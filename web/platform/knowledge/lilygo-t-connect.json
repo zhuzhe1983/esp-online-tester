@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-connect",
   "title": "LILYGO T-Connect",
-  "summary": "Spark 将此商品归入T-Connect 系列，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "已实现 BOOT0 与四颗 APA102 的 GPIO 位流／SPI 数据、BGR 链序和全局亮度；CAN/RS485 隔离收发器与真实网络未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Connect_V1.0",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Connect",
@@ -52,6 +52,153 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-08-12",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-connect",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "leds": {
+            "controller": "APA102",
+            "count": 4,
+            "clock": 3,
+            "data": 8,
+            "wireOrder": "BGR",
+            "schematicChain": [
+              "LED3",
+              "LED4",
+              "LED5",
+              "LED2"
+            ],
+            "spatialMappingVerified": false,
+            "implemented": true
+          },
+          "serialPorts": [
+            {
+              "number": 1,
+              "tx": 4,
+              "rx": 5,
+              "modes": [
+                "CAN",
+                "RS485"
+              ],
+              "implemented": false
+            },
+            {
+              "number": 2,
+              "tx": 6,
+              "rx": 7,
+              "modes": [
+                "CAN",
+                "RS485"
+              ],
+              "implemented": false
+            },
+            {
+              "number": 3,
+              "tx": 17,
+              "rx": 18,
+              "modes": [
+                "CAN",
+                "RS485"
+              ],
+              "implemented": false
+            },
+            {
+              "number": 4,
+              "tx": 9,
+              "rx": 10,
+              "modes": [
+                "CAN",
+                "RS485"
+              ],
+              "implemented": false
+            }
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Connect-README.md",
+        "T-Connect-libraries-Mylibrary-pin_config.h",
+        "T-Connect-project-T-Connect_V1.0.pdf",
+        "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+        "T-Connect-examples-Original_Test-Original_Test.ino",
+        "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+        "T-Connect-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-connect"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "T-Connect-README.md",
+            "T-Connect-libraries-Mylibrary-pin_config.h",
+            "T-Connect-project-T-Connect_V1.0.pdf",
+            "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+            "T-Connect-examples-Original_Test-Original_Test.ino",
+            "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+            "T-Connect-tree",
+            "official-store-shopify-1",
+            "official-wiki-t-connect"
+          ],
+          "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Connect-README.md",
+        "T-Connect-libraries-Mylibrary-pin_config.h",
+        "T-Connect-project-T-Connect_V1.0.pdf",
+        "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+        "T-Connect-examples-Original_Test-Original_Test.ino",
+        "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+        "T-Connect-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-connect"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +227,284 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-connect-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_5.jpg?v=1723446253",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_5.jpg?v=1723446253",
+      "fetchedAt": "2026-11-22T06:57:20Z",
+      "bytes": 68468,
+      "sha256": "3fd3ad65f19776c132747a7e178c67c92bd724efed5a21c43cc8dd8e2149614b",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t connect official photo 0",
+      "archiveName": "lilygo-t-connect-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-connect-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_8.jpg?v=1723446252",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_8.jpg?v=1723446252",
+      "fetchedAt": "2026-11-22T06:57:20Z",
+      "bytes": 73770,
+      "sha256": "0c854e1bcd732ea2067b7153bfb5fed34e17d056bc158761e02225f532a1eea4",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t connect official photo 1",
+      "archiveName": "lilygo-t-connect-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-connect-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_3.jpg?v=1723446252",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_3.jpg?v=1723446252",
+      "fetchedAt": "2026-11-22T06:57:20Z",
+      "bytes": 76933,
+      "sha256": "71452bca8ed075876c00538294ee2ed61bb8a0d81f3aef874699e549fa09be69",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t connect official photo 2",
+      "archiveName": "lilygo-t-connect-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-connect-manufacturer-cad",
+      "productId": "lilygo-t-connect",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/structure/T-Connect_v1.0_202602240924.step",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/structure/T-Connect_v1.0_202602240924.step",
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "repositoryPath": "structure/T-Connect_v1.0_202602240924.step",
+      "scope": "V1.0 assembly dated 2026-02-24",
+      "fetchedAt": "2026-11-22T07:04:04Z",
+      "bytes": 15337211,
+      "sha256": "3103d3f2683a2bbfd3e2fd4253c94f0edab5e0c948f82ad7c0011e727ff3133d",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "3103d3f2683a2bbfd3e2fd4253c94f0edab5e0c948f82ad7c0011e727ff3133d",
+      "archiveSha256": "7dcbafe67560b437b7bb41323c7083b294c5c4443633c7d945f3174d7097b813",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "representationScope": "Named PCB product only; component, copper and silkscreen representations omitted; original assembly retained in compressed source.",
+      "storedSha256": "7dcbafe67560b437b7bb41323c7083b294c5c4443633c7d945f3174d7097b813",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "b50a92a9f87ab55680b8521ded9db808be4ffb60",
+      "revisionType": "pinned-git-revision",
+      "revision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "title": "lilygo t connect manufacturer cad",
+      "archiveName": "lilygo-t-connect-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t-connect-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:15Z",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t connect repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t-connect-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-connect",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-connect-series/t-connect/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-connect-series/t-connect/index.md",
+      "fetchedAt": "2026-11-22T06:42:45Z",
+      "mediaType": "text/plain",
+      "bytes": 5470,
+      "sha256": "096ce67652d5c84b1081bd0b072e35367681cf0aa3163df8b428981ddc202e4c",
+      "gitBlobSha": "2ea00ebd3313f8e3e5d6d634cfc9b716ca9ba749",
+      "path": "en/products/t-connect-series/t-connect/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "archiveName": "en__products__t-connect-series__t-connect__index.md",
+      "title": "LILYGO official wiki t connect",
+      "kind": "manufacturer-documentation",
+      "sourceCachePath": "target/lilygo-audit/wiki/en__products__t-connect-series__t-connect__index.md"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "README.md",
+      "id": "T-Connect-README.md",
+      "gitBlobSha": "73fd9f741a990b78b9b7d2f228416027c7a66727",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:02Z",
+      "sha256": "26c98ad6bf464ac5704ac9a84f51c554e964ecaec535c2fc3a1c4dd1470daea7",
+      "bytes": 10410,
+      "archiveName": "T-Connect-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-Connect-README.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "libraries/Mylibrary/pin_config.h",
+      "id": "T-Connect-libraries-Mylibrary-pin_config.h",
+      "gitBlobSha": "958ddd84eb64b361f2ca25d2cc64bd748a177247",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/libraries/Mylibrary/pin_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/libraries/Mylibrary/pin_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:02Z",
+      "sha256": "62a3c9071058eca222295a6256505bd579a1e8c68c31f0bd9b85c03e1e619273",
+      "bytes": 598,
+      "archiveName": "T-Connect-libraries-Mylibrary-pin_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / libraries/Mylibrary/pin_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-Connect-libraries-Mylibrary-pin_config.h.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "project/T-Connect_V1.0.pdf",
+      "id": "T-Connect-project-T-Connect_V1.0.pdf",
+      "gitBlobSha": "751d0a49104a4e518c0cbaf2c77af76e7744fcf3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/project/T-Connect_V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/project/T-Connect_V1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:35Z",
+      "sha256": "31aeb81fccb7895f51268c35d598b207f663bf7edbc6a46dfd44c2dbc9063e37",
+      "bytes": 753306,
+      "archiveName": "T-Connect-project-T-Connect_V1.0.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / project/T-Connect_V1.0.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-Connect-project-T-Connect_V1.0.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "examples/APA102_Blink/APA102_Blink.ino",
+      "id": "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+      "gitBlobSha": "8eb6c64ef2ab0ec7ef10ef00a1d27d915f768d67",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/examples/APA102_Blink/APA102_Blink.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/examples/APA102_Blink/APA102_Blink.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "e688f80a0a2891e0441f7724de11e5e1a96bdcd4c36132e57bf01259656271a9",
+      "bytes": 917,
+      "archiveName": "T-Connect-examples-APA102_Blink-APA102_Blink.ino.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / examples/APA102_Blink/APA102_Blink.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-Connect-examples-APA102_Blink-APA102_Blink.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "examples/Original_Test/Original_Test.ino",
+      "id": "T-Connect-examples-Original_Test-Original_Test.ino",
+      "gitBlobSha": "a0bcdbbf8a713c3f7170d221c2f99bf5bfb8563c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/examples/Original_Test/Original_Test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/examples/Original_Test/Original_Test.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "8f370b34a0ab8da2724f73fe56c3fc2391649533327e2d9ad8cfff98245d3b62",
+      "bytes": 34388,
+      "archiveName": "T-Connect-examples-Original_Test-Original_Test.ino.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / examples/Original_Test/Original_Test.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-Connect-examples-Original_Test-Original_Test.ino.raw"
+    },
+    {
+      "id": "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "path": "libraries/FastLED-3.6.0/src/chipsets.h",
+      "gitBlobSha": "40bd988cd318e6a4ac3ff3c31d63c25beac435cf",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/libraries/FastLED-3.6.0/src/chipsets.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/libraries/FastLED-3.6.0/src/chipsets.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:21:20Z",
+      "sha256": "996f475d1b4421f20c1b28972cafbd3b47572c8faec383fdbc9c15912042d263",
+      "bytes": 26844,
+      "archiveName": "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h.raw",
+      "title": "Xinyuan-LilyGO/T-Connect / libraries/FastLED-3.6.0/src/chipsets.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-Connect-libraries-FastLED-3.6.0-src-chipsets.h.raw"
+    },
+    {
+      "id": "T-Connect-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Connect/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:06Z",
+      "mediaType": "application/json",
+      "sha256": "53a16ee1379a2dbb76cf60e42296cd000656beff4234d9ee1f214fa9e3fa4e35",
+      "bytes": 79501,
+      "archiveName": "T-Connect-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/T-Connect",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-Connect",
+      "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash.",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-Connect-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-connect-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_5.jpg?v=1723446253",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-connect/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-connect-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_8.jpg?v=1723446252",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-connect/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-connect-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect-lilygo_3.jpg?v=1723446252",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-connect/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +517,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +524,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +534,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +544,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +554,254 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-entries-linked",
+    "sourceIds": [
+      "T-Connect-tree",
+      "T-Connect-README.md"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-Connect/blob/b0e7c4803a19fadaabf93890704a65193afcd181/firmware/%5BT-Connect_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.3.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/firmware/%5BT-Connect_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.3.bin",
+        "path": "firmware/[T-Connect_V1.0][Original_Test]_firmware_V1.0.3.bin",
+        "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+        "gitBlobSha": "ad99c3d3a0c5df7f48cf46d51e2ab18cdbc7e06f",
+        "bytes": 913296,
+        "status": "linked",
+        "sourceId": "T-Connect-tree",
+        "role": "factory",
+        "identityEvidence": "README explicitly calls this exact link Product factory original testing.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Factory identity is explicit. The binary and screenshot-only flash layout were not downloaded/validated; factory execution remains unverified.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-connect/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：V1.0 assembly dated 2026-02-24；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-connect",
+      "lilygo-t-connect-official-photo-0",
+      "lilygo-t-connect-official-photo-1",
+      "lilygo-t-connect-official-photo-2",
+      "lilygo-t-connect-manufacturer-cad",
+      "T-Connect-README.md",
+      "T-Connect-libraries-Mylibrary-pin_config.h",
+      "T-Connect-project-T-Connect_V1.0.pdf",
+      "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+      "T-Connect-examples-Original_Test-Original_Test.ino",
+      "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+      "T-Connect-tree"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-connect",
+    "status": "diagnostic",
+    "scope": "已实现 BOOT0 与四颗 APA102 的 GPIO 位流／SPI 数据、BGR 链序和全局亮度；CAN/RS485 隔离收发器与真实网络未实现。",
+    "unsupported": [
+      "APA102 digital frames only; per-LED clock propagation, PWM oscillator, current and optical brightness are not calibrated. Publication occurs after four frames plus two end clocks; no independent validation of the physical PCB LED spatial order.",
+      "Four selectable CAN/RS485 ports, protection/isolation, supply, external connectors and network/RF traffic are unmodeled. No relay controller is present in the inspected T-Connect schematic; do not inherit the wiki relay claim.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-connect",
+    "boardId": "lilygo-t-connect",
+    "name": "LILYGO T-Connect",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-Connect_V1.0",
+    "display": null,
+    "physicalDisplay": false,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "已实现 BOOT0 与四颗 APA102 的 GPIO 位流／SPI 数据、BGR 链序和全局亮度；CAN/RS485 隔离收发器与真实网络未实现。",
+    "scopeEn": "BOOT0 and four APA102 LEDs from physical GPIO rising edges or routed hardware SPI, with start/header/BGR/brightness/end clocks; CAN/RS485 transceivers remain unmodeled.",
+    "chronology": {
+      "date": "2024-08-12",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-connect",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "T-Connect-README.md",
+      "T-Connect-libraries-Mylibrary-pin_config.h",
+      "T-Connect-project-T-Connect_V1.0.pdf",
+      "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+      "T-Connect-examples-Original_Test-Original_Test.ino",
+      "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+      "T-Connect-tree",
+      "official-store-shopify-1",
+      "official-wiki-t-connect"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "APA102 digital frames only; per-LED clock propagation, PWM oscillator, current and optical brightness are not calibrated. Publication occurs after four frames plus two end clocks; no independent validation of the physical PCB LED spatial order.",
+      "Four selectable CAN/RS485 ports, protection/isolation, supply, external connectors and network/RF traffic are unmodeled. No relay controller is present in the inspected T-Connect schematic; do not inherit the wiki relay claim.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "pins": {
+      "boot": 0,
+      "leds": {
+        "controller": "APA102",
+        "count": 4,
+        "clock": 3,
+        "data": 8,
+        "wireOrder": "BGR",
+        "schematicChain": [
+          "LED3",
+          "LED4",
+          "LED5",
+          "LED2"
+        ],
+        "spatialMappingVerified": false,
+        "implemented": true
+      },
+      "serialPorts": [
+        {
+          "number": 1,
+          "tx": 4,
+          "rx": 5,
+          "modes": [
+            "CAN",
+            "RS485"
+          ],
+          "implemented": false
+        },
+        {
+          "number": 2,
+          "tx": 6,
+          "rx": 7,
+          "modes": [
+            "CAN",
+            "RS485"
+          ],
+          "implemented": false
+        },
+        {
+          "number": 3,
+          "tx": 17,
+          "rx": 18,
+          "modes": [
+            "CAN",
+            "RS485"
+          ],
+          "implemented": false
+        },
+        {
+          "number": 4,
+          "tx": 9,
+          "rx": 10,
+          "modes": [
+            "CAN",
+            "RS485"
+          ],
+          "implemented": false
+        }
+      ]
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "T-Connect-README.md",
+        "T-Connect-libraries-Mylibrary-pin_config.h",
+        "T-Connect-project-T-Connect_V1.0.pdf",
+        "T-Connect-examples-APA102_Blink-APA102_Blink.ino",
+        "T-Connect-examples-Original_Test-Original_Test.ino",
+        "T-Connect-libraries-FastLED-3.6.0-src-chipsets.h",
+        "T-Connect-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-connect"
+      ],
+      "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+    },
+    "conflicts": [
+      {
+        "fact": "onboard relay",
+        "resolution": "Official wiki advertises relay capability, but exact V1.0 schematic and product pin_config contain APA102 and four CAN/RS485 ports, not relay GPIO/driver. No relay function is enabled.",
+        "sourceIds": [
+          "T-Connect-project-T-Connect_V1.0.pdf",
+          "official-wiki-t-connect"
+        ]
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "official-entries-linked",
+      "sourceIds": [
+        "T-Connect-tree",
+        "T-Connect-README.md"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Connect/blob/b0e7c4803a19fadaabf93890704a65193afcd181/firmware/%5BT-Connect_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.3.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect/b0e7c4803a19fadaabf93890704a65193afcd181/firmware/%5BT-Connect_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.3.bin",
+          "path": "firmware/[T-Connect_V1.0][Original_Test]_firmware_V1.0.3.bin",
+          "pinnedGitRevision": "b0e7c4803a19fadaabf93890704a65193afcd181",
+          "gitBlobSha": "ad99c3d3a0c5df7f48cf46d51e2ab18cdbc7e06f",
+          "bytes": 913296,
+          "status": "linked",
+          "sourceId": "T-Connect-tree",
+          "role": "factory",
+          "identityEvidence": "README explicitly calls this exact link Product factory original testing.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Factory identity is explicit. The binary and screenshot-only flash layout were not downloaded/validated; factory execution remains unverified.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+      }
+    }
+  }
 }

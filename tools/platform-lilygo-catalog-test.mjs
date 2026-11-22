@@ -66,31 +66,33 @@ test('T-Deck is a six-item family with independent Plus, Pro and software editio
   const deck = lilygo.filter(p => p.family.id === 't-deck-series');
   assert.deepEqual(deck.map(p => p.providers['lilygo-spark'].productId).sort(), ['t-deck', 't-deck-meshtastic', 't-deck-plus-1', 't-deck-plus-meshtastic', 't-deck-pro', 't-deck-pro-meshtastic'].sort());
   for (const p of deck.filter(p => p.id !== 'lilygo-t-deck')) {
-    assert.equal(p.runtime.board, null);
-    assert.equal(p.model, undefined);
+    assert.ok(p.model?.url, `${p.id}: exact preview exists`);
+    assert.notEqual(p.runtime.board, 'tdeck', 'A sibling must not inherit original T-Deck hardware');
+    if(p.runtime.board) assert.equal(p.runtime.board,p.id,'Explicitly adapted variant retains an independent board identity');
     assert.equal(p.defaultFirmwareId, undefined);
-    assert.equal(p.displayStatus, 'unknown');
-    assert.equal(p.display, null);
   }
   for (const pid of ['t-deck-meshtastic', 't-deck-plus-meshtastic', 't-deck-pro-meshtastic']) assert.equal(byProvider.get(pid).firmwareEdition, 'Meshtastic');
 });
 
-test('new products remain explicit unknowns and round-trip as valid preview scenes', async () => {
+test('every LilyGO preview round-trips and new protocol support stays separate from firmware compatibility', async () => {
   for (const product of lilygo) {
     const scene = createDefaultScene(catalog, product.id);
     assert.equal(validateScene(scene, catalog).valid, true, product.id);
     assert.deepEqual(decodeScene(encodeScene(scene, catalog), catalog), scene);
     if (Object.hasOwn(curated, product.providers['lilygo-spark'].productId)) continue;
-    assert.deepEqual(product.runtime, {board: null, flashMb: null, psramMb: null, status: 'unavailable'});
-    assert.equal(product.displayStatus, 'unknown');
-    assert.equal(product.display, null);
-    assert.deepEqual(product.controls, []);
-    assert.deepEqual(product.interfaces, []);
+    assert.ok(product.model?.url, `${product.id}: missing debug/CAD/photo preview`);
+    assert.ok(product.chronology && Object.hasOwn(product.chronology,'date'));
+    assert.ok(['diagnostic','unavailable'].includes(product.runtime.status));
+    if(!product.runtime.board){assert.equal(product.runtime.status,'unavailable');assert.equal(product.runtime.flashMb,null);assert.equal(product.runtime.psramMb,null);}
+    if(product.displayStatus==='unknown')assert.equal(product.display,null,'An unknown display cannot be a guessed physical screen');
     assert.equal(product.defaultFirmwareId, undefined);
     const knowledge = await read(`web/platform/knowledge/${product.id}.json`);
     assert.ok(knowledge.unknowns.some(f => f.id === 'factory-firmware' && f.value === null));
     assert.equal(knowledge.sources.find(s => s.id === 'spark-product-catalog').sha256, receipt.source.sha256);
-    assert.ok(knowledge.sources.filter(s => s.id !== 'spark-product-catalog').every(s => s.status === 'linked' && !s.fetchedAt && !s.sha256));
+    assert.ok(knowledge.factoryFirmwareInvestigation,'Each product has a recorded factory-source investigation');
+    assert.ok(knowledge.sources.filter(s => s.status === 'linked').every(s => !s.fetchedAt && !s.sha256));
+    assert.ok(knowledge.sources.filter(s => s.status === 'fetched').every(s => /^[a-f0-9]{64}$/.test(s.sha256) && s.fetchedAt));
+    if(product.runtime.board)assert.equal(knowledge.runtimeSupport.status,'diagnostic');
   }
 });
 

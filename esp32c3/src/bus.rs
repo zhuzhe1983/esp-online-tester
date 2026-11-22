@@ -147,7 +147,7 @@ impl SocBus {
         let drive = (self.periph.gpio.enable, self.periph.gpio.out);
         // Reuse the peripheral's pin-block classification; only those blocks start or stop I2C/RMT.
         if self.periph.write32(a, v) { self.pins_active = self.pins_active(); }
-        if matches!(a & !0xfff, 0x6000_4000 | 0x6000_9000) && self.board.uses_gpio_waveform() {
+        if matches!(a & !0xfff, 0x6000_4000 | 0x6000_9000) && self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::C3.routes(&self.periph.gpio, &self.periph.io_mux));
         }
         if self.periph.sha.dma_pending { self.sha_dma_write(a); }
@@ -218,7 +218,7 @@ impl SocBus {
 
     /// Attach controller 0 devices and reconnect board inputs after a reset.
     pub fn attach_board_devices(&mut self) {
-        if self.board.uses_gpio_waveform() {
+        if self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::C3.routes(&self.periph.gpio, &self.periph.io_mux));
         }
         self.uart_pins = self.board.uses_uart_pins();

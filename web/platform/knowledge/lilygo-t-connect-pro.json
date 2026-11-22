@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-connect-pro",
   "title": "LILYGO T-Connect Pro",
-  "summary": "Spark 将此商品归入T-Connect 系列，标注 MCU 为 ESP32-S3R8；具体硬件版次及配置待核对。",
+  "summary": "精确选择带 ST7796 屏幕和 SX1262 的 V1.0，已接入 222×480 显示、CST226SE 单点触摸与 BOOT。共享 SPI 的 W5500/LoRa 同时片选会拒绝显示写入；网口、无线、继电器、CAN 和串口收发器尚未模拟。无 LoRa 加 SD/RTC 的另一版本不在本配置内。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Connect Pro",
@@ -52,6 +52,102 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2025-02-05",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/README.md",
+        "sourceId": "s3add-connect-pro-readme",
+        "confidence": "high",
+        "hardwareRevision": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262",
+        "notes": "First product hardware version date in the manufacturer Version iteration table. Later selected panel/microphone revisions remain explicitly scoped."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s3add-connect-pro-readme"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 222,
+          "height": 480,
+          "controller": "ST7796",
+          "type": "TFT",
+          "interface": "spi",
+          "pixelFormat": "RGB565",
+          "crop": [
+            49,
+            0,
+            222,
+            480
+          ],
+          "commandCoordinateCanvas": [
+            320,
+            480
+          ],
+          "physicalTouch": true,
+          "touchImplemented": true
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "display": {
+            "sclk": 12,
+            "mosi": 11,
+            "miso": 13,
+            "cs": 21,
+            "dc": 41,
+            "reset": null,
+            "enable": null,
+            "backlight": {
+              "pin": 46,
+              "activeHigh": true
+            },
+            "ledcGate": true,
+            "conflictingChipSelectPins": [
+              10,
+              14
+            ]
+          },
+          "touch": {
+            "controller": "CST226SE",
+            "address": 90,
+            "sda": 39,
+            "scl": 40,
+            "irq": 3,
+            "reset": 47
+          },
+          "encoder": null
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s3add-connect-pro-readme",
+        "s3add-connect-pro-pins",
+        "s3add-connect-pro-gfx",
+        "s3add-connect-pro-touch",
+        "s3add-connect-pro-touch-h"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +176,348 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-connect-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_3.jpg?v=1740730511",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_3.jpg?v=1740730511",
+      "fetchedAt": "2026-11-22T06:57:02Z",
+      "bytes": 53010,
+      "sha256": "93ddb6c28b5e43a5662a021ec356ed5ce2a6f188da2a8358ebcc3ec31b91b521",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t connect pro official photo 0",
+      "archiveName": "lilygo-t-connect-pro-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-connect-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_9.jpg?v=1740730511",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_9.jpg?v=1740730511",
+      "fetchedAt": "2026-11-22T06:57:02Z",
+      "bytes": 53478,
+      "sha256": "66d4c21961affbe01acc823b3fe2b1cef69df394fbfb54eea1fb912488734500",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t connect pro official photo 1",
+      "archiveName": "lilygo-t-connect-pro-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-connect-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_11.jpg?v=1740730511",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_11.jpg?v=1740730511",
+      "fetchedAt": "2026-11-22T06:57:02Z",
+      "bytes": 52099,
+      "sha256": "a6dce7e16fe9bf6c40af13d0ec005c12c79e0428c33f8fb2f5ed59f582217636",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t connect pro official photo 2",
+      "archiveName": "lilygo-t-connect-pro-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-connect-pro-reviewed-cad-1",
+      "productId": "lilygo-t-connect-pro",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro 3D_File/h76100.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/h76100.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/h76100.stl",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "repositoryPath": "3D_File/h76100.stl",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "b3cfa1fd27c4ebebb6af4b9b95387b3741292d8f",
+      "fetchedAt": "2026-11-22T08:32:10Z",
+      "bytes": 281684,
+      "sha256": "5528dcc46dc1040b4521fcbcefe4ff3fb93a5d1246e590195d4d3acce5213993",
+      "rawSha256": "5528dcc46dc1040b4521fcbcefe4ff3fb93a5d1246e590195d4d3acce5213993",
+      "file": "manufacturer-h76100.stl.gz",
+      "archiveName": "manufacturer-h76100.stl.gz",
+      "storedSha256": "8ddb0dbc4aa998bcbdc5c0fb75234bb34f75d51d1478694f53f4a23cdde39d12",
+      "archiveSha256": "8ddb0dbc4aa998bcbdc5c0fb75234bb34f75d51d1478694f53f4a23cdde39d12",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-Connect-Pro printable enclosure and mounting components, retaining source placement. These are enclosure references; PCB, terminal contacts, display glass and DIN-rail fit remain unverified.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-connect-pro-reviewed-cad-2",
+      "productId": "lilygo-t-connect-pro",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro 3D_File/00.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/00.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/00.stl",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "repositoryPath": "3D_File/00.stl",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e9125603891730dadb086eb56f918e41af728b0b",
+      "fetchedAt": "2026-11-22T08:37:51Z",
+      "bytes": 51284,
+      "sha256": "ef16cce77da176d532d04b948e96db9db510dda74c004eb5b9e7f4eac9693ae5",
+      "rawSha256": "ef16cce77da176d532d04b948e96db9db510dda74c004eb5b9e7f4eac9693ae5",
+      "file": "manufacturer-00.stl.gz",
+      "archiveName": "manufacturer-00.stl.gz",
+      "storedSha256": "22b7c81c939f37b0a3429cf381ba3fa1b13d2f1663917a7c868227fb53dec6e5",
+      "archiveSha256": "22b7c81c939f37b0a3429cf381ba3fa1b13d2f1663917a7c868227fb53dec6e5",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-Connect-Pro printable enclosure and mounting components, retaining source placement. These are enclosure references; PCB, terminal contacts, display glass and DIN-rail fit remain unverified.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-connect-pro-reviewed-cad-3",
+      "productId": "lilygo-t-connect-pro",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro 3D_File/0002.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/0002.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/0002.stl",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "repositoryPath": "3D_File/0002.stl",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "6e25e501f02d92c184fb475e4c86314b35ca191e",
+      "fetchedAt": "2026-11-22T08:37:51Z",
+      "bytes": 22284,
+      "sha256": "60970155993cbb4ccb7dadcccce41076cee4c7dcd13ed06fb1209403e5642abd",
+      "rawSha256": "60970155993cbb4ccb7dadcccce41076cee4c7dcd13ed06fb1209403e5642abd",
+      "file": "manufacturer-0002.stl.gz",
+      "archiveName": "manufacturer-0002.stl.gz",
+      "storedSha256": "69242e26a272d1b536d647aff614fedac059227717c9b7b5aa78d4a091dd4db8",
+      "archiveSha256": "69242e26a272d1b536d647aff614fedac059227717c9b7b5aa78d4a091dd4db8",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-Connect-Pro printable enclosure and mounting components, retaining source placement. These are enclosure references; PCB, terminal contacts, display glass and DIN-rail fit remain unverified.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-connect-pro-reviewed-cad-4",
+      "productId": "lilygo-t-connect-pro",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro 3D_File/0003.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/0003.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/0003.stl",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "repositoryPath": "3D_File/0003.stl",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "ae84ab3f8f0871dce93954c344ac19251739c101",
+      "fetchedAt": "2026-11-22T08:37:51Z",
+      "bytes": 37084,
+      "sha256": "59fd052ff15994b2a7700621fafb0bdafd5e7c3ee892d2f8e09c239c161c8ed8",
+      "rawSha256": "59fd052ff15994b2a7700621fafb0bdafd5e7c3ee892d2f8e09c239c161c8ed8",
+      "file": "manufacturer-0003.stl.gz",
+      "archiveName": "manufacturer-0003.stl.gz",
+      "storedSha256": "2cd50649e3cd65b7ead011a029008f84d80c14bb4d387a945ea1079974c4554d",
+      "archiveSha256": "2cd50649e3cd65b7ead011a029008f84d80c14bb4d387a945ea1079974c4554d",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-Connect-Pro printable enclosure and mounting components, retaining source placement. These are enclosure references; PCB, terminal contacts, display glass and DIN-rail fit remain unverified.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-connect-pro-reviewed-cad-5",
+      "productId": "lilygo-t-connect-pro",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro 3D_File/0100.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/0100.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/3D_File/0100.stl",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "repositoryPath": "3D_File/0100.stl",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "43bc32d75b0881dcc46e0ece005aac47cd5c784a",
+      "fetchedAt": "2026-11-22T08:37:57Z",
+      "bytes": 78284,
+      "sha256": "49e23d6fa31bef7a3d0772efe06a1b2103c5a3c459005ae6cead9abd82bdbd88",
+      "rawSha256": "49e23d6fa31bef7a3d0772efe06a1b2103c5a3c459005ae6cead9abd82bdbd88",
+      "file": "manufacturer-0100.stl.gz",
+      "archiveName": "manufacturer-0100.stl.gz",
+      "storedSha256": "e875d4078a45609808b9ea3969b7274e0eddc095cb4047782e394e576eb4c650",
+      "archiveSha256": "e875d4078a45609808b9ea3969b7274e0eddc095cb4047782e394e576eb4c650",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Official T-Connect-Pro printable enclosure and mounting components, retaining source placement. These are enclosure references; PCB, terminal contacts, display glass and DIN-rail fit remain unverified.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-connect-pro-reviewed-cad-license",
+      "title": "Manufacturer repository LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/LICENSE",
+      "fetchedAt": "2026-11-22T08:37:57Z",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149,
+      "file": "manufacturer-LICENSE.txt",
+      "archiveName": "manufacturer-LICENSE.txt",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-connect-pro",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-connect-series/t-connect-pro/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-connect-series/t-connect-pro/index.md",
+      "fetchedAt": "2026-11-22T06:42:45Z",
+      "mediaType": "text/plain",
+      "bytes": 7894,
+      "sha256": "febea0793cb59ca233d4845de129038cd547b47b66ecb54097e14550fd78d03f",
+      "gitBlobSha": "c2a17dc82a0dce1a44043b719cec31c1d22f9b0f",
+      "path": "en/products/t-connect-series/t-connect-pro/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t connect pro",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-connect-series__t-connect-pro__index.md"
+    },
+    {
+      "id": "s3add-connect-pro-readme",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "README.md",
+      "gitBlobSha": "887cf89b9dd04e421e750c436c26d6f67f2b1b63",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:36Z",
+      "sha256": "471585b16296a6f3ae536b272eae1a7341994d57460259d04a7182bd864aaf6d",
+      "bytes": 13343,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-pins",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "libraries/private_library/pin_config.h",
+      "gitBlobSha": "7ce2913f9094897d1ead33707fb604b78cb990c0",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/libraries/private_library/pin_config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/libraries/private_library/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:36Z",
+      "sha256": "e0afda283f30331c81ec85aff2cbab8ed7e844b165df725e8b4e9a2a3b5b0d80",
+      "bytes": 2934,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-gfx",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "examples/GFX/GFX.ino",
+      "gitBlobSha": "1655b38f563edd67a420e3107c1096fa4febd129",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/examples/GFX/GFX.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/examples/GFX/GFX.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:36Z",
+      "sha256": "0f2147d9f16707f67069f599a871aa3a12c34b0bf5b41902d3316fa680cdf38b",
+      "bytes": 859,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-gfx.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-touch",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.cpp",
+      "gitBlobSha": "db805cbc67c4bb532fa173ad4fab76b7c202f0fb",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:13Z",
+      "sha256": "71d13bb57978689a79384e4674a32fa1be146d3f801086472930c6528e48f0dc",
+      "bytes": 9768,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-touch.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-connect-pro-touch-h",
+      "repository": "Xinyuan-LilyGO/T-Connect-Pro",
+      "revision": "255a8db5636e53bf5058f90d83d61929ca798946",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.h",
+      "gitBlobSha": "98a908c8e7347b1980efa0d6aec143094bfcd584",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Connect-Pro/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST2xxSE.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:13Z",
+      "sha256": "504a6b96f80f1206476d70e2a85d6016b6a6618064641bb910faa1a6a30f11ae",
+      "bytes": 4681,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-connect-pro-touch-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-connect-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_3.jpg?v=1740730511",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-connect-pro/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-connect-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_9.jpg?v=1740730511",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-connect-pro/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-connect-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Connect_Pro-lilygo_11.jpg?v=1740730511",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-connect-pro/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +530,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +537,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +547,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +557,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +567,240 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "reference-only",
+    "sourceIds": [
+      "s3add-connect-pro-readme"
+    ],
+    "candidates": [
+      {
+        "path": "firmware/deprecated/(屏幕色彩测试项增加黑色背景测试)[T-Connect-Pro_V1.0][Original_Test]_firmware_202502191117.bin",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/firmware/deprecated/%28%E5%B1%8F%E5%B9%95%E8%89%B2%E5%BD%A9%E6%B5%8B%E8%AF%95%E9%A1%B9%E5%A2%9E%E5%8A%A0%E9%BB%91%E8%89%B2%E8%83%8C%E6%99%AF%E6%B5%8B%E8%AF%95%29%5BT-Connect-Pro_V1.0%5D%5BOriginal_Test%5D_firmware_202502191117.bin",
+        "status": "linked",
+        "gitBlobSha": "4f074b5e91a63b01b7eb6d4383d0e7d212b21a60",
+        "bytesFromTree": 2136672,
+        "binaryFetched": false,
+        "layoutVerified": false,
+        "sha256": null
+      }
+    ],
+    "simulationVerified": false,
+    "notes": "Manufacturer lists this exact variant candidate. No binary payload was downloaded or claimed to boot; source fixtures are the execution evidence."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-connect-pro/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "采用已审查的官方 CAD 部件；具体版次、遗漏部分及未标定项见模型资料。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-connect-pro",
+      "lilygo-t-connect-pro-official-photo-0",
+      "lilygo-t-connect-pro-official-photo-1",
+      "lilygo-t-connect-pro-official-photo-2",
+      "lilygo-t-connect-pro-reviewed-cad-1",
+      "lilygo-t-connect-pro-reviewed-cad-2",
+      "lilygo-t-connect-pro-reviewed-cad-3",
+      "lilygo-t-connect-pro-reviewed-cad-4",
+      "lilygo-t-connect-pro-reviewed-cad-5",
+      "lilygo-t-connect-pro-reviewed-cad-license",
+      "s3add-connect-pro-readme",
+      "s3add-connect-pro-pins",
+      "s3add-connect-pro-gfx",
+      "s3add-connect-pro-touch",
+      "s3add-connect-pro-touch-h"
+    ],
+    "displayHint": {
+      "width": 222,
+      "height": 480,
+      "sourceIds": [
+        "s3add-connect-pro-readme",
+        "s3add-connect-pro-pins",
+        "s3add-connect-pro-gfx",
+        "s3add-connect-pro-touch",
+        "s3add-connect-pro-touch-h"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-connect-pro",
+    "status": "diagnostic",
+    "scope": "精确选择带 ST7796 屏幕和 SX1262 的 V1.0，已接入 222×480 显示、CST226SE 单点触摸与 BOOT。共享 SPI 的 W5500/LoRa 同时片选会拒绝显示写入；网口、无线、继电器、CAN 和串口收发器尚未模拟。无 LoRa 加 SD/RTC 的另一版本不在本配置内。",
+    "unsupported": [
+      "No official binary boot or physical hardware validation is claimed. Authored Xtensa SRAM probes execute IO_MUX, GPIO matrix, GP-SPI and I2C MMIO.",
+      "DCS RGB565 command/pixel subset only; analog/gamma/TE timing/color calibration are not simulated.",
+      "Touch IRQ uses a held low level while pressed; periodic interrupt pulses, auto-sleep timing, gestures, pressure and factory firmware/calibration IDs are unmodeled.",
+      "W5500 Ethernet, SX1262 LoRa, relay GPIO8, CAN, RS485 and RS232 peripherals are not implemented.",
+      "The no-screen and no-LoRa/SD/RTC hardware variants are excluded; no SD socket is invented on the selected SX1262 target.",
+      "CST226SE uses its vendor 8-bit report pointer and D1/05 sleep command. Pressure and additional finger reports are absent."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-connect-pro",
+    "boardId": "lilygo-t-connect-pro",
+    "name": "LILYGO T-Connect Pro",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262",
+    "display": {
+      "width": 222,
+      "height": 480,
+      "controller": "ST7796",
+      "type": "TFT",
+      "interface": "spi",
+      "pixelFormat": "RGB565",
+      "crop": [
+        49,
+        0,
+        222,
+        480
+      ],
+      "commandCoordinateCanvas": [
+        320,
+        480
+      ],
+      "physicalTouch": true,
+      "touchImplemented": true
+    },
+    "pins": {
+      "boot": 0,
+      "display": {
+        "sclk": 12,
+        "mosi": 11,
+        "miso": 13,
+        "cs": 21,
+        "dc": 41,
+        "reset": null,
+        "enable": null,
+        "backlight": {
+          "pin": 46,
+          "activeHigh": true
+        },
+        "ledcGate": true,
+        "conflictingChipSelectPins": [
+          10,
+          14
+        ]
+      },
+      "touch": {
+        "controller": "CST226SE",
+        "address": 90,
+        "sda": 39,
+        "scl": 40,
+        "irq": 3,
+        "reset": 47
+      },
+      "encoder": null
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      }
+    ],
+    "sdCard": {
+      "slot": false,
+      "transportSupported": false,
+      "notes": "No SD socket is declared on the exact selected hardware variant."
+    },
+    "runtimeLevel": "partial",
+    "scope": "精确选择带 ST7796 屏幕和 SX1262 的 V1.0，已接入 222×480 显示、CST226SE 单点触摸与 BOOT。共享 SPI 的 W5500/LoRa 同时片选会拒绝显示写入；网口、无线、继电器、CAN 和串口收发器尚未模拟。无 LoRa 加 SD/RTC 的另一版本不在本配置内。",
+    "scopeEn": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262: source-backed display, GPIO and single-point touch subset only.",
+    "sourceIds": [
+      "s3add-connect-pro-readme",
+      "s3add-connect-pro-pins",
+      "s3add-connect-pro-gfx",
+      "s3add-connect-pro-touch",
+      "s3add-connect-pro-touch-h"
+    ],
+    "chronology": {
+      "date": "2025-02-05",
+      "basis": "hardware-release",
+      "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/README.md",
+      "sourceId": "s3add-connect-pro-readme",
+      "confidence": "high",
+      "hardwareRevision": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262",
+      "notes": "First product hardware version date in the manufacturer Version iteration table. Later selected panel/microphone revisions remain explicitly scoped."
+    },
+    "priorityRank": 21,
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "three_exact_screen_variants_execute_xtensa_spi_with_power_and_route_gates",
+        "cst226se_and_cst816d_keep_distinct_registers_ids_sleep_reset_and_coordinates"
+      ]
+    },
+    "unsupported": [
+      "No official binary boot or physical hardware validation is claimed. Authored Xtensa SRAM probes execute IO_MUX, GPIO matrix, GP-SPI and I2C MMIO.",
+      "DCS RGB565 command/pixel subset only; analog/gamma/TE timing/color calibration are not simulated.",
+      "Touch IRQ uses a held low level while pressed; periodic interrupt pulses, auto-sleep timing, gestures, pressure and factory firmware/calibration IDs are unmodeled.",
+      "W5500 Ethernet, SX1262 LoRa, relay GPIO8, CAN, RS485 and RS232 peripherals are not implemented.",
+      "The no-screen and no-LoRa/SD/RTC hardware variants are excluded; no SD socket is invented on the selected SX1262 target.",
+      "CST226SE uses its vendor 8-bit report pointer and D1/05 sleep command. Pressure and additional finger reports are absent."
+    ],
+    "variantEvidence": {
+      "selectedHardware": "T-Connect-Pro V1.0 with screen and SX1262; header T_Connect_Pro_V1_0 / T_Connect_Pro_V1_0_SX1262",
+      "automaticRevisionDetection": false,
+      "sourceIds": [
+        "s3add-connect-pro-readme",
+        "s3add-connect-pro-pins",
+        "s3add-connect-pro-gfx",
+        "s3add-connect-pro-touch",
+        "s3add-connect-pro-touch-h"
+      ],
+      "basis": "Exact manufacturer pin header and selected factory/example panel constructor; no sibling mapping by name."
+    },
+    "radio": {
+      "controller": "SX1262",
+      "implemented": false,
+      "physicalRf": false
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "s3add-connect-pro-readme"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/deprecated/(屏幕色彩测试项增加黑色背景测试)[T-Connect-Pro_V1.0][Original_Test]_firmware_202502191117.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Connect-Pro/255a8db5636e53bf5058f90d83d61929ca798946/firmware/deprecated/%28%E5%B1%8F%E5%B9%95%E8%89%B2%E5%BD%A9%E6%B5%8B%E8%AF%95%E9%A1%B9%E5%A2%9E%E5%8A%A0%E9%BB%91%E8%89%B2%E8%83%8C%E6%99%AF%E6%B5%8B%E8%AF%95%29%5BT-Connect-Pro_V1.0%5D%5BOriginal_Test%5D_firmware_202502191117.bin",
+          "status": "linked",
+          "gitBlobSha": "4f074b5e91a63b01b7eb6d4383d0e7d212b21a60",
+          "bytesFromTree": 2136672,
+          "binaryFetched": false,
+          "layoutVerified": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Manufacturer lists this exact variant candidate. No binary payload was downloaded or claimed to boot; source fixtures are the execution evidence."
+    }
+  }
 }

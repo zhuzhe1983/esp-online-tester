@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t5-2-13inch-e-paper",
   "title": "LILYGO T5-2.13inch E-paper",
-  "summary": "Spark 将此商品归入T5 系列，标注 MCU 为 ESP32；具体硬件版次及配置待核对。",
+  "summary": "已接入精确 GDEW0213T5 四灰阶 T5：原生 104×212、双位平面、忙信号与刷新后显像，GPIO39 用户键和 SPI TF 卡。它不是 SSD1680 的 T5 V2.3.1。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "LilyGo-T5-Grayscale src/src.cpp explicitly selects GDEW0213T5; 4-gray product listing",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T5-2.13inch E-paper",
@@ -52,6 +52,87 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-11-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t5-2-13inch-e-paper",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 104,
+          "height": 212,
+          "controller": "GDEW0213T5 manufacturer four-gray command set",
+          "interface": "spi",
+          "type": "e-paper",
+          "diagonalInch": 2.13,
+          "pixelFormat": "RGB565",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false,
+          "orientation": "Native portrait driver geometry; storefront landscape dimensions are not a hardware conflict",
+          "visibleImage": "Retained optical image, published only when an explicit refresh completes",
+          "controllerRam": {
+            "planes": 2,
+            "width": 104,
+            "height": 212,
+            "bitsPerPlane": 1
+          }
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": null,
+        "controls": [
+          {
+            "id": "user",
+            "name": "用户键",
+            "type": "button",
+            "pin": 39,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "display": {
+            "sclk": 18,
+            "mosi": 23,
+            "miso": null,
+            "cs": 5,
+            "dc": 17,
+            "reset": 16,
+            "busy": 4,
+            "busyActiveHigh": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-lilygo-t5-grayscale-01e6d9ffed05",
+        "classic-lilygo-t5-grayscale-5fadde8b9aa1",
+        "classic-lilygo-t5-grayscale-ea9b87a68106",
+        "classic-lilygo-t5-grayscale-7e277c1d7234",
+        "classic-lilygo-t5-grayscale-0f2be9f10931",
+        "classic-lilygo-t5-grayscale-eec2cd0a154c",
+        "classic-lilygo-t5-grayscale-dd842a106422",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +161,247 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t5-2-13inch-e-paper-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_2.jpg?v=1669357597",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_2.jpg?v=1669357597",
+      "fetchedAt": "2026-11-22T06:59:33Z",
+      "bytes": 78593,
+      "sha256": "82cd81f1b1894c4313b6e7d4307bf74ab6ab4b467b8db347d753d1bbc416c242",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t5 2 13inch e paper official photo 0",
+      "archiveName": "lilygo-t5-2-13inch-e-paper-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t5-2-13inch-e-paper-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_4.jpg?v=1669357596",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_4.jpg?v=1669357596",
+      "fetchedAt": "2026-11-22T06:59:33Z",
+      "bytes": 82290,
+      "sha256": "8eafa6862d2ea119db23313f5f7e717963827c809f8eb8933fc521126a009192",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t5 2 13inch e paper official photo 1",
+      "archiveName": "lilygo-t5-2-13inch-e-paper-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t5-2-13inch-e-paper-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_5.jpg?v=1669357597",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_5.jpg?v=1669357597",
+      "fetchedAt": "2026-11-22T06:59:33Z",
+      "bytes": 37287,
+      "sha256": "1eb7627a9171cb68811fc1e44c843c7a9c50da3b6913569b7ab549994cd18b2f",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t5 2 13inch e paper official photo 2",
+      "archiveName": "lilygo-t5-2-13inch-e-paper-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t5-epaper-2.13inch",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t5-series/t5-epaper-2.13inch/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t5-series/t5-epaper-2.13inch/index.md",
+      "fetchedAt": "2026-11-22T06:44:03Z",
+      "mediaType": "text/plain",
+      "bytes": 4690,
+      "sha256": "d1f6ba1110a62f8ffb55d8f12352765c4e90a6597968e38d8abf1587f92145ce",
+      "gitBlobSha": "a488b098ad8df89921afe3f786636db9839b8e0f",
+      "path": "en/products/t5-series/t5-epaper-2.13inch/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t5 epaper 2.13inch",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t5-series__t5-epaper-2.13inch__index.md"
+    },
+    {
+      "id": "classic-lilygo-t5-grayscale-01e6d9ffed05",
+      "repository": "Xinyuan-LilyGO/LilyGo-T5-Grayscale",
+      "path": "README.MD",
+      "revision": "f80822202749fd16bfe2acd07b1feb801895db73",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "0edc58f518dd3c096ebc2d3d26d6d7b251ff5d5e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/README.MD",
+      "fetchedAt": "2026-11-22T08:45:07Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1186,
+      "sha256": "301b8bd843a09c4795dd7da39d2f506d0c4a41391028d61f10002dc61eeea4c5",
+      "archiveName": "classic-lilygo-t5-grayscale-01e6d9ffed05.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t5-grayscale-01e6d9ffed05.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-T5-Grayscale/README.MD"
+    },
+    {
+      "id": "classic-lilygo-t5-grayscale-5fadde8b9aa1",
+      "repository": "Xinyuan-LilyGO/LilyGo-T5-Grayscale",
+      "path": "src/src.cpp",
+      "revision": "f80822202749fd16bfe2acd07b1feb801895db73",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "02ee4fce20963f9ee3aabe26b951241e7ffd9a2d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/src/src.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/src/src.cpp",
+      "fetchedAt": "2026-11-22T08:45:07Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 2854,
+      "sha256": "70dab07c538f06b56203df82da069c4e155896a66d8c4650614d74e3019f99bd",
+      "archiveName": "classic-lilygo-t5-grayscale-5fadde8b9aa1.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t5-grayscale-5fadde8b9aa1.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-T5-Grayscale/src/src.cpp"
+    },
+    {
+      "id": "classic-lilygo-t5-grayscale-ea9b87a68106",
+      "repository": "Xinyuan-LilyGO/LilyGo-T5-Grayscale",
+      "path": "lib/ePaper Driver Lib/src/ePaperDeviceConfigurations.cpp",
+      "revision": "f80822202749fd16bfe2acd07b1feb801895db73",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "fccbdfdf2627f9707cc27119c3ebe6a288cfcee6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperDeviceConfigurations.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperDeviceConfigurations.cpp",
+      "fetchedAt": "2026-11-22T08:45:07Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 7805,
+      "sha256": "0d911efa02b3f1b8f7888d5818877a69ff7ad15f641b15d3753f1e0f59fb20dc",
+      "archiveName": "classic-lilygo-t5-grayscale-ea9b87a68106.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t5-grayscale-ea9b87a68106.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-T5-Grayscale/lib/ePaper Driver Lib/src/ePaperDeviceConfigurations.cpp"
+    },
+    {
+      "id": "classic-lilygo-t5-grayscale-7e277c1d7234",
+      "repository": "Xinyuan-LilyGO/LilyGo-T5-Grayscale",
+      "path": "lib/ePaper Driver Lib/src/ePaperSettings.h",
+      "revision": "f80822202749fd16bfe2acd07b1feb801895db73",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "da957ade53adbf8cb397726063f4c502e43778ab",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperSettings.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperSettings.h",
+      "fetchedAt": "2026-11-22T08:51:25Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 3050,
+      "sha256": "62410afdc0c4833ed424ab477acdaf9c9c570d5ff60f173bedc9652f8dff3025",
+      "archiveName": "classic-lilygo-t5-grayscale-7e277c1d7234.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t5-grayscale-7e277c1d7234.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-T5-Grayscale/lib/ePaper Driver Lib/src/ePaperSettings.h"
+    },
+    {
+      "id": "classic-lilygo-t5-grayscale-0f2be9f10931",
+      "repository": "Xinyuan-LilyGO/LilyGo-T5-Grayscale",
+      "path": "lib/ePaper Driver Lib/src/ePaperSettings_GoodDisplay.h",
+      "revision": "f80822202749fd16bfe2acd07b1feb801895db73",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "b0629b82a7fef439e38f15c1e86f55bec1d97dff",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperSettings_GoodDisplay.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperSettings_GoodDisplay.h",
+      "fetchedAt": "2026-11-22T08:45:12Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 5552,
+      "sha256": "f707de05db5dbcb205b700f4cd4c1c6493dca9005b52aa323df174e868fb3ed6",
+      "archiveName": "classic-lilygo-t5-grayscale-0f2be9f10931.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t5-grayscale-0f2be9f10931.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-T5-Grayscale/lib/ePaper Driver Lib/src/ePaperSettings_GoodDisplay.h"
+    },
+    {
+      "id": "classic-lilygo-t5-grayscale-eec2cd0a154c",
+      "repository": "Xinyuan-LilyGO/LilyGo-T5-Grayscale",
+      "path": "lib/ePaper Driver Lib/src/ePaperDriver.cpp",
+      "revision": "f80822202749fd16bfe2acd07b1feb801895db73",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2172185f5e27c738f3828c4ea83504cce9da273b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperDriver.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperDriver.cpp",
+      "fetchedAt": "2026-11-22T08:45:07Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 8952,
+      "sha256": "4cc9bdd63d4664eac0eb5e63254684973303decdaf8a481e1d2fd8f865658a4f",
+      "archiveName": "classic-lilygo-t5-grayscale-eec2cd0a154c.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t5-grayscale-eec2cd0a154c.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-T5-Grayscale/lib/ePaper Driver Lib/src/ePaperDriver.cpp"
+    },
+    {
+      "id": "classic-lilygo-t5-grayscale-dd842a106422",
+      "repository": "Xinyuan-LilyGO/LilyGo-T5-Grayscale",
+      "path": "lib/ePaper Driver Lib/src/ePaperCanvas.cpp",
+      "revision": "f80822202749fd16bfe2acd07b1feb801895db73",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "166ea8161eca18c059d2f0988a2e1b9ca1cb026c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperCanvas.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Grayscale/f80822202749fd16bfe2acd07b1feb801895db73/lib/ePaper%20Driver%20Lib/src/ePaperCanvas.cpp",
+      "fetchedAt": "2026-11-22T08:45:12Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 19203,
+      "sha256": "a3e4b881c17881651cc8e0f79df0b65765f942725024c3e924f4d2d6686dd84e",
+      "archiveName": "classic-lilygo-t5-grayscale-dd842a106422.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-t5-grayscale-dd842a106422.raw",
+      "kind": "manufacturer-source",
+      "title": "Xinyuan-LilyGO/LilyGo-T5-Grayscale/lib/ePaper Driver Lib/src/ePaperCanvas.cpp"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t5-2-13inch-e-paper-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_2.jpg?v=1669357597",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t5-2-13inch-e-paper/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t5-2-13inch-e-paper-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_4.jpg?v=1669357596",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t5-2-13inch-e-paper/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t5-2-13inch-e-paper-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H480-E-paper-lilygo_5.jpg?v=1669357597",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t5-2-13inch-e-paper/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +414,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +421,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +431,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +441,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +451,238 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
+    },
+    {
+      "id": "memory",
+      "label": "实体存储容量仍需核对",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "classic-lilygo-t5-grayscale-01e6d9ffed05",
+        "classic-lilygo-t5-grayscale-5fadde8b9aa1",
+        "classic-lilygo-t5-grayscale-ea9b87a68106",
+        "classic-lilygo-t5-grayscale-7e277c1d7234",
+        "classic-lilygo-t5-grayscale-0f2be9f10931",
+        "classic-lilygo-t5-grayscale-eec2cd0a154c",
+        "classic-lilygo-t5-grayscale-dd842a106422",
+        "official-store-shopify-1"
+      ],
+      "notes": "部分实体 Flash / PSRAM 容量未确认；运行时字段是所选调试或编译配置，PSRAM 为 0 不表示实板没有该器件。冲突、已知候选值和容量依据见本型号适配来源记录。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t5-epaper-2.13inch"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t5-2-13inch-e-paper/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t5-epaper-2.13inch",
+      "lilygo-t5-2-13inch-e-paper-official-photo-0",
+      "lilygo-t5-2-13inch-e-paper-official-photo-1",
+      "lilygo-t5-2-13inch-e-paper-official-photo-2",
+      "classic-lilygo-t5-grayscale-01e6d9ffed05",
+      "classic-lilygo-t5-grayscale-5fadde8b9aa1",
+      "classic-lilygo-t5-grayscale-ea9b87a68106",
+      "classic-lilygo-t5-grayscale-7e277c1d7234",
+      "classic-lilygo-t5-grayscale-0f2be9f10931",
+      "classic-lilygo-t5-grayscale-eec2cd0a154c",
+      "classic-lilygo-t5-grayscale-dd842a106422"
+    ],
+    "displayHint": {
+      "width": 104,
+      "height": 212,
+      "sourceIds": [
+        "classic-lilygo-t5-grayscale-01e6d9ffed05",
+        "classic-lilygo-t5-grayscale-5fadde8b9aa1",
+        "classic-lilygo-t5-grayscale-ea9b87a68106",
+        "classic-lilygo-t5-grayscale-7e277c1d7234",
+        "classic-lilygo-t5-grayscale-0f2be9f10931",
+        "classic-lilygo-t5-grayscale-eec2cd0a154c",
+        "classic-lilygo-t5-grayscale-dd842a106422",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t5-2-13inch-e-paper",
+    "status": "diagnostic",
+    "scope": "已接入精确 GDEW0213T5 四灰阶 T5：原生 104×212、双位平面、忙信号与刷新后显像，GPIO39 用户键和 SPI TF 卡。它不是 SSD1680 的 T5 V2.3.1。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "An e-paper RAM write is not a completed frame: BUSY and a frozen pending image are separate, reset/power loss cancel unfinished refresh, and the previous optical image is retained.",
+      "Analog LUT waveforms, temperature/voltage, ghosting, calibrated reflectance and physical update-time validation are unmodeled. The visible RGB565 values are digital debug colors.",
+      "SPI bytes require the exact clock/MOSI/CS/DC and reset/supply routes. Unsupported command/data effects are not substituted with host-drawn frames.",
+      "Only the exact manufacturer factory four-gray plane convention is represented. Arbitrary custom LUTs do not produce physically simulated shades; nominal debug tones are black, dark gray, light gray and white.",
+      "No measured refresh duration is available in the driver. The runtime declares a 3000ms full-refresh and 50ms power-sequence debugging convention, not a physical specification. Partial-refresh commands are outside this selected four-gray subset.",
+      "The listing mentions four custom keys, but only GPIO39 is explicitly mapped in the exact example. Three unverified extra keys and non-display analog power functions are not invented.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t5-2-13inch-e-paper",
+    "boardId": "lilygo-t5-2-13inch-e-paper",
+    "name": "LILYGO T5-2.13inch E-paper",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": null,
+    "psramMB": 0,
+    "psramMbBasis": "unknown-physical-capacity",
+    "hardwareRevision": "LilyGo-T5-Grayscale src/src.cpp explicitly selects GDEW0213T5; 4-gray product listing",
+    "display": {
+      "width": 104,
+      "height": 212,
+      "controller": "GDEW0213T5 manufacturer four-gray command set",
+      "interface": "spi",
+      "type": "e-paper",
+      "diagonalInch": 2.13,
+      "pixelFormat": "RGB565",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false,
+      "orientation": "Native portrait driver geometry; storefront landscape dimensions are not a hardware conflict",
+      "visibleImage": "Retained optical image, published only when an explicit refresh completes",
+      "controllerRam": {
+        "planes": 2,
+        "width": 104,
+        "height": 212,
+        "bitsPerPlane": 1
+      }
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sclk": 18,
+        "mosi": 23,
+        "miso": null,
+        "cs": 5,
+        "dc": 17,
+        "reset": 16,
+        "busy": 4,
+        "busyActiveHigh": false
+      }
+    },
+    "controls": [
+      {
+        "id": "user",
+        "name": "用户键",
+        "type": "button",
+        "pin": 39,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "gray_t5_decodes_two_sourced_planes_only_after_an_explicit_refresh",
+        "classic_epaper_tf_cards_exchange_real_spi_register_packets"
+      ]
+    },
+    "scope": "已接入精确 GDEW0213T5 四灰阶 T5：原生 104×212、双位平面、忙信号与刷新后显像，GPIO39 用户键和 SPI TF 卡。它不是 SSD1680 的 T5 V2.3.1。",
+    "scopeEn": "Exact GDEW0213T5 four-gray T5: native104x212, two source-defined bitplanes, active-low BUSY, retained image after refresh, user39 and routed SPI TF card. Distinct from SSD1680 T5 V2.3.1.",
+    "sourceIds": [
+      "classic-lilygo-t5-grayscale-01e6d9ffed05",
+      "classic-lilygo-t5-grayscale-5fadde8b9aa1",
+      "classic-lilygo-t5-grayscale-ea9b87a68106",
+      "classic-lilygo-t5-grayscale-7e277c1d7234",
+      "classic-lilygo-t5-grayscale-0f2be9f10931",
+      "classic-lilygo-t5-grayscale-eec2cd0a154c",
+      "classic-lilygo-t5-grayscale-dd842a106422",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "An e-paper RAM write is not a completed frame: BUSY and a frozen pending image are separate, reset/power loss cancel unfinished refresh, and the previous optical image is retained.",
+      "Analog LUT waveforms, temperature/voltage, ghosting, calibrated reflectance and physical update-time validation are unmodeled. The visible RGB565 values are digital debug colors.",
+      "SPI bytes require the exact clock/MOSI/CS/DC and reset/supply routes. Unsupported command/data effects are not substituted with host-drawn frames.",
+      "Only the exact manufacturer factory four-gray plane convention is represented. Arbitrary custom LUTs do not produce physically simulated shades; nominal debug tones are black, dark gray, light gray and white.",
+      "No measured refresh duration is available in the driver. The runtime declares a 3000ms full-refresh and 50ms power-sequence debugging convention, not a physical specification. Partial-refresh commands are outside this selected four-gray subset.",
+      "The listing mentions four custom keys, but only GPIO39 is explicitly mapped in the exact example. Three unverified extra keys and non-display analog power functions are not invented.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "chronology": {
+      "date": "2022-11-25",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t5-2-13inch-e-paper",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 86,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t5-epaper-2.13inch"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "sdCard": {
+      "slot": true,
+      "transport": "spi",
+      "implemented": true,
+      "transportSupported": true,
+      "pins": {
+        "sclk": 14,
+        "mosi": 15,
+        "miso": 2,
+        "cs": 13
+      },
+      "sourceIds": [
+        "classic-lilygo-t5-grayscale-5fadde8b9aa1"
+      ],
+      "preparedImage": {
+        "sizeMB": 64,
+        "filesystem": "FAT32"
+      },
+      "notes": "Actual SPI card protocol on routed CLK/MOSI/MISO/CS, card-presence and CMD0/CMD8/ACMD41/CMD17 read tested through classic ESP32 SPI registers. Common virtual SPI card also supports writes; no physical-media timing claim."
+    },
+    "refreshTiming": {
+      "basis": "explicit simulation convention; driver does not specify completion duration",
+      "fullMs": 3000,
+      "powerMs": 50,
+      "measured": false
+    }
+  }
 }

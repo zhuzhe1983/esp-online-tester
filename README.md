@@ -9,9 +9,15 @@ A static platform for complete ESP32 products: select a device, attach accessori
 - [Coding-agent skill](skills/esp-online-tester/SKILL.md)
 - [Contribute products, accessories and firmware](docs/platform/contributing.md)
 
-The initial product set is M5Stack StopWatch, PaperMono and two GPS Unit revisions. **StopWatch has a partial executable board model; PaperMono currently provides catalog metadata and a 3D preview.** GPS exercises logical UART1 input. Capability labels are explicit; a preview or successful configuration is not evidence that firmware ran.
+Capability labels are product-specific. The [current platform guide](docs/platform/README.md) records implemented peripherals, verified firmware and remaining limits. A preview or successful configuration is not evidence that firmware ran.
 
 The platform lives under `web/platform/`, shares the upstream emulator in `web/wasm/`, and needs no application server. Private DIY accessory definitions stay in the browser unless explicitly exported or shared. Public catalogs accept pull requests.
+
+## LILYGO catalog coverage
+
+The 127 existing LILYGO listings now have source-described 3D previews and newest-first ordering, with hardware dates, provisional storefront dates and unknown dates distinguished. There are 126 executable diagnostic or partial board configurations: 121 added profiles and five existing runtimes. T-Radar remains an A121 expansion module requiring an external host.
+
+The 122 added models use 44 official CAD assemblies or parts and 78 approximate photograph-derived outlines. S2 and C5 currently support explicitly bounded SRAM applications; the P4 display remains a physical preview without DSI frame output. Diagnostic support does not establish factory firmware compatibility or physical model fit. See the [complete chronological inventory, source evidence and validation record](docs/platform/lilygo-adaptation-2026-11-22.md).
 
 ## Run locally
 
@@ -52,7 +58,9 @@ CameraWebServer path is unsupported. See the [camera scope and example](docs/esp
 | Chip | CPU | Status | Boards |
 | --- | --- | --- | --- |
 | ESP32-S3 | 2 x Xtensa LX7 | mature | Atech 14-port kit, Waveshare Touch-LCD-4B, Touch-AMOLED-1.8, ESP32-S3-CAM |
+| ESP32-S2 | 1 x Xtensa LX7 | SRAM diagnostics | three distinct LILYGO S2 profiles in the WASM platform; no ROM/MMU/SDK boot |
 | ESP32-C3 | RISC-V RV32IMC | draft | console only |
+| ESP32-C5 | 1 x RISC-V | SRAM diagnostics | Stamp-C5, LILYGO T7-C5 and T-Dongle-C5; no ROM/MMU/SDK boot |
 | ESP32-C6 | RISC-V RV32IMAC | draft | Waveshare ESP32-C6-LCD-1.47 (with the 802.15.4 radio), Seeed XIAO ESP32-C6 |
 | ESP32 (classic) | 2 x Xtensa LX6 | early | LilyGO TTGO T-Display, ESP32-2432S028 "Cheap Yellow Display", AI-Thinker ESP32-CAM (raw capture), Ulanzi TC001 |
 | ESP32-P4 (rev < 3; rev ≥ 3: hello_world, ESP-Hosted) | 2 x RISC-V RV32IMAFC | draft | console only; the C6 co-processor over SDIO |

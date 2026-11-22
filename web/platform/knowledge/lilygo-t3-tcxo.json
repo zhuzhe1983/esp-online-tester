@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t3-tcxo",
   "title": "LILYGO T3 TCXO",
-  "summary": "Spark 将此商品归入T3 (LoRa) 系列，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "已纠正为经典 ESP32-PICO-D4；已接入 SSD1306 128×64、GPIO25 指示输出与 BOOT；无线与 TF 卡传输尚未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T3_V3_0_SX1276_TCXO / ESP32-PICO-D4",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T3 TCXO",
@@ -52,6 +52,75 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-11-27",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t3-tcxo",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 64,
+          "controller": "SSD1306",
+          "interface": "i2c",
+          "type": "OLED",
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": null,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "display": {
+            "sda": 21,
+            "scl": 22,
+            "address": 60,
+            "reset": 4
+          },
+          "indicator": {
+            "pin": 25,
+            "activeHigh": true,
+            "colorBasis": "debug visualization; exact emitted color is unverified"
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-lilygo-lora-series-bb68cd55803b",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +149,165 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lora-utilities",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/utilities.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "bf37221526ccc6143995d1e495d65cdec0dc407c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/examples/Factory/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "1f234017d45099f90e3a5cb7fb6ed16b78dfe11fa57f2b82a58f9d1b9411f733",
+      "bytes": 28783,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-utilities.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "lilygo-t3-tcxo-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_5_1588d41a-cd11-4356-9761-c2126f8f24bc.jpg?v=1732688971",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_5_1588d41a-cd11-4356-9761-c2126f8f24bc.jpg?v=1732688971",
+      "fetchedAt": "2026-11-22T06:57:08Z",
+      "bytes": 124728,
+      "sha256": "50161b300a0bd09dd7769581e659cd61493d8ecf16fadcaefa947fa973c893d9",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t3 tcxo official photo 0",
+      "archiveName": "lilygo-t3-tcxo-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t3-tcxo-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_4_6c5e7b21-5924-411f-8a3d-cfd58bcb0ca9.jpg?v=1732688971",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_4_6c5e7b21-5924-411f-8a3d-cfd58bcb0ca9.jpg?v=1732688971",
+      "fetchedAt": "2026-11-22T06:57:08Z",
+      "bytes": 90884,
+      "sha256": "ac226f49de78b5ae282733d69f028d41464da08a1da212cb7a0753db175c2c8d",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t3 tcxo official photo 1",
+      "archiveName": "lilygo-t3-tcxo-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t3-tcxo-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_2.jpg?v=1732688971",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_2.jpg?v=1732688971",
+      "fetchedAt": "2026-11-22T06:57:08Z",
+      "bytes": 56394,
+      "sha256": "376452a12bb2cabe7d2f8596f5b72ebaf8c94fc9c82bad915740af1528637ad7",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t3 tcxo official photo 2",
+      "archiveName": "lilygo-t3-tcxo-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t3-txco",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-txco/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-txco/index.md",
+      "fetchedAt": "2026-11-22T06:43:58Z",
+      "mediaType": "text/plain",
+      "bytes": 6892,
+      "sha256": "fc530a152cf498d7204bb85ad0d201004727d90d8f6957d71e08bb94a6353df3",
+      "gitBlobSha": "8a13e91ba99b57bafb3bfd7042f5b7ddc85c00ac",
+      "path": "en/products/t3-series/t3-txco/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t3-series/t3-txco/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t3-series__t3-txco__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "classic-lilygo-lora-series-bb68cd55803b",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/utilities.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "bf37221526ccc6143995d1e495d65cdec0dc407c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "fetchedAt": "2026-11-22T08:06:05Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 28783,
+      "sha256": "1f234017d45099f90e3a5cb7fb6ed16b78dfe11fa57f2b82a58f9d1b9411f733",
+      "archiveName": "classic-lilygo-lora-series-bb68cd55803b.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-lora-series-bb68cd55803b.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-LoRa-Series/examples/Factory/utilities.h"
+    },
+    {
+      "id": "classic-esp32-pico-d4-datasheet",
+      "url": "https://www.espressif.com/sites/default/files/documentation/esp32-pico-d4_datasheet_en.pdf",
+      "resolvedUrl": "https://documentation.espressif.com/esp32-pico_series_datasheet_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:11:46Z",
+      "bytes": 4549458,
+      "sha256": "177eb1517274eea5056ce725951091ebe8e2bce1d8635f064081fdad1cec0918",
+      "mediaType": "application/pdf",
+      "archiveName": "esp32-pico-d4-datasheet.pdf",
+      "sourceCachePath": "target/lilygo-classic-sources/esp32-pico-d4-datasheet.pdf",
+      "kind": "chip-manufacturer-datasheet",
+      "title": "classic esp32 pico d4 datasheet"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t3-tcxo-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_5_1588d41a-cd11-4356-9761-c2126f8f24bc.jpg?v=1732688971",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t3-tcxo/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t3-tcxo-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_4_6c5e7b21-5924-411f-8a3d-cfd58bcb0ca9.jpg?v=1732688971",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t3-tcxo/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t3-tcxo-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T3-V3_2.jpg?v=1732688971",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t3-tcxo/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +320,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +327,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +337,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +347,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +357,250 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
+    },
+    {
+      "id": "memory",
+      "label": "实体存储容量仍需核对",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "classic-lilygo-lora-series-bb68cd55803b",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "notes": "部分实体 Flash / PSRAM 容量未确认；运行时字段是所选调试或编译配置，PSRAM 为 0 不表示实板没有该器件。冲突、已知候选值和容量依据见本型号适配来源记录。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t3-txco"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t3-tcxo/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t3-txco",
+      "lilygo-t3-tcxo-official-photo-0",
+      "lilygo-t3-tcxo-official-photo-1",
+      "lilygo-t3-tcxo-official-photo-2",
+      "classic-lilygo-lora-series-bb68cd55803b",
+      "classic-esp32-pico-d4-datasheet"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "classic-lilygo-lora-series-bb68cd55803b",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t3-tcxo",
+    "status": "diagnostic",
+    "scope": "已纠正为经典 ESP32-PICO-D4；已接入 SSD1306 128×64、GPIO25 指示输出与 BOOT；无线与 TF 卡传输尚未实现。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "SX1276 radio, TCXO timing, RF analog behavior and SPI SD are unmodeled.",
+      "GPIO25 state is shown with a blue diagnostic marker; physical LED color/brightness is not verified.",
+      "Wiki LoRa CS7 conflicts with exact T3_V3_0_SX1276_TCXO header CS18. Neither radio path is claimed implemented. Wiki PSRAM2 MiB is not independently verified and is not allocated.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "sourceCorrections": {
+    "productId": "lilygo-t3-tcxo",
+    "correctedChip": "esp32",
+    "controllerRole": "ESP32-PICO-D4 main CPU; separate SX1276 radio",
+    "status": "corrected-chip-delegated-to-classic-esp32",
+    "runtimeBoard": null,
+    "scope": "官方商品页和 wiki 主控为经典 ESP32 / ESP32-PICO-D4，不是 ESP32-S3。移交经典 ESP32 适配；S3 工厂不注册此 ID，避免错误指令/外设地址映射。",
+    "scopeEn": "Exact product is classic ESP32, not S3. Board runtime is handled by the classic ESP32 lane; this record only corrects chip routing.",
+    "displayEvidence": {
+      "present": true,
+      "controller": "SSD1306",
+      "width": 128,
+      "height": 64,
+      "sda": 21,
+      "scl": 22,
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t3-txco",
+        "lora-utilities"
+      ]
+    },
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t3-txco",
+      "lora-utilities"
+    ],
+    "sourceConflicts": [
+      {
+        "issue": "Wiki radio CS7 conflicts with the exact T3_V3_0_SX1276_TCXO header CS18.",
+        "resolution": "Classic runtime must use exact target header and independently review schematic; no S3 sibling alias."
+      }
+    ],
+    "chronology": {
+      "date": "2024-11-27",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t3-tcxo",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 24,
+    "resolvedByBoard": "lilygo-t3-tcxo"
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t3-tcxo",
+    "boardId": "lilygo-t3-tcxo",
+    "name": "LILYGO T3 TCXO",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": null,
+    "psramMB": 0,
+    "psramMbBasis": "unknown-physical-capacity",
+    "hardwareRevision": "T3_V3_0_SX1276_TCXO / ESP32-PICO-D4",
+    "display": {
+      "width": 128,
+      "height": 64,
+      "controller": "SSD1306",
+      "interface": "i2c",
+      "type": "OLED",
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sda": 21,
+        "scl": 22,
+        "address": 60,
+        "reset": 4
+      },
+      "indicator": {
+        "pin": 25,
+        "activeHigh": true,
+        "colorBasis": "debug visualization; exact emitted color is unverified"
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes",
+        "relay_coils_and_indicators_follow_mux_and_enable_not_only_latches",
+        "named_inputs_are_actual_classic_gpio_levels_and_encoder_channels"
+      ]
+    },
+    "scope": "已纠正为经典 ESP32-PICO-D4；已接入 SSD1306 128×64、GPIO25 指示输出与 BOOT；无线与 TF 卡传输尚未实现。",
+    "scopeEn": "Corrected classic ESP32-PICO-D4 identity. Exact routed SSD1306 I2C and GPIO25 indicator subset; radio and SD unmodeled.",
+    "sourceIds": [
+      "classic-lilygo-lora-series-bb68cd55803b",
+      "classic-esp32-pico-d4-datasheet",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "SX1276 radio, TCXO timing, RF analog behavior and SPI SD are unmodeled.",
+      "GPIO25 state is shown with a blue diagnostic marker; physical LED color/brightness is not verified.",
+      "Wiki LoRa CS7 conflicts with exact T3_V3_0_SX1276_TCXO header CS18. Neither radio path is claimed implemented. Wiki PSRAM2 MiB is not independently verified and is not allocated.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "chronology": {
+      "date": "2024-11-27",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t3-tcxo",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 24,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t3-txco"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "module": "ESP32-PICO-D4",
+    "sdCard": {
+      "slot": true,
+      "transport": "spi",
+      "implemented": false,
+      "transportSupported": false,
+      "pins": {
+        "sclk": 14,
+        "mosi": 15,
+        "miso": 2,
+        "cs": 13
+      },
+      "sourceIds": [
+        "classic-lilygo-lora-series-bb68cd55803b"
+      ],
+      "notes": "Prepared 64 MiB FAT32 image is not attached to guest until board transport is implemented."
+    },
+    "correctedChip": {
+      "from": "ESP32-S3",
+      "to": "ESP32-PICO-D4",
+      "sourceIds": [
+        "classic-lilygo-lora-series-bb68cd55803b"
+      ]
+    }
+  }
 }

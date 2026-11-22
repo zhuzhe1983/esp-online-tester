@@ -1,0 +1,567 @@
+{
+  "schemaVersion": 1,
+  "evidenceDate": "2026-11-22",
+  "updatedAt": "2026-11-22T12:02:44.310281Z",
+  "status": "local-functional-validation-complete-with-performance-limit",
+  "scope": {
+    "catalogProducts": 127,
+    "newDiagnosticProfiles": 121,
+    "preservedPartialProfiles": 5,
+    "runtimeProducts": 126,
+    "modelProducts": 127,
+    "nonStandaloneAccessory": "lilygo-t-radar",
+    "factoryImagesNewlyVerified": 0,
+    "physicalHardwareVerified": false
+  },
+  "baselineCommit": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "wasm": {
+    "path": "web/wasm/esp32sim.wasm",
+    "sha256": "2abff05748fdc09e2da58afe75ed11a17251b1197e1b72886ff5523279adb224",
+    "bytes": 6572710,
+    "build": "CARGO_BUILD_JOBS=1 tools/wasm-build.sh",
+    "dwarfAbsent": true,
+    "nameRetained": true
+  },
+  "modelReproduction": {
+    "receipt": "docs/platform/research/lilygo-model-reproduction-2026-11-22.json",
+    "sha256": "cd20d3c0f84a9667422d8e8a38c9b0ca08562b90405712f78a6ea39ce92b6993"
+  },
+  "checks": [
+    {
+      "id": "catalog",
+      "name": "目录与知识资料",
+      "status": "passed",
+      "command": "python3 tools/validate-platform-catalog.py; node --test tools/platform-knowledge-test.mjs",
+      "detail": "219 products / 10 accessories / 178 firmware entries / 122 watchlist entries; knowledge tests passed"
+    },
+    {
+      "id": "workspace-clippy",
+      "name": "工作区 Clippy",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 cargo clippy --workspace --all-targets -- -D warnings",
+      "detail": "final native source; no compiler or manifest warnings"
+    },
+    {
+      "id": "wasm-clippy",
+      "name": "WASM release Clippy",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "detail": "final WASM source; warnings denied"
+    },
+    {
+      "id": "wasm-build",
+      "name": "生产 WASM",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 tools/wasm-build.sh; node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "detail": "6572710 bytes; no DWARF; name section retained"
+    },
+    {
+      "id": "public-probes",
+      "name": "真实 Worker / WASM 诊断",
+      "status": "passed",
+      "command": "node --test --test-concurrency=1 tools/platform-lilygo-board-construction-test.mjs tools/platform-lilygo-s2-test.mjs tools/platform-lilygo-c5-test.mjs tools/platform-lilygo-p4-test.mjs tools/platform-lilygo-s3-test.mjs tools/platform-lilygo-c6-test.mjs",
+      "detail": "8 tests passed; all 126 advertised boards plus bare S2 construct; actual CPU frames, input, UART, P4 XL9535 and S2 unsupported-instruction error propagation"
+    },
+    {
+      "id": "platform",
+      "name": "平台完整回归",
+      "status": "passed",
+      "command": "node --test --test-concurrency=1 tools/platform-*-test.mjs",
+      "detail": "446 tests passed, 0 failed, 0 skipped; 66.79 seconds"
+    },
+    {
+      "id": "legacy-wasm-ci",
+      "name": "既有 WASM / Worker 场景",
+      "status": "passed",
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw node tools/wasm-test.mjs hello c3-hello c6-hello c6-xiao p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik; node tools/wasm-test.mjs demo-stopwatch; node tools/worker-pacing-test.mjs; node tools/worker-channel-test.mjs",
+      "detail": "14 CI manifest scenarios plus StopWatch passed; real worker pacing/channel/ACK/replacement/storage tests passed. These runs were concurrent with native compilation and are not performance measurements."
+    },
+    {
+      "id": "supplementary-ci",
+      "name": "补充 CI 契约与真实 ABI",
+      "status": "passed",
+      "command": "See supplementaryCi.runs for all 16 exact command arrays; {ignored-output} is a caller-selected output directory.",
+      "detail": "126 unit tests, retained x5 receipt verification, timing/BLE ABIs, actual 18-event recording replay and StopWatch guest diagnostics passed; recording is not bit-exact."
+    },
+    {
+      "id": "pages-staging",
+      "name": "公开 Pages 目录打包",
+      "status": "passed",
+      "command": "node tools/stage-platform-pages.mjs web target/lilygo-pages-final",
+      "detail": "2835 files / 773643448 bytes staged; seven internal StopWatch diagnostic artifacts excluded. Temporary staging copy removed after the check to reclaim build space."
+    },
+    {
+      "id": "p4-native",
+      "name": "P4 数字外设与复位",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 cargo test -p esp32p4 --test lilygo",
+      "detail": "5 tests passed; two full 8-bit I2C fractional clocks, BOOT state, XL9535 routes and SDMMC block DMA"
+    },
+    {
+      "id": "s2-native",
+      "name": "独立 S2 原生后端",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 cargo test -p esp32s2 --test diagnostic",
+      "detail": "7 tests passed; ISA gate, aliased memory, image validation, polled UART, GPIO, software SPI, full frames and reset"
+    },
+    {
+      "id": "model-loader",
+      "name": "生产模型加载器",
+      "status": "passed",
+      "command": "node tools/verify-lilygo-expansion-models.mjs",
+      "detail": "122 new models; 44 CAD and 78 photograph outlines; no loader/source-hash failures"
+    },
+    {
+      "id": "model-reproduction",
+      "name": "模型独立重现",
+      "status": "passed",
+      "command": "python3 tools/build-lilygo-expansion-models.py --output target/lilygo-final-model-repro",
+      "detail": "122 models; 837/837 compared files byte-identical; 597 frozen input hashes unchanged; see lilygo-model-reproduction-2026-11-22.json"
+    },
+    {
+      "id": "privacy",
+      "name": "证据隐私与来源审阅",
+      "status": "passed",
+      "command": "node tools/check-evidence-privacy.mjs",
+      "detail": "Existing docs/evidence pattern gate: 2378 tracked files, 22 gzip, passed. Additional final review: 287 LilyGO JSON records / 170521 strings, plus 706 changed text files with 119 compressed files expanded, no private host paths, credentials or signed URLs found. Binary source provenance and model hashes were reviewed separately."
+    },
+    {
+      "id": "native-release",
+      "name": "原生 release 全工作区",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 ESP32SIM_ROM_DIR=$PWD/web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+      "detail": "188 suites; 2358 passed, 0 failed, 0 ignored, 98 external-input cases filtered; release build 33m 18s after cache-space recovery",
+      "result": {
+        "commandExitCode": 0,
+        "completedSuites": 188,
+        "passed": 2358,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 98
+      }
+    },
+    {
+      "id": "native-virtual-quantum",
+      "name": "原生可选调度器",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 ESP32SIM_ROM_DIR=$PWD/web/wasm/fw ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "detail": "44 tests passed, 0 failed; explicit virtual-quantum mode rerun, not added to the full-workspace unique-test total."
+    },
+    {
+      "id": "wasm-jit-differential",
+      "name": "WASM JIT 差分与波形",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 ESP32SIM_ROM_DIR=$PWD/web/wasm/fw tools/wasm-jit-test.sh",
+      "detail": "111126 differential cases across 78 isolated groups and 24 separate GPIO waveform cases passed. The checked production web/wasm/esp32sim.wasm is unchanged."
+    },
+    {
+      "id": "wasm-profile-build",
+      "name": "WASM 分析配置编译",
+      "status": "passed",
+      "command": ". ./tools/wasm-rustflags.sh\nCARGO_BUILD_JOBS=1 cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "detail": "Release build with production flags and jit-profile,cpu-profile passed; production web/wasm/esp32sim.wasm unchanged."
+    },
+    {
+      "id": "performance",
+      "name": "最终性能对照",
+      "status": "completed-with-known-increase",
+      "command": "python3 -B tools/bench-lilygo-cpu.py --baseline ../lilygo-perf-base --candidate . --assets web/wasm/fw --rounds 8 --workloads all --output docs/platform/research/lilygo-performance-final-2026-11-22.json --raw-dir target/lilygo-perf/final-recheck-raw --conditions <recorded-in-receipt>",
+      "detail": "80 measured runs plus 10 warmups match exact guest work/output. CPU median changes: S3 +5.348%, C3 -1.326%, C6 -2.452%, classic -8.453%, P4 +7.225%. P4 is slower in 8/8 pairs with disjoint ranges. Two scoped candidates failed to eliminate the increase and were reverted. Known native hello cost remains; no no-regression or browser-speed claim.",
+      "receipt": "docs/platform/research/lilygo-performance-final-2026-11-22.json"
+    },
+    {
+      "id": "browser",
+      "name": "真实 Chromium 渲染",
+      "status": "pending-ci",
+      "command": "node tools/check-lilygo-expansion-browser.mjs --url <served-platform-url> --output <evidence-directory>",
+      "detail": "Pages CI must render all 127 models and execute actual C5/S2 input/frame probes before deployment. Local Chromium socket creation was denied and the escalation was rejected by automatic approval review; this is not recorded as a passed browser test."
+    }
+  ],
+  "retainedNegativeResults": [
+    {
+      "gate": "platform first final run",
+      "passed": 445,
+      "failed": 1,
+      "total": 446,
+      "failure": "14 new control labels lacked English translations",
+      "resolutionCommit": "e9e13de",
+      "recheck": "all 446 tests passed after integration"
+    },
+    {
+      "gate": "first performance checkpoint",
+      "receipt": "docs/platform/research/lilygo-performance-2026-11-22.json",
+      "limits": "C3 median +5.272%; C6 paired median +3.244%; concurrent build interference unresolved until final controlled recheck"
+    },
+    {
+      "gate": "final native release build, first attempt",
+      "status": "environment-failure",
+      "reason": "ENOSPC while creating a compiler temporary directory; no failed test assertion was observed.",
+      "resolution": "Removed reproducible task build caches and the generated public staging copy; retained sources, model inputs and evidence. Resumed the same release command with cached compilation."
+    },
+    {
+      "gate": "final integration candidate performance",
+      "sourceCommit": "91d79752519b329c76912370d900d14a3bba0ad4",
+      "receipt": "docs/platform/research/lilygo-performance-final-2026-11-22.json",
+      "p4MedianPercentChange": 7.2248887006168605,
+      "p4SlowerPairs": 8,
+      "p4TotalPairs": 8,
+      "p4RangesOverlap": false,
+      "limits": "Shared VM conditions do not establish cause. All workload instruction/cycle/exception/interrupt/output comparisons match. P4 regression remains under investigation."
+    },
+    {
+      "gate": "P4 isolated Box<I2c> layout candidate",
+      "candidateCommit": "42f7bac18cebbe7a3df3a9eab1f83ed1a1603162",
+      "receipt": "docs/platform/research/lilygo-p4-box-exploratory-2026-11-22.json",
+      "medianPercentChange": 20.84052554491165,
+      "pairedMedianPercentChange": 18.950182180365672,
+      "slowerPairs": 4,
+      "pairs": 4,
+      "identicalWorkAndOutput": true,
+      "disposition": "Rejected; moving I2C0 into a separate allocation did not recover the measured idle-path cost. Revert this candidate; keep the full measurements."
+    },
+    {
+      "gate": "P4 interrupt-source inlining candidate",
+      "candidateCommit": "a03f2e5e8713156918bfa8f3031d5f8769782a91",
+      "receipt": "docs/platform/research/lilygo-p4-inline-exploratory-2026-11-22.json",
+      "medianPercentChange": 9.39136550251909,
+      "pairedMedianPercentChange": 6.976818093286918,
+      "slowerPairs": 4,
+      "pairs": 4,
+      "identicalWorkAndOutput": true,
+      "disposition": "Rejected; removal of the source-status call and stack return buffer was confirmed in machine code, but this candidate did not eliminate the measured CPU increase. Revert both inlining attributes. No wider IRQ/timing rewrite is adopted."
+    }
+  ],
+  "resetSemantics": {
+    "nativeMcuReset": "Same-machine board/GPIO reset behavior is tested in native board suites.",
+    "publicRuntimeReset": "runtime.reset() reconstructs Worker and Machine and reloads the same verified firmware; host button state is not retained."
+  },
+  "publication": {
+    "status": "blocked-by-authentication-network-policy",
+    "repository": "https://github.com/zhuzhe1983/esp-online-tester",
+    "requestedBranch": "main",
+    "requestedHosting": "GitHub Pages",
+    "remoteBaseConfirmed": "43de45a1244fd1a0a023beba778adaee169f86bc",
+    "observedBlocker": "The GitHub CLI device-login process was blocked by the execution environment network policy when accessing api.github.com; the formal network escalation request was rejected by the configured approval policy and CLI credentials were not saved. The existing GitHub integration create-blob attempt returned HTTP403 Resource not accessible by integration. No remote write or deployment of this change has succeeded.",
+    "previousRemoteBaseConfirmed": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce"
+  },
+  "source": {
+    "head": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "rustSourceManifestSha256": "5ac573ea50f2f00324edf84b3ddb8a03863069cdd33b11540a8cf818066f3935",
+    "rustSourceFiles": 646,
+    "rustSourceScope": "All tracked/unignored Rust files, Cargo.toml and Cargo.lock; paths and content SHA-256 sorted as compact JSON",
+    "uncommittedRustFiles": {}
+  },
+  "supplementaryCi": {
+    "commands": 16,
+    "passed": 16,
+    "failed": 0,
+    "unitTestsPassed": 126,
+    "runs": [
+      {
+        "name": "x5-results-tests",
+        "command": [
+          "node",
+          "--test",
+          "docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-results",
+        "command": [
+          "node",
+          "docs/evidence/perf-x5-2026-09-22/verify-results.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-m1-tests",
+        "command": [
+          "node",
+          "--test",
+          "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-m1",
+        "command": [
+          "node",
+          "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-historical-tests",
+        "command": [
+          "node",
+          "--test",
+          "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "x5-historical",
+        "command": [
+          "node",
+          "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "timing-api",
+        "command": [
+          "node",
+          "wasm/tests/timing-api.mjs",
+          "web/wasm/esp32sim.wasm"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "ble-api",
+        "command": [
+          "node",
+          "wasm/tests/ble-api.mjs",
+          "web/wasm/esp32sim.wasm",
+          "web/wasm/fw/public",
+          "web/wasm/fw/esp32c3_rev3_rom.elf"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "ble-connection",
+        "command": [
+          "node",
+          "wasm/tests/ble-connection.mjs",
+          "web/wasm/esp32sim.wasm",
+          "web/wasm/fw/public",
+          "web/wasm/fw/esp32c3_rev3_rom.elf"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "touch-input",
+        "command": [
+          "node",
+          "--test",
+          "tools/touch-input-test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "stopwatch-ui",
+        "command": [
+          "node",
+          "--test",
+          "tools/stopwatch-ui-test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "wasm-build-policy",
+        "command": [
+          "node",
+          "--test",
+          "tools/wasm-build-policy.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "browser-benchmark-js",
+        "command": [
+          "node",
+          "--test",
+          "tools/browser-benchmark/battery-failure.test.mjs",
+          "tools/browser-benchmark/battery-workload.test.mjs",
+          "tools/browser-benchmark/experiments.test.mjs",
+          "tools/browser-benchmark/verdict.test.mjs"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "browser-benchmark-python",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/browser-benchmark",
+          "-p",
+          "test_*.py"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "recording-real",
+        "command": [
+          "node",
+          "tools/platform-recording-test.mjs",
+          "--real",
+          "--receipt",
+          "{ignored-output}/esp-lilygo-final-extra-ci-recording-receipt.json"
+        ],
+        "exitCode": 0
+      },
+      {
+        "name": "hardware-diagnostics",
+        "command": [
+          "node",
+          "tools/probe-hardware-diagnostics.mjs",
+          "tools/fixtures/stopwatch-hardware-checks.json",
+          "{ignored-output}/esp-lilygo-final-extra-ci-hardware-diagnostics-receipt.json"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "actualWasmAbi": {
+      "timing": "passed",
+      "bleObservation": {
+        "packets": 57,
+        "events": 19
+      },
+      "bleConnection": {
+        "connections": 2,
+        "reads": 2,
+        "guestErrors": []
+      }
+    },
+    "recording": {
+      "events": 18,
+      "inputDeliveryVerified": true,
+      "nonzeroIntervalsRetained": true,
+      "bitExact": false,
+      "finalFramesDiffer": true,
+      "scope": "Input delivery and interval preservation; application navigation and frame equivalence are not asserted."
+    },
+    "hardwareDiagnostic": {
+      "guestSeconds": 8,
+      "instructions": 46846393,
+      "diagnosticEvents": 3,
+      "findings": [],
+      "panicSeen": false,
+      "applicationReady": true
+    },
+    "concurrentNativeCompilation": true,
+    "performanceMeasurement": false
+  },
+  "finalSourceVerification": {
+    "restoredSource": {
+      "head": "9d4239fc514865838e9cca9a2f06917addebc7d0",
+      "rustSourceManifestSha256": "5ac573ea50f2f00324edf84b3ddb8a03863069cdd33b11540a8cf818066f3935",
+      "rustSourceFiles": 646,
+      "rustSourceScope": "All tracked/unignored Rust files, Cargo.toml and Cargo.lock; paths and content SHA-256 sorted as compact JSON",
+      "uncommittedRustFiles": {}
+    },
+    "sameRustSourceAsValidatedCommit": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "sameRustSourceAsFinalIntegrationPerformanceReceipt": true,
+    "sampledExecutablesRestoredAndHashMatched": {
+      "esp32sim": {
+        "bytes": 36223416,
+        "sha256": "8f70de7646b74c2e9205542f8469d7d956fed922d69763b72df5d3068542e13f"
+      },
+      "esp32sim-c3": {
+        "bytes": 36223488,
+        "sha256": "47dcece239fb1bcbcc98c7cf240658e3c3fff4418b4e5a02480dc945e360c199"
+      },
+      "esp32sim-c6": {
+        "bytes": 36223552,
+        "sha256": "23ea707b42a3bf47bd9eacbba894aeb12b929e7d48f454f25363b693f4e1bfcf"
+      },
+      "esp32sim-p4": {
+        "bytes": 36223496,
+        "sha256": "93fa35675f31b430c436a57f43ea1e044fdb6b8e64f2fe1de30e297c369c2bf9"
+      }
+    },
+    "productionWasmUnchanged": true,
+    "verificationReuseBasis": "All 646 Rust/Cargo content hashes equal the fully tested source; all sampled executable SHA-256 values equal the retained integration run. The production WASM and all web runtime/catalog/model files are unchanged. Rejected local performance candidates are not in the final Rust source."
+  },
+  "performanceDisposition": {
+    "reviewComplete": true,
+    "localOptimizationAttemptsComplete": true,
+    "knownP4NativeHelloMedianIncreasePercent": 7.2248887006168605,
+    "p4SlowerPairs": 8,
+    "p4Pairs": 8,
+    "noRegressionClaim": false,
+    "browserSpeedMeasured": false,
+    "retainedSource": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "reviewReceipt": "docs/platform/research/lilygo-p4-idle-review-2026-11-22.md",
+    "decision": "Keep the functionally verified adaptation and disclose the measured native P4 cost. No broader IRQ/timing rewrite or unproven local optimization is included."
+  },
+  "remoteCiVerification": {
+    "status": "not-started-no-push",
+    "requiredBeforeClaimingDeployment": [
+      "Pages workflow browser/model/input gate",
+      "Pages deployment result"
+    ],
+    "additionalCiPending": [
+      "Real TCP/TLS/UDP network-helper integration in GitHub runner",
+      "Native AArch64 core/JIT/golden job"
+    ],
+    "localBrowserOutcome": "Blocked by socket restriction and rejected automatic escalation; no local browser render pass is claimed."
+  },
+  "privacyReview": {
+    "existingEvidencePatternGate": {
+      "scope": "docs/evidence",
+      "trackedFiles": 2378,
+      "gzipFiles": 22,
+      "passed": true
+    },
+    "finalLilygoJsonReview": {
+      "jsonFilesReviewed": 287,
+      "stringsReviewed": 170521,
+      "issues": []
+    },
+    "finalChangedFileReview": {
+      "changedTextFilesReviewed": 706,
+      "compressedFilesExpanded": 119,
+      "binaryFilesRequiringSeparateSourceReview": 530,
+      "strongPrivatePathCredentialOrSignedUrlFindings": []
+    },
+    "binaryReviewBasis": "Official-source provenance, retained hashes, 376 source-photo hash checks and the byte-identical 122-model reproduction; text-pattern checks do not establish binary or image privacy."
+  },
+  "postValidationMetadataIntegration": {
+    "remoteCommit": "43de45a1244fd1a0a023beba778adaee169f86bc",
+    "localParentBeforeMerge": "40b6f5c6b86cf25a6ba52094715867b4e1958f14",
+    "scope": "Only 266 timestamp leaf values changed across three firmware catalog JSON files; firmware identity, versions, URLs, SHA-256 values, product mappings, support and verification declarations are unchanged.",
+    "files": {
+      "web/platform/catalog/firmware-catalog-sync-report.json": {
+        "sha256": "51d48d87ce56387ba71af7431f0a89478a37ff2f0460ed99e28553f9e9ec1a8a",
+        "matchesRemoteExactly": true
+      },
+      "web/platform/catalog/firmware-release-snapshot.json": {
+        "sha256": "3b4763f69b4b24071bbef6c3c595c07a1e542ba360c494fbd0d11a50a2dcca0e",
+        "matchesRemoteExactly": true
+      },
+      "web/platform/catalog/firmwares.json": {
+        "sha256": "cc6aac87b8765defe7619798020965f2eb1feacc275363ce2ee7e038f22f4158",
+        "matchesRemoteExactly": true
+      }
+    },
+    "sameRustCargoSourceAsValidatedCommit": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "rustCargoDiffEmpty": true,
+    "catalogValidation": {
+      "status": "pass",
+      "products": 219,
+      "accessories": 10,
+      "firmwares": 178,
+      "watchlist": 122
+    },
+    "lilygoCatalogTest": {
+      "status": "pass",
+      "command": "node --test tools/platform-lilygo-catalog-test.mjs",
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "verificationReuseBasis": "Only upstream timestamp metadata changed after the original final-source verification. Native code, production WASM, web runtime, product definitions and model files are unchanged; the earlier functional and CPU receipts continue to apply to those artifacts.",
+    "webFilesChangedSinceValidatedCommit": [
+      "web/platform/catalog/firmware-catalog-sync-report.json",
+      "web/platform/catalog/firmware-release-snapshot.json",
+      "web/platform/catalog/firmwares.json"
+    ],
+    "productionWasmSha256": "2abff05748fdc09e2da58afe75ed11a17251b1197e1b72886ff5523279adb224"
+  }
+}

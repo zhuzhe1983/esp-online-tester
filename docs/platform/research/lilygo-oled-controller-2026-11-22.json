@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-22T08:29:20Z",
+  "implementation": "esp-soc/src/devices/oled_mono.rs",
+  "sources": [
+    {
+      "id": "lora-ssd1306-wire",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "3a0ab10ca5a9f2e0bee06ac09c7b4df9f1410756",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/ESP8266_SSD1306/src/SSD1306Wire.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "f771b1844dcb5432a3647cfa91c7b83efc69aea90bd9e670448bbf98ec3b7ea5",
+      "bytes": 5363,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-ssd1306-wire.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "lora-sh1106-wire",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "b088807656de56befa7f921b2a0d331be3ad1413",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "f8873d338eac0948c6faaf34215516cbe514ddaa3277a19d679fb09e176b7374",
+      "bytes": 4901,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-sh1106-wire.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "ssd1306-datasheet",
+      "status": "linked",
+      "kind": "manufacturer-datasheet",
+      "title": "Solomon Systech SSD1306 rev 1.1, April 2008",
+      "url": "https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf",
+      "inspection": "Manufacturer PDF text and tables inspected through public web retrieval; raw binary not retained or hashed. §§8.1.5, 8.5, 9, 10.1.3-15."
+    },
+    {
+      "id": "sh1106-datasheet",
+      "status": "linked",
+      "kind": "manufacturer-datasheet",
+      "title": "Sino Wealth SH1106 v2.3, June 2013",
+      "url": "https://resource.heltec.cn/download/oled/SH1106_V2.3.pdf",
+      "inspection": "Manufacturer PDF text inspected through public web retrieval; raw binary not retained or hashed. I2C Interface, Display RAM, Reset Circuit and Command Descriptions."
+    },
+    {
+      "id": "ssd1309-datasheet",
+      "url": "https://www.crystalfontz.com/controllers/SolomonSystech/SSD1309/342/",
+      "title": "Solomon Systech SSD1309 Rev 1.1, July 2011 (manufacturer datasheet, Crystalfontz mirror)",
+      "kind": "manufacturer-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:29:20Z",
+      "sha256": "37909523e9b24e2ad434854b065968e8a5deb546721835d1e201a28b62b9cf22",
+      "bytes": 2073896,
+      "mediaType": "application/pdf",
+      "archiveName": "ssd1309.pdf",
+      "archiveStorage": "Ignored target/lilygo-additional-sources cache; public URL and hash permit re-fetch.",
+      "sections": [
+        "8.1.3 four-wire SPI",
+        "8.6 display RAM",
+        "9.1 command lock",
+        "9.2 seven-parameter scroll setup",
+        "9.3 addressing",
+        "10.22 command-lock behavior"
+      ],
+      "visualInspection": {
+        "pages": [
+          27
+        ],
+        "result": "Command-lock table confirms FD 12 unlock / FD 16 lock; command and memory access are blocked while locked except FD."
+      }
+    },
+    {
+      "id": "ssd1309-manufacturer-page",
+      "url": "https://www.solomon-systech.com/en/product/SSD1309",
+      "title": "Solomon Systech SSD1309 product specification",
+      "kind": "official-documentation",
+      "status": "linked",
+      "note": "Manufacturer page independently confirms 128x64 SRAM, external panel supply and SPI/I2C interfaces. Command behavior comes from the fetched manufacturer datasheet."
+    }
+  ],
+  "scope": "Write-side digital OLED controller with pin-bound I2C endpoint and completed four-wire SPI transfer API. Exact board pins, chip selection, software bit sampling and supplies remain board responsibilities.",
+  "controllers": [
+    {
+      "kind": "Ssd1306",
+      "ram": [
+        128,
+        64
+      ],
+      "addressing": [
+        "page",
+        "horizontal",
+        "vertical"
+      ],
+      "sourceIds": [
+        "ssd1306-datasheet",
+        "lora-ssd1306-wire"
+      ]
+    },
+    {
+      "kind": "Sh1106",
+      "ram": [
+        132,
+        64
+      ],
+      "addressing": [
+        "page"
+      ],
+      "sourceIds": [
+        "sh1106-datasheet",
+        "lora-sh1106-wire"
+      ],
+      "visibleWindow": "Caller-defined; LILYGO bundled SH1106Wire uses physical columns 2..129 for 128x64 glass.",
+      "overflowPolicy": "SH1106 source documents increments through column 131 without defining a safe rollover contract. Further data is rejected until an explicit column command; no invented page advance or wrap."
+    },
+    {
+      "kind": "Ssd1309",
+      "ram": [
+        128,
+        64
+      ],
+      "addressing": [
+        "page",
+        "horizontal",
+        "vertical"
+      ],
+      "sourceIds": [
+        "ssd1309-datasheet",
+        "ssd1309-manufacturer-page"
+      ],
+      "differencesFromSsd1306": [
+        "FD 12 / FD 16 command and memory lock",
+        "DC consumes one GPIO configuration parameter; GPIO electrical output remains unmodeled",
+        "26/27/29/2A/2C/2D consume seven parameters; scrolling remains unmodeled",
+        "8D charge-pump command is not recognized",
+        "Documented unused mode/page/multiplex/offset bits are masked per table 9"
+      ]
+    }
+  ],
+  "implemented": [
+    "Co and D/C I2C control bytes, command parameters across STOP boundaries",
+    "SSD1306 horizontal and vertical windows plus page-mode column nibble addressing",
+    "SH1106 separate 132-column page addressing and explicit physical viewport",
+    "Display enable, invert/all-on, segment/COM direction, start line, offset, multiplex subset",
+    "Supply/reset gates; reset preserves RAM, power loss deterministically clears undefined SRAM",
+    "Framebuffer comes only from accepted guest protocol bytes; completed data transactions are counted, not synthetic VSYNC",
+    "SSD1309 is a distinct 128-column kind with command lock, exact parameter lengths, page wrap and no SSD1306 charge-pump alias",
+    "write_spi(dc, bytes) accepts a complete four-wire transfer after the board validates CS/clock/MOSI/D-C; supply and reset gates apply, one accepted data transfer increments frames once"
+  ],
+  "limitations": [
+    "Only write transactions are accepted. SH1106 I2C RAM/status readback and read-modify-write are unimplemented.",
+    "Charge pump, oscillator, contrast and physical COM pin wiring parameters are consumed but have no analog visual effects.",
+    "SSD1306 hardware scroll setup is consumed and counted as unsupported. Active scrolling blocks data writes; no timed scroll animation is fabricated.",
+    "Unknown commands are counted and ignored. Invalid geometry is host-clamped; malformed guest windows/addresses/modes cannot wrap into unrelated memory.",
+    "No physical device or complete factory firmware validation.",
+    "No per-tick, bus, interrupt-route or device_set change. Unused boards allocate no OLED state.",
+    "SSD1309 GPIO configuration is consumed and counted unsupported; its electrical GPIO output and content/timed scrolling are not simulated. Four-wire SPI is write-only and the API return is a host diagnostic, not a hardware ACK."
+  ],
+  "verification": {
+    "commands": [
+      "CARGO_BUILD_JOBS=1 cargo test -p esp-soc --lib devices::oled_mono",
+      "CARGO_BUILD_JOBS=1 cargo clippy -p esp-soc --lib -- -D warnings"
+    ],
+    "unitTests": 8,
+    "status": "passed",
+    "checks": [
+      "independent horizontal/vertical/page pointer expectations",
+      "132-column end bound and +2 window",
+      "Co continuation and parameters split across I2C transactions",
+      "remap, inverse, all-on, offset/start-line and multiplex output without RAM mutation",
+      "malformed windows and interleaved parameter/data rejection",
+      "power/reset and explicitly unsupported scroll boundary",
+      "SSD1309 lock/unlock blocks commands and RAM, lock reset behavior, no 8D alias, complete SPI transaction counting",
+      "SSD1309 seven-parameter scroll/GPIO parsing, distinct 128-column boundary, masked address fields and I2C lock path"
+    ]
+  }
+}

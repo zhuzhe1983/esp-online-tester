@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-touch-bar",
   "title": "LILYGO T-Touch Bar",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "选择同一商品页的 AMOLED H621 选项：两片 JD9613 原生 126×294，各旋转 90° 后组成 588×126 调试画面，片选 GPIO13／14 可独立写入，也可按官方初始化同时广播。接入 CST820 单点触摸与复位；物理触摸坐标包含中间 32 单位间隔。旧 H612 显示版本不在此配置内，左右片光学镜像和工厂 UI 尚未校准。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Touch Bar AMOLED H621 option / Shopify variant 42880705102005; two JD9613 panels",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Touch Bar",
@@ -52,6 +52,95 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-02-02",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-touch-bar",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 588,
+          "height": 126,
+          "controller": "JD9613 × 2",
+          "type": "AMOLED",
+          "interface": "spi",
+          "pixelFormat": "RGB565",
+          "physicalTouch": true,
+          "touchImplemented": true,
+          "physicalPanels": [
+            {
+              "width": 126,
+              "height": 294,
+              "controller": "JD9613",
+              "chipSelect": 13,
+              "debugRotationDegrees": 90
+            },
+            {
+              "width": 126,
+              "height": 294,
+              "controller": "JD9613",
+              "chipSelect": 14,
+              "debugRotationDegrees": 90
+            }
+          ],
+          "debugLayout": "horizontal-composite"
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [],
+        "pins": {
+          "display": {
+            "sclk": 17,
+            "mosi": 18,
+            "cs": [
+              13,
+              14
+            ],
+            "dc": 16,
+            "reset": 15,
+            "broadcastInitialization": true
+          },
+          "touch": {
+            "controller": "CST820",
+            "address": 21,
+            "sda": 10,
+            "scl": 11,
+            "irq": 12,
+            "reset": 9
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s3add-touchbar-amoled-readme",
+        "s3add-touchbar-pins",
+        "s3add-touchbar-display",
+        "s3add-touchbar-factory",
+        "s3add-touchbar-touch",
+        "s3add-touchbar-touch-reg",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +169,266 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-touch-bar-reviewed-cad-license",
+      "title": "Manufacturer repository LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touch_Bar/85c418abc47400be284a86de2a5c631a577dcd79/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touch_Bar/85c418abc47400be284a86de2a5c631a577dcd79/LICENSE",
+      "fetchedAt": "2026-11-22T08:38:14Z",
+      "sha256": "c0aacbcf39b9a4a2c97edfe0fd2b1944bfe898c0002c970621e05c297b650e12",
+      "bytes": 1071,
+      "file": "manufacturer-LICENSE.txt",
+      "archiveName": "manufacturer-LICENSE.txt",
+      "revision": "85c418abc47400be284a86de2a5c631a577dcd79"
+    },
+    {
+      "id": "lilygo-t-touch-bar-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_4.jpg?v=1675304986",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_4.jpg?v=1675304986",
+      "fetchedAt": "2026-11-22T06:59:16Z",
+      "bytes": 30689,
+      "sha256": "e7fc9bac12c8aa5cea3843c304387bb1285d6e239777b3b6517665535b242440",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t touch bar official photo 0",
+      "archiveName": "lilygo-t-touch-bar-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-touch-bar-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_7.jpg?v=1675304987",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_7.jpg?v=1675304987",
+      "fetchedAt": "2026-11-22T06:59:21Z",
+      "bytes": 36563,
+      "sha256": "d3cfc04b35d7cf7ea5983a91fbaa14ab3eee127f6acff73f0209f7b3c1833b4b",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t touch bar official photo 1",
+      "archiveName": "lilygo-t-touch-bar-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-touch-bar-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_3.jpg?v=1675304987",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_3.jpg?v=1675304987",
+      "fetchedAt": "2026-11-22T06:59:22Z",
+      "bytes": 21820,
+      "sha256": "a9ee06ebbd6f1ca90d56c5bfc244383bca23b58aad11293569ea1453b74c2ea6",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t touch bar official photo 2",
+      "archiveName": "lilygo-t-touch-bar-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-touch-bar-reviewed-cad-1",
+      "productId": "lilygo-t-touch-bar",
+      "title": "Xinyuan-LilyGO/T-Touchbar-AMOLED shell/shell.stp",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touchbar-AMOLED/355803a6893f2ae7c57389dcda7f088880080293/shell/shell.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touchbar-AMOLED/355803a6893f2ae7c57389dcda7f088880080293/shell/shell.stp",
+      "repository": "Xinyuan-LilyGO/T-Touchbar-AMOLED",
+      "repositoryPath": "shell/shell.stp",
+      "revision": "355803a6893f2ae7c57389dcda7f088880080293",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "5559d7b281210ac9d0ef279c64cb446e7c8b4288",
+      "fetchedAt": "2026-11-22T08:32:31Z",
+      "bytes": 1266919,
+      "sha256": "a1fac6c2abf5cc488059da8698280c48f3a10e2d7e06babbaf644c9bb4c5e96a",
+      "rawSha256": "a1fac6c2abf5cc488059da8698280c48f3a10e2d7e06babbaf644c9bb4c5e96a",
+      "file": "manufacturer-shell.stp.gz",
+      "archiveName": "manufacturer-shell.stp.gz",
+      "storedSha256": "62f03a6491037c39d43b9c8849d69cf922c6bf185fd052d32e3021f3d1761af2",
+      "archiveSha256": "62f03a6491037c39d43b9c8849d69cf922c6bf185fd052d32e3021f3d1761af2",
+      "compression": "gzip",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "scope": "Official T-Touch Bar AMOLED H621 enclosure/assembly reference, selected to match the two JD9613 panels. The exact store SKU separately lists LCD H612 and AMOLED H621; the older narrow H612 CAD is not used for this runtime. Supplied relative part positions are retained; the angled support/enclosure is an optional mechanical reference rather than bare-board dimensions.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-touch-bar-official-photo-amoled-h621",
+      "productId": "lilygo-t-touch-bar",
+      "title": "Manufacturer T-Touch Bar AMOLED H621 variant photograph",
+      "kind": "manufacturer-photo",
+      "status": "fetched",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-TouchBar-AMOLED-LILYGO_2.jpg?v=1685341352",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-TouchBar-AMOLED-LILYGO_2.jpg?v=1685341352",
+      "fetchedAt": "2026-11-22T09:05:44Z",
+      "bytes": 42137,
+      "sha256": "b172f5752d33f79496ff04c21c4e9fb5f448809c8baafa1e3e4e11de44e17195",
+      "file": "reference-amoled-h621.jpg",
+      "archiveName": "reference-amoled-h621.jpg",
+      "variantId": "42880705102005"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-touchbar-amoled-readme",
+      "repository": "Xinyuan-LilyGO/T-Touchbar-AMOLED",
+      "revision": "355803a6893f2ae7c57389dcda7f088880080293",
+      "path": "README.md",
+      "gitBlobSha": "b84d5357260fad83dd1c69b8429ab2bd8de6bdd3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touchbar-AMOLED/355803a6893f2ae7c57389dcda7f088880080293/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Touchbar-AMOLED/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:41:49Z",
+      "sha256": "1a1f88bedca18789eda8ffa8e8b4dec1d98b6ee67a2c3ad11b44c836467f888c",
+      "bytes": 2471,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-touchbar-amoled-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-touchbar-pins",
+      "repository": "Xinyuan-LilyGO/T-Touchbar-AMOLED",
+      "revision": "355803a6893f2ae7c57389dcda7f088880080293",
+      "path": "examples/lifting_dedsk/pin_config.h",
+      "gitBlobSha": "9acb92a260932854d2544a117dda0fb750fa426f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touchbar-AMOLED/355803a6893f2ae7c57389dcda7f088880080293/examples/lifting_dedsk/pin_config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Touchbar-AMOLED/examples/lifting_dedsk/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:44:34Z",
+      "sha256": "e47f0db7f4b3e7640fecf0c758ddfcdc1969f7fd0d6f76c33664f3845deb8bf9",
+      "bytes": 1685,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-touchbar-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-touchbar-display",
+      "repository": "Xinyuan-LilyGO/T-Touchbar-AMOLED",
+      "revision": "355803a6893f2ae7c57389dcda7f088880080293",
+      "path": "examples/lifting_dedsk/jd9613.cpp",
+      "gitBlobSha": "b69cfcc220314bc900a25ae0d70f37a77085594b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touchbar-AMOLED/355803a6893f2ae7c57389dcda7f088880080293/examples/lifting_dedsk/jd9613.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Touchbar-AMOLED/examples/lifting_dedsk/jd9613.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:44:34Z",
+      "sha256": "cafdfb839ed612cb778ee828722f5e9055cb9e0de5dbf9e09b719f8244d60705",
+      "bytes": 16808,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-touchbar-display.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-touchbar-factory",
+      "repository": "Xinyuan-LilyGO/T-Touchbar-AMOLED",
+      "revision": "355803a6893f2ae7c57389dcda7f088880080293",
+      "path": "examples/lifting_dedsk/lifting_dedsk.ino",
+      "gitBlobSha": "13d762bec58fc99cee93f6c810e0133aac3466ea",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touchbar-AMOLED/355803a6893f2ae7c57389dcda7f088880080293/examples/lifting_dedsk/lifting_dedsk.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Touchbar-AMOLED/examples/lifting_dedsk/lifting_dedsk.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:44:34Z",
+      "sha256": "159e2e875346fc9e5bb69b39ac514e8a2dbef3880e1ad983197cbb70e858b87a",
+      "bytes": 21929,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-touchbar-factory.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-touchbar-touch",
+      "repository": "Xinyuan-LilyGO/T-Touchbar-AMOLED",
+      "revision": "355803a6893f2ae7c57389dcda7f088880080293",
+      "path": "lib/TouchLib/src/ModulesCSTSelf.tpp",
+      "gitBlobSha": "18a0a4745f2df8e487e579fe19993babacd4733a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touchbar-AMOLED/355803a6893f2ae7c57389dcda7f088880080293/lib/TouchLib/src/ModulesCSTSelf.tpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Touchbar-AMOLED/lib/TouchLib/src/ModulesCSTSelf.tpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T09:09:32Z",
+      "sha256": "3dafbead863c0047e7ff42c85e3990ddcb0028fca672823323b68bbce7753fea",
+      "bytes": 3613,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-touchbar-touch.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-touchbar-touch-reg",
+      "repository": "Xinyuan-LilyGO/T-Touchbar-AMOLED",
+      "revision": "355803a6893f2ae7c57389dcda7f088880080293",
+      "path": "lib/TouchLib/src/REG/CSTSelfConstants.h",
+      "gitBlobSha": "939a189ee10a12da68daeb62ab53ee8e2dc987d2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Touchbar-AMOLED/355803a6893f2ae7c57389dcda7f088880080293/lib/TouchLib/src/REG/CSTSelfConstants.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Touchbar-AMOLED/lib/TouchLib/src/REG/CSTSelfConstants.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T09:09:38Z",
+      "sha256": "6d90909932dba25084881dc817f5676d88362e0794daade1aba44cbaed54e710",
+      "bytes": 2877,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-touchbar-touch-reg.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+      "repository": "Xinyuan-LilyGO/T-Display-Bar",
+      "path": "lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+      "gitBlobSha": "855c7b1051b1ed2a26f9dd0e040f26ef3989635e",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-Bar/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp-TouchClassCST816.cpp",
+      "sha256": "86f48a816759842c15c2816a5e7a69fb24d7522aafb6aa074a4db7e30cd235f4",
+      "bytes": 8355,
+      "mediaType": "text/plain; charset=utf-8"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-touch-bar-official-photo-amoled-h621",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-TouchBar-AMOLED-LILYGO_2.jpg?v=1685341352",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-touch-bar/reference-amoled-h621.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-touch-bar-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_4.jpg?v=1675304986",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-touch-bar/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-touch-bar-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_7.jpg?v=1675304987",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-touch-bar/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-touch-bar-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-TouchBar-H612-LILYGO_3.jpg?v=1675304987",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-touch-bar/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +441,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +448,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +458,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +468,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +478,234 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "reference-only",
+    "sourceIds": [
+      "s3add-touchbar-amoled-readme",
+      "s3add-touchbar-pins",
+      "s3add-touchbar-display",
+      "s3add-touchbar-factory",
+      "s3add-touchbar-touch",
+      "s3add-touchbar-touch-reg",
+      "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+      "official-store-shopify-1"
+    ],
+    "candidates": [],
+    "simulationVerified": false,
+    "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-touch-bar/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "采用已审查的官方 CAD 部件；具体版次、遗漏部分及未标定项见模型资料。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-touch-bar-official-photo-0",
+      "lilygo-t-touch-bar-official-photo-1",
+      "lilygo-t-touch-bar-official-photo-2",
+      "lilygo-t-touch-bar-reviewed-cad-1",
+      "lilygo-t-touch-bar-official-photo-amoled-h621",
+      "s3add-touchbar-amoled-readme",
+      "s3add-touchbar-pins",
+      "s3add-touchbar-display",
+      "s3add-touchbar-factory",
+      "s3add-touchbar-touch",
+      "s3add-touchbar-touch-reg",
+      "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+    ],
+    "displayHint": {
+      "width": 588,
+      "height": 126,
+      "sourceIds": [
+        "s3add-touchbar-amoled-readme",
+        "s3add-touchbar-pins",
+        "s3add-touchbar-display",
+        "s3add-touchbar-factory",
+        "s3add-touchbar-touch",
+        "s3add-touchbar-touch-reg",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-touch-bar",
+    "status": "diagnostic",
+    "scope": "选择同一商品页的 AMOLED H621 选项：两片 JD9613 原生 126×294，各旋转 90° 后组成 588×126 调试画面，片选 GPIO13／14 可独立写入，也可按官方初始化同时广播。接入 CST820 单点触摸与复位；物理触摸坐标包含中间 32 单位间隔。旧 H612 显示版本不在此配置内，左右片光学镜像和工厂 UI 尚未校准。",
+    "unsupported": [
+      "Official factory binary boot and physical hardware validation are unverified. Native authored Xtensa SRAM fixtures execute the documented peripheral MMIO.",
+      "The exact same storefront links both T-Touch_Bar and T-Touchbar-AMOLED. This profile selects AMOLED variant42880705102005; original H612 photos/LED matrix hardware are retained only as alternative-variant evidence.",
+      "The composite maps native(x,y) to horizontal(y,125-x) for each panel, as the vendor software address transform. The factory left-panel full-frame indexing also includes a reversal; its physical mirror/orientation and factory bitmap alignment have not been validated.",
+      "JD9613 FE vendor pages are isolated from native DCS. Native90/270 MV rotations are excluded; software rotation writes actual native RAM.",
+      "CST820 raw contact transform x=126-previewY, y=previewX+(previewX>=294?32:0) models the physical gap. Factory strict greater-than326 test creates an unverified boundary at the first right-hand pixel; no calibration correction is fabricated.",
+      "Only held-level contact IRQ, reset and single-point register reports are modeled; no gestures/pressure/periodic pulses/battery ADC/USB behavior."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-touch-bar",
+    "boardId": "lilygo-t-touch-bar",
+    "name": "LILYGO T-Touch Bar",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-Touch Bar AMOLED H621 option / Shopify variant 42880705102005; two JD9613 panels",
+    "display": {
+      "width": 588,
+      "height": 126,
+      "controller": "JD9613 × 2",
+      "type": "AMOLED",
+      "interface": "spi",
+      "pixelFormat": "RGB565",
+      "physicalTouch": true,
+      "touchImplemented": true,
+      "physicalPanels": [
+        {
+          "width": 126,
+          "height": 294,
+          "controller": "JD9613",
+          "chipSelect": 13,
+          "debugRotationDegrees": 90
+        },
+        {
+          "width": 126,
+          "height": 294,
+          "controller": "JD9613",
+          "chipSelect": 14,
+          "debugRotationDegrees": 90
+        }
+      ],
+      "debugLayout": "horizontal-composite"
+    },
+    "pins": {
+      "display": {
+        "sclk": 17,
+        "mosi": 18,
+        "cs": [
+          13,
+          14
+        ],
+        "dc": 16,
+        "reset": 15,
+        "broadcastInitialization": true
+      },
+      "touch": {
+        "controller": "CST820",
+        "address": 21,
+        "sda": 10,
+        "scl": 11,
+        "irq": 12,
+        "reset": 9
+      }
+    },
+    "controls": [],
+    "runtimeLevel": "partial",
+    "scope": "选择同一商品页的 AMOLED H621 选项：两片 JD9613 原生 126×294，各旋转 90° 后组成 588×126 调试画面，片选 GPIO13／14 可独立写入，也可按官方初始化同时广播。接入 CST820 单点触摸与复位；物理触摸坐标包含中间 32 单位间隔。旧 H612 显示版本不在此配置内，左右片光学镜像和工厂 UI 尚未校准。",
+    "scopeEn": "T-Touch Bar AMOLED H621 option / Shopify variant 42880705102005; two JD9613 panels: only the explicitly implemented digital display/control paths; factory boot is unverified.",
+    "sourceIds": [
+      "s3add-touchbar-amoled-readme",
+      "s3add-touchbar-pins",
+      "s3add-touchbar-display",
+      "s3add-touchbar-factory",
+      "s3add-touchbar-touch",
+      "s3add-touchbar-touch-reg",
+      "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+      "official-store-shopify-1"
+    ],
+    "chronology": {
+      "date": "2023-02-02",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-touch-bar",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 80,
+    "sdCard": {
+      "slot": false,
+      "transportSupported": false
+    },
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "touchbar_native_spi_broadcast_and_independent_panels_keep_real_pixels"
+      ]
+    },
+    "unsupported": [
+      "Official factory binary boot and physical hardware validation are unverified. Native authored Xtensa SRAM fixtures execute the documented peripheral MMIO.",
+      "The exact same storefront links both T-Touch_Bar and T-Touchbar-AMOLED. This profile selects AMOLED variant42880705102005; original H612 photos/LED matrix hardware are retained only as alternative-variant evidence.",
+      "The composite maps native(x,y) to horizontal(y,125-x) for each panel, as the vendor software address transform. The factory left-panel full-frame indexing also includes a reversal; its physical mirror/orientation and factory bitmap alignment have not been validated.",
+      "JD9613 FE vendor pages are isolated from native DCS. Native90/270 MV rotations are excluded; software rotation writes actual native RAM.",
+      "CST820 raw contact transform x=126-previewY, y=previewX+(previewX>=294?32:0) models the physical gap. Factory strict greater-than326 test creates an unverified boundary at the first right-hand pixel; no calibration correction is fabricated.",
+      "Only held-level contact IRQ, reset and single-point register reports are modeled; no gestures/pressure/periodic pulses/battery ADC/USB behavior."
+    ],
+    "variantEvidence": {
+      "selectedHardware": "T-Touch Bar AMOLED H621 option / Shopify variant 42880705102005; two JD9613 panels",
+      "automaticRevisionDetection": false,
+      "sourceIds": [
+        "s3add-touchbar-amoled-readme",
+        "s3add-touchbar-pins",
+        "s3add-touchbar-display",
+        "s3add-touchbar-factory",
+        "s3add-touchbar-touch",
+        "s3add-touchbar-touch-reg",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+        "official-store-shopify-1"
+      ],
+      "basis": "Exact manufacturer product-linked source and selected example/controller; no automatic sibling substitution.",
+      "storefrontOptions": [
+        {
+          "variantId": 42723482599605,
+          "name": "LED / H612",
+          "implemented": false
+        },
+        {
+          "variantId": 42880705102005,
+          "name": "AMOLED / H621",
+          "implemented": true
+        }
+      ],
+      "exactImageUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-TouchBar-AMOLED-LILYGO_2.jpg?v=1685341352"
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "s3add-touchbar-amoled-readme",
+        "s3add-touchbar-pins",
+        "s3add-touchbar-display",
+        "s3add-touchbar-factory",
+        "s3add-touchbar-touch",
+        "s3add-touchbar-touch-reg",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+        "official-store-shopify-1"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    }
+  }
 }

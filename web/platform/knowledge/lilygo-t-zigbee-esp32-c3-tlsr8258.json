@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-zigbee-esp32-c3-tlsr8258",
   "title": "LILYGO T-Zigbee",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-C3 + TLSR8258；具体硬件版次及配置待核对。",
+  "summary": "仅模拟 ESP32-C3 子系统的 GPIO2 用户键和 GPIO3 蓝灯；TLSR8258 协处理器、其红绿灯、HCI 与 Zigbee 射频尚未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-ZIGBEE V1.0, ESP32-C3 + TLSR8258",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Zigbee",
@@ -52,6 +52,103 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-08-15",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-zigbee-esp32-c3-tlsr8258",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [
+          {
+            "id": "user",
+            "name": "USER",
+            "type": "button",
+            "pin": 2,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "button": 2,
+          "leds": [
+            {
+              "id": "C3_LED_B",
+              "pin": 3,
+              "activeLow": false,
+              "color": "blue"
+            }
+          ],
+          "unmodeledCoprocessorLeds": [
+            {
+              "owner": "TLSR8258",
+              "pin": "PD4",
+              "color": "red"
+            },
+            {
+              "owner": "TLSR8258",
+              "pin": "PA0",
+              "color": "green"
+            }
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-ZigBee-README.md",
+        "T-ZigBee-Schematic-T-Zigbee.pdf",
+        "T-ZigBee-examples-factory_test-factory_test.ino",
+        "T-ZigBee-platformio.ini",
+        "T-ZigBee-firmware-README.md",
+        "T-ZigBee-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flash": "Schematic U8 W25Q32FVSS=4MB on C3 side",
+          "psram": "No PSRAM on exact C3 schematic; TLSR memory separate",
+          "sourceIds": [
+            "T-ZigBee-Schematic-T-Zigbee.pdf"
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-ZigBee-README.md",
+        "T-ZigBee-Schematic-T-Zigbee.pdf",
+        "T-ZigBee-examples-factory_test-factory_test.ino",
+        "T-ZigBee-platformio.ini",
+        "T-ZigBee-firmware-README.md",
+        "T-ZigBee-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +177,194 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Zigbeepa-lilygo_3_da471766-97ec-4e7b-8762-12c75e998d92.jpg?v=1687922857",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Zigbeepa-lilygo_3_da471766-97ec-4e7b-8762-12c75e998d92.jpg?v=1687922857",
+      "fetchedAt": "2026-11-22T07:00:33Z",
+      "bytes": 84409,
+      "sha256": "7881b3f55ce7bcb73c7330bc1d9060a9d8bfe9158dd72dc5e3767c2473b34975",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t zigbee esp32 c3 tlsr8258 official photo 0",
+      "archiveName": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Zigbee_5.jpg?v=1710386889",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Zigbee_5.jpg?v=1710386889",
+      "fetchedAt": "2026-11-22T07:00:33Z",
+      "bytes": 57148,
+      "sha256": "34a1c1b7ccede4e6755f66c139fa5eca951f05f5ce98d338b90ed3731c69f9f4",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t zigbee esp32 c3 tlsr8258 official photo 1",
+      "archiveName": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Zigbee_6.jpg?v=1710386891",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Zigbee_6.jpg?v=1710386891",
+      "fetchedAt": "2026-11-22T07:00:38Z",
+      "bytes": 101809,
+      "sha256": "24d43ac8e3616914a732f4ab40f338fd050e8d6a1ff666b7382dac9db08ef268",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t zigbee esp32 c3 tlsr8258 official photo 2",
+      "archiveName": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "README.md",
+      "id": "T-ZigBee-README.md",
+      "gitBlobSha": "89e916a9dc16e1f55ba7060b8fdbe107ab133acc",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "65c33bd72e28b24252f358336a25660bfbe8a97a350c21e1f08106337e65464f",
+      "bytes": 1468,
+      "archiveName": "T-ZigBee-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-ZigBee-README.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "Schematic/T-Zigbee.pdf",
+      "id": "T-ZigBee-Schematic-T-Zigbee.pdf",
+      "gitBlobSha": "c92e0737cf341a9c46d8f47fa2160c4e9319ca02",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/Schematic/T-Zigbee.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/Schematic/T-Zigbee.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "d22322f5d32ed210ddd63dc2358bd8e0296ae90e9cd45d79d03151ee32270eb4",
+      "bytes": 127098,
+      "archiveName": "T-ZigBee-Schematic-T-Zigbee.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / Schematic/T-Zigbee.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-ZigBee-Schematic-T-Zigbee.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "examples/factory_test/factory_test.ino",
+      "id": "T-ZigBee-examples-factory_test-factory_test.ino",
+      "gitBlobSha": "9ed8316d0f9232d59dfe28ec978332e1ff29e33b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/examples/factory_test/factory_test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/examples/factory_test/factory_test.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:57:54Z",
+      "sha256": "ce2bb100293710270de899289bc29dd36a1414a73451427b39f66eec83342fc2",
+      "bytes": 8756,
+      "archiveName": "T-ZigBee-examples-factory_test-factory_test.ino.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / examples/factory_test/factory_test.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-ZigBee-examples-factory_test-factory_test.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "platformio.ini",
+      "id": "T-ZigBee-platformio.ini",
+      "gitBlobSha": "a92068466814a4af3cc35c4c404d08aff26286c5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "90a07b010abf92dd4abe8e9ee20b01a8ef1f96c20c2d449bb7e33b541d48aabc",
+      "bytes": 1442,
+      "archiveName": "T-ZigBee-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-ZigBee-platformio.ini.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-ZigBee",
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "path": "firmware/README.md",
+      "id": "T-ZigBee-firmware-README.md",
+      "gitBlobSha": "bfbadea8aefef7b98234325b795337303fe292d0",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-ZigBee/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "ad973b3eb6fe41daee26c376f71c82cd60307f9933b64140719db8ba5a95de8d",
+      "bytes": 110,
+      "archiveName": "T-ZigBee-firmware-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-ZigBee / firmware/README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-ZigBee-firmware-README.md.raw"
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-ZigBee/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:48:15Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "T-ZigBee-tree",
+      "title": "Official T-ZigBee complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-ZigBee/git/trees/HEAD?recursive=1",
+      "sha256": "c68f5ac5f1d3fce1967d45f39fb0f32d622f5ab0473d4021d4910c776af59466",
+      "bytes": 36101,
+      "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+      "truncated": false,
+      "entryCount": 147,
+      "archiveName": "Xinyuan-LilyGO__T-ZigBee.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint.",
+      "sourceCachePath": "target/lilygo-model-audit/Xinyuan-LilyGO__T-ZigBee.tree.json"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Zigbeepa-lilygo_3_da471766-97ec-4e7b-8762-12c75e998d92.jpg?v=1687922857",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-zigbee-esp32-c3-tlsr8258/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Zigbee_5.jpg?v=1710386889",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-zigbee-esp32-c3-tlsr8258/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Zigbee_6.jpg?v=1710386891",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-zigbee-esp32-c3-tlsr8258/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +377,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +384,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +394,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +404,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +414,217 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "exact-c3-factory-test-source-coprocessor-binaries-only",
+    "sourceIds": [
+      "T-ZigBee-examples-factory_test-factory_test.ino",
+      "T-ZigBee-firmware-README.md",
+      "T-ZigBee-tree"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/hciDevice_ZE_8258_SDK_eb644f1_MD5_a27ce68a94bc19284c5c87a4e0aa416b.bin",
+        "path": "firmware/hciDevice_ZE_8258_SDK_eb644f1_MD5_a27ce68a94bc19284c5c87a4e0aa416b.bin",
+        "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+        "gitBlobSha": "1de97e2fc89af688a6cb3a3518a6c1142f6615f9",
+        "bytes": 160772,
+        "status": "linked",
+        "sourceId": "T-ZigBee-tree"
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/hciDevice_ZR_8258_SDK_eb644f1_MD5_3e7c395bacca28475952808a79ff2ec1.bin",
+        "path": "firmware/hciDevice_ZR_8258_SDK_eb644f1_MD5_3e7c395bacca28475952808a79ff2ec1.bin",
+        "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+        "gitBlobSha": "384b1188cb9d1899b2aca293ff791998981e17f3",
+        "bytes": 208772,
+        "status": "linked",
+        "sourceId": "T-ZigBee-tree"
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/sampleGW_8258_20220302.bin",
+        "path": "firmware/sampleGW_8258_20220302.bin",
+        "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+        "gitBlobSha": "608843d7da96704da7e4a54736166d8deb997831",
+        "bytes": 191924,
+        "status": "linked",
+        "sourceId": "T-ZigBee-tree"
+      }
+    ],
+    "simulationVerified": false,
+    "binaryFetched": false,
+    "notes": "factory_test.ino is ESP32 C3 application source. All three published.bin files target TLSR8258, not C3, and must not enter an ESP32 firmware trial."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-zigbee-esp32-c3-tlsr8258/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-0",
+      "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-1",
+      "lilygo-t-zigbee-esp32-c3-tlsr8258-official-photo-2",
+      "T-ZigBee-README.md",
+      "T-ZigBee-Schematic-T-Zigbee.pdf",
+      "T-ZigBee-examples-factory_test-factory_test.ino",
+      "T-ZigBee-platformio.ini",
+      "T-ZigBee-firmware-README.md",
+      "T-ZigBee-tree"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-zigbee",
+    "status": "diagnostic",
+    "scope": "仅模拟 ESP32-C3 子系统的 GPIO2 用户键和 GPIO3 蓝灯；TLSR8258 协处理器、其红绿灯、HCI 与 Zigbee 射频尚未实现。",
+    "unsupported": [
+      "TLSR8258 execution, Zigbee HCI UART and all RF/network behavior.",
+      "TLSR red/green LEDs and optional external sensors are not mapped to C3 GPIO.",
+      "GPIO2 release is modeled as high for normal input-pullup firmware; schematic external pullup R10 is NC. No analog floating-input simulation.",
+      "Software-GPIO LED only; no PWM brightness."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-zigbee-esp32-c3-tlsr8258",
+    "boardId": "lilygo-t-zigbee",
+    "name": "LILYGO T-Zigbee",
+    "chip": "esp32c3",
+    "flashMB": 4,
+    "psramMB": 0,
+    "hardwareRevision": "T-ZIGBEE V1.0, ESP32-C3 + TLSR8258",
+    "display": null,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "user",
+        "name": "USER",
+        "type": "button",
+        "pin": 2,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "仅模拟 ESP32-C3 子系统的 GPIO2 用户键和 GPIO3 蓝灯；TLSR8258 协处理器、其红绿灯、HCI 与 Zigbee 射频尚未实现。",
+    "scopeEn": "ESP32-C3 subsystem only with GPIO2 user button and GPIO3 blue LED. TLSR8258 execution, HCI, its red/green LEDs and RF remain unmodeled.",
+    "chronology": {
+      "date": "2022-08-15",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-zigbee-esp32-c3-tlsr8258",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "T-ZigBee-README.md",
+      "T-ZigBee-Schematic-T-Zigbee.pdf",
+      "T-ZigBee-examples-factory_test-factory_test.ino",
+      "T-ZigBee-platformio.ini",
+      "T-ZigBee-firmware-README.md",
+      "T-ZigBee-tree",
+      "official-store-shopify-1"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "trialAvailable": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "TLSR8258 execution, Zigbee HCI UART and all RF/network behavior.",
+      "TLSR red/green LEDs and optional external sensors are not mapped to C3 GPIO.",
+      "GPIO2 release is modeled as high for normal input-pullup firmware; schematic external pullup R10 is NC. No analog floating-input simulation.",
+      "Software-GPIO LED only; no PWM brightness."
+    ],
+    "conflicts": [],
+    "physicalChip": "ESP32-C3 + TLSR8258",
+    "pins": {
+      "button": 2,
+      "leds": [
+        {
+          "id": "C3_LED_B",
+          "pin": 3,
+          "activeLow": false,
+          "color": "blue"
+        }
+      ],
+      "unmodeledCoprocessorLeds": [
+        {
+          "owner": "TLSR8258",
+          "pin": "PD4",
+          "color": "red"
+        },
+        {
+          "owner": "TLSR8258",
+          "pin": "PA0",
+          "color": "green"
+        }
+      ]
+    },
+    "memoryEvidence": {
+      "flash": "Schematic U8 W25Q32FVSS=4MB on C3 side",
+      "psram": "No PSRAM on exact C3 schematic; TLSR memory separate",
+      "sourceIds": [
+        "T-ZigBee-Schematic-T-Zigbee.pdf"
+      ]
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "exact-c3-factory-test-source-coprocessor-binaries-only",
+      "sourceIds": [
+        "T-ZigBee-examples-factory_test-factory_test.ino",
+        "T-ZigBee-firmware-README.md",
+        "T-ZigBee-tree"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/hciDevice_ZE_8258_SDK_eb644f1_MD5_a27ce68a94bc19284c5c87a4e0aa416b.bin",
+          "path": "firmware/hciDevice_ZE_8258_SDK_eb644f1_MD5_a27ce68a94bc19284c5c87a4e0aa416b.bin",
+          "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+          "gitBlobSha": "1de97e2fc89af688a6cb3a3518a6c1142f6615f9",
+          "bytes": 160772,
+          "status": "linked",
+          "sourceId": "T-ZigBee-tree"
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/hciDevice_ZR_8258_SDK_eb644f1_MD5_3e7c395bacca28475952808a79ff2ec1.bin",
+          "path": "firmware/hciDevice_ZR_8258_SDK_eb644f1_MD5_3e7c395bacca28475952808a79ff2ec1.bin",
+          "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+          "gitBlobSha": "384b1188cb9d1899b2aca293ff791998981e17f3",
+          "bytes": 208772,
+          "status": "linked",
+          "sourceId": "T-ZigBee-tree"
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-ZigBee/blob/fc7602f6f3a269ffa234d0a6cb7846161f58c3f9/firmware/sampleGW_8258_20220302.bin",
+          "path": "firmware/sampleGW_8258_20220302.bin",
+          "pinnedGitRevision": "fc7602f6f3a269ffa234d0a6cb7846161f58c3f9",
+          "gitBlobSha": "608843d7da96704da7e4a54736166d8deb997831",
+          "bytes": 191924,
+          "status": "linked",
+          "sourceId": "T-ZigBee-tree"
+        }
+      ],
+      "simulationVerified": false,
+      "binaryFetched": false,
+      "notes": "factory_test.ino is ESP32 C3 application source. All three published.bin files target TLSR8258, not C3, and must not enter an ESP32 firmware trial."
+    }
+  }
 }

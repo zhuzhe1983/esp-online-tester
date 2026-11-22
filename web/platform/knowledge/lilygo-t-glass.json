@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-glass",
   "title": "LILYGO T-Glass",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3-FN4R2；具体硬件版次及配置待核对。",
+  "summary": "精确选择 T-Glass V2 光学组件：JD9613 面板原生 126×294，显示官方 GlassHelloWorld 底部对齐的 126×126 可见窗口；接入 SPI、复位和 BOOT。模拟器区分 FE 厂商寄存器页，避免初始化表被误当成像素或睡眠命令。电容触摸条、光学镜像、IMU、RTC 和音频未模拟。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Glass V2 optical assembly; GlassV2/GlassHelloWorld native bottom window",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Glass",
@@ -52,6 +52,95 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-06-04",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-glass",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 126,
+          "height": 126,
+          "controller": "JD9613",
+          "type": "AMOLED",
+          "interface": "spi",
+          "pixelFormat": "RGB565",
+          "physicalPanelResolution": [
+            126,
+            294
+          ],
+          "commandCoordinateCanvas": [
+            128,
+            294
+          ],
+          "crop": [
+            0,
+            168,
+            126,
+            126
+          ],
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 2,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "display": {
+            "sclk": 15,
+            "mosi": 16,
+            "cs": 17,
+            "dc": 21,
+            "reset": 18,
+            "backlight": null
+          },
+          "capacitivePad": {
+            "pin": 14,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s3add-glass-readme",
+        "s3add-glass-h",
+        "s3add-glass-cpp",
+        "s3add-glass-display-h",
+        "s3add-glass-init",
+        "s3add-glass-helper",
+        "s3add-glass-v2-example",
+        "official-store-shopify-1",
+        "official-wiki-t-glass"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +169,274 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-glass-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_15.jpg?v=1729584309",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_15.jpg?v=1729584309",
+      "fetchedAt": "2026-11-22T06:57:36Z",
+      "bytes": 21248,
+      "sha256": "da5f610fdf4b1b3917c880ebde221d0b8123c59625f5e873139606fb341728b8",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t glass official photo 0",
+      "archiveName": "lilygo-t-glass-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-glass-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_10.jpg?v=1729584309",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_10.jpg?v=1729584309",
+      "fetchedAt": "2026-11-22T06:57:36Z",
+      "bytes": 25536,
+      "sha256": "03b87389c493d58cf9dd39724a8b4f1fcba6e0cd4a3f48bf1601c63ff48d5dbd",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t glass official photo 1",
+      "archiveName": "lilygo-t-glass-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-glass-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_14.jpg?v=1729584309",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_14.jpg?v=1729584309",
+      "fetchedAt": "2026-11-22T06:57:36Z",
+      "bytes": 19941,
+      "sha256": "637c6d0bc1dad94ff2335e62aed5361efebd6ddb6eff25beb3976e6c3a27a395",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t glass official photo 2",
+      "archiveName": "lilygo-t-glass-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-glass-reviewed-cad-1",
+      "productId": "lilygo-t-glass",
+      "title": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass Shell/V2/full.stl",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/Shell/V2/full.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/Shell/V2/full.stl",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass",
+      "repositoryPath": "Shell/V2/full.stl",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "5ea700278be1e8ee9fcd9de0226edb9febafadbe",
+      "fetchedAt": "2026-11-22T08:31:57Z",
+      "bytes": 448984,
+      "sha256": "d1c70e238ae19f0626d3390ffe907b1c07a088755b4f2ca6d8cffe78fd484026",
+      "rawSha256": "d1c70e238ae19f0626d3390ffe907b1c07a088755b4f2ca6d8cffe78fd484026",
+      "file": "manufacturer-full.stl.gz",
+      "archiveName": "manufacturer-full.stl.gz",
+      "storedSha256": "ad5e12e539ab3f7a1cbd76934f1f25f153c977ebb62ac18a203caae25e4e7c6f",
+      "archiveSha256": "ad5e12e539ab3f7a1cbd76934f1f25f153c977ebb62ac18a203caae25e4e7c6f",
+      "compression": "gzip",
+      "sourceFormat": "STL",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "scope": "Manufacturer T-Glass V2 printable glasses/housing assembly. V2 is selected explicitly; optical components, PCB and correspondence to other shell revisions are not claimed.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-glass-reviewed-cad-license",
+      "title": "Manufacturer repository LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/LICENSE",
+      "fetchedAt": "2026-11-22T08:37:46Z",
+      "sha256": "913879919918761b5b79f9aa804a772f1033e1fa28d425d6fa368448046ccc42",
+      "bytes": 1063,
+      "file": "manufacturer-LICENSE.txt",
+      "archiveName": "manufacturer-LICENSE.txt",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-glass",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-glass/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-glass/index.md",
+      "fetchedAt": "2026-11-22T06:42:34Z",
+      "mediaType": "text/plain",
+      "bytes": 6116,
+      "sha256": "8d24ac71998abbdc11055ede64cd3174b5a73ea31693fa3a4e9d02775f1d67ca",
+      "gitBlobSha": "34068ce775501497e4ddb06e9daf9ae059d475e9",
+      "path": "en/products/other/t-glass/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t glass",
+      "kind": "official-product-document",
+      "archiveName": "en__products__other__t-glass__index.md"
+    },
+    {
+      "id": "s3add-glass-readme",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439",
+      "path": "README.MD",
+      "gitBlobSha": "49fbb2dafd3cfdb84d3a2d3512dd36329977dd06",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/README.MD",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/README.MD",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:53Z",
+      "sha256": "931e0ba902095a961972f1d1dd2c1a7c90a74316d036be62fe9fdb33f45c9abc",
+      "bytes": 13764,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-glass-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-glass-h",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439",
+      "path": "src/LilyGo_Wristband.h",
+      "gitBlobSha": "3f1229c986df02bd4862b67625a847dfb1694aeb",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/src/LilyGo_Wristband.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/src/LilyGo_Wristband.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:53Z",
+      "sha256": "e30165d7ff48a03b96edf3d5305bb67768bc96a9d56eeb62aa1ab64455f4acd8",
+      "bytes": 3619,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-glass-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-glass-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439",
+      "path": "src/LilyGo_Wristband.cpp",
+      "gitBlobSha": "574d64c96b0aa6f26ccc803febc6614f8beef694",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/src/LilyGo_Wristband.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/src/LilyGo_Wristband.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:30:53Z",
+      "sha256": "664aab8dc565e875a684f7f575d497fe670a265507fcdb578e88ddec640472d4",
+      "bytes": 20944,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-glass-cpp.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-glass-display-h",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439",
+      "path": "src/LilyGo_Display.h",
+      "gitBlobSha": "ff334e3e7bb3d244c43926f2222d39d0d795e168",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/src/LilyGo_Display.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/src/LilyGo_Display.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:31Z",
+      "sha256": "22f9ca946cf2b1102b08c1bc196295a623520cc6762f86bc970ff3726bc15a03",
+      "bytes": 1084,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-glass-display-h.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-glass-init",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439",
+      "path": "src/initSequence.cpp",
+      "gitBlobSha": "1c4ca9cd4fb31bb8e0896beee5b38141898fc6ff",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/src/initSequence.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/src/initSequence.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:31Z",
+      "sha256": "2c4117c3033a5f2d98ffe9cc16c3164a5a0b90a770a1dfa81a31fa2de6144968",
+      "bytes": 5911,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-glass-init.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-glass-helper",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439",
+      "path": "src/LV_Helper.cpp",
+      "gitBlobSha": "28ca2f0a6e8f322f00976f63db0ffce381632a02",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/src/LV_Helper.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/src/LV_Helper.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:46:08Z",
+      "sha256": "550f294cc9ddc9cebfdf06d5a47aa3722a0da6bd26578058f8e1cc94a99d9965",
+      "bytes": 2883,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-glass-helper.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-glass-v2-example",
+      "repository": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass",
+      "revision": "99ae22477daeaec55714f6b31e0219407dd52439",
+      "path": "examples/GlassV2/GlassHelloWorld/GlassHelloWorld.ino",
+      "gitBlobSha": "81d4cfd980d4ba767ec795999e9ae816e56535be",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/99ae22477daeaec55714f6b31e0219407dd52439/examples/GlassV2/GlassHelloWorld/GlassHelloWorld.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGO-T-Wristband-and-T-Glass/examples/GlassV2/GlassHelloWorld/GlassHelloWorld.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:51:40Z",
+      "sha256": "201f263200f9ab37a5676079908b767792bc1acb41ff51a45532dd38f9ae93d4",
+      "bytes": 2046,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-glass-v2-example.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-glass-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_15.jpg?v=1729584309",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-glass/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-glass-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_10.jpg?v=1729584309",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-glass/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-glass-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-GLASS_14.jpg?v=1729584309",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-glass/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +449,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +456,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +466,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +476,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +486,222 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "reference-only",
+    "sourceIds": [
+      "s3add-glass-readme",
+      "s3add-glass-h",
+      "s3add-glass-cpp",
+      "s3add-glass-display-h",
+      "s3add-glass-init",
+      "s3add-glass-helper",
+      "s3add-glass-v2-example",
+      "official-store-shopify-1",
+      "official-wiki-t-glass"
+    ],
+    "candidates": [],
+    "simulationVerified": false,
+    "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-glass/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "采用已审查的官方 CAD 部件；具体版次、遗漏部分及未标定项见模型资料。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-glass",
+      "lilygo-t-glass-official-photo-0",
+      "lilygo-t-glass-official-photo-1",
+      "lilygo-t-glass-official-photo-2",
+      "lilygo-t-glass-reviewed-cad-1",
+      "lilygo-t-glass-reviewed-cad-license",
+      "s3add-glass-readme",
+      "s3add-glass-h",
+      "s3add-glass-cpp",
+      "s3add-glass-display-h",
+      "s3add-glass-init",
+      "s3add-glass-helper",
+      "s3add-glass-v2-example"
+    ],
+    "displayHint": {
+      "width": 126,
+      "height": 126,
+      "sourceIds": [
+        "s3add-glass-readme",
+        "s3add-glass-h",
+        "s3add-glass-cpp",
+        "s3add-glass-display-h",
+        "s3add-glass-init",
+        "s3add-glass-helper",
+        "s3add-glass-v2-example",
+        "official-store-shopify-1",
+        "official-wiki-t-glass"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-glass",
+    "status": "diagnostic",
+    "scope": "精确选择 T-Glass V2 光学组件：JD9613 面板原生 126×294，显示官方 GlassHelloWorld 底部对齐的 126×126 可见窗口；接入 SPI、复位和 BOOT。模拟器区分 FE 厂商寄存器页，避免初始化表被误当成像素或睡眠命令。电容触摸条、光学镜像、IMU、RTC 和音频未模拟。",
+    "unsupported": [
+      "Official factory binary boot and physical hardware validation are unverified. Native authored Xtensa SRAM fixtures execute the documented peripheral MMIO.",
+      "Native 0/180-degree addressing only; the manufacturer implements 90/270 rotation in software because this JD9613 has half RAM. Optical mirror bit1 and prism calibration are not implemented.",
+      "128 columns are a padded command-coordinate canvas for documented rotation offsets, not a claim of 128 physical pixels. Original T-Glass and wristband optical windows are excluded.",
+      "Capacitive pad GPIO14 is not falsely exposed as a normal pushbutton. No touch contact protocol is implemented."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-glass",
+    "boardId": "lilygo-t-glass",
+    "name": "LILYGO T-Glass",
+    "chip": "esp32s3",
+    "flashMB": 4,
+    "psramMB": 2,
+    "hardwareRevision": "T-Glass V2 optical assembly; GlassV2/GlassHelloWorld native bottom window",
+    "display": {
+      "width": 126,
+      "height": 126,
+      "controller": "JD9613",
+      "type": "AMOLED",
+      "interface": "spi",
+      "pixelFormat": "RGB565",
+      "physicalPanelResolution": [
+        126,
+        294
+      ],
+      "commandCoordinateCanvas": [
+        128,
+        294
+      ],
+      "crop": [
+        0,
+        168,
+        126,
+        126
+      ],
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "pins": {
+      "boot": 0,
+      "display": {
+        "sclk": 15,
+        "mosi": 16,
+        "cs": 17,
+        "dc": 21,
+        "reset": 18,
+        "backlight": null
+      },
+      "capacitivePad": {
+        "pin": 14,
+        "implemented": false
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "精确选择 T-Glass V2 光学组件：JD9613 面板原生 126×294，显示官方 GlassHelloWorld 底部对齐的 126×126 可见窗口；接入 SPI、复位和 BOOT。模拟器区分 FE 厂商寄存器页，避免初始化表被误当成像素或睡眠命令。电容触摸条、光学镜像、IMU、RTC 和音频未模拟。",
+    "scopeEn": "T-Glass V2 optical assembly; GlassV2/GlassHelloWorld native bottom window: only the explicitly implemented digital display/control paths; factory boot is unverified.",
+    "sourceIds": [
+      "s3add-glass-readme",
+      "s3add-glass-h",
+      "s3add-glass-cpp",
+      "s3add-glass-display-h",
+      "s3add-glass-init",
+      "s3add-glass-helper",
+      "s3add-glass-v2-example",
+      "official-store-shopify-1",
+      "official-wiki-t-glass"
+    ],
+    "chronology": {
+      "date": "2024-06-04",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-glass",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 37,
+    "sdCard": {
+      "slot": false,
+      "transportSupported": false
+    },
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "glass_v2_and_long_execute_native_spi_without_vendor_page_side_effects"
+      ]
+    },
+    "unsupported": [
+      "Official factory binary boot and physical hardware validation are unverified. Native authored Xtensa SRAM fixtures execute the documented peripheral MMIO.",
+      "Native 0/180-degree addressing only; the manufacturer implements 90/270 rotation in software because this JD9613 has half RAM. Optical mirror bit1 and prism calibration are not implemented.",
+      "128 columns are a padded command-coordinate canvas for documented rotation offsets, not a claim of 128 physical pixels. Original T-Glass and wristband optical windows are excluded.",
+      "Capacitive pad GPIO14 is not falsely exposed as a normal pushbutton. No touch contact protocol is implemented."
+    ],
+    "variantEvidence": {
+      "selectedHardware": "T-Glass V2 optical assembly; GlassV2/GlassHelloWorld native bottom window",
+      "automaticRevisionDetection": false,
+      "sourceIds": [
+        "s3add-glass-readme",
+        "s3add-glass-h",
+        "s3add-glass-cpp",
+        "s3add-glass-display-h",
+        "s3add-glass-init",
+        "s3add-glass-helper",
+        "s3add-glass-v2-example",
+        "official-store-shopify-1",
+        "official-wiki-t-glass"
+      ],
+      "basis": "Exact manufacturer product-linked source and selected example/controller; no automatic sibling substitution."
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "s3add-glass-readme",
+        "s3add-glass-h",
+        "s3add-glass-cpp",
+        "s3add-glass-display-h",
+        "s3add-glass-init",
+        "s3add-glass-helper",
+        "s3add-glass-v2-example",
+        "official-store-shopify-1",
+        "official-wiki-t-glass"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    }
+  }
 }

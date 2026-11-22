@@ -11,11 +11,13 @@ use esp_soc::devices::{DcsPanel, Ft5x06, Ft5x06Points, FT5X06_ADDRESS};
 use esp_periph::i2c::{I2cDevice, Reg8Device};
 use esp_soc::board::{BoardEdge, VirtualCycle};
 use esp_soc::{Board, BoardModel, NoBoard};
+pub mod lilygo;
 
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "none" | "bare" => Some(Box::new(NoBoard)),
         "stamp-p4" | "m5stack-s013" => Some(Box::new(StampP4)),
+        "lilygo-t-display-p4" => Some(Box::new(lilygo::TDisplayP4::new())),
         "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" => Some(Box::new(WaveshareP4Lcd35::new())),
         _ => None,
     }
@@ -107,7 +109,7 @@ impl BoardModel for WaveshareP4Lcd35 {
     /// On I2C1: the FT5x06 at 0x38, and the ES8311 at 0x18 (ES8311_CODEC_DEFAULT_ADDR 0x30 shifted,
     /// esp_codec_dev 1.x platform/audio_codec_ctrl_i2c.c) as its register file, chip ID 0x8311 at 0xFD-0xFE.
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn I2cDevice>)> {
-        vec![(0, FT5X06_ADDRESS, Box::new(Ft5x06::new(self.touch.clone()))), (0, 0x18, Box::new(Reg8Device::new("es8311", &[(0xfd, 0x83), (0xfe, 0x11)])))]
+        vec![(1, FT5X06_ADDRESS, Box::new(Ft5x06::new(self.touch.clone()))), (1, 0x18, Box::new(Reg8Device::new("es8311", &[(0xfd, 0x83), (0xfe, 0x11)])))]
     }
     fn touch(&mut self, x: u16, y: u16, down: bool) { self.touch_at(self.cycle, x, y, down); }
     /// A lift comes at least two report periods after its touch, so a click shorter than that (a

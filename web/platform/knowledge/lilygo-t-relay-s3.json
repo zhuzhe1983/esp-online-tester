@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-relay-s3",
   "title": "LILYGO T-Relay S3",
-  "summary": "Spark 将此商品归入T-Relay 系列，标注 MCU 为 ESP32-S3-WROOM-1U；具体硬件版次及配置待核对。",
+  "summary": "已实现 BOOT0、74HC595 GPIO 串行移位/锁存/低有效使能、六路继电器数字驱动及绿红状态灯；触点负载、RTC 和扩展通信未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "Six-channel T-Relay S3; schematic filename Rev1.1, internal sheets V1.0",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Relay S3",
@@ -52,6 +52,134 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-05-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-relay-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "relay": {
+            "controller": "HT74HC595ARZ",
+            "data": 7,
+            "shiftClock": 5,
+            "latchClock": 6,
+            "outputEnable": 4,
+            "outputEnableActiveLow": true,
+            "reset": "tied high",
+            "coilDriveBits": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ],
+            "coilDriveActiveHigh": true,
+            "contactModel": false,
+            "implemented": true
+          },
+          "leds": [
+            {
+              "shiftBit": 6,
+              "color": "green",
+              "activeLow": false
+            },
+            {
+              "shiftBit": 7,
+              "color": "red",
+              "activeLow": false
+            }
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-T-Relay-README.md",
+        "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+        "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+        "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+        "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+        "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+        "LilyGo-T-Relay-platformio.ini",
+        "LilyGo-T-Relay-firmware-README.MD",
+        "LilyGo-T-Relay-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-relay-s3"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "LilyGo-T-Relay-README.md",
+            "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+            "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+            "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+            "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+            "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+            "LilyGo-T-Relay-platformio.ini",
+            "LilyGo-T-Relay-firmware-README.MD",
+            "LilyGo-T-Relay-tree",
+            "official-store-shopify-1",
+            "official-wiki-t-relay-s3"
+          ],
+          "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-T-Relay-README.md",
+        "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+        "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+        "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+        "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+        "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+        "LilyGo-T-Relay-platformio.ini",
+        "LilyGo-T-Relay-firmware-README.MD",
+        "LilyGo-T-Relay-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-relay-s3"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +208,276 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-relay-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_2.jpg?v=1683699160",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_2.jpg?v=1683699160",
+      "fetchedAt": "2026-11-22T06:59:06Z",
+      "bytes": 135177,
+      "sha256": "e137430f66122f76027b2641849307c89525f69d98b3d5e8f4afabc15046ad7e",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t relay s3 official photo 0",
+      "archiveName": "lilygo-t-relay-s3-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-relay-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_3.jpg?v=1683699160",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_3.jpg?v=1683699160",
+      "fetchedAt": "2026-11-22T06:59:06Z",
+      "bytes": 32765,
+      "sha256": "5087dac3fcf89be92e680a48a8b8145e48d332199de7137e1298ccaeadb77099",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t relay s3 official photo 1",
+      "archiveName": "lilygo-t-relay-s3-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-relay-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_4.jpg?v=1683699160",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_4.jpg?v=1683699160",
+      "fetchedAt": "2026-11-22T06:59:06Z",
+      "bytes": 37620,
+      "sha256": "49b8a08b1a8da1a3b39b0730e522334fc5e4846e621871dd5a4a7786f1c385a8",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t relay s3 official photo 2",
+      "archiveName": "lilygo-t-relay-s3-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-relay-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-relay-series/t-relay-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-relay-series/t-relay-s3/index.md",
+      "fetchedAt": "2026-11-22T06:43:33Z",
+      "mediaType": "text/plain",
+      "bytes": 3575,
+      "sha256": "ce387563c00e53c35b17b0f8c6d014167cfd7fb4b436755b54571e48ecf48938",
+      "gitBlobSha": "2c98008f4c475284675316c41120157e6371b64a",
+      "path": "en/products/t-relay-series/t-relay-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "archiveName": "en__products__t-relay-series__t-relay-s3__index.md",
+      "title": "LILYGO official wiki t relay s3",
+      "kind": "manufacturer-documentation",
+      "sourceCachePath": "target/lilygo-audit/wiki/en__products__t-relay-series__t-relay-s3__index.md"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "README.md",
+      "id": "LilyGo-T-Relay-README.md",
+      "gitBlobSha": "2336930c8651bfba8f34e20674f133fa3b513c02",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "0391b4e72eebd27d8837bd73bf24f8d63fdf2ed7f12c19fec504171641ae2cbc",
+      "bytes": 1523,
+      "archiveName": "LilyGo-T-Relay-README.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-README.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "Schematic/T-Relay6-ESP32S3-Rev1.1.pdf",
+      "id": "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+      "gitBlobSha": "29f7093219ed71641bfcb3b7dc4844ce34ca24a2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/Schematic/T-Relay6-ESP32S3-Rev1.1.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/Schematic/T-Relay6-ESP32S3-Rev1.1.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "f3ba1e2d568e0db53d7e79be22a4547bf0f5c915b0acfa7f38060aff9f56b592",
+      "bytes": 996260,
+      "archiveName": "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / Schematic/T-Relay6-ESP32S3-Rev1.1.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "examples/T-Relay-ESP32S3/HT74HC595/HT74HC595.ino",
+      "id": "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+      "gitBlobSha": "9539079e9f6458a6bad1b390656fa03f11c2073a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/HT74HC595/HT74HC595.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/HT74HC595/HT74HC595.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "6f21b9bad2bdd857b7f2a146fc1616c36e9146e513ca0155fe65b542c638b346",
+      "bytes": 2536,
+      "archiveName": "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / examples/T-Relay-ESP32S3/HT74HC595/HT74HC595.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "examples/T-Relay-ESP32S3/UnitTestExample/UnitTestExample.ino",
+      "id": "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+      "gitBlobSha": "5b3474c115228020e1ea779171c1d762746f2c47",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/UnitTestExample/UnitTestExample.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/examples/T-Relay-ESP32S3/UnitTestExample/UnitTestExample.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:34Z",
+      "sha256": "bb5eae7d05567b16de4ff911ea90e606d9e209336bc620449254a6703eb5f7b7",
+      "bytes": 7157,
+      "archiveName": "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / examples/T-Relay-ESP32S3/UnitTestExample/UnitTestExample.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.cpp",
+      "id": "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+      "gitBlobSha": "1d43f8c4b3c9533d72cf4fd40bbc08b6729f8338",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "09e3786f31cde848324349ef95949499af9164d057bc8241687aef77c488ed95",
+      "bytes": 4156,
+      "archiveName": "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.h",
+      "id": "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+      "gitBlobSha": "277b233d541fe075e4abcf008708a5715898ebe6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "4b270fb24c1278778ae8440e7e71d071767aac7c294fa17232310dc3177f5f92",
+      "bytes": 1384,
+      "archiveName": "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / lib/ShiftRegister74HC595_NonTemplate/src/ShiftRegister74HC595_NonTemplate.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "platformio.ini",
+      "id": "LilyGo-T-Relay-platformio.ini",
+      "gitBlobSha": "852c2b6149ca71c4e83b213363a89fdde613901d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:13Z",
+      "sha256": "4ef38112ad9a67388675bf50b8f370df3d245e5eaf7102e95f7996740bdd638e",
+      "bytes": 3373,
+      "archiveName": "LilyGo-T-Relay-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-platformio.ini.raw"
+    },
+    {
+      "id": "LilyGo-T-Relay-firmware-README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "path": "firmware/README.MD",
+      "gitBlobSha": "c56f8e4674e95b3f79bb0cd98a039d9e851b30f4",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:38Z",
+      "sha256": "b6b0d9028812919c225b9fe165e664cc29441b88ce7375257343b1831d15de4d",
+      "bytes": 3203,
+      "archiveName": "LilyGo-T-Relay-firmware-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-Relay / firmware/README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-firmware-README.MD.raw"
+    },
+    {
+      "id": "LilyGo-T-Relay-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-T-Relay/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:28Z",
+      "mediaType": "application/json",
+      "sha256": "d1e22e5e7b95f707dbf9f1fb79816f95969eee2d2183d4f3b07d9bcba0fb02b1",
+      "bytes": 907858,
+      "archiveName": "LilyGo-T-Relay-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGo-T-Relay",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-Relay",
+      "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash.",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-relay-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_2.jpg?v=1683699160",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-relay-s3/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-relay-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_3.jpg?v=1683699160",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-relay-s3/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-relay-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H629-T-RELAY-S3-LILYGO_4.jpg?v=1683699160",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-relay-s3/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +490,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +497,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +507,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +517,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +527,267 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-factory-candidate-and-test-image-linked",
+    "sourceIds": [
+      "LilyGo-T-Relay-tree",
+      "LilyGo-T-Relay-firmware-README.MD"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+        "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+        "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+        "gitBlobSha": "c7241453110f572dadb67458b389009fadcbe824",
+        "bytes": 737088,
+        "status": "linked",
+        "sourceId": "LilyGo-T-Relay-tree",
+        "role": "factory-candidate",
+        "identityEvidence": "ChuChang (factory) image under exact LilyGo-T-Relay-S3 directory; binary revision not independently documented.",
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "documentedFlashOffset": 0
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+        "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+        "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+        "gitBlobSha": "575628954d9fdce533b3ab4d660e09d28a669d52",
+        "bytes": 607680,
+        "status": "linked",
+        "sourceId": "LilyGo-T-Relay-tree",
+        "role": "official-example",
+        "identityEvidence": "Existing pinned-tree S3 UnitTest file; README links an older 20230830 filename that is absent from this tree.",
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "documentedFlashOffset": 0
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Manufacturer quick-test README links T-Relay-S3 but its exact 20230830 binary is stale/absent. Existing S3 candidates are retained without asserting all relay/W5500 variants share a factory image.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-relay-s3/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-relay-s3",
+      "lilygo-t-relay-s3-official-photo-0",
+      "lilygo-t-relay-s3-official-photo-1",
+      "lilygo-t-relay-s3-official-photo-2",
+      "LilyGo-T-Relay-README.md",
+      "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+      "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+      "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+      "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+      "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+      "LilyGo-T-Relay-platformio.ini",
+      "LilyGo-T-Relay-firmware-README.MD",
+      "LilyGo-T-Relay-tree"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-relay-s3",
+    "status": "diagnostic",
+    "scope": "已实现 BOOT0、74HC595 GPIO 串行移位/锁存/低有效使能、六路继电器数字驱动及绿红状态灯；触点负载、RTC 和扩展通信未实现。",
+    "unsupported": [
+      "74HC595 uses physical GPIO clock/data/strobe (official shiftOut path); no hardware-SPI shift-register transport. Initial unknown hardware shift/latch state is deterministic zero for this diagnostic model.",
+      "Relay coil drive is observable in board report, not a claim about contact closure, electrical load, bounce, isolation/current or calibrated switching delay. Per-coil physical indicator positions are not mapped to 3D.",
+      "PCF8563 RTC, external OLED/TFT/DS18B20, cascaded boards, W5500/Sim shields and analog power are unmodeled; no onboard screen or SD is invented.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-relay-s3",
+    "boardId": "lilygo-t-relay-s3",
+    "name": "LILYGO T-Relay S3",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "Six-channel T-Relay S3; schematic filename Rev1.1, internal sheets V1.0",
+    "display": null,
+    "physicalDisplay": false,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "已实现 BOOT0、74HC595 GPIO 串行移位/锁存/低有效使能、六路继电器数字驱动及绿红状态灯；触点负载、RTC 和扩展通信未实现。",
+    "scopeEn": "BOOT0 and source-wired 74HC595 GPIO shift/latch/output-enable; QA..QF digital coil-drive mask, QG green and QH red LEDs. No contacts/load simulation.",
+    "chronology": {
+      "date": "2023-05-13",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-relay-s3",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "LilyGo-T-Relay-README.md",
+      "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+      "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+      "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+      "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+      "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+      "LilyGo-T-Relay-platformio.ini",
+      "LilyGo-T-Relay-firmware-README.MD",
+      "LilyGo-T-Relay-tree",
+      "official-store-shopify-1",
+      "official-wiki-t-relay-s3"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "74HC595 uses physical GPIO clock/data/strobe (official shiftOut path); no hardware-SPI shift-register transport. Initial unknown hardware shift/latch state is deterministic zero for this diagnostic model.",
+      "Relay coil drive is observable in board report, not a claim about contact closure, electrical load, bounce, isolation/current or calibrated switching delay. Per-coil physical indicator positions are not mapped to 3D.",
+      "PCF8563 RTC, external OLED/TFT/DS18B20, cascaded boards, W5500/Sim shields and analog power are unmodeled; no onboard screen or SD is invented.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "pins": {
+      "boot": 0,
+      "relay": {
+        "controller": "HT74HC595ARZ",
+        "data": 7,
+        "shiftClock": 5,
+        "latchClock": 6,
+        "outputEnable": 4,
+        "outputEnableActiveLow": true,
+        "reset": "tied high",
+        "coilDriveBits": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "coilDriveActiveHigh": true,
+        "contactModel": false,
+        "implemented": true
+      },
+      "leds": [
+        {
+          "shiftBit": 6,
+          "color": "green",
+          "activeLow": false
+        },
+        {
+          "shiftBit": 7,
+          "color": "red",
+          "activeLow": false
+        }
+      ]
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "LilyGo-T-Relay-README.md",
+        "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf",
+        "LilyGo-T-Relay-examples-T-Relay-ESP32S3-HT74HC595-HT74HC595.ino",
+        "LilyGo-T-Relay-examples-T-Relay-ESP32S3-UnitTestExample-UnitTestExample.ino",
+        "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.cpp",
+        "LilyGo-T-Relay-lib-ShiftRegister74HC595_NonTemplate-src-ShiftRegister74HC595_NonTemplate.h",
+        "LilyGo-T-Relay-platformio.ini",
+        "LilyGo-T-Relay-firmware-README.MD",
+        "LilyGo-T-Relay-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-relay-s3"
+      ],
+      "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+    },
+    "conflicts": [
+      {
+        "fact": "schematic revision label",
+        "resolution": "Exact S3 six-relay source filename says Rev1.1 but sheet title blocks say V1.0. Both labels are preserved; no board release date is derived from its engineering date.",
+        "sourceIds": [
+          "LilyGo-T-Relay-Schematic-T-Relay6-ESP32S3-Rev1.1.pdf"
+        ]
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "official-factory-candidate-and-test-image-linked",
+      "sourceIds": [
+        "LilyGo-T-Relay-tree",
+        "LilyGo-T-Relay-firmware-README.MD"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+          "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+          "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+          "gitBlobSha": "c7241453110f572dadb67458b389009fadcbe824",
+          "bytes": 737088,
+          "status": "linked",
+          "sourceId": "LilyGo-T-Relay-tree",
+          "role": "factory-candidate",
+          "identityEvidence": "ChuChang (factory) image under exact LilyGo-T-Relay-S3 directory; binary revision not independently documented.",
+          "binaryFetched": false,
+          "simulationVerified": false,
+          "documentedFlashOffset": 0
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+          "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+          "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+          "gitBlobSha": "575628954d9fdce533b3ab4d660e09d28a669d52",
+          "bytes": 607680,
+          "status": "linked",
+          "sourceId": "LilyGo-T-Relay-tree",
+          "role": "official-example",
+          "identityEvidence": "Existing pinned-tree S3 UnitTest file; README links an older 20230830 filename that is absent from this tree.",
+          "binaryFetched": false,
+          "simulationVerified": false,
+          "documentedFlashOffset": 0
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Manufacturer quick-test README links T-Relay-S3 but its exact 20230830 binary is stale/absent. Existing S3 candidates are retained without asserting all relay/W5500 variants share a factory image.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+      }
+    }
+  }
 }

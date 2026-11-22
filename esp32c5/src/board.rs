@@ -2,6 +2,7 @@
 //! ESP32-C5HF4, 4 MiB flash. Blue D1 is VSYS_3V3 -> LED/R1 -> GPIO28.
 //! The red nCHG lamp is charger-controlled; there is no RGB or user button here.
 use esp_soc::{BoardModel, pins::PinRoutes};
+pub mod lilygo;
 pub struct StampC5 { dip: bool, leds: [[u8; 3]; 1], updates: u64 }
 impl StampC5 {
     // Generation 1 publishes the board's real initial off state to observers whose
@@ -12,6 +13,8 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
         "stamp-c5" | "m5stack-s016" => Some(Box::new(StampC5::new(false))),
         "stamp-c5-dip" | "m5stack-s016-dip" => Some(Box::new(StampC5::new(true))),
+        "lilygo-t7-c5" => Some(Box::new(lilygo::T7C5)),
+        "lilygo-t-dongle-c5" => Some(Box::new(lilygo::TDongleC5::new())),
         "none" | "bare" => Some(Box::new(esp_soc::NoBoard)),
         _ => None,
     }

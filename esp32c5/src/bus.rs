@@ -35,8 +35,11 @@ impl C5Bus {
             board: Box::new(NoBoard), clic: ClicCore::default(), map: [0; SOURCES], clic_config: 0, lp_ana_date: 36_774_528, reset_cause: 0x21, first_fault: None, pc: 0, cycles: 0,
             flash: Vec::new(), app_off: None, app_entry: None, irq_dirty: true, reset_requested: false, misc: Default::default(), gpio_events: None, debug: Default::default() }
     }
-    pub fn attach_board(&mut self, board: Board) { self.board = board; self.publish_gpio(); }
-    pub fn attach_board_devices(&mut self) { self.publish_gpio(); }
+    pub fn attach_board(&mut self, board: Board) { self.board = board; self.attach_board_devices(); }
+    pub fn attach_board_devices(&mut self) {
+        for (pin, level) in self.board.input_levels() { self.gpio.set_input(pin, level); }
+        self.publish_gpio();
+    }
     pub(crate) fn publish_gpio(&mut self) {
         self.board.gpio_waveform_at(self.cycles, PINS.routes(&self.gpio, &self.io_mux));
         if let Some(events) = &mut self.gpio_events { events.extend(self.gpio.changes.drain(..).map(|(p, l)| (self.cycles, p, l))); }

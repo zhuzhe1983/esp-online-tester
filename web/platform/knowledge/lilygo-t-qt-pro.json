@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-qt-pro",
   "title": "LILYGO T-QT Pro",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3FN4R2；具体硬件版次及配置待核对。",
+  "summary": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "FN4R2 4MB Flash / 2MB PSRAM; current GC9A01 panel",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-QT Pro",
@@ -52,6 +52,98 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-09-21",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-qt-pro",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 128,
+          "controller": "GC9A01",
+          "interface": "spi",
+          "pixelFormat": "RGB565",
+          "crop": [
+            2,
+            1,
+            128,
+            128
+          ],
+          "commandCoordinateCanvas": [
+            132,
+            132
+          ],
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 2,
+        "controls": [
+          {
+            "id": "boot",
+            "pin": 0,
+            "activeLow": true,
+            "type": "button",
+            "name": "BOOT"
+          },
+          {
+            "id": "user",
+            "pin": 47,
+            "activeLow": true,
+            "type": "button",
+            "name": "User"
+          }
+        ],
+        "pins": {
+          "display": {
+            "sclk": 3,
+            "mosi": 2,
+            "cs": 5,
+            "dc": 6,
+            "reset": 1,
+            "enable": null,
+            "backlight": {
+              "pin": 10,
+              "activeHigh": false
+            },
+            "ledcGate": true
+          },
+          "touch": null,
+          "encoder": null
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "qt-readme-md",
+        "qt-lib-tft_espi-tft_drivers-gc9a01_rotation-h",
+        "pro-readme-md",
+        "pro-examples-factory-utilities-h",
+        "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+        "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+        "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +172,253 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-qt-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_2.jpg?v=1661840140",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_2.jpg?v=1661840140",
+      "fetchedAt": "2026-11-22T07:00:17Z",
+      "bytes": 65814,
+      "sha256": "b223bbc453fb4ebba29e7bbbe386eb9e0b472bba4a50034abf1283315acaca61",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t qt pro official photo 0",
+      "archiveName": "lilygo-t-qt-pro-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-qt-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_1.jpg?v=1661840139",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_1.jpg?v=1661840139",
+      "fetchedAt": "2026-11-22T07:00:17Z",
+      "bytes": 48756,
+      "sha256": "c1941eb004a0afda45147a6797fad6543163388abf5f804a4e7e1839631505de",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t qt pro official photo 1",
+      "archiveName": "lilygo-t-qt-pro-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-qt-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_3.jpg?v=1661840139",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_3.jpg?v=1661840139",
+      "fetchedAt": "2026-11-22T07:00:17Z",
+      "bytes": 58882,
+      "sha256": "1dd5c0b3778d9fec5ed80fa97db51312dd07fedd6d8d0480fdb2640fa3088f2f",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t qt pro official photo 2",
+      "archiveName": "lilygo-t-qt-pro-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-qt-pro-manufacturer-cad",
+      "productId": "lilygo-t-qt-pro",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-QT/230f0c0ea7677fdde29ca7a49a419dbf597e6b3e/3D_file/T_QT_Pro.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-QT/230f0c0ea7677fdde29ca7a49a419dbf597e6b3e/3D_file/T_QT_Pro.stp",
+      "repository": "Xinyuan-LilyGO/T-QT",
+      "repositoryPath": "3D_file/T_QT_Pro.stp",
+      "scope": "T-QT Pro assembly; not C6",
+      "fetchedAt": "2026-11-22T07:04:13Z",
+      "bytes": 1202391,
+      "sha256": "628a593d4c508e09a1c0fc001afae97277dea1010c2c8539f63e15475ed6b37f",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "628a593d4c508e09a1c0fc001afae97277dea1010c2c8539f63e15475ed6b37f",
+      "archiveSha256": "f7f7255019984a4617587b2d66c97223ba1a5943058959167ed5a0c41dcfccb3",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "f7f7255019984a4617587b2d66c97223ba1a5943058959167ed5a0c41dcfccb3",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "d66959337fbd1f42f2f3568368d21ef62e61a0b2",
+      "revisionType": "pinned-git-revision",
+      "revision": "230f0c0ea7677fdde29ca7a49a419dbf597e6b3e",
+      "title": "lilygo t qt pro manufacturer cad",
+      "archiveName": "lilygo-t-qt-pro-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t-qt-pro-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-QT/230f0c0ea7677fdde29ca7a49a419dbf597e6b3e/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-QT/230f0c0ea7677fdde29ca7a49a419dbf597e6b3e/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:24Z",
+      "bytes": 1071,
+      "sha256": "50ccab4158478096cd982dbdf5b117c32f52f755122d6dcb659cf5c713568405",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t qt pro repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t-qt-pro-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "qt-readme-md",
+      "repository": "Xinyuan-LilyGO/T-QT",
+      "path": "README.md",
+      "revision": "230f0c0ea7677fdde29ca7a49a419dbf597e6b3e",
+      "gitBlobSha": "e8417fa67b9f69e8657979fd532d834f9fed4709",
+      "url": "https://github.com/Xinyuan-LilyGO/T-QT/blob/230f0c0ea7677fdde29ca7a49a419dbf597e6b3e/README.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-QT/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "qt-readme-md-README.md",
+      "sha256": "376b75549d0dddcce724ff05583985092b06ecbf9d6fa95faaf86ab7ea03d426",
+      "bytes": 5338,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "qt-lib-tft_espi-tft_drivers-gc9a01_rotation-h",
+      "repository": "Xinyuan-LilyGO/T-QT",
+      "path": "lib/TFT_eSPI/TFT_Drivers/GC9A01_Rotation.h",
+      "revision": "230f0c0ea7677fdde29ca7a49a419dbf597e6b3e",
+      "gitBlobSha": "a95f0e9211e85d465bb99e96e06824edf9d617e9",
+      "url": "https://github.com/Xinyuan-LilyGO/T-QT/blob/230f0c0ea7677fdde29ca7a49a419dbf597e6b3e/lib/TFT_eSPI/TFT_Drivers/GC9A01_Rotation.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-QT/lib/TFT_eSPI/TFT_Drivers/GC9A01_Rotation.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "qt-lib-tft_espi-tft_drivers-gc9a01_rotation-h-GC9A01_Rotation.h",
+      "sha256": "f15991bf36dadf9211bdca269f274287dcf64d5772c767f3e2062d4b79c91273",
+      "bytes": 1247,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-readme-md",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "README.md",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "ef9d0935a9b2d5e5fda7b6df9012bd6f87a3ca39",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/README.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-readme-md-README.md",
+      "sha256": "3ed3dac6cdc71b87fa05e714ff26f307a75cc7c540df56b00711912f5006283b",
+      "bytes": 17536,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-examples-factory-utilities-h",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "examples/factory/utilities.h",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "f6e1be94e5068ef36028be9b68a0eb8aa5c4eec0",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/examples/factory/utilities.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/examples/factory/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-examples-factory-utilities-h-utilities.h",
+      "sha256": "9bfc1a25238e1954145180c0469c20a5f71fdcc26f4481d3cf06af63275aaa1a",
+      "bytes": 2048,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "lib/TFT_eSPI/User_Setups/Setup214_LilyGo_T_Display_S3_Pro.h",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "edc8f3a6142e31f49dd21d707ead6fa6b5d122c4",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/lib/TFT_eSPI/User_Setups/Setup214_LilyGo_T_Display_S3_Pro.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/lib/TFT_eSPI/User_Setups/Setup214_LilyGo_T_Display_S3_Pro.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h-Setup214_LilyGo_T_Display_S3_Pro.h",
+      "sha256": "43cb52c5fe67f1ea96d053ba02cfecea18384cb6f7799203fecd38aa26e1a545",
+      "bytes": 1473,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "lib/TFT_eSPI/TFT_Drivers/ST7796_Rotation.h",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "c5f6ad69eff4c3db34e37d537feb51dc62355769",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/lib/TFT_eSPI/TFT_Drivers/ST7796_Rotation.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/lib/TFT_eSPI/TFT_Drivers/ST7796_Rotation.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-lib-tft_espi-tft_drivers-st7796_rotation-h-ST7796_Rotation.h",
+      "sha256": "8e582c55de898b7f2f37b1111b01c7d8003944e38961c4569c6aa832ffaedb1f",
+      "bytes": 1854,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-Pro",
+      "path": "lib/SensorLib/src/touch/TouchClassCST226.cpp",
+      "revision": "bef8db74e847f1e89a10cb3877f3b3a8544857d6",
+      "gitBlobSha": "8d292cb72ba4dd29dec91d45b64f48faa83b1088",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-Pro/blob/bef8db74e847f1e89a10cb3877f3b3a8544857d6/lib/SensorLib/src/touch/TouchClassCST226.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-Pro/lib/SensorLib/src/touch/TouchClassCST226.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "pro-lib-sensorlib-src-touch-touchclasscst226-cpp-TouchClassCST226.cpp",
+      "sha256": "6ae8e81bda9f99908a4b3f60d96ef2a0483b1d28b9514c225e995cf4fe0c3136",
+      "bytes": 8044,
+      "mediaType": "text/plain; charset=utf-8"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-qt-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_2.jpg?v=1661840140",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-qt-pro/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-qt-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_1.jpg?v=1661840139",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-qt-pro/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-qt-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H579-T-QT-Pro_3.jpg?v=1661840139",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-qt-pro/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +431,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +438,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +448,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +458,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +468,174 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-qt-pro/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：T-QT Pro assembly; not C6；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-qt-pro-official-photo-0",
+      "lilygo-t-qt-pro-official-photo-1",
+      "lilygo-t-qt-pro-official-photo-2",
+      "lilygo-t-qt-pro-manufacturer-cad",
+      "qt-readme-md",
+      "qt-lib-tft_espi-tft_drivers-gc9a01_rotation-h",
+      "pro-readme-md",
+      "pro-examples-factory-utilities-h",
+      "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+      "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+      "pro-lib-sensorlib-src-touch-touchclasscst226-cpp"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 128,
+      "sourceIds": [
+        "qt-readme-md",
+        "qt-lib-tft_espi-tft_drivers-gc9a01_rotation-h",
+        "pro-readme-md",
+        "pro-examples-factory-utilities-h",
+        "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+        "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+        "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-qt-pro",
+    "status": "diagnostic",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-qt-pro",
+    "boardId": "lilygo-t-qt-pro",
+    "name": "LILYGO T-QT Pro",
+    "chip": "esp32s3",
+    "flashMB": 4,
+    "psramMB": 2,
+    "display": {
+      "width": 128,
+      "height": 128,
+      "controller": "GC9A01",
+      "interface": "spi",
+      "pixelFormat": "RGB565",
+      "crop": [
+        2,
+        1,
+        128,
+        128
+      ],
+      "commandCoordinateCanvas": [
+        132,
+        132
+      ],
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "pins": {
+      "display": {
+        "sclk": 3,
+        "mosi": 2,
+        "cs": 5,
+        "dc": 6,
+        "reset": 1,
+        "enable": null,
+        "backlight": {
+          "pin": 10,
+          "activeHigh": false
+        },
+        "ledcGate": true
+      },
+      "touch": null,
+      "encoder": null
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "pin": 0,
+        "activeLow": true,
+        "type": "button",
+        "name": "BOOT"
+      },
+      {
+        "id": "user",
+        "pin": 47,
+        "activeLow": true,
+        "type": "button",
+        "name": "User"
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "nativeGuestProbeVerified": false,
+      "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
+    },
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile."
+    ],
+    "sourceIds": [
+      "qt-readme-md",
+      "qt-lib-tft_espi-tft_drivers-gc9a01_rotation-h",
+      "pro-readme-md",
+      "pro-examples-factory-utilities-h",
+      "pro-lib-tft_espi-user_setups-setup214_lilygo_t_display_s3_pro-h",
+      "pro-lib-tft_espi-tft_drivers-st7796_rotation-h",
+      "pro-lib-sensorlib-src-touch-touchclasscst226-cpp",
+      "official-store-shopify-1"
+    ],
+    "chronology": {
+      "date": "2022-09-21",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-qt-pro",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 108,
+    "hardwareRevision": "FN4R2 4MB Flash / 2MB PSRAM; current GC9A01 panel",
+    "scopeEn": "Selects FN4R2 4MB Flash/2MB PSRAM and current vendor GC9A01 panel rotation table. FN8 8MB/no-PSRAM variant and old-panel command offsets require explicit future selection. 132x132 coordinate canvas represents documented offsets and is not physical GRAM capacity.",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+  }
 }

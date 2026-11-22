@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-fpga",
   "title": "LILYGO T-FPGA",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3R8 + GW1NSR-4C；具体硬件版次及配置待核对。",
+  "summary": "适配 ESP32-S3 子系统的 BOOT0、GPIO46 蓝灯及 GPIO38/39 上 AXP2101 的已实现寄存器子集；高云 FPGA、其硬核 Cortex-M3、FPGA 内存及供电时序均未模拟。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-FPGA V1.0 main/core boards, ESP32-S3 subsystem only",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-FPGA",
@@ -52,6 +52,115 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-04-14",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-fpga",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "activeLow": true,
+            "pin": 0
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "led": {
+            "pin": 46,
+            "color": "blue",
+            "activeHigh": true,
+            "implemented": true
+          },
+          "pmic": {
+            "controller": "AXP2101",
+            "address": 52,
+            "sda": 38,
+            "scl": 39,
+            "irq": 40,
+            "implemented": "03h ID,30h ADC enables,90h LDO enables,94h ALDO3 voltage only"
+          },
+          "fpga": {
+            "cs": 1,
+            "clock": 2,
+            "data": [
+              3,
+              5,
+              6,
+              4
+            ],
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-FPGA-README.md",
+        "T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h",
+        "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino",
+        "T-FPGA-schematic-T-FPGA-MAIN.pdf",
+        "T-FPGA-schematic-T-FPGA-V1.0 CORE.pdf",
+        "T-FPGA-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "T-FPGA-README.md",
+            "T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h",
+            "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino",
+            "T-FPGA-schematic-T-FPGA-MAIN.pdf",
+            "T-FPGA-schematic-T-FPGA-V1.0 CORE.pdf",
+            "T-FPGA-tree",
+            "official-store-shopify-1"
+          ],
+          "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-FPGA-README.md",
+        "T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h",
+        "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino",
+        "T-FPGA-schematic-T-FPGA-MAIN.pdf",
+        "T-FPGA-schematic-T-FPGA-V1.0 CORE.pdf",
+        "T-FPGA-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +189,196 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-fpga-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_5.jpg?v=1681348930",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_5.jpg?v=1681348930",
+      "fetchedAt": "2026-11-22T06:59:11Z",
+      "bytes": 99908,
+      "sha256": "bc4cfbcd8ba3c3c67aeef6ad2967aa94024c0231bb93cc32d5dabb83daa7869b",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t fpga official photo 0",
+      "archiveName": "lilygo-t-fpga-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-fpga-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_7.jpg?v=1681348930",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_7.jpg?v=1681348930",
+      "fetchedAt": "2026-11-22T06:59:11Z",
+      "bytes": 63115,
+      "sha256": "be73eac355cdbf3d7b5868d9d2edce41f4f13e96555399ac46cc3d174afde991",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t fpga official photo 1",
+      "archiveName": "lilygo-t-fpga-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-fpga-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_3.jpg?v=1681348930",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_3.jpg?v=1681348930",
+      "fetchedAt": "2026-11-22T06:59:16Z",
+      "bytes": 67947,
+      "sha256": "1c183b0db07032ac11dd8e025007c9862db2c9f0615a15126ca531e9149ca2e2",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t fpga official photo 2",
+      "archiveName": "lilygo-t-fpga-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "T-FPGA-README.md",
+      "repository": "Xinyuan-LilyGO/T-FPGA",
+      "pinnedGitRevision": "4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf",
+      "path": "README.md",
+      "gitBlobSha": "a30a47f38a8c8644135c0e3fe232f70c7f59a88c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:18Z",
+      "sha256": "11470f78f5ae065047811f52ea2e9ff9b85ff5c7c78829954967f0854dcf66ea",
+      "bytes": 6483,
+      "archiveName": "T-FPGA-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-FPGA / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-FPGA-README.md.raw"
+    },
+    {
+      "id": "T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h",
+      "repository": "Xinyuan-LilyGO/T-FPGA",
+      "pinnedGitRevision": "4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf",
+      "path": "example/ESP32-S3/turn_on_power/pins_config.h",
+      "gitBlobSha": "b53adf924e0c8e071264f71fa7a80c6b59be9fc2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/example/ESP32-S3/turn_on_power/pins_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/example/ESP32-S3/turn_on_power/pins_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:18Z",
+      "sha256": "185318dd5e9bb0d151d2c847a456634ad32bbc235e927c51fcd6fd86ce71ee0e",
+      "bytes": 274,
+      "archiveName": "T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-FPGA / example/ESP32-S3/turn_on_power/pins_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h.raw"
+    },
+    {
+      "id": "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino",
+      "repository": "Xinyuan-LilyGO/T-FPGA",
+      "pinnedGitRevision": "4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf",
+      "path": "example/ESP32-S3/turn_on_power/turn_on_power.ino",
+      "gitBlobSha": "0a8f280c196dc6026d8284168e8840b1cd31b60e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/example/ESP32-S3/turn_on_power/turn_on_power.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/example/ESP32-S3/turn_on_power/turn_on_power.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:18Z",
+      "sha256": "364d780be64a14d2dbcf6db82a8a80e72d9f5cfc8aa81e022730382cf44331ab",
+      "bytes": 1724,
+      "archiveName": "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino.raw",
+      "title": "Xinyuan-LilyGO/T-FPGA / example/ESP32-S3/turn_on_power/turn_on_power.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino.raw"
+    },
+    {
+      "id": "T-FPGA-schematic-T-FPGA-MAIN.pdf",
+      "repository": "Xinyuan-LilyGO/T-FPGA",
+      "pinnedGitRevision": "4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf",
+      "path": "schematic/T-FPGA-MAIN.pdf",
+      "gitBlobSha": "71968df52ff5f0745db540a1225782e4ed23eca7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/schematic/T-FPGA-MAIN.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/schematic/T-FPGA-MAIN.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:18Z",
+      "sha256": "396825191b77581f93e73791728b60a2e1f91fc8249e67c26f9f53f4e540fdba",
+      "bytes": 214875,
+      "archiveName": "T-FPGA-schematic-T-FPGA-MAIN.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-FPGA / schematic/T-FPGA-MAIN.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-FPGA-schematic-T-FPGA-MAIN.pdf.raw"
+    },
+    {
+      "id": "T-FPGA-schematic-T-FPGA-V1.0 CORE.pdf",
+      "repository": "Xinyuan-LilyGO/T-FPGA",
+      "pinnedGitRevision": "4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf",
+      "path": "schematic/T-FPGA-V1.0 CORE.pdf",
+      "gitBlobSha": "7899ad3642140b8bae0bc03108b2e60712dd8b38",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/schematic/T-FPGA-V1.0%20CORE.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/schematic/T-FPGA-V1.0%20CORE.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:18Z",
+      "sha256": "1c57f3df023ba43924dc747c297bacdef46c5fc510830e333a7ed25051d92dc7",
+      "bytes": 308684,
+      "archiveName": "T-FPGA-schematic-T-FPGA-V1.0_CORE.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-FPGA / schematic/T-FPGA-V1.0 CORE.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-FPGA-schematic-T-FPGA-V1.0 CORE.pdf.raw"
+    },
+    {
+      "id": "T-FPGA-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-FPGA/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:23Z",
+      "title": "Official repository snapshot: Xinyuan-LilyGO/T-FPGA",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-FPGA",
+      "pinnedGitRevision": "4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf",
+      "gitObjectType": "not-independently-checked",
+      "mediaType": "application/json",
+      "sha256": "40f6b7a14bc3f36198c9278c3808b6a14685bf0154498b2a7af6ae3fcc9fc6e8",
+      "bytes": 45666,
+      "archiveName": "T-FPGA-tree.raw",
+      "notes": "Exact original GitHub connector UTF-8 snapshot copied from the model lane; original fetch timestamp retained. A normalized sha field is a pinned revision, not proof of Git commit/tree object type. Firmware metadata is discovery evidence only, not a fetched firmware checksum.",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-FPGA-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-fpga-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_5.jpg?v=1681348930",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-fpga/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-fpga-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_7.jpg?v=1681348930",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-fpga/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-fpga-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-FPGA-LILYGO-DEVELOPMENT-BOARDS_3.jpg?v=1681348930",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-fpga/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +391,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +398,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +408,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +418,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +428,212 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-package-linked",
+    "sourceIds": [
+      "T-FPGA-tree",
+      "T-FPGA-README.md",
+      "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-FPGA/blob/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/example/ESP32-S3/turn_on_power/firmware.zip",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/example/ESP32-S3/turn_on_power/firmware.zip",
+        "path": "example/ESP32-S3/turn_on_power/firmware.zip",
+        "pinnedGitRevision": "4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf",
+        "gitBlobSha": "305a8a9bcb4dd37e2672b7b97c3403bc3e200185",
+        "bytes": 7599989,
+        "status": "linked",
+        "sourceId": "T-FPGA-tree",
+        "role": "official-example-package",
+        "chip": "esp32s3",
+        "identityEvidence": "README points to ESP32-S3 turn_on_power firmware/example for powering the FPGA. It is an official archive, not verified as a factory recovery image or a directly loadable ESP32 binary.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Official S3 power example and firmware.zip package found, but factory recovery identity/layout are not established. FPGA .bin bitstreams are explicitly excluded from the ESP32 firmware list.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-fpga/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-fpga-official-photo-0",
+      "lilygo-t-fpga-official-photo-1",
+      "lilygo-t-fpga-official-photo-2",
+      "T-FPGA-README.md",
+      "T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h",
+      "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino",
+      "T-FPGA-schematic-T-FPGA-MAIN.pdf",
+      "T-FPGA-schematic-T-FPGA-V1.0 CORE.pdf",
+      "T-FPGA-tree"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-fpga",
+    "status": "diagnostic",
+    "scope": "适配 ESP32-S3 子系统的 BOOT0、GPIO46 蓝灯及 GPIO38/39 上 AXP2101 的已实现寄存器子集；高云 FPGA、其硬核 Cortex-M3、FPGA 内存及供电时序均未模拟。",
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "No execution/configuration of FPGA fabric or its Cortex-M3, no fictitious SPI ID/bitstream success, no attached FPGA memory/shield peripheral. Only independently sourced S3 GPIO and bounded PMIC registers are available.",
+      "ALDO3 and FPGA bank power control values are digital register state only; analog voltage, PMIC EFUSE defaults and full FPGA power sequencing are unmodeled."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-fpga",
+    "boardId": "lilygo-t-fpga",
+    "name": "LILYGO T-FPGA",
+    "constructor": "t_fpga",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-FPGA V1.0 main/core boards, ESP32-S3 subsystem only",
+    "display": null,
+    "physicalDisplay": false,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "activeLow": true,
+        "pin": 0
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "适配 ESP32-S3 子系统的 BOOT0、GPIO46 蓝灯及 GPIO38/39 上 AXP2101 的已实现寄存器子集；高云 FPGA、其硬核 Cortex-M3、FPGA 内存及供电时序均未模拟。",
+    "scopeEn": "ESP32-S3 subsystem BOOT0, high-active blue LED46 and AXP2101 ID/ADC-enable/ALDO3 subset on SDA38/SCL39. Gowin FPGA/hard Cortex-M3, FPGA memory and rail sequencing are not simulated.",
+    "chronology": {
+      "date": "2023-04-14",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-fpga",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "T-FPGA-README.md",
+      "T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h",
+      "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino",
+      "T-FPGA-schematic-T-FPGA-MAIN.pdf",
+      "T-FPGA-schematic-T-FPGA-V1.0 CORE.pdf",
+      "T-FPGA-tree",
+      "official-store-shopify-1"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "No execution/configuration of FPGA fabric or its Cortex-M3, no fictitious SPI ID/bitstream success, no attached FPGA memory/shield peripheral. Only independently sourced S3 GPIO and bounded PMIC registers are available.",
+      "ALDO3 and FPGA bank power control values are digital register state only; analog voltage, PMIC EFUSE defaults and full FPGA power sequencing are unmodeled."
+    ],
+    "pins": {
+      "boot": 0,
+      "led": {
+        "pin": 46,
+        "color": "blue",
+        "activeHigh": true,
+        "implemented": true
+      },
+      "pmic": {
+        "controller": "AXP2101",
+        "address": 52,
+        "sda": 38,
+        "scl": 39,
+        "irq": 40,
+        "implemented": "03h ID,30h ADC enables,90h LDO enables,94h ALDO3 voltage only"
+      },
+      "fpga": {
+        "cs": 1,
+        "clock": 2,
+        "data": [
+          3,
+          5,
+          6,
+          4
+        ],
+        "implemented": false
+      }
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "T-FPGA-README.md",
+        "T-FPGA-example-ESP32-S3-turn_on_power-pins_config.h",
+        "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino",
+        "T-FPGA-schematic-T-FPGA-MAIN.pdf",
+        "T-FPGA-schematic-T-FPGA-V1.0 CORE.pdf",
+        "T-FPGA-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+    },
+    "conflicts": [],
+    "physicalChip": "ESP32-S3 + Gowin GW1NSR-LV4CQN48PC6/I5 FPGA (hard Cortex-M3)",
+    "factoryFirmwareInvestigation": {
+      "status": "official-package-linked",
+      "sourceIds": [
+        "T-FPGA-tree",
+        "T-FPGA-README.md",
+        "T-FPGA-example-ESP32-S3-turn_on_power-turn_on_power.ino"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-FPGA/blob/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/example/ESP32-S3/turn_on_power/firmware.zip",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-FPGA/4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf/example/ESP32-S3/turn_on_power/firmware.zip",
+          "path": "example/ESP32-S3/turn_on_power/firmware.zip",
+          "pinnedGitRevision": "4ac8907f99a156b6b7dc4ad86cc0ef34f89166cf",
+          "gitBlobSha": "305a8a9bcb4dd37e2672b7b97c3403bc3e200185",
+          "bytes": 7599989,
+          "status": "linked",
+          "sourceId": "T-FPGA-tree",
+          "role": "official-example-package",
+          "chip": "esp32s3",
+          "identityEvidence": "README points to ESP32-S3 turn_on_power firmware/example for powering the FPGA. It is an official archive, not verified as a factory recovery image or a directly loadable ESP32 binary.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Official S3 power example and firmware.zip package found, but factory recovery identity/layout are not established. FPGA .bin bitstreams are explicitly excluded from the ESP32 firmware list.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
+      }
+    }
+  }
 }

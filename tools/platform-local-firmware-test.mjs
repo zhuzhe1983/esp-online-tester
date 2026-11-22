@@ -16,6 +16,12 @@ const events=[];let merged=await assembleLocalFirmware({format:'build',files:[co
 const nessoOpts={board:'nesso-n1',flashBytes};
 const nessoBuild={format:'build',files:[config({extra_esptool_args:{chip:'esp32c6'}}),file('bootloader.bin',image(13)),part,file('custom.bin',image(13))]};
 const nesso=await assembleLocalFirmware(nessoBuild,nessoOpts);validateMergedImage(nesso.data,'nesso-n1',flashBytes,{partitionTableOffset:0x9000});
+// T-Knob has no C6 suffix; use the reviewed chip map for local builds as well
+// as remote application validation and ROM selection.
+const lilygoC6Build={...nessoBuild,files:[config({extra_esptool_args:{chip:'esp32c6'},flash_settings:{flash_size:'4MB'}}),...nessoBuild.files.slice(1)]};
+const knob=await assembleLocalFirmware(lilygoC6Build,{board:'lilygo-t-knob',flashBytes:4*1024*1024});
+validateMergedImage(knob.data,'lilygo-t-knob',4*1024*1024,{partitionTableOffset:0x9000});
+await fail(()=>assembleLocalFirmware(lilygoC6Build,{board:'lilygo-t-watch-s3',flashBytes}),'CHIP_MISMATCH');
 await fail(()=>assembleLocalFirmware({format:'build',files:[config(),boot,part,app]},nessoOpts),'CHIP_MISMATCH');
 assert.throws(()=>validateMergedImage(nesso.data,'stopwatch',flashBytes,{partitionTableOffset:0x9000}),{code:'CHIP_MISMATCH'});
 // P4 boot ROM reads the bootloader at 0x2000, unlike C3/C6/S3 at zero.

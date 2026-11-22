@@ -14,6 +14,7 @@ pub mod atom_matrix_v11;
 pub mod stamppico;
 pub mod ulanzi;
 pub mod cyd;
+pub mod lilygo_additional;
 
 pub use tdisplay::*;
 
@@ -30,7 +31,7 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
         "ai-thinker-cam" | "esp32cam" => Some(Box::new(aithinker::AiThinkerCam::default())),
         "cyd" | "esp32-2432s028" => Some(Box::new(cyd::Cyd::new())),
         "ulanzi-tc001" | "tc001" => Some(Box::new(ulanzi::UlanziTc001::new())),
-        _ => crate::spi::make_board(name),
+        _ => lilygo_additional::make_board(name).or_else(|| crate::spi::make_board(name)),
     }
 }
 

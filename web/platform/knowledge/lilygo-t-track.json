@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-track",
   "title": "LILYGO T-Track",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3R8；具体硬件版次及配置待核对。",
+  "summary": "实现工厂接线的 JD9613 126×294 AMOLED、294×126 横向调试画面、GPIO4 供电、BOOT0 和四路滚珠传感器脉冲；README 冲突引脚与用户 LED 颜色均未当成已验证功能。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Track V1.2 photo and factory JD9613 pin map; old V1.1 schematic used only to corroborate wiring",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Track",
@@ -52,6 +52,171 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-04-28",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-track",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "type": "AMOLED",
+          "controller": "JD9613",
+          "width": 294,
+          "height": 126,
+          "interface": "SPI",
+          "nativeWidth": 126,
+          "nativeHeight": 294,
+          "orientation": "factory PushColors_SoftRotation landscape mapping",
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "activeLow": true,
+            "pin": 0
+          },
+          {
+            "id": "track-right",
+            "name": "滚珠向右脉冲",
+            "type": "button",
+            "activeLow": true,
+            "pin": 1,
+            "defaultKeyCode": "ArrowRight",
+            "notes": "Diagnostic low/release edges on a trackball sensor output; not a physical pushbutton or calibrated movement distance.",
+            "transport": "board"
+          },
+          {
+            "id": "track-up",
+            "name": "滚珠向上脉冲",
+            "type": "button",
+            "activeLow": true,
+            "pin": 2,
+            "defaultKeyCode": "ArrowUp",
+            "notes": "Diagnostic low/release edges on a trackball sensor output; not a physical pushbutton or calibrated movement distance.",
+            "transport": "board"
+          },
+          {
+            "id": "track-left",
+            "name": "滚珠向左脉冲",
+            "type": "button",
+            "activeLow": true,
+            "pin": 3,
+            "defaultKeyCode": "ArrowLeft",
+            "notes": "Diagnostic low/release edges on a trackball sensor output; not a physical pushbutton or calibrated movement distance.",
+            "transport": "board"
+          },
+          {
+            "id": "track-down",
+            "name": "滚珠向下脉冲",
+            "type": "button",
+            "activeLow": true,
+            "pin": 10,
+            "defaultKeyCode": "ArrowDown",
+            "notes": "Diagnostic low/release edges on a trackball sensor output; not a physical pushbutton or calibrated movement distance.",
+            "transport": "board"
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "powerEnable": 4,
+          "display": {
+            "clock": 5,
+            "mosi": 6,
+            "dc": 7,
+            "reset": 8,
+            "cs": 9,
+            "backlight": null
+          },
+          "trackball": {
+            "right": 1,
+            "up": 2,
+            "left": 3,
+            "down": 10,
+            "edgeSemantics": "Active-low diagnostic pulse/release; both transitions are visible to firmware; power-off releases inputs."
+          },
+          "userLed": {
+            "pin": 21,
+            "implemented": false,
+            "reason": "Conflicting blue schematic vs green README color"
+          },
+          "batteryAdc": null
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Track-README.md",
+        "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf",
+        "T-Track-examples-factory-JD9613.cpp",
+        "T-Track-examples-factory-JD9613.h",
+        "T-Track-examples-factory-factory.ino",
+        "T-Track-image-T-Track-Pin.jpg",
+        "T-Track-platformio.ini",
+        "T-Track-schematic-LilyGo-T-Track.pdf",
+        "T-Track-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "T-Track-README.md",
+            "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf",
+            "T-Track-examples-factory-JD9613.cpp",
+            "T-Track-examples-factory-JD9613.h",
+            "T-Track-examples-factory-factory.ino",
+            "T-Track-image-T-Track-Pin.jpg",
+            "T-Track-platformio.ini",
+            "T-Track-schematic-LilyGo-T-Track.pdf",
+            "T-Track-tree",
+            "official-store-shopify-1"
+          ],
+          "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Track-README.md",
+        "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf",
+        "T-Track-examples-factory-JD9613.cpp",
+        "T-Track-examples-factory-JD9613.h",
+        "T-Track-examples-factory-factory.ino",
+        "T-Track-image-T-Track-Pin.jpg",
+        "T-Track-platformio.ini",
+        "T-Track-schematic-LilyGo-T-Track.pdf",
+        "T-Track-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +245,253 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-track-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_6.jpg?v=1682661058",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_6.jpg?v=1682661058",
+      "fetchedAt": "2026-11-22T06:59:06Z",
+      "bytes": 77630,
+      "sha256": "a17aea89c1e02b54f57a058753d3424fa39a3e89ff8d32b5f909c8615b555cf1",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t track official photo 0",
+      "archiveName": "lilygo-t-track-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-track-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_7.jpg?v=1682661059",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_7.jpg?v=1682661059",
+      "fetchedAt": "2026-11-22T06:59:06Z",
+      "bytes": 46322,
+      "sha256": "b99e237ddf153b522de3b41eaba030fbdb87794127b59086eca821fd7729379c",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t track official photo 1",
+      "archiveName": "lilygo-t-track-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-track-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_5.jpg?v=1682661058",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_5.jpg?v=1682661058",
+      "fetchedAt": "2026-11-22T06:59:06Z",
+      "bytes": 41375,
+      "sha256": "83bd0e784995479d8cc4a33e1e867f45039962c0a215bfcd647d0757516647c9",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t track official photo 2",
+      "archiveName": "lilygo-t-track-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "T-Track-README.md",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "path": "README.md",
+      "gitBlobSha": "8de9ba9e5b19794cf8e4da7779c6671ced4f079e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:18Z",
+      "sha256": "657c278bad5d6884d6b94b1a642c998b6dd0d28710f1aa107c3f8018a2cdb14b",
+      "bytes": 4144,
+      "archiveName": "T-Track-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Track / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-README.md.raw"
+    },
+    {
+      "id": "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "path": "datasheet/JD9613_DS_Preliminary_V0.02_20210325.pdf",
+      "gitBlobSha": "6364fa87039fb3d37c5978557e81edb349484b85",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/datasheet/JD9613_DS_Preliminary_V0.02_20210325.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/datasheet/JD9613_DS_Preliminary_V0.02_20210325.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:46:37Z",
+      "sha256": "a47340ae585a36b5716d53954e24b92313c1f6f0e4bc70c4a3093d2e543ef6e8",
+      "bytes": 4493274,
+      "archiveName": "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Track / datasheet/JD9613_DS_Preliminary_V0.02_20210325.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf.raw"
+    },
+    {
+      "id": "T-Track-examples-factory-JD9613.cpp",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "path": "examples/factory/JD9613.cpp",
+      "gitBlobSha": "41f5e71b277e46fa4f51e564c29e35c058e02151",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/examples/factory/JD9613.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/examples/factory/JD9613.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:40:10Z",
+      "sha256": "689977384d33302da3dff0f08ded393c7c0fa085849fe1ae0a72787c826992f9",
+      "bytes": 11593,
+      "archiveName": "T-Track-examples-factory-JD9613.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Track / examples/factory/JD9613.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-examples-factory-JD9613.cpp.raw"
+    },
+    {
+      "id": "T-Track-examples-factory-JD9613.h",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "path": "examples/factory/JD9613.h",
+      "gitBlobSha": "94eb3b2a85e12d810ff8bbfe0c1340893d1c49f5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/examples/factory/JD9613.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/examples/factory/JD9613.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:22Z",
+      "sha256": "27cac5a973755e82515163cd68cb98e4c339b2784efc4f1208467ceb626d0e96",
+      "bytes": 1992,
+      "archiveName": "T-Track-examples-factory-JD9613.h.raw",
+      "title": "Xinyuan-LilyGO/T-Track / examples/factory/JD9613.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-examples-factory-JD9613.h.raw"
+    },
+    {
+      "id": "T-Track-examples-factory-factory.ino",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "path": "examples/factory/factory.ino",
+      "gitBlobSha": "e16a735cdd397d5a07f937c04c9a8cea7d00b691",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/examples/factory/factory.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/examples/factory/factory.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:22Z",
+      "sha256": "3c64edb9a52c5ff9b1420521a2a3bcf5932a8e2e5f4b58dd1d77b52330d3c3f8",
+      "bytes": 12368,
+      "archiveName": "T-Track-examples-factory-factory.ino.raw",
+      "title": "Xinyuan-LilyGO/T-Track / examples/factory/factory.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-examples-factory-factory.ino.raw"
+    },
+    {
+      "id": "T-Track-image-T-Track-Pin.jpg",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "path": "image/T-Track-Pin.jpg",
+      "gitBlobSha": "4d311dc14fcc58e432acb38295a967b702a9073b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/image/T-Track-Pin.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/image/T-Track-Pin.jpg",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:46:37Z",
+      "sha256": "d2758207668053b8ec0a3635d832efbad14c9098be97b61445ea3ca2ab231081",
+      "bytes": 754871,
+      "archiveName": "T-Track-image-T-Track-Pin.jpg.raw",
+      "title": "Xinyuan-LilyGO/T-Track / image/T-Track-Pin.jpg",
+      "kind": "manufacturer-product-photo",
+      "mediaType": "image/jpeg",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-image-T-Track-Pin.jpg.raw"
+    },
+    {
+      "id": "T-Track-platformio.ini",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "path": "platformio.ini",
+      "gitBlobSha": "3627e30fda55dfcce4b4b13a50da0024de02ea59",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:22Z",
+      "sha256": "a8150ff0f70ffe9f6f42f3b6293d2383f52c0c452cccd54c5499831dfe18768a",
+      "bytes": 644,
+      "archiveName": "T-Track-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/T-Track / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-platformio.ini.raw"
+    },
+    {
+      "id": "T-Track-schematic-LilyGo-T-Track.pdf",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "path": "schematic/LilyGo-T-Track.pdf",
+      "gitBlobSha": "330d6873b296163453415efaa2a19cb33f1f72f7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/schematic/LilyGo-T-Track.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Track/fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8/schematic/LilyGo-T-Track.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:22Z",
+      "sha256": "92fba6c23dfe796781e7ba423761e0b448c52b08112c486f6e625e56ae2bb6bd",
+      "bytes": 899624,
+      "archiveName": "T-Track-schematic-LilyGo-T-Track.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Track / schematic/LilyGo-T-Track.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-schematic-LilyGo-T-Track.pdf.raw"
+    },
+    {
+      "id": "T-Track-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Track/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:48:08Z",
+      "title": "Official repository snapshot: Xinyuan-LilyGO/T-Track",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-Track",
+      "pinnedGitRevision": "fd79525cd7aa7af71cf46aecbf3e8cb7d909cfa8",
+      "gitObjectType": "not-independently-checked",
+      "mediaType": "application/json",
+      "sha256": "cd01b44fb14f58267c70b8480637537388cac2f1e9dd8f99b0232832be3c1515",
+      "bytes": 343141,
+      "archiveName": "T-Track-tree.raw",
+      "notes": "Exact original GitHub connector UTF-8 snapshot copied from the model lane; original fetch timestamp retained. A normalized sha field is a pinned revision, not proof of Git commit/tree object type. Firmware metadata is discovery evidence only, not a fetched firmware checksum.",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Track-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-track-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_6.jpg?v=1682661058",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-track/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-track-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_7.jpg?v=1682661059",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-track/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-track-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TRACK-H620_5.jpg?v=1682661058",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-track/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +504,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +511,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +521,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +531,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +541,284 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-source-only",
+    "sourceIds": [
+      "T-Track-tree",
+      "T-Track-README.md",
+      "T-Track-examples-factory-factory.ino"
+    ],
+    "candidates": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Official examples/factory and exact JD9613 driver were inspected. No exact recovery binary was present in the pinned repository tree; source availability is not factory execution verification.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-track/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-track-official-photo-0",
+      "lilygo-t-track-official-photo-1",
+      "lilygo-t-track-official-photo-2",
+      "T-Track-README.md",
+      "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf",
+      "T-Track-examples-factory-JD9613.cpp",
+      "T-Track-examples-factory-JD9613.h",
+      "T-Track-examples-factory-factory.ino",
+      "T-Track-image-T-Track-Pin.jpg",
+      "T-Track-platformio.ini",
+      "T-Track-schematic-LilyGo-T-Track.pdf",
+      "T-Track-tree"
+    ],
+    "displayHint": {
+      "width": 294,
+      "height": 126,
+      "sourceIds": [
+        "T-Track-README.md",
+        "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf",
+        "T-Track-examples-factory-JD9613.cpp",
+        "T-Track-examples-factory-JD9613.h",
+        "T-Track-examples-factory-factory.ino",
+        "T-Track-image-T-Track-Pin.jpg",
+        "T-Track-platformio.ini",
+        "T-Track-schematic-LilyGo-T-Track.pdf",
+        "T-Track-tree",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-track",
+    "status": "diagnostic",
+    "scope": "实现工厂接线的 JD9613 126×294 AMOLED、294×126 横向调试画面、GPIO4 供电、BOOT0 和四路滚珠传感器脉冲；README 冲突引脚与用户 LED 颜色均未当成已验证功能。",
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "JD9613 RGB565 window/rotation/sleep/on/inversion, brightness51h and BCTRL53h only. FEh vendor banks are separated before DCS decode; analog gamma/supply/clock programming, display dimming time curves and readback are not modeled.",
+      "Trackball direction controls inject physical sensor-line edges only. Mechanical travel and pulse spacing are not calibrated; the factory code changes cursor position on either edge. GPIO10 is a trackball input, not an OLED backlight.",
+      "Current16MB Flash/8MB PSRAM product/build configuration is selected. The old V1.1 W25Q32 schematic is not claimed to have that Flash capacity; no battery ADC divider exists."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-track",
+    "boardId": "lilygo-t-track",
+    "name": "LILYGO T-Track",
+    "constructor": "t_track",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-Track V1.2 photo and factory JD9613 pin map; old V1.1 schematic used only to corroborate wiring",
+    "display": {
+      "type": "AMOLED",
+      "controller": "JD9613",
+      "width": 294,
+      "height": 126,
+      "interface": "SPI",
+      "nativeWidth": 126,
+      "nativeHeight": 294,
+      "orientation": "factory PushColors_SoftRotation landscape mapping",
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "activeLow": true,
+        "pin": 0
+      },
+      {
+        "id": "track-right",
+        "name": "滚珠向右脉冲",
+        "type": "button",
+        "activeLow": true,
+        "pin": 1,
+        "defaultKeyCode": "ArrowRight",
+        "notes": "Diagnostic low/release edges on a trackball sensor output; not a physical pushbutton or calibrated movement distance.",
+        "transport": "board"
+      },
+      {
+        "id": "track-up",
+        "name": "滚珠向上脉冲",
+        "type": "button",
+        "activeLow": true,
+        "pin": 2,
+        "defaultKeyCode": "ArrowUp",
+        "notes": "Diagnostic low/release edges on a trackball sensor output; not a physical pushbutton or calibrated movement distance.",
+        "transport": "board"
+      },
+      {
+        "id": "track-left",
+        "name": "滚珠向左脉冲",
+        "type": "button",
+        "activeLow": true,
+        "pin": 3,
+        "defaultKeyCode": "ArrowLeft",
+        "notes": "Diagnostic low/release edges on a trackball sensor output; not a physical pushbutton or calibrated movement distance.",
+        "transport": "board"
+      },
+      {
+        "id": "track-down",
+        "name": "滚珠向下脉冲",
+        "type": "button",
+        "activeLow": true,
+        "pin": 10,
+        "defaultKeyCode": "ArrowDown",
+        "notes": "Diagnostic low/release edges on a trackball sensor output; not a physical pushbutton or calibrated movement distance.",
+        "transport": "board"
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "实现工厂接线的 JD9613 126×294 AMOLED、294×126 横向调试画面、GPIO4 供电、BOOT0 和四路滚珠传感器脉冲；README 冲突引脚与用户 LED 颜色均未当成已验证功能。",
+    "scopeEn": "Factory/photo-proven JD9613 native126x294 AMOLED mounted landscape294x126, GPIO4 shared power, BOOT0 and four trackball sensor pulse lines. Conflicting README SPI pins and user LED color are retained as unresolved evidence.",
+    "chronology": {
+      "date": "2023-04-28",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-track",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "T-Track-README.md",
+      "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf",
+      "T-Track-examples-factory-JD9613.cpp",
+      "T-Track-examples-factory-JD9613.h",
+      "T-Track-examples-factory-factory.ino",
+      "T-Track-image-T-Track-Pin.jpg",
+      "T-Track-platformio.ini",
+      "T-Track-schematic-LilyGo-T-Track.pdf",
+      "T-Track-tree",
+      "official-store-shopify-1"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "JD9613 RGB565 window/rotation/sleep/on/inversion, brightness51h and BCTRL53h only. FEh vendor banks are separated before DCS decode; analog gamma/supply/clock programming, display dimming time curves and readback are not modeled.",
+      "Trackball direction controls inject physical sensor-line edges only. Mechanical travel and pulse spacing are not calibrated; the factory code changes cursor position on either edge. GPIO10 is a trackball input, not an OLED backlight.",
+      "Current16MB Flash/8MB PSRAM product/build configuration is selected. The old V1.1 W25Q32 schematic is not claimed to have that Flash capacity; no battery ADC divider exists."
+    ],
+    "pins": {
+      "boot": 0,
+      "powerEnable": 4,
+      "display": {
+        "clock": 5,
+        "mosi": 6,
+        "dc": 7,
+        "reset": 8,
+        "cs": 9,
+        "backlight": null
+      },
+      "trackball": {
+        "right": 1,
+        "up": 2,
+        "left": 3,
+        "down": 10,
+        "edgeSemantics": "Active-low diagnostic pulse/release; both transitions are visible to firmware; power-off releases inputs."
+      },
+      "userLed": {
+        "pin": 21,
+        "implemented": false,
+        "reason": "Conflicting blue schematic vs green README color"
+      },
+      "batteryAdc": null
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "T-Track-README.md",
+        "T-Track-datasheet-JD9613_DS_Preliminary_V0.02_20210325.pdf",
+        "T-Track-examples-factory-JD9613.cpp",
+        "T-Track-examples-factory-JD9613.h",
+        "T-Track-examples-factory-factory.ino",
+        "T-Track-image-T-Track-Pin.jpg",
+        "T-Track-platformio.ini",
+        "T-Track-schematic-LilyGo-T-Track.pdf",
+        "T-Track-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+    },
+    "conflicts": [
+      {
+        "fact": "SPI/power pin map",
+        "resolution": "Current README table lists36/35/34/38/46/37; exact factory JD9613.h, official V1.2 pin photograph and schematic corroborate SCLK5/MOSI6/DC7/RST8/CS9. This implementation selects the latter, with GPIO4 shared power.",
+        "sourceIds": [
+          "T-Track-README.md",
+          "T-Track-examples-factory-JD9613.h",
+          "T-Track-image-T-Track-Pin.jpg",
+          "T-Track-schematic-LilyGo-T-Track.pdf"
+        ]
+      },
+      {
+        "fact": "TFT_BL macro collision",
+        "resolution": "Factory header TFT_BL10 conflicts with its G4 trackball input10. AMOLED has no LED backlight and GPIO4 is its supply enable. No backlight is attached to10.",
+        "sourceIds": [
+          "T-Track-examples-factory-JD9613.h",
+          "T-Track-examples-factory-factory.ino"
+        ]
+      },
+      {
+        "fact": "Flash/LED revision conflict",
+        "resolution": "Old schematic W25Q32(4MB) and blue GPIO21 LED differ from current16MB product configuration and green README user LED. Runtime chooses current16MB/8MB memory and leaves ambiguous LED unmodeled.",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "T-Track-README.md",
+          "T-Track-schematic-LilyGo-T-Track.pdf"
+        ]
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "official-source-only",
+      "sourceIds": [
+        "T-Track-tree",
+        "T-Track-README.md",
+        "T-Track-examples-factory-factory.ino"
+      ],
+      "candidates": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Official examples/factory and exact JD9613 driver were inspected. No exact recovery binary was present in the pinned repository tree; source availability is not factory execution verification.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
+      }
+    }
+  }
 }

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-display-p4",
   "title": "LILYGO T-Display P4",
-  "summary": "Spark 将此商品归入T-Display 系列，标注 MCU 为 ESP32-P4 + ESP32-C6；具体硬件版次及配置待核对。",
+  "summary": "T-Display-P4 V1.0 的 P4 rev < 3 指令、UART、GPIO35 BOOT、准确 G7/G8 路由的 I2C0 / XL9535 数字寄存器及 SDMMC 可调试；540×1168 屏幕提供模型预览，MIPI-DSI 帧输出尚未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Display-P4 V1.0 TFT; simulator selects P4 silicon rev < 3, not V2.0 evaluation hardware",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Display P4",
@@ -52,6 +52,144 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2025-06-13",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/t-display-series/t-display-p4/",
+        "sourceId": "official-wiki-t-display-p4",
+        "confidence": "medium",
+        "hardwareRevision": "T-Display-P4 V1.0",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki-t-display-p4"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 540,
+          "height": 1168,
+          "type": "LCD",
+          "controller": "HI8561 / H0405S002T002-V0",
+          "interface": "MIPI-DSI",
+          "implemented": false,
+          "physicalTouch": true,
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 32,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "P4 BOOT / GPIO35",
+            "type": "button",
+            "transport": "board",
+            "pin": 35,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 35,
+          "i2c0": {
+            "sda": 7,
+            "scl": 8,
+            "xl9535": {
+              "address": 32,
+              "interrupt": 5,
+              "implemented": "digital register subset"
+            }
+          },
+          "i2c1": {
+            "sda": 20,
+            "scl": 21,
+            "implemented": false
+          },
+          "c6Sdio": {
+            "clk": 18,
+            "cmd": 19,
+            "data": [
+              14,
+              15,
+              16,
+              17
+            ],
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "p4-README-md",
+        "p4-gitmodules",
+        "p4-sdkconfig-defaults",
+        "p4-main-idf_component-yml",
+        "p4-main-CMakeLists-txt",
+        "p4-t_display_p4_config-h",
+        "p4-t_display_p4_driver-h",
+        "p4-t_display_p4_driver-cpp",
+        "p4-xl9535",
+        "p4-tft-schematic",
+        "p4-idf-gpio-signals",
+        "p4-idf-interrupts",
+        "p4-idf-i2c-reg",
+        "p4-idf-soc-reg",
+        "p4-idf-interrupt-ids",
+        "p4-idf-p4-clkrst",
+        "p4-idf-p4-gpio",
+        "official-store-shopify-1",
+        "official-wiki-t-display-p4"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flash": "Manufacturer README and official storefront specify 16 MB P4 flash.",
+          "psram": "Official storefront t-display-p4 explicitly specifies P4 PSRAM 32 MB.",
+          "coprocessor": "README specifies C6 4 MB flash. It is not 4 MB PSRAM and is not a second running CPU in this profile.",
+          "sourceIds": [
+            "p4-README-md",
+            "official-store-shopify-1"
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "p4-README-md",
+        "p4-gitmodules",
+        "p4-sdkconfig-defaults",
+        "p4-main-idf_component-yml",
+        "p4-main-CMakeLists-txt",
+        "p4-t_display_p4_config-h",
+        "p4-t_display_p4_driver-h",
+        "p4-t_display_p4_driver-cpp",
+        "p4-xl9535",
+        "p4-tft-schematic",
+        "p4-idf-gpio-signals",
+        "p4-idf-interrupts",
+        "p4-idf-i2c-reg",
+        "p4-idf-soc-reg",
+        "p4-idf-interrupt-ids",
+        "p4-idf-p4-clkrst",
+        "p4-idf-p4-gpio",
+        "official-store-shopify-1",
+        "official-wiki-t-display-p4"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +218,429 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-display-p4-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DisplayP4-H753_6.jpg?v=1764833428",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DisplayP4-H753_6.jpg?v=1764833428",
+      "fetchedAt": "2026-11-22T06:56:38Z",
+      "bytes": 63058,
+      "sha256": "cc5a0cca1694ab3a34175c77259c3ebf3d869e0b973f8a420a1c34eb4a82c500",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display p4 official photo 0",
+      "archiveName": "lilygo-t-display-p4-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-display-p4-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY-P4-H753_1.jpg?v=1765273480",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY-P4-H753_1.jpg?v=1765273480",
+      "fetchedAt": "2026-11-22T06:56:38Z",
+      "bytes": 60495,
+      "sha256": "f11d50214985462c94af897e1ee1bce33cf8e145320af7ba5e61fe64a6347f58",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display p4 official photo 1",
+      "archiveName": "lilygo-t-display-p4-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-display-p4-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY-P4-H753_7.jpg?v=1765273480",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY-P4-H753_7.jpg?v=1765273480",
+      "fetchedAt": "2026-11-22T06:56:38Z",
+      "bytes": 47182,
+      "sha256": "a625a2c3a2db4cb21069323b144f208897dc71a71bccc615da59a6a4f997d2f0",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display p4 official photo 2",
+      "archiveName": "lilygo-t-display-p4-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-display-p4-manufacturer-cad",
+      "productId": "lilygo-t-display-p4",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/structure/H753.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/structure/H753.stp",
+      "repository": "Xinyuan-LilyGO/T-Display-P4",
+      "repositoryPath": "structure/H753.stp",
+      "scope": "H753 handset enclosure assembly; K270 is a different assembly",
+      "fetchedAt": "2026-11-22T07:04:04Z",
+      "bytes": 5457538,
+      "sha256": "18314b5d34123b828cf8550cee4d840260fb7be919e82c59689c6f66ddaadb38",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "18314b5d34123b828cf8550cee4d840260fb7be919e82c59689c6f66ddaadb38",
+      "archiveSha256": "c77c487f1c764d134cd0c82e5be4e84d25bb306689ab80da5147ab7ebb8f4033",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "c77c487f1c764d134cd0c82e5be4e84d25bb306689ab80da5147ab7ebb8f4033",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "10c27034b0d19f947c7d1bbc2f02089d80578f0b",
+      "revisionType": "pinned-git-revision",
+      "revision": "10da1bac3ea3843f9950533a81d65ff18a0d42a4",
+      "title": "lilygo t display p4 manufacturer cad",
+      "archiveName": "lilygo-t-display-p4-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t-display-p4-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:15Z",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t display p4 repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t-display-p4-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-display-p4",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-display-series/t-display-p4/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-display-series/t-display-p4/index.md",
+      "fetchedAt": "2026-11-22T06:42:58Z",
+      "mediaType": "text/plain",
+      "bytes": 10103,
+      "sha256": "176ad867aef51ad705e1a1c7ebd8457ecea96c30e7a0709a54e398364508db37",
+      "gitBlobSha": "593612fb3152cb430725b7d44eab80f596baed48",
+      "path": "en/products/t-display-series/t-display-p4/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t display p4",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-display-series__t-display-p4__index.md"
+    },
+    {
+      "id": "p4-README-md",
+      "title": "T-Display-P4 official README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/README.md",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "9844043e3247490d8ee417609d8a8627c9e1730678d819e28d9316aaef96473e",
+      "bytes": 17011,
+      "archiveName": "t-display-p4-README.md",
+      "revision": "10da1bac3ea3843f9950533a81d65ff18a0d42a4",
+      "path": "README.md",
+      "repository": "Xinyuan-LilyGO/T-Display-P4",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-gitmodules",
+      "title": "T-Display-P4 official .gitmodules",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/.gitmodules",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/.gitmodules",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "b73e442d89da1fff6654d534caa73bc8748e11898016b31ffaedfc841daebbc7",
+      "bytes": 1110,
+      "archiveName": "t-display-p4-gitmodules",
+      "revision": "10da1bac3ea3843f9950533a81d65ff18a0d42a4",
+      "path": ".gitmodules",
+      "repository": "Xinyuan-LilyGO/T-Display-P4",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-sdkconfig-defaults",
+      "title": "T-Display-P4 official sdkconfig.defaults",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/sdkconfig.defaults",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/sdkconfig.defaults",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "0fb4d82422db913ba701f3fd6465b367c4496c019b33ec853470976facfedea4",
+      "bytes": 941,
+      "archiveName": "t-display-p4-sdkconfig.defaults",
+      "revision": "10da1bac3ea3843f9950533a81d65ff18a0d42a4",
+      "path": "sdkconfig.defaults",
+      "repository": "Xinyuan-LilyGO/T-Display-P4",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-main-idf_component-yml",
+      "title": "T-Display-P4 official main/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/main/idf_component.yml",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/main/idf_component.yml",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "d2aa1ea3a4aec2eca26d08cd607a4760f3d07e054f18b686238c185bc5829875",
+      "bytes": 1939,
+      "archiveName": "t-display-p4-main__idf_component.yml",
+      "revision": "10da1bac3ea3843f9950533a81d65ff18a0d42a4",
+      "path": "main/idf_component.yml",
+      "repository": "Xinyuan-LilyGO/T-Display-P4",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-main-CMakeLists-txt",
+      "title": "T-Display-P4 official main/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/main/CMakeLists.txt",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/main/CMakeLists.txt",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "dc3ba38f9777cca155527829908f1301308d78759e22356f7451305e57e16f98",
+      "bytes": 2701,
+      "archiveName": "t-display-p4-main__CMakeLists.txt",
+      "revision": "10da1bac3ea3843f9950533a81d65ff18a0d42a4",
+      "path": "main/CMakeLists.txt",
+      "repository": "Xinyuan-LilyGO/T-Display-P4",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-t_display_p4_config-h",
+      "title": "T-Display-P4 pinned submodule t_display_p4_config.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/lilygo_device_driver/a47cf73e2c9d442c0f00b618749150f4482dcd0a/src/device/t_display_p4/t_display_p4_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/lilygo_device_driver/a47cf73e2c9d442c0f00b618749150f4482dcd0a/src/device/t_display_p4/t_display_p4_config.h",
+      "fetchedAt": "2026-11-22T07:50:22Z",
+      "sha256": "f44001adb4721eff46092d89a8e9d8260aeb80f6851fe221985f23a4ba130434",
+      "bytes": 11422,
+      "archiveName": "t_display_p4_config.h",
+      "revision": "a47cf73e2c9d442c0f00b618749150f4482dcd0a",
+      "path": "src/device/t_display_p4/t_display_p4_config.h",
+      "repository": "Xinyuan-LilyGO/lilygo_device_driver",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-t_display_p4_driver-h",
+      "title": "T-Display-P4 pinned submodule t_display_p4_driver.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/lilygo_device_driver/a47cf73e2c9d442c0f00b618749150f4482dcd0a/src/device/t_display_p4/t_display_p4_driver.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/lilygo_device_driver/a47cf73e2c9d442c0f00b618749150f4482dcd0a/src/device/t_display_p4/t_display_p4_driver.h",
+      "fetchedAt": "2026-11-22T07:50:22Z",
+      "sha256": "ff54f522148eb5d497056f717b3b62725ff5767a53666aa512d253deb971c239",
+      "bytes": 13144,
+      "archiveName": "t_display_p4_driver.h",
+      "revision": "a47cf73e2c9d442c0f00b618749150f4482dcd0a",
+      "path": "src/device/t_display_p4/t_display_p4_driver.h",
+      "repository": "Xinyuan-LilyGO/lilygo_device_driver",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-t_display_p4_driver-cpp",
+      "title": "T-Display-P4 pinned submodule t_display_p4_driver.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/lilygo_device_driver/a47cf73e2c9d442c0f00b618749150f4482dcd0a/src/device/t_display_p4/t_display_p4_driver.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/lilygo_device_driver/a47cf73e2c9d442c0f00b618749150f4482dcd0a/src/device/t_display_p4/t_display_p4_driver.cpp",
+      "fetchedAt": "2026-11-22T07:50:22Z",
+      "sha256": "83900db872b987b33c82a23ced439d7640eec07359bd115bc10aeac340f3e92d",
+      "bytes": 88533,
+      "archiveName": "t_display_p4_driver.cpp",
+      "revision": "a47cf73e2c9d442c0f00b618749150f4482dcd0a",
+      "path": "src/device/t_display_p4/t_display_p4_driver.cpp",
+      "repository": "Xinyuan-LilyGO/lilygo_device_driver",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-xl9535",
+      "title": "T-Display-P4 V1.0 xl9535",
+      "kind": "datasheet",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/docs/XL95x5.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/docs/XL95x5.pdf",
+      "fetchedAt": "2026-11-22T08:02:18Z",
+      "sha256": "8d6805fbf1e452d674bc0d3868f5c047065e82317a9f6fc6d5bfd22fb6e58d78",
+      "bytes": 2409300,
+      "archiveName": "xl9535.pdf",
+      "revision": "10da1bac3ea3843f9950533a81d65ff18a0d42a4",
+      "path": "docs/XL95x5.pdf",
+      "mediaType": "application/pdf",
+      "repository": "Xinyuan-LilyGO/T-Display-P4"
+    },
+    {
+      "id": "p4-tft-schematic",
+      "title": "T-Display-P4 V1.0 tft-schematic",
+      "kind": "schematic",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/project/T-Display-P4_V1.0(H0405S002T002-V0)_202601061148.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-P4/10da1bac3ea3843f9950533a81d65ff18a0d42a4/project/T-Display-P4_V1.0(H0405S002T002-V0)_202601061148.pdf",
+      "fetchedAt": "2026-11-22T08:02:24Z",
+      "sha256": "e3bfc63ab524e3fa13b5dc026390c243fdf4126571cd8fd74a81e4d11eb3fce9",
+      "bytes": 2743319,
+      "archiveName": "tft-schematic.pdf",
+      "revision": "10da1bac3ea3843f9950533a81d65ff18a0d42a4",
+      "path": "project/T-Display-P4_V1.0(H0405S002T002-V0)_202601061148.pdf",
+      "mediaType": "application/pdf",
+      "repository": "Xinyuan-LilyGO/T-Display-P4"
+    },
+    {
+      "id": "p4-idf-gpio-signals",
+      "title": "ESP-IDF v5.5.3 P4 include/soc/gpio_sig_map.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/include/soc/gpio_sig_map.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/include/soc/gpio_sig_map.h",
+      "fetchedAt": "2026-11-22T08:05:23Z",
+      "sha256": "de326cc4c6b3250dcd505e7bc344c6639cb965c909dd15e0b6f95d57801f9922",
+      "bytes": 29871,
+      "archiveName": "idf-gpio-signals.h",
+      "revision": "v5.5.3",
+      "path": "include/soc/gpio_sig_map.h",
+      "repository": "espressif/esp-idf",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-idf-interrupts",
+      "title": "ESP-IDF v5.5.3 P4 interrupts.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/interrupts.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/interrupts.c",
+      "fetchedAt": "2026-11-22T08:05:30Z",
+      "sha256": "8269371010af0479ec51802608be06c34aad4294c86293be9e3ed6a4e38a122a",
+      "bytes": 7778,
+      "archiveName": "idf-interrupts.h",
+      "revision": "v5.5.3",
+      "path": "interrupts.c",
+      "repository": "espressif/esp-idf",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-idf-i2c-reg",
+      "title": "ESP-IDF v5.5.3 P4 register/hw_ver1/soc/i2c_reg.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/register/hw_ver1/soc/i2c_reg.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/register/hw_ver1/soc/i2c_reg.h",
+      "fetchedAt": "2026-11-22T08:05:35Z",
+      "sha256": "68259c2797da4010060392f868e6818047d4ea4636a55a96bf44c657fc0f47b6",
+      "bytes": 61939,
+      "archiveName": "idf-i2c-reg.h",
+      "revision": "v5.5.3",
+      "path": "register/hw_ver1/soc/i2c_reg.h",
+      "repository": "espressif/esp-idf",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-idf-soc-reg",
+      "title": "ESP-IDF v5.5.3 P4 register/hw_ver1/soc/reg_base.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/register/hw_ver1/soc/reg_base.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/register/hw_ver1/soc/reg_base.h",
+      "fetchedAt": "2026-11-22T08:05:40Z",
+      "sha256": "f4ac22688de5890e048b1140db7cd1004d054691df7d94e4197c4bcf76170c4f",
+      "bytes": 10839,
+      "archiveName": "idf-soc-reg.h",
+      "revision": "v5.5.3",
+      "path": "register/hw_ver1/soc/reg_base.h",
+      "repository": "espressif/esp-idf",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-idf-interrupt-ids",
+      "title": "ESP-IDF v5.5.3 P4 interrupt source enumeration",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/include/soc/interrupts.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/include/soc/interrupts.h",
+      "fetchedAt": "2026-11-22T08:05:57Z",
+      "sha256": "1375fd3d96b6ad660435b2b4d0da0a08978c3f03132b8d677fa6d1012b32cdc1",
+      "bytes": 5471,
+      "archiveName": "idf-interrupt-ids.h",
+      "revision": "v5.5.3",
+      "path": "components/soc/esp32p4/include/soc/interrupts.h",
+      "repository": "espressif/esp-idf",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-idf-p4-clkrst",
+      "title": "ESP-IDF v5.5.3 P4 components/soc/esp32p4/register/hw_ver1/soc/hp_sys_clkrst_reg.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/register/hw_ver1/soc/hp_sys_clkrst_reg.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/register/hw_ver1/soc/hp_sys_clkrst_reg.h",
+      "fetchedAt": "2026-11-22T08:06:49Z",
+      "sha256": "419c7bbbece0816ea8fe9e9e21bb2f8a6b194f10d78af5b18f4d20b651cd2f87",
+      "bytes": 228654,
+      "archiveName": "idf-p4-clkrst.h",
+      "revision": "v5.5.3",
+      "path": "components/soc/esp32p4/register/hw_ver1/soc/hp_sys_clkrst_reg.h",
+      "repository": "espressif/esp-idf",
+      "mediaType": "text/plain"
+    },
+    {
+      "id": "p4-idf-p4-gpio",
+      "title": "ESP-IDF v5.5.3 P4 components/soc/esp32p4/register/hw_ver1/soc/gpio_reg.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/register/hw_ver1/soc/gpio_reg.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.3/components/soc/esp32p4/register/hw_ver1/soc/gpio_reg.h",
+      "fetchedAt": "2026-11-22T08:06:54Z",
+      "sha256": "3987f0b60a21c57ea45f595f6f5e5159c2479863822f526fb8659de8a74ce0d0",
+      "bytes": 550292,
+      "archiveName": "idf-p4-gpio.h",
+      "revision": "v5.5.3",
+      "path": "components/soc/esp32p4/register/hw_ver1/soc/gpio_reg.h",
+      "repository": "espressif/esp-idf",
+      "mediaType": "text/plain"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-display-p4-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DisplayP4-H753_6.jpg?v=1764833428",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-p4/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-display-p4-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY-P4-H753_1.jpg?v=1765273480",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-p4/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-display-p4-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY-P4-H753_7.jpg?v=1765273480",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-p4/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +653,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +660,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +670,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +680,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +690,248 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-firmware-candidates-listed-unverified",
+    "sourceIds": [
+      "p4-README-md"
+    ],
+    "simulationVerified": false,
+    "notes": "Pinned manufacturer repository has TFT/AMOLED and software-specific firmware directories. MIPI-DSI and most external devices are unmodeled; no factory binary is installed as a platform default."
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-display-p4/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：H753 handset enclosure assembly; K270 is a different assembly；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-display-p4",
+      "lilygo-t-display-p4-official-photo-0",
+      "lilygo-t-display-p4-official-photo-1",
+      "lilygo-t-display-p4-official-photo-2",
+      "lilygo-t-display-p4-manufacturer-cad",
+      "p4-README-md",
+      "p4-gitmodules",
+      "p4-sdkconfig-defaults",
+      "p4-main-idf_component-yml",
+      "p4-main-CMakeLists-txt",
+      "p4-t_display_p4_config-h",
+      "p4-t_display_p4_driver-h",
+      "p4-t_display_p4_driver-cpp",
+      "p4-xl9535",
+      "p4-tft-schematic",
+      "p4-idf-gpio-signals",
+      "p4-idf-interrupts",
+      "p4-idf-i2c-reg",
+      "p4-idf-soc-reg",
+      "p4-idf-interrupt-ids",
+      "p4-idf-p4-clkrst",
+      "p4-idf-p4-gpio"
+    ],
+    "displayHint": {
+      "width": 540,
+      "height": 1168,
+      "sourceIds": [
+        "p4-README-md",
+        "p4-gitmodules",
+        "p4-sdkconfig-defaults",
+        "p4-main-idf_component-yml",
+        "p4-main-CMakeLists-txt",
+        "p4-t_display_p4_config-h",
+        "p4-t_display_p4_driver-h",
+        "p4-t_display_p4_driver-cpp",
+        "p4-xl9535",
+        "p4-tft-schematic",
+        "p4-idf-gpio-signals",
+        "p4-idf-interrupts",
+        "p4-idf-i2c-reg",
+        "p4-idf-soc-reg",
+        "p4-idf-interrupt-ids",
+        "p4-idf-p4-clkrst",
+        "p4-idf-p4-gpio",
+        "official-store-shopify-1",
+        "official-wiki-t-display-p4"
+      ],
+      "basis": "verified physical panel; runtime frame output not implemented",
+      "physicalSizeMm": null,
+      "implemented": false
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-display-p4",
+    "status": "diagnostic",
+    "scope": "T-Display-P4 V1.0 的 P4 rev < 3 指令、UART、GPIO35 BOOT、准确 G7/G8 路由的 I2C0 / XL9535 数字寄存器及 SDMMC 可调试；540×1168 屏幕提供模型预览，MIPI-DSI 帧输出尚未实现。",
+    "unsupported": [
+      "MIPI-DSI、HI8561 / GT9895 触摸、MIPI-CSI 摄像头、PPA/视频加速和完整出厂固件启动未验证；不生成虚构屏幕帧。",
+      "C6 协处理器、LoRa、GPS、以太网、音频、IMU、RTC、振动和电量芯片未连接；不将 I2C0 外设错误挂到 I2C1。",
+      "XL9535 只模拟方向/输出/输入极性与成对寄存器寻址；未连接的输入采用固定高电平调试值，不代表 XL9535 自带上拉或实际传感器状态。GPIO5 INT 无外设事件来源。",
+      "XL9535 供电开关、模拟电压、I2C APB 时钟门控及控制器专用复位门控未模拟；SD 卡当前按固定供电处理。",
+      "本配置选择 TFT V1.0 和硅片 rev < 3；不把 568×1232 AMOLED、键盘扩展、V2.0 预览板或 rev >= 3 固件视为等价型号。"
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-display-p4",
+    "boardId": "lilygo-t-display-p4",
+    "name": "LILYGO T-Display-P4 V1.0 TFT",
+    "chip": "esp32p4",
+    "physicalChip": "ESP32-P4 + ESP32-C6",
+    "flashMB": 16,
+    "psramMB": 32,
+    "hardwareRevision": "T-Display-P4 V1.0 TFT; simulator selects P4 silicon rev < 3, not V2.0 evaluation hardware",
+    "runtimeLevel": "partial",
+    "chronology": {
+      "date": "2025-06-13",
+      "basis": "hardware-release",
+      "sourceUrl": "https://wiki.lilygo.cc/products/t-display-series/t-display-p4/",
+      "sourceId": "official-wiki-t-display-p4",
+      "confidence": "medium",
+      "hardwareRevision": "T-Display-P4 V1.0",
+      "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+    },
+    "display": {
+      "width": 540,
+      "height": 1168,
+      "type": "LCD",
+      "controller": "HI8561 / H0405S002T002-V0",
+      "interface": "MIPI-DSI",
+      "implemented": false,
+      "physicalTouch": true,
+      "touchImplemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "P4 BOOT / GPIO35",
+        "type": "button",
+        "transport": "board",
+        "pin": 35,
+        "activeLow": true
+      }
+    ],
+    "sdCard": {
+      "slot": true,
+      "transport": "sdmmc",
+      "implemented": true,
+      "pins": {
+        "clk": 43,
+        "cmd": 44,
+        "d0": 39,
+        "d1": 40,
+        "d2": 41,
+        "d3": 42
+      },
+      "defaultImageMiB": 64,
+      "defaultFilesystem": "FAT32",
+      "power": "Current SDMMC backend supplies a digital powered socket; XL9535 IO15 supply switching is not modeled."
+    },
+    "pins": {
+      "boot": 35,
+      "i2c0": {
+        "sda": 7,
+        "scl": 8,
+        "xl9535": {
+          "address": 32,
+          "interrupt": 5,
+          "implemented": "digital register subset"
+        }
+      },
+      "i2c1": {
+        "sda": 20,
+        "scl": 21,
+        "implemented": false
+      },
+      "c6Sdio": {
+        "clk": 18,
+        "cmd": 19,
+        "data": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "implemented": false
+      }
+    },
+    "sourceIds": [
+      "p4-README-md",
+      "p4-gitmodules",
+      "p4-sdkconfig-defaults",
+      "p4-main-idf_component-yml",
+      "p4-main-CMakeLists-txt",
+      "p4-t_display_p4_config-h",
+      "p4-t_display_p4_driver-h",
+      "p4-t_display_p4_driver-cpp",
+      "p4-xl9535",
+      "p4-tft-schematic",
+      "p4-idf-gpio-signals",
+      "p4-idf-interrupts",
+      "p4-idf-i2c-reg",
+      "p4-idf-soc-reg",
+      "p4-idf-interrupt-ids",
+      "p4-idf-p4-clkrst",
+      "p4-idf-p4-gpio",
+      "official-store-shopify-1",
+      "official-wiki-t-display-p4"
+    ],
+    "memoryEvidence": {
+      "flash": "Manufacturer README and official storefront specify 16 MB P4 flash.",
+      "psram": "Official storefront t-display-p4 explicitly specifies P4 PSRAM 32 MB.",
+      "coprocessor": "README specifies C6 4 MB flash. It is not 4 MB PSRAM and is not a second running CPU in this profile.",
+      "sourceIds": [
+        "p4-README-md",
+        "official-store-shopify-1"
+      ]
+    },
+    "scope": "T-Display-P4 V1.0 的 P4 rev < 3 指令、UART、GPIO35 BOOT、准确 G7/G8 路由的 I2C0 / XL9535 数字寄存器及 SDMMC 可调试；540×1168 屏幕提供模型预览，MIPI-DSI 帧输出尚未实现。",
+    "unsupported": [
+      "MIPI-DSI、HI8561 / GT9895 触摸、MIPI-CSI 摄像头、PPA/视频加速和完整出厂固件启动未验证；不生成虚构屏幕帧。",
+      "C6 协处理器、LoRa、GPS、以太网、音频、IMU、RTC、振动和电量芯片未连接；不将 I2C0 外设错误挂到 I2C1。",
+      "XL9535 只模拟方向/输出/输入极性与成对寄存器寻址；未连接的输入采用固定高电平调试值，不代表 XL9535 自带上拉或实际传感器状态。GPIO5 INT 无外设事件来源。",
+      "XL9535 供电开关、模拟电压、I2C APB 时钟门控及控制器专用复位门控未模拟；SD 卡当前按固定供电处理。",
+      "本配置选择 TFT V1.0 和硅片 rev < 3；不把 568×1232 AMOLED、键盘扩展、V2.0 预览板或 rev >= 3 固件视为等价型号。"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "wasmFirmwareVerified": true,
+      "factoryBootVerified": false,
+      "hardwareValidated": false,
+      "nativeTestScope": "Four tests: actual RV32I BOOT press/release; MMIO I2C0 routing/NACK/register pairs/reset; exact SD pins and absent clock; real RAM IDMAC CMD24/CMD17 block round-trip. Full P4 debug suite also passed.",
+      "wasmFirmwareScope": "Authored SRAM-only RV32I probe through public runtime, real Worker and production WASM; I2C0 XL9535 round-trip, BOOT GPIO35 press/release, pause and reset. DSI frame remains null. Not factory firmware.",
+      "wasmCheckpoint": {
+        "checkedAt": "2026-11-22T08:37:41Z",
+        "wasmSha256": "4b4f708c8ece27cdf105e1258bf08ba7702f1fdf09a9887ce0e7f3c60993504f",
+        "probe": {
+          "bytes": 2432,
+          "sha256": "e8440f4d408df0bf308875c338ba8c7a51f009834947884be84ba09b5176c80e"
+        },
+        "romSha256": "948f2c7d108d04a9c3a982f9c1c498fb17f2c4a68abc51f87782592034d7ce44",
+        "command": "node --test tools/platform-lilygo-p4-test.mjs",
+        "result": "passed",
+        "factoryFirmwareVerified": false
+      }
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "official-firmware-candidates-listed-unverified",
+      "sourceIds": [
+        "p4-README-md"
+      ],
+      "simulationVerified": false,
+      "notes": "Pinned manufacturer repository has TFT/AMOLED and software-specific firmware directories. MIPI-DSI and most external devices are unmodeled; no factory binary is installed as a platform default."
+    }
+  }
 }
