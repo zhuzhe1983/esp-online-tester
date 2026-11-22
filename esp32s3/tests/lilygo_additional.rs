@@ -225,3 +225,42 @@ fn mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply() {
         b.set_sd_card_present(false);assert_eq!(sd_command(&mut b,pins,0,0),[255,255]);
     }
 }
+
+#[test]
+fn glass_v2_and_long_execute_native_spi_without_vendor_page_side_effects() {
+    for (id,clock,mosi,cs,dc,rst,light,x,y,w,h) in [
+        ("lilygo-t-glass",15,16,17,Some(21),18,None,0u16,168u16,126u16,126u16),
+        ("lilygo-t-display-s3-long",17,13,12,None,16,Some(1),0,0,180,640),
+    ] {
+        let mut m=machine(id);for (pin,signal) in [(clock,101),(mosi,103),(cs,110)] {mode(&mut m,pin,signal);}write(&mut m,SPI+0x20,0x3e);mode(&mut m,rst,256);output(&mut m,rst,true);
+        if let Some(pin)=dc {mode(&mut m,pin,256);}
+        if let Some(pin)=light{mode(&mut m,pin,256);output(&mut m,pin,false);}
+        for (c,d) in [(0x11,vec![]),(0x29,vec![]),(0x3a,vec![0x55])] {screen_command(&mut m,dc,c,&d);}
+        let put=|m:&mut esp32s3::Machine,x:u16,y:u16,color:u16| {screen_command(m,dc,0x2a,&[x.to_be_bytes(),x.to_be_bytes()].concat());screen_command(m,dc,0x2b,&[y.to_be_bytes(),y.to_be_bytes()].concat());screen_command(m,dc,0x2c,&color.to_be_bytes());};
+        put(&mut m,x,y,0xf800);put(&mut m,x+w-1,y+h-1,0x07e0);let frame=m.bus.board.display().unwrap();assert_eq!((frame.0,frame.1),(u32::from(w),u32::from(h)));assert_eq!(frame.2[0],0xf800);assert_eq!(frame.2[frame.2.len()-1],0x07e0);
+        if dc.is_some() {screen_command(&mut m,dc,0xfe,&[7]);for c in [0x28,0x10,0x2c,0x01] {screen_command(&mut m,dc,c,&[0xff;4]);}assert_eq!(m.bus.board.display().unwrap().2,frame.2,"JD9613 analog page is not DCS");screen_command(&mut m,dc,0xfe,&[0]);put(&mut m,0,0,0xffff);assert_eq!(m.bus.board.display().unwrap().2,frame.2,"V2 prism hides the top of the panel");}
+        mode(&mut m,clock,102);put(&mut m,x,y,0xffff);assert_eq!(m.bus.board.display().unwrap().2,frame.2);mode(&mut m,clock,101);output(&mut m,rst,false);assert!(m.bus.board.display().unwrap().2.iter().all(|&v|v==0));boot_probe(&mut m,&[0]);
+    }
+}
+#[test]
+fn long_axs_touch_requires_its_eleven_byte_query_and_shared_reset() {
+    let mut r=Rig::new("lilygo-t-display-s3-long");let mut devices=r.board.i2c_devices();assert_eq!(devices.len(),2);assert!(devices.iter().all(|(_,a,d)|*a==0x3b&&d.pins()==Some((15,10))));let d=devices[0].2.as_mut();assert!(!d.start(false));r.drive(16,true);r.board.touch(179,639,true);
+    let read=|d:&mut dyn I2cDevice,query:&[u8]|{assert!(d.start(false));for &b in query{assert!(d.write(b));}assert!(d.start(true));(0..8).map(|_|d.read()).collect::<Vec<_>>()};
+    assert_eq!(read(d,&[0]),[255;8]);let query=[0xb5,0xab,0xa5,0x5a,0,0,0,8,0,0,0];assert_eq!(read(d,&query),[0,1,0x80,1,0,179,0,0]);assert_eq!(r.board.touch_irq(),Some((11,false)));r.board.touch(0,0,true);assert_eq!(read(d,&query),[0,1,0x82,0x80,0,0,0,0]);r.board.touch(0,0,false);assert_eq!(read(d,&query)[1],0);r.drive(16,false);assert!(!d.start(false));r.drive(16,true);assert_eq!(read(d,&query)[1],0);
+    let mut m=machine("lilygo-t-display-s3-long");mode(&mut m,16,256);output(&mut m,16,true);i2c_route(&mut m,15,10,0);assert!(i2c_write(&mut m,0,0x3b,&query));i2c_route(&mut m,15,9,0);assert!(!i2c_write(&mut m,0,0x3b,&query));
+}
+#[test]
+fn ts_ssd1680_native_spi_refreshes_real_crop_only_at_busy_deadline() {
+    let mut m=machine("lilygo-ts-s3-epaper");for (pin,signal) in [(14,101),(11,103),(15,110),(16,256),(47,256)] {mode(&mut m,pin,signal);}write(&mut m,SPI+0x20,0x3e);output(&mut m,47,true);
+    for (c,d) in [(0x11,vec![3]),(0x44,vec![15,15]),(0x45,vec![249,0,249,0]),(0x4e,vec![15]),(0x4f,vec![249,0]),(0x24,vec![0x3f])] {screen_command(&mut m,Some(16),c,&d);}
+    assert!(m.bus.board.display().unwrap().2.iter().all(|&v|v==65535));screen_command(&mut m,Some(16),0x22,&[0xf7]);screen_command(&mut m,Some(16),0x20,&[]);let due=m.bus.board.next_deadline().unwrap();assert!(m.bus.board.input_levels().contains(&(48,true)));m.bus.board.advance_to(due-1);assert_eq!(m.bus.board.display_frames(),0);m.bus.board.advance_to(due);let frame=m.bus.board.display().unwrap();assert_eq!((frame.0,frame.1),(122,250));assert_eq!(&frame.2[frame.2.len()-2..],&[0,0]);assert_eq!(frame.2.iter().filter(|&&p|p==0).count(),2);assert!(m.bus.board.input_levels().contains(&(48,false)));
+    output(&mut m,47,false);assert_eq!(m.bus.board.display().unwrap().2,frame.2,"reset retains optical pixels");output(&mut m,47,true);mode(&mut m,14,102);screen_command(&mut m,Some(16),0x20,&[]);assert_eq!(m.bus.board.next_deadline(),None);boot_probe(&mut m,&[0]);
+    let mut r=Rig::new("lilygo-ts-s3-epaper");r.drive(47,true);let p=SpiPins{sclk:1<<14,mosi:1<<11,cs:1<<15,..Default::default()};r.drive(16,false);r.board.spi_transfer_pins(2,SpiPins{cs:p.cs|1<<13,..p},&[0x20],0);assert_eq!(r.board.next_deadline(),None,"SD and display cannot be selected together");r.board.spi_transfer_pins(2,p,&[0x10],0);r.drive(16,true);r.board.spi_transfer_pins(2,p,&[1],0);assert!(r.board.input_levels().contains(&(48,true)));assert_eq!(r.board.next_deadline(),None,"deep sleep BUSY is not a polling deadline");
+}
+#[test]
+fn long_and_ts_sd_use_separate_exact_buses_and_persist_across_removal() {
+    for (id,clk,mosi,miso,cs,conflict) in [("lilygo-t-display-s3-long",40,39,41,38,None),("lilygo-ts-s3-epaper",14,11,2,13,Some(15))] {
+        let mut b=lilygo_additional::make_board(id).unwrap();let p=SpiPins{sclk:1<<clk,mosi:1<<mosi,miso:Some(miso),cs:1<<cs};b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();b.spi_transfer_pins(2,SpiPins{cs:0,..p},&[255;10],0);assert_eq!(sd_command(&mut b,p,0,0),[255,1]);sd_command(&mut b,p,8,0x1aa);b.spi_transfer_pins(2,p,&[],4);for _ in 0..2 {sd_command(&mut b,p,55,0);sd_command(&mut b,p,41,1<<30);}
+        assert_eq!(sd_command(&mut b,p,24,4),[255,0]);let mut payload=vec![0xfe];payload.extend([0x96;512]);payload.extend([255;2]);b.spi_transfer_pins(2,p,&payload,0);assert_eq!(b.spi_transfer_pins(2,p,&[],1),[5]);assert_eq!(sd_command(&mut b,p,17,4),[255,0]);assert_eq!(b.spi_transfer_pins(2,p,&[],2),[255,0xfe]);assert_eq!(b.spi_transfer_pins(2,p,&[],512),[0x96;512]);b.spi_transfer_pins(2,p,&[],2);assert_eq!(sd_command(&mut b,SpiPins{miso:Some(0),..p},58,0),[255;2]);if let Some(pin)=conflict {assert_eq!(sd_command(&mut b,SpiPins{cs:p.cs|1<<pin,..p},0,0),[255;2]);}b.set_sd_card_present(false);assert_eq!(sd_command(&mut b,p,0,0),[255;2]);
+    }
+}

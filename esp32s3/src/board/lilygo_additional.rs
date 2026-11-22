@@ -14,13 +14,14 @@ use std::sync::{Arc,Mutex};
 use esp_soc::devices::{i2c_bitbang::I2cBitBang,oled_mono::{OledMono,OledI2c,OledKind}};
 
 pub fn make_board(name:&str)->Option<Board> {
+    if name=="lilygo-ts-s3-epaper" {return Some(Box::new(TsEpaper::new()));}
     let (name,tft):(&'static str,bool)=match name {
         "lilygo-t-deck-pro-meshtastic"=>("lilygo-t-deck-pro-meshtastic",false),
         "lilygo-t-deck-meshtastic"=>("lilygo-t-deck-meshtastic",true),
         "lilygo-t-deck-plus-meshtastic"=>("lilygo-t-deck-plus-meshtastic",true),
         "lilygo-t-deck-plus-1"=>("lilygo-t-deck-plus-1",true),
         _=>return WIRED.iter().find(|p|p.name==name).map(|p|Box::new(WiredBoard::new(p)) as Board)
-            .or_else(||SCREENS.iter().find(|p|p.display.name==name).map(|p|Box::new(ScreenBoard{profile:p,inner:LilygoDisplay::new(&p.display)}) as Board)),
+            .or_else(||SCREENS.iter().find(|p|p.display.name==name).map(|p|Box::new(ScreenBoard{profile:p,inner:LilygoDisplay::new(&p.display),card:None,card_present:true}) as Board)),
     };
     let inner:Board=if tft {Box::new(TDeck::new())}else{Box::new(LilygoEpaper::t_deck_pro())};
     Some(Box::new(AdditionalDeck{name,inner,tft,card:None,card_present:true,powered:false,dc:None,gpio_events:0}))
@@ -34,15 +35,17 @@ struct CardWiring {pins:[u8;4],other_selects:u64}
 struct PowerWiring {pins:(u8,u8),oled_ldo:Option<u8>,card_ldo:u8}
 struct WiredProfile {name:&'static str,oled:Option<OledWiring>,buttons:&'static [(&'static str,u8)],encoder:Option<(u8,u8)>,emission_enable:Option<u8>,led:Option<(u8,bool)>,card:Option<CardWiring>,power:Option<PowerWiring>,scope:&'static str}
 const BOOT:&[(&str,u8)]=&[("boot",0)];
-struct ScreenProfile {display:Profile,other_selects:u64,scope:&'static str}
+struct ScreenProfile {display:Profile,other_selects:u64,card:Option<CardWiring>,scope:&'static str}
 const SCREENS:&[ScreenProfile]=&[
-    ScreenProfile{display:Profile{name:"lilygo-t-connect-pro",controller:"ST7796",gram:[320,480],glass:[49,0,222,480],spi:[12,11,21],dc:Some(41),reset:None,light:Some((46,true)),light_pwm:true,enable:None,quad:false,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst226Se,address:0x5a,sda:39,scl:40,irq:3,reset:Some(47)}),expander:false},other_selects:(1<<10)|(1<<14),scope:"V1.0 with screen and SX1262; ST7796/CST226SE single-point touch/BOOT only; W5500/LoRa/relay/CAN/RS485/RS232 absent; no SD on this selected variant"},
-    ScreenProfile{display:Profile{name:"lilygo-t-circle-s3",controller:"GC9D01N",gram:[160,160],glass:[0,0,160,160],spi:[15,17,13],dc:Some(16),reset:None,light:Some((18,false)),light_pwm:true,enable:None,quad:false,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst816D,address:0x15,sda:11,scl:14,irq:12,reset:None}),expander:false},other_selects:0,scope:"V1.1 base board; GC9D01N/CST816D single-point touch/BOOT; APA102/audio/microphone absent; infrared expansion excluded"},
-    ScreenProfile{display:Profile{name:"lilygo-t-encoder-pro",controller:"CO5300",gram:[390,390],glass:[0,0,390,390],spi:[12,11,10],dc:None,reset:Some(4),light:None,light_pwm:false,enable:Some(3),quad:true,buttons:&[("encoder-press",0)],encoder:Some((1,2)),touch:Some(TouchWiring{kind:TouchKind::Cst816D,address:0x15,sda:5,scl:6,irq:9,reset:Some(8)}),expander:false},other_selects:0,scope:"TFD12MASBCTB4_V0_07 CO5300/CST816D panel; QSPI display and encoder; original DXQ120MYB2416A SH8601/CHSC5816 panel excluded; buzzer absent"},
+    ScreenProfile{display:Profile{name:"lilygo-t-glass",controller:"JD9613",gram:[128,294],glass:[0,168,126,126],spi:[15,16,17],dc:Some(21),reset:Some(18),light:None,light_pwm:false,enable:None,quad:false,buttons:BOOT,encoder:None,touch:None,expander:false},other_selects:0,card:None,scope:"T-Glass V2 bottom 126x126 prism window; JD9613 native126x294 with padded address canvas128x294; vendor pages and native0/180 rotation; capacitive pad14/optical mirror/IMU/RTC/audio unmodeled"},
+    ScreenProfile{display:Profile{name:"lilygo-t-display-s3-long",controller:"AXS15231B",gram:[180,640],glass:[0,0,180,640],spi:[17,13,12],dc:None,reset:Some(16),light:Some((1,false)),light_pwm:true,enable:None,quad:true,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Axs15231,address:0x3b,sda:15,scl:10,irq:11,reset:Some(16)}),expander:false},other_selects:0,card:Some(CardWiring{pins:[40,39,41,38],other_selects:0}),scope:"New AXS15231B display/integrated-touch assembly with shared reset16; DCS RGB565/QSPI/active-low backlight/BOOT/SPI-SD; old CST3530 assembly, fuel gauge/charger/RTC unmodeled"},
+    ScreenProfile{display:Profile{name:"lilygo-t-connect-pro",controller:"ST7796",gram:[320,480],glass:[49,0,222,480],spi:[12,11,21],dc:Some(41),reset:None,light:Some((46,true)),light_pwm:true,enable:None,quad:false,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst226Se,address:0x5a,sda:39,scl:40,irq:3,reset:Some(47)}),expander:false},other_selects:(1<<10)|(1<<14),card:None,scope:"V1.0 with screen and SX1262; ST7796/CST226SE single-point touch/BOOT only; W5500/LoRa/relay/CAN/RS485/RS232 absent; no SD on this selected variant"},
+    ScreenProfile{display:Profile{name:"lilygo-t-circle-s3",controller:"GC9D01N",gram:[160,160],glass:[0,0,160,160],spi:[15,17,13],dc:Some(16),reset:None,light:Some((18,false)),light_pwm:true,enable:None,quad:false,buttons:BOOT,encoder:None,touch:Some(TouchWiring{kind:TouchKind::Cst816D,address:0x15,sda:11,scl:14,irq:12,reset:None}),expander:false},other_selects:0,card:None,scope:"V1.1 base board; GC9D01N/CST816D single-point touch/BOOT; APA102/audio/microphone absent; infrared expansion excluded"},
+    ScreenProfile{display:Profile{name:"lilygo-t-encoder-pro",controller:"CO5300",gram:[390,390],glass:[0,0,390,390],spi:[12,11,10],dc:None,reset:Some(4),light:None,light_pwm:false,enable:Some(3),quad:true,buttons:&[("encoder-press",0)],encoder:Some((1,2)),touch:Some(TouchWiring{kind:TouchKind::Cst816D,address:0x15,sda:5,scl:6,irq:9,reset:Some(8)}),expander:false},other_selects:0,card:None,scope:"TFD12MASBCTB4_V0_07 CO5300/CST816D panel; QSPI display and encoder; original DXQ120MYB2416A SH8601/CHSC5816 panel excluded; buzzer absent"},
 ];
 /// Only the protocol implementation is shared. Each constructor above declares
 /// its own exact pin map, selected panel, touch type and shared-bus exclusions.
-struct ScreenBoard {profile:&'static ScreenProfile,inner:LilygoDisplay}
+struct ScreenBoard {profile:&'static ScreenProfile,inner:LilygoDisplay,card:Option<Box<SpiSdCard>>,card_present:bool}
 impl BoardModel for ScreenBoard {
     fn name(&self)->&'static str {self.profile.display.name}
     fn uses_gpio_routes(&self)->bool {true}
@@ -50,7 +53,14 @@ impl BoardModel for ScreenBoard {
     fn uses_gpio_pwm(&self)->bool {self.inner.uses_gpio_pwm()}
     fn gpio_pwm_at(&mut self,cycle:VirtualCycle,pwm:&dyn Fn(u8)->Option<(f64,u32)>) {self.inner.gpio_pwm_at(cycle,pwm);}
     fn uses_spi_pins(&self)->bool {true}
-    fn spi_transfer_pins(&mut self,host:u8,pins:SpiPins,tx:&[u8],rx:usize)->Vec<u8> {if pins.cs&self.profile.other_selects!=0 {return vec![255;rx];}self.inner.spi_transfer_pins(host,pins,tx,rx)}
+    fn spi_transfer_pins(&mut self,host:u8,pins:SpiPins,tx:&[u8],rx:usize)->Vec<u8> {
+        if let (Some(w),Some(card))=(self.profile.card,&mut self.card) {let [clk,mosi,miso,cs]=w.pins;
+            if self.card_present&&pins.sclk&(1<<clk)!=0&&pins.mosi&(1<<mosi)!=0 {let selected=pins.cs&((1<<cs)|w.other_selects)==1<<cs;let bytes=card.transfer(selected,tx,rx);if selected{return if pins.miso==Some(miso){bytes}else{vec![255;rx]};}}
+        }
+        if pins.cs&self.profile.other_selects!=0 {return vec![255;rx];}self.inner.spi_transfer_pins(host,pins,tx,rx)
+    }
+    fn attach_spi_sd_card(&mut self,image:Box<dyn SdStore>,config:SdCardConfig)->Result<String,String> {if self.profile.card.is_none(){return Err("No SD socket on selected screen target".into());}let card=SpiSdCard::new(image,config)?;let description=card.describe();self.card=Some(Box::new(card));Ok(description)}
+    fn set_sd_card_present(&mut self,present:bool) {if self.card_present!=present {if let Some(card)=&mut self.card {card.power_cycle();}}self.card_present=present;}
     fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {self.inner.i2c_devices()}
     fn input_levels(&self)->Vec<(u8,bool)> {self.inner.input_levels()}
     fn named_pin(&self,name:&str)->Option<u8> {self.inner.named_pin(name).or_else(||(name=="boot").then_some(0))}
@@ -222,4 +232,31 @@ impl BoardModel for AdditionalDeck {
         let detail=if self.tft {format!("SD-SPI={} {}",self.card.is_some()&&self.card_present,self.inner.report().replace("audio/SD/GNSS=absent","audio/GNSS=absent"))}else{self.inner.report()};
         format!("[{}] selected={} GNSS/audio/charger/battery=unmodeled factory/Meshtastic-boot=unverified; {}",self.name,if self.tft {"original/Plus SX1262 main-board wiring"}else{"Pro V1.0 only; V1.1 excluded"},detail)
     }
+}
+
+// DEPG0213BN is SSD1680, not the older SSD1681 or UC81xx family. Its real
+// 176x296 RAM, 128-wide firmware canvas and 122x250 glass are distinct.
+const TS_IO:WiredProfile=WiredProfile{name:"lilygo-ts-s3-epaper",oled:None,buttons:BOOT,encoder:None,emission_enable:None,led:None,card:Some(CardWiring{pins:[14,11,2,13],other_selects:1<<15}),power:None,scope:"TS-S3 exact SD/BOOT wires"};
+struct TsEpaper {inner:WiredBoard,panel:esp_soc::devices::ssd1680::Ssd1680,reset:bool,dc:Option<bool>,cs:Option<bool>}
+impl TsEpaper {fn new()->Self {let mut panel=esp_soc::devices::ssd1680::Ssd1680::new(48,240_000_000);panel.set_timing_ms(4000,800,100,150);Self{inner:WiredBoard::new(&TS_IO),panel,reset:false,dc:None,cs:None}}}
+impl BoardModel for TsEpaper {
+    fn name(&self)->&'static str {TS_IO.name}
+    fn uses_gpio_routes(&self)->bool {true}
+    fn gpio_waveform_at(&mut self,cycle:VirtualCycle,routes:PinRoutes<'_>) {self.panel.advance_to(cycle);let reset=routes.software_output(47)==Some(true);if self.reset&&!reset{self.panel.reset(true);}self.reset=reset;self.dc=routes.software_output(16);self.cs=routes.software_output(15);}
+    fn uses_spi_pins(&self)->bool {true}
+    fn spi_transfer_pins(&mut self,host:u8,pins:SpiPins,tx:&[u8],rx:usize)->Vec<u8> {
+        if self.reset&&self.cs!=Some(true)&&pins.sclk&(1<<14)!=0&&pins.mosi&(1<<11)!=0&&pins.cs&((1<<15)|(1<<13))==1<<15 {if let Some(dc)=self.dc{self.panel.write(dc,tx);}}
+        self.inner.spi_transfer_pins(host,pins,tx,rx)
+    }
+    fn input_levels(&self)->Vec<(u8,bool)> {vec![(0,true),(48,self.panel.busy())]}
+    fn named_pin(&self,name:&str)->Option<u8> {self.inner.named_pin(name)}
+    fn attach_spi_sd_card(&mut self,image:Box<dyn SdStore>,config:SdCardConfig)->Result<String,String> {self.inner.attach_spi_sd_card(image,config)}
+    fn set_sd_card_present(&mut self,present:bool) {self.inner.set_sd_card_present(present);}
+    fn next_deadline(&self)->Option<VirtualCycle> {self.panel.next_deadline()}
+    fn advance_to(&mut self,cycle:VirtualCycle) {self.panel.advance_to(cycle);}
+    fn take_edges(&mut self)->Vec<BoardEdge> {self.panel.take_edges()}
+    fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {Some((122,250,self.panel.frame.clone(),self.panel.version))}
+    fn display_version(&self)->u64 {self.panel.version}
+    fn display_frames(&self)->u64 {self.panel.frames}
+    fn report(&self)->String {format!("[{}] DEPG0213BN/SSD1680 visible122x250 RAM176x296; origin0 exact GxDEPG0213BN; 4000/800ms modeled full/partial driver deadlines; bytes={} frames={} factory-boot=unverified analog/LUT/temperature/RF unmodeled",self.name(),self.panel.ram_bytes_written,self.panel.frames)}
 }

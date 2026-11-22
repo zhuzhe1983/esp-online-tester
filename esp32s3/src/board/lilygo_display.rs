@@ -9,7 +9,7 @@ use esp_soc::devices::{DcsPanel,i2c_bitbang::I2cBitBang};
 use esp_soc::pins::PinRoutes;
 
 #[derive(Clone,Copy,PartialEq)]
-pub(super) enum TouchKind {Cst816S,Cst816T,Cst816D,Cst226,Cst226Se,Ft6336}
+pub(super) enum TouchKind {Cst816S,Cst816T,Cst816D,Cst820,Axs15231,Cst226,Cst226Se,Ft6336}
 #[derive(Clone,Copy)]
 pub(super) struct TouchWiring {pub(super) kind:TouchKind,pub(super) address:u8,pub(super) sda:u8,pub(super) scl:u8,pub(super) irq:u8,pub(super) reset:Option<u8>}
 pub(super) struct Profile {
@@ -47,17 +47,18 @@ const PROFILES:&[&Profile]=&[&PRO_EXTERNAL,&PAGER_MESHTASTIC,&EMBED_PLUS,&ULTRA,
 
 pub fn make_board(name:&str)->Option<Board> {PROFILES.iter().find(|p|p.name==name).map(|&p|Box::new(LilygoDisplay::new(p)) as Board)}
 
-struct TouchState {powered:bool,asleep:bool,down:bool,x:u16,y:u16,width:u16,height:u16}
-impl TouchState {fn clear(&mut self) {self.down=false;self.asleep=false;}}
+pub(super) struct TouchState {pub(super) powered:bool,pub(super) asleep:bool,pub(super) down:bool,pub(super) x:u16,pub(super) y:u16,pub(super) width:u16,pub(super) height:u16}
+impl TouchState {pub(super) fn clear(&mut self) {self.down=false;self.asleep=false;}}
 /// Digital report/command subsets derived from the pinned manufacturer's SensorLib.
 /// No firmware/project/calibration identifiers, pressure or gestures are invented.
-struct TouchDevice {kind:TouchKind,state:Arc<Mutex<TouchState>>,registers:[u8;256],ptr:u8,address_byte:bool,prefix:Option<u8>,word:u16,read_at:usize}
+pub(super) struct TouchDevice {kind:TouchKind,state:Arc<Mutex<TouchState>>,registers:[u8;256],ptr:u8,address_byte:bool,prefix:Option<u8>,word:u16,read_at:usize,query:[u8;11],query_len:usize}
 impl TouchDevice {
-    fn new(kind:TouchKind,state:Arc<Mutex<TouchState>>)->Self {Self{kind,state,registers:[0;256],ptr:0,address_byte:true,prefix:None,word:0,read_at:0}}
+    pub(super) fn new(kind:TouchKind,state:Arc<Mutex<TouchState>>)->Self {Self{kind,state,registers:[0;256],ptr:0,address_byte:true,prefix:None,word:0,read_at:0,query:[0;11],query_len:0}}
 }
 impl I2cDevice for TouchDevice {
-    fn start(&mut self,read:bool)->bool {let state=self.state.lock().expect("LILYGO touch state mutex poisoned");if !state.powered || state.asleep {return false;}drop(state);if !read {self.address_byte=true;self.prefix=None;}true}
+    fn start(&mut self,read:bool)->bool {let state=self.state.lock().expect("LILYGO touch state mutex poisoned");if !state.powered || state.asleep {return false;}drop(state);if !read {self.address_byte=true;self.prefix=None;self.query_len=0;}else{self.read_at=0;}true}
     fn write(&mut self,b:u8)->bool {
+        if self.kind==TouchKind::Axs15231 {if self.query_len<11 {self.query[self.query_len]=b;}self.query_len=self.query_len.saturating_add(1);return true;}
         if self.address_byte {self.address_byte=false;self.prefix=if self.kind==TouchKind::Cst226 && matches!(b,0xd1|0xd2) {Some(b)} else {None};self.word=u16::from(b);self.ptr=b;self.read_at=0;return true;}
         if let Some(prefix)=self.prefix.take() {self.word=(u16::from(prefix)<<8)|u16::from(b);self.read_at=0;if self.word==0xd105 {self.state.lock().expect("LILYGO touch state mutex poisoned").asleep=true;}return true;}
         let reg=self.ptr;
@@ -71,6 +72,14 @@ impl I2cDevice for TouchDevice {
     }
     fn read(&mut self)->u8 {
         let s=self.state.lock().expect("LILYGO touch state mutex poisoned");
+        if self.kind==TouchKind::Axs15231 {
+            // Exact GFX_AXS15231B_Image query and example coordinate transform.
+            // These are debug contact coordinates, not physical calibration.
+            let vertical=s.height.saturating_sub(s.y);
+            let report=[0,u8::from(s.down),((vertical>>8) as u8&15)|if s.down{0x80}else{0},vertical as u8,(s.x>>8) as u8&15,s.x as u8,0,0];
+            let valid=self.query_len==11&&self.query==[0xb5,0xab,0xa5,0x5a,0,0,0,8,0,0,0];
+            let value=if valid {report.get(self.read_at).copied().unwrap_or(0xff)}else{0xff};self.read_at=self.read_at.saturating_add(1);return value;
+        }
         if self.kind==TouchKind::Cst226 {
             let report=[u8::from(s.down)*6,(s.x>>4) as u8,(s.y>>4) as u8,((s.x&15)<<4) as u8|(s.y&15) as u8,0,u8::from(s.down),0xab];
             let value=match self.word {0xd1fc=>[0,0,0xca,0xca].get(self.read_at).copied(),0xd1f8=>[s.width as u8,(s.width>>8) as u8,s.height as u8,(s.height>>8) as u8].get(self.read_at).copied(),0xd204|0xd208=>Some(0),0=>report.get(self.read_at).copied(),_=>None}.unwrap_or(0);
@@ -91,6 +100,7 @@ impl I2cDevice for TouchDevice {
         if self.kind==TouchKind::Cst816S {self.registers[0xa7]=0xb4;}
         if self.kind==TouchKind::Cst816T {self.registers[0xa7]=0xb5;}
         if self.kind==TouchKind::Cst816D {self.registers[0xa7]=0xb6;}
+        if self.kind==TouchKind::Cst820 {self.registers[0xa7]=0xb7;}
         if self.kind==TouchKind::Ft6336 {self.registers[0xa8]=0x11;}
         let value=self.registers[usize::from(self.ptr)];self.ptr=self.ptr.wrapping_add(1);value
     }
@@ -98,23 +108,30 @@ impl I2cDevice for TouchDevice {
 
 pub(super) struct LilygoDisplay {
     profile:&'static Profile,panel:DcsPanel,dc:Option<bool>,reset:bool,enabled:bool,light:u32,gpio_light:u32,pwm:Option<u32>,
-    cs:Option<bool>,header:[u8;4],header_len:usize,command:u8,brightness:u8,
+    cs:Option<bool>,header:[u8;4],header_len:usize,command:u8,brightness:u8,page:u8,
     version:u64,transactions:u64,i2c:I2cBitBang,levels:[bool;2],edges:Vec<BoardEdge>,cycle:VirtualCycle,
     touch:Arc<Mutex<TouchState>>,expander:Arc<Mutex<Tca9555State>>,
 }
 impl LilygoDisplay {
     pub(super) fn new(profile:&'static Profile)->Self {
         let panel=if profile.controller=="ST7789" {DcsPanel::st7789()} else {DcsPanel::new(profile.gram[0],profile.gram[1])};
-        Self{profile,panel,dc:None,reset:profile.reset.is_none(),enabled:profile.enable.is_none(),light:if profile.light.is_none(){65535}else{0},gpio_light:0,pwm:None,cs:None,header:[0;4],header_len:0,command:0,brightness:255,version:0,transactions:0,i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),cycle:0,
+        Self{profile,panel,dc:None,reset:profile.reset.is_none(),enabled:profile.enable.is_none(),light:if profile.light.is_none(){65535}else{0},gpio_light:0,pwm:None,cs:None,header:[0;4],header_len:0,command:0,brightness:255,page:0,version:0,transactions:0,i2c:I2cBitBang::new(),levels:[true;2],edges:Vec::new(),cycle:0,
             touch:Arc::new(Mutex::new(TouchState{powered:profile.touch.is_some_and(|w|w.reset.is_none()),asleep:false,down:false,x:0,y:0,width:profile.glass[2] as u16,height:profile.glass[3] as u16})),expander:Default::default()}
     }
     fn supplied(&self)->bool {self.enabled && (!self.profile.expander || self.expander.lock().expect("LILYGO expander mutex poisoned").driven_high()&(1<<7)!=0)}
     fn command(&mut self,c:u8) {
+        if self.profile.controller=="JD9613" && (c==0xfe||self.page!=0) {self.command=c;return;}
         if c==0x3c && self.command==0x2c {return;}
         self.command=c;self.panel.dc=false;self.panel.byte(c);self.panel.dc=true;self.version=self.version.wrapping_add(1);
         if c==1 {self.brightness=255;}
     }
-    fn data(&mut self,data:&[u8]) {if self.command==0x2c && self.panel.colmod&7!=5 {return;}self.panel.dc=true;for &b in data {if self.command==0x51 {if self.brightness!=b {self.version=self.version.wrapping_add(1);}self.brightness=b;}self.panel.byte(b);}}
+    fn data(&mut self,data:&[u8]) {
+        // JD9613 vendor pages reuse DCS opcodes for analog registers. Never
+        // interpret page-1 2Ch or page-7 10h as pixels/sleep commands.
+        if self.profile.controller=="JD9613" {if self.command==0xfe {if let Some(&page)=data.first(){self.page=page;}return;}
+            if self.page!=0{return;}}
+        if self.profile.name=="lilygo-t-glass" && self.command==0x36 && data.first().is_some_and(|b|b&0x20!=0) {return;}
+        if self.command==0x2c && self.panel.colmod&7!=5 {return;}self.panel.dc=true;for &b in data {if self.command==0x51 {if self.brightness!=b {self.version=self.version.wrapping_add(1);}self.brightness=b;}self.panel.byte(b);}}
     fn valid_header(data:&[u8])->bool {matches!(data[0],0x02|0x32) && data[1]==0 && data[3]==0}
     fn quad(&mut self,mut data:&[u8]) {
         if self.cs==Some(false) {
@@ -136,7 +153,7 @@ impl BoardModel for LilygoDisplay {
         self.dc=self.profile.dc.and_then(|p|routes.software_output(p));
         self.gpio_light=self.profile.light.map_or(65535,|(p,active)|if routes.software_output(p)==Some(active){65535}else{0});
         self.light=self.pwm.unwrap_or(self.gpio_light);
-        if (before.0 && !self.reset) || (before.1 && !self.enabled) {self.panel.reset();self.header_len=0;self.command=0;self.brightness=255;}
+        if (before.0 && !self.reset) || (before.1 && !self.enabled) {self.panel.reset();self.header_len=0;self.command=0;self.brightness=255;self.page=0;}
         if before!=(self.reset,self.enabled,self.light) {self.version=self.version.wrapping_add(1);}
         let cs=routes.software_output(self.profile.spi[2]);if cs==Some(false) && self.cs!=Some(false) {self.header_len=0;self.header=[0;4];}self.cs=cs;
         if let Some(w)=self.profile.touch {let old=self.touch_level();let mut s=self.touch.lock().expect("LILYGO touch state mutex poisoned");let power=w.reset.is_none_or(|p|routes.software_output(p)==Some(true));if !power {s.clear();}s.powered=power;drop(s);let level=self.touch_level();if old!=level {self.edges.push(BoardEdge{cycle,pin:w.irq,level});}}
