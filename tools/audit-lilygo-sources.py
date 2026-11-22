@@ -144,7 +144,7 @@ def normalized_specifications(rows):
             for group in re.findall(r'(\d+(?:\.\d+)?\s*[xX×*]\s*\d+(?:\.\d+)?(?:\s*[xX×*]\s*\d+(?:\.\d+)?)?)\s*mm', value, re.I):
                 dimensions.append({'values': [float(x) for x in re.findall(r'\d+(?:\.\d+)?', group)], 'unit': 'mm',
                                    'sourceId': sid, 'label': label, 'scope': 'as labeled; do not infer axis order or thickness'})
-        for role, destination in [('flash', flash), ('ps\s*ram', psram)]:
+        for role, destination in [('flash', flash), (r'ps\s*ram', psram)]:
             if re.fullmatch(r'.*' + role + r'.*', label, re.I) and not re.search(r'frequency|mode|clock|pin|interface', label, re.I):
                 for n in re.findall(r'(?<!\d)(\d+)\s*M(?:B|iB)\b', value):
                     destination.setdefault(int(n), set()).add(sid)
