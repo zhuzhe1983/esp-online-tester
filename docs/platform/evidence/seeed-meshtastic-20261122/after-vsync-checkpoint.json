@@ -1,0 +1,399 @@
+{
+  "schema": 1,
+  "scope": "Actual unchanged Meshtastic ROM boot after clock-only VSYNC and RGB-lane fixes, before the subsequent frame-boundary correction. A visible but horizontally drifting and intermittently byte-shifted frame is a negative display result, not display compatibility.",
+  "checkedAt": "2026-11-22T10:44:53.306Z",
+  "productId": "seeed-sensecap-indicator-meshtastic",
+  "firmwareId": "seeed-sensecap-indicator-meshtastic-2511",
+  "wasmSha256": "abb53cb6a9f768aa811b48aa89ccacb2774d5207e33388a116e352cd1972c995",
+  "workerSha256": "f2903f82105003582d2ccde163c3dbfbc1c61d980c542fd9c0a5a69803af960d",
+  "probeSha256": "d6d8e66bf415fd53d46e60d794b8d5609e88389f003f447b24db81eea976359d",
+  "rawReceiptSha256": "7c0f02b030d1230559267f6b192aa07ae7516ae2954c2dd09b7619e7b6bfca51",
+  "firmwarePatched": false,
+  "sourceHashes": {
+    "esp32s3/src/bus/dma.rs": "1617f2edfae802c5a02f6f8d37802a0709ff909b57f2f731290c1efb679e2433",
+    "esp32s3/src/periph.rs": "e6f4576f0a8c64a74d80d9a2d42d0bfd31bf970fb0ccb637ead4cde65ecbc7bf",
+    "esp32s3/src/board/seeed_indicator.rs": "48b58ac55586c9cbd31a22e8919a402d554006e1bc3fe47e61dd6c0a576fc69e"
+  },
+  "command": "ESP32SIM_ROM_DIR=<roms> node tools/probe-seeed-runtime.mjs --product seeed-sensecap-indicator-meshtastic --seconds 8 --local-map <official-zip-local-map> --local-only --lora-json <explicit-peer-fixture> --inputs <physical-button-fixture> --output <fresh-output>",
+  "status": "observed",
+  "frames": [
+    {
+      "label": "boot",
+      "width": 480,
+      "height": 480,
+      "guestSeconds": 8,
+      "insns": 1479021024,
+      "nonwhitePixels": 230400,
+      "nonblackPixels": 2179,
+      "colors": 4,
+      "meanRgb": 0.5051403356481482,
+      "changedPixelsFromPrevious": null,
+      "rgbaSha256": "48400ca0c485b601f8ac506a273e1eea2df457a8dd79f17ad1b4e2d18f12395e",
+      "serialSha256": "7c18524b203197ef6d26c8001e35542a56ee8564c6d63be02c06567f7fdc573c",
+      "serialBytes": 16285,
+      "rgbaHistogram": [
+        {
+          "rgba": [
+            0,
+            0,
+            0,
+            255
+          ],
+          "pixels": 228221
+        },
+        {
+          "rgba": [
+            82,
+            77,
+            58,
+            255
+          ],
+          "pixels": 1039
+        },
+        {
+          "rgba": [
+            0,
+            12,
+            58,
+            255
+          ],
+          "pixels": 570
+        },
+        {
+          "rgba": [
+            82,
+            65,
+            0,
+            255
+          ],
+          "pixels": 570
+        }
+      ]
+    },
+    {
+      "label": "radio-peer",
+      "width": 480,
+      "height": 480,
+      "guestSeconds": 11.06,
+      "insns": 2052609024,
+      "nonwhitePixels": 230400,
+      "nonblackPixels": 1609,
+      "colors": 2,
+      "meanRgb": 1.1220167824074074,
+      "changedPixelsFromPrevious": 3046,
+      "rgbaSha256": "312070eb2d1bd4c046dee0ff59204845832de9748b59a4b7198897fcab59ef46",
+      "serialSha256": "af2b59293aae67744ac5e8d420365014d60dee4ef02d21612a460ce22dc5d1da",
+      "serialBytes": 16974,
+      "rgbaHistogram": [
+        {
+          "rgba": [
+            0,
+            0,
+            0,
+            255
+          ],
+          "pixels": 228791
+        },
+        {
+          "rgba": [
+            99,
+            235,
+            148,
+            255
+          ],
+          "pixels": 1609
+        }
+      ]
+    },
+    {
+      "label": "0-user-short",
+      "width": 480,
+      "height": 480,
+      "guestSeconds": 12.1,
+      "insns": 2303703082,
+      "nonwhitePixels": 230400,
+      "nonblackPixels": 2179,
+      "colors": 4,
+      "meanRgb": 0.5051403356481482,
+      "changedPixelsFromPrevious": 3582,
+      "rgbaSha256": "f853476714f37e07a8e1606089a494b500fa28e908daa4bd75f0fef6889acfa1",
+      "serialSha256": "af2b59293aae67744ac5e8d420365014d60dee4ef02d21612a460ce22dc5d1da",
+      "serialBytes": 16974,
+      "rgbaHistogram": [
+        {
+          "rgba": [
+            0,
+            0,
+            0,
+            255
+          ],
+          "pixels": 228221
+        },
+        {
+          "rgba": [
+            82,
+            77,
+            58,
+            255
+          ],
+          "pixels": 1039
+        },
+        {
+          "rgba": [
+            0,
+            12,
+            58,
+            255
+          ],
+          "pixels": 570
+        },
+        {
+          "rgba": [
+            82,
+            65,
+            0,
+            255
+          ],
+          "pixels": 570
+        }
+      ]
+    }
+  ],
+  "radioInput": {
+    "fixtureSha256": "47ed59985af6fc9c0e80418754591b204eb92a7cfab359cfdd551e3d67b4dfc4",
+    "fixture": {
+      "description": "Synthetic four-byte packet, intentionally shorter than the Meshtastic packet header; digital IRQ/FIFO observation only. No message delivery or physical RF claim.",
+      "packet": {
+        "config": {
+          "frequency": 950927360,
+          "sf": 11,
+          "bandwidth": 5,
+          "codingRate": 1,
+          "syncWord": 9396,
+          "implicitHeader": false,
+          "crc": true,
+          "invertIq": false
+        },
+        "payloadHex": "00000000",
+        "rssiDbm": -70,
+        "snrQuarterDb": 24,
+        "crcError": false
+      },
+      "settleSeconds": 3
+    },
+    "before": {
+      "model": "sx1262-lora-digital",
+      "physicalRf": false,
+      "powered": true,
+      "resetHigh": true,
+      "antennaEnabled": true,
+      "busy": false,
+      "mode": 80,
+      "irq": 0,
+      "config": {
+        "frequency": 950927360,
+        "sf": 11,
+        "bandwidth": 5,
+        "codingRate": 1,
+        "syncWord": 9396,
+        "implicitHeader": false,
+        "crc": true,
+        "invertIq": false
+      },
+      "transmitted": [],
+      "txCount": 0,
+      "rxCount": 0,
+      "timeoutCount": 0,
+      "rejectedCommands": 0,
+      "droppedTx": 0,
+      "guestTime": 8.020011045833334
+    },
+    "accepted": {
+      "accepted": true,
+      "delivery": "scheduled-digital-packet",
+      "guestTime": 8.020019370833333,
+      "physicalRf": false
+    },
+    "after": {
+      "model": "sx1262-lora-digital",
+      "physicalRf": false,
+      "powered": true,
+      "resetHigh": true,
+      "antennaEnabled": true,
+      "busy": false,
+      "mode": 80,
+      "irq": 0,
+      "config": {
+        "frequency": 950927360,
+        "sf": 11,
+        "bandwidth": 5,
+        "codingRate": 1,
+        "syncWord": 9396,
+        "implicitHeader": false,
+        "crc": true,
+        "invertIq": false
+      },
+      "transmitted": [],
+      "txCount": 0,
+      "rxCount": 1,
+      "timeoutCount": 0,
+      "rejectedCommands": 0,
+      "droppedTx": 0,
+      "guestTime": 11.074477570833333
+    }
+  },
+  "radioSnapshots": [
+    {
+      "label": "boot",
+      "state": {
+        "model": "sx1262-lora-digital",
+        "physicalRf": false,
+        "powered": true,
+        "resetHigh": true,
+        "antennaEnabled": true,
+        "busy": false,
+        "mode": 80,
+        "irq": 0,
+        "config": {
+          "frequency": 950927360,
+          "sf": 11,
+          "bandwidth": 5,
+          "codingRate": 1,
+          "syncWord": 9396,
+          "implicitHeader": false,
+          "crc": true,
+          "invertIq": false
+        },
+        "transmitted": [],
+        "txCount": 0,
+        "rxCount": 0,
+        "timeoutCount": 0,
+        "rejectedCommands": 0,
+        "droppedTx": 0,
+        "guestTime": 8.020011045833334
+      }
+    },
+    {
+      "label": "radio-peer",
+      "state": {
+        "model": "sx1262-lora-digital",
+        "physicalRf": false,
+        "powered": true,
+        "resetHigh": true,
+        "antennaEnabled": true,
+        "busy": false,
+        "mode": 80,
+        "irq": 0,
+        "config": {
+          "frequency": 950927360,
+          "sf": 11,
+          "bandwidth": 5,
+          "codingRate": 1,
+          "syncWord": 9396,
+          "implicitHeader": false,
+          "crc": true,
+          "invertIq": false
+        },
+        "transmitted": [],
+        "txCount": 0,
+        "rxCount": 1,
+        "timeoutCount": 0,
+        "rejectedCommands": 0,
+        "droppedTx": 0,
+        "guestTime": 11.074477570833333
+      }
+    },
+    {
+      "label": "0-user-short",
+      "state": {
+        "model": "sx1262-lora-digital",
+        "physicalRf": false,
+        "powered": true,
+        "resetHigh": true,
+        "antennaEnabled": true,
+        "busy": false,
+        "mode": 80,
+        "irq": 0,
+        "config": {
+          "frequency": 950927360,
+          "sf": 11,
+          "bandwidth": 5,
+          "codingRate": 1,
+          "syncWord": 9396,
+          "implicitHeader": false,
+          "crc": true,
+          "invertIq": false
+        },
+        "transmitted": [],
+        "txCount": 0,
+        "rxCount": 1,
+        "timeoutCount": 0,
+        "rejectedCommands": 0,
+        "droppedTx": 0,
+        "guestTime": 12.111810079166666
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "label": "user-short",
+      "event": {
+        "label": "user-short",
+        "down": {
+          "type": "button",
+          "id": "button",
+          "pressed": true
+        },
+        "up": {
+          "type": "button",
+          "id": "button",
+          "pressed": false
+        },
+        "holdSeconds": 0.2,
+        "settleSeconds": 0.8
+      },
+      "down": {
+        "accepted": true,
+        "delivery": "queued",
+        "message": {
+          "t": "btn",
+          "pin": 38,
+          "v": 1
+        },
+        "guestTime": 11.0745014875
+      },
+      "up": {
+        "accepted": true,
+        "delivery": "queued",
+        "message": {
+          "t": "btn",
+          "pin": 38,
+          "v": 0
+        },
+        "guestTime": 11.291300016666666
+      },
+      "repeated": []
+    }
+  ],
+  "stats": {
+    "time": 12.1,
+    "insns": 2303703082,
+    "frames": 370,
+    "gpio_in": "1ffffffd00000"
+  },
+  "observations": [
+    "The unchanged firmware produced 370 real frames by 12.1 guest seconds; all captures are 480 by 480.",
+    "The visible boot design is inverted by 180 degrees relative to the rendered coordinates; panel/firmware orientation still requires source review.",
+    "Green RGB565 0x6752 at 11.06 seconds becomes byte-swapped 0x5267 in the other two samples, with additional split-word colors 0x0067 and 0x5200. Horizontal image displacement changes between samples.",
+    "The short physical button input has no new serial bytes after the peer capture. Image differences cannot establish a valid button-controlled page transition while the frame boundary is unstable.",
+    "The explicitly configured four-byte digital packet changes SX1262 rxCount from zero to one; the application reports region unset and a noise packet. This is not a delivered Meshtastic message or physical RF."
+  ],
+  "redactions": [
+    "Raw serial, network state, local path prefixes and screenshots containing device-specific text are omitted.",
+    "Raw receipt and RGBA hashes, measured pixel/color counts, guest counters, full explicit radio input and physical button events are retained."
+  ],
+  "limitations": [
+    "No physical device, physical RF, browser DOM/WebGL or remote CORS claim.",
+    "This checkpoint is not the final firmware/display acceptance result."
+  ]
+}

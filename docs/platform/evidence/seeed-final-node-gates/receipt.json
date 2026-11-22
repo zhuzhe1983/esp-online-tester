@@ -1,0 +1,163 @@
+{
+  "schema": 1,
+  "scope": "Final WASM ABI, actual recording and worker regressions; no browser/hardware/performance claim.",
+  "startedAt": "2026-11-22T09:42:57.277440Z",
+  "wasm": {
+    "sha256": "1002b80d7336ee0e610eedad8b9688fc5389bb1bcaeadf48c02d279069181a24",
+    "bytes": 6026506
+  },
+  "checks": [
+    {
+      "name": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:42:57.370273Z",
+      "seconds": 0.085,
+      "originalLogSha256": "bd8a325d51c3ffec3e7bd237953a0889318452ada92ba0f09b27be16d845694d",
+      "publishedLogSha256": "bd8a325d51c3ffec3e7bd237953a0889318452ada92ba0f09b27be16d845694d",
+      "archiveSha256": "12fd240355a0a4fc14a6ec2b1ce2703f0b97494d9fb6a21f9510242830708ab0",
+      "archive": "wasm-sections.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "recording-real",
+      "command": "node tools/platform-recording-test.mjs --real --receipt <run-output>/recording.json",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:03.473048Z",
+      "seconds": 6.096,
+      "originalLogSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d",
+      "publishedLogSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d",
+      "archiveSha256": "31821365db2a30b08f69233293fe3fe4c977a21277e5a2e1be86315138922218",
+      "archive": "recording-real.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "stopwatch-wasm",
+      "command": "node tools/wasm-test.mjs demo-stopwatch",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:05.093184Z",
+      "seconds": 1.615,
+      "originalLogSha256": "7fcc67a3273a235bff9de2d613329d599b1350862379f272180463aad4ca1ed5",
+      "publishedLogSha256": "7fcc67a3273a235bff9de2d613329d599b1350862379f272180463aad4ca1ed5",
+      "archiveSha256": "cda226d50d67d2870d000b4903e052aeee1bdf0bed4658cd96a1b778988586c9",
+      "archive": "stopwatch-wasm.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "stopwatch-diagnostics",
+      "command": "node tools/probe-hardware-diagnostics.mjs tools/fixtures/stopwatch-hardware-checks.json <run-output>/diagnostics.json",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:13.648402Z",
+      "seconds": 8.546,
+      "originalLogSha256": "da0cf57ce289cf2683e2069b0952fc8a6e013cd020bb23aac6b284ae1ab2a942",
+      "publishedLogSha256": "da0cf57ce289cf2683e2069b0952fc8a6e013cd020bb23aac6b284ae1ab2a942",
+      "archiveSha256": "4c589457e45196ddc454240dc46cfc422b15554ca5ea36c11d4aba9913a4654f",
+      "archive": "stopwatch-diagnostics.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "timing-abi",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:13.953089Z",
+      "seconds": 0.299,
+      "originalLogSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3",
+      "publishedLogSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3",
+      "archiveSha256": "e2530209693df92d0618a574927fd417058746b6413e1fdbc8793f22c9e5f5ca",
+      "archive": "timing-abi.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "ble-abi",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public <roms>/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:15.563619Z",
+      "seconds": 1.605,
+      "originalLogSha256": "041407c64fc487be9968b8766a83df992f1b7f244e97cf062cad9aeb77984ca3",
+      "publishedLogSha256": "da7c35c80f010b2773477c9790f91a129a1c1c50afbe470fbbac30275d7131d6",
+      "archiveSha256": "5e6f0bec16804d61ec6afca585f60dc79225b4723611f607be41116f88d96aa7",
+      "archive": "ble-abi.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public <roms>/esp32c3_rev3_rom.elf",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:21.062056Z",
+      "seconds": 5.49,
+      "originalLogSha256": "26b03c872bc450ab24595466a467d9043171898eb9076afbe650b8e8edd4fd84",
+      "publishedLogSha256": "26b03c872bc450ab24595466a467d9043171898eb9076afbe650b8e8edd4fd84",
+      "archiveSha256": "29afbd0e56daf4ca263aedcc9aaa69a7af1bbe57dbf1644d1cff89a18ab5c388",
+      "archive": "ble-connection.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "worker-pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:21.138821Z",
+      "seconds": 0.068,
+      "originalLogSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158",
+      "publishedLogSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158",
+      "archiveSha256": "cf93096761eec85522b5512dff5a3169fa99003fd04dbc8660912101386ad67f",
+      "archive": "worker-pacing.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "worker-channel",
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:21.399497Z",
+      "seconds": 0.256,
+      "originalLogSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6",
+      "publishedLogSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6",
+      "archiveSha256": "60b01e10bd2faca37843d42d75f860e138d012e3a5d624a10059dd8d8d7d1e27",
+      "archive": "worker-channel.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "touch-input",
+      "command": "node --test tools/touch-input-test.mjs",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:21.614586Z",
+      "seconds": 0.21,
+      "originalLogSha256": "d1e8fdaaac42595ef88d49c1019af3946abcca119e9e1e8b49976f54534b6c96",
+      "publishedLogSha256": "d1e8fdaaac42595ef88d49c1019af3946abcca119e9e1e8b49976f54534b6c96",
+      "archiveSha256": "fc36553c65c6096ce668dbde2ec5171cd2a33f7464385a9d4311437cb59cc195",
+      "archive": "touch-input.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "stopwatch-ui",
+      "command": "node --test tools/stopwatch-ui-test.mjs",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:43:21.778554Z",
+      "seconds": 0.159,
+      "originalLogSha256": "b7f554c1f707625e8951b87fdad9f85ab40239817e980c445dc3bcb375b2770a",
+      "publishedLogSha256": "b7f554c1f707625e8951b87fdad9f85ab40239817e980c445dc3bcb375b2770a",
+      "archiveSha256": "e4a9726ca58e0e1552d9e3b4ac513554f3481478106eae0a9daee4890ebeef35",
+      "archive": "stopwatch-ui.log.gz",
+      "wasmUnchanged": true
+    },
+    {
+      "name": "wasm-demos",
+      "command": "ESP32SIM_ROM_DIR=<roms> node tools/wasm-test.mjs hello c3-hello c6-hello c6-xiao p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik",
+      "exitCode": 0,
+      "confirmedSuccessfulCases": 14,
+      "jitHandoffPassed": true,
+      "observations": "All named manifest cases and the JIT handoff check completed, including two-node network demos; rates are functional smoke output, not isolated performance measurements.",
+      "originalLogSha256": "748d3c041fc3723369d12d5b90c90ce0f8d7e752265c8cc2336d19f6179fdafe",
+      "publishedLogSha256": "748d3c041fc3723369d12d5b90c90ce0f8d7e752265c8cc2336d19f6179fdafe",
+      "archiveSha256": "070dd78d1053c040aef905d332b086f4966fbba7377edfd8d8f531947fa4ac77",
+      "archive": "wasm-demos.log.gz",
+      "wasmUnchanged": true
+    }
+  ],
+  "redactions": [
+    "Absolute repository/run/ROM directory prefixes replaced by <repo>/<run-output>/<roms>.",
+    "Any MAC-shaped log value is replaced by <device-id>; raw log and published log hashes are retained."
+  ],
+  "status": "passed",
+  "finishedAt": "2026-11-22T09:43:21.783483Z",
+  "recordedAt": "2026-11-22T09:44:41.087953Z"
+}

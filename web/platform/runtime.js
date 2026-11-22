@@ -3,7 +3,7 @@ import {parseHardwareDiagnostics} from './hardware-diagnostics.js';
 import {validServoSnapshot} from './servo-state.js';
 import {hasMotorOutput,parseMotorSnapshot,STAMPFLY_MOTORS} from './motor-state.js';
 import {selectBleProfile,loadBleProfile,verifyBleStoredPages} from './ble-profile.js';
-import {validFirmwareArchive,extractFirmwareZip,firmwareArchiveCacheKey,MAX_FIRMWARE_ZIP_BYTES} from './firmware-archive.js';
+import {validFirmwareArchive,validFirmwareZipEntry,extractFirmwareZip,extractFirmwareZipEntry,firmwareArchiveCacheKey,MAX_FIRMWARE_ZIP_BYTES} from './firmware-archive.js';
 import {createNetworkSession} from './network-session.js';
 import {createAudioStream} from './audio-stream.js';
 import {motionParameter} from './motion-input.js';
@@ -25,7 +25,7 @@ import {firmwareDownloadUrl} from './firmware-relay.js';
 import {checkFirmwareDownloadResponse} from './firmware-download-access.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 import {firmwareMetadata} from './firmware-metadata.js';
-import {chipIdForBoard,validateAppImage,validateBoardRevision,isC5Board,isC61Board,isS31Board,C5_SRAM_RANGES} from './app-image.js';
+import {chipIdForBoard,validateAppImage,validateBoardRevision,isC3Board,isC5Board,isC61Board,isS31Board,C5_SRAM_RANGES} from './app-image.js';
 import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
 import {UIFLOW2_PARTITION,virtualConfigurationPlan,encodeVirtualConfiguration,replaceConfigurationPages} from './virtual-firmware-configuration.js';
 
@@ -178,7 +178,7 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
   return true;
 }
 
-const romFor = board => isS31Board(board) ? 'esp32s31_rev0_rom.elf' : isC61Board(board) ? 'esp32c61_rev100_rom.elf' : isC5Board(board) ? null : ['esp32c3','stampc3','stampc3u'].includes(board) ? 'esp32c3_rev3_rom.elf' : ['esp32p4','stamp-p4'].includes(board) ? 'esp32p4_rev0_rom.elf' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
+const romFor = board => isS31Board(board) ? 'esp32s31_rev0_rom.elf' : isC61Board(board) ? 'esp32c61_rev100_rom.elf' : isC5Board(board) ? null : isC3Board(board) ? 'esp32c3_rev3_rom.elf' : ['esp32p4','stamp-p4'].includes(board) ? 'esp32p4_rev0_rom.elf' : (board==='nesso-n1'||board.includes('c6')) ? 'esp32c6_rev0_rom.elf' : /^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board) ? 'esp32_rev300_rom.elf' : 'esp32s3_rev0_rom.elf';
 
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
@@ -491,9 +491,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const cfg={ board: runtime.board, flash_mb: runtime.flashMb ?? (c5?4:8), psram_mb: runtime.psramMb ?? (c5?0:2), ...(runtime.board === 'stopwatch'||c5||isS31Board(runtime.board) ? {jit: false} : {}) };
     requireValue(!c5||cfg.flash_mb===4&&cfg.psram_mb===0,'MEMORY_MISMATCH','Stamp-C5 SRAM runtime uses 4 MiB Flash staging and no PSRAM.');return cfg;
   };
-  const readArtifact = async (entry, root, progress, kind, maxBytes = MAX_FILE) => {
+  const readArtifact = async (entry, root, progress, kind, maxBytes = MAX_FILE, archiveCache = null) => {
     const item = typeof entry === 'string' ? { url: entry } : entry;
     requireValue(item && typeof item.url === 'string', 'INVALID_MANIFEST', 'Each firmware file needs a URL.');
+    requireValue(!item.archive||validFirmwareArchive(item)||validFirmwareZipEntry(item),'INVALID_FIRMWARE_ARCHIVE','固件清单的 ZIP 条目必须声明精确文件名和校验值。');
     const url = resolveFirmwareUrl(item.url, root);
     const cacheUrl=firmwareArchiveCacheKey(item,url);
     let cached = await firmwareCache.get(cacheUrl, item.sha256, maxBytes);
@@ -502,19 +503,28 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       try { await checkedHash(cached.data, item.sha256); }
       catch { await firmwareCache.remove(cacheUrl, item.sha256); cached = null; }
     }
-    let data = cached?.data || await fetchBytes(url, { fetchImpl, maxBytes:item.archive?MAX_FIRMWARE_ZIP_BYTES:maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url), sha256:item.sha256 });
-    if(item.archive&&!cached){progress.prepare('extract',kind,url);data=await extractFirmwareZip(data,item,{maxBytes,signal:aborter.signal});}
+    const containerKey=item.archive?.format==='zip-entry'?`${url}\n${item.archive.sha256.toLowerCase()}`:null;
+    if(!cached&&containerKey&&archiveCache&&archiveCache.current?.key!==containerKey)archiveCache.current=null;
+    let container=!cached&&containerKey&&archiveCache?.current?.key===containerKey?archiveCache.current.data:null;
+    let data = cached?.data || container || await fetchBytes(url, { fetchImpl, maxBytes:item.archive?MAX_FIRMWARE_ZIP_BYTES:maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url), sha256:item.archive?.sha256||item.sha256 });
+    if(item.archive&&!cached){if(containerKey)container=data;progress.prepare('extract',kind,url);data=await (item.archive.format==='zip-entry'?extractFirmwareZipEntry:extractFirmwareZip)(data,item,{maxBytes,signal:aborter.signal});}
     if (cached) progress.cache(kind, url, data.byteLength, cached.storage);
     progress.prepare('verify', kind, url);
     requireValue(data.length > 0, 'EMPTY_FILE', 'Firmware file is empty.', { url });
     const digest = await checkedHash(data, item.sha256);
     requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
+    // Keep one container only after extraction, CRC and member SHA succeed.
+    // This slot belongs to one prepare() call; the persistent cache still stores
+    // independently pinned members under URL#entry, never a shared BIN identity.
+    if(!cached&&containerKey&&archiveCache)archiveCache.current={key:containerKey,data:container};
     // Store computed hashes too; reuse still requires a pinned hash. A newly
     // discovered Burner version can then be restored from its history receipt.
     if (!cached) await firmwareCache.putVerified(cacheUrl, digest, data);
-    return { data, url, sha256: digest };
+    return { data, url, sha256: digest, ...(item.archive?{archive:clone(item.archive)}:{}) };
   };
   const prepare = async (source, progress) => {
+    const archiveCache={current:null};
+    const loadArtifact=(entry,root,kind,maxBytes)=>readArtifact(entry,root,progress,kind,maxBytes,archiveCache);
     requireValue(source && typeof source === 'object', 'FIRMWARE_REQUIRED', 'Select a firmware manifest or merged flash image first.');
     const cfg = runtimeConfig(), c5=isC5Board(cfg.board), files = [], receipts = [];
     requireValue(source.bootMode===undefined||['rom','app-direct'].includes(source.bootMode),'INVALID_BOOT_MODE','Unknown firmware boot mode.');
@@ -526,12 +536,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       total += artifact.data.length;
       requireValue(total <= MAX_TOTAL, 'BUNDLE_TOO_LARGE', 'Firmware bundle exceeds 256 MiB.');
       files.push({ kind, data: artifact.data, ...(at === undefined ? {} : { at }) });
-      receipts.push({ kind, url: artifact.url, sha256: artifact.sha256, bytes: artifact.data.length, ...(at === undefined ? {} : { at }) });
+      receipts.push({ kind, url: artifact.url, sha256: artifact.sha256, bytes: artifact.data.length, ...(artifact.archive?{archive:artifact.archive}:{}), ...(at === undefined ? {} : { at }) });
     };
     let manifest = null, manifestUrl = null, manifestHash = null, localLayout = null, sramApp = null;
     if (source.manifestUrl) {
       manifestUrl = resolveFirmwareUrl(source.manifestUrl, baseUrl);
-      const artifact = await readArtifact({ url: manifestUrl, sha256: source.sha256 }, baseUrl, progress, 'manifest');
+      const artifact = await loadArtifact({ url: manifestUrl, sha256: source.sha256 }, baseUrl, 'manifest');
       manifestHash = artifact.sha256;
       try { manifest = JSON.parse(new TextDecoder().decode(artifact.data)); } catch { throw error('INVALID_MANIFEST', 'Firmware manifest is not valid JSON.'); }
       requireValue(manifest && !Array.isArray(manifest) && typeof manifest === 'object', 'INVALID_MANIFEST', 'Firmware manifest must be an object.');
@@ -548,12 +558,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         requireValue(Object.hasOwn(KINDS, kind), 'INVALID_MANIFEST', `Unsupported firmware file kind: ${kind}.`);
         for (const entry of [].concat(entries)) {
           requireValue(files.length < 32, 'INVALID_MANIFEST', 'A manifest may contain at most 32 files.');
-          add(kind, await readArtifact(pinned(entry), manifestUrl, progress, kind));
+          add(kind, await loadArtifact(pinned(entry), manifestUrl, kind));
         }
       }
       for (const [offset, entry] of Object.entries(manifest.flash_at || {})) {
         requireValue(/^0x[0-9a-f]+$/i.test(offset), 'INVALID_MANIFEST', 'flash_at offsets must be hexadecimal strings beginning with 0x.');
-        const at = Number(offset), artifact = await readArtifact(pinned(entry), manifestUrl, progress, 'flash_at');
+        const at = Number(offset), artifact = await loadArtifact(pinned(entry), manifestUrl, 'flash_at');
         requireValue(Number.isSafeInteger(at) && at >= 0 && at + artifact.data.length <= cfg.flash_mb * MIB, 'FLASH_OVERFLOW', 'Flash segment is outside product flash.');
         requireValue(files.length < 32, 'INVALID_MANIFEST', 'A manifest may contain at most 32 files.');
         add('flash', artifact, at);
@@ -586,7 +596,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         const data = new Uint8Array(await source.file.arrayBuffer());
         progress.prepare('verify', 'flash');
         artifact = { data, url: null, sha256: await checkedHash(data, source.sha256) };
-      } else artifact = await readArtifact(source, baseUrl, progress, 'flash',source.archive?cfg.flash_mb*MIB:MAX_FILE);
+      } else artifact = await loadArtifact(source, baseUrl, 'flash',source.archive?cfg.flash_mb*MIB:MAX_FILE);
       if(c5) {
         sramApp=await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);
         requireValue(source.file||source.bootMode==='app-direct'||sramApp.applicationDescriptor,'C5_APP_DIRECT_REQUIRED','For a bare-metal C5 URL, choose SRAM app-direct or set bootMode:"app-direct" explicitly.');
@@ -606,7 +616,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       }
       add(cfg.appDirect?'app':'flash', artifact);
     }
-    if (!c5 && (!cfg.appDirect || !manifest) && !files.some(f => f.kind === 'rom')) add('rom', await readArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, progress, 'rom'));
+    if (!c5 && (!cfg.appDirect || !manifest) && !files.some(f => f.kind === 'rom')) add('rom', await loadArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, 'rom'));
     if(isC61Board(cfg.board)||isS31Board(cfg.board))cfg.jit=false;
     return { cfg, files, receipt: { manifestUrl, manifestHash, metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), ...(sramApp?{sramApp,bootMode:'app-direct',resetMode:'reload-same-sram-image'}:{}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
   };
@@ -675,7 +685,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     booted = true; setStatus('running'); return snapshot();
   };
   const controls = () => Array.isArray(product?.controls) ? product.controls : product?.controls?.buttons || [];
-  const boardButton = control => control?.transport==='board' && ({'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back']}[product?.runtime?.board] || []).includes(control.id);
+  const supportsTouch = () => product?.runtime?.touch ?? (product?.display?.touch === true || product?.display?.touch?.supported === true || product?.hardware?.display?.touch === true);
+  const boardButton = control => control?.transport==='board' && ({'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back'],'seeed-sensecap-watcher':['knob']}[product?.runtime?.board] || []).includes(control.id);
   const input = async event => {
     const releaseWhilePaused = status === 'paused' && ((['button','matrix-key','accessory-button'].includes(event?.type) && event.pressed === false) || (event?.type==='accessory-connection' && event.connected===false) || (event?.type === 'touch' && event.down === false));
     requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');
@@ -731,7 +742,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       message = { t:'matrix-key', row:event.row, column:event.column, pressed:event.pressed?1:0 };
     } else if (event.type === 'touch') {
       const display = product.display || product.hardware?.display;
-      requireValue(product.runtime?.touch === true || display?.touch === true || display?.touch?.supported === true, 'UNSUPPORTED_CONTROL', 'Touch input is not supported for this product.');
+      requireValue(supportsTouch(), 'UNSUPPORTED_CONTROL', 'Touch input is not supported for this product.');
       const width = frame?.width || display?.framebufferWidth || display?.width, height = frame?.height || display?.framebufferHeight || display?.height;
       requireValue(Number.isInteger(event.x) && Number.isInteger(event.y) && event.x >= 0 && event.y >= 0 && event.x < width && event.y < height && typeof event.down === 'boolean', 'INVALID_INPUT', 'Touch coordinates must be integer native display pixels within the panel.');
       message = { t: 'touch', x: event.x, y: event.y, down: event.down ? 1 : 0 };
@@ -767,12 +778,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const api = {
     version: API_VERSION,
     readLoRa() {return exclusive(async()=>{
-      requireValue(['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','Load firmware on a board with a digital LoRa model before inspecting its radio.');
+      requireValue(['papermono','lilygo-t-beam-v1-2','stamp-c6lora','seeed-sensecap-indicator-d1l','seeed-sensecap-indicator-d1pro','seeed-sensecap-indicator-meshtastic'].includes(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','Load firmware on a board with a digital LoRa model before inspecting its radio.');
       const requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-read',requestId});
       requireValue(result.ok,'LORA_UNSUPPORTED','This runtime does not expose a LoRa radio.');return {...result.state,guestTime:result.time};
     });},
     receiveLoRa(packet) {return exclusive(async()=>{
-      requireValue(['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','This device does not have a digital LoRa model.');
+      requireValue(['papermono','lilygo-t-beam-v1-2','stamp-c6lora','seeed-sensecap-indicator-d1l','seeed-sensecap-indicator-d1pro','seeed-sensecap-indicator-meshtastic'].includes(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','This device does not have a digital LoRa model.');
       requireValue(['running','paused'].includes(status),'NOT_RUNNING','Start the firmware before supplying a LoRa peer packet.');
       const input=validateLoRaPacket(packet),requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-receive',requestId,packet:input});
       requireValue(result.ok,'LORA_PACKET_REJECTED','Radio power, receive state or channel configuration rejected this packet.');
@@ -880,14 +891,14 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: !c5, localFile: true, localSegments: !c5, localBuild: !c5, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true,...(c5?{sramAppDirect:true,ota:false,targetRevision:100}:{}) },
-        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,pins,addresses,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),...(pins?{pins,addresses}:{}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || boardButton(c)).map(c => c.id) : [], touch: !!(product?.runtime?.board && (product?.runtime?.touch || product?.display?.touch)), keyboard:['cardputer','cardputer-adv','tdeck'].includes(product?.runtime?.board)?{rows:4,columns:product.runtime.board==='tdeck'?10:14,model:product.runtime.board==='tdeck'?'esp32c3-i2c-raw':product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: c5?['uart0']:s31?['usb','uart0']:['usb', 'uart0', 'uart1'] },
+        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,pins,addresses,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),...(pins?{pins,addresses}:{}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:product.runtime.board==='seeed-sensecap-watcher'?20:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || boardButton(c)).map(c => c.id) : [], touch: !!(product?.runtime?.board && supportsTouch()), keyboard:['cardputer','cardputer-adv','tdeck'].includes(product?.runtime?.board)?{rows:4,columns:product.runtime.board==='tdeck'?10:14,model:product.runtime.board==='tdeck'?'esp32c3-i2c-raw':product.runtime.board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:product.runtime.board}:null, serialPorts: c5?['uart0']:s31?['usb','uart0']:['usb', 'uart0', 'uart1'] },
         servos:{available:product?.runtime?.board==='stackchan',axes:product?.runtime?.board==='stackchan'?['pan','tilt']:[],source:'guest-uart-feedback',unit:'degrees',hardwareValidated:false},
         motors:{available:hasMotorOutput(product?.runtime?.board),axes:hasMotorOutput(product?.runtime?.board)?STAMPFLY_MOTORS.map(({id})=>id):[],source:'guest-routed-pwm',unit:'normalized-duty',rpmAvailable:false,flightSimulated:false,hardwareValidated:false},
         flight:{available:hasFlight(product?.runtime?.board),enabled:flightEnabled(),model:FLIGHT_MODEL,calibrated:false,source:'guest-pwm-rigid-body',methods:['configureFlight','readFlight'],recording:false,shares:'configuration-only',worldFrame:'NED',bodyFrame:'FRD'},
         hardwareDiagnostics:{available:['stopwatch','corematrix'].includes(product?.runtime?.board),source:'guest-registers',hardwareValidated:false},
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { available:gpsSupported(),mode: gpsSupported()?'logical-uart1-nmea':null, physicalRouting: false, baudTiming: false, hardwareValidated: false },
-        lora:{available:['papermono','lilygo-t-beam-v1-2','stamp-c6lora'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
+        lora:{available:['papermono','lilygo-t-beam-v1-2','stamp-c6lora','seeed-sensecap-indicator-d1l','seeed-sensecap-indicator-d1pro','seeed-sensecap-indicator-meshtastic'].includes(product?.runtime?.board),model:product?.runtime?.board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: !!imuModel(), sceneMapping: 'virtual-model-xyz', sceneLinkDefault: false, orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: flightEnabled()?'guest-cycles':'host-input', inputOwner:flightEnabled()?'flight':'host', physicalMountingVerified: false },
         unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
     },

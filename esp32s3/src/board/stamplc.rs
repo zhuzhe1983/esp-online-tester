@@ -61,7 +61,7 @@ mod tests {
     use super::*;
     fn wr(d:&mut dyn I2cDevice,r:u8,v:u8){assert!(d.start(false));assert!(d.write(r));assert!(d.write(v));}
     fn rd(d:&mut dyn I2cDevice,r:u8)->u8{assert!(d.start(false));d.write(r);d.start(true);d.read()}
-    fn pins()->SpiPins{SpiPins{sclk:1<<7,mosi:1<<8,miso:Some(9),cs:1<<12}}
+    fn pins()->SpiPins{SpiPins {sclk:1<<7,mosi:1<<8,miso:Some(9),cs:1<<12,keep_cs:false}}
     fn cmd(b:&mut StamPlc,c:u8,p:&[u8]){b.panel.dc=false;b.spi_transfer_pins(2,pins(),&[c],0);b.panel.dc=true;b.spi_transfer_pins(2,pins(),p,0);}
     #[test]
     fn factory_rotation_glass_corners_spi_routes_and_pi4_backlight() {

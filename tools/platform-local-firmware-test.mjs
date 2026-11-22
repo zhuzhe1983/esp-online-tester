@@ -16,6 +16,10 @@ const events=[];let merged=await assembleLocalFirmware({format:'build',files:[co
 const nessoOpts={board:'nesso-n1',flashBytes};
 const nessoBuild={format:'build',files:[config({extra_esptool_args:{chip:'esp32c6'}}),file('bootloader.bin',image(13)),part,file('custom.bin',image(13))]};
 const nesso=await assembleLocalFirmware(nessoBuild,nessoOpts);validateMergedImage(nesso.data,'nesso-n1',flashBytes,{partitionTableOffset:0x9000});
+const seeedC3={board:'seeed-xiao-epaper-75',flashBytes:4*1024*1024};
+const seeedC3Build={format:'build',files:[config({extra_esptool_args:{chip:'esp32c3'},flash_settings:{flash_size:'4MB'}}),file('bootloader.bin',image(5)),part,file('custom.bin',image(5))]};
+const seeedC3Merged=await assembleLocalFirmware(seeedC3Build,seeedC3);validateMergedImage(seeedC3Merged.data,seeedC3.board,seeedC3.flashBytes,{partitionTableOffset:0x9000});
+await fail(()=>assembleLocalFirmware({format:'build',files:[config(),boot,part,app]},seeedC3),'CHIP_MISMATCH');
 await fail(()=>assembleLocalFirmware({format:'build',files:[config(),boot,part,app]},nessoOpts),'CHIP_MISMATCH');
 assert.throws(()=>validateMergedImage(nesso.data,'stopwatch',flashBytes,{partitionTableOffset:0x9000}),{code:'CHIP_MISMATCH'});
 // P4 boot ROM reads the bootloader at 0x2000, unlike C3/C6/S3 at zero.

@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "scope": "Source-only diff of the recorded RGB byte-boundary correction. Retained independently of private integration ancestry; contains only the three listed Rust files, no CAD or original source metadata.",
+  "patch": "boundary-source.patch",
+  "bytes": 7229,
+  "sha256": "553348adafa9641abd742f18cc536ca6341cc0bd381ab6be2cd2b400a2e30d77",
+  "fromUnpublishedCheckpoint": "972577650202ffa5e062ac02ee50b0ccdced5433",
+  "toUnpublishedCheckpoint": "819989b",
+  "files": [
+    "esp32s3/src/periph.rs",
+    "esp32s3/src/bus/dma.rs",
+    "esp32s3/src/bus/dma_tests.rs"
+  ],
+  "use": "Apply or reverse only in an isolated checkout, with --unidiff-zero, after checking the recorded file SHA-256 values. Reversing all three files also removes the three regression tests.",
+  "format": "Zero-context unified diff; apply/reverse with git apply --unidiff-zero after verifying source-file hashes.",
+  "beforeFileSha256": {
+    "esp32s3/src/periph.rs": "e6f4576f0a8c64a74d80d9a2d42d0bfd31bf970fb0ccb637ead4cde65ecbc7bf",
+    "esp32s3/src/bus/dma.rs": "1617f2edfae802c5a02f6f8d37802a0709ff909b57f2f731290c1efb679e2433",
+    "esp32s3/src/bus/dma_tests.rs": "62f877a4c4eded3f5bf76442b5a77e54561161afa6eaf42337f101647f011abf"
+  },
+  "afterFileSha256": {
+    "esp32s3/src/periph.rs": "457e7d5397bd42dc6591eae9881c9c6367d82ce08828255786b99e33c469a8d6",
+    "esp32s3/src/bus/dma.rs": "702eb41e073e792da00f2b4991d686d190b9b53076f33c587b1bfc5b6180debb",
+    "esp32s3/src/bus/dma_tests.rs": "3f2a2a3413609eb5e04e7acf99edccec174cc3b5eaddf1c0d5e3cf255e2d4b64"
+  },
+  "roundTripCheck": "Applied the patch in an isolated repository; all three result files exactly matched the recorded after state. Reversed it and all three matched the recorded before state.",
+  "originalContextPatch": {
+    "bytes": 9294,
+    "sha256": "dbbefff7e7f035043670c814af06942e9b3c531747e254c41d3ec7c54b88c766",
+    "reasonForReserialization": "A normal blank context line is a single space, which the repository diff whitespace check flags when a patch is added as an evidence file. Zero-context serialization preserves the exact source changes without adding such context whitespace."
+  }
+}

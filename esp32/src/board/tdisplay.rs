@@ -140,7 +140,7 @@ mod tests {
     use emu_core::Bus;
 
     /// the panel's routes as the bus reports them: SCLK on 18, MOSI on 19, CS 5 low
-    fn routes() -> SpiPins { SpiPins { sclk: 1 << PIN_LCD_SCLK, mosi: 1 << PIN_LCD_MOSI, miso: None, cs: 1 << PIN_LCD_CS } }
+    fn routes() -> SpiPins { SpiPins { sclk: 1 << PIN_LCD_SCLK, mosi: 1 << PIN_LCD_MOSI, miso: None, cs: 1 << PIN_LCD_CS,keep_cs:false} }
     fn cmd(b: &mut TtgoTDisplay, c: u8, params: &[u8]) {
         b.gpio_changes(&[(PIN_LCD_CS, false), (PIN_LCD_DC, false)]); b.spi_transfer_pins(3, routes(), &[c], 0);
         if !params.is_empty() { b.gpio_changes(&[(PIN_LCD_DC, true)]); b.spi_transfer_pins(3, routes(), params, 0); }
@@ -231,7 +231,7 @@ mod tests {
         assert_eq!((b.panel.pixels_written, b.spi_dropped), (2, 2));
         // CS low but the clock on another GPIO (HSPI on its IO_MUX pins): not this panel
         b.gpio_changes(&[(PIN_LCD_CS, false)]);
-        b.spi_transfer_pins(2, SpiPins { sclk: 1 << 14, mosi: 1 << 13, miso: None, cs: 1 << PIN_LCD_CS }, &[0x07, 0xe0], 0);
+        b.spi_transfer_pins(2, SpiPins { sclk: 1 << 14, mosi: 1 << 13, miso: None, cs: 1 << PIN_LCD_CS,keep_cs:false}, &[0x07, 0xe0], 0);
         assert_eq!((b.panel.pixels_written, b.spi_dropped), (2, 4));
         // routes the bus could not decode are taken as the panel's
         assert_eq!(b.spi_transfer_pins(3, SpiPins::default(), &[0x07, 0xe0], 3), vec![0xff; 3], "MISO is not connected");

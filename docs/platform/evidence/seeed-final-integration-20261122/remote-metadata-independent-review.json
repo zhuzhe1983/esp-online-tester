@@ -1,0 +1,139 @@
+{
+  "schema": 1,
+  "kind": "independent-read-only-remote-metadata-merge-review",
+  "recordedAt": "2026-11-22T11:53:28.849718Z",
+  "verdict": "PASS",
+  "baselineCommit": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+  "upstreamCommit": "43de45a1244fd1a0a023beba778adaee169f86bc",
+  "reviewedMergeReceipt": {
+    "path": "docs/platform/evidence/seeed-final-integration-20261122/remote-metadata-merge.json",
+    "bytes": 77483,
+    "sha256": "260b44d7e7f76f951602d601809e327c7d660a38c40a69c619ec576931bb462a"
+  },
+  "method": [
+    "Independently computed the recursive JSON leaf differences directly from the baseline and upstream Git objects already available locally.",
+    "Mapped upstream array changes to the saved pre-merge document by stable id, or firmwareId for download records. Constructed an expected document from that pre-merge document and only the upstream timestamp delta, then compared the complete expected and current JSON objects.",
+    "Required actual changed paths and counts to equal the mapped upstream delta exactly, with no extra semantic changes.",
+    "Compared original before and after byte lengths. Replaced only complete quoted ISO timestamp literals with a common placeholder and compared all remaining raw bytes, including serialization and whitespace.",
+    "Compared every Seeed report, snapshot and firmware object in full, without stripping its timestamps or fields.",
+    "Cross-checked every merge-receipt localPath against baseline, upstream, before and after values and verified all four original-byte SHA-256 hashes and the recorded byte lengths."
+  ],
+  "files": [
+    {
+      "path": "web/platform/catalog/firmware-catalog-sync-report.json",
+      "baselineSha256": "b51209d1766f8a6508910948ee3a92156263c5609d386ca218a67c50dfdd2fc0",
+      "upstreamSha256": "51d48d87ce56387ba71af7431f0a89478a37ff2f0460ed99e28553f9e9ec1a8a",
+      "beforeSha256": "629a2c9e1f85efadf03ee2896d1b9b25b6bd0f797acd578405c35e0f5d8ad4b4",
+      "afterSha256": "6cc3108cc686ce1178e5da47965dfa5b17d99830f4a8621fb11d882adb929cb3",
+      "beforeBytes": 133407,
+      "afterBytes": 133407,
+      "remoteChangedFields": 72,
+      "actualChangedFields": 72,
+      "expectedConstructedFromBeforeAndRemoteDeltaEqualsCurrent": true,
+      "allNonTimestampValuesEqual": true,
+      "rawBytesEqualAfterMaskingOnlyIsoTimestampLiterals": true,
+      "allRecordedLocalPathsAndValuesMatched": true,
+      "duplicateRecordedLocalPaths": 0,
+      "seeedEntriesPreservedByFullObjectEquality": {
+        "entries": 27,
+        "downloads.entries": 0
+      }
+    },
+    {
+      "path": "web/platform/catalog/firmware-release-snapshot.json",
+      "baselineSha256": "c4f35f9a45bf179e194cc45278ecf04a661570b08528614f8efa216c09c3d962",
+      "upstreamSha256": "3b4763f69b4b24071bbef6c3c595c07a1e542ba360c494fbd0d11a50a2dcca0e",
+      "beforeSha256": "ccbfee7753f8158956887d633d06a50e529257bd1d42aa16c62412f798c97fbc",
+      "afterSha256": "5459183affec2877f8795d5779b66b506bdaf8c9d13911db02fcef878515971c",
+      "beforeBytes": 1435970,
+      "afterBytes": 1435970,
+      "remoteChangedFields": 123,
+      "actualChangedFields": 123,
+      "expectedConstructedFromBeforeAndRemoteDeltaEqualsCurrent": true,
+      "allNonTimestampValuesEqual": true,
+      "rawBytesEqualAfterMaskingOnlyIsoTimestampLiterals": true,
+      "allRecordedLocalPathsAndValuesMatched": true,
+      "duplicateRecordedLocalPaths": 0,
+      "seeedEntriesPreservedByFullObjectEquality": {
+        "entries": 27
+      }
+    },
+    {
+      "path": "web/platform/catalog/firmwares.json",
+      "baselineSha256": "24fda78721343e73d2458ec9cd25af06d55f9a9acf43234d03b78bb000f7c1bf",
+      "upstreamSha256": "cc6aac87b8765defe7619798020965f2eb1feacc275363ce2ee7e038f22f4158",
+      "beforeSha256": "a3fb84badb2bdfd04bbb4752d50582414c1ada1d6de0ca84cb88c675fd19b3e0",
+      "afterSha256": "62d4c388389cf25938dd614fd992f7256b939cf2678df6e29cf8f86ccd728e93",
+      "beforeBytes": 763896,
+      "afterBytes": 763896,
+      "remoteChangedFields": 71,
+      "actualChangedFields": 71,
+      "expectedConstructedFromBeforeAndRemoteDeltaEqualsCurrent": true,
+      "allNonTimestampValuesEqual": true,
+      "rawBytesEqualAfterMaskingOnlyIsoTimestampLiterals": true,
+      "allRecordedLocalPathsAndValuesMatched": true,
+      "duplicateRecordedLocalPaths": 0,
+      "seeedEntriesPreservedByFullObjectEquality": {
+        "items": 56
+      }
+    }
+  ],
+  "totalRemoteTimestampChanges": 266,
+  "totalActualTimestampChanges": 266,
+  "unrelatedChanges": 0,
+  "timestampFields": {
+    "firmware-catalog-sync-report.json": {
+      "checkedAt": 1,
+      "downloads.entries.checkedAt": 71
+    },
+    "firmware-release-snapshot.json": {
+      "generatedAt": 1,
+      "entries.checkedAt": 115,
+      "entries.error.attemptedAt": 7
+    },
+    "firmwares.json": {
+      "items.downloadAccess.checkedAt": 71
+    }
+  },
+  "preservedContracts": {
+    "watchlistEntries": 149,
+    "snapshotEntries": 149,
+    "watchlistAndSnapshotIdSetsEqual": true,
+    "firmwareItems": 234,
+    "reportEntries": 176,
+    "reportEntriesWithoutFirmwareId": 37,
+    "reportFirmwareReferences": 139,
+    "unmappedReportFirmwareReferences": 0,
+    "downloadEntries": 72,
+    "unmappedDownloadFirmwareReferences": 0,
+    "snapshotBytes": 1435970,
+    "snapshotBudgetBytes": 2097152,
+    "snapshotBudgetRemainingBytes": 661182,
+    "seeedReportObjectsUnchanged": 27,
+    "seeedSnapshotObjectsUnchanged": 27,
+    "seeedFirmwareObjectsUnchanged": 56,
+    "artifactSourceHashesLayoutsVersionsAndVerificationFieldsUnchanged": true,
+    "firmwarePlanFilesChangedByThisMerge": false
+  },
+  "freshnessBoundary": {
+    "upstreamTimestamp": "2026-11-22T11:39:36.865Z",
+    "failedExistingSnapshotAttemptsUpdated": 7,
+    "failedExistingSnapshotCachedCheckedAtPreserved": true,
+    "newSeeedSnapshotObjectsIncludingCacheAndErrorsPreserved": 27,
+    "all149EntriesNewlyFetchedOrFreshnessAsserted": false,
+    "meaning": "The seven failed existing snapshot checks update error.attemptedAt only. They do not renew the cached observation checkedAt. Top-level synchronization timestamps do not establish successful fresh HTTP retrieval for every entry."
+  },
+  "validationScope": {
+    "performed": "Read-only JSON, byte, SHA-256, stable-identity and receipt-path comparisons described above.",
+    "cargoOrEmulatorRun": false,
+    "networkRequestsMadeByThisReview": false,
+    "remoteWrites": false,
+    "catalogOrGoldenFilesModifiedByThisReview": false,
+    "additionalContractTestsRepeated": false
+  },
+  "privacy": {
+    "retained": "Repository-relative paths, immutable commits, original byte hashes, counts, metadata timestamps and comparison outcomes.",
+    "omitted": "Raw before documents, absolute local paths, device identifiers, credentials and session details.",
+    "originalHashesDescribeOriginalBytes": true
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "collectedAt": "2026-11-22T10:39:31.547237Z",
+  "patchBase": "934573e91eb4051f487174c038500a2f3c0a36d5",
+  "codeSha256": {
+    "esp32s3/src/periph.rs": "e6f4576f0a8c64a74d80d9a2d42d0bfd31bf970fb0ccb637ead4cde65ecbc7bf",
+    "esp32s3/src/bus/dma.rs": "1617f2edfae802c5a02f6f8d37802a0709ff909b57f2f731290c1efb679e2433",
+    "esp32s3/src/bus/dma_tests.rs": "62f877a4c4eded3f5bf76442b5a77e54561161afa6eaf42337f101647f011abf",
+    "esp32s3/src/bus/tests.rs": "60f6876b92091971276e428f7ac44b1c1e4bb6def84a30fe29af398dc9e7c616"
+  },
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32s3",
+        "--lib",
+        "bus::"
+      ],
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "shared integration target"
+      },
+      "exitCode": 0,
+      "result": {
+        "passed": 139,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 147
+      },
+      "originalLogBytes": 12843,
+      "originalLogSha256": "586c621589ae73a23e494f2195d27f37a5257e2ff103466c6ca72d5624d08442",
+      "retainedLog": "checks.txt",
+      "normalization": "Repository and shared build-output paths replaced by neutral labels. All diagnostics and test result values retained."
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32s3",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "shared integration target"
+      },
+      "exitCode": 0,
+      "result": {
+        "warningsDenied": true
+      },
+      "originalLogBytes": 154,
+      "originalLogSha256": "813d466764637c7c50e12f0a62fd184bbded73876dda694fecd4a59208b0c73a",
+      "retainedLog": "checks.txt",
+      "normalization": "Repository and shared build-output paths replaced by neutral labels. All diagnostics and test result values retained."
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32s3",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environment": {
+        "CARGO_BUILD_JOBS": "2",
+        "CARGO_TARGET_DIR": "shared integration target"
+      },
+      "exitCode": 101,
+      "result": {
+        "failure": "Four test-style lints: constant chunks_exact and unnecessary cloned_ref_to_slice_refs. Fixed with as_chunks and from_ref; no runtime behavior changed."
+      },
+      "originalLogBytes": 2419,
+      "originalLogSha256": "e684edea4232e4cdc5ca1af542f8db2172fa6f3b75a1fd23bd48477cd69110b7",
+      "retainedLog": "checks.txt",
+      "normalization": "Repository and shared build-output paths replaced by neutral labels. All diagnostics and test result values retained."
+    }
+  ],
+  "review": {
+    "scope": "LCD clock gating, independent starved scan interrupt, incomplete scan discard, ordinary complete-frame path and RGB565 skip-34 restart",
+    "independentReadOnlyReview": "Completed; no additional build or simulation was run by the reviewer.",
+    "openPullRequestCheck": "See docs/platform/research/seeed-predeploy-2026-11-22.json openPullRequestCheck: successful connected read-only result was empty. Unauthenticated HTTP 403 was not treated as an empty list."
+  },
+  "limits": [
+    "Digital unit/integration fixtures, not physical hardware validation.",
+    "No product firmware was executed after this patch in this lane.",
+    "No release workspace, production WASM or performance result is claimed by these checks.",
+    "LcdCam size and generated-code effects require the final integration comparison.",
+    "No golden output was regenerated."
+  ],
+  "privacy": {
+    "manualReview": "Only relevant MMIO/descriptor values and source/check provenance retained; native paths, device identifiers, unrelated serial output and host timing removed from captured-register evidence. Compiler log paths normalized.",
+    "reviewedLogSha256": "0430859fe3cf1b020d671911f123a0d729a77c61b19bd4e8da622715634f1b55"
+  }
+}

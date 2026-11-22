@@ -86,6 +86,31 @@ fn ordinary_knob_deltas_preserve_edges_spacing_and_queue_order() {
 }
 
 #[test]
+fn watcher_polled_knob_uses_slow_phases_in_both_host_paths() {
+    let (mut machine, web, _) = fixture();
+    machine.bus.board = esp32s3::board::make_board("seeed-sensecap-watcher").unwrap();
+    for delta in [1, -1] { web.push_incoming(format!(r#"{{"t":"knob","d":{delta}}}"#)); }
+    assert!(matches!(machine.run(0), Stop::MaxInsns));
+    let step = 240_000_000 / 50; // 20ms: comfortably beyond two 3ms polls.
+    let expected = [(1,41,false),(2,42,false),(3,41,true),(4,42,true),
+                    (9,42,false),(10,41,false),(11,42,true),(12,41,true)];
+    assert_eq!(machine.script.events.len(), expected.len());
+    for ((cycle, action), (phase, pin, level)) in machine.script.events.iter().zip(expected) {
+        assert_eq!(*cycle, phase * step);
+        assert!(matches!(action, ScriptAction::Gpio(p,l) if *p==pin&&*l==level));
+    }
+    // Native scripts emit the same GPIO transitions from their explicit start
+    // time. They must not silently retain the short browser-incompatible pulse.
+    machine.load_script("1 knob cw 1\n2 knob ccw 1\n").unwrap();
+    for (i, (cycle, action)) in machine.script.events.iter().enumerate() {
+        let start = if i<4 {240_000_000} else {480_000_000};
+        assert_eq!(*cycle, start + (i as u64 % 4) * step);
+        let (_,pin,level)=expected[i];
+        assert!(matches!(action, ScriptAction::Gpio(p,l) if *p==pin&&*l==level));
+    }
+}
+
+#[test]
 fn camera_plain_input_channel_needs_no_web_server() {
     let (mut machine, _, pictures) = fixture();
     machine.web = None;

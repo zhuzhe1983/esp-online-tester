@@ -563,6 +563,7 @@ impl SocBus {
                 sclk: gpio.output_pins(clock_signal), mosi: gpio.output_pins(mosi_signal),
                 miso: gpio.input_pin(miso_signal),
                 cs: gpio.low_outputs(),
+                keep_cs: false,
             };
             self.board.spi_transfer_pins(host as u8, pins, &transfer.tx, transfer.rx_len)
             } else { self.board.spi_transfer(host as u8, &transfer.tx, transfer.rx_len) };

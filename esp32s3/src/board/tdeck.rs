@@ -69,7 +69,7 @@ mod tests {
     fn physical_keyboard_layout_is_a_bijection_and_holes_are_rejected() {let mut b=TDeck::new();let mut seen=std::collections::HashSet::new();for (row,line) in MATRIX.iter().enumerate(){for (col,key) in line.iter().enumerate(){assert_eq!(b.matrix_key_at(0,row as u8,col as u8,true),key.is_some());if let Some(k)=key {assert!(seen.insert(k));}}}assert_eq!(seen.len(),35);assert!(!b.matrix_key_at(0,4,0,true));assert!(!b.matrix_key_at(0,0,10,true));}
     #[test]
     fn lcd_requires_spi_route_exclusive_select_and_power_then_maps_native_gram() {
-        let mut b=TDeck::new();let pins=SpiPins{sclk:1<<40,mosi:1<<41,miso:Some(38),cs:1<<12};let mask=(1<<10)|(1<<11)|(1<<42);
+        let mut b=TDeck::new();let pins=SpiPins {sclk:1<<40,mosi:1<<41,miso:Some(38),cs:1<<12,keep_cs:false};let mask=(1<<10)|(1<<11)|(1<<42);
         let command=|b:&mut TDeck,c:u8,data:&[u8],p:SpiPins|{b.gpio_output_at(1,&[],mask,(1<<10)|(1<<42));b.spi_transfer_pins(2,p,&[c],0);b.gpio_output_at(2,&[],mask,mask);b.spi_transfer_pins(2,p,data,0);};
         command(&mut b,0x11,&[],pins);command(&mut b,0x29,&[],pins);command(&mut b,0x36,&[0x60],pins);command(&mut b,0x3a,&[0x55],pins);
         command(&mut b,0x2a,&[0,0,1,63],pins);command(&mut b,0x2b,&[0,0,0,239],pins);

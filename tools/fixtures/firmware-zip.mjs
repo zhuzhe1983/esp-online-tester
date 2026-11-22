@@ -10,3 +10,9 @@ export function firmwareZip(data,{name='firmware.bin',method=8,descriptor=false}
  const end=Buffer.alloc(22);end.writeUInt32LE(0x06054b50);end.writeUInt16LE(1,8);end.writeUInt16LE(1,10);end.writeUInt32LE(central.length+filename.length,12);end.writeUInt32LE(header.length+filename.length+payload.length+dd.length,16);
  return Buffer.concat([header,filename,payload,dd,central,filename,end]);
 }
+export function firmwareZipEntries(entries) {
+ const locals=[],centrals=[];let offset=0;
+ for(const {data,...options} of entries){const zip=firmwareZip(data,options),end=zip.length-22,cd=zip.readUInt32LE(end+16),central=Buffer.from(zip.subarray(cd,end));central.writeUInt32LE(offset,42);locals.push(zip.subarray(0,cd));centrals.push(central);offset+=cd;}
+ const central=Buffer.concat(centrals),end=Buffer.alloc(22);end.writeUInt32LE(0x06054b50);end.writeUInt16LE(entries.length,8);end.writeUInt16LE(entries.length,10);end.writeUInt32LE(central.length,12);end.writeUInt32LE(offset,16);
+ return Buffer.concat([...locals,central,end]);
+}

@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "date": "2026-11-22",
+  "product": "seeed-reterminal-d1001",
+  "status": "blocked-core-prerequisites",
+  "scope": "Official image layout, actual bare-P4 ROM boot diagnosis, and source-backed DSI/input gap assessment. No D1001 runtime is registered or claimed.",
+  "source": {
+    "repository": "Seeed-Studio/reTerminal-D1001",
+    "commit": "5074d3b2f45626b261298e305aaf792036febc5a",
+    "idf_reference": "espressif/esp-idf@v5.4.2",
+    "idf_limit": "Factory says v5.4.2-dirty; the public tag documents the relevant driver/register behavior, not the complete modified factory build."
+  },
+  "firmware": {
+    "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/firmware/reTerminal_D1001_esp32p4_factory_firmware_2025_12_17_01.bin",
+    "bytes": 13697024,
+    "sha256": "50e63daf5380383f9b89990b664bf4a825dd49aab0d58bdd7d52d542a2dd7c55",
+    "flash_at": "0x0",
+    "bootloader_at": "0x2000",
+    "partition_table_at": "0x8000",
+    "app_at": "0x10000",
+    "chip_id": 18,
+    "legacy_minimum_chip_revision": 0,
+    "minimum_chip_revision_full": 1,
+    "maximum_chip_revision_full": 199,
+    "app_descriptor": {
+      "project": "esp_brookesia_demo",
+      "version": "1.0.1",
+      "idf": "v5.4.2-dirty",
+      "build_date": "Dec 11 2025",
+      "build_time": "18:13:43"
+    },
+    "partitions": [
+      { "label": "nvs", "type": 1, "subtype": 2, "offset": "0x9000", "size": "0x6000" },
+      { "label": "phy_init", "type": 1, "subtype": 1, "offset": "0xf000", "size": "0x1000" },
+      { "label": "factory", "type": 0, "subtype": 0, "offset": "0x10000", "size": "0x900000" },
+      { "label": "storage", "type": 1, "subtype": 130, "offset": "0x910000", "size": "0x400000" }
+    ],
+    "storage_image_included": true,
+    "publication_limit": "The firmware filename date is not used as a product launch date. Third-party bytes are not committed."
+  },
+  "execution": {
+    "emulator_binary_sha256": "39b4db4378dc313dc9d421cfea6d51cc033e69f6cea522f25928d336fd7650e1",
+    "p4_source_status": "No P4 source difference from main baseline 573f5a6 at the time of this probe.",
+    "rom": "esp32p4_rev0_rom.elf",
+    "rom_sha256": "948f2c7d108d04a9c3a982f9c1c498fb17f2c4a68abc51f87782592034d7ce44",
+    "board": "none",
+    "flash_mb": 16,
+    "psram_mb": 32,
+    "boot": "rom",
+    "performance_measurement": false,
+    "command": "target/release/esp32sim --chip p4 --board none --rom $ROM_DIR/esp32p4_rev0_rom.elf --boot rom --flash-image $FIRMWARE_DIR/reTerminal_D1001_esp32p4_factory_firmware_2025_12_17_01.bin --flash-mb 16 --psram-mb 32 --max-seconds 0.05 --console both --log-periph",
+    "cases": [
+      {
+        "name": "unchanged-image-rom-boot",
+        "guest_seconds": 3,
+        "core0_instructions": 1080000000,
+        "core1_instructions": 0,
+        "cycles": 1080000000,
+        "interrupts": 0,
+        "exceptions": 0,
+        "result": "Second-stage bootloader reached; app not reached; remains at early RNG entropy initialization."
+      },
+      {
+        "name": "first-unknown-register-diagnosis",
+        "guest_seconds": 0.05,
+        "core0_instructions": 18000000,
+        "core1_instructions": 0,
+        "cycles": 18000000,
+        "pc": "0x4ff2de80",
+        "last_unknown_read": "0x500de054",
+        "register": "ADC_INT_RAW",
+        "waited_bit": 31,
+        "waited_condition": "SAR1 conversion done",
+        "result": "Actual PC/register match the official bootloader entropy wait; ADC is not mounted in the current P4 device set."
+      }
+    ],
+    "privacy": "Only public firmware metadata and aggregate execution/PC/MMIO facts retained. Raw logs and third-party binaries remain local."
+  },
+  "source_inferred_later_gaps": [
+    {
+      "component": "DSI PHY readiness",
+      "address": "0x500a00b0",
+      "condition": "PHY_LOCK bit 0, then two-lane stop status bits 2/4/7",
+      "status": "No DSI behavior mounted; native probe did not reach this call."
+    },
+    {
+      "component": "DSI DBI and DPI",
+      "host": "0x500a0000",
+      "bridge": "0x500a0800",
+      "fifo": "0x50105000",
+      "status": "Missing command packets, FIFO states, bridge scanout, format/enable gates and completion behavior."
+    },
+    {
+      "component": "DW_GDMA",
+      "address": "0x50081000",
+      "descriptor_bytes": 64,
+      "descriptor_alignment": 64,
+      "status": "Missing linked-list walk, memory-to-DSI handshake, markers, IRQ and rearm; AXI/AHB GDMA and DMA2D are different transports."
+    },
+    {
+      "component": "DMA2D",
+      "address": "0x50088000",
+      "status": "Existing shared implementation can inform P4 M2M support, but needs register compatibility verification, P4 mounting, memory adapter, clock/reset and interrupt integration."
+    },
+    {
+      "component": "I2C0/GSL3670 and PCA9535",
+      "status": "Hardware I2C0 is not mounted; touch/reset/IRQ and expander power controls need real devices. Existing P4 BoardModel bus 0 means hardware I2C1 and must remain compatible."
+    }
+  ],
+  "not_claimed": [
+    "D1001 board runtime",
+    "Factory app or display startup",
+    "DSI behavior based on a constant ready flag or direct frontend framebuffer painting",
+    "Touch input",
+    "Camera/ISP, audio, sensor or C6 networking support",
+    "Performance regression comparison"
+  ]
+}

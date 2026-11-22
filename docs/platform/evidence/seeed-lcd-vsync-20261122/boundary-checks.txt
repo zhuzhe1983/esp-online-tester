@@ -1,0 +1,218 @@
+$ cargo test -p esp32s3 --lib rgb565_513_byte_batch
+exit: 101
+   Compiling esp32s3 v0.3.0 (<repository>/esp32s3)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 8.26s
+     Running unittests src/lib.rs (<shared-target>/debug/build/esp32s3/49e4e31d8502cc13/out/esp32s3-49e4e31d8502cc13)
+
+running 1 test
+test bus::dma_tests::rgb565_513_byte_batch_cannot_consume_past_the_vsync_boundary ... FAILED
+
+failures:
+
+---- bus::dma_tests::rgb565_513_byte_batch_cannot_consume_past_the_vsync_boundary stdout ----
+
+thread 'bus::dma_tests::rgb565_513_byte_batch_cannot_consume_past_the_vsync_boundary' (<test-process>) panicked at esp32s3/src/bus/dma_tests.rs:833:5:
+VSYNC must not consume a byte from the next frame
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    bus::dma_tests::rgb565_513_byte_batch_cannot_consume_past_the_vsync_boundary
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 290 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p esp32s3 --lib`
+
+$ cargo test -p esp32s3 --lib rgb
+exit: 0
+   Compiling esp32s3 v0.3.0 (<repository>/esp32s3)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.47s
+     Running unittests src/lib.rs (<shared-target>/debug/build/esp32s3/49e4e31d8502cc13/out/esp32s3-49e4e31d8502cc13)
+
+running 26 tests
+test board::atoms3_lite::tests::physical_rgb_route_grb_button_and_no_invented_peripherals ... ok
+test board::atoms3_lite::tests::software_gpio_does_not_invent_rgb_without_ex218_timing_opt_in ... ok
+test board::stackchan_base::tests::rgb_requires_output_route_and_refresh_then_power_cycle_discards_old_color ... ok
+test board::stamplc::tests::physical_keys_use_pulls_expander_irq_and_rgb_high_impedance ... ok
+test board::stamps3bat_power::tests::rgb_requires_supply_gpio_mode_refresh_and_valid_count ... ok
+test board::stopwatch::unit_rgb_tests::u003_real_rmt_route_power_disconnect_and_reset ... ok
+test board::tembed_cc1101::tests::rgb_requires_its_pin_and_supply_and_a_fresh_frame_after_power_cut ... ok
+test board::papercolor::tests::rgb_requires_g21_and_ldo_and_power_loss_drops_latched_colors ... ok
+test board::papermono::tests::rgb_uses_pmic_and_expander_pwm_and_sd_detect_is_not_output_latch ... ok
+test bus::dma_tests::rgb565_513_byte_batch_cannot_consume_past_the_vsync_boundary ... ok
+test board::seeed_indicator::tests::indicator_gx_requires_nine_bit_init_reset_backlight_and_every_rgb_lane ... ok
+test bus::dma_tests::i80_dummy_priming_clock_rgb_and_bad_dma_do_not_fake_data ... ok
+test bus::dma_tests::rgb565_vsync_dma_restart_preserves_the_34_prefetched_bytes ... ok
+test bus::dma_tests::rgb565_large_elapsed_credit_is_exact_and_services_at_most_one_frame ... ok
+test bus::dma_tests::rgb_clock_stop_start_reset_and_one_shot_gate_starved_vsync ... ok
+test bus::dma_tests::rgb_complete_dma_keeps_original_frame_boundary_bytes_and_fifo ... ok
+test board::seeed_indicator::tests::indicator_rgb565_follows_direct_and_lovyangfx_gpio_lane_mappings ... ok
+test bus::dma_tests::rgb_start_observes_only_running_finite_clock_on_its_physical_gpio ... ok
+test bus::dma_tests::rgb_sync_remainder_handles_large_elapsed_cycles_without_overflow ... ok
+test bus::dma_tests::rgb_empty_dma_vsync_follows_guest_clock_without_a_frame ... ok
+test bus::dma_tests::rgb565_irregular_ticks_preserve_byte_phase_with_and_without_isr_restart ... ok
+test bus::dma_tests::rgb_partial_scan_is_discarded_before_guest_dma_restart ... ok
+test board::seeed_indicator::tests::dx_rgb_profile_needs_reset_and_routing_without_inventing_a_spi_controller ... ok
+test board::seeed_indicator::tests::indicator_swapped_rgb_rejects_wrong_dimensions_lengths_and_each_missing_lane ... ok
+test board::papers3::tests::rgb_epdiy_decodes_dummy_pair_order_padding_and_retained_optical_state ... ok
+test board::papers3::tests::rgb_requires_all_routes_power_scan_and_a_running_gate_clock ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 265 filtered out; finished in 0.05s
+
+
+$ cargo test -p esp32s3 --lib bus::
+exit: 0
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running unittests src/lib.rs (<shared-target>/debug/build/esp32s3/49e4e31d8502cc13/out/esp32s3-49e4e31d8502cc13)
+
+running 142 tests
+test bus::cache_tests::demand_ready_can_precede_resource_release ... ok
+test bus::dma_tests::aes_dma_rejects_mmio_destination_before_writing_any_register ... ok
+test bus::cache_tests::shared_cache_misses_queue_without_charging_hits_or_service_twice ... ok
+test bus::cache_tests::cache_reconfiguration_discards_inline_and_fast_internal_modes ... ok
+test bus::cache_tests::flash_override_does_not_reprice_dirty_victims ... ok
+test bus::cache_tests::flash_override_keeps_psram_prices_and_shared_contention ... ok
+test bus::dma_tests::aes_empty_destination_cycle_is_not_reported_as_success ... ok
+test bus::cache_tests::approximate_cache_keeps_only_internal_mappings_direct ... ok
+test bus::dma_tests::camera_blanking_owner_modes_clock_reset_and_idle ... ok
+test bus::dma_tests::camera_receive_leftover_data_reports_ring_exhaustion ... ok
+test bus::dma_tests::camera_partial_slices_resume_unaligned_without_false_ring_exhaustion ... ok
+test bus::cache_tests::flash_override_is_optional_and_reset_by_cache_configuration ... ok
+test bus::dma_tests::camera_ring_has_multiple_eofs_per_frame_and_resets_each_counter ... ok
+test bus::dma_tests::camera_vsync_eof_realigns_a_mid_frame_start ... ok
+test bus::dma_tests::aes_dma_scatters_across_descriptors_and_marks_only_final_eof ... ok
+test bus::dma_tests::crypto_descriptor_read_fault_stops_channel ... ok
+test bus::dma_tests::crypto_cycles_do_not_hash_or_encrypt_partial_input ... ok
+test bus::cache_tests::packed_pie_loads_preserve_offchip_cache_accounting ... ok
+test bus::dma_tests::crypto_descriptor_writeback_preserves_mmio_side_effects ... ok
+test bus::dma_tests::crypto_owner_check_is_controlled_by_conf1 ... ok
+test bus::dma_tests::finite_i2s_work_can_read_a_nonempty_ring ... ok
+test bus::dma_tests::i2s_32_bit_stereo_consumes_eight_bytes_and_keeps_the_high_sample_bits ... ok
+test bus::dma_tests::camera_vsync_starts_capture_and_streams_partial_descriptors ... ok
+test bus::dma_tests::i80_dummy_priming_clock_rgb_and_bad_dma_do_not_fake_data ... ok
+test bus::dma_tests::empty_streaming_descriptor_cycles_raise_error_and_stop ... ok
+test bus::dma_tests::i80_dma_reaches_routed_bus_words_and_completes_irq ... ok
+test bus::dma_tests::rgb565_513_byte_batch_cannot_consume_past_the_vsync_boundary ... ok
+test bus::dma_tests::camera_sensor_clock_survives_stop_reset_and_dma_failure ... ok
+test bus::dma_tests::rgb565_large_elapsed_credit_is_exact_and_services_at_most_one_frame ... ok
+test bus::dma_tests::rgb_clock_stop_start_reset_and_one_shot_gate_starved_vsync ... ok
+test bus::dma_tests::rgb_empty_dma_vsync_follows_guest_clock_without_a_frame ... ok
+test bus::dma_tests::rgb_complete_dma_keeps_original_frame_boundary_bytes_and_fifo ... ok
+test bus::dma_tests::rgb565_vsync_dma_restart_preserves_the_34_prefetched_bytes ... ok
+test bus::dma_tests::rgb565_irregular_ticks_preserve_byte_phase_with_and_without_isr_restart ... ok
+test bus::dma_tests::camera_stopped_capture_does_not_pause_or_replay_sensor_bytes ... ok
+test bus::dma_tests::rgb_sync_remainder_handles_large_elapsed_cycles_without_overflow ... ok
+test bus::dma_tests::rgb_start_observes_only_running_finite_clock_on_its_physical_gpio ... ok
+test bus::dma_tests::sha_dma_hashes_exact_requested_message ... ok
+test bus::dma_tests::rgb_partial_scan_is_discarded_before_guest_dma_restart ... ok
+test bus::dma_tests::sha_rejects_oversized_and_short_input_without_allocating_a_padded_message ... ok
+test bus::dma_tests::streaming_dma_buffer_faults_raise_error_instead_of_emitting_zeros ... ok
+test bus::gp_spi_board_tests::bare_input_reads_do_not_refresh_board_deadlines ... ok
+test bus::gp_spi_board_tests::air_rx_base_write_does_not_rewind_a_running_list ... ok
+test bus::gp_spi_board_tests::air_rx_restarts_at_the_base_when_the_list_runs_dry ... ok
+test bus::gp_spi_board_tests::cardputer_ir_diode_load_matches_input_probe_but_releases_for_gpio_output ... ok
+test bus::gp_spi_board_tests::cardputer_decoder_observes_routes_and_releases_at_the_same_read_horizon ... ok
+test bus::gp_spi_board_tests::cpu_command_does_not_replace_a_parked_dma_transfer_on_the_bus ... ok
+test bus::gp_spi_board_tests::cpu_owned_descriptor_is_typed ... ok
+test bus::gp_spi_board_tests::deferred_extension_bases_include_preoffset_boundary_crossings ... ok
+test bus::gp_spi_board_tests::descriptor_buffer_read_failure_is_typed ... ok
+test bus::gp_spi_board_tests::descriptor_control_read_failure_is_typed ... ok
+test bus::gp_spi_board_tests::descriptor_cycle_is_typed ... ok
+test bus::gp_spi_board_tests::bare_gpio_toggle_loop_keeps_quiet_cadence_and_no_pcnt_work ... ok
+test bus::gp_spi_board_tests::dma_payload_crosses_a_tlb_mapping_boundary ... ok
+test bus::gp_spi_board_tests::descriptor_step_budget_is_typed ... ok
+test bus::dma_tests::camera_untouched_lcd_cam_does_no_work ... ok
+test bus::gp_spi_board_tests::dma_payload_reports_the_first_unmapped_address ... ok
+test bus::gp_spi_board_tests::empty_tick_flush_does_not_break_a_block ... ok
+test bus::gp_spi_board_tests::cpu_store_versions_cover_instruction_overlap ... ok
+test bus::gp_spi_board_tests::gdma_copies_memory_to_memory_when_mem_trans_en_is_set ... ok
+test bus::gp_spi_board_tests::gdma_m2m_parked_pair_resumes_where_it_stopped_and_stays_quiet_meanwhile ... ok
+test bus::gp_spi_board_tests::gdma_m2m_back_to_back_copies_with_auto_wrback ... ok
+test bus::gp_spi_board_tests::host_input_notifies_without_a_periodic_irq_scan ... ok
+test bus::gp_spi_board_tests::gpio_output_level_irqs_notify_for_both_banks_and_polarities ... ok
+test bus::gp_spi_board_tests::gpspi_usr_boundaries_keep_partial_descriptors_and_delay_eof ... ok
+test bus::gp_spi_board_tests::host_touch_uses_the_current_bus_horizon_and_keeps_its_edge_timestamp ... ok
+test bus::gp_spi_board_tests::gdma_m2m_ring_of_empty_out_descriptors_stops_at_the_step_budget ... ok
+test bus::gp_spi_board_tests::idf_shaped_read_uses_ms_dlen_and_a_following_cpu_transfer_completes ... ok
+test bus::gp_spi_board_tests::mask_drom_discards_cpu_stores_without_writable_dma_or_code_invalidation ... ok
+test bus::gp_spi_board_tests::mmio_read_flush_notifies_interrupt_changes_before_the_backstop ... ok
+test bus::gp_spi_board_tests::narrow_mmio_writes_are_rejected_without_device_or_time_side_effects ... ok
+test bus::gp_spi_board_tests::no_edge_touch_keeps_pending_cycles_in_the_deadline_threshold ... ok
+test bus::gp_spi_board_tests::out_descriptor_length_is_not_limited_by_size ... ok
+test bus::gp_spi_board_tests::mmio_write_delivers_pending_time_and_leaves_the_post_write_budget ... ok
+test bus::gp_spi_board_tests::output_irq_cache_tracks_resolved_input_not_output_latch ... ok
+test bus::gp_spi_board_tests::non_mmio_gpio_activation_restores_cadence_without_losing_pending_time ... ok
+test bus::gp_spi_board_tests::gdma_m2m_descriptor_errors_and_faults ... ok
+test bus::gp_spi_board_tests::gdma_m2m_productive_copy_resumes_after_work_budget ... ok
+test bus::gp_spi_board_tests::partial_gpspi_descriptor_cannot_leak_through_stop_reset_or_fresh_link ... ok
+test bus::gp_spi_board_tests::periodic_tick_only_requests_irq_refresh_for_events ... ok
+test bus::gp_spi_board_tests::periodic_tick_notifies_wifi_tx_and_air_rx ... ok
+test bus::gp_spi_board_tests::radio_analog_registers_take_byte_and_half_word_access ... ok
+test bus::gp_spi_board_tests::read_flush_reports_falling_board_level_interrupt ... ok
+test bus::gp_spi_board_tests::read_flush_reports_pcnt_without_a_gpio_interrupt ... ok
+test bus::gp_spi_board_tests::read_flush_reports_terminal_i2s_and_lcd_dma_descriptors ... ok
+test bus::gp_spi_board_tests::read_only_auto_writeback_descriptor_is_typed ... ok
+test bus::gp_spi_board_tests::reattaching_board_inputs_notifies_configured_level_irqs ... ok
+test bus::gp_spi_board_tests::read_flush_reports_timer_and_rmt_threshold_sources ... ok
+test bus::gp_spi_board_tests::quiet_backstop_keeps_the_original_cadence_for_active_devices ... ok
+test bus::gp_spi_board_tests::reboot_reattaches_amoled_i2c_devices_and_restores_board_input_levels ... ok
+test bus::gp_spi_board_tests::released_and_same_cycle_inputs_restore_pcnt_cadence ... ok
+test bus::gp_spi_board_tests::rmt_dma_follows_the_idf_ping_pong_ring ... ok
+test bus::gp_spi_board_tests::rmt_dma_fresh_start_discards_ring_resume_with_or_without_reset ... ok
+test bus::gp_spi_board_tests::rmt_dma_ring_waits_for_a_cpu_owned_node_and_resumes_after_restart ... ok
+test bus::gp_spi_board_tests::rmt_dma_stages_symbols_and_returns_descriptors_without_a_tick_pump ... ok
+test bus::gp_spi_board_tests::routed_output_edges_reach_pcnt_and_retain_queue_capacity ... ok
+test bus::gp_spi_board_tests::short_descriptor_chain_is_typed ... ok
+test bus::gp_spi_board_tests::short_ms_dlen_keeps_an_overlong_eof_descriptor_for_the_next_usr ... ok
+test bus::gp_spi_board_tests::spi2_and_gdma_writes_dirty_interrupts_only_when_their_sources_change ... ok
+test bus::gp_spi_board_tests::spi2_data_phase_comes_from_gdma_descriptor ... ok
+test bus::gp_spi_board_tests::spi2_dma_without_a_bound_channel_aborts_and_accepts_cpu_commands ... ok
+test bus::gp_spi_board_tests::spi3_cpu_transfer_reaches_the_board_as_host_3_on_its_own_source ... ok
+test bus::gp_spi_board_tests::spi3_dma_fault_is_cleared_by_the_next_transaction ... ok
+test bus::gp_spi_board_tests::rmt_dma_rejects_malformed_chains_and_bounds_cycles ... ok
+test bus::gp_spi_board_tests::spi3_dma_reads_the_gdma_channel_of_trigger_1 ... ok
+test bus::gp_spi_board_tests::spi3_routes_come_from_its_matrix_signals ... ok
+test bus::gp_spi_board_tests::stable_pages_move_their_epoch ... ok
+test bus::gp_spi_board_tests::timed_spi2_descriptor_collection_dirties_interrupts ... ok
+test bus::gp_spi_board_tests::spi_sio_reads_d_input_without_bypassing_matrix_or_mux ... ok
+test bus::gp_spi_board_tests::timed_spi2_dma_completion_yields_to_out_rebind ... ok
+test bus::gp_spi_board_tests::timed_spi2_dma_completion_yields_to_out_reset ... ok
+test bus::gp_spi_board_tests::timed_spi2_dma_keeps_owner_and_interrupt_pending_until_wire_deadline ... ok
+test bus::gp_spi_board_tests::timed_spi2_dma_preserves_live_gdma_configuration_and_irq_clear ... ok
+test bus::gp_spi_board_tests::timed_spi2_dma_stop_survives_completion_and_gates_the_next_usr ... ok
+test bus::gp_spi_board_tests::unrelated_gdma_channel_does_not_stage_rmt ... ok
+test bus::gp_spi_board_tests::unsupported_mmio_reads_do_not_pop_fifos_or_advance_time ... ok
+test bus::dma_tests::camera_host_frames_follow_sccb_configuration_into_dma_memory ... ok
+test bus::gp_spi_board_tests::unsupported_mmu_writes_do_not_change_mapping ... ok
+test bus::gp_spi_board_tests::wifi_rx_ctrl_carries_a_nearby_networks_channel_and_rssi ... ok
+test bus::gpspi_rx::tests::both_hosts_write_bounded_miso_and_only_last_descriptor_gets_eof ... ok
+test bus::gp_spi_board_tests::wifi_softap_rx_selects_ap_without_changing_station_metadata ... ok
+test bus::gpspi_rx::tests::exhausted_or_cyclic_chain_is_bounded_and_can_be_restarted ... ok
+test bus::gpspi_rx::tests::bad_descriptors_stop_without_successful_eof_or_mmio_side_effects ... ok
+test bus::gpspi_rx::tests::unsupported_eof_mode_fails_and_stopped_channel_is_not_restarted ... ok
+test bus::memory_origin_regressions::chip_reset_clears_timing_state_but_keeps_configuration ... ok
+test bus::gpspi_rx::tests::fifo_mode_and_wrong_peripheral_do_not_write_rx_memory ... ok
+test bus::gp_spi_board_tests::timed_spi2_dma_accounts_for_both_half_duplex_phases ... ok
+test bus::gp_spi_board_tests::papers3_battery_default_reaches_sar_and_keeps_host_overrides_across_reset_and_wake ... ok
+test bus::memory_origin_regressions::chip_reset_makes_cached_memory_cold ... ok
+test bus::memory_origin_regressions::dma_does_not_evict_or_dirty_cpu_lines ... ok
+test bus::memory_origin_regressions::dma_does_not_allocate_or_charge_cpu ... ok
+test bus::memory_origin_regressions::remap_still_invalidates_unwatched_flash_and_psram ... ok
+test bus::memory_origin_regressions::unpriced_accesses_preserve_data_versions_faults_and_cpu_debt ... ok
+test bus::memory_origin_regressions::next_block_prefix_stores_invalidate_the_watched_previous_page ... ok
+test bus::memory_origin_regressions::unwatched_mappings_skip_version_bookkeeping_until_code_arrives ... ok
+test bus::gp_spi_board_tests::read_bulk_matches_per_byte_reads_or_declines ... ok
+test bus::memory_origin_regressions::core_reset_preserves_the_shared_cache ... ok
+test bus::dma_tests::camera_large_frame_slow_clock_progress_does_not_overflow ... ok
+test bus::memory_origin_regressions::host_peek_does_not_warm_cpu_cache ... ok
+test bus::sdmmc::tests::sdmmc_missing_route_and_invalid_dma_fail_without_guest_memory_recursion ... ok
+test bus::sdmmc::tests::physical_sdmmc_dma_roundtrip_and_chip_reset_retains_media ... ok
+test bus::memory_origin_regressions::dma_run_copy_matches_the_word_loop ... ok
+
+test result: ok. 142 passed; 0 failed; 0 ignored; 0 measured; 149 filtered out; finished in 1.71s
+
+
+$ cargo clippy -p esp32s3 --lib --tests -- -D warnings
+exit: 0
+    Checking esp32s3 v0.3.0 (<repository>/esp32s3)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.31s

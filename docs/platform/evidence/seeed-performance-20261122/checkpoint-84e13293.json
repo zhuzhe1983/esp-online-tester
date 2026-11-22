@@ -1,0 +1,505 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-22T08:54:38Z",
+  "status": "checkpoint-paused-for-expanded-device-scope",
+  "finalPerformanceGatePassed": false,
+  "successfulTimedRuns": 22,
+  "requestedTimedRuns": 24,
+  "baseline": {
+    "commit": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+    "binarySha256": "22954f6f7ef68a1d12e76a07ed3494c25e9cc2c231781ea912d479af8f3a87be",
+    "build": "CARGO_BUILD_JOBS=1 cargo build --release --bins; unchanged release profile"
+  },
+  "candidate": {
+    "gitHead": "7955e306e6c0007a3a71ab1bef72b4e250f94483",
+    "gitHeadStatus": "unpublished integration checkpoint; not a published release or final onboarding commit",
+    "binarySha256": "84e13293e0524d108f4c08817fe09b0352fc525c8e134cecb29a81c7b80ef7b1",
+    "identityNote": "The exact executable and input SHA-256 values identify these runs. The unpublished integration history may be consolidated before publication."
+  },
+  "environment": {
+    "python": "3.12.14",
+    "system": "Linux",
+    "machine": "x86_64",
+    "cpu": {
+      "vendor_id": "AuthenticAMD",
+      "cpu family": "25",
+      "model": "17",
+      "model name": "AMD EPYC 9V74 80-Core Processor",
+      "stepping": "1"
+    },
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "bash": "GNU bash, version 5.2.37(1)-release (x86_64-pc-linux-gnu)",
+    "timer": "bash builtin time -p",
+    "timePrecisionSeconds": 0.01
+  },
+  "method": {
+    "timer": "bash builtin time -p",
+    "cpuMetric": "median user seconds for three complete alternating main/candidate pairs",
+    "guestWindowSeconds": 30,
+    "quietWindow": "All task-owned compilation, tests and other emulator probes were stopped by coordination before measurements. No CPU affinity or frequency lock was imposed.",
+    "profiles": "Baseline and candidate Cargo.toml / cli/Cargo.toml / .cargo/config.toml have no difference in this checkpoint; no optimization or LTO setting was changed for measurement.",
+    "consoleCheck": "SHA-256 and byte count of complete stdout; per-core instructions, cycles, exceptions and interrupts also identical in every recorded run. Raw console output is not committed."
+  },
+  "workloads": {
+    "hello": {
+      "completedPairs": 3,
+      "requestedPairs": 3,
+      "guestSeconds": 30,
+      "exactExecutionMatchForEveryRecordedRun": true,
+      "commonExecution": {
+        "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+        "stdoutBytes": 20364,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          11934783,
+          6775776
+        ],
+        "totalInstructions": 18710559,
+        "guestSeconds": 30.0,
+        "cycles": 7200000000,
+        "exceptions": 27229,
+        "interrupts": 6032
+      },
+      "samples": [
+        {
+          "pair": 1,
+          "main": {
+            "userSeconds": 0.56,
+            "sysSeconds": 0.02,
+            "realSeconds": 0.58
+          },
+          "candidate": {
+            "userSeconds": 0.7,
+            "sysSeconds": 0.02,
+            "realSeconds": 0.74
+          }
+        },
+        {
+          "pair": 2,
+          "main": {
+            "userSeconds": 0.59,
+            "sysSeconds": 0.01,
+            "realSeconds": 0.61
+          },
+          "candidate": {
+            "userSeconds": 0.67,
+            "sysSeconds": 0.01,
+            "realSeconds": 0.69
+          }
+        },
+        {
+          "pair": 3,
+          "main": {
+            "userSeconds": 0.69,
+            "sysSeconds": 0.02,
+            "realSeconds": 0.71
+          },
+          "candidate": {
+            "userSeconds": 0.71,
+            "sysSeconds": 0.02,
+            "realSeconds": 0.73
+          }
+        }
+      ],
+      "inputs": {
+        "rom": {
+          "path": "$ROM_DIR/esp32s3_rev0_rom.elf",
+          "bytes": 949552,
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+        },
+        "bootloader": {
+          "path": "$ROOT/web/wasm/fw/public/hello-bootloader.bin",
+          "bytes": 20832,
+          "sha256": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579"
+        },
+        "ptable": {
+          "path": "$ROOT/web/wasm/fw/public/hello-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+        },
+        "app": {
+          "path": "$ROOT/web/wasm/fw/public/hello_world.bin",
+          "bytes": 161712,
+          "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9"
+        }
+      },
+      "arguments": [
+        "--chip",
+        "s3",
+        "--board",
+        "none",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--flash-mb",
+        "8",
+        "--psram-mb",
+        "2",
+        "--rom",
+        "$ROM_DIR/esp32s3_rev0_rom.elf",
+        "--bootloader",
+        "$ROOT/web/wasm/fw/public/hello-bootloader.bin",
+        "--ptable",
+        "$ROOT/web/wasm/fw/public/hello-ptable.bin",
+        "--app",
+        "$ROOT/web/wasm/fw/public/hello_world.bin"
+      ],
+      "medianUserSeconds": {
+        "main": 0.59,
+        "candidate": 0.7
+      },
+      "candidateDeltaPercent": 18.644067796610166
+    },
+    "c3-hello": {
+      "completedPairs": 3,
+      "requestedPairs": 3,
+      "guestSeconds": 30,
+      "exactExecutionMatchForEveryRecordedRun": true,
+      "commonExecution": {
+        "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+        "stdoutBytes": 10095,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          4800000000
+        ],
+        "totalInstructions": 4800000000,
+        "guestSeconds": 30.0,
+        "cycles": 4800000000,
+        "exceptions": 0,
+        "interrupts": 3028
+      },
+      "samples": [
+        {
+          "pair": 1,
+          "main": {
+            "userSeconds": 6.31,
+            "sysSeconds": 0.01,
+            "realSeconds": 6.33
+          },
+          "candidate": {
+            "userSeconds": 5.65,
+            "sysSeconds": 0.02,
+            "realSeconds": 5.68
+          }
+        },
+        {
+          "pair": 2,
+          "main": {
+            "userSeconds": 5.82,
+            "sysSeconds": 0.0,
+            "realSeconds": 5.83
+          },
+          "candidate": {
+            "userSeconds": 5.57,
+            "sysSeconds": 0.01,
+            "realSeconds": 5.59
+          }
+        },
+        {
+          "pair": 3,
+          "main": {
+            "userSeconds": 5.48,
+            "sysSeconds": 0.01,
+            "realSeconds": 5.5
+          },
+          "candidate": {
+            "userSeconds": 5.61,
+            "sysSeconds": 0.02,
+            "realSeconds": 5.66
+          }
+        }
+      ],
+      "inputs": {
+        "rom": {
+          "path": "$ROM_DIR/esp32c3_rev3_rom.elf",
+          "bytes": 556332,
+          "sha256": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c"
+        },
+        "bootloader": {
+          "path": "$ROOT/web/wasm/fw/public/c3-hello-bootloader.bin",
+          "bytes": 20960,
+          "sha256": "3eaeaa5fb91d462a6ce6dbd8f8d488c8dc059216bc5841e50b784aea8348eb7b"
+        },
+        "ptable": {
+          "path": "$ROOT/web/wasm/fw/public/c3-hello-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+        },
+        "app": {
+          "path": "$ROOT/web/wasm/fw/public/c3-hello_world.bin",
+          "bytes": 137104,
+          "sha256": "3fd8606fd2fb10d2387ed4d238e16e7f80cd4832f380da02f0128f7bf4e0e8be"
+        }
+      },
+      "arguments": [
+        "--chip",
+        "c3",
+        "--board",
+        "none",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--flash-mb",
+        "4",
+        "--rom",
+        "$ROM_DIR/esp32c3_rev3_rom.elf",
+        "--bootloader",
+        "$ROOT/web/wasm/fw/public/c3-hello-bootloader.bin",
+        "--ptable",
+        "$ROOT/web/wasm/fw/public/c3-hello-ptable.bin",
+        "--app",
+        "$ROOT/web/wasm/fw/public/c3-hello_world.bin"
+      ],
+      "medianUserSeconds": {
+        "main": 5.82,
+        "candidate": 5.61
+      },
+      "candidateDeltaPercent": -3.6082474226804107
+    },
+    "c6-hello": {
+      "completedPairs": 3,
+      "requestedPairs": 3,
+      "guestSeconds": 30,
+      "exactExecutionMatchForEveryRecordedRun": true,
+      "commonExecution": {
+        "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+        "stdoutBytes": 9735,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          4800000000
+        ],
+        "totalInstructions": 4800000000,
+        "guestSeconds": 30.0,
+        "cycles": 4800000000,
+        "exceptions": 0,
+        "interrupts": 3029
+      },
+      "samples": [
+        {
+          "pair": 1,
+          "main": {
+            "userSeconds": 3.53,
+            "sysSeconds": 0.0,
+            "realSeconds": 3.54
+          },
+          "candidate": {
+            "userSeconds": 3.29,
+            "sysSeconds": 0.02,
+            "realSeconds": 3.37
+          }
+        },
+        {
+          "pair": 2,
+          "main": {
+            "userSeconds": 3.54,
+            "sysSeconds": 0.01,
+            "realSeconds": 3.55
+          },
+          "candidate": {
+            "userSeconds": 3.59,
+            "sysSeconds": 0.0,
+            "realSeconds": 3.61
+          }
+        },
+        {
+          "pair": 3,
+          "main": {
+            "userSeconds": 3.5,
+            "sysSeconds": 0.02,
+            "realSeconds": 3.53
+          },
+          "candidate": {
+            "userSeconds": 4.1,
+            "sysSeconds": 0.01,
+            "realSeconds": 4.13
+          }
+        }
+      ],
+      "inputs": {
+        "rom": {
+          "path": "$ROM_DIR/esp32c6_rev0_rom.elf",
+          "bytes": 489768,
+          "sha256": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551"
+        },
+        "bootloader": {
+          "path": "$ROOT/web/wasm/fw/public/c6-hello-bootloader.bin",
+          "bytes": 22464,
+          "sha256": "88fd358b406ebc874cda1f4d14c1fd50d37cd064a1826192ee275ce67741ff75"
+        },
+        "ptable": {
+          "path": "$ROOT/web/wasm/fw/public/c6-hello-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+        },
+        "app": {
+          "path": "$ROOT/web/wasm/fw/public/c6-hello_world.bin",
+          "bytes": 120848,
+          "sha256": "e302a3769d3122759ea85ed6caff857da36f558f83f9bf0eb652276657de0131"
+        }
+      },
+      "arguments": [
+        "--chip",
+        "c6",
+        "--board",
+        "none",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--flash-mb",
+        "4",
+        "--rom",
+        "$ROM_DIR/esp32c6_rev0_rom.elf",
+        "--bootloader",
+        "$ROOT/web/wasm/fw/public/c6-hello-bootloader.bin",
+        "--ptable",
+        "$ROOT/web/wasm/fw/public/c6-hello-ptable.bin",
+        "--app",
+        "$ROOT/web/wasm/fw/public/c6-hello_world.bin"
+      ],
+      "medianUserSeconds": {
+        "main": 3.53,
+        "candidate": 3.59
+      },
+      "candidateDeltaPercent": 1.6997167138810276
+    },
+    "pocket-tank": {
+      "completedPairs": 2,
+      "requestedPairs": 3,
+      "guestSeconds": 30,
+      "exactExecutionMatchForEveryRecordedRun": true,
+      "commonExecution": {
+        "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+        "stdoutBytes": 22192,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          4595734479,
+          6171560740
+        ],
+        "totalInstructions": 10767295219,
+        "guestSeconds": 30.0,
+        "cycles": 7200000000,
+        "exceptions": 1048080,
+        "interrupts": 100430
+      },
+      "samples": [
+        {
+          "pair": 1,
+          "main": {
+            "userSeconds": 193.96,
+            "sysSeconds": 0.2,
+            "realSeconds": 194.89
+          },
+          "candidate": {
+            "userSeconds": 194.35,
+            "sysSeconds": 0.19,
+            "realSeconds": 195.22
+          }
+        },
+        {
+          "pair": 2,
+          "main": {
+            "userSeconds": 191.73,
+            "sysSeconds": 0.3,
+            "realSeconds": 192.76
+          },
+          "candidate": {
+            "userSeconds": 192.72,
+            "sysSeconds": 0.23,
+            "realSeconds": 193.79
+          }
+        }
+      ],
+      "inputs": {
+        "rom": {
+          "path": "$ROM_DIR/esp32s3_rev0_rom.elf",
+          "bytes": 949552,
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+        },
+        "bootloader": {
+          "path": "$ROOT/web/wasm/fw/public/pocket-tank-bootloader.bin",
+          "bytes": 22464,
+          "sha256": "9556d59f3a10f6b04fa6d75f3142a66034339afafffbd4bbc3d9a127eaa73859"
+        },
+        "ptable": {
+          "path": "$ROOT/web/wasm/fw/public/pocket-tank-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7af5b28608c91167e00778b7f20622f3b47849efebeb3e64117162d73f3e0508"
+        },
+        "app": {
+          "path": "$ROOT/web/wasm/fw/public/pocket-tank.bin",
+          "bytes": 470096,
+          "sha256": "443dd24aed14a509e6df597eb3a02635cc07e0fbee6f04db85a62f4d4dadb113"
+        },
+        "flash_at_0x290000": {
+          "path": "$ROOT/web/wasm/fw/local/model_q4.bin",
+          "bytes": 7557640,
+          "sha256": "b200bf87c78dc85c4d727f68941ac0b83cced9827037cc169cd2122d71002c2a"
+        }
+      },
+      "arguments": [
+        "--chip",
+        "s3",
+        "--board",
+        "waveshare-amoled18-v2",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--flash-mb",
+        "16",
+        "--psram-mb",
+        "8",
+        "--rom",
+        "$ROM_DIR/esp32s3_rev0_rom.elf",
+        "--bootloader",
+        "$ROOT/web/wasm/fw/public/pocket-tank-bootloader.bin",
+        "--ptable",
+        "$ROOT/web/wasm/fw/public/pocket-tank-ptable.bin",
+        "--app",
+        "$ROOT/web/wasm/fw/public/pocket-tank.bin",
+        "--flash-at",
+        "0x290000=$ROOT/web/wasm/fw/local/model_q4.bin"
+      ],
+      "medianGate": "incomplete: third pair was not started; no three-pair median result is claimed"
+    }
+  },
+  "nonSuccessfulAttempts": [
+    {
+      "id": "missing-external-timer",
+      "stage": "measurement setup",
+      "guestStarted": false,
+      "error": "/usr/bin/time not installed",
+      "action": "Used the same bash builtin time -p for both arms; installed no software; preserved the original failed receipt locally."
+    },
+    {
+      "id": "unsupported-c3-cli-option",
+      "stage": "CLI option validation",
+      "guestStarted": false,
+      "error": "--psram-mb is not available on the C3",
+      "context": "S3 hello six valid runs had completed and are retained. The initial common command supplied --psram-mb 0 to C3.",
+      "action": "Removed that option from the C3/C6 commands, matching CONTRIBUTING; resumed the remaining workloads in a separate output directory without replacing the S3 samples."
+    },
+    {
+      "id": "scope-expansion-pause",
+      "stage": "between Pocket Tank pairs 2 and 3",
+      "guestInterrupted": false,
+      "reason": "Additional independent Seeed devices may change the final candidate. The parent requested completion of the active pair, then a pause.",
+      "mechanism": "The already-running driver had no pause hook. Its next integrity check was stopped by temporarily renaming the baseline executable entry; the active candidate completed normally. The baseline entry was then restored and its unchanged SHA verified. No third Pocket pair or 300-second run started.",
+      "followup": "The committed reproduction script has a pair-boundary pause-file hook."
+    }
+  ],
+  "interpretation": {
+    "hello": "The 30-second guest workload is shorter than one host CPU second. Its recorded +18.64% median increase remains unresolved; this receipt does not claim no regression.",
+    "c3Hello": "Three pairs, matching exact execution, median user -3.61%.",
+    "c6Hello": "Three pairs, matching exact execution, median user +1.70%.",
+    "pocketTank": "Two pairs completed, both exact; timing samples are retained but the requested three-pair median gate is incomplete.",
+    "additionalCheck": "A separate 300-guest-second S3 hello comparison was planned to investigate the short-sample increase. It was not started before scope expansion; it must remain separate from the 30-second data."
+  }
+}

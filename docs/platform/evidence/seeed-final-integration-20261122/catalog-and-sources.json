@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "checkedAt": "2026-11-22T10:48:09.447951+00:00",
+  "scope": "Catalog contracts and the 267 original Seeed HTTP bodies; global knowledge schema validation does not re-download or verify original bodies for other manufacturers.",
+  "checks": [
+    {
+      "command": [
+        "python",
+        "tools/validate-platform-catalog.py"
+      ],
+      "exitCode": 0,
+      "output": "products: 267 entries\naccessories: 10 entries\nfirmwares: 234 entries\nwatchlist: 149 entries\nCatalog schemas and unique entry IDs passed.\n",
+      "outputSha256": "90487fa4d68fff549a013033bb6b4d8e99b65631fefb228e70faf0819b0432da"
+    },
+    {
+      "command": [
+        "node",
+        "tools/platform-seeed-catalog-test.mjs",
+        "--source-dir",
+        "<seeed-source-bodies>"
+      ],
+      "exitCode": 0,
+      "output": "seeed-catalog: 48 product identities (23 independent devices/boards + 25 explicit kit selections), firmware boundaries and layouts passed; 267 original HTTP bodies hash-verified.\n",
+      "outputSha256": "f7452ae76434daae194b732ac0cec3c842e497de4b1b9cf2229c7c5f36fcf56b"
+    },
+    {
+      "command": [
+        "node",
+        "tools/platform-knowledge-test.mjs"
+      ],
+      "exitCode": 0,
+      "output": "platform-knowledge: 275 record(s), evidence/reference/revision boundaries passed; 0 downloaded source hashes verified (use --source-dir to verify originals).\n",
+      "outputSha256": "65f7d7593879d5a6ff03c37b805db1bd03003afc52e661e7d8325b028d038ade"
+    },
+    {
+      "command": [
+        "node",
+        "tools/platform-watchlist-test.mjs"
+      ],
+      "exitCode": 0,
+      "output": "ok watchlist metadata schema, update detection, HEAD/range cancellation without body reads, 404/CORS distinction and private issue URL redaction\nok official M5Burner metadata: published versions only, fixed CDN, no GitHub token or author metadata retained\nok device-scoped release history, independent versions and isolated selected-artifact probes\n",
+      "outputSha256": "0e490301bce3965e8fbad7c07212ab676baac6b637b59e7cefdb40fb85e170db"
+    }
+  ],
+  "priorInvocationErrors": [
+    {
+      "command": "node tools/platform-knowledge-test.mjs --source-dir <seeed-source-bodies>",
+      "exitCode": 1,
+      "reason": "The global verifier also requires earlier non-Seeed bodies, including official-docs.html, which are not in the Seeed body directory. Seeed bodies are verified by platform-seeed-catalog-test instead."
+    },
+    {
+      "command": "node tools/platform-watchlist-sync-test.mjs",
+      "exitCode": 1,
+      "reason": "This filename does not exist in this checkout. The implemented platform-watchlist-test and frozen synchronization receipts are used."
+    }
+  ],
+  "productsSha256": "addcdc576e36db375d5b884eee0aeb6d7b651b500e4ec28c4216435e3e290600"
+}

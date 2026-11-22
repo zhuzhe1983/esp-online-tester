@@ -1058,6 +1058,9 @@ fn report<S: Soc>(m: &mut Machine<S>, o: &Opts, stop: Stop, dt: f64) {
     { let r = m.reports(); if !r.is_empty() { eprintln!("{}", r); } }
     eprintln!("{}", m.irq_report());
     if let Some(w) = &o.wav { match m.write_wav(w) { Ok(n) => eprintln!("[emu] wrote {} samples ({:.2} s) to {}", n, n as f64 / m.bus.audio().1 as f64, w), Err(e) => eprintln!("[emu] wav: {}", e) } }
+    // Reports must observe the same latched PWM/board output as PNG and web
+    // capture; otherwise a PWM backlight can be reported off before capture.
+    m.bus.refresh_board_outputs();
     { let r = m.bus.report(); if !r.is_empty() { eprintln!("{}", r); } }
     { let st: Vec<(u64, u64, u64, usize)> = m.cores.iter().filter_map(|c| c.code_cache_stats()).collect();
       if m.vq_stats[0] > 0 { eprintln!("[emu] virtual quanta: runs, quanta, stopped at a device register, at waiti = {:?}", m.vq_stats); }

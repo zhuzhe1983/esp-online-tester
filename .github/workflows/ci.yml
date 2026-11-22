@@ -17,7 +17,7 @@ jobs:
           targets: wasm32-unknown-unknown
       - uses: Swatinem/rust-cache@v2
       - name: Evidence privacy patterns
-        run: node tools/check-evidence-privacy.mjs
+        run: node tools/check-evidence-privacy.mjs docs/evidence 'docs/platform/evidence/seeed*'
       - name: Retained x5 receipt contracts
         run: |
           node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs

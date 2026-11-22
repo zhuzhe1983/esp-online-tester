@@ -6,7 +6,7 @@ pub mod stampc3u;
 pub use stampc3u::StampC3U;
 
 pub fn make_board(name:&str)->Option<Board> {
-    match name {"none"|"bare"=>Some(Box::new(NoBoard)),"stampc3"=>Some(Box::new(StampC3::new())),"stampc3u"=>Some(Box::new(StampC3U::new())),_=>None}
+    match name {"none"|"bare"=>Some(Box::new(NoBoard)),"stampc3"=>Some(Box::new(StampC3::new())),"stampc3u"=>Some(Box::new(StampC3U::new())),"seeed-xiao-epaper-75"=>Some(Box::new(esp_soc::board::seeed_xiao_epaper::SeeedXiaoEpaper::new(esp_soc::board::seeed_xiao_epaper::Variant::XiaoC3,crate::periph::CPU_HZ/1000))),_=>None}
 }
 
 #[cfg(test)]

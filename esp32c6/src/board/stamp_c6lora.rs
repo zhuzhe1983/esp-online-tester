@@ -75,7 +75,7 @@ mod tests {
     use super::*;
     use emu_core::Bus;
     fn write(d:&mut dyn I2cDevice,r:u8,v:u8) {assert!(d.start(false));assert!(d.write(r));assert!(d.write(v));d.stop();}
-    fn route()->SpiPins {SpiPins{sclk:1<<20,mosi:1<<21,miso:Some(22),cs:1<<23}}
+    fn route()->SpiPins {SpiPins {sclk:1<<20,mosi:1<<21,miso:Some(22),cs:1<<23,keep_cs:false}}
     fn cmd(b:&mut StampC6LoRa,bytes:&[u8])->Vec<u8> {let r=b.spi_transfer_pins(2,route(),bytes,bytes.len());b.advance_to(b.cycle+crate::periph::CPU_HZ/100);r}
     fn ready()->(StampC6LoRa,Box<dyn I2cDevice>) {
         let mut b=StampC6LoRa::new();let (_,a,mut d)=b.i2c_devices().pop().unwrap();assert_eq!(a,0x43);assert_eq!(d.pins(),Some((10,8)));

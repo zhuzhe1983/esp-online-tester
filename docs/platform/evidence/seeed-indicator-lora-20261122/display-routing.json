@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "kind": "actual-unpatched-meshtastic-rgb-routing-diagnostic",
+  "binarySha256": "69a3c36544d0047f24e580edf721c898a7ba4343299cba49cbaf256166c4e37b",
+  "firmwareRelease": "v2.5.11.8e2a3e5",
+  "guestSeconds": 6,
+  "rawStderrSha256": "4a5f472ad454ab8bbd44c2e5f972f87669f48ad50202ed0a175f8754b57c77d0",
+  "rawStderrBytes": 7206,
+  "rawCaptureRetainedInPublic": false,
+  "rawCaptureOmission": "Raw application/device identifiers and private local paths are omitted; only hardware register values are retained.",
+  "lcd": {
+    "0x60041000": "0xdf800409",
+    "0x60041014": "0x69802000",
+    "0x60041018": "0xe000000",
+    "0x6004101c": "0xc0aef839",
+    "0x60041020": "0x2231df1b",
+    "0x60041024": "0x70307",
+    "0x60041064": "0x1",
+    "0x60041068": "0x2",
+    "0x6004106c": "0x0"
+  },
+  "derivedGeometry": {
+    "activeWidth": 480,
+    "activeHeight": 480,
+    "totalWidth": 548,
+    "totalHeight": 518
+  },
+  "gpioOutputSignal": {
+    "0": 140,
+    "1": 139,
+    "2": 138,
+    "3": 137,
+    "4": 136,
+    "5": 135,
+    "6": 134,
+    "7": 133,
+    "8": 148,
+    "9": 147,
+    "10": 146,
+    "11": 145,
+    "12": 144,
+    "13": 143,
+    "14": 142,
+    "15": 141,
+    "16": 151,
+    "17": 152,
+    "18": 150,
+    "19": 256,
+    "20": 256,
+    "21": 154
+  },
+  "gdmaOut0": {
+    "0x60": "0x38",
+    "0x64": "0x4000",
+    "0x68": "0x9",
+    "0x6c": "0x0",
+    "0x70": "0x0",
+    "0x78": "0x1f",
+    "0x80": "0xb30a4",
+    "0x84": "0x0",
+    "0x88": "0x0",
+    "0x8c": "0x0",
+    "0x90": "0x0",
+    "0xa4": "0x0",
+    "0xa8": "0x5"
+  },
+  "observations": [
+    "All 16 real RGB data pads are assigned the opposite 8-bit LCD data group.",
+    "Active geometry is 480 x 480; an 800-wide crop would not address this observation.",
+    "LCD START/RGB mode is enabled. GDMA output channel 0 is bound to LCD trigger 5, has completed/stopped, and LCD VSYNC raw/status bit 0 is clear.",
+    "The original 0-frame negative result is retained; this register inspection alone is not proof of successful display output."
+  ],
+  "sourceReview": {
+    "sources": [
+      {
+        "provider": "authorized GitHub connector GET",
+        "url": "https://github.com/meshtastic/firmware/blob/v2.5.11.8e2a3e5/src/graphics/TFTDisplay.cpp",
+        "gitBlobSha": "87c3f7de9fdfcad25dcc08980d315757abad3a34",
+        "utc": "2026-11-22T10:17:13.359Z",
+        "purpose": "Fixed Meshtastic display configuration",
+        "bytes": 33433,
+        "sha256": "005c83a697d643529f29a7f64108819b7c7146b9d2de5f6bfdcf5fc87e57cf97"
+      },
+      {
+        "provider": "authorized GitHub connector GET",
+        "url": "https://github.com/meshtastic/firmware/blob/v2.5.11.8e2a3e5/src/graphics/TFTDisplay.h",
+        "gitBlobSha": "38cd53ebb5f1c3e7659403786f8361ef264c3d23",
+        "utc": "2026-11-22T10:17:13.359Z",
+        "purpose": "Fixed Meshtastic display interface",
+        "bytes": 1958,
+        "sha256": "c7d20ee6e066ab7696359452a07d6402593e22d88b5d2f78d7398696c7af0e42"
+      },
+      {
+        "provider": "authorized GitHub connector GET",
+        "url": "https://github.com/mverch67/LovyanGFX/blob/894e4340c94d78b1fb56d180185f773cc1f45099/src/lgfx/v1/platforms/esp32s3/Bus_RGB.cpp",
+        "gitBlobSha": "93db22d2affb78f78a5b588dfa613ffb79abe272",
+        "utc": "2026-11-22T10:17:13.359Z",
+        "purpose": "Historical LovyanGFX source candidate; exact release build dependency is not pinned",
+        "bytes": 11529,
+        "sha256": "584e7e8bbefcc46bdee173a4725172267fb703c783412599f4cb2d347d1c9e76"
+      },
+      {
+        "provider": "authorized GitHub connector GET",
+        "url": "https://github.com/mverch67/LovyanGFX/blob/894e4340c94d78b1fb56d180185f773cc1f45099/src/lgfx/v1/platforms/esp32s3/Panel_RGB.cpp",
+        "gitBlobSha": "d0d2ecbcf352cae446f352d1bcb4809f95b0296a",
+        "utc": "2026-11-22T10:17:13.359Z",
+        "purpose": "Historical framebuffer stride and ST7701 commands",
+        "bytes": 16314,
+        "sha256": "2382225578320475a747b3069a10191b98583b03e49156ba2b9da245927a4514"
+      },
+      {
+        "provider": "authorized GitHub connector GET",
+        "url": "https://github.com/mverch67/LovyanGFX/blob/894e4340c94d78b1fb56d180185f773cc1f45099/src/lgfx/v1/platforms/esp32s3/Panel_RGB.hpp",
+        "gitBlobSha": "220ef26736cf3a9eaf0c36d7d6dacf1bc48cd23e",
+        "utc": "2026-11-22T10:17:13.359Z",
+        "purpose": "Historical framebuffer interface",
+        "bytes": 3190,
+        "sha256": "5864b5f2ff54dbb20e26a8cd36efa8bdaf21edabe72e9180e80b76a76080d6f3"
+      }
+    ],
+    "releaseDate": "2024-11-05T13:23:58Z",
+    "dependencyNote": "The fixed firmware platformio.ini uses mverch67/LovyanGFX#develop without a commit. The 894e4340 revision is the latest ancestor returned before release publication, not a proven build lock."
+  },
+  "changeScope": [
+    "The board decodes the direct and byte-group-swapped 16-bit routes from physical pins.",
+    "No guessed 800-wide crop, rotation or replacement UI. Incorrect lane, geometry or payload length remains rejected.",
+    "The shared LCD VSYNC bootstrap question is a separate review; this board patch does not change CPU, GDMA or LCD timing."
+  ],
+  "validation": {
+    "status": "source-and-register-reviewed; cargo-not-run-at-this-checkpoint",
+    "testsAdded": [
+      "indicator_rgb565_follows_direct_and_lovyangfx_gpio_lane_mappings",
+      "indicator_swapped_rgb_rejects_wrong_dimensions_lengths_and_each_missing_lane"
+    ],
+    "checksCompleted": [
+      "git diff --check",
+      "evidence privacy pattern scan and manual source/register review"
+    ],
+    "integrationGate": "Compilation, runtime tests and actual original-firmware display verification must be recorded separately before any success claim.",
+    "sourceSha256": {
+      "esp32s3/src/board/seeed_indicator.rs": "48b58ac55586c9cbd31a22e8919a402d554006e1bc3fe47e61dd6c0a576fc69e",
+      "esp32s3/src/board/seeed_indicator_lora.rs": "1a5a961886ecd8657089bc5bbf99f054313dd43f90a2ff830a8fbc8ad3c5982f"
+    }
+  }
+}

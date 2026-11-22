@@ -676,7 +676,7 @@ function reflectMode(mode, unavailable = false) {
   renderImuLink();
   for (const candidate of ['2d', '3d']) { const button = $(`view-${candidate}`); if (button) { button.classList.toggle('active', mode === candidate); button.setAttribute('aria-pressed', String(mode === candidate)); } }
   if ($('view-3d')) $('view-3d').disabled = unavailable;
-  const touch = product()?.runtime?.board && (product()?.runtime?.touch || product()?.display?.touch);
+  const touch = product()?.runtime?.board && (product()?.runtime?.touch ?? product()?.display?.touch);
   text('stage-gesture', mode === '3d' ? `拖动模型旋转 · 滚轮缩放${touch ? ' · 点击或滑动触摸屏' : ''}` : touch ? '点击或滑动触摸屏 · 按键支持键盘映射' : '实际固件画面 · 按键支持键盘映射');
 }
 async function configure(next, {reflectSource = false} = {}) {

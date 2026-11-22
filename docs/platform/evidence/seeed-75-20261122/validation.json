@@ -1,0 +1,394 @@
+{
+  "schema": 1,
+  "verifiedAt": "2026-11-22T07:34:56.661861+00:00",
+  "mode": "native-interpreter-rom-boot-unmodified-official-release",
+  "cli": {
+    "profile": "debug",
+    "sha256": "c3b76b74e08a6f1870d63d1b97d66430622782d408fb2f27bc76d9d5e761152c",
+    "performanceClaim": false
+  },
+  "release": {
+    "repository": "usetrmnl/trmnl-firmware",
+    "tag": "v1.8.19",
+    "commit": "450f9ca2c690ef8bf7d9f5a219b71fd49301325d",
+    "published": "2026-11-13",
+    "distributionSource": "https://github.com/usetrmnl/trmnl-firmware/blob/450f9ca2c690ef8bf7d9f5a219b71fd49301325d/.github/workflows/publish-release-firmware.yml"
+  },
+  "firmwares": [
+    {
+      "board": "seeed-trmnl-75-diy",
+      "url": "https://trmnl-fw.s3.us-east-2.amazonaws.com/byod/seeed_OG_DIY_Kit/flash/FW1.8.19.bin",
+      "bytes": 1540080,
+      "sha256": "342acbafe8d7e74a2cd77bba82ea0d09ded2c068ef8386c57e82cec42db45727",
+      "headerChipId": 9,
+      "fetchedAt": "2026-11-22T07:15:12Z",
+      "format": "merged",
+      "offset": 0,
+      "partitionLayout": [
+        {
+          "name": "nvs",
+          "offset": 36864,
+          "size": 20480
+        },
+        {
+          "name": "otadata",
+          "offset": 57344,
+          "size": 8192
+        },
+        {
+          "name": "app0",
+          "offset": 65536,
+          "size": 1900544
+        },
+        {
+          "name": "app1",
+          "offset": 1966080,
+          "size": 1900544
+        },
+        {
+          "name": "spiffs",
+          "offset": 3866624,
+          "size": 262144
+        },
+        {
+          "name": "coredump",
+          "offset": 4128768,
+          "size": 65536
+        }
+      ]
+    },
+    {
+      "board": "seeed-xiao-epaper-75",
+      "url": "https://trmnl-fw.s3.us-east-2.amazonaws.com/byod/seeed_xiao_esp32c3/flash/FW1.8.19.bin",
+      "bytes": 1554304,
+      "sha256": "907beb4253c5fe933da84d09c3c3444af7c86b1e52910d2950269ff4a8c2ec82",
+      "headerChipId": 5,
+      "fetchedAt": "2026-11-22T07:15:17Z",
+      "format": "merged",
+      "offset": 0,
+      "partitionLayout": [
+        {
+          "name": "nvs",
+          "offset": 36864,
+          "size": 20480
+        },
+        {
+          "name": "otadata",
+          "offset": 57344,
+          "size": 8192
+        },
+        {
+          "name": "app0",
+          "offset": 65536,
+          "size": 1900544
+        },
+        {
+          "name": "app1",
+          "offset": 1966080,
+          "size": 1900544
+        },
+        {
+          "name": "spiffs",
+          "offset": 3866624,
+          "size": 262144
+        },
+        {
+          "name": "coredump",
+          "offset": 4128768,
+          "size": 65536
+        }
+      ]
+    }
+  ],
+  "roms": [
+    {
+      "chip": "s3",
+      "file": "esp32s3_rev0_rom.elf",
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    {
+      "chip": "c3",
+      "file": "esp32c3_rev3_rom.elf",
+      "sha256": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c"
+    }
+  ],
+  "schematic": {
+    "url": "https://files.seeedstudio.com/wiki/XIAO_Gadget/TRMNL_Kit_Pic/XIAO_ePaper_driver_board_sch.pdf",
+    "sha256": "288a9b9372360e898ac9b702808892cbb0af97878e0d12d0db9a55a6eeeb43e8",
+    "reviewedSheets": [
+      4,
+      5
+    ],
+    "battery": "U17 gated by GPIO6; R28=R29=10k divider to GPIO1",
+    "panelSupply": "U16, PWR_EN on GPIO43/U0TXD; R26=100k pulldown"
+  },
+  "tests": {
+    "sharedBoardUnit": {
+      "pass": 4
+    },
+    "c3Mmio": {
+      "pass": 1
+    },
+    "c3ExistingPinTransport": {
+      "pass": 9,
+      "externalIgnored": 1
+    },
+    "webChipAndLocalFirmware": {
+      "pass": 2
+    },
+    "clippy": "pass"
+  },
+  "runs": [
+    {
+      "board": "seeed-trmnl-75-diy",
+      "scenario": "pre-fix-gpio-only-power-gate",
+      "status": "blocked",
+      "romBoot": true,
+      "virtualSeconds": 10,
+      "cycles": 2400000000,
+      "instructions": "core0 47277360 + core1 64378641",
+      "consoleSha256": "bb7b8581d8a4530622223736d9ed9b68f629e60eea1bf8d59af46eb5c7749db6",
+      "consoleBytes": 1717,
+      "screen": {
+        "dimensions": [
+          800,
+          480
+        ],
+        "pngSha256": "e27fe9b5530c6d1fc147ba1518761b1380cc54e67281ea6e5e8a6c746a04429c",
+        "rgbSha256": "cf2fc989b2e2f2060013960928812ab0985c6bc55e298166d52477b43452faa8",
+        "blackPixels": 0,
+        "colors": 1
+      },
+      "command": [
+        "target/debug/esp32sim",
+        "--chip",
+        "s3",
+        "--board",
+        "seeed-trmnl-75-diy",
+        "--rom",
+        "$ROM_DIR/esp32s3_rev0_rom.elf",
+        "--boot",
+        "rom",
+        "--flash-image",
+        "$FIRMWARE_DIR/s3-FW1.8.19.bin",
+        "--flash-mb",
+        "16",
+        "--max-seconds",
+        "10",
+        "--console",
+        "both",
+        "--no-dump",
+        "--tft-png",
+        "target/seeed-75-probe/s3-screen.png",
+        "--psram-mb",
+        "8",
+        "--script",
+        "target/seeed-75-probe/s3.script"
+      ],
+      "actions": [
+        "0 adc 1 1.9"
+      ]
+    },
+    {
+      "board": "seeed-trmnl-75-diy",
+      "scenario": "pre-fix-reset-cleared-ram",
+      "status": "blank-screen",
+      "romBoot": true,
+      "virtualSeconds": 10,
+      "cycles": 2400000000,
+      "instructions": "core0 47303884 + core1 64408425",
+      "consoleSha256": "c1baf5379a8d9cb8502441a34b1a4804d3f92b651c2ebb50105fb2d0c5a93dbd",
+      "consoleBytes": 1435,
+      "screen": {
+        "dimensions": [
+          800,
+          480
+        ],
+        "pngSha256": "e27fe9b5530c6d1fc147ba1518761b1380cc54e67281ea6e5e8a6c746a04429c",
+        "rgbSha256": "cf2fc989b2e2f2060013960928812ab0985c6bc55e298166d52477b43452faa8",
+        "blackPixels": 0,
+        "colors": 1
+      },
+      "command": [
+        "target/debug/esp32sim",
+        "--chip",
+        "s3",
+        "--board",
+        "seeed-trmnl-75-diy",
+        "--rom",
+        "$ROM_DIR/esp32s3_rev0_rom.elf",
+        "--boot",
+        "rom",
+        "--flash-image",
+        "$FIRMWARE_DIR/s3-FW1.8.19.bin",
+        "--flash-mb",
+        "16",
+        "--max-seconds",
+        "10",
+        "--console",
+        "uart0",
+        "--no-dump",
+        "--tft-png",
+        "target/seeed-75-probe/s3-screen.png",
+        "--psram-mb",
+        "8",
+        "--adc",
+        "1"
+      ]
+    },
+    {
+      "board": "seeed-trmnl-75-diy",
+      "scenario": "rom-boot-default-battery-and-provisioning",
+      "status": "pass",
+      "romBoot": true,
+      "virtualSeconds": 10,
+      "cycles": 2400000000,
+      "instructions": "core0 47303884 + core1 64408425",
+      "consoleSha256": "55ad930cc59a01b2303d906ed38f906d540f923501d6d97832355517739fe640",
+      "consoleBytes": 1437,
+      "screen": {
+        "dimensions": [
+          800,
+          480
+        ],
+        "pngSha256": "89839de3862e64ee98dd57970b1f44a72791747cd67b382742264332253c6c92",
+        "rgbSha256": "0a4912f8cbdd76805c23ef0330e74f85b17589797b630a0c5bdddc90359434ce",
+        "blackPixels": 8639,
+        "colors": 2
+      },
+      "frames": 2,
+      "ramBytes": 192000,
+      "visualLabels": [
+        "TRMNL firmware 1.8.19 (450f9ca)",
+        "Wi-Fi provisioning instructions",
+        "QR code"
+      ],
+      "identifierPayloadsRetained": false,
+      "batterySource": "board-default: nominal4.0V via GPIO6-gated1/2 divider",
+      "adc": {
+        "pin": 1,
+        "raw": 2163,
+        "generation": 9
+      },
+      "command": [
+        "target/debug/esp32sim",
+        "--chip",
+        "s3",
+        "--board",
+        "seeed-trmnl-75-diy",
+        "--rom",
+        "$ROM_DIR/esp32s3_rev0_rom.elf",
+        "--boot",
+        "rom",
+        "--flash-image",
+        "$FIRMWARE_DIR/s3-FW1.8.19.bin",
+        "--flash-mb",
+        "16",
+        "--max-seconds",
+        "10",
+        "--console",
+        "uart0",
+        "--no-dump",
+        "--tft-png",
+        "target/seeed-75-probe/s3-screen.png",
+        "--psram-mb",
+        "8",
+        "--adc",
+        "1"
+      ]
+    },
+    {
+      "board": "seeed-xiao-epaper-75",
+      "scenario": "rom-boot-stock-trmnl-1.8.19",
+      "status": "blocked",
+      "romBoot": true,
+      "virtualSeconds": 10,
+      "cycles": 1600000000,
+      "instructions": "1600000000",
+      "consoleSha256": "b80896f1324f9905dddba51b2cb90ddafff021ec77eb537d95f1b766a9e3a1a4",
+      "consoleBytes": 22113,
+      "screen": {
+        "dimensions": [
+          800,
+          480
+        ],
+        "pngSha256": "e27fe9b5530c6d1fc147ba1518761b1380cc54e67281ea6e5e8a6c746a04429c",
+        "rgbSha256": "cf2fc989b2e2f2060013960928812ab0985c6bc55e298166d52477b43452faa8",
+        "blackPixels": 0,
+        "colors": 1
+      },
+      "limitation": "No nonwhite frame; full10s run resets at8.749s with RTCWDT_RTC_RESET. Firmware uses light sleep; C3 backend has no light-sleep state machine.",
+      "command": [
+        "target/debug/esp32sim",
+        "--chip",
+        "c3",
+        "--board",
+        "seeed-xiao-epaper-75",
+        "--rom",
+        "$ROM_DIR/esp32c3_rev3_rom.elf",
+        "--boot",
+        "rom",
+        "--flash-image",
+        "$FIRMWARE_DIR/c3-FW1.8.19.bin",
+        "--flash-mb",
+        "4",
+        "--max-seconds",
+        "10",
+        "--console",
+        "both",
+        "--no-dump",
+        "--tft-png",
+        "target/seeed-75-probe/c3-screen.png"
+      ]
+    },
+    {
+      "board": "seeed-xiao-epaper-75",
+      "scenario": "spi-initialization-before-watchdog-reset",
+      "status": "blocked",
+      "romBoot": true,
+      "virtualSeconds": 8.5,
+      "cycles": 1360000000,
+      "instructions": "1360000000",
+      "consoleSha256": "908325ce6ba08eba222c5d06b39d11a38f21e8aeb8b1a3064843a2f9fcabe64f",
+      "consoleBytes": 609742,
+      "screen": {
+        "dimensions": [
+          800,
+          480
+        ],
+        "pngSha256": "e27fe9b5530c6d1fc147ba1518761b1380cc54e67281ea6e5e8a6c746a04429c",
+        "rgbSha256": "cf2fc989b2e2f2060013960928812ab0985c6bc55e298166d52477b43452faa8",
+        "blackPixels": 0,
+        "colors": 1
+      },
+      "limitation": "No nonwhite frame; full10s run resets at8.749s with RTCWDT_RTC_RESET. Firmware uses light sleep; C3 backend has no light-sleep state machine.",
+      "command": [
+        "target/debug/esp32sim",
+        "--chip",
+        "c3",
+        "--board",
+        "seeed-xiao-epaper-75",
+        "--rom",
+        "$ROM_DIR/esp32c3_rev3_rom.elf",
+        "--boot",
+        "rom",
+        "--flash-image",
+        "$FIRMWARE_DIR/c3-FW1.8.19.bin",
+        "--flash-mb",
+        "4",
+        "--max-seconds",
+        "8.5",
+        "--console",
+        "uart0",
+        "--no-dump",
+        "--tft-png",
+        "target/seeed-75-probe/c3-screen.png",
+        "--debug",
+        "spi"
+      ]
+    }
+  ],
+  "reproduction": "docs/platform/seeed-75-runtime.md",
+  "remainingGate": "same-profile release hello median CPU comparison after C3 bus predicate change; delegated to integration",
+  "privacy": "Raw console, screenshots, generated network identifiers and QR payloads are not committed."
+}

@@ -8,8 +8,9 @@ const check=(value,code,message)=>{if(!value)fail(code,message);};
 export const isC5Board=board=>['esp32c5','stamp-c5','stamp-c5-dip'].includes(board);
 export const isS31Board=board=>['esp32s31','mosaico','esp-mosaico','metalio-ink4-plus'].includes(board);
 export const isC61Board=board=>['esp32c61','corematrix'].includes(board);
+export const isC3Board=board=>['esp32c3','stampc3','stampc3u','seeed-xiao-epaper-75'].includes(board);
 // ESP-IDF v6.1 esp_app_format.h: S31 = 0x0020; v5.5.4: C61 = 20, distinct from C6 (13).
-export const chipIdForBoard=board=>isS31Board(board)?32:isC61Board(board)?20:isC5Board(board)?23:/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board)?0:['esp32c3','stampc3','stampc3u'].includes(board)?5:(board==='nesso-n1'||board.includes('c6'))?13:['esp32p4','stamp-p4'].includes(board)?18:9;
+export const chipIdForBoard=board=>isS31Board(board)?32:isC61Board(board)?20:isC5Board(board)?23:/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2)$/.test(board)?0:isC3Board(board)?5:(board==='nesso-n1'||board.includes('c6'))?13:['esp32p4','stamp-p4'].includes(board)?18:9;
 export const C5_SRAM_RANGES=Object.freeze([Object.freeze({start:0x40800000,end:0x40860000}),Object.freeze({start:0x50000000,end:0x50004000})]);
 // S013's source-backed virtual profile is rev < 3; do not silently change ROM
 // families for an image targeting ECO5. ESP-IDF esp_image_header_t offsets 15/17.

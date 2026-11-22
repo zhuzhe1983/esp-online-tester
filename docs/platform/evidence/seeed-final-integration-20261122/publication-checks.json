@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "checkedAt": "2026-11-22T12:32:44.604919+00:00",
+  "scope": "Final source, execution-inventory and local-document consistency snapshot before adding this checklist. Artifact packaging and clean-commit object validation are recorded separately in the delivery package.",
+  "evidencePrivacy": {
+    "command": "node tools/check-evidence-privacy.mjs docs/evidence 'docs/platform/evidence/seeed*'",
+    "exitCode": 0,
+    "trackedFiles": 2724,
+    "gzipFiles": 109,
+    "manualSourceReview": "../seeed-expanded-models/privacy-review.json"
+  },
+  "sourceFreeze": {
+    "rustSourceFiles": 631,
+    "goldenFiles": 92,
+    "allHashesMatchFinalNativeGate": true,
+    "productionWasmSha256": "a3f0c90c47f9403225084c7138a3ec6c6b7ab5d2d9a0d1e6d3db8938a7379a75",
+    "nativeCliSha256": "4dd4d549dabb2e11282e692119558bb3a4907baa02be345aac9c5ff71176c9a4",
+    "workerSha256": "f2903f82105003582d2ccde163c3dbfbc1c61d980c542fd9c0a5a69803af960d",
+    "probeSha256": "8cf822899f24ebff4a6f5295dee5f2c66f19fd32b67f05e6acedfa8518b34429",
+    "productCatalogSha256": "addcdc576e36db375d5b884eee0aeb6d7b651b500e4ec28c4216435e3e290600"
+  },
+  "scopeAndInventory": {
+    "seeedProducts": 48,
+    "partial": 47,
+    "unavailable": 1,
+    "bareBoardsWithoutDisplay": 4,
+    "finalIndependentRuns": 19,
+    "distinctProducts": 18,
+    "inputActions": 26,
+    "digitalPeers": 2,
+    "captures": 52,
+    "rgbaSamples": 49,
+    "noFrame": 3,
+    "everyRawReceiptHashFoundInCuratedEvidence": true,
+    "allIndependentDisplayProductsExceptUnavailableD1001Covered": true
+  },
+  "relativeDocumentLinks": {
+    "markdownFiles": 33,
+    "localLinks": 697,
+    "missing": 0
+  },
+  "postStageSourceChanges": [
+    "web/platform/catalog/firmware-catalog-sync-report.json",
+    "web/platform/catalog/firmware-release-snapshot.json",
+    "web/platform/catalog/firmwares.json"
+  ],
+  "whitespace": {
+    "fullDiffExitCode": 2,
+    "fullDiffFindings": [
+      {
+        "path": "web/platform/assets/seeed-xiao-epaper-75/button.step",
+        "line": 4,
+        "sha256": "c71ea9f48dad934cafdb202d269889f4d62af14cfee5a4c27eb32c9786192244",
+        "sourceId": "archive-button-step",
+        "reason": "Retained manufacturer STEP comment ends with a space before CRLF. This exact extracted-source hash remains in the source manifest and validated model. Preserve manufacturer bytes rather than reformatting CAD for a text-style check."
+      },
+      {
+        "path": "web/platform/assets/seeed-xiao-epaper-75/front_board.step",
+        "line": 4,
+        "sha256": "164e5d286705c56a1f61d7235e62acd8d4144099678712ad5cd7fd6139bdaaba",
+        "sourceId": "archive-front_board-step",
+        "reason": "Retained manufacturer STEP comment ends with a space before CRLF. This exact extracted-source hash remains in the source manifest and validated model. Preserve manufacturer bytes rather than reformatting CAD for a text-style check."
+      }
+    ],
+    "allOtherFilesExitCode": 0,
+    "perCommandWhitespace": "blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+    "note": "No repository configuration or CI comparison was weakened. CRLF is required by the exact console golden. The two separately recorded manufacturer-source comment lines are the only full-range findings; all code, tests, documentation and other assets pass."
+  }
+}

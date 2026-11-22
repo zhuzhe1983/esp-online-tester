@@ -30,8 +30,7 @@ impl Ssd1677 {
             entry:3,x_start:0,x_end:959,y_start:0,y_end:679,x:0,y:0,control1:0,control2:0xff,lut:[0;105],lut_written:false,
             mode2_face_odd:false,ping_pong:true,asleep:false,clock:false,analog:false,cycle:0,busy_until:None,pending_refresh:false,edges:Vec::new()}
     }
-    /// Reset controller state, retaining the bistable optical image and RAM. RAM
-    /// power-loss behavior is unspecified here; firmware must initialize its RAM.
+    /// Reset controller state, retaining the bistable optical image and RAM.
     pub fn reset(&mut self) {
         self.command=0; self.count=0; self.entry=3; self.x_start=0; self.x_end=959; self.y_start=0; self.y_end=679; self.x=0; self.y=0;
         self.control1=0; self.control2=0xff; self.lut_written=false; self.mode2_face_odd=false; self.ping_pong=true;
@@ -39,6 +38,9 @@ impl Ssd1677 {
         if self.busy_until.take().is_some() { self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:false}); }
     }
     pub fn busy(&self) -> bool { self.busy_until.is_some() }
+    /// Power loss clears volatile storage to a deterministic white RAM fixture,
+    /// retaining the bistable visible image. Firmware must initialize real RAM.
+    pub fn power_loss(&mut self) {self.reset();for plane in &mut self.planes {plane.fill(255);}}
     pub fn next_deadline(&self) -> Option<VirtualCycle> { self.busy_until }
     pub fn take_edges(&mut self) -> Vec<BoardEdge> { std::mem::take(&mut self.edges) }
     fn busy_for(&mut self, ms: u64) {

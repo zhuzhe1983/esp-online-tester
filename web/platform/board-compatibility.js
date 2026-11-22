@@ -7,4 +7,4 @@ export const firmwareBoardMatches = (manifestBoard,board) => manifestBoard === b
 export const persistentBoard = (productId,board) => productId === 'm5stack-c153-lite' && board === 'papermono-lite' ? 'papermono' : board;
 
 // Physical card transports are board-specific; this only exposes shared storage UI.
-export const hasSdCard = board => isPaperMonoBoard(board) || board === 'papers3' || board === 'paperdiy' || board === 'corematrix' || board === 'metalio-ink4' || board === 'metalio-ink4-plus';
+export const hasSdCard = board => isPaperMonoBoard(board) || board === 'papers3' || board === 'paperdiy' || board === 'corematrix' || board === 'metalio-ink4' || board === 'metalio-ink4-plus' || ['seeed-reterminal-sticky','seeed-reterminal-e1001','seeed-reterminal-e1002','seeed-reterminal-e1003','seeed-reterminal-e1004'].includes(board);

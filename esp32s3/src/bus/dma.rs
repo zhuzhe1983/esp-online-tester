@@ -707,25 +707,35 @@ impl SocBus {
         self.irq_dirty = true;
     }
 
-    /// LCD RGB output: consume the GDMA out-channel bound to LCD (trigger 5) at the panel's pixel rate,
-    /// assemble frames, publish each completed frame to the board and raise LCD_VSYNC.
     /// LCD RGB output. The LCD engine's async FIFO (16 words) is kept full ahead of the pixel clock,
     /// so a DMA link restart mid-frame (the RGB driver skips LCD_FIFO_PRESERVE_SIZE_PX pixels then)
-    /// behaves as on silicon. Frames are published to the board and raise LCD_VSYNC.
+    /// retains the existing 34-byte lookahead. Each service ends at a frame boundary so a
+    /// VSYNC ISR can restart DMA without already-consumed next-frame bytes. Unspent clock
+    /// credit remains for the next service, equally with interrupts enabled or disabled.
     pub(super) fn dma_lcd_step(&mut self, cycles: u64) {
         if !self.periph.lcd_cam.lcd_running() { return; }
+        if !self.periph.lcd_cam.lcd_clock_active() { return; }
         let (ha, va, bpp, frame_cycles) = self.periph.lcd_cam.lcd_geometry();
         let frame_bytes = (ha * va * bpp) as usize;
         if frame_bytes == 0 { return; }
+        let sync_due = self.periph.lcd_cam.lcd_sync_step(cycles, frame_cycles);
         const FIFO_BYTES: usize = 17 * 2;
-        self.periph.lcd_cam.lcd_acc += cycles;
-        let due = (self.periph.lcd_cam.lcd_acc as u128 * frame_bytes as u128 / frame_cycles as u128) as usize;
-        if due < 512 { return; }
-        self.periph.lcd_cam.lcd_acc = 0;
+        // Even u64::MAX elapsed cycles fit this wide product. Repeated out-of-domain
+        // host steps saturate credit rather than wrap; service/allocation stays bounded.
+        self.periph.lcd_cam.lcd_acc = self.periph.lcd_cam.lcd_acc.saturating_add(u128::from(cycles) * frame_bytes as u128);
+        let remaining = frame_bytes.saturating_sub(self.periph.lcd_cam.lcd_line.len());
+        // LCD_2BYTE_EN transfers a whole RGB565 pixel, never half a pixel clock.
+        // Bound in u128 before narrowing, and prefetch only beyond this frame's end.
+        let due = ((self.periph.lcd_cam.lcd_acc / u128::from(frame_cycles)).min(remaining as u128) as usize / bpp as usize) * bpp as usize;
+        if due < 512.min(remaining) {
+            if sync_due && (self.periph.lcd_cam.lcd_underflow || (self.periph.lcd_cam.lcd_fifo.is_empty() && self.periph.gdma.out_channel_for(5).is_none())) { self.lcd_starved_vsync(); }
+            return;
+        }
+        self.periph.lcd_cam.lcd_acc -= due as u128 * u128::from(frame_cycles);
         let log = self.periph.lcd_cam.lcd_log;
         // 1) top the FIFO up from DMA so that it holds `due` + lookahead bytes
         if let Some(ch) = self.periph.gdma.out_channel_for(5) {
-            let mut want = (due + FIFO_BYTES).saturating_sub(self.periph.lcd_cam.lcd_fifo.len());
+            let mut want = due.saturating_add(FIFO_BYTES).saturating_sub(self.periph.lcd_cam.lcd_fifo.len());
             let mut walk = DescriptorWalk::new(GDMA_DESCRIPTOR_STEP_BUDGET);
             while want > 0 {
                 let c = self.periph.gdma.out[ch];
@@ -755,15 +765,36 @@ impl SocBus {
         }
         // 2) the panel consumes `due` bytes from the FIFO
         let n = due.min(self.periph.lcd_cam.lcd_fifo.len());
-        for _ in 0..n { let b = self.periph.lcd_cam.lcd_fifo.pop_front().unwrap(); self.periph.lcd_cam.lcd_line.push(b); }
-        while self.periph.lcd_cam.lcd_line.len() >= frame_bytes {
+        for _ in 0..n {
+            let b = self.periph.lcd_cam.lcd_fifo.pop_front().unwrap();
+            if !self.periph.lcd_cam.lcd_underflow { self.periph.lcd_cam.lcd_line.push(b); }
+        }
+        let mut completed = false;
+        if self.periph.lcd_cam.lcd_line.len() >= frame_bytes {
             let frame = std::mem::take(&mut self.periph.lcd_cam.lcd_line);
             self.board.lcd_frame(ha, va, &frame[..frame_bytes]);
-            if frame.len() > frame_bytes { self.periph.lcd_cam.lcd_line.extend_from_slice(&frame[frame_bytes..]); }
             self.periph.lcd_cam.lcd_frames += 1;
+            completed = true;
+            // A late service may retain time beyond VSYNC. Preserve that phase instead
+            // of charging the same elapsed cycles again when a later scan is starved.
+            self.periph.lcd_cam.lcd_sync_acc = (self.periph.lcd_cam.lcd_acc / frame_bytes as u128 % u128::from(frame_cycles)) as u64;
             self.periph.lcd_cam.int_raw |= 1 << 0;                                    // LCD_VSYNC_INT
             self.irq_dirty = true;
         }
+        if n < due { self.periph.lcd_cam.lcd_underflow = true; self.periph.lcd_cam.lcd_line.clear(); }
+        if sync_due && !completed && self.periph.lcd_cam.lcd_underflow { self.lcd_starved_vsync(); }
+    }
+
+    /// IDF v5.0.6 lcd.rst documents S3 dummy output on DMA starvation and restart in
+    /// VSYNC. IDF v4.4.7 lcd_ll.h defines VSYNC_END bit0 and MISC.NEXT_FRAME bit25.
+    /// Discard an incomplete scan instead of joining bytes from two scans or filling it.
+    #[cold]
+    fn lcd_starved_vsync(&mut self) {
+        let lcd = &mut self.periph.lcd_cam;
+        lcd.lcd_line.clear(); lcd.lcd_underflow = false; lcd.lcd_acc = 0;
+        lcd.int_raw |= 1;
+        if lcd.ram.read(0x18) & (1 << 25) == 0 { lcd.lcd_user &= !(1 << 27); lcd.lcd_sync_acc = 0; }
+        self.irq_dirty = true;
     }
 
     fn scatter_dma_in(&mut self, ch: usize, data: &[u8], eof_bytes: Option<u32>, finish: bool) -> Result<(), ()> {

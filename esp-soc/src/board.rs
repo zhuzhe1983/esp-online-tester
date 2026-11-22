@@ -2,6 +2,7 @@
 //! SPI bytes, LCD frames, camera requests); a `BoardModel` interprets them as the devices wired to
 //! the pins and offers what the UI and the scripts need back.
 use esp_periph::i2c::I2cDevice;
+pub mod seeed_xiao_epaper;
 
 pub type VirtualCycle = u64;
 
@@ -20,6 +21,9 @@ pub struct SpiPins {
     pub mosi: u64,
     pub miso: Option<u8>,
     pub cs: u64,
+    /// Hardware CS remains asserted after this transfer (MISC.CS_KEEP_ACTIVE).
+    /// Separate command/data transfers can then form one peripheral transaction.
+    pub keep_cs: bool,
 }
 
 /// GPIO matrix masks at an LCD_CAM i80 transaction. Each data bit may drive several pads.
@@ -151,6 +155,9 @@ pub trait BoardModel {
     fn named_pin(&self, _name: &str) -> Option<u8> { None }
     /// The rotary encoder's (CLK, DT) pins, if there is one.
     fn encoder(&self) -> Option<(u8, u8)> { None }
+    /// Duration of a host-generated quadrature phase. This is an input policy,
+    /// not a measured mechanical speed; polled encoders need time to debounce.
+    fn encoder_phase_ms(&self) -> u8 { 2 }
     /// Lines for the end-of-run report.
     fn report(&self) -> String { String::new() }
     /// Opt-in software drive after GPIO/IO_MUX writes and board attachment (including reset).
