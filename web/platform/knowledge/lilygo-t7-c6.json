@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t7-c6",
   "title": "LILYGO T7-C6",
-  "summary": "Spark 将此商品归入T7 系列，标注 MCU 为 ESP32-C6；具体硬件版次及配置待核对。",
+  "summary": "ESP32-C6 板级 GPIO9 BOOT 与 GPIO8/9 上拉；无屏幕，无 MCU 用户 LED。充电器和电池模拟未实现，出厂固件未运行验证。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T7-C6 V1.0 / ESP32-C6-MINI-1",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T7-C6",
@@ -52,6 +52,87 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-02-11",
+        "basis": "hardware-release",
+        "sourceUrl": "https://github.com/Xinyuan-LilyGO/T7-c6/blob/e67375ab9533d9c91162968f27168c48ab3797c7/README.md",
+        "sourceId": "t7-c6-readme",
+        "confidence": "medium",
+        "hardwareRevision": "T7-C6 V1.0",
+        "notes": "Manufacturer Version iteration table labels this an update date. The same README still says not yet sold. This is a dated hardware-version/documentation milestone, not confirmed retail launch; it replaces the later 2024-12-16 storefront-publication proxy."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "t7-c6-readme"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 9,
+          "bootActiveLow": true,
+          "strapPullups": [
+            8,
+            9
+          ],
+          "batteryAdc": 2,
+          "userLeds": [],
+          "chargerLed": "TP4065 CHRG, no MCU GPIO"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "t7-c6-readme",
+        "t7-c6-schematic",
+        "t7-c6-pins",
+        "t7-c6-factory-source",
+        "espressif-c6-psram"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flash": "4 MB manufacturer module/flash specification",
+          "psram": "No external PSRAM supported by ESP32-C6; conflicting wiki/README labels are not allocated",
+          "sourceIds": [
+            "espressif-c6-psram"
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "t7-c6-readme",
+        "t7-c6-schematic",
+        "t7-c6-pins",
+        "t7-c6-factory-source",
+        "espressif-c6-psram"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +161,299 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t7-c6-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_2.jpg?v=1734340141",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_2.jpg?v=1734340141",
+      "fetchedAt": "2026-11-22T06:57:02Z",
+      "bytes": 80152,
+      "sha256": "144624e5d3cdd025c215a3d83db3c4e1b557447e147d2b7363d8abdea4d02ee9",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t7 c6 official photo 0",
+      "archiveName": "lilygo-t7-c6-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t7-c6-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_1.jpg?v=1734340141",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_1.jpg?v=1734340141",
+      "fetchedAt": "2026-11-22T06:57:08Z",
+      "bytes": 51611,
+      "sha256": "f1f110230a2997c9045d07d2c651e2e1d9db0552e3aa819371d648914841d60f",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t7 c6 official photo 1",
+      "archiveName": "lilygo-t7-c6-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t7-c6-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_3.jpg?v=1734340081",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_3.jpg?v=1734340081",
+      "fetchedAt": "2026-11-22T06:57:08Z",
+      "bytes": 79602,
+      "sha256": "c5524e0ee07d91ad3958db52c252c8eb2db07372886c2fd9517b24378afec292",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t7 c6 official photo 2",
+      "archiveName": "lilygo-t7-c6-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t7-c6-manufacturer-cad",
+      "productId": "lilygo-t7-c6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/structure/T7-C6_V1.0.step",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/structure/T7-C6_V1.0.step",
+      "repository": "Xinyuan-LilyGO/T7-c6",
+      "repositoryPath": "structure/T7-C6_V1.0.step",
+      "scope": "V1.0 assembly",
+      "fetchedAt": "2026-11-22T07:04:04Z",
+      "bytes": 1982196,
+      "sha256": "2b9760e4d3dd469067733a75f67c095fc3585e890e914d3e5ae4b129c97466b2",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "2b9760e4d3dd469067733a75f67c095fc3585e890e914d3e5ae4b129c97466b2",
+      "archiveSha256": "d8b49a03378da07a4ac9ecde0dc5ee8702bdbd002641f3b025edb77b3822cf9e",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "d8b49a03378da07a4ac9ecde0dc5ee8702bdbd002641f3b025edb77b3822cf9e",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "f97746f3d413ae09ea30bb9025513ba6ebfe74a4",
+      "revisionType": "pinned-git-revision",
+      "revision": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "title": "lilygo t7 c6 manufacturer cad",
+      "archiveName": "lilygo-t7-c6-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t7-c6-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:15Z",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t7 c6 repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t7-c6-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t7-c6",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t7-series/t7-c6/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t7-series/t7-c6/index.md",
+      "fetchedAt": "2026-11-22T06:44:03Z",
+      "mediaType": "text/plain",
+      "bytes": 3543,
+      "sha256": "e1f5d0929f305c753e0acfb1a3b6a3d4663516b2f523b4e5615687f1abcb6300",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitBlobSha": "7e8f6e063286b40576a80bceef350d83e5eb7de3",
+      "path": "en/products/t7-series/t7-c6/index.md",
+      "title": "official-wiki-t7-c6",
+      "kind": "manufacturer-documentation",
+      "archiveName": "official-wiki-t7-c6.md",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/README.md",
+      "fetchedAt": "2026-11-22T07:06:48Z",
+      "bytes": 8942,
+      "sha256": "cc0d669cca29bdb516e4543156deeb7bc911b22406edc3c8a3c916a7e60f1ac7",
+      "mediaType": "text/plain",
+      "revision": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "path": "README.md",
+      "repository": "Xinyuan-LilyGO/T7-c6",
+      "gitBlobSha": "ac388ac98ce51431e3ccaa1f05c8a37c7adf4a33",
+      "id": "t7-c6-readme",
+      "status": "fetched",
+      "title": "T7-C6 manufacturer README, hardware version and factory instructions",
+      "kind": "manufacturer-documentation",
+      "archiveName": "Xinyuan-LilyGO__T7-c6__README.md",
+      "commit": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22d668646aa2c9e7cb744e18873335dda58ff53b",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T7-C6/git/commits/e67375ab9533d9c91162968f27168c48ab3797c7",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T7-C6/git/commits/e67375ab9533d9c91162968f27168c48ab3797c7",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1101,
+        "sha256": "95fbc003685240c6f4714cd1c212a6427ab9be84fbcc412df30eb0300cc17575",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T7-c6.raw"
+      },
+      "sourceCachePath": "target/lilygo-c6-sources/Xinyuan-LilyGO__T7-c6__README.md"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/project/T7-C6_V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/project/T7-C6_V1.0.pdf",
+      "fetchedAt": "2026-11-22T07:06:48Z",
+      "bytes": 314441,
+      "sha256": "78354eee2c9c30e9c6cb143ed2146f9c97a9c0f0957fedd7a4904a77b01378b4",
+      "mediaType": "application/octet-stream",
+      "revision": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "path": "project/T7-C6_V1.0.pdf",
+      "repository": "Xinyuan-LilyGO/T7-c6",
+      "gitBlobSha": "a967e0050bbd7903991e3ff68183657a2d74e58d",
+      "id": "t7-c6-schematic",
+      "status": "fetched",
+      "title": "T7-C6 V1.0 schematic",
+      "kind": "schematic",
+      "archiveName": "Xinyuan-LilyGO__T7-c6__project__T7-C6_V1.0.pdf",
+      "commit": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22d668646aa2c9e7cb744e18873335dda58ff53b",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T7-C6/git/commits/e67375ab9533d9c91162968f27168c48ab3797c7",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T7-C6/git/commits/e67375ab9533d9c91162968f27168c48ab3797c7",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1101,
+        "sha256": "95fbc003685240c6f4714cd1c212a6427ab9be84fbcc412df30eb0300cc17575",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T7-c6.raw"
+      },
+      "sourceCachePath": "target/lilygo-c6-sources/Xinyuan-LilyGO__T7-c6__project__T7-C6_V1.0.pdf"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/libraries/Mylibrary/pin_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/libraries/Mylibrary/pin_config.h",
+      "fetchedAt": "2026-11-22T07:06:48Z",
+      "bytes": 210,
+      "sha256": "6732f978e408126d4e58aaec2aeeba3ee5957e942f90ddfbe6e282e94529e63f",
+      "mediaType": "text/plain",
+      "revision": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "path": "libraries/Mylibrary/pin_config.h",
+      "repository": "Xinyuan-LilyGO/T7-c6",
+      "gitBlobSha": "253b2cfb8933fd0a2ac8f5310f01f7523155da80",
+      "id": "t7-c6-pins",
+      "status": "fetched",
+      "title": "T7-C6 official pin configuration",
+      "kind": "manufacturer-source",
+      "archiveName": "Xinyuan-LilyGO__T7-c6__libraries__Mylibrary__pin_config.h",
+      "commit": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22d668646aa2c9e7cb744e18873335dda58ff53b",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T7-C6/git/commits/e67375ab9533d9c91162968f27168c48ab3797c7",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T7-C6/git/commits/e67375ab9533d9c91162968f27168c48ab3797c7",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1101,
+        "sha256": "95fbc003685240c6f4714cd1c212a6427ab9be84fbcc412df30eb0300cc17575",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T7-c6.raw"
+      },
+      "sourceCachePath": "target/lilygo-c6-sources/Xinyuan-LilyGO__T7-c6__libraries__Mylibrary__pin_config.h"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/examples/Original_Test/Original_Test.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/examples/Original_Test/Original_Test.ino",
+      "fetchedAt": "2026-11-22T07:06:48Z",
+      "bytes": 6259,
+      "sha256": "ed300b3663a85464c33103b59e2db0dec74d643724a1c7bc28aedccdbc2c7fe6",
+      "mediaType": "text/plain",
+      "revision": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "path": "examples/Original_Test/Original_Test.ino",
+      "repository": "Xinyuan-LilyGO/T7-c6",
+      "gitBlobSha": "5609ec0f9f2558556b7fdcec03c288ce76caa0b9",
+      "id": "t7-c6-factory-source",
+      "status": "fetched",
+      "title": "T7-C6 factory original test source",
+      "kind": "manufacturer-source",
+      "archiveName": "Xinyuan-LilyGO__T7-c6__examples__Original_Test__Original_Test.ino",
+      "commit": "e67375ab9533d9c91162968f27168c48ab3797c7",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22d668646aa2c9e7cb744e18873335dda58ff53b",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T7-C6/git/commits/e67375ab9533d9c91162968f27168c48ab3797c7",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T7-C6/git/commits/e67375ab9533d9c91162968f27168c48ab3797c7",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1101,
+        "sha256": "95fbc003685240c6f4714cd1c212a6427ab9be84fbcc412df30eb0300cc17575",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T7-c6.raw"
+      },
+      "sourceCachePath": "target/lilygo-c6-sources/Xinyuan-LilyGO__T7-c6__examples__Original_Test__Original_Test.ino"
+    },
+    {
+      "url": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "resolvedUrl": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "fetchedAt": "2026-11-22T07:07:06Z",
+      "bytes": 38300,
+      "sha256": "9f01971adeba15437d287ef9ad696fcd6d6dbcfd11b29d51734eb6803d474fd8",
+      "mediaType": "text/html",
+      "id": "espressif-c6-psram",
+      "status": "fetched",
+      "title": "Espressif FAQ: ESP32-C6 does not support external PSRAM",
+      "kind": "manufacturer-documentation",
+      "archiveName": "espressif-psram-faq.html",
+      "sourceCachePath": "target/lilygo-c6-sources/espressif-psram-faq.html"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t7-c6-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_2.jpg?v=1734340141",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t7-c6/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t7-c6-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_1.jpg?v=1734340141",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t7-c6/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t7-c6-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T7-LILYGO-01_3.jpg?v=1734340081",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t7-c6/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +466,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +473,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +483,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +493,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +503,193 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-factory-source-and-linked-images",
+    "sourceIds": [
+      "t7-c6-readme",
+      "t7-c6-factory-source"
+    ],
+    "candidates": [
+      {
+        "path": "firmware/[T7-C6_V1.0][Original_Test]_firmware_V1.0.0.bin",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/firmware/%5BT7-C6_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.0.bin",
+        "status": "linked",
+        "gitBlobSha": "357239950ea3c3cfd07f7e7211cc59c895aca88b",
+        "bytesFromTree": 910784,
+        "binaryFetched": false,
+        "sha256": null,
+        "layoutVerified": false
+      },
+      {
+        "path": "firmware/[T7-C6_V1.0][Original_Test]_firmware_V1.0.1.bin",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/firmware/%5BT7-C6_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.1.bin",
+        "status": "linked",
+        "gitBlobSha": "5fb05f47b604a5a27608ca9b1ca9d96ae0152835",
+        "bytesFromTree": 923264,
+        "binaryFetched": false,
+        "sha256": null,
+        "layoutVerified": false
+      }
+    ],
+    "simulationVerified": false,
+    "notes": "README explicitly identifies Original_Test as the product factory program and links versions 1.0.0/1.0.1. Images were not fetched, layout-checked or executed."
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t7-c6/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 T7-C6 V1.0 PCB/器件 CAD + 明示照片估计的模组、USB 外形；BOT/BOOT 可操作。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t7-c6",
+      "lilygo-t7-c6-official-photo-0",
+      "lilygo-t7-c6-official-photo-1",
+      "lilygo-t7-c6-official-photo-2",
+      "lilygo-t7-c6-manufacturer-cad",
+      "lilygo-t7-c6-repository-license",
+      "t7-c6-readme",
+      "t7-c6-schematic",
+      "t7-c6-pins",
+      "t7-c6-factory-source",
+      "espressif-c6-psram"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t7-c6",
+    "status": "diagnostic",
+    "scope": "ESP32-C6 板级 GPIO9 BOOT 与 GPIO8/9 上拉；无屏幕，无 MCU 用户 LED。充电器和电池模拟未实现，出厂固件未运行验证。",
+    "unsupported": [
+      "TP4065 charging state, physical charger LED and battery voltage divider/ADC are not modeled.",
+      "No board-owned display, SD socket or MCU-driven user LED. QWIIC accessories are not attached by default.",
+      "Wi-Fi/BLE/802.15.4 and complete official factory startup were not validated for this product."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t7-c6",
+    "boardId": "lilygo-t7-c6",
+    "name": "LILYGO T7-C6",
+    "chip": "esp32c6",
+    "flashMB": 4,
+    "psramMB": 0,
+    "display": null,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 9,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "trialAvailable": false,
+      "hardwareValidated": false
+    },
+    "chronology": {
+      "date": "2024-02-11",
+      "basis": "hardware-release",
+      "sourceUrl": "https://github.com/Xinyuan-LilyGO/T7-c6/blob/e67375ab9533d9c91162968f27168c48ab3797c7/README.md",
+      "sourceId": "t7-c6-readme",
+      "confidence": "medium",
+      "hardwareRevision": "T7-C6 V1.0",
+      "notes": "Manufacturer Version iteration table labels this an update date. The same README still says not yet sold. This is a dated hardware-version/documentation milestone, not confirmed retail launch; it replaces the later 2024-12-16 storefront-publication proxy."
+    },
+    "memoryEvidence": {
+      "flash": "4 MB manufacturer module/flash specification",
+      "psram": "No external PSRAM supported by ESP32-C6; conflicting wiki/README labels are not allocated",
+      "sourceIds": [
+        "espressif-c6-psram"
+      ]
+    },
+    "hardwareRevision": "T7-C6 V1.0 / ESP32-C6-MINI-1",
+    "pins": {
+      "boot": 9,
+      "bootActiveLow": true,
+      "strapPullups": [
+        8,
+        9
+      ],
+      "batteryAdc": 2,
+      "userLeds": [],
+      "chargerLed": "TP4065 CHRG, no MCU GPIO"
+    },
+    "scope": "ESP32-C6 板级 GPIO9 BOOT 与 GPIO8/9 上拉；无屏幕，无 MCU 用户 LED。充电器和电池模拟未实现，出厂固件未运行验证。",
+    "scopeEn": "Exact T7-C6 V1.0 GPIO9 BOOT and GPIO8/9 pull-ups with existing C6 core. No invented display or GPIO RGB LED.",
+    "sourceIds": [
+      "t7-c6-readme",
+      "t7-c6-schematic",
+      "t7-c6-pins",
+      "t7-c6-factory-source",
+      "espressif-c6-psram"
+    ],
+    "unsupported": [
+      "TP4065 charging state, physical charger LED and battery voltage divider/ADC are not modeled.",
+      "No board-owned display, SD socket or MCU-driven user LED. QWIIC accessories are not attached by default.",
+      "Wi-Fi/BLE/802.15.4 and complete official factory startup were not validated for this product."
+    ],
+    "conflicts": [
+      {
+        "fact": "memory",
+        "sources": [
+          "t7-c6-readme",
+          "espressif-c6-psram"
+        ],
+        "resolution": "The README purchase table and Arduino settings say FLASH4M / PSRAM absent; its MCU paragraph swaps those labels. Use 4 MB Flash, 0 MB PSRAM, supported by the ESP32-C6-FH4 schematic module and Espressif FAQ."
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "official-factory-source-and-linked-images",
+      "sourceIds": [
+        "t7-c6-readme",
+        "t7-c6-factory-source"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/[T7-C6_V1.0][Original_Test]_firmware_V1.0.0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/firmware/%5BT7-C6_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.0.bin",
+          "status": "linked",
+          "gitBlobSha": "357239950ea3c3cfd07f7e7211cc59c895aca88b",
+          "bytesFromTree": 910784,
+          "binaryFetched": false,
+          "sha256": null,
+          "layoutVerified": false
+        },
+        {
+          "path": "firmware/[T7-C6_V1.0][Original_Test]_firmware_V1.0.1.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-c6/e67375ab9533d9c91162968f27168c48ab3797c7/firmware/%5BT7-C6_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.1.bin",
+          "status": "linked",
+          "gitBlobSha": "5fb05f47b604a5a27608ca9b1ca9d96ae0152835",
+          "bytesFromTree": 923264,
+          "binaryFetched": false,
+          "sha256": null,
+          "layoutVerified": false
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "README explicitly identifies Original_Test as the product factory program and links versions 1.0.0/1.0.1. Images were not fetched, layout-checked or executed."
+    }
+  }
 }

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t5-e-paper-s3-pro",
   "title": "LILYGO T5 E-Paper S3 Pro",
-  "summary": "Spark 将此商品归入T5 系列，标注 MCU 为 ESP32-S3-WROOM-1；具体硬件版次及配置待核对。",
+  "summary": "接入 H752-01 的 ED047TC1 960×540 原始电子纸黑白驱动、PCA9535 数字控制线、BOOT、PCA9535 功能键与 SPI TF 卡。LCD_CAM 使用241×544字节流，校验真实数据线排列和 CKV 时钟，跳过每行前导字节及末尾4行。屏幕断电保留内容。TPS651851 电源芯片及其 power-good 未模拟且不会伪造成功，官方完整开机流程仍未验证；16级灰阶、GT911触摸、LoRa、GNSS和音频等未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T5S3-4.7-e-paper-PRO H752-01; ED047TC1 raw panel and exact epd_board_v7 driver",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T5 E-Paper S3 Pro",
@@ -52,6 +52,137 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-11-14",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t5-e-paper-s3-pro",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 960,
+          "height": 540,
+          "controller": "ED047TC1 raw source/gate panel",
+          "type": "e-paper",
+          "interface": "lcd-rgb",
+          "pixelFormat": "RGB565 optical debug output",
+          "physicalGrayLevels": 16,
+          "implementedGrayLevels": 2,
+          "physicalTouch": true,
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          },
+          {
+            "id": "function",
+            "name": "Function button",
+            "type": "button",
+            "transport": "board",
+            "sourceIds": [
+              "s3add-t5pro-pinmap"
+            ],
+            "notes": "Physical button S3 behind PCA9535 IO1_2 / bit10; no ESP GPIO pin is invented."
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "display": {
+            "clock": 4,
+            "data": [
+              5,
+              6,
+              7,
+              15,
+              16,
+              17,
+              18,
+              8
+            ],
+            "lcdCamSignals8To15": [
+              18,
+              8,
+              16,
+              17,
+              7,
+              15,
+              5,
+              6
+            ],
+            "stv": 45,
+            "ckv": 48,
+            "sth": 41,
+            "latch": 42,
+            "backlight": {
+              "pin": 11,
+              "implemented": false
+            }
+          },
+          "expander": {
+            "controller": "PCA9535",
+            "address": 32,
+            "sda": 39,
+            "scl": 40,
+            "irq": 38,
+            "outputEnable": 8,
+            "mode": 9,
+            "functionButton": 10,
+            "powerUp": 11,
+            "vcomEnable": 12,
+            "wakeUp": 13,
+            "powerGood": 14,
+            "powerGoodImplemented": false,
+            "functionButtonTransport": "board"
+          },
+          "touch": {
+            "controller": "GT911",
+            "address": 93,
+            "sda": 39,
+            "scl": 40,
+            "reset": 9,
+            "irq": 3,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "s3add-t5pro-readme",
+        "s3add-t5pro-pinmap",
+        "s3add-t5pro-board",
+        "s3add-t5pro-lcd",
+        "s3add-t5pro-render",
+        "s3add-t5pro-tps",
+        "s3add-t5pro-raw-panel",
+        "official-store-shopify-1",
+        "official-wiki-t5-e-paper-s3-pro"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +211,261 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t5-e-paper-s3-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_7.jpg?v=1731576423",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_7.jpg?v=1731576423",
+      "fetchedAt": "2026-11-22T06:57:14Z",
+      "bytes": 55236,
+      "sha256": "682ef33b7e66df43c68a7deb9aef266e9bd7f9cf76843336ba5dd5fe5927f5ff",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t5 e paper s3 pro official photo 0",
+      "archiveName": "lilygo-t5-e-paper-s3-pro-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t5-e-paper-s3-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_6.jpg?v=1731576423",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_6.jpg?v=1731576423",
+      "fetchedAt": "2026-11-22T06:57:14Z",
+      "bytes": 54013,
+      "sha256": "bd4d2eed256223b4352451daeec8489f3e990aa5629a881070154b73474219e1",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t5 e paper s3 pro official photo 1",
+      "archiveName": "lilygo-t5-e-paper-s3-pro-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t5-e-paper-s3-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_5.jpg?v=1731576423",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_5.jpg?v=1731576423",
+      "fetchedAt": "2026-11-22T06:57:14Z",
+      "bytes": 32354,
+      "sha256": "844fe6513d9df963ec87631c6f4cd4e367f506ec71a8cc14dd2406e047ddcf7f",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t5 e paper s3 pro official photo 2",
+      "archiveName": "lilygo-t5-e-paper-s3-pro-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t5-e-paper-s3-pro-manufacturer-cad",
+      "productId": "lilygo-t5-e-paper-s3-pro",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/DXF/H752.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/DXF/H752.stp",
+      "repository": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+      "repositoryPath": "DXF/H752.stp",
+      "scope": "H752 enclosure assembly",
+      "fetchedAt": "2026-11-22T07:04:09Z",
+      "bytes": 5483438,
+      "sha256": "36f610f18504f9fdd108506d77d53165fda9454e9b36339a26ad53e087c539b4",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "36f610f18504f9fdd108506d77d53165fda9454e9b36339a26ad53e087c539b4",
+      "archiveSha256": "f09ac13eb985c7dc73880d7b3d419d81626fde5e64f1f71681d97f4177e15302",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "f09ac13eb985c7dc73880d7b3d419d81626fde5e64f1f71681d97f4177e15302",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "c9bdf945d8aa9b2744ba13b8a92d4dacbf985530",
+      "revisionType": "pinned-git-revision",
+      "revision": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+      "title": "lilygo t5 e paper s3 pro manufacturer cad",
+      "archiveName": "lilygo-t5-e-paper-s3-pro-manufacturer-cad.gz"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t5-e-paper-s3-pro",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t5-series/t5-e-paper-s3-pro/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t5-series/t5-e-paper-s3-pro/index.md",
+      "fetchedAt": "2026-11-22T06:44:03Z",
+      "mediaType": "text/plain",
+      "bytes": 7405,
+      "sha256": "dd1c93eb05e15c7f9ecdce9de499921648e44b791d8541dcd9def97de72f0ac8",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitBlobSha": "4d9460e916884396c1e8bdcdbcb57281712fbb7c",
+      "path": "en/products/t5-series/t5-e-paper-s3-pro/index.md",
+      "title": "official-wiki-t5-e-paper-s3-pro",
+      "kind": "official-documentation",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "archiveName": "en__products__t5-series__t5-e-paper-s3-pro__index.md"
+    },
+    {
+      "id": "s3add-t5pro-readme",
+      "repository": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+      "revision": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+      "path": "README.md",
+      "gitBlobSha": "b29b2fc03c7032c87375fac3f5aa2b0994600c85",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:41Z",
+      "sha256": "bdb9247e416ad0f65faf82b27d6bede3c809234f51d2f35e3def64f717f45273",
+      "bytes": 10801,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-t5pro-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-t5pro-pinmap",
+      "repository": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+      "revision": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+      "path": "docs/pinmap.md",
+      "gitBlobSha": "673fdc5fe621ce4a4f2c661c2c18078d330c32aa",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/docs/pinmap.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/docs/pinmap.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:30:41Z",
+      "sha256": "9b2bd05c0e8174e36192635878b3bbf613e1cd166225fce15e00f815035beab6",
+      "bytes": 9546,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-t5pro-pinmap.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-t5pro-board",
+      "repository": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+      "revision": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+      "path": "lib/epdiy/src/board/epd_board_v7.c",
+      "gitBlobSha": "d599337b766830113a48a2ac6e8aa156649e4355",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/lib/epdiy/src/board/epd_board_v7.c",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/lib/epdiy/src/board/epd_board_v7.c",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:51:31Z",
+      "sha256": "f00be6f2f1aff88157d7239a1b477341f4ef13fbdb4b5f56a33decebc1b8139c",
+      "bytes": 7972,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-t5pro-board.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-t5pro-lcd",
+      "repository": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+      "revision": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+      "path": "lib/epdiy/src/output_lcd/lcd_driver.c",
+      "gitBlobSha": "91524b628980bd7540a39b7032a4d6e0ee6669f7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/lib/epdiy/src/output_lcd/lcd_driver.c",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/lib/epdiy/src/output_lcd/lcd_driver.c",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:51:31Z",
+      "sha256": "d98c7f685769b2aa9442868cbf24f415fbb65d66b6c7b7e984a8ac89c2791a56",
+      "bytes": 23462,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-t5pro-lcd.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-t5pro-render",
+      "repository": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+      "revision": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+      "path": "lib/epdiy/src/output_lcd/render_lcd.c",
+      "gitBlobSha": "611c9178c9369f147e3d83d619fdcf165bd08d85",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/lib/epdiy/src/output_lcd/render_lcd.c",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/lib/epdiy/src/output_lcd/render_lcd.c",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:51:31Z",
+      "sha256": "92ce9455c5a4482de12827ef07ee26813bd006eac7467bd13f97f1eb2c360976",
+      "bytes": 6283,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-t5pro-render.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-t5pro-tps",
+      "repository": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+      "revision": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+      "path": "lib/epdiy/src/board/tps65185.c",
+      "gitBlobSha": "eb5f829c71d8d6f4a4949a448ee712ece5cdb8af",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/lib/epdiy/src/board/tps65185.c",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/lib/epdiy/src/board/tps65185.c",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:51:36Z",
+      "sha256": "f4f8df437a46311ea1201b1e43da827f46ebf52e56333811bc207c013f56f595",
+      "bytes": 2611,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-t5pro-tps.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-t5pro-raw-panel",
+      "repository": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+      "revision": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+      "path": "hardware/ED047TC1.pdf",
+      "gitBlobSha": "02ff545160bb5bb43a316cad5e14610076a31af2",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/hardware/ED047TC1.pdf",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/hardware/ED047TC1.pdf",
+      "kind": "official-schematic",
+      "fetchedAt": "2026-11-22T08:51:36Z",
+      "sha256": "c8c3d8be57e8ff3d798739f38458b07a386286293d465f95ede462c1069b5c37",
+      "bytes": 1182427,
+      "mediaType": "application/pdf",
+      "archiveName": "s3add-t5pro-raw-panel.pdf",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t5-e-paper-s3-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_7.jpg?v=1731576423",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t5-e-paper-s3-pro/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t5-e-paper-s3-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_6.jpg?v=1731576423",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t5-e-paper-s3-pro/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t5-e-paper-s3-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T5-4_5.jpg?v=1731576423",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t5-e-paper-s3-pro/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +478,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +485,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +495,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +505,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +515,309 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "reference-only",
+    "sourceIds": [
+      "s3add-t5pro-readme",
+      "s3add-t5pro-pinmap",
+      "s3add-t5pro-board",
+      "s3add-t5pro-lcd",
+      "s3add-t5pro-render",
+      "s3add-t5pro-tps",
+      "s3add-t5pro-raw-panel",
+      "official-store-shopify-1",
+      "official-wiki-t5-e-paper-s3-pro"
+    ],
+    "candidates": [],
+    "simulationVerified": false,
+    "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t5-e-paper-s3-pro/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：H752 enclosure assembly；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t5-e-paper-s3-pro",
+      "lilygo-t5-e-paper-s3-pro-official-photo-0",
+      "lilygo-t5-e-paper-s3-pro-official-photo-1",
+      "lilygo-t5-e-paper-s3-pro-official-photo-2",
+      "lilygo-t5-e-paper-s3-pro-manufacturer-cad",
+      "s3add-t5pro-readme",
+      "s3add-t5pro-pinmap",
+      "s3add-t5pro-board",
+      "s3add-t5pro-lcd",
+      "s3add-t5pro-render",
+      "s3add-t5pro-tps",
+      "s3add-t5pro-raw-panel"
+    ],
+    "displayHint": {
+      "width": 960,
+      "height": 540,
+      "sourceIds": [
+        "s3add-t5pro-readme",
+        "s3add-t5pro-pinmap",
+        "s3add-t5pro-board",
+        "s3add-t5pro-lcd",
+        "s3add-t5pro-render",
+        "s3add-t5pro-tps",
+        "s3add-t5pro-raw-panel",
+        "official-store-shopify-1",
+        "official-wiki-t5-e-paper-s3-pro"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t5-e-paper-s3-pro",
+    "status": "diagnostic",
+    "scope": "接入 H752-01 的 ED047TC1 960×540 原始电子纸黑白驱动、PCA9535 数字控制线、BOOT、PCA9535 功能键与 SPI TF 卡。LCD_CAM 使用241×544字节流，校验真实数据线排列和 CKV 时钟，跳过每行前导字节及末尾4行。屏幕断电保留内容。TPS651851 电源芯片及其 power-good 未模拟且不会伪造成功，官方完整开机流程仍未验证；16级灰阶、GT911触摸、LoRa、GNSS和音频等未实现。",
+    "unsupported": [
+      "Official factory binary boot and physical hardware validation are unverified. Native authored Xtensa SRAM fixtures execute the documented peripheral MMIO.",
+      "ED047TC1 is physically a 16-gray-capable raw panel. This model implements only the explicit two-bit black/white drive endpoint: symbols1/2 drive black/white,0/3 retain. Analog waveform integration, gray levels, ghosting, temperature and physical gate pulse calibration are unmodeled.",
+      "The existing Et047tc1 helper is reused solely for independently confirmed two-bit drive semantics; metadata and identity remain ED047TC1, without asserting these are the same panel.",
+      "Pixel data enters through routed LCD_CAM source/gate symbols, not a host supplied RGB framebuffer. The tested native guest scopes are digital rails/GPIO/I2C; raw display transfer goldens exercise the completed board callbacks, not an official factory binary.",
+      "PCA9535 direction/output/input pair registers model only digital lines. OE8/PWRUP11/VCOM12/WAKEUP13 must be explicitly driven high. TPS power-good input14 remains low; TPS651851 I2C address0x68, charger/fuel gauge/RTC are absent, so no fabricated official power-on handshake.",
+      "One completed RGB transfer requires a fresh STV falling edge, exact RGB241x544 bytes, DATA8..15 pin permutation and at least544 already-running CKV48 pulses. Modeled rows are540; each row prefix and padded bottom rows are ignored.",
+      "Frontlight GPIO11 pulse/PWM optical behavior and audio/radio/GNSS are unmodeled."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "sourceCorrections": {
+    "productId": "lilygo-t5-e-paper-s3-pro",
+    "name": "T5 4.7 E-Paper S3 Pro",
+    "chronology": {
+      "date": "2024-11-14",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t5-e-paper-s3-pro",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "status": "source-reviewed; runtime not implemented in this module",
+    "reason": "ED047TC1 960x540 is a parallel panel with TPS65185 power and PCA9535 expansion. A UC8253/UC8175 SPI profile would be wrong. Requires independently verified parallel signal and power routing.",
+    "sourceIds": [
+      "official-wiki-t5-e-paper-s3-pro"
+    ],
+    "officialRepository": "https://github.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO",
+    "resolvedByBoard": "lilygo-t5-e-paper-s3-pro"
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t5-e-paper-s3-pro",
+    "boardId": "lilygo-t5-e-paper-s3-pro",
+    "name": "LILYGO T5 ePaper S3 Pro",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T5S3-4.7-e-paper-PRO H752-01; ED047TC1 raw panel and exact epd_board_v7 driver",
+    "display": {
+      "width": 960,
+      "height": 540,
+      "controller": "ED047TC1 raw source/gate panel",
+      "type": "e-paper",
+      "interface": "lcd-rgb",
+      "pixelFormat": "RGB565 optical debug output",
+      "physicalGrayLevels": 16,
+      "implementedGrayLevels": 2,
+      "physicalTouch": true,
+      "touchImplemented": false
+    },
+    "pins": {
+      "boot": 0,
+      "display": {
+        "clock": 4,
+        "data": [
+          5,
+          6,
+          7,
+          15,
+          16,
+          17,
+          18,
+          8
+        ],
+        "lcdCamSignals8To15": [
+          18,
+          8,
+          16,
+          17,
+          7,
+          15,
+          5,
+          6
+        ],
+        "stv": 45,
+        "ckv": 48,
+        "sth": 41,
+        "latch": 42,
+        "backlight": {
+          "pin": 11,
+          "implemented": false
+        }
+      },
+      "expander": {
+        "controller": "PCA9535",
+        "address": 32,
+        "sda": 39,
+        "scl": 40,
+        "irq": 38,
+        "outputEnable": 8,
+        "mode": 9,
+        "functionButton": 10,
+        "powerUp": 11,
+        "vcomEnable": 12,
+        "wakeUp": 13,
+        "powerGood": 14,
+        "powerGoodImplemented": false,
+        "functionButtonTransport": "board"
+      },
+      "touch": {
+        "controller": "GT911",
+        "address": 93,
+        "sda": 39,
+        "scl": 40,
+        "reset": 9,
+        "irq": 3,
+        "implemented": false
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      },
+      {
+        "id": "function",
+        "name": "Function button",
+        "type": "button",
+        "transport": "board",
+        "sourceIds": [
+          "s3add-t5pro-pinmap"
+        ],
+        "notes": "Physical button S3 behind PCA9535 IO1_2 / bit10; no ESP GPIO pin is invented."
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "接入 H752-01 的 ED047TC1 960×540 原始电子纸黑白驱动、PCA9535 数字控制线、BOOT、PCA9535 功能键与 SPI TF 卡。LCD_CAM 使用241×544字节流，校验真实数据线排列和 CKV 时钟，跳过每行前导字节及末尾4行。屏幕断电保留内容。TPS651851 电源芯片及其 power-good 未模拟且不会伪造成功，官方完整开机流程仍未验证；16级灰阶、GT911触摸、LoRa、GNSS和音频等未实现。",
+    "scopeEn": "T5S3-4.7-e-paper-PRO H752-01; ED047TC1 raw panel and exact epd_board_v7 driver: only the explicitly implemented digital display/control paths; factory boot is unverified.",
+    "sourceIds": [
+      "s3add-t5pro-readme",
+      "s3add-t5pro-pinmap",
+      "s3add-t5pro-board",
+      "s3add-t5pro-lcd",
+      "s3add-t5pro-render",
+      "s3add-t5pro-tps",
+      "s3add-t5pro-raw-panel",
+      "official-store-shopify-1",
+      "official-wiki-t5-e-paper-s3-pro"
+    ],
+    "chronology": {
+      "date": "2024-11-14",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t5-e-paper-s3-pro",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 25,
+    "sdCard": {
+      "slot": true,
+      "transport": "spi",
+      "implemented": true,
+      "transportSupported": true,
+      "pins": {
+        "sclk": 14,
+        "mosi": 13,
+        "miso": 21,
+        "cs": 12
+      },
+      "conflictingChipSelectPins": [
+        46
+      ],
+      "defaultImageMiB": 64,
+      "defaultFilesystem": "FAT32",
+      "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+      "sourceIds": [
+        "s3add-t5pro-pinmap"
+      ],
+      "verification": "both_raw_epaper_s3_cards_are_real_spi_sockets_with_distinct_wiring"
+    },
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "t5_pro_raw_drive_uses_pca9535_routes_gate_clock_padding_and_retained_pixels",
+        "both_raw_epaper_s3_cards_are_real_spi_sockets_with_distinct_wiring"
+      ],
+      "nativeGuestProbeScope": "BOOT and exact GPIO/I2C PCA9535 commands; raw RGB drive is independently tested at completed LCD_CAM board callbacks."
+    },
+    "unsupported": [
+      "Official factory binary boot and physical hardware validation are unverified. Native authored Xtensa SRAM fixtures execute the documented peripheral MMIO.",
+      "ED047TC1 is physically a 16-gray-capable raw panel. This model implements only the explicit two-bit black/white drive endpoint: symbols1/2 drive black/white,0/3 retain. Analog waveform integration, gray levels, ghosting, temperature and physical gate pulse calibration are unmodeled.",
+      "The existing Et047tc1 helper is reused solely for independently confirmed two-bit drive semantics; metadata and identity remain ED047TC1, without asserting these are the same panel.",
+      "Pixel data enters through routed LCD_CAM source/gate symbols, not a host supplied RGB framebuffer. The tested native guest scopes are digital rails/GPIO/I2C; raw display transfer goldens exercise the completed board callbacks, not an official factory binary.",
+      "PCA9535 direction/output/input pair registers model only digital lines. OE8/PWRUP11/VCOM12/WAKEUP13 must be explicitly driven high. TPS power-good input14 remains low; TPS651851 I2C address0x68, charger/fuel gauge/RTC are absent, so no fabricated official power-on handshake.",
+      "One completed RGB transfer requires a fresh STV falling edge, exact RGB241x544 bytes, DATA8..15 pin permutation and at least544 already-running CKV48 pulses. Modeled rows are540; each row prefix and padded bottom rows are ignored.",
+      "Frontlight GPIO11 pulse/PWM optical behavior and audio/radio/GNSS are unmodeled."
+    ],
+    "variantEvidence": {
+      "selectedHardware": "T5S3-4.7-e-paper-PRO H752-01; ED047TC1 raw panel and exact epd_board_v7 driver",
+      "automaticRevisionDetection": false,
+      "sourceIds": [
+        "s3add-t5pro-readme",
+        "s3add-t5pro-pinmap",
+        "s3add-t5pro-board",
+        "s3add-t5pro-lcd",
+        "s3add-t5pro-render",
+        "s3add-t5pro-tps",
+        "s3add-t5pro-raw-panel",
+        "official-store-shopify-1",
+        "official-wiki-t5-e-paper-s3-pro"
+      ],
+      "basis": "Exact manufacturer product-linked source and selected example/controller; no automatic sibling substitution."
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "s3add-t5pro-readme",
+        "s3add-t5pro-pinmap",
+        "s3add-t5pro-board",
+        "s3add-t5pro-lcd",
+        "s3add-t5pro-render",
+        "s3add-t5pro-tps",
+        "s3add-t5pro-raw-panel",
+        "official-store-shopify-1",
+        "official-wiki-t5-e-paper-s3-pro"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    }
+  }
 }

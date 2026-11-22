@@ -14,6 +14,7 @@ required-features = ["psram-tests"]
 
 [dependencies]
 esp32s3 = { path = "../esp32s3" }
+esp32s2 = { path = "../esp32s2" }
 esp-soc = { path = "../esp-soc" }
 esp-periph = { path = "../esp-periph" }
 esp32c3 = { path = "../esp32c3" }
@@ -23,8 +24,10 @@ esp32c6 = { path = "../esp32c6" }
 esp32c61 = { path = "../esp32c61" }
 esp32s31 = { path = "../esp32s31" }
 esp32p4 = { path = "../esp32p4" }
-esp32sim-wasm-jit = { path = "../wasm-jit" }
 xtensa-lx7 = { path = "../xtensa-lx7" }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+esp32sim-wasm-jit = { path = "../wasm-jit" }
 
 [features]
 # The inline data-cache probe of the timing model; it is emitted only once the model is switched on.

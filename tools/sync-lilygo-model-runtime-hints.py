@@ -6,13 +6,13 @@ contain productId and boardId. Model plans and the catalog patch are updated;
 run build-lilygo-expansion-models.py afterwards to emit assets. No source CAD
 coordinates, transforms, triangles or CAD provenance are modified.
 """
-import argparse,hashlib,json,math
+import argparse,copy,json
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];ASSETS=ROOT/'web/platform/assets'
 parser=argparse.ArgumentParser(description='Update only live debug surfaces and semantic controls from verified LilyGO runtime profiles; preserve source CAD geometry and provenance.')
 parser.add_argument('--profile-dir',type=Path,default=ROOT/'docs/platform/research')
 args=parser.parse_args()
-patchfile=ROOT/'docs/platform/research/lilygo-model-catalog-patches-2026-11-22.json';patches=json.loads(patchfile.read_text());patchby={r['id']:r for r in patches['items']};profiles={};sources={}
+patchfile=ROOT/'docs/platform/research/lilygo-model-catalog-patches-2026-11-22.json';patches=json.loads(patchfile.read_text());patchby={r['id']:r for r in patches['items']};profiles={};sources={};blockers={}
 for file in sorted(args.profile_dir.glob('lilygo-*profiles*.json')):
  data=json.loads(file.read_text())
  if not isinstance(data.get('items'),list):continue
@@ -22,7 +22,19 @@ for file in sorted(args.profile_dir.glob('lilygo-*profiles*.json')):
   if previous and previous.get('boardId')!=item['boardId']:raise ValueError('Conflicting board revisions for '+item['productId'])
   profiles[item['productId']]=item
  sources.update({s['id']:s for s in data.get('sources',[])})
+ for item in data.get('deferred',[]):blockers[item['productId']]=item
+for file in sorted(args.profile_dir.glob('lilygo-*-blockers-*.json')):
+ data=json.loads(file.read_text());sources.update({s['id']:s for s in data.get('sources',[])})
+ for item in data.get('items',[]):blockers[item['productId']]=item
 if not profiles:raise ValueError('No supported productId/boardId runtime profiles found')
+runtime_count=len(profiles)
+for id,item in blockers.items():
+ if id in profiles:continue
+ profile=copy.deepcopy(item);profile.setdefault('controls',[]);profile.setdefault('sourceIds',[])
+ if profile.get('displayEvidence',{}).get('present') is False:profile['physicalDisplay']=False
+ display=profile.get('physicalDisplay')if isinstance(profile.get('physicalDisplay'),dict)else profile.get('displayEvidence')
+ if display and display.get('width')and display.get('height'):profile['display']={**display,'implemented':False}
+ profiles[id]=profile
 for f in ASSETS.glob('lilygo-*/model-plan.json'):
  plan=json.loads(f.read_text());id=plan['id']
  if plan.get('generator')!='build-lilygo-expansion-models.py':continue
@@ -32,13 +44,16 @@ for f in ASSETS.glob('lilygo-*/model-plan.json'):
  if not profile:f.write_text(json.dumps(plan,ensure_ascii=False,indent=2)+'\n');continue
  existing={s['id']for s in plan['provenance']['sources']};plan['provenance']['sources'].extend(sources[s].copy()for s in profile['sourceIds']if s in sources and s not in existing)
  patch=patchby[id];patch['sourceIds']=list(dict.fromkeys(patch['sourceIds']+profile['sourceIds']))
- display=profile.get('display');bw,bh,depth=[plan['dimensions'][k]for k in ['width','height','depth']]
+ display=profile.get('display')
+ if not display and isinstance(profile.get('physicalDisplay'),dict):display={**profile['physicalDisplay'],'implemented':False}
+ bw,bh,depth=[plan['dimensions'][k]for k in ['width','height','depth']]
  if profile.get('physicalDisplay') is False:
   # An explicit, source-backed no-screen correction overrides a mistaken
   # storefront/wiki hint. A missing runtime display alone does not mean no LCD.
   plan['presentation'].pop('screen',None);plan.pop('displayNativeOrientation',None);patch.pop('displayHint',None)
   plan['parts']=[p for p in plan['parts']if p['name']!='debug-screen-frame'];plan['derivedParts']=[p for p in plan.get('derivedParts',[])if p['id']!='debug-panel-label']
   plan['debugPreview']['physicalDisplay']=False;plan['debugPreview']['liveFramebuffer']=False
+  plan['debugPreview']['displayPlacement']='no-physical-display'
   display=None
  if display:
   ratio=display['width']/display['height'];old=plan.get('presentation',{}).get('screen');wrong=not old or abs(old['sizeMm'][0]/old['sizeMm'][1]-ratio)>1e-7
@@ -51,9 +66,14 @@ for f in ASSETS.glob('lilygo-*/model-plan.json'):
   patch['displayHint']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds'],'basis':'exact selected BSP/controller native orientation'if implemented else'verified physical panel; runtime frame output not implemented','physicalSizeMm':None,'implemented':implemented}
   plan['displayNativeOrientation']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds'],'implemented':implemented}
   plan['debugPreview']['liveFramebuffer']=implemented
+  plan['debugPreview']['physicalDisplay']=True;plan['debugPreview']['displayPlacement']='separate-native-orientation-debug-panel'
   for part in plan.get('derivedParts',[]):
    if part['id']=='debug-panel-label':part['lines']=['LIVE DEBUG'if implemented else'DISPLAY PREVIEW']
-  if not implemented:
+  if implemented:
+   if plan['presentation']['screen'].get('notes')=='Physical display preview only; the selected runtime has no implemented framebuffer transport.':
+    plan['presentation']['screen']['notes']='Source-backed live framebuffer on a separate native-orientation debug panel; physical window placement is not implied.'
+   plan['limitations']=[note for note in plan['limitations']if note!='DISPLAY PREVIEW 仅表示已核实的实体屏幕尺寸比例；此板运行时尚未实现显示总线和帧输出。']
+  else:
    plan['presentation']['screen']['notes']='Physical display preview only; the selected runtime has no implemented framebuffer transport.'
    if not any('DISPLAY PREVIEW' in n for n in plan['limitations']):plan['limitations'].append('DISPLAY PREVIEW 仅表示已核实的实体屏幕尺寸比例；此板运行时尚未实现显示总线和帧输出。')
  # Explicit debugging controls provide semantic click surfaces without claiming
@@ -74,4 +94,4 @@ for f in ASSETS.glob('lilygo-*/model-plan.json'):
   if not any('DEBUG INPUT' in n for n in plan['limitations']):plan['limitations'].append('标记 DEBUG INPUT 的按键是独立调试控件，不表示已核实的实物按键位置。')
  assert json.dumps([plan.get('cad'),plan.get('additionalCad'),[s for s in plan['provenance']['sources']if s.get('kind')=='manufacturer-cad']],sort_keys=True)==cad_snapshot,'Runtime hints must not change CAD geometry or provenance'
  f.write_text(json.dumps(plan,ensure_ascii=False,indent=2)+'\n')
-patchfile.write_text(json.dumps(patches,ensure_ascii=False,indent=2)+'\n');print('Refreshed native display/control hints for',len(profiles),'profiles')
+patchfile.write_text(json.dumps(patches,ensure_ascii=False,indent=2)+'\n');print('Refreshed native display/control hints for',runtime_count,'runtime profiles and',len(profiles)-runtime_count,'model-only evidence records')

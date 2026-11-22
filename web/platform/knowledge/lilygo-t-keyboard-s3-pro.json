@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-keyboard-s3-pro",
   "title": "LILYGO T-Keyboard S3 Pro",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3R8 + STM32G030F6P6；具体硬件版次及配置待核对。",
+  "summary": "适配主机四块独立 GC9107 128×128、STM32 原版 protocol 02 的延迟选屏／按键快照／版本查询、GPIO0 旋钮按下和 GPIO4/5 编码器；512×128 仅为横向拼接调试画布。选定 legacy GC9107 分支与 Original_Test STM32 源码版本，灯效、扩展键盘和其他屏幕版本未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "MCU_V1.1 + Keyboard_V1.1 + LCD_FPC_V1.0; main host with four GC9107 panels and rotary encoder",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Keyboard S3 Pro",
@@ -52,6 +52,316 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-09-05",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/README.md",
+        "sourceId": "T-Keyboard-S3-Pro-README.md",
+        "confidence": "medium",
+        "hardwareRevision": "Original MCU/Keyboard V1.1 and LCD FPC V1.0",
+        "notes": "Earliest explicit manufacturer Version History date for this product, not independently verified retail launch. The runtime represented revision is specified separately; a later BOM/source revision does not move the original product date."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Keyboard-S3-Pro-README.md"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "type": "LCD",
+          "controller": "4 × GC9107",
+          "width": 512,
+          "height": 128,
+          "interface": "SPI; STM32G030 I2C chip-select",
+          "debugLayout": "horizontal-composite",
+          "physicalPanels": [
+            {
+              "id": "lcd1",
+              "width": 128,
+              "height": 128,
+              "controller": "GC9107",
+              "diagonalInches": 0.85,
+              "activeAreaMm": [
+                15.2064,
+                15.2064
+              ],
+              "csMask": 16
+            },
+            {
+              "id": "lcd2",
+              "width": 128,
+              "height": 128,
+              "controller": "GC9107",
+              "diagonalInches": 0.85,
+              "activeAreaMm": [
+                15.2064,
+                15.2064
+              ],
+              "csMask": 8
+            },
+            {
+              "id": "lcd3",
+              "width": 128,
+              "height": 128,
+              "controller": "GC9107",
+              "diagonalInches": 0.85,
+              "activeAreaMm": [
+                15.2064,
+                15.2064
+              ],
+              "csMask": 4
+            },
+            {
+              "id": "lcd4",
+              "width": 128,
+              "height": 128,
+              "controller": "GC9107",
+              "diagonalInches": 0.85,
+              "activeAreaMm": [
+                15.2064,
+                15.2064
+              ],
+              "csMask": 2
+            }
+          ],
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "key1",
+            "name": "屏幕按键 1",
+            "type": "button",
+            "activeLow": true,
+            "controller": "STM32G030",
+            "register": 2,
+            "mask": 16,
+            "notes": "Read from original STM32 key snapshot; this is not an invented ESP32 GPIO.",
+            "transport": "board"
+          },
+          {
+            "id": "key2",
+            "name": "屏幕按键 2",
+            "type": "button",
+            "activeLow": true,
+            "controller": "STM32G030",
+            "register": 2,
+            "mask": 8,
+            "notes": "Read from original STM32 key snapshot; this is not an invented ESP32 GPIO.",
+            "transport": "board"
+          },
+          {
+            "id": "key3",
+            "name": "屏幕按键 3",
+            "type": "button",
+            "activeLow": true,
+            "controller": "STM32G030",
+            "register": 2,
+            "mask": 4,
+            "notes": "Read from original STM32 key snapshot; this is not an invented ESP32 GPIO.",
+            "transport": "board"
+          },
+          {
+            "id": "key4",
+            "name": "屏幕按键 4",
+            "type": "button",
+            "activeLow": true,
+            "controller": "STM32G030",
+            "register": 2,
+            "mask": 2,
+            "notes": "Read from original STM32 key snapshot; this is not an invented ESP32 GPIO.",
+            "transport": "board"
+          },
+          {
+            "id": "knob",
+            "name": "旋钮按下 / KEY5 / BOOT",
+            "type": "button",
+            "activeLow": true,
+            "pin": 0,
+            "controller": "STM32G030 + ESP32-S3",
+            "register": 2,
+            "mask": 1,
+            "transport": "board"
+          },
+          {
+            "id": "encoder",
+            "name": "旋转编码器",
+            "type": "encoder",
+            "pins": {
+              "a": 4,
+              "b": 5
+            },
+            "detents": null
+          }
+        ],
+        "pins": {
+          "i2c": {
+            "sda": 42,
+            "scl": 2,
+            "address": 1
+          },
+          "display": {
+            "clock": 41,
+            "mosi": 40,
+            "dc": 39,
+            "reset": 38,
+            "backlight": 1,
+            "backlightActiveLow": true
+          },
+          "encoder": {
+            "a": 4,
+            "b": 5,
+            "push": 0
+          },
+          "stm32": {
+            "implemented": "register subset only",
+            "cpuImplemented": false
+          },
+          "optionalExpansion": {
+            "i2cSda": 6,
+            "i2cScl": 7,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Keyboard-S3-Pro-Library-README.md",
+        "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp",
+        "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h",
+        "T-Keyboard-S3-Pro-Library-src-board-board_config.h",
+        "T-Keyboard-S3-Pro-Library-src-board-protocol.h",
+        "T-Keyboard-S3-Pro-Library-src-utility-display.cpp",
+        "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp",
+        "T-Keyboard-S3-Pro-Library-tree",
+        "T-Keyboard-S3-Pro-README.md",
+        "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+        "T-Keyboard-S3-Pro-tree",
+        "keyboard-legacy-factory-source",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h",
+        "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-legacy-libraries-common-pin_config.h",
+        "keyboard-legacy-tree",
+        "keyboard-stm-README.md",
+        "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-stm-examples-Original_Test-Core-Inc-main.h",
+        "keyboard-stm-examples-Original_Test-Core-Src-i2c.c",
+        "keyboard-stm-examples-Original_Test-Core-Src-main.c",
+        "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c",
+        "keyboard-stm-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "T-Keyboard-S3-Pro-Library-README.md",
+            "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp",
+            "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h",
+            "T-Keyboard-S3-Pro-Library-src-board-board_config.h",
+            "T-Keyboard-S3-Pro-Library-src-board-protocol.h",
+            "T-Keyboard-S3-Pro-Library-src-utility-display.cpp",
+            "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp",
+            "T-Keyboard-S3-Pro-Library-tree",
+            "T-Keyboard-S3-Pro-README.md",
+            "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf",
+            "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+            "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+            "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+            "T-Keyboard-S3-Pro-tree",
+            "keyboard-legacy-factory-source",
+            "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+            "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp",
+            "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h",
+            "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h",
+            "keyboard-legacy-libraries-common-pin_config.h",
+            "keyboard-legacy-tree",
+            "keyboard-stm-README.md",
+            "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+            "keyboard-stm-examples-Original_Test-Core-Inc-main.h",
+            "keyboard-stm-examples-Original_Test-Core-Src-i2c.c",
+            "keyboard-stm-examples-Original_Test-Core-Src-main.c",
+            "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c",
+            "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+            "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h",
+            "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c",
+            "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c",
+            "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c",
+            "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c",
+            "keyboard-stm-tree",
+            "official-store-shopify-1"
+          ],
+          "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Keyboard-S3-Pro-Library-README.md",
+        "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp",
+        "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h",
+        "T-Keyboard-S3-Pro-Library-src-board-board_config.h",
+        "T-Keyboard-S3-Pro-Library-src-board-protocol.h",
+        "T-Keyboard-S3-Pro-Library-src-utility-display.cpp",
+        "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp",
+        "T-Keyboard-S3-Pro-Library-tree",
+        "T-Keyboard-S3-Pro-README.md",
+        "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+        "T-Keyboard-S3-Pro-tree",
+        "keyboard-legacy-factory-source",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h",
+        "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-legacy-libraries-common-pin_config.h",
+        "keyboard-legacy-tree",
+        "keyboard-stm-README.md",
+        "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-stm-examples-Original_Test-Core-Inc-main.h",
+        "keyboard-stm-examples-Original_Test-Core-Src-i2c.c",
+        "keyboard-stm-examples-Original_Test-Core-Src-main.c",
+        "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c",
+        "keyboard-stm-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +390,749 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-keyboard-s3-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_13.jpg?v=1727510231",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_13.jpg?v=1727510231",
+      "fetchedAt": "2026-11-22T06:57:20Z",
+      "bytes": 74521,
+      "sha256": "33b8831c205e40b9ce5d7e51e07433ff82be6dd6362a5a03f5f0b018bd993f9f",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t keyboard s3 pro official photo 0",
+      "archiveName": "lilygo-t-keyboard-s3-pro-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-keyboard-s3-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_10.jpg?v=1727510231",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_10.jpg?v=1727510231",
+      "fetchedAt": "2026-11-22T06:57:20Z",
+      "bytes": 48654,
+      "sha256": "03d81c169865f6d8529d44a8283857e47a8c0727a498777ba4183b70c2e7a2ee",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t keyboard s3 pro official photo 1",
+      "archiveName": "lilygo-t-keyboard-s3-pro-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-keyboard-s3-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_12.jpg?v=1727510231",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_12.jpg?v=1727510231",
+      "fetchedAt": "2026-11-22T06:57:20Z",
+      "bytes": 39728,
+      "sha256": "0aa6a0088c6b3cbd19f8c16a9ac6ecfc3b4ea4e715dc78fe0a23ae620909e497",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t keyboard s3 pro official photo 2",
+      "archiveName": "lilygo-t-keyboard-s3-pro-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-keyboard-s3-pro",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-keyboard-s3-pro/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-keyboard-s3-pro/index.md",
+      "fetchedAt": "2026-11-22T06:42:34Z",
+      "mediaType": "text/plain",
+      "bytes": 8297,
+      "sha256": "1684653a8b0a66ab46e5332fb56942e5e37cf82f6a1bf0132d8e760550fda5e7",
+      "gitBlobSha": "05b3f48abe5d4632a9fd1fece01a6568784948fc",
+      "path": "en/products/other/t-keyboard-s3-pro/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t keyboard s3 pro",
+      "kind": "official-product-document",
+      "archiveName": "en__products__other__t-keyboard-s3-pro__index.md"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-Library-README.md",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library",
+      "pinnedGitRevision": "a536442dbd1c10d2c12cb6364f8c1745f7843589",
+      "path": "README.md",
+      "gitBlobSha": "9aeb505f0d05fc830f91e03f7baec1c18d16b252",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:33Z",
+      "sha256": "78ed8600363f4a1c248286a38cb6a843b7252629cc219abb3bd676c69fd67939",
+      "bytes": 6631,
+      "archiveName": "T-Keyboard-S3-Pro-Library-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-Library-README.md.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library",
+      "pinnedGitRevision": "a536442dbd1c10d2c12cb6364f8c1745f7843589",
+      "path": "src/TKeyboardS3Pro.cpp",
+      "gitBlobSha": "20318e063d64efc0c73d3bb463190191761205d3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/TKeyboardS3Pro.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/TKeyboardS3Pro.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:33Z",
+      "sha256": "ca297b1dd1478a2c2fa39df7367c5f3f780d5954b147fcf5a8a8a5c74f630817",
+      "bytes": 13584,
+      "archiveName": "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library / src/TKeyboardS3Pro.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library",
+      "pinnedGitRevision": "a536442dbd1c10d2c12cb6364f8c1745f7843589",
+      "path": "src/TKeyboardS3Pro.h",
+      "gitBlobSha": "53abf7aed6d829f4fe39539c5c3b5af42ed8770f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/TKeyboardS3Pro.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/TKeyboardS3Pro.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:33Z",
+      "sha256": "9a0623f1eadda736d41e0b9cd24453a618af0cba8c69cd9ac4c8df2e3e51cc45",
+      "bytes": 12718,
+      "archiveName": "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library / src/TKeyboardS3Pro.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-Library-src-board-board_config.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library",
+      "pinnedGitRevision": "a536442dbd1c10d2c12cb6364f8c1745f7843589",
+      "path": "src/board/board_config.h",
+      "gitBlobSha": "746e7a374bf675f47d2f175f745ee7269e14e695",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/board/board_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/board/board_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:33Z",
+      "sha256": "c5247374b2d74f1c230ec07c5a283577c5af74b8e03fbecaf7efe19d86a057e6",
+      "bytes": 2235,
+      "archiveName": "T-Keyboard-S3-Pro-Library-src-board-board_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library / src/board/board_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-Library-src-board-board_config.h.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-Library-src-board-protocol.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library",
+      "pinnedGitRevision": "a536442dbd1c10d2c12cb6364f8c1745f7843589",
+      "path": "src/board/protocol.h",
+      "gitBlobSha": "43c121673e6fbbd46c5f8e6b12f3ce68d630d741",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/board/protocol.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/board/protocol.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:33Z",
+      "sha256": "319f2e660c545df04ae55e1d80d0c2ef5a8a26aac6d2ae97c68f01e8838ccba9",
+      "bytes": 3980,
+      "archiveName": "T-Keyboard-S3-Pro-Library-src-board-protocol.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library / src/board/protocol.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-Library-src-board-protocol.h.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-Library-src-utility-display.cpp",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library",
+      "pinnedGitRevision": "a536442dbd1c10d2c12cb6364f8c1745f7843589",
+      "path": "src/utility/display.cpp",
+      "gitBlobSha": "7d1c170d6ab3d0bd93b3d1611e0f5f80d7b367c6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/utility/display.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/utility/display.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:33Z",
+      "sha256": "daf3242d46481a3359560f1e7abe5f7409193e17c57fb9fa3ce3324018880c15",
+      "bytes": 2022,
+      "archiveName": "T-Keyboard-S3-Pro-Library-src-utility-display.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library / src/utility/display.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-Library-src-utility-display.cpp.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library",
+      "pinnedGitRevision": "a536442dbd1c10d2c12cb6364f8c1745f7843589",
+      "path": "src/utility/encoder.cpp",
+      "gitBlobSha": "f1920c7e0b31e3fd005d00cee150fbb95c583841",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/utility/encoder.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/a536442dbd1c10d2c12cb6364f8c1745f7843589/src/utility/encoder.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:38Z",
+      "sha256": "38bf0ac4fe2cec68e3fccba5c7d8202f50e6a0b77ccb49a96431c106d8797c74",
+      "bytes": 1467,
+      "archiveName": "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library / src/utility/encoder.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-Library-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Keyboard-S3-Pro-Library/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:37:25Z",
+      "mediaType": "application/json",
+      "bytes": 18938,
+      "sha256": "dce28d076719e873a0a9681dce4fbf6319e56514d85933f8994222cd38b00866",
+      "archiveName": "T-Keyboard-S3-Pro-Library-tree.raw",
+      "pinnedGitRevision": "a536442dbd1c10d2c12cb6364f8c1745f7843589",
+      "transport": "GitHub connector normalized JSON snapshot; revision object type not inferred",
+      "title": "LILYGO official product source / T-Keyboard-S3-Pro-Library-tree",
+      "kind": "manufacturer-repository-tree",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-Library-tree.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-README.md",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "3347b02e986c8221ae5b33645a9bae1b2c4bd2f0",
+      "path": "README.md",
+      "gitBlobSha": "e521617c5cec95b20d6403f8473935c8230d53db",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:27Z",
+      "sha256": "ccead85ba2606f97b92171daa11e761dbfd7c0785ce1aea87b41e559c53340b6",
+      "bytes": 8272,
+      "archiveName": "T-Keyboard-S3-Pro-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-README.md.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "3347b02e986c8221ae5b33645a9bae1b2c4bd2f0",
+      "path": "information/GC9107_DataSheet_V1.2.pdf",
+      "gitBlobSha": "19575f8ce2acbe34374f9d58c5f8ff3781ac01fc",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/information/GC9107_DataSheet_V1.2.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/information/GC9107_DataSheet_V1.2.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:46:36Z",
+      "sha256": "b92cb5fdfdbd736ed1d3ae13d324252b912abdc32194c5f6a6c6884f51554703",
+      "bytes": 2646303,
+      "archiveName": "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / information/GC9107_DataSheet_V1.2.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "3347b02e986c8221ae5b33645a9bae1b2c4bd2f0",
+      "path": "project/SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+      "gitBlobSha": "3a5d6c3e14657f5576d63bdd4aff00cc3900f9f4",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/project/SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/project/SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:28Z",
+      "sha256": "23fe214d412089094efc406e7a8aba491ccbf64e6e052c091d2429e608b2bcbf",
+      "bytes": 97044,
+      "archiveName": "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / project/SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "3347b02e986c8221ae5b33645a9bae1b2c4bd2f0",
+      "path": "project/SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+      "gitBlobSha": "4fe35aa54d72460b50ab3e24093c4d01ba514a64",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/project/SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/project/SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:28Z",
+      "sha256": "00b8ca74aa51dec39507ae09407a717d0503536ca19b2314de6239ad4d4d2e1d",
+      "bytes": 481793,
+      "archiveName": "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / project/SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "3347b02e986c8221ae5b33645a9bae1b2c4bd2f0",
+      "path": "project/SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+      "gitBlobSha": "0ecd05f042d8d40db380d4f61a9fc4969cde1802",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/project/SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/project/SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:28Z",
+      "sha256": "b7e43ca413eff359515525785392660f802cb479eae472e805d1d548640d527a",
+      "bytes": 254686,
+      "archiveName": "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / project/SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf.raw"
+    },
+    {
+      "id": "T-Keyboard-S3-Pro-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Keyboard-S3-Pro/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:33Z",
+      "title": "Official repository snapshot: Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "3347b02e986c8221ae5b33645a9bae1b2c4bd2f0",
+      "gitObjectType": "not-independently-checked",
+      "mediaType": "application/json",
+      "sha256": "71bd2eedd1216840ad9063bf9c9da7594dab6da3a02dfc0e0cb592fa67f40660",
+      "bytes": 6917,
+      "archiveName": "T-Keyboard-S3-Pro-tree.raw",
+      "notes": "Exact original GitHub connector UTF-8 snapshot copied from the model lane; original fetch timestamp retained. A normalized sha field is a pinned revision, not proof of Git commit/tree object type. Firmware metadata is discovery evidence only, not a fetched firmware checksum.",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Keyboard-S3-Pro-tree.raw"
+    },
+    {
+      "id": "keyboard-legacy-factory-source",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "path": "examples/Original_Test/Original_Test.ino",
+      "gitBlobSha": "d2b7fa6117b7b69a81d4bd1f353355c2ad2ca0f3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/examples/Original_Test/Original_Test.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro/examples/Original_Test/Original_Test.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:33:31Z",
+      "sha256": "14f91fbcc926459336d3513db46ceacc674a33ced1070c076d89c8648ee2c643",
+      "bytes": 50043,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "keyboard-legacy-factory-source.raw",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch.",
+      "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-legacy-factory-source.raw"
+    },
+    {
+      "id": "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+      "path": "libraries/Arduino_GFX-1.3.7/src/Arduino_TFT.cpp",
+      "gitBlobSha": "f18710bcb903cfe23aa4882517bda7475af63be9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/Arduino_GFX-1.3.7/src/Arduino_TFT.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/Arduino_GFX-1.3.7/src/Arduino_TFT.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:47:56Z",
+      "sha256": "9167aeebbca9acdc32a69372eef79bc34593cdb764e82638f62a6a8d474667f9",
+      "bytes": 24043,
+      "archiveName": "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / libraries/Arduino_GFX-1.3.7/src/Arduino_TFT.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp.raw"
+    },
+    {
+      "id": "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+      "path": "libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9107.cpp",
+      "gitBlobSha": "d74f8f428d5139efcbc1345633001777cdd95708",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9107.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9107.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:47:56Z",
+      "sha256": "05dfaeeddcbb8e513acd016694c42b67123ea6c9bc31bbe94b41fb2597c523a2",
+      "bytes": 2526,
+      "archiveName": "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9107.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp.raw"
+    },
+    {
+      "id": "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+      "path": "libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9107.h",
+      "gitBlobSha": "dc49cbea1e9f610ce89ab68098f6b9230267eb20",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9107.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9107.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:47:56Z",
+      "sha256": "012941804779d6f09e1ba48bf093747ed4ff9025383e2560ec962991cc482d68",
+      "bytes": 4718,
+      "archiveName": "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / libraries/Arduino_GFX-1.3.7/src/display/Arduino_GC9107.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h.raw"
+    },
+    {
+      "id": "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+      "path": "libraries/T-Keyboard-S3-Pro_Drive/T-Keyboard-S3-Pro_Drive.h",
+      "gitBlobSha": "dacd54d2b9e4b0c4601db3ad3ccf4209f9eeff30",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/T-Keyboard-S3-Pro_Drive/T-Keyboard-S3-Pro_Drive.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/T-Keyboard-S3-Pro_Drive/T-Keyboard-S3-Pro_Drive.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:47:56Z",
+      "sha256": "54ba92da182ee779e0a259708077ddaadf4ef3bcd458daccb376796eee744cc3",
+      "bytes": 861,
+      "archiveName": "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / libraries/T-Keyboard-S3-Pro_Drive/T-Keyboard-S3-Pro_Drive.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h.raw"
+    },
+    {
+      "id": "keyboard-legacy-libraries-common-pin_config.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+      "path": "libraries/common/pin_config.h",
+      "gitBlobSha": "e81925d1388b6bc930dd15c1d82e509e94e57ec7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/common/pin_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/libraries/common/pin_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T09:06:23Z",
+      "sha256": "217822e2b50cc75aa7f13ddd1a149f691cc00ddb3506b923d5eb75d5ed37b4db",
+      "bytes": 1572,
+      "archiveName": "keyboard-legacy-libraries-common-pin_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / libraries/common/pin_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-legacy-libraries-common-pin_config.h.raw"
+    },
+    {
+      "id": "keyboard-legacy-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Keyboard-S3-Pro/git/trees/arduino-esp32-libs_V2.0.14?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T09:11:41Z",
+      "mediaType": "application/json",
+      "sha256": "3b87947e104ca643e94c7b626e8beb5c25a25aa65aa667ab73a0a53258beb47b",
+      "bytes": 789161,
+      "archiveName": "keyboard-legacy-tree.raw",
+      "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / keyboard-legacy-tree",
+      "kind": "manufacturer-repository-tree",
+      "gitObjectType": "not-independently-checked",
+      "notes": "Exact GitHub connector UTF-8 snapshot. Normalized revision object type is not inferred; firmware size/blob metadata is not a binary download hash.",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-legacy-tree.raw"
+    },
+    {
+      "id": "keyboard-stm-README.md",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "README.md",
+      "gitBlobSha": "4b468378bd3d32622fda6232f9055c5958236d05",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:22Z",
+      "sha256": "b1f1433f195392213b66565e5ef0e6b422c548599bd43764da9000e7d257d859",
+      "bytes": 6979,
+      "archiveName": "keyboard-stm-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-README.md.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/Original_Test/Core/Inc/T-Keyboard-S3-Pro_Drive.h",
+      "gitBlobSha": "91d9100906980a1eea6bad4f6189df0e7096fe6c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Inc/T-Keyboard-S3-Pro_Drive.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Inc/T-Keyboard-S3-Pro_Drive.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:46Z",
+      "sha256": "2169d943ffda6bcc44e9e18f3ff12fef44f56ec8e033a8b9e92ed469ef4cc222",
+      "bytes": 490,
+      "archiveName": "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/Original_Test/Core/Inc/T-Keyboard-S3-Pro_Drive.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-Original_Test-Core-Inc-main.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/Original_Test/Core/Inc/main.h",
+      "gitBlobSha": "1be92d210473c10e80b6cd3033fe35c8b6401c74",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Inc/main.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Inc/main.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:46Z",
+      "sha256": "9765c901627a06a1cfa5983269423ec4dbd033585eb50b2e2b12ebf2ac2272cf",
+      "bytes": 2793,
+      "archiveName": "keyboard-stm-examples-Original_Test-Core-Inc-main.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/Original_Test/Core/Inc/main.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-Original_Test-Core-Inc-main.h.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-Original_Test-Core-Src-i2c.c",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/Original_Test/Core/Src/i2c.c",
+      "gitBlobSha": "53b3c77b20ee2286454f9185fd48871fc42ce75c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Src/i2c.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Src/i2c.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:46Z",
+      "sha256": "250e076747de1d9d5f1e86a4829a45f6f25a5f73af5fa26e5b5b886bc61e00a6",
+      "bytes": 3684,
+      "archiveName": "keyboard-stm-examples-Original_Test-Core-Src-i2c.c.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/Original_Test/Core/Src/i2c.c",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-Original_Test-Core-Src-i2c.c.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-Original_Test-Core-Src-main.c",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/Original_Test/Core/Src/main.c",
+      "gitBlobSha": "26737a15558b4c920c793f2a5f196f9d0b9d69fc",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Src/main.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Src/main.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:46Z",
+      "sha256": "24ac60df8f024ce3535019dd78e29084e22343fddfd93bf2bfa14c46a149448f",
+      "bytes": 17356,
+      "archiveName": "keyboard-stm-examples-Original_Test-Core-Src-main.c.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/Original_Test/Core/Src/main.c",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-Original_Test-Core-Src-main.c.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/Original_Test/Core/Src/stm32g0xx_it.c",
+      "gitBlobSha": "2f3a621e6ae05d48c81e9127520d3e6a57e5676b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Src/stm32g0xx_it.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/Original_Test/Core/Src/stm32g0xx_it.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:46Z",
+      "sha256": "db979cb70607f68ec12769eba64c2e40aef2c2aafee8c8732153e15ee4a3b450",
+      "bytes": 12818,
+      "archiveName": "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/Original_Test/Core/Src/stm32g0xx_it.c",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/T-Keyboard-S3-Pro_IIC_Command/Core/Inc/T-Keyboard-S3-Pro_Drive.h",
+      "gitBlobSha": "91d9100906980a1eea6bad4f6189df0e7096fe6c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Inc/T-Keyboard-S3-Pro_Drive.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Inc/T-Keyboard-S3-Pro_Drive.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:22Z",
+      "sha256": "2169d943ffda6bcc44e9e18f3ff12fef44f56ec8e033a8b9e92ed469ef4cc222",
+      "bytes": 490,
+      "archiveName": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/T-Keyboard-S3-Pro_IIC_Command/Core/Inc/T-Keyboard-S3-Pro_Drive.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/T-Keyboard-S3-Pro_IIC_Command/Core/Inc/main.h",
+      "gitBlobSha": "c50561697fcb77902a416cba7027fdf7b35cabe4",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Inc/main.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Inc/main.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:22Z",
+      "sha256": "b06687aa39ac11787e9d8fde65db767d980e88d23c571d714a5310b6af1a79d8",
+      "bytes": 2477,
+      "archiveName": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/T-Keyboard-S3-Pro_IIC_Command/Core/Inc/main.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/gpio.c",
+      "gitBlobSha": "72b14910629d854343a9e5e111feb2c60cac96ca",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/gpio.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/gpio.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:22Z",
+      "sha256": "644f46914697cce1fdce2fce99adbb663839841c88d6935ad330be1265a6d2bf",
+      "bytes": 2371,
+      "archiveName": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/gpio.c",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/i2c.c",
+      "gitBlobSha": "ecd761b6550ba9a5472c6daccad6dfc4601193ad",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/i2c.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/i2c.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:22Z",
+      "sha256": "548605478a1313316114e1f40edfe817e4547288ee9010c74f6989a6950fbf1e",
+      "bytes": 3678,
+      "archiveName": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/i2c.c",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/main.c",
+      "gitBlobSha": "a0d7b53ae5954a54e9d39a58125c2a08d78ede1a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/main.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/main.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:22Z",
+      "sha256": "7b2bd89cfcf574091d665839874bb8226821ec684d1198e0fdc6e5361b7aa420",
+      "bytes": 10030,
+      "archiveName": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/main.c",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c.raw"
+    },
+    {
+      "id": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c",
+      "repository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "path": "examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/stm32g0xx_it.c",
+      "gitBlobSha": "b32cdf9bb82036d471b01c86a374a7fbddf508a1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/stm32g0xx_it.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/stm32g0xx_it.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:48:26Z",
+      "sha256": "67393165a5ca3d9c79afbaf0efd83c089f1c15f35a0d54579334ae0ec23f087b",
+      "bytes": 10447,
+      "archiveName": "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c.raw",
+      "title": "Xinyuan-LilyGO/T-Keyboard-S3-Pro / examples/T-Keyboard-S3-Pro_IIC_Command/Core/Src/stm32g0xx_it.c",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c.raw"
+    },
+    {
+      "id": "keyboard-stm-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Keyboard-S3-Pro/git/trees/stm32cubeg0-firmware-package_V1.6.2?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:47:56Z",
+      "sha256": "836f52ddb3cd8b2a1365e5e176d6f6d4897d3d958545801b853d5bf3b0ed3a73",
+      "bytes": 149750,
+      "archiveName": "keyboard-stm-tree.raw",
+      "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "title": "LILYGO official product source / keyboard-stm-tree",
+      "kind": "manufacturer-repository-tree",
+      "mediaType": "application/json",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/keyboard-stm-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-keyboard-s3-pro-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_13.jpg?v=1727510231",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-keyboard-s3-pro/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-keyboard-s3-pro-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_10.jpg?v=1727510231",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-keyboard-s3-pro/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-keyboard-s3-pro-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-Keyboard-S3_Pro_12.jpg?v=1727510231",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-keyboard-s3-pro/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +1145,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +1152,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +1162,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +1172,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +1182,541 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-entries-linked",
+    "sourceIds": [
+      "T-Keyboard-S3-Pro-README.md",
+      "keyboard-legacy-factory-source",
+      "keyboard-legacy-tree",
+      "keyboard-stm-tree"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/blob/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/firmware/%5BESP32S3%5D%5BT-Keyboard-S3-Pro_V1.0%5D%5BOriginal_Test_2%28gc9107%29%5D_firmware_V1.0.0.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/firmware/%5BESP32S3%5D%5BT-Keyboard-S3-Pro_V1.0%5D%5BOriginal_Test_2%28gc9107%29%5D_firmware_V1.0.0.bin",
+        "path": "firmware/[ESP32S3][T-Keyboard-S3-Pro_V1.0][Original_Test_2(gc9107)]_firmware_V1.0.0.bin",
+        "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+        "gitBlobSha": "1bf7f43f0fe4228b7aef9062abae5d31e877cfc2",
+        "bytes": 1380912,
+        "status": "linked",
+        "sourceId": "keyboard-legacy-tree",
+        "role": "factory",
+        "chip": "esp32s3",
+        "identityEvidence": "Exact GC9107 original-test factory entry in the official legacy host branch; tree metadata checked, binary not fetched.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/blob/e35ec481e5136707293ef92e35f3540534095dc4/firmware/%EF%BC%88%E4%BF%AE%E5%A4%8DLED%E7%9A%84HUE%E5%80%BC%E8%AE%BE%E7%BD%AE%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%EF%BC%89%5BSTM32G030F6P6_Drive_0x01%5D%5BT-Keyboard-S3-Pro_V1.0%5D%5BOriginal_Test%5D_firmware_V2_202501231722.hex",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/firmware/%EF%BC%88%E4%BF%AE%E5%A4%8DLED%E7%9A%84HUE%E5%80%BC%E8%AE%BE%E7%BD%AE%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%EF%BC%89%5BSTM32G030F6P6_Drive_0x01%5D%5BT-Keyboard-S3-Pro_V1.0%5D%5BOriginal_Test%5D_firmware_V2_202501231722.hex",
+        "path": "firmware/（修复LED的HUE值设置失败问题）[STM32G030F6P6_Drive_0x01][T-Keyboard-S3-Pro_V1.0][Original_Test]_firmware_V2_202501231722.hex",
+        "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+        "gitBlobSha": "9c3c9a221fc53bd99c9a529d9e098927045f9726",
+        "bytes": 47340,
+        "status": "linked",
+        "sourceId": "keyboard-stm-tree",
+        "role": "coprocessor-factory",
+        "chip": "stm32g030",
+        "identityEvidence": "STM32 I2C address01 original-test firmware; not an ESP32 image and must never be offered as an S3 flash image.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Pinned host factory image is GC9107-specific and not boot-verified. Coprocessor HEX is linked only as a distinct-chip source; source protocol02 is simulated in a bounded I2C device, not by running the HEX.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-keyboard-s3-pro/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-keyboard-s3-pro",
+      "lilygo-t-keyboard-s3-pro-official-photo-0",
+      "lilygo-t-keyboard-s3-pro-official-photo-1",
+      "lilygo-t-keyboard-s3-pro-official-photo-2",
+      "T-Keyboard-S3-Pro-Library-README.md",
+      "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp",
+      "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h",
+      "T-Keyboard-S3-Pro-Library-src-board-board_config.h",
+      "T-Keyboard-S3-Pro-Library-src-board-protocol.h",
+      "T-Keyboard-S3-Pro-Library-src-utility-display.cpp",
+      "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp",
+      "T-Keyboard-S3-Pro-Library-tree",
+      "T-Keyboard-S3-Pro-README.md",
+      "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf",
+      "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+      "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+      "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+      "T-Keyboard-S3-Pro-tree",
+      "keyboard-legacy-factory-source",
+      "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+      "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp",
+      "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h",
+      "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h",
+      "keyboard-legacy-libraries-common-pin_config.h",
+      "keyboard-legacy-tree",
+      "keyboard-stm-README.md",
+      "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+      "keyboard-stm-examples-Original_Test-Core-Inc-main.h",
+      "keyboard-stm-examples-Original_Test-Core-Src-i2c.c",
+      "keyboard-stm-examples-Original_Test-Core-Src-main.c",
+      "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c",
+      "keyboard-stm-tree"
+    ],
+    "displayHint": {
+      "width": 512,
+      "height": 128,
+      "sourceIds": [
+        "T-Keyboard-S3-Pro-Library-README.md",
+        "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp",
+        "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h",
+        "T-Keyboard-S3-Pro-Library-src-board-board_config.h",
+        "T-Keyboard-S3-Pro-Library-src-board-protocol.h",
+        "T-Keyboard-S3-Pro-Library-src-utility-display.cpp",
+        "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp",
+        "T-Keyboard-S3-Pro-Library-tree",
+        "T-Keyboard-S3-Pro-README.md",
+        "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+        "T-Keyboard-S3-Pro-tree",
+        "keyboard-legacy-factory-source",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h",
+        "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-legacy-libraries-common-pin_config.h",
+        "keyboard-legacy-tree",
+        "keyboard-stm-README.md",
+        "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-stm-examples-Original_Test-Core-Inc-main.h",
+        "keyboard-stm-examples-Original_Test-Core-Src-i2c.c",
+        "keyboard-stm-examples-Original_Test-Core-Src-main.c",
+        "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c",
+        "keyboard-stm-tree",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-keyboard-s3-pro",
+    "status": "diagnostic",
+    "scope": "适配主机四块独立 GC9107 128×128、STM32 原版 protocol 02 的延迟选屏／按键快照／版本查询、GPIO0 旋钮按下和 GPIO4/5 编码器；512×128 仅为横向拼接调试画布。选定 legacy GC9107 分支与 Original_Test STM32 源码版本，灯效、扩展键盘和其他屏幕版本未实现。",
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "No STM32 CPU execution, chained slave boards, 14-LED mode/PWM registers, alternate ST7735/ST7789 images or newer LovyanGFX offset conventions. Unknown LED registers are deliberately rejected by this partial device model.",
+      "Only the host has four visible panels; chip-select bit0 for the fifth/slave position has no attached panel. The physical rotary push shares ESP32 BOOT0 and STM32 KEY5.",
+      "Visible RGB565 window commands only; controller readback, analog gamma/supply timing and RAM outside documented glass are not modeled. STM32 source has a malformed case label in an unrelated LED branch; source inspection is not proof that the current full firmware builds or boots.",
+      "STM32G030 has 64KB Flash and 8KB SRAM; the product listing terminology PSRAM does not make this memory ESP32 PSRAM."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-keyboard-s3-pro",
+    "boardId": "lilygo-t-keyboard-s3-pro",
+    "name": "LILYGO T-Keyboard S3 Pro",
+    "constructor": "t_keyboard_s3_pro",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "MCU_V1.1 + Keyboard_V1.1 + LCD_FPC_V1.0; main host with four GC9107 panels and rotary encoder",
+    "display": {
+      "type": "LCD",
+      "controller": "4 × GC9107",
+      "width": 512,
+      "height": 128,
+      "interface": "SPI; STM32G030 I2C chip-select",
+      "debugLayout": "horizontal-composite",
+      "physicalPanels": [
+        {
+          "id": "lcd1",
+          "width": 128,
+          "height": 128,
+          "controller": "GC9107",
+          "diagonalInches": 0.85,
+          "activeAreaMm": [
+            15.2064,
+            15.2064
+          ],
+          "csMask": 16
+        },
+        {
+          "id": "lcd2",
+          "width": 128,
+          "height": 128,
+          "controller": "GC9107",
+          "diagonalInches": 0.85,
+          "activeAreaMm": [
+            15.2064,
+            15.2064
+          ],
+          "csMask": 8
+        },
+        {
+          "id": "lcd3",
+          "width": 128,
+          "height": 128,
+          "controller": "GC9107",
+          "diagonalInches": 0.85,
+          "activeAreaMm": [
+            15.2064,
+            15.2064
+          ],
+          "csMask": 4
+        },
+        {
+          "id": "lcd4",
+          "width": 128,
+          "height": 128,
+          "controller": "GC9107",
+          "diagonalInches": 0.85,
+          "activeAreaMm": [
+            15.2064,
+            15.2064
+          ],
+          "csMask": 2
+        }
+      ],
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "key1",
+        "name": "屏幕按键 1",
+        "type": "button",
+        "activeLow": true,
+        "controller": "STM32G030",
+        "register": 2,
+        "mask": 16,
+        "notes": "Read from original STM32 key snapshot; this is not an invented ESP32 GPIO.",
+        "transport": "board"
+      },
+      {
+        "id": "key2",
+        "name": "屏幕按键 2",
+        "type": "button",
+        "activeLow": true,
+        "controller": "STM32G030",
+        "register": 2,
+        "mask": 8,
+        "notes": "Read from original STM32 key snapshot; this is not an invented ESP32 GPIO.",
+        "transport": "board"
+      },
+      {
+        "id": "key3",
+        "name": "屏幕按键 3",
+        "type": "button",
+        "activeLow": true,
+        "controller": "STM32G030",
+        "register": 2,
+        "mask": 4,
+        "notes": "Read from original STM32 key snapshot; this is not an invented ESP32 GPIO.",
+        "transport": "board"
+      },
+      {
+        "id": "key4",
+        "name": "屏幕按键 4",
+        "type": "button",
+        "activeLow": true,
+        "controller": "STM32G030",
+        "register": 2,
+        "mask": 2,
+        "notes": "Read from original STM32 key snapshot; this is not an invented ESP32 GPIO.",
+        "transport": "board"
+      },
+      {
+        "id": "knob",
+        "name": "旋钮按下 / KEY5 / BOOT",
+        "type": "button",
+        "activeLow": true,
+        "pin": 0,
+        "controller": "STM32G030 + ESP32-S3",
+        "register": 2,
+        "mask": 1,
+        "transport": "board"
+      },
+      {
+        "id": "encoder",
+        "name": "旋转编码器",
+        "type": "encoder",
+        "pins": {
+          "a": 4,
+          "b": 5
+        },
+        "detents": null
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "适配主机四块独立 GC9107 128×128、STM32 原版 protocol 02 的延迟选屏／按键快照／版本查询、GPIO0 旋钮按下和 GPIO4/5 编码器；512×128 仅为横向拼接调试画布。选定 legacy GC9107 分支与 Original_Test STM32 源码版本，灯效、扩展键盘和其他屏幕版本未实现。",
+    "scopeEn": "Four independent GC9107 128x128 panels on the host; original STM32 protocol02 delayed CS/key/version subset, BOOT/KEY5 GPIO0 and encoder4/5. The 512x128 horizontal canvas is a debug composition, not a physical single display. Requires the explicitly selected legacy GC9107 and Original_Test STM32 protocol versions.",
+    "chronology": {
+      "date": "2024-09-05",
+      "basis": "hardware-release",
+      "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/3347b02e986c8221ae5b33645a9bae1b2c4bd2f0/README.md",
+      "sourceId": "T-Keyboard-S3-Pro-README.md",
+      "confidence": "medium",
+      "hardwareRevision": "Original MCU/Keyboard V1.1 and LCD FPC V1.0",
+      "notes": "Earliest explicit manufacturer Version History date for this product, not independently verified retail launch. The runtime represented revision is specified separately; a later BOM/source revision does not move the original product date."
+    },
+    "sourceIds": [
+      "T-Keyboard-S3-Pro-Library-README.md",
+      "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp",
+      "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h",
+      "T-Keyboard-S3-Pro-Library-src-board-board_config.h",
+      "T-Keyboard-S3-Pro-Library-src-board-protocol.h",
+      "T-Keyboard-S3-Pro-Library-src-utility-display.cpp",
+      "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp",
+      "T-Keyboard-S3-Pro-Library-tree",
+      "T-Keyboard-S3-Pro-README.md",
+      "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf",
+      "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+      "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+      "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+      "T-Keyboard-S3-Pro-tree",
+      "keyboard-legacy-factory-source",
+      "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+      "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp",
+      "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h",
+      "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h",
+      "keyboard-legacy-libraries-common-pin_config.h",
+      "keyboard-legacy-tree",
+      "keyboard-stm-README.md",
+      "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+      "keyboard-stm-examples-Original_Test-Core-Inc-main.h",
+      "keyboard-stm-examples-Original_Test-Core-Src-i2c.c",
+      "keyboard-stm-examples-Original_Test-Core-Src-main.c",
+      "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c",
+      "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c",
+      "keyboard-stm-tree",
+      "official-store-shopify-1"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "No STM32 CPU execution, chained slave boards, 14-LED mode/PWM registers, alternate ST7735/ST7789 images or newer LovyanGFX offset conventions. Unknown LED registers are deliberately rejected by this partial device model.",
+      "Only the host has four visible panels; chip-select bit0 for the fifth/slave position has no attached panel. The physical rotary push shares ESP32 BOOT0 and STM32 KEY5.",
+      "Visible RGB565 window commands only; controller readback, analog gamma/supply timing and RAM outside documented glass are not modeled. STM32 source has a malformed case label in an unrelated LED branch; source inspection is not proof that the current full firmware builds or boots.",
+      "STM32G030 has 64KB Flash and 8KB SRAM; the product listing terminology PSRAM does not make this memory ESP32 PSRAM."
+    ],
+    "pins": {
+      "i2c": {
+        "sda": 42,
+        "scl": 2,
+        "address": 1
+      },
+      "display": {
+        "clock": 41,
+        "mosi": 40,
+        "dc": 39,
+        "reset": 38,
+        "backlight": 1,
+        "backlightActiveLow": true
+      },
+      "encoder": {
+        "a": 4,
+        "b": 5,
+        "push": 0
+      },
+      "stm32": {
+        "implemented": "register subset only",
+        "cpuImplemented": false
+      },
+      "optionalExpansion": {
+        "i2cSda": 6,
+        "i2cScl": 7,
+        "implemented": false
+      }
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "T-Keyboard-S3-Pro-Library-README.md",
+        "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.cpp",
+        "T-Keyboard-S3-Pro-Library-src-TKeyboardS3Pro.h",
+        "T-Keyboard-S3-Pro-Library-src-board-board_config.h",
+        "T-Keyboard-S3-Pro-Library-src-board-protocol.h",
+        "T-Keyboard-S3-Pro-Library-src-utility-display.cpp",
+        "T-Keyboard-S3-Pro-Library-src-utility-encoder.cpp",
+        "T-Keyboard-S3-Pro-Library-tree",
+        "T-Keyboard-S3-Pro-README.md",
+        "T-Keyboard-S3-Pro-information-GC9107_DataSheet_V1.2.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_LCD_FPC_V1.0.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_Keyboard_V1.1.pdf",
+        "T-Keyboard-S3-Pro-project-SCH_T-Keyboard-S3-Pro_MCU_V1.1.pdf",
+        "T-Keyboard-S3-Pro-tree",
+        "keyboard-legacy-factory-source",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-Arduino_TFT.cpp",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.cpp",
+        "keyboard-legacy-libraries-Arduino_GFX-1.3.7-src-display-Arduino_GC9107.h",
+        "keyboard-legacy-libraries-T-Keyboard-S3-Pro_Drive-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-legacy-libraries-common-pin_config.h",
+        "keyboard-legacy-tree",
+        "keyboard-stm-README.md",
+        "keyboard-stm-examples-Original_Test-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-stm-examples-Original_Test-Core-Inc-main.h",
+        "keyboard-stm-examples-Original_Test-Core-Src-i2c.c",
+        "keyboard-stm-examples-Original_Test-Core-Src-main.c",
+        "keyboard-stm-examples-Original_Test-Core-Src-stm32g0xx_it.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-T-Keyboard-S3-Pro_Drive.h",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Inc-main.h",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-gpio.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-i2c.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-main.c",
+        "keyboard-stm-examples-T-Keyboard-S3-Pro_IIC_Command-Core-Src-stm32g0xx_it.c",
+        "keyboard-stm-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+    },
+    "conflicts": [
+      {
+        "fact": "display revision/offset selection",
+        "resolution": "The pinned legacy header now defaults to ST7735 with different offsets. This profile explicitly selects GC9107 offsets, IPS inversion and MADCTL0=C8. The newer Library uses different LovyanGFX dimensions/offsets and is not silently treated as compatible.",
+        "sourceIds": [
+          "keyboard-legacy-libraries-common-pin_config.h",
+          "T-Keyboard-S3-Pro-Library-src-utility-display.cpp"
+        ]
+      },
+      {
+        "fact": "date",
+        "resolution": "Original hardware date 2024-09-05 in manufacturer README replaces 2024-09-28 storefront publication proxy; neither independently establishes retail availability.",
+        "sourceIds": [
+          "T-Keyboard-S3-Pro-README.md",
+          "official-store-shopify-1"
+        ]
+      }
+    ],
+    "physicalChip": "ESP32-S3 + STM32G030F6P6",
+    "firmwareCompatibility": {
+      "hostRepository": "Xinyuan-LilyGO/T-Keyboard-S3-Pro",
+      "hostRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+      "hostBranch": "arduino-esp32-libs_V2.0.14",
+      "requiredDisplayDefine": "T_KEYBOARD_S3_PRO_LCD_DRIVER=T_KEYBOARD_S3_PRO_LCD_DRIVER_GC9107",
+      "stm32Revision": "e35ec481e5136707293ef92e35f3540534095dc4",
+      "stm32Source": "examples/Original_Test",
+      "protocolVersion": 2,
+      "i2cAddress": 1,
+      "behavior": "The original STM32 address callback interprets the previous receive buffer at the next write-address phase. CS selection and key/version snapshots therefore become effective on the next write. This is not a generic promise for other STM32 images or revisions.",
+      "controllerOffsets": {
+        "rotation0": [
+          2,
+          1
+        ],
+        "rotation1": [
+          1,
+          0
+        ],
+        "rotation2": [
+          0,
+          0
+        ],
+        "rotation3": [
+          0,
+          2
+        ]
+      },
+      "readmeNewLibrarySupported": false
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "official-entries-linked",
+      "sourceIds": [
+        "T-Keyboard-S3-Pro-README.md",
+        "keyboard-legacy-factory-source",
+        "keyboard-legacy-tree",
+        "keyboard-stm-tree"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/blob/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/firmware/%5BESP32S3%5D%5BT-Keyboard-S3-Pro_V1.0%5D%5BOriginal_Test_2%28gc9107%29%5D_firmware_V1.0.0.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/cb41b375c6e20f3204dcd246001c6a405c3f9fd7/firmware/%5BESP32S3%5D%5BT-Keyboard-S3-Pro_V1.0%5D%5BOriginal_Test_2%28gc9107%29%5D_firmware_V1.0.0.bin",
+          "path": "firmware/[ESP32S3][T-Keyboard-S3-Pro_V1.0][Original_Test_2(gc9107)]_firmware_V1.0.0.bin",
+          "pinnedGitRevision": "cb41b375c6e20f3204dcd246001c6a405c3f9fd7",
+          "gitBlobSha": "1bf7f43f0fe4228b7aef9062abae5d31e877cfc2",
+          "bytes": 1380912,
+          "status": "linked",
+          "sourceId": "keyboard-legacy-tree",
+          "role": "factory",
+          "chip": "esp32s3",
+          "identityEvidence": "Exact GC9107 original-test factory entry in the official legacy host branch; tree metadata checked, binary not fetched.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/blob/e35ec481e5136707293ef92e35f3540534095dc4/firmware/%EF%BC%88%E4%BF%AE%E5%A4%8DLED%E7%9A%84HUE%E5%80%BC%E8%AE%BE%E7%BD%AE%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%EF%BC%89%5BSTM32G030F6P6_Drive_0x01%5D%5BT-Keyboard-S3-Pro_V1.0%5D%5BOriginal_Test%5D_firmware_V2_202501231722.hex",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Keyboard-S3-Pro/e35ec481e5136707293ef92e35f3540534095dc4/firmware/%EF%BC%88%E4%BF%AE%E5%A4%8DLED%E7%9A%84HUE%E5%80%BC%E8%AE%BE%E7%BD%AE%E5%A4%B1%E8%B4%A5%E9%97%AE%E9%A2%98%EF%BC%89%5BSTM32G030F6P6_Drive_0x01%5D%5BT-Keyboard-S3-Pro_V1.0%5D%5BOriginal_Test%5D_firmware_V2_202501231722.hex",
+          "path": "firmware/（修复LED的HUE值设置失败问题）[STM32G030F6P6_Drive_0x01][T-Keyboard-S3-Pro_V1.0][Original_Test]_firmware_V2_202501231722.hex",
+          "pinnedGitRevision": "e35ec481e5136707293ef92e35f3540534095dc4",
+          "gitBlobSha": "9c3c9a221fc53bd99c9a529d9e098927045f9726",
+          "bytes": 47340,
+          "status": "linked",
+          "sourceId": "keyboard-stm-tree",
+          "role": "coprocessor-factory",
+          "chip": "stm32g030",
+          "identityEvidence": "STM32 I2C address01 original-test firmware; not an ESP32 image and must never be offered as an S3 flash image.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Pinned host factory image is GC9107-specific and not boot-verified. Coprocessor HEX is linked only as a distinct-chip source; source protocol02 is simulated in a bounded I2C device, not by running the HEX.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
+      }
+    }
+  }
 }

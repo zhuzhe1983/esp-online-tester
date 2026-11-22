@@ -12,10 +12,27 @@
   },
   "presentation": {
     "bodySizeMm": [
-      59.99999999999999,
-      38.13449023861171,
-      5.076138828633405
-    ]
+      133.75,
+      65.0,
+      4.576138828633405
+    ],
+    "screen": {
+      "sizeMm": [
+        33.75,
+        45.0
+      ],
+      "positionMm": [
+        54.875,
+        1,
+        0.72
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "notes": "Separate native-orientation debug panel, not an uncalibrated physical window."
+    }
   },
   "parts": [
     {
@@ -83,6 +100,83 @@
       "sourceIds": [
         "lilygo-t-hmi-official-photo-0"
       ]
+    },
+    {
+      "name": "debug-screen-frame",
+      "role": "component",
+      "kind": "ring",
+      "sizeMm": [
+        36.75,
+        53.0,
+        1.4
+      ],
+      "openingMm": [
+        33.75,
+        45.0
+      ],
+      "radiusMm": 2,
+      "innerRadiusMm": 0.2,
+      "centerMm": [
+        54.875,
+        0,
+        0
+      ],
+      "color": "#20343d",
+      "basis": "debug-layout"
+    },
+    {
+      "name": "debug-control:boot",
+      "role": "component",
+      "kind": "rounded-box",
+      "sizeMm": [
+        11,
+        4,
+        1.3
+      ],
+      "centerMm": [
+        48.375,
+        -30.5,
+        0
+      ],
+      "radiusMm": 0.5,
+      "color": "#24434c",
+      "controlId": "boot",
+      "basis": "separate debug control; not a physical part",
+      "sourceIds": [
+        "s3add-hmi-readme",
+        "s3add-hmi-pins",
+        "s3add-hmi-factory",
+        "s3add-hmi-xpt",
+        "s3add-hmi-xpt-h",
+        "official-store-shopify-1"
+      ]
+    },
+    {
+      "name": "debug-control:user",
+      "role": "component",
+      "kind": "rounded-box",
+      "sizeMm": [
+        11,
+        4,
+        1.3
+      ],
+      "centerMm": [
+        61.375,
+        -30.5,
+        0
+      ],
+      "radiusMm": 0.5,
+      "color": "#24434c",
+      "controlId": "user",
+      "basis": "separate debug control; not a physical part",
+      "sourceIds": [
+        "s3add-hmi-readme",
+        "s3add-hmi-pins",
+        "s3add-hmi-factory",
+        "s3add-hmi-xpt",
+        "s3add-hmi-xpt-h",
+        "official-store-shopify-1"
+      ]
     }
   ],
   "derivedParts": [
@@ -114,6 +208,118 @@
         ]
       },
       "notes": "Replaceable UNKNOWN internal board, not a derived PCB outline or guessed components."
+    },
+    {
+      "id": "debug-panel-label",
+      "kind": "printed-marking",
+      "basis": "debug-layout",
+      "sourceIds": [
+        "s3add-hmi-readme",
+        "s3add-hmi-pins",
+        "s3add-hmi-factory",
+        "s3add-hmi-xpt",
+        "s3add-hmi-xpt-h",
+        "official-store-shopify-1"
+      ],
+      "lines": [
+        "LIVE DEBUG"
+      ],
+      "color": "#bde5d8",
+      "geometry": {
+        "sizeMm": [
+          33.75,
+          3.2
+        ],
+        "centerMm": [
+          54.875,
+          -24.5,
+          0.72
+        ]
+      }
+    },
+    {
+      "id": "debug-control-label:boot",
+      "kind": "printed-marking",
+      "basis": "debug-layout",
+      "sourceIds": [
+        "s3add-hmi-readme",
+        "s3add-hmi-pins",
+        "s3add-hmi-factory",
+        "s3add-hmi-xpt",
+        "s3add-hmi-xpt-h",
+        "official-store-shopify-1"
+      ],
+      "lines": [
+        "BOOT"
+      ],
+      "color": "#dcf1e9",
+      "geometry": {
+        "sizeMm": [
+          10.120000000000001,
+          3.2
+        ],
+        "centerMm": [
+          48.375,
+          -30.5,
+          0.67
+        ]
+      }
+    },
+    {
+      "id": "debug-control-label:user",
+      "kind": "printed-marking",
+      "basis": "debug-layout",
+      "sourceIds": [
+        "s3add-hmi-readme",
+        "s3add-hmi-pins",
+        "s3add-hmi-factory",
+        "s3add-hmi-xpt",
+        "s3add-hmi-xpt-h",
+        "official-store-shopify-1"
+      ],
+      "lines": [
+        "User button"
+      ],
+      "color": "#dcf1e9",
+      "geometry": {
+        "sizeMm": [
+          10.120000000000001,
+          3.2
+        ],
+        "centerMm": [
+          61.375,
+          -30.5,
+          0.67
+        ]
+      }
+    },
+    {
+      "id": "debug-control-label:heading",
+      "kind": "printed-marking",
+      "basis": "debug-layout",
+      "sourceIds": [
+        "s3add-hmi-readme",
+        "s3add-hmi-pins",
+        "s3add-hmi-factory",
+        "s3add-hmi-xpt",
+        "s3add-hmi-xpt-h",
+        "official-store-shopify-1"
+      ],
+      "lines": [
+        "DEBUG INPUT"
+      ],
+      "color": "#49656d",
+      "geometry": {
+        "sizeMm": [
+          26,
+          3
+        ],
+        "centerMm": [
+          54.875,
+          -26.5,
+          0.67
+        ]
+      }
     }
   ],
   "referencePhotos": [
@@ -154,7 +360,9 @@
         "bytes": 2507924,
         "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
         "title": "official-store-shopify-1",
-        "kind": "official-documentation"
+        "kind": "official-documentation",
+        "archiveName": "official-store-shopify-1.source",
+        "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
       },
       {
         "id": "lilygo-t-hmi-official-photo-0",
@@ -191,6 +399,91 @@
         "status": "fetched",
         "file": "reference-2.jpg",
         "kind": "manufacturer-photo"
+      },
+      {
+        "id": "s3add-hmi-readme",
+        "repository": "Xinyuan-LilyGO/T-HMI",
+        "revision": "7b52eed0a1fa9611a12814a8a922b78a946a4316",
+        "path": "README.md",
+        "gitBlobSha": "f45e04e6c9139fa23690a3152b1c85551ae2ffbf",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-HMI/7b52eed0a1fa9611a12814a8a922b78a946a4316/README.md",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-HMI/README.md",
+        "kind": "official-documentation",
+        "fetchedAt": "2026-11-22T08:41:49Z",
+        "sha256": "067b576c142fa495ca918c6307af73d2fc0573b0ba20cc60efba74accde3b78b",
+        "bytes": 4771,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-hmi-readme.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-hmi-pins",
+        "repository": "Xinyuan-LilyGO/T-HMI",
+        "revision": "7b52eed0a1fa9611a12814a8a922b78a946a4316",
+        "path": "examples/factory/pins.h",
+        "gitBlobSha": "68abca8401ead44c118d129c56d58f295454052f",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-HMI/7b52eed0a1fa9611a12814a8a922b78a946a4316/examples/factory/pins.h",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-HMI/examples/factory/pins.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T08:44:29Z",
+        "sha256": "667bdf3ebbde9d18518df039f824818f75fb21d354dac1588af1c5c4ab4377fe",
+        "bytes": 846,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-hmi-pins.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-hmi-factory",
+        "repository": "Xinyuan-LilyGO/T-HMI",
+        "revision": "7b52eed0a1fa9611a12814a8a922b78a946a4316",
+        "path": "examples/factory/factory.ino",
+        "gitBlobSha": "c024d9d14dee16a845473e7d805c4d829f21db64",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-HMI/7b52eed0a1fa9611a12814a8a922b78a946a4316/examples/factory/factory.ino",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-HMI/examples/factory/factory.ino",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T08:44:29Z",
+        "sha256": "90a3af3d38d3ba4d9710d58b96fc4a89f003b25e908f261bb6a8720369df3d44",
+        "bytes": 20787,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-hmi-factory.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-hmi-xpt",
+        "repository": "Xinyuan-LilyGO/T-HMI",
+        "revision": "7b52eed0a1fa9611a12814a8a922b78a946a4316",
+        "path": "lib/arduino_xpt2046_library/src/xpt2046.cpp",
+        "gitBlobSha": "2f2e775e792c1559d4b3e32ec77cfd7041e2b36e",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-HMI/7b52eed0a1fa9611a12814a8a922b78a946a4316/lib/arduino_xpt2046_library/src/xpt2046.cpp",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-HMI/lib/arduino_xpt2046_library/src/xpt2046.cpp",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T09:09:32Z",
+        "sha256": "17e5d83b4612895f4059bea16d39d920780e5c6f45278b4282157e1f2f4df24a",
+        "bytes": 5475,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-hmi-xpt.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-hmi-xpt-h",
+        "repository": "Xinyuan-LilyGO/T-HMI",
+        "revision": "7b52eed0a1fa9611a12814a8a922b78a946a4316",
+        "path": "lib/arduino_xpt2046_library/src/xpt2046.h",
+        "gitBlobSha": "a9cc3f347b6c6057ed1e3f240a6467be3777620e",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-HMI/7b52eed0a1fa9611a12814a8a922b78a946a4316/lib/arduino_xpt2046_library/src/xpt2046.h",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-HMI/lib/arduino_xpt2046_library/src/xpt2046.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T09:09:32Z",
+        "sha256": "43df3326a25a16a47d95454ab0c8dac87ff293595891af346d0a29cf43363f67",
+        "bytes": 792,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-hmi-xpt-h.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
       }
     ],
     "license": "Generated debug geometry follows repository code license. Source documents and manufacturer photographs retain their original rights.",
@@ -201,14 +494,18 @@
     "侧壁厚度和绝对尺度尚未标定；画面以最长边 60 mm 归一化，不能当作实物尺寸。",
     "未猜测内部元件、丝印、插针线序或连接器精确结构；背面 UNKNOWN 占位可替换。",
     "有屏幕时，真实固件画面放在独立 LIVE DEBUG 面板；实体屏幕窗口尚未逐款校准。",
-    "原始照片仅作为来源，不将照片里的演示画面贴到实时屏幕。"
+    "原始照片仅作为来源，不将照片里的演示画面贴到实时屏幕。",
+    "标记 DEBUG INPUT 的按键是独立调试控件，不表示已核实的实物按键位置。"
   ],
   "debugPreview": {
     "mode": "photo-derived",
     "isPhysicalReplica": false,
     "physicalDimensionsVerified": false,
-    "displayPlacement": "no-verified-display",
-    "reason": "Multi-view exterior source references exist; projection recovered, physical depth/scale/window placement uncalibrated."
+    "displayPlacement": "separate-native-orientation-debug-panel",
+    "reason": "Multi-view exterior source references exist; projection recovered, physical depth/scale/window placement uncalibrated.",
+    "liveFramebuffer": true,
+    "physicalDisplay": true,
+    "controlPlacement": "Separate labeled debugging controls where physical locations are uncalibrated; official physical matches are preserved."
   },
   "reviewViews": {
     "front": {
@@ -217,7 +514,7 @@
         0,
         200
       ],
-      "span": 71.99999999999999
+      "span": 160.5
     },
     "back": {
       "position": [
@@ -225,7 +522,7 @@
         0,
         -200
       ],
-      "span": 71.99999999999999
+      "span": 160.5
     },
     "side": {
       "position": [
@@ -233,7 +530,7 @@
         0,
         0
       ],
-      "span": 71.99999999999999
+      "span": 160.5
     }
   },
   "photoDerivation": {
@@ -347,5 +644,18 @@
       }
     ],
     "multiViewStatus": "Additional manufacturer views retained for comparison; perspective, depth and hidden topology remain uncalibrated."
+  },
+  "displayNativeOrientation": {
+    "width": 240,
+    "height": 320,
+    "sourceIds": [
+      "s3add-hmi-readme",
+      "s3add-hmi-pins",
+      "s3add-hmi-factory",
+      "s3add-hmi-xpt",
+      "s3add-hmi-xpt-h",
+      "official-store-shopify-1"
+    ],
+    "implemented": true
   }
 }

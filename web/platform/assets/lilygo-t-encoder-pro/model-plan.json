@@ -2,19 +2,19 @@
   "schemaVersion": "1",
   "generator": "build-lilygo-expansion-models.py",
   "id": "lilygo-t-encoder-pro",
-  "mode": "photo-derived",
+  "mode": "manufacturer-cad",
   "priorityRank": 43,
   "dimensions": {
-    "width": 60.0,
-    "height": 57.84860557768925,
-    "depth": 6.94183266932271,
-    "basis": "photo projection normalized to 60 mm for debugging; absolute scale and depth uncalibrated"
+    "width": 41.358036041259766,
+    "height": 39.837345123291016,
+    "depth": 29.999999523162842,
+    "basis": "Retained CAD component envelope after a rigid viewing transform; not a certified full-device measurement. STL units, where used, are interpreted as mm and remain uncalibrated."
   },
   "presentation": {
     "bodySizeMm": [
-      117.0,
-      57.84860557768925,
-      7.44183266932271
+      113.35803604125977,
+      65.0,
+      29.999999523162842
     ],
     "screen": {
       "sizeMm": [
@@ -22,7 +22,7 @@
         45.0
       ],
       "positionMm": [
-        60.5,
+        51.17901802062988,
         1,
         0.72
       ],
@@ -31,116 +31,10 @@
         0,
         0
       ],
-      "notes": "Separate live debug panel; physical display location has not been calibrated."
+      "notes": "Separate native-orientation debug panel, not an uncalibrated physical window."
     }
   },
   "parts": [
-    {
-      "name": "photo-envelope",
-      "role": "envelope",
-      "kind": "polygon",
-      "sizeMm": [
-        60.0,
-        57.84860557768925,
-        6.94183266932271
-      ],
-      "outlineMm": [
-        [
-          -19.840637450199203,
-          22.589641434262948
-        ],
-        [
-          -24.143426294820717,
-          18.16733067729084
-        ],
-        [
-          -28.56573705179283,
-          10.0398406374502
-        ],
-        [
-          -30.0,
-          3.4661354581673307
-        ],
-        [
-          -30.0,
-          -1.1952191235059761
-        ],
-        [
-          -27.13147410358566,
-          -10.278884462151394
-        ],
-        [
-          -14.701195219123507,
-          -23.665338645418327
-        ],
-        [
-          -8.00796812749004,
-          -28.08764940239044
-        ],
-        [
-          -5.617529880478088,
-          -28.804780876494025
-        ],
-        [
-          12.191235059760956,
-          -27.96812749003984
-        ],
-        [
-          15.53784860557769,
-          -26.772908366533866
-        ],
-        [
-          20.677290836653388,
-          -22.231075697211157
-        ],
-        [
-          28.804780876494025,
-          -8.127490039840637
-        ],
-        [
-          29.880478087649404,
-          -4.54183266932271
-        ],
-        [
-          28.924302788844624,
-          1.6733067729083666
-        ],
-        [
-          17.808764940239044,
-          19.721115537848608
-        ],
-        [
-          7.768924302788845,
-          26.53386454183267
-        ],
-        [
-          1.7928286852589643,
-          28.56573705179283
-        ],
-        [
-          -2.6294820717131477,
-          28.924302788844624
-        ],
-        [
-          -8.605577689243027,
-          28.207171314741036
-        ],
-        [
-          -15.418326693227092,
-          25.57768924302789
-        ]
-      ],
-      "centerMm": [
-        0,
-        0,
-        0
-      ],
-      "color": "#303131",
-      "basis": "photo-projection",
-      "sourceIds": [
-        "lilygo-t-encoder-pro-official-photo-1"
-      ]
-    },
     {
       "name": "debug-screen-frame",
       "role": "component",
@@ -157,52 +51,57 @@
       "radiusMm": 2,
       "innerRadiusMm": 0.2,
       "centerMm": [
-        60.5,
+        51.17901802062988,
         0,
         0
       ],
       "color": "#20343d",
       "basis": "debug-layout"
+    },
+    {
+      "name": "debug-control:encoder-press",
+      "role": "component",
+      "kind": "rounded-box",
+      "sizeMm": [
+        11,
+        4,
+        1.3
+      ],
+      "centerMm": [
+        51.17901802062988,
+        -30.5,
+        0
+      ],
+      "radiusMm": 0.5,
+      "color": "#24434c",
+      "controlId": "encoder-press",
+      "basis": "separate debug control; not a physical part",
+      "sourceIds": [
+        "s3add-encoder-pro-readme",
+        "s3add-encoder-pro-pins",
+        "s3add-encoder-pro-factory",
+        "s3add-encoder-pro-display",
+        "s3add-encoder-pro-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+      ]
     }
   ],
   "derivedParts": [
-    {
-      "id": "pcb-main",
-      "kind": "pcb-placeholder",
-      "basis": "unknown; display spacing only",
-      "sourceIds": [
-        "lilygo-t-encoder-pro-official-photo-0",
-        "lilygo-t-encoder-pro-official-photo-1",
-        "lilygo-t-encoder-pro-official-photo-2"
-      ],
-      "color": "#536066",
-      "geometry": {
-        "sizeMm": [
-          40.800000000000004,
-          39.33705179282869,
-          0.3
-        ],
-        "centerMm": [
-          0,
-          0,
-          -3.670916334661355
-        ],
-        "labelSide": "back",
-        "labelSizeMm": [
-          33.0,
-          8.25
-        ]
-      },
-      "notes": "Replaceable UNKNOWN internal board, not a derived PCB outline or guessed components."
-    },
     {
       "id": "debug-panel-label",
       "kind": "printed-marking",
       "basis": "debug-layout",
       "sourceIds": [
-        "lilygo-t-encoder-pro-official-photo-0",
-        "lilygo-t-encoder-pro-official-photo-1",
-        "lilygo-t-encoder-pro-official-photo-2"
+        "s3add-encoder-pro-readme",
+        "s3add-encoder-pro-pins",
+        "s3add-encoder-pro-factory",
+        "s3add-encoder-pro-display",
+        "s3add-encoder-pro-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
       ],
       "lines": [
         "LIVE DEBUG"
@@ -214,9 +113,69 @@
           3.2
         ],
         "centerMm": [
-          60.5,
+          51.17901802062988,
           -24.5,
           0.72
+        ]
+      }
+    },
+    {
+      "id": "debug-control-label:encoder-press",
+      "kind": "printed-marking",
+      "basis": "debug-layout",
+      "sourceIds": [
+        "s3add-encoder-pro-readme",
+        "s3add-encoder-pro-pins",
+        "s3add-encoder-pro-factory",
+        "s3add-encoder-pro-display",
+        "s3add-encoder-pro-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+      ],
+      "lines": [
+        "Encoder pres"
+      ],
+      "color": "#dcf1e9",
+      "geometry": {
+        "sizeMm": [
+          10.120000000000001,
+          3.2
+        ],
+        "centerMm": [
+          51.17901802062988,
+          -30.5,
+          0.67
+        ]
+      }
+    },
+    {
+      "id": "debug-control-label:heading",
+      "kind": "printed-marking",
+      "basis": "debug-layout",
+      "sourceIds": [
+        "s3add-encoder-pro-readme",
+        "s3add-encoder-pro-pins",
+        "s3add-encoder-pro-factory",
+        "s3add-encoder-pro-display",
+        "s3add-encoder-pro-display-h",
+        "s3add-circle-touch",
+        "s3add-circle-touch-h",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
+      ],
+      "lines": [
+        "DEBUG INPUT"
+      ],
+      "color": "#49656d",
+      "geometry": {
+        "sizeMm": [
+          20,
+          3
+        ],
+        "centerMm": [
+          51.17901802062988,
+          -26.5,
+          0.67
         ]
       }
     }
@@ -244,10 +203,19 @@
   "retainedFiles": [
     "reference-0.jpg",
     "reference-1.jpg",
-    "reference-2.jpg"
+    "reference-2.jpg",
+    "manufacturer-0-00_38_1.stl.gz",
+    "manufacturer-0-001_10.stl.gz",
+    "manufacturer-0-00_10_5_12.stl.gz",
+    "manufacturer-0-00_15.stl.gz",
+    "manufacturer-0-00_22_30_1.stl.gz",
+    "manufacturer-0-00_26_4_23_7_30.stl.gz",
+    "manufacturer-0-00_27_3_20_15_33.stl.gz",
+    "manufacturer-0-00_44_4_15_33_10.stl.gz",
+    "manufacturer-LICENSE.txt"
   ],
   "provenance": {
-    "kind": "photo-derived",
+    "kind": "manufacturer-cad",
     "sources": [
       {
         "id": "official-store-shopify-1",
@@ -259,7 +227,9 @@
         "bytes": 2507924,
         "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
         "title": "official-store-shopify-1",
-        "kind": "official-documentation"
+        "kind": "official-documentation",
+        "archiveName": "official-store-shopify-1.source",
+        "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
       },
       {
         "id": "official-wiki-t-encoder-pro",
@@ -309,24 +279,396 @@
         "status": "fetched",
         "file": "reference-2.jpg",
         "kind": "manufacturer-photo"
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-1",
+        "productId": "lilygo-t-encoder-pro",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_38_1.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_38_1.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_38_1.stl",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "repositoryPath": "structure/H670-STL/0-00_38_1.stl",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "revisionType": "pinned-git-revision",
+        "gitBlobSha": "39b9dc8874a7ecc3ee0762a33ceceb189ebedeb0",
+        "fetchedAt": "2026-11-22T08:32:20Z",
+        "bytes": 262184,
+        "sha256": "7d9ec034f98a95de218aa1cd9b2bf7d53c60cb9650b96a7770e3438283c2d94f",
+        "rawSha256": "7d9ec034f98a95de218aa1cd9b2bf7d53c60cb9650b96a7770e3438283c2d94f",
+        "file": "manufacturer-0-00_38_1.stl.gz",
+        "archiveName": "manufacturer-0-00_38_1.stl.gz",
+        "storedSha256": "77fdded874c3d0b26e51a3db6cd668958d7ebd58ca4967564f184007cc9308eb",
+        "archiveSha256": "77fdded874c3d0b26e51a3db6cd668958d7ebd58ca4967564f184007cc9308eb",
+        "compression": "gzip",
+        "sourceFormat": "STL",
+        "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+        "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+        "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-2",
+        "productId": "lilygo-t-encoder-pro",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-001_10.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-001_10.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-001_10.stl",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "repositoryPath": "structure/H670-STL/0-001_10.stl",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "revisionType": "pinned-git-revision",
+        "gitBlobSha": "565598267d95b03231308bd56ad71c42d59f629a",
+        "fetchedAt": "2026-11-22T08:37:57Z",
+        "bytes": 117784,
+        "sha256": "054fdad3c4f85e5b8ed4c7fbf02187a149db9bf159382fd0d351f96a2205c515",
+        "rawSha256": "054fdad3c4f85e5b8ed4c7fbf02187a149db9bf159382fd0d351f96a2205c515",
+        "file": "manufacturer-0-001_10.stl.gz",
+        "archiveName": "manufacturer-0-001_10.stl.gz",
+        "storedSha256": "02ac2195cf93c7ff2d0d35d8bee9477978083c1b3bf27ee0e158a90d7a38a3e0",
+        "archiveSha256": "02ac2195cf93c7ff2d0d35d8bee9477978083c1b3bf27ee0e158a90d7a38a3e0",
+        "compression": "gzip",
+        "sourceFormat": "STL",
+        "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+        "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+        "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-3",
+        "productId": "lilygo-t-encoder-pro",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_10_5_12.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_10_5_12.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_10_5_12.stl",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "repositoryPath": "structure/H670-STL/0-00_10_5_12.stl",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "revisionType": "pinned-git-revision",
+        "gitBlobSha": "3db1ab67de200d7396440c0e74c04c93a331432f",
+        "fetchedAt": "2026-11-22T08:38:02Z",
+        "bytes": 98084,
+        "sha256": "005a57523f9034f688dc93019cc8d927c3954716b2cab3601f0a750d17648b30",
+        "rawSha256": "005a57523f9034f688dc93019cc8d927c3954716b2cab3601f0a750d17648b30",
+        "file": "manufacturer-0-00_10_5_12.stl.gz",
+        "archiveName": "manufacturer-0-00_10_5_12.stl.gz",
+        "storedSha256": "fb802a84154fd3566a0efc55fb66e709173dc1ebf77a17345ab431215cda2973",
+        "archiveSha256": "fb802a84154fd3566a0efc55fb66e709173dc1ebf77a17345ab431215cda2973",
+        "compression": "gzip",
+        "sourceFormat": "STL",
+        "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+        "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+        "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-4",
+        "productId": "lilygo-t-encoder-pro",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_15.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_15.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_15.stl",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "repositoryPath": "structure/H670-STL/0-00_15.stl",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "revisionType": "pinned-git-revision",
+        "gitBlobSha": "66a6cebc66423f899b6b7d18bf5427c25abb4d80",
+        "fetchedAt": "2026-11-22T08:38:02Z",
+        "bytes": 24884,
+        "sha256": "bc797b654bb92dd82e8816ac630c3de861fb2c71fa89c78b3292b8770386d609",
+        "rawSha256": "bc797b654bb92dd82e8816ac630c3de861fb2c71fa89c78b3292b8770386d609",
+        "file": "manufacturer-0-00_15.stl.gz",
+        "archiveName": "manufacturer-0-00_15.stl.gz",
+        "storedSha256": "22381ace0a859864ce1bcbb9c58219a6f0dfc789bcc5efce6fb53d5b41190412",
+        "archiveSha256": "22381ace0a859864ce1bcbb9c58219a6f0dfc789bcc5efce6fb53d5b41190412",
+        "compression": "gzip",
+        "sourceFormat": "STL",
+        "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+        "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+        "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-5",
+        "productId": "lilygo-t-encoder-pro",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_22_30_1.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_22_30_1.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_22_30_1.stl",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "repositoryPath": "structure/H670-STL/0-00_22_30_1.stl",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "revisionType": "pinned-git-revision",
+        "gitBlobSha": "c7bb122161f3d31dcb1755c8e1d95f996e673094",
+        "fetchedAt": "2026-11-22T08:38:02Z",
+        "bytes": 112284,
+        "sha256": "b9d5f8785d4501bd39e8a2721dd92fea8c1d352ba3a4c2d7fa9348125509d97c",
+        "rawSha256": "b9d5f8785d4501bd39e8a2721dd92fea8c1d352ba3a4c2d7fa9348125509d97c",
+        "file": "manufacturer-0-00_22_30_1.stl.gz",
+        "archiveName": "manufacturer-0-00_22_30_1.stl.gz",
+        "storedSha256": "d179bff31644447f5becb0d45f6183d792ee50a419c740fb7055f6581ab32c69",
+        "archiveSha256": "d179bff31644447f5becb0d45f6183d792ee50a419c740fb7055f6581ab32c69",
+        "compression": "gzip",
+        "sourceFormat": "STL",
+        "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+        "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+        "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-6",
+        "productId": "lilygo-t-encoder-pro",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_26_4_23_7_30.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_26_4_23_7_30.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_26_4_23_7_30.stl",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "repositoryPath": "structure/H670-STL/0-00_26_4_23_7_30.stl",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "revisionType": "pinned-git-revision",
+        "gitBlobSha": "faed4c87e6ad7c0c819c5c3db1be8d454edc24ed",
+        "fetchedAt": "2026-11-22T08:38:02Z",
+        "bytes": 53284,
+        "sha256": "6f71008aa9aa19af030bb3cbac8b7fe0e196607f1415b57d09405bcc8f832a9c",
+        "rawSha256": "6f71008aa9aa19af030bb3cbac8b7fe0e196607f1415b57d09405bcc8f832a9c",
+        "file": "manufacturer-0-00_26_4_23_7_30.stl.gz",
+        "archiveName": "manufacturer-0-00_26_4_23_7_30.stl.gz",
+        "storedSha256": "fb74a5037c4be6f7ad73d03ec6dc844131f43e1d68acd792036c1d7a7d4bf9d8",
+        "archiveSha256": "fb74a5037c4be6f7ad73d03ec6dc844131f43e1d68acd792036c1d7a7d4bf9d8",
+        "compression": "gzip",
+        "sourceFormat": "STL",
+        "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+        "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+        "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-7",
+        "productId": "lilygo-t-encoder-pro",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_27_3_20_15_33.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_27_3_20_15_33.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_27_3_20_15_33.stl",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "repositoryPath": "structure/H670-STL/0-00_27_3_20_15_33.stl",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "revisionType": "pinned-git-revision",
+        "gitBlobSha": "7bcb98d59c57ca5131a01db8ad3694abe676e21a",
+        "fetchedAt": "2026-11-22T08:38:08Z",
+        "bytes": 66884,
+        "sha256": "0b803b3eb7f2dc8c4e17ebb249ccd7fff817470c37a02d8aeb2c2fac4bc76ef7",
+        "rawSha256": "0b803b3eb7f2dc8c4e17ebb249ccd7fff817470c37a02d8aeb2c2fac4bc76ef7",
+        "file": "manufacturer-0-00_27_3_20_15_33.stl.gz",
+        "archiveName": "manufacturer-0-00_27_3_20_15_33.stl.gz",
+        "storedSha256": "6aa4e9dc840f55b4d6460f87511bc6ecdf1194b3c570891de566c5671afc3f20",
+        "archiveSha256": "6aa4e9dc840f55b4d6460f87511bc6ecdf1194b3c570891de566c5671afc3f20",
+        "compression": "gzip",
+        "sourceFormat": "STL",
+        "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+        "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+        "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-8",
+        "productId": "lilygo-t-encoder-pro",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro structure/H670-STL/0-00_44_4_15_33_10.stl",
+        "kind": "manufacturer-cad",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_44_4_15_33_10.stl",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/structure/H670-STL/0-00_44_4_15_33_10.stl",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "repositoryPath": "structure/H670-STL/0-00_44_4_15_33_10.stl",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "revisionType": "pinned-git-revision",
+        "gitBlobSha": "a4ed5c419138d1fc6f49df614ff46a0db3d2612b",
+        "fetchedAt": "2026-11-22T08:38:08Z",
+        "bytes": 70884,
+        "sha256": "184d7751a3dd1470dc022a90efe47f1f198515341c2babf031ee85d00add7302",
+        "rawSha256": "184d7751a3dd1470dc022a90efe47f1f198515341c2babf031ee85d00add7302",
+        "file": "manufacturer-0-00_44_4_15_33_10.stl.gz",
+        "archiveName": "manufacturer-0-00_44_4_15_33_10.stl.gz",
+        "storedSha256": "a9d96e830792161bee5945812720611f362e40fd0ffd99a6d5f00e953ec72366",
+        "archiveSha256": "a9d96e830792161bee5945812720611f362e40fd0ffd99a6d5f00e953ec72366",
+        "compression": "gzip",
+        "sourceFormat": "STL",
+        "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+        "scope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+        "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+      },
+      {
+        "id": "lilygo-t-encoder-pro-reviewed-cad-license",
+        "title": "Manufacturer repository LICENSE",
+        "kind": "license",
+        "status": "fetched",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/LICENSE",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/LICENSE",
+        "fetchedAt": "2026-11-22T08:38:08Z",
+        "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+        "bytes": 35149,
+        "file": "manufacturer-LICENSE.txt",
+        "archiveName": "manufacturer-LICENSE.txt",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7"
+      },
+      {
+        "id": "s3add-encoder-pro-readme",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "path": "README.md",
+        "gitBlobSha": "a302e8e05b3cc5a7f984c412bcbe2d4ad016f2e6",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/README.md",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro/README.md",
+        "kind": "official-documentation",
+        "fetchedAt": "2026-11-22T08:30:58Z",
+        "sha256": "463349a7d413c28cb4a34461be4f1492dbbd3212c107e2bb39b3c7ed48dcddb9",
+        "bytes": 11846,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-encoder-pro-readme.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-encoder-pro-pins",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "path": "libraries/Mylibrary/pin_config.h",
+        "gitBlobSha": "6d7a1826ad44629fb99142a7383a6b6f60184cd8",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Mylibrary/pin_config.h",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Mylibrary/pin_config.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T08:30:57Z",
+        "sha256": "dd80948e7d5babce382ce21fca311677c3d65aad0771175cd46c5208ddef9cad",
+        "bytes": 908,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-encoder-pro-pins.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-encoder-pro-factory",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "path": "examples/Lvgl_CIT/Lvgl_CIT.ino",
+        "gitBlobSha": "7dc514d10d92123c37f4651e30ef03c68bbcaa37",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/examples/Lvgl_CIT/Lvgl_CIT.ino",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro/examples/Lvgl_CIT/Lvgl_CIT.ino",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T08:33:21Z",
+        "sha256": "585cf4bc96add41f36f7401460d84eecc80f0401ce454c755ee883528ad76588",
+        "bytes": 10970,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-encoder-pro-factory.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-encoder-pro-display",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "path": "libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+        "gitBlobSha": "8a3aab185d6346aa2da301d9ae42958fd05aed3c",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.cpp",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T08:33:21Z",
+        "sha256": "936b1dd6f87e25e4cc7dfdd58aab66cef3f09d540ab08a0294911d2d946ec3cf",
+        "bytes": 4449,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-encoder-pro-display.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-encoder-pro-display-h",
+        "repository": "Xinyuan-LilyGO/T-Encoder-Pro",
+        "revision": "eb878b19ce493c9cc4da7769daa384b7227d88d7",
+        "path": "libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+        "gitBlobSha": "899ce419913959e411b087d846c1e2e7b0df3bfe",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Encoder-Pro/eb878b19ce493c9cc4da7769daa384b7227d88d7/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-Encoder-Pro/libraries/Arduino_GFX-1.5.0/src/display/Arduino_CO5300.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T08:33:26Z",
+        "sha256": "26462d61cf254f3b7d3614841f4783f9775e8736afbe7a961b5b3dd05e1b7430",
+        "bytes": 7214,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-encoder-pro-display-h.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-circle-touch",
+        "repository": "Xinyuan-LilyGO/T-Circle-S3",
+        "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+        "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+        "gitBlobSha": "e55e7b1c02509a18a76b1f389686279e419e5084",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T08:33:13Z",
+        "sha256": "2c10a6f68c2669a69cef48a308f3a9e89389b068c9dbe603883517aa2190825a",
+        "bytes": 6889,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-circle-touch.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "s3add-circle-touch-h",
+        "repository": "Xinyuan-LilyGO/T-Circle-S3",
+        "revision": "86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a",
+        "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+        "gitBlobSha": "30a75c9d4edb4871d7f63775d0ea8f012137d87a",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Circle-S3/86bdee8bd9b2a6ce0f4f4f8757ce82d6a3f43a0a/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-Circle-S3/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T08:33:13Z",
+        "sha256": "c2d76aac84aa1650e85b60ab518b6f8cd82ec6477df029eefda784fbf72dd58c",
+        "bytes": 3752,
+        "mediaType": "text/plain; charset=utf-8",
+        "archiveName": "s3add-circle-touch-h.source",
+        "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+        "repository": "Xinyuan-LilyGO/T-Display-Bar",
+        "path": "lib/SensorLib/src/touch/TouchClassCST816.cpp",
+        "revision": "d3f4b8974be1dfb8bc35262d105e0453a697b459",
+        "gitBlobSha": "855c7b1051b1ed2a26f9dd0e040f26ef3989635e",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Display-Bar/blob/d3f4b8974be1dfb8bc35262d105e0453a697b459/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+        "checkedAt": "2026-11-22",
+        "type": "manufacturer-source",
+        "status": "fetched",
+        "title": "Xinyuan-LilyGO/T-Display-Bar/lib/SensorLib/src/touch/TouchClassCST816.cpp",
+        "kind": "official-source",
+        "fetchedAt": "2026-11-22T06:56:00Z",
+        "archiveName": "bar-lib-sensorlib-src-touch-touchclasscst816-cpp-TouchClassCST816.cpp",
+        "sha256": "86f48a816759842c15c2816a5e7a69fb24d7522aafb6aa074a4db7e30cd235f4",
+        "bytes": 8355,
+        "mediaType": "text/plain; charset=utf-8"
       }
     ],
-    "license": "Generated debug geometry follows repository code license. Source documents and manufacturer photographs retain their original rights.",
+    "license": "Retained manufacturer CAD and photographs retain their original rights; repository LICENSE is archived when present. Generated debug controls follow this repository license; source CAD is not relicensed.",
     "sourcePolicy": "Official CAD candidates are recorded independently in the model source audit; an uncalibrated model is not silently substituted for another SKU."
   },
   "limitations": [
-    "依据官方多角度图片建立外轮廓粗模；这是照片投影的凸包，不是摄影测量或制造用 CAD。",
-    "侧壁厚度和绝对尺度尚未标定；画面以最长边 60 mm 归一化，不能当作实物尺寸。",
-    "未猜测内部元件、丝印、插针线序或连接器精确结构；背面 UNKNOWN 占位可替换。",
-    "有屏幕时，真实固件画面放在独立 LIVE DEBUG 面板；实体屏幕窗口尚未逐款校准。",
-    "原始照片仅作为来源，不将照片里的演示画面贴到实时屏幕。"
+    "采用固定版本官方 CAD；仅做刚体旋转和平移，不拉伸源几何。",
+    "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+    "STL 不携带单位；按 mm 解读仅为预览约定，未完成实物测量或装配公差验证。",
+    "中性色材质用于调试，不表示已核实的实际材质和颜色。",
+    "实体屏幕窗口和按键位置未逐一校准；实时屏幕和语义按键由单独标记的调试面板提供。",
+    "官方照片仅作外观来源，不把照片中的演示内容作为实时固件画面。",
+    "标记 DEBUG INPUT 的按键是独立调试控件，不表示已核实的实物按键位置。"
   ],
   "debugPreview": {
-    "mode": "photo-derived",
+    "mode": "manufacturer-cad",
     "isPhysicalReplica": false,
     "physicalDimensionsVerified": false,
-    "displayPlacement": "separate-debug-panel",
-    "reason": "Multi-view exterior source references exist; projection recovered, physical depth/scale/window placement uncalibrated."
+    "reason": "Official source geometry is retained; precise selected components and missing geometry are described in representationScope.",
+    "displayPlacement": "separate-native-orientation-debug-panel",
+    "liveFramebuffer": true,
+    "physicalDisplay": true,
+    "controlPlacement": "Separate labeled debugging controls where physical locations are uncalibrated; official physical matches are preserved."
   },
   "reviewViews": {
     "front": {
@@ -335,7 +677,7 @@
         0,
         200
       ],
-      "span": 140.4
+      "span": 136.0296432495117
     },
     "back": {
       "position": [
@@ -343,7 +685,7 @@
         0,
         -200
       ],
-      "span": 140.4
+      "span": 136.0296432495117
     },
     "side": {
       "position": [
@@ -351,159 +693,371 @@
         0,
         0
       ],
-      "span": 140.4
+      "span": 136.0296432495117
     }
   },
-  "photoDerivation": {
-    "method": "largest connected studio-photo foreground, convex projected envelope; not photogrammetry",
-    "chosenSourceId": "lilygo-t-encoder-pro-official-photo-1",
-    "chosenView": 1,
-    "analysis": {
-      "imageSize": [
-        1000,
-        1000
+  "cad": {
+    "file": "manufacturer-0-00_38_1.stl.gz",
+    "sha256": "7d9ec034f98a95de218aa1cd9b2bf7d53c60cb9650b96a7770e3438283c2d94f",
+    "archiveSha256": "77fdded874c3d0b26e51a3db6cd668958d7ebd58ca4967564f184007cc9308eb",
+    "format": "stl",
+    "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+    "matrixRows": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        -0.0
       ],
-      "analysisScale": 0.8,
-      "cropXYXY": null,
-      "background": "white",
-      "hull": [
+      [
+        0.0,
+        0.0,
+        1.0,
+        -0.0
+      ],
+      [
+        0.0,
+        -1.0,
+        0.0,
+        -10.399999856948853
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "groups": [
+      {
+        "name": "cad-source-1",
+        "role": "component",
+        "components": [
+          0
+        ],
+        "color": "#283f4c"
+      }
+    ]
+  },
+  "additionalCad": [
+    {
+      "file": "manufacturer-0-001_10.stl.gz",
+      "sha256": "054fdad3c4f85e5b8ed4c7fbf02187a149db9bf159382fd0d351f96a2205c515",
+      "archiveSha256": "02ac2195cf93c7ff2d0d35d8bee9477978083c1b3bf27ee0e158a90d7a38a3e0",
+      "format": "stl",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "matrixRows": [
         [
-          271.0,
-          186.0
+          1.0,
+          0.0,
+          0.0,
+          -0.0
         ],
         [
-          328.0,
-          164.0
+          0.0,
+          0.0,
+          1.0,
+          -0.0
         ],
         [
-          378.0,
-          158.0
+          0.0,
+          -1.0,
+          0.0,
+          -10.399999856948853
         ],
         [
-          415.0,
-          161.0
-        ],
-        [
-          465.0,
-          178.0
-        ],
-        [
-          549.0,
-          235.0
-        ],
-        [
-          642.0,
-          386.0
-        ],
-        [
-          650.0,
-          438.0
-        ],
-        [
-          641.0,
-          468.0
-        ],
-        [
-          573.0,
-          586.0
-        ],
-        [
-          530.0,
-          624.0
-        ],
-        [
-          502.0,
-          634.0
-        ],
-        [
-          353.0,
-          641.0
-        ],
-        [
-          333.0,
-          635.0
-        ],
-        [
-          277.0,
-          598.0
-        ],
-        [
-          173.0,
-          486.0
-        ],
-        [
-          149.0,
-          410.0
-        ],
-        [
-          149.0,
-          371.0
-        ],
-        [
-          161.0,
-          316.0
-        ],
-        [
-          198.0,
-          248.0
-        ],
-        [
-          234.0,
-          211.0
+          0.0,
+          0.0,
+          0.0,
+          1.0
         ]
       ],
-      "bounds": [
-        149,
-        158,
-        502,
-        484
-      ],
-      "occupancy": 0.7487055908597017,
-      "color": [
-        48,
-        49,
-        49
-      ],
-      "screen": null,
-      "score": 0.7487055908597017
+      "groups": [
+        {
+          "name": "cad-source-2",
+          "role": "component",
+          "components": [
+            0
+          ],
+          "color": "#405969"
+        }
+      ]
     },
-    "manualViewSelection": null,
-    "modelMillimetresPerAnalysisPixel": 0.11952191235059761,
-    "scaleBasis": "debug layout only",
-    "thicknessBasis": "debug spacing only; not recovered from side views",
-    "algorithm": "tools/derive-lilygo-photo-envelopes.py",
-    "independentViews": [
-      {
-        "view": 0,
-        "bounds": [
-          76,
-          251,
-          307,
-          298
+    {
+      "file": "manufacturer-0-00_10_5_12.stl.gz",
+      "sha256": "005a57523f9034f688dc93019cc8d927c3954716b2cab3601f0a750d17648b30",
+      "archiveSha256": "fb802a84154fd3566a0efc55fb66e709173dc1ebf77a17345ab431215cda2973",
+      "format": "stl",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "matrixRows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.0
         ],
-        "occupancy": 0.7708009968738386
-      },
-      {
-        "view": 1,
-        "bounds": [
-          149,
-          158,
-          502,
-          484
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.0
         ],
-        "occupancy": 0.7487055908597017
-      },
-      {
-        "view": 2,
-        "bounds": [
-          155,
-          194,
-          461,
-          461
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -10.399999856948853
         ],
-        "occupancy": 0.8453588115997949
-      }
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "groups": [
+        {
+          "name": "cad-source-3",
+          "role": "component",
+          "components": [
+            0
+          ],
+          "color": "#a1a7a4"
+        }
+      ]
+    },
+    {
+      "file": "manufacturer-0-00_15.stl.gz",
+      "sha256": "bc797b654bb92dd82e8816ac630c3de861fb2c71fa89c78b3292b8770386d609",
+      "archiveSha256": "22381ace0a859864ce1bcbb9c58219a6f0dfc789bcc5efce6fb53d5b41190412",
+      "format": "stl",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "matrixRows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -10.399999856948853
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "groups": [
+        {
+          "name": "cad-source-4",
+          "role": "component",
+          "components": [
+            0
+          ],
+          "color": "#d6b564"
+        }
+      ]
+    },
+    {
+      "file": "manufacturer-0-00_22_30_1.stl.gz",
+      "sha256": "b9d5f8785d4501bd39e8a2721dd92fea8c1d352ba3a4c2d7fa9348125509d97c",
+      "archiveSha256": "d179bff31644447f5becb0d45f6183d792ee50a419c740fb7055f6581ab32c69",
+      "format": "stl",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "matrixRows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -10.399999856948853
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "groups": [
+        {
+          "name": "cad-source-5",
+          "role": "component",
+          "components": [
+            0
+          ],
+          "color": "#283f4c"
+        }
+      ]
+    },
+    {
+      "file": "manufacturer-0-00_26_4_23_7_30.stl.gz",
+      "sha256": "6f71008aa9aa19af030bb3cbac8b7fe0e196607f1415b57d09405bcc8f832a9c",
+      "archiveSha256": "fb74a5037c4be6f7ad73d03ec6dc844131f43e1d68acd792036c1d7a7d4bf9d8",
+      "format": "stl",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "matrixRows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -10.399999856948853
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "groups": [
+        {
+          "name": "cad-source-6",
+          "role": "component",
+          "components": [
+            0
+          ],
+          "color": "#405969"
+        }
+      ]
+    },
+    {
+      "file": "manufacturer-0-00_27_3_20_15_33.stl.gz",
+      "sha256": "0b803b3eb7f2dc8c4e17ebb249ccd7fff817470c37a02d8aeb2c2fac4bc76ef7",
+      "archiveSha256": "6aa4e9dc840f55b4d6460f87511bc6ecdf1194b3c570891de566c5671afc3f20",
+      "format": "stl",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "matrixRows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -10.399999856948853
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "groups": [
+        {
+          "name": "cad-source-7",
+          "role": "component",
+          "components": [
+            0
+          ],
+          "color": "#a1a7a4"
+        }
+      ]
+    },
+    {
+      "file": "manufacturer-0-00_44_4_15_33_10.stl.gz",
+      "sha256": "184d7751a3dd1470dc022a90efe47f1f198515341c2babf031ee85d00add7302",
+      "archiveSha256": "a9d96e830792161bee5945812720611f362e40fd0ffd99a6d5f00e953ec72366",
+      "format": "stl",
+      "sourceUnit": "unencoded STL units; interpreted as millimetres, not physically calibrated",
+      "matrixRows": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          -0.0
+        ],
+        [
+          0.0,
+          -1.0,
+          0.0,
+          -10.399999856948853
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "groups": [
+        {
+          "name": "cad-source-8",
+          "role": "component",
+          "components": [
+            0
+          ],
+          "color": "#d6b564"
+        }
+      ]
+    }
+  ],
+  "binaryCompression": "gzip",
+  "representationScope": "Official H670 T-Encoder-Pro enclosure components, retaining source positions. The optional stand is excluded. Display glass, PCB and assembled mechanical tolerances are not inferred.",
+  "dimensionChecks": [],
+  "displayNativeOrientation": {
+    "width": 390,
+    "height": 390,
+    "sourceIds": [
+      "s3add-encoder-pro-readme",
+      "s3add-encoder-pro-pins",
+      "s3add-encoder-pro-factory",
+      "s3add-encoder-pro-display",
+      "s3add-encoder-pro-display-h",
+      "s3add-circle-touch",
+      "s3add-circle-touch-h",
+      "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
     ],
-    "multiViewStatus": "Additional manufacturer views retained for comparison; perspective, depth and hidden topology remain uncalibrated."
+    "implemented": true
   }
 }

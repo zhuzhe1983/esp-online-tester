@@ -8,11 +8,11 @@ async function loadWith(documents) {
   try { return await loadCatalog(); } finally { globalThis.fetch = originalFetch; }
 }
 const document = (bytes, id='catalog-product') => JSON.stringify({schemaVersion:'1',items:[{id,name:'Product',summary:'x'.repeat(bytes)}]});
-const expanded = await loadWith({'products.json':document(600 * 1024)});
-assert.equal(expanded.products[0].id,'catalog-product','Expanded product inventories load beyond the former 512 KiB limit');
+const expanded = await loadWith({'products.json':document(1200 * 1024)});
+assert.equal(expanded.products[0].id,'catalog-product','Source-backed product inventories load beyond the former 1 MiB limit');
 const releases = await loadWith({'firmwares.json':document(600 * 1024,'catalog-firmware')});
 assert.equal(releases.firmwares[0].id,'catalog-firmware','Release metadata also grows beyond 512 KiB');
-for(const [name,limit] of [['products',1024*1024],['accessories',512*1024],['firmwares',2*1024*1024]]){
+for(const [name,limit] of [['products',2*1024*1024],['accessories',512*1024],['firmwares',2*1024*1024]]){
   const padded=JSON.stringify(empty).padEnd(limit,' ');
   assert.deepEqual(await loadWith({[`${name}.json`]:padded}),{products:[],accessories:[],firmwares:[]});
   await assert.rejects(()=>loadWith({[`${name}.json`]:padded+' '}),{code:'INPUT_TOO_LARGE'});

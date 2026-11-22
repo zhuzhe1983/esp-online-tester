@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-beam-1w",
   "title": "LILYGO T-Beam 1W",
-  "summary": "Spark 将此商品归入T-Beam 系列，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "选定 T-Beam 1W V1.0 SX1262：SH1106 OLED、BOOT/GPIO17 用户键、GPIO18 指示灯及 SPI TF 卡已接入。卡时钟 GPIO13 与 MISO GPIO12 按本板映射；不套用 BPF 引脚。官方当前驱动没有 HAS_PMU，未凭 wiki 概述虚构 AXP2101；射频功放、GNSS、风扇和模拟电路未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Beam 1W V1.0, T_BEAM_1W_SX1262 manufacturer target",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Beam 1W",
@@ -52,6 +52,124 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-06-15",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/t-beam-series/t-beam-1w/",
+        "sourceId": "official-wiki-t-beam-1w",
+        "confidence": "medium",
+        "hardwareRevision": "T-Beam-1W V1.0",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki-t-beam-1w"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 64,
+          "controller": "SH1106",
+          "type": "OLED",
+          "interface": "i2c",
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+          "controllerRamWidth": 132,
+          "physicalColumnOffset": 2,
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          },
+          {
+            "id": "user",
+            "name": "用户按键",
+            "type": "button",
+            "pin": 17,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "display": {
+            "sda": 8,
+            "scl": 9,
+            "address": 60,
+            "reset": null,
+            "resetScope": "No host-controlled reset pin claimed by selected profile"
+          },
+          "leds": [
+            {
+              "pin": 18,
+              "activeLow": false,
+              "implemented": true,
+              "color": null,
+              "simulationColor": "white logical on/off indicator; physical LED color not established"
+            }
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-beam-1w",
+        "lora-1w-hardware",
+        "lora-utilities",
+        "lora-boards",
+        "lora-sh1106-wire",
+        "sh1106-datasheet",
+        "lora-factory-readme"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [
+          {
+            "sourceIds": [
+              "official-wiki-t-beam-1w",
+              "lora-1w-hardware",
+              "lora-utilities"
+            ],
+            "issue": "Wiki overview claims AXP2101 and PMU key; current exact T_BEAM_1W_SX1262 header lacks HAS_PMU and hardware document lists GPIO17 user button.",
+            "resolution": "Use exact V1.0 manufacturer target and do not instantiate AXP2101 from the wiki overview."
+          }
+        ],
+        "memoryEvidence": null
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-beam-1w",
+        "lora-1w-hardware",
+        "lora-utilities",
+        "lora-boards",
+        "lora-sh1106-wire",
+        "sh1106-datasheet",
+        "lora-factory-readme"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +198,209 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-beam-1w-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_1.jpg?v=1763106788",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_1.jpg?v=1763106788",
+      "fetchedAt": "2026-11-22T06:57:30Z",
+      "bytes": 82980,
+      "sha256": "1a36bdf1b5e89bb24fc5f894792fea61f8e886a32b9d8b44c44cbc892d67b876",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t beam 1w official photo 0",
+      "archiveName": "lilygo-t-beam-1w-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-beam-1w-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_9.jpg?v=1763106788",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_9.jpg?v=1763106788",
+      "fetchedAt": "2026-11-22T06:57:30Z",
+      "bytes": 64355,
+      "sha256": "30e1b172d0730c483692c6cf0a1aabc6cae08bad89db3425046341cded3785d7",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t beam 1w official photo 1",
+      "archiveName": "lilygo-t-beam-1w-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-beam-1w-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_5.jpg?v=1763106788",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_5.jpg?v=1763106788",
+      "fetchedAt": "2026-11-22T06:57:30Z",
+      "bytes": 48132,
+      "sha256": "a868ebad2b21a4ef73ac2ea96b6dba8c94b3ab80477efe46c788d525698eb573",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t beam 1w official photo 2",
+      "archiveName": "lilygo-t-beam-1w-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-beam-1w",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-beam-series/t-beam-1w/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-beam-series/t-beam-1w/index.md",
+      "fetchedAt": "2026-11-22T06:42:40Z",
+      "mediaType": "text/plain",
+      "bytes": 8148,
+      "sha256": "6bec3d007364b5625bd19a264af3cc79ec062ad7056bf3c99644518ed4d24984",
+      "gitBlobSha": "8d655cf349791d11c079eedfa39bf8b21d5b629e",
+      "path": "en/products/t-beam-series/t-beam-1w/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t-beam-series/t-beam-1w/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t-beam-series__t-beam-1w__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lora-1w-hardware",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "docs/en/t_beam_1w_sx1262/t_beam_1w_sx1262.md",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "147c89f19a22f42061a1ff83676c23f56729b5d8",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t_beam_1w_sx1262/t_beam_1w_sx1262.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/docs/en/t_beam_1w_sx1262/t_beam_1w_sx1262.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:21:18Z",
+      "sha256": "e185408cb1eca347ace70080270d786c261f8e13b4cdfb3d59ffa38a6fe4abd8",
+      "bytes": 11659,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-1w-hardware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lora-utilities",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/utilities.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "bf37221526ccc6143995d1e495d65cdec0dc407c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/examples/Factory/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "1f234017d45099f90e3a5cb7fb6ed16b78dfe11fa57f2b82a58f9d1b9411f733",
+      "bytes": 28783,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-utilities.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    },
+    {
+      "id": "lora-boards",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/LoRaBoards.cpp",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "5cdae340f582fcfb2fe1379f4082fa13c73d9367",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/LoRaBoards.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/examples/Factory/LoRaBoards.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:21:21Z",
+      "sha256": "b5ab071a1b3946f435f8d324f317cc550e7ba48a398b047ddf099a341aac5174",
+      "bytes": 42023,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-boards.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lora-sh1106-wire",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "b088807656de56befa7f921b2a0d331be3ad1413",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/lib/ESP8266_SSD1306/src/SH1106Wire.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "f8873d338eac0948c6faaf34215516cbe514ddaa3277a19d679fb09e176b7374",
+      "bytes": 4901,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-sh1106-wire.raw",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch.",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/lora-sh1106-wire.raw"
+    },
+    {
+      "id": "sh1106-datasheet",
+      "status": "linked",
+      "kind": "manufacturer-datasheet",
+      "title": "Sino Wealth SH1106 v2.3, June 2013",
+      "url": "https://resource.heltec.cn/download/oled/SH1106_V2.3.pdf",
+      "inspection": "Manufacturer PDF text inspected through public web retrieval; raw binary not retained or hashed. I2C Interface, Display RAM, Reset Circuit and Command Descriptions."
+    },
+    {
+      "id": "lora-factory-readme",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "firmware/README.MD",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "bfe94510e41e3fc265ba56a38725f0e8a1de547e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/README.MD",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/firmware/README.MD",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:21:15Z",
+      "sha256": "adee8f3fc2b93a2bd02b353d966ce6aeeb839784f109364d81bab922c649aad7",
+      "bytes": 8197,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-factory-readme.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-beam-1w-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_1.jpg?v=1763106788",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-beam-1w/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-beam-1w-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_9.jpg?v=1763106788",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-beam-1w/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-beam-1w-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-BEAM-1W_5.jpg?v=1763106788",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-beam-1w/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +413,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +420,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +430,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +440,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +450,255 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "reference-only",
+    "sourceIds": [
+      "lora-factory-readme"
+    ],
+    "candidates": [
+      {
+        "path": "firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+        "status": "linked",
+        "gitBlobSha": "25fd919265b2de5e3f25f17e2c7dd912c5942be5",
+        "bytesFromTree": 958928,
+        "binaryFetched": false,
+        "layoutVerified": false,
+        "sha256": null
+      }
+    ],
+    "simulationVerified": false,
+    "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-beam-1w/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-beam-1w",
+      "lilygo-t-beam-1w-official-photo-0",
+      "lilygo-t-beam-1w-official-photo-1",
+      "lilygo-t-beam-1w-official-photo-2",
+      "lora-1w-hardware",
+      "lora-utilities",
+      "lora-boards",
+      "lora-sh1106-wire",
+      "sh1106-datasheet",
+      "lora-factory-readme"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-beam-1w",
+        "lora-1w-hardware",
+        "lora-utilities",
+        "lora-boards",
+        "lora-sh1106-wire",
+        "sh1106-datasheet",
+        "lora-factory-readme"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-beam-1w",
+    "status": "diagnostic",
+    "scope": "选定 T-Beam 1W V1.0 SX1262：SH1106 OLED、BOOT/GPIO17 用户键、GPIO18 指示灯及 SPI TF 卡已接入。卡时钟 GPIO13 与 MISO GPIO12 按本板映射；不套用 BPF 引脚。官方当前驱动没有 HAS_PMU，未凭 wiki 概述虚构 AXP2101；射频功放、GNSS、风扇和模拟电路未实现。",
+    "unsupported": [
+      "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+      "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+      "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+      "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-beam-1w",
+    "boardId": "lilygo-t-beam-1w",
+    "name": "LILYGO T-Beam 1W",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-Beam 1W V1.0, T_BEAM_1W_SX1262 manufacturer target",
+    "display": {
+      "width": 128,
+      "height": 64,
+      "controller": "SH1106",
+      "type": "OLED",
+      "interface": "i2c",
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp eight pages, one byte is eight vertical pixels",
+      "controllerRamWidth": 132,
+      "physicalColumnOffset": 2,
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "pins": {
+      "boot": 0,
+      "display": {
+        "sda": 8,
+        "scl": 9,
+        "address": 60,
+        "reset": null,
+        "resetScope": "No host-controlled reset pin claimed by selected profile"
+      },
+      "leds": [
+        {
+          "pin": 18,
+          "activeLow": false,
+          "implemented": true,
+          "color": null,
+          "simulationColor": "white logical on/off indicator; physical LED color not established"
+        }
+      ]
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      },
+      {
+        "id": "user",
+        "name": "用户按键",
+        "type": "button",
+        "pin": 17,
+        "activeLow": true
+      }
+    ],
+    "sdCard": {
+      "slot": true,
+      "transport": "spi",
+      "implemented": true,
+      "transportSupported": true,
+      "pins": {
+        "sclk": 13,
+        "mosi": 11,
+        "miso": 12,
+        "cs": 10
+      },
+      "conflictingChipSelectPins": [
+        15
+      ],
+      "defaultImageMiB": 64,
+      "defaultFilesystem": "FAT32",
+      "defaultImagePreparedBy": "platform TF-card service; board attaches supplied image",
+      "supply": "On-board supply; no invented GPIO enable",
+      "sourceIds": [
+        "lora-1w-hardware",
+        "lora-utilities",
+        "lora-boards"
+      ],
+      "verification": "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+    },
+    "radio": {
+      "controller": "SX1262",
+      "implemented": false,
+      "physicalRf": false
+    },
+    "runtimeLevel": "partial",
+    "scope": "选定 T-Beam 1W V1.0 SX1262：SH1106 OLED、BOOT/GPIO17 用户键、GPIO18 指示灯及 SPI TF 卡已接入。卡时钟 GPIO13 与 MISO GPIO12 按本板映射；不套用 BPF 引脚。官方当前驱动没有 HAS_PMU，未凭 wiki 概述虚构 AXP2101；射频功放、GNSS、风扇和模拟电路未实现。",
+    "scopeEn": "Exact selected T-Beam 1W V1.0, T_BEAM_1W_SX1262 manufacturer target: OLED display RAM, physical buttons, documented LED and SPI card paths only; no factory or Meshtastic boot claim.",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-beam-1w",
+      "lora-1w-hardware",
+      "lora-utilities",
+      "lora-boards",
+      "lora-sh1106-wire",
+      "sh1106-datasheet",
+      "lora-factory-readme"
+    ],
+    "chronology": {
+      "date": "2024-06-15",
+      "basis": "hardware-release",
+      "sourceUrl": "https://wiki.lilygo.cc/products/t-beam-series/t-beam-1w/",
+      "sourceId": "official-wiki-t-beam-1w",
+      "confidence": "medium",
+      "hardwareRevision": "T-Beam-1W V1.0",
+      "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+    },
+    "priorityRank": 35,
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "oled_boards_execute_real_xtensa_i2c_and_gpio_with_wrong_route_and_power_rejection",
+        "oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage"
+      ]
+    },
+    "unsupported": [
+      "No official binary has been executed for this profile. Native SRAM Xtensa probes verify the stated display/GPIO contracts only.",
+      "OLED scrolling, analog brightness/charge pump/oscillator timing and controller readback are not implemented. Display content comes only from accepted RAM writes.",
+      "Radio/controller variants, RF propagation, GNSS, sensors/RTC, ADC, battery/charging and USB are unmodeled.",
+      "SPI SD accepts the exact documented pins and exclusive shared chip selection; bit-banged SD and SDMMC host mode are not implemented."
+    ],
+    "variantEvidence": {
+      "selectedHardware": "T-Beam 1W V1.0, T_BEAM_1W_SX1262 manufacturer target",
+      "automaticRevisionDetection": false,
+      "sourceIds": [
+        "lora-1w-hardware",
+        "lora-utilities",
+        "lora-boards"
+      ],
+      "basis": "Exact manufacturer product-linked hardware document and current board-target header; unsupported siblings are not substituted."
+    },
+    "sourceConflicts": [
+      {
+        "sourceIds": [
+          "official-wiki-t-beam-1w",
+          "lora-1w-hardware",
+          "lora-utilities"
+        ],
+        "issue": "Wiki overview claims AXP2101 and PMU key; current exact T_BEAM_1W_SX1262 header lacks HAS_PMU and hardware document lists GPIO17 user button.",
+        "resolution": "Use exact V1.0 manufacturer target and do not instantiate AXP2101 from the wiki overview."
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "lora-factory-readme"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+          "status": "linked",
+          "gitBlobSha": "25fd919265b2de5e3f25f17e2c7dd912c5942be5",
+          "bytesFromTree": 958928,
+          "binaryFetched": false,
+          "layoutVerified": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    }
+  }
 }

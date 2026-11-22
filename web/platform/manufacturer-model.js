@@ -8,6 +8,7 @@ import {addRgbLedGlow} from './rgb-led-view.js';
 import {createServoJoints} from './servo-view.js';
 import {createMotorRotors} from './motor-view.js';
 import {createModelInspection} from './model-inspection.js';
+import {readModelBinary} from './model-binary.js';
 const safeAsset = (name, root) => {
   if (typeof name !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._/-]*$/.test(name) || name.split('/').includes('..')) throw Error('Invalid local model asset');
   return new URL(name,root);
@@ -36,8 +37,7 @@ export function createManufacturerModel(product, screenTexture) {
     const response=await fetch(modelUrl,{signal:aborter.signal,cache:'no-store'});if(!response.ok)throw Error(`Model metadata HTTP ${response.status}`);const metadata=await response.json();
     const asset=name=>{const url=safeAsset(name,root),hash=metadata.artifacts?.[name];if(typeof hash==='string'&&/^[a-f0-9]{64}$/.test(hash))url.searchParams.set('sha256',hash);return url;};
     if(metadata.unit!=='mm'||metadata.strideFloats!==6||!Array.isArray(metadata.parts)||metadata.parts.length>512)throw Error('Invalid manufacturer model geometry contract');
-    const file=await fetch(asset(metadata.binary),{signal:aborter.signal});if(!file.ok)throw Error(`Model geometry HTTP ${file.status}`);const binary=await file.arrayBuffer();if(disposed)return;
-    if(binary.byteLength>64*1024*1024)throw Error('Model geometry exceeds 64 MiB');
+    const file=await fetch(asset(metadata.binary),{signal:aborter.signal});if(!file.ok)throw Error(`Model geometry HTTP ${file.status}`);const binary=await readModelBinary(file,metadata.binaryCompression);if(disposed)return;
     for(const part of metadata.parts) {
       if(!Number.isInteger(part.byteOffset)||part.byteOffset<0||part.byteOffset%4||!Number.isInteger(part.vertexCount)||part.vertexCount<3||part.vertexCount%3||part.byteOffset+part.vertexCount*24>binary.byteLength)throw Error('Invalid model part bounds');
       const values=new Float32Array(binary,part.byteOffset,part.vertexCount*6);if(!values.every(Number.isFinite))throw Error('Invalid model coordinate');

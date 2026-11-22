@@ -17,6 +17,7 @@ pub mod nesso_n1;
 pub mod stamp_c6lora;
 pub mod lilygo;
 pub mod lilygo_tqt;
+pub mod lilygo_additional;
 
 pub use waveshare_lcd147::{
     lcd_visible, WaveshareC6Lcd147, LCD_COL_OFFSET, LCD_VISIBLE_COLS, PIN_BOOT, PIN_LCD_BL, PIN_LCD_CS, PIN_LCD_DC,
@@ -30,6 +31,8 @@ pub fn make_board(name: &str) -> Option<Board> {
         "lilygo-t7-c6" => Some(Box::new(lilygo::LilygoC6::t7_c6())),
         "lilygo-t-knob" => Some(Box::new(lilygo::LilygoC6::t_knob())),
         "lilygo-t-qt-c6" => Some(Box::new(lilygo_tqt::TQtC6::new())),
+        "lilygo-t-lora-c6" => Some(Box::new(lilygo_additional::TLoRaC6::new())),
+        "lilygo-t-pico-c6" => Some(Box::new(lilygo_additional::TPicoC6::new())),
         "stamp-c6lora" | "m5stack-s012" => Some(Box::new(stamp_c6lora::StampC6LoRa::new())),
         "nesso-n1" | "m5stack-dk001" => Some(Box::new(nesso_n1::NessoN1::new())),
         "nanoc6" | "m5stack-c125" => Some(Box::new(nanoc6::NanoC6::new())),

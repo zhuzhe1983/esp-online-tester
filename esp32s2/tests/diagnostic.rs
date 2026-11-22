@@ -93,6 +93,8 @@ fn raw_image(entry:u32,segments:&[(u32,Vec<u8>)])->Vec<u8>{
 fn image_validation_rejects_alias_overlap_revision_and_integrity_transactionally(){
     for image in[CONSOLE,SCREEN]{assert!(esp32s2::S2::check_image(image).is_ok());}
     let simple=vec![0x22,0xa0,5,0];let valid=raw_image(IRAM_BASE,&[(IRAM_BASE,simple.clone())]);assert!(esp32s2::image::parse(&valid).is_ok());
+    let magic_data=raw_image(IRAM_BASE+4,&[(DRAM_BASE,0xabcd5432u32.to_le_bytes().to_vec()),(IRAM_BASE+4,simple.clone())]);
+    assert!(esp32s2::image::parse(&magic_data).is_ok(),"a short bare-metal data constant is not an ESP-IDF descriptor");
     for (addr,len) in[(IRAM_BASE+2,4),(IRAM_BASE,2),(IRAM_BASE,0),(IRAM_BASE+SRAM_SIZE as u32,4),(0x40000000,4),(0x50000000,4),(0x3ff9e000,4),(0x40080000,4),(GPIO_BASE,4)]{
         assert!(esp32s2::image::parse(&raw_image(IRAM_BASE,&[(addr,vec![0;len])])).is_err(),"{addr:#x}+{len}");
     }

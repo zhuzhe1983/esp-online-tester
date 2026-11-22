@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-panel-s3",
   "title": "LILYGO T-Panel S3",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3 + ESP32-H2；具体硬件版次及配置待核对。",
+  "summary": "实现 V1.2 的 XL9535 I²C GPIO、9 位串行屏幕初始化、480×480 ST7701S RGB565 的真实 LCD_CAM／DMA 帧、背光 PWM、BOOT0 与 SPI SD；CST3240 触摸、ESP32-H2、CAN/RS485 未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Panel V1.2 (replaceable CAN/RS485 module variant), not T-Panel-Lite",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Panel S3",
@@ -52,6 +52,175 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-11-23",
+        "basis": "hardware-release",
+        "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/README.md",
+        "sourceId": "T-Panel-README.md",
+        "confidence": "medium",
+        "hardwareRevision": "Initial T-Panel V1.0-V1.1; represented runtime is V1.2 dated 2023-12-11",
+        "notes": "Earliest explicit manufacturer Version History date for this product, not independently verified retail launch. The runtime represented revision is specified separately; a later BOM/source revision does not move the original product date."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Panel-README.md"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "type": "LCD",
+          "controller": "ST7701S",
+          "width": 480,
+          "height": 480,
+          "interface": "16-bit RGB LCD_CAM/GDMA + XL9535 I2C 9-bit serial initialization",
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "activeLow": true,
+            "pin": 0
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "i2c": {
+            "sda": 17,
+            "scl": 18
+          },
+          "xl9535": {
+            "address": 32,
+            "serialClock": "P15",
+            "serialData": "P16",
+            "serialCs": "P17",
+            "lcdReset": "P05",
+            "touchReset": "P04",
+            "registers": "00h..07h input/output/polarity/config; paired register pointer toggles low/high byte"
+          },
+          "display": {
+            "clock": 41,
+            "hsync": 39,
+            "vsync": 40,
+            "de": null,
+            "data": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              42,
+              46,
+              45
+            ],
+            "backlight": 14,
+            "backlightActiveHigh": true,
+            "busWidth": 16
+          },
+          "touch": {
+            "controller": "CST3240",
+            "address": 90,
+            "irq": 21,
+            "implemented": false
+          },
+          "coprocessor": {
+            "chip": "ESP32-H2",
+            "tx": 48,
+            "rx": 47,
+            "en": 34,
+            "boot": 33,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Panel-.gitmodules",
+        "T-Panel-README.md",
+        "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf",
+        "T-Panel-docs-ST7701S_SPEC_V1.4.pdf",
+        "T-Panel-docs-XL9535.pdf",
+        "T-Panel-firmware-general_test-README.md",
+        "T-Panel-libraries-private_library-t_panel_config.h",
+        "T-Panel-libraries-st7701_driver-st7701_driver.cpp",
+        "T-Panel-main-examples-general_test-main.cpp",
+        "T-Panel-main-examples-screen-main.cpp",
+        "T-Panel-main-examples-sd-main.cpp",
+        "T-Panel-project-T-Panel_V1.2.pdf",
+        "T-Panel-sdkconfig.defaults",
+        "T-Panel-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "T-Panel-.gitmodules",
+            "T-Panel-README.md",
+            "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf",
+            "T-Panel-docs-ST7701S_SPEC_V1.4.pdf",
+            "T-Panel-docs-XL9535.pdf",
+            "T-Panel-firmware-general_test-README.md",
+            "T-Panel-libraries-private_library-t_panel_config.h",
+            "T-Panel-libraries-st7701_driver-st7701_driver.cpp",
+            "T-Panel-main-examples-general_test-main.cpp",
+            "T-Panel-main-examples-screen-main.cpp",
+            "T-Panel-main-examples-sd-main.cpp",
+            "T-Panel-project-T-Panel_V1.2.pdf",
+            "T-Panel-sdkconfig.defaults",
+            "T-Panel-tree",
+            "official-store-shopify-1"
+          ],
+          "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-Panel-.gitmodules",
+        "T-Panel-README.md",
+        "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf",
+        "T-Panel-docs-ST7701S_SPEC_V1.4.pdf",
+        "T-Panel-docs-XL9535.pdf",
+        "T-Panel-firmware-general_test-README.md",
+        "T-Panel-libraries-private_library-t_panel_config.h",
+        "T-Panel-libraries-st7701_driver-st7701_driver.cpp",
+        "T-Panel-main-examples-general_test-main.cpp",
+        "T-Panel-main-examples-screen-main.cpp",
+        "T-Panel-main-examples-sd-main.cpp",
+        "T-Panel-project-T-Panel_V1.2.pdf",
+        "T-Panel-sdkconfig.defaults",
+        "T-Panel-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +249,421 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-panel-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_9.jpg?v=1717482999",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_9.jpg?v=1717482999",
+      "fetchedAt": "2026-11-22T06:57:47Z",
+      "bytes": 69819,
+      "sha256": "a9b4b0620d181f9416cde405cc083900052ff4162e45e132b844126e4dc445b7",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t panel s3 official photo 0",
+      "archiveName": "lilygo-t-panel-s3-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-panel-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_3.jpg?v=1717482999",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_3.jpg?v=1717482999",
+      "fetchedAt": "2026-11-22T06:57:47Z",
+      "bytes": 48254,
+      "sha256": "57a1910ed7c9b24fcf878555956203bc6546f9d077abadcf974b626ad58ef6dc",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t panel s3 official photo 1",
+      "archiveName": "lilygo-t-panel-s3-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-panel-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_7.jpg?v=1717482999",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_7.jpg?v=1717482999",
+      "fetchedAt": "2026-11-22T06:57:55Z",
+      "bytes": 67767,
+      "sha256": "7a48838c6eeb09c922ecb5078305871adf2ed9ec40e80f90febebc6ad62f1e56",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t panel s3 official photo 2",
+      "archiveName": "lilygo-t-panel-s3-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-panel-s3-manufacturer-cad",
+      "productId": "lilygo-t-panel-s3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/structure/T-Panel_V1.2.step",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/structure/T-Panel_V1.2.step",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "repositoryPath": "structure/T-Panel_V1.2.step",
+      "scope": "V1.2 PCB assembly; Lite/field-bus options are distinct",
+      "fetchedAt": "2026-11-22T07:04:08Z",
+      "bytes": 3228902,
+      "sha256": "99109554187acc76fb683517cf4e069409f6b10c8ff660b997a0559491d97af4",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "99109554187acc76fb683517cf4e069409f6b10c8ff660b997a0559491d97af4",
+      "archiveSha256": "61de9939c3f8f5af6596e6624a6dc76a54c04d26d24e9a3b0635a006a0685ab2",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "61de9939c3f8f5af6596e6624a6dc76a54c04d26d24e9a3b0635a006a0685ab2",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "de7b3925398beaef06a78546b32bee8a78d2e3ab",
+      "revisionType": "pinned-git-revision",
+      "revision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "title": "lilygo t panel s3 manufacturer cad",
+      "archiveName": "lilygo-t-panel-s3-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t-panel-s3-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:19Z",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t panel s3 repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t-panel-s3-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-panel-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-panel-series/t-panel-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-panel-series/t-panel-s3/index.md",
+      "fetchedAt": "2026-11-22T06:43:33Z",
+      "mediaType": "text/plain",
+      "bytes": 5377,
+      "sha256": "c995bd0e200f419c7d5e61b6c46c7baee44690acb381b708368f2be2897d1d0a",
+      "gitBlobSha": "f87a88a695fcc77b195e28e1622f0064f8ec9287",
+      "path": "en/products/t-panel-series/t-panel-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t panel s3",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-panel-series__t-panel-s3__index.md"
+    },
+    {
+      "id": "T-Panel-.gitmodules",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": ".gitmodules",
+      "gitBlobSha": "d57cfa04e677dc0b8980ea6de45063a5766540f8",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/.gitmodules",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/.gitmodules",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:42Z",
+      "sha256": "41e5d14f743a180a95917fcbbc78fc5999757a7474d7edaf57b2d693e8807e35",
+      "bytes": 139,
+      "archiveName": "T-Panel-.gitmodules.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / .gitmodules",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-.gitmodules.raw"
+    },
+    {
+      "id": "T-Panel-README.md",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "README.md",
+      "gitBlobSha": "b768a61db8e3e4a12537b5b1235bb4696036ee90",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:42Z",
+      "sha256": "42ef71e5fb35027af400658e3c9e214a3775dca037c633d30eab0fe4d3236dfb",
+      "bytes": 5117,
+      "archiveName": "T-Panel-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-README.md.raw"
+    },
+    {
+      "id": "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "docs/HYNITRON-CST3240_V1.0.pdf",
+      "gitBlobSha": "67f3448f75da8b16f8dc81bda6051658b3b20f4e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/docs/HYNITRON-CST3240_V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/docs/HYNITRON-CST3240_V1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:40:10Z",
+      "sha256": "8ac519152186e3cab055f1d1faffa275c9a88749c8b563cbd650bab539955b6e",
+      "bytes": 1172613,
+      "archiveName": "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / docs/HYNITRON-CST3240_V1.0.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-docs-HYNITRON-CST3240_V1.0.pdf.raw"
+    },
+    {
+      "id": "T-Panel-docs-ST7701S_SPEC_V1.4.pdf",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "docs/ST7701S_SPEC_V1.4.pdf",
+      "gitBlobSha": "4907020b17903814ec2c0584f735e985bab72fac",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/docs/ST7701S_SPEC_V1.4.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/docs/ST7701S_SPEC_V1.4.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:46:41Z",
+      "sha256": "ef682eda3c4f226470f8d71e936000b477f1c0908ac1a16a416f43e4165433d2",
+      "bytes": 8502996,
+      "archiveName": "T-Panel-docs-ST7701S_SPEC_V1.4.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / docs/ST7701S_SPEC_V1.4.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-docs-ST7701S_SPEC_V1.4.pdf.raw"
+    },
+    {
+      "id": "T-Panel-docs-XL9535.pdf",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "docs/XL9535.pdf",
+      "gitBlobSha": "b3ff4ce5c974237b2d2c9c5b83e8a7e6514ab320",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/docs/XL9535.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/docs/XL9535.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:40:10Z",
+      "sha256": "80ea36f92c4bf704e51e729b3ff213362dfc0a02449ac4f9ff5fe56d46d50b7f",
+      "bytes": 589855,
+      "archiveName": "T-Panel-docs-XL9535.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / docs/XL9535.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-docs-XL9535.pdf.raw"
+    },
+    {
+      "id": "T-Panel-firmware-general_test-README.md",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "firmware/[t-panel_v1.2][general_test]/README.md",
+      "gitBlobSha": "6fc7675ac69fc888bcefcfdc5f99cb848b38baf9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T09:06:23Z",
+      "sha256": "13ac2a1e6f6a227675261b98dc77ebeb3237a873ad86eed235fc51d59bc02bf1",
+      "bytes": 752,
+      "archiveName": "T-Panel-firmware-general_test-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / firmware/[t-panel_v1.2][general_test]/README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-firmware-general_test-README.md.raw"
+    },
+    {
+      "id": "T-Panel-libraries-private_library-t_panel_config.h",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "libraries/private_library/t_panel_config.h",
+      "gitBlobSha": "0884d48101cc41caeb2d22b327bb9d40b19ce8a5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/libraries/private_library/t_panel_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/libraries/private_library/t_panel_config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:40:10Z",
+      "sha256": "1516f5af83c86b743ea967c3dc4daeac3ee6dd0317d8ce670cbcd2dd67753dc6",
+      "bytes": 3147,
+      "archiveName": "T-Panel-libraries-private_library-t_panel_config.h.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / libraries/private_library/t_panel_config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-libraries-private_library-t_panel_config.h.raw"
+    },
+    {
+      "id": "T-Panel-libraries-st7701_driver-st7701_driver.cpp",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "libraries/st7701_driver/st7701_driver.cpp",
+      "gitBlobSha": "7c733fd25e5328d8d81b179cdcde850acc2e9046",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/libraries/st7701_driver/st7701_driver.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/libraries/st7701_driver/st7701_driver.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:40:10Z",
+      "sha256": "892ac5512c534e4d845b97e2ab960c8cb912b797eaefb47c041b7c380e25d1c1",
+      "bytes": 11018,
+      "archiveName": "T-Panel-libraries-st7701_driver-st7701_driver.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / libraries/st7701_driver/st7701_driver.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-libraries-st7701_driver-st7701_driver.cpp.raw"
+    },
+    {
+      "id": "T-Panel-main-examples-general_test-main.cpp",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "main/examples/general_test/main.cpp",
+      "gitBlobSha": "36c651f33749dd07ade157f3499b50a022d6cb2b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/main/examples/general_test/main.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/main/examples/general_test/main.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:42Z",
+      "sha256": "b7c5dd5700f3bd35054f2dbe8395ca25fea29f0326447ed03cef36d1b492c83f",
+      "bytes": 74561,
+      "archiveName": "T-Panel-main-examples-general_test-main.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / main/examples/general_test/main.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-main-examples-general_test-main.cpp.raw"
+    },
+    {
+      "id": "T-Panel-main-examples-screen-main.cpp",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "main/examples/screen/main.cpp",
+      "gitBlobSha": "cee28c881f269739b257e5d0fa200fd3cacaf50a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/main/examples/screen/main.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/main/examples/screen/main.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:48Z",
+      "sha256": "c6d6113011fd7e16a54501acb0f001e3ef44b41d5c9ebf1b46ff4647ba6ebb82",
+      "bytes": 2414,
+      "archiveName": "T-Panel-main-examples-screen-main.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / main/examples/screen/main.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-main-examples-screen-main.cpp.raw"
+    },
+    {
+      "id": "T-Panel-main-examples-sd-main.cpp",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "main/examples/sd/main.cpp",
+      "gitBlobSha": "78855ccb5966af8b9edcaa777a5d29e45b62e6e1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/main/examples/sd/main.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/main/examples/sd/main.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:42Z",
+      "sha256": "96e1ad2d2d84d74e885c22a3dc4ac0d1038a61bea4253bd0710543dc244a1878",
+      "bytes": 12579,
+      "archiveName": "T-Panel-main-examples-sd-main.cpp.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / main/examples/sd/main.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-main-examples-sd-main.cpp.raw"
+    },
+    {
+      "id": "T-Panel-project-T-Panel_V1.2.pdf",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "project/T-Panel_V1.2.pdf",
+      "gitBlobSha": "f631d48c65417256d5757b5201a38dde4db75fca",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/project/T-Panel_V1.2.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/project/T-Panel_V1.2.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:48Z",
+      "sha256": "6e11e2f6cf3e09d86275edc29b17310465beff626c34ab0166b5aad7b7583999",
+      "bytes": 703448,
+      "archiveName": "T-Panel-project-T-Panel_V1.2.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / project/T-Panel_V1.2.pdf",
+      "kind": "manufacturer-datasheet-or-schematic",
+      "mediaType": "application/pdf",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-project-T-Panel_V1.2.pdf.raw"
+    },
+    {
+      "id": "T-Panel-sdkconfig.defaults",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "path": "sdkconfig.defaults",
+      "gitBlobSha": "7da92d3c2b6ebeaf8888d3b2048d23aec89929c5",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/sdkconfig.defaults",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/sdkconfig.defaults",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:48Z",
+      "sha256": "23d3262491319bc04c9aa270f930139d6511c2e8c4eeb5a302b81cbec6fc8dd5",
+      "bytes": 699,
+      "archiveName": "T-Panel-sdkconfig.defaults.raw",
+      "title": "Xinyuan-LilyGO/T-Panel / sdkconfig.defaults",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-sdkconfig.defaults.raw"
+    },
+    {
+      "id": "T-Panel-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Panel/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:41Z",
+      "title": "Official repository snapshot: Xinyuan-LilyGO/T-Panel",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-Panel",
+      "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+      "gitObjectType": "not-independently-checked",
+      "mediaType": "application/json",
+      "sha256": "9ac9aae7e4c41ba63e6ff66c9f08d55f26b987b814d6b948fd4c668dccccd67b",
+      "bytes": 35144,
+      "archiveName": "T-Panel-tree.raw",
+      "notes": "Exact original GitHub connector UTF-8 snapshot copied from the model lane; original fetch timestamp retained. A normalized sha field is a pinned revision, not proof of Git commit/tree object type. Firmware metadata is discovery evidence only, not a fetched firmware checksum.",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-panel-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_9.jpg?v=1717482999",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-panel-s3/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-panel-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_3.jpg?v=1717482999",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-panel-s3/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-panel-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/H719-LILYGO-T-PENAL_7.jpg?v=1717482999",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-panel-s3/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +676,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +683,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +693,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +703,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +713,349 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-entries-linked",
+    "sourceIds": [
+      "T-Panel-tree",
+      "T-Panel-README.md",
+      "T-Panel-firmware-general_test-README.md"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-Panel/blob/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
+        "path": "firmware/[t-panel_v1.2][general_test]/[t-panel_v1.2][general_test]_firmware_202608200958.bin",
+        "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+        "gitBlobSha": "da191a4172aca16c83f47924cf0736706766f3b8",
+        "bytes": 2774496,
+        "status": "linked",
+        "sourceId": "T-Panel-tree",
+        "role": "factory",
+        "chip": "esp32s3",
+        "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "flashOffset": 0
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-Panel/blob/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5BESP32H2%5D%5BT-Panel_V1.2%5D%5BESP32H2_BLE_Test%5D_firmware_V1.0.2.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5BESP32H2%5D%5BT-Panel_V1.2%5D%5BESP32H2_BLE_Test%5D_firmware_V1.0.2.bin",
+        "path": "firmware/[t-panel_v1.2][general_test]/[ESP32H2][T-Panel_V1.2][ESP32H2_BLE_Test]_firmware_V1.0.2.bin",
+        "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+        "gitBlobSha": "7f829c3bb4b977f7c3152eccd79a81838b683a47",
+        "bytes": 1213952,
+        "status": "linked",
+        "sourceId": "T-Panel-tree",
+        "role": "coprocessor-factory",
+        "chip": "esp32h2",
+        "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "README identifies general_test as V1.2 factory firmware at flash offset0. Latest pinned S3 binary is linked with tree size/blob metadata; no image bytes or flash header were fetched/boot-verified. H2 binary is a separate unsimulated chip, not an alternative S3 image.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-panel-s3/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：V1.2 PCB assembly; Lite/field-bus options are distinct；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-panel-s3",
+      "lilygo-t-panel-s3-official-photo-0",
+      "lilygo-t-panel-s3-official-photo-1",
+      "lilygo-t-panel-s3-official-photo-2",
+      "lilygo-t-panel-s3-manufacturer-cad",
+      "T-Panel-.gitmodules",
+      "T-Panel-README.md",
+      "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf",
+      "T-Panel-docs-ST7701S_SPEC_V1.4.pdf",
+      "T-Panel-docs-XL9535.pdf",
+      "T-Panel-firmware-general_test-README.md",
+      "T-Panel-libraries-private_library-t_panel_config.h",
+      "T-Panel-libraries-st7701_driver-st7701_driver.cpp",
+      "T-Panel-main-examples-general_test-main.cpp",
+      "T-Panel-main-examples-screen-main.cpp",
+      "T-Panel-main-examples-sd-main.cpp",
+      "T-Panel-project-T-Panel_V1.2.pdf",
+      "T-Panel-sdkconfig.defaults",
+      "T-Panel-tree"
+    ],
+    "displayHint": {
+      "width": 480,
+      "height": 480,
+      "sourceIds": [
+        "T-Panel-.gitmodules",
+        "T-Panel-README.md",
+        "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf",
+        "T-Panel-docs-ST7701S_SPEC_V1.4.pdf",
+        "T-Panel-docs-XL9535.pdf",
+        "T-Panel-firmware-general_test-README.md",
+        "T-Panel-libraries-private_library-t_panel_config.h",
+        "T-Panel-libraries-st7701_driver-st7701_driver.cpp",
+        "T-Panel-main-examples-general_test-main.cpp",
+        "T-Panel-main-examples-screen-main.cpp",
+        "T-Panel-main-examples-sd-main.cpp",
+        "T-Panel-project-T-Panel_V1.2.pdf",
+        "T-Panel-sdkconfig.defaults",
+        "T-Panel-tree",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-panel-s3",
+    "status": "diagnostic",
+    "scope": "实现 V1.2 的 XL9535 I²C GPIO、9 位串行屏幕初始化、480×480 ST7701S RGB565 的真实 LCD_CAM／DMA 帧、背光 PWM、BOOT0 与 SPI SD；CST3240 触摸、ESP32-H2、CAN/RS485 未实现。",
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "ST7701S has no GRAM; the preview retains the last complete DMA scan. Vendor analog/power/gamma programming and optical timing are not modeled; pixel bus must use native 480x480 RGB565. No host writes manufacture a frame.",
+      "Unknown XL9535 external input levels use diagnostic high. LCD reset remains unavailable until firmware explicitly configures P05 output high. This is an explicit simulation startup policy, not a claim about unknown board power-on pull states.",
+      "Only supported standard serial commands and physical RGB routes are interpreted. CST3240 address5A remains unattached; H2 CPU/BLE/Thread, CAN/RS485 transceivers and touch gestures are absent.",
+      "The storefront also lists Lite and later hardware. This exact V1.2 mapping does not alias T-Panel-Lite, a structurally different board, or claim every later BOM is verified."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-panel-s3",
+    "boardId": "lilygo-t-panel-s3",
+    "name": "LILYGO T-Panel S3",
+    "constructor": "t_panel_s3",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-Panel V1.2 (replaceable CAN/RS485 module variant), not T-Panel-Lite",
+    "display": {
+      "type": "LCD",
+      "controller": "ST7701S",
+      "width": 480,
+      "height": 480,
+      "interface": "16-bit RGB LCD_CAM/GDMA + XL9535 I2C 9-bit serial initialization",
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "sdCard": {
+      "slot": true,
+      "implemented": true,
+      "transport": "spi",
+      "pins": {
+        "sclk": 36,
+        "mosi": 35,
+        "miso": 37,
+        "cs": 38
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "activeLow": true,
+        "pin": 0
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "实现 V1.2 的 XL9535 I²C GPIO、9 位串行屏幕初始化、480×480 ST7701S RGB565 的真实 LCD_CAM／DMA 帧、背光 PWM、BOOT0 与 SPI SD；CST3240 触摸、ESP32-H2、CAN/RS485 未实现。",
+    "scopeEn": "T-Panel V1.2 XL9535 I2C GPIO, 9-bit serial ST7701S initialization, routed native 480x480 RGB565 LCD_CAM DMA frames, backlight PWM, BOOT0 and SPI SD. CST3240 touch, ESP32-H2 and CAN/RS485 are not modeled.",
+    "chronology": {
+      "date": "2023-11-23",
+      "basis": "hardware-release",
+      "sourceUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/README.md",
+      "sourceId": "T-Panel-README.md",
+      "confidence": "medium",
+      "hardwareRevision": "Initial T-Panel V1.0-V1.1; represented runtime is V1.2 dated 2023-12-11",
+      "notes": "Earliest explicit manufacturer Version History date for this product, not independently verified retail launch. The runtime represented revision is specified separately; a later BOM/source revision does not move the original product date."
+    },
+    "sourceIds": [
+      "T-Panel-.gitmodules",
+      "T-Panel-README.md",
+      "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf",
+      "T-Panel-docs-ST7701S_SPEC_V1.4.pdf",
+      "T-Panel-docs-XL9535.pdf",
+      "T-Panel-firmware-general_test-README.md",
+      "T-Panel-libraries-private_library-t_panel_config.h",
+      "T-Panel-libraries-st7701_driver-st7701_driver.cpp",
+      "T-Panel-main-examples-general_test-main.cpp",
+      "T-Panel-main-examples-screen-main.cpp",
+      "T-Panel-main-examples-sd-main.cpp",
+      "T-Panel-project-T-Panel_V1.2.pdf",
+      "T-Panel-sdkconfig.defaults",
+      "T-Panel-tree",
+      "official-store-shopify-1"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "Factory firmware boot and full application behavior remain unverified; no physical hardware validation.",
+      "ST7701S has no GRAM; the preview retains the last complete DMA scan. Vendor analog/power/gamma programming and optical timing are not modeled; pixel bus must use native 480x480 RGB565. No host writes manufacture a frame.",
+      "Unknown XL9535 external input levels use diagnostic high. LCD reset remains unavailable until firmware explicitly configures P05 output high. This is an explicit simulation startup policy, not a claim about unknown board power-on pull states.",
+      "Only supported standard serial commands and physical RGB routes are interpreted. CST3240 address5A remains unattached; H2 CPU/BLE/Thread, CAN/RS485 transceivers and touch gestures are absent.",
+      "The storefront also lists Lite and later hardware. This exact V1.2 mapping does not alias T-Panel-Lite, a structurally different board, or claim every later BOM is verified."
+    ],
+    "pins": {
+      "boot": 0,
+      "i2c": {
+        "sda": 17,
+        "scl": 18
+      },
+      "xl9535": {
+        "address": 32,
+        "serialClock": "P15",
+        "serialData": "P16",
+        "serialCs": "P17",
+        "lcdReset": "P05",
+        "touchReset": "P04",
+        "registers": "00h..07h input/output/polarity/config; paired register pointer toggles low/high byte"
+      },
+      "display": {
+        "clock": 41,
+        "hsync": 39,
+        "vsync": 40,
+        "de": null,
+        "data": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          42,
+          46,
+          45
+        ],
+        "backlight": 14,
+        "backlightActiveHigh": true,
+        "busWidth": 16
+      },
+      "touch": {
+        "controller": "CST3240",
+        "address": 90,
+        "irq": 21,
+        "implemented": false
+      },
+      "coprocessor": {
+        "chip": "ESP32-H2",
+        "tx": 48,
+        "rx": 47,
+        "en": 34,
+        "boot": 33,
+        "implemented": false
+      }
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "T-Panel-.gitmodules",
+        "T-Panel-README.md",
+        "T-Panel-docs-HYNITRON-CST3240_V1.0.pdf",
+        "T-Panel-docs-ST7701S_SPEC_V1.4.pdf",
+        "T-Panel-docs-XL9535.pdf",
+        "T-Panel-firmware-general_test-README.md",
+        "T-Panel-libraries-private_library-t_panel_config.h",
+        "T-Panel-libraries-st7701_driver-st7701_driver.cpp",
+        "T-Panel-main-examples-general_test-main.cpp",
+        "T-Panel-main-examples-screen-main.cpp",
+        "T-Panel-main-examples-sd-main.cpp",
+        "T-Panel-project-T-Panel_V1.2.pdf",
+        "T-Panel-sdkconfig.defaults",
+        "T-Panel-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "Exact selected source/BOM or build target; capacity is not inherited from a sibling."
+    },
+    "conflicts": [
+      {
+        "fact": "hardware chronology vs selected revision",
+        "resolution": "Earliest hardware date is 2023-11-23 for V1.0-V1.1; represented V1.2 is dated 2023-12-11; V1.3 structure update is 2024-05-08. Storefront republication is not substituted for either date.",
+        "sourceIds": [
+          "T-Panel-README.md"
+        ]
+      }
+    ],
+    "physicalChip": "ESP32-S3 + ESP32-H2",
+    "factoryFirmwareInvestigation": {
+      "status": "official-entries-linked",
+      "sourceIds": [
+        "T-Panel-tree",
+        "T-Panel-README.md",
+        "T-Panel-firmware-general_test-README.md"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Panel/blob/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
+          "path": "firmware/[t-panel_v1.2][general_test]/[t-panel_v1.2][general_test]_firmware_202608200958.bin",
+          "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+          "gitBlobSha": "da191a4172aca16c83f47924cf0736706766f3b8",
+          "bytes": 2774496,
+          "status": "linked",
+          "sourceId": "T-Panel-tree",
+          "role": "factory",
+          "chip": "esp32s3",
+          "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+          "binaryFetched": false,
+          "simulationVerified": false,
+          "flashOffset": 0
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Panel/blob/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5BESP32H2%5D%5BT-Panel_V1.2%5D%5BESP32H2_BLE_Test%5D_firmware_V1.0.2.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5BESP32H2%5D%5BT-Panel_V1.2%5D%5BESP32H2_BLE_Test%5D_firmware_V1.0.2.bin",
+          "path": "firmware/[t-panel_v1.2][general_test]/[ESP32H2][T-Panel_V1.2][ESP32H2_BLE_Test]_firmware_V1.0.2.bin",
+          "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+          "gitBlobSha": "7f829c3bb4b977f7c3152eccd79a81838b683a47",
+          "bytes": 1213952,
+          "status": "linked",
+          "sourceId": "T-Panel-tree",
+          "role": "coprocessor-factory",
+          "chip": "esp32h2",
+          "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "README identifies general_test as V1.2 factory firmware at flash offset0. Latest pinned S3 binary is linked with tree size/blob metadata; no image bytes or flash header were fetched/boot-verified. H2 binary is a separate unsimulated chip, not an alternative S3 image.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
+      }
+    }
+  }
 }

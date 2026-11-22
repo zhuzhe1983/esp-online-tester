@@ -4,9 +4,17 @@ pub mod stampc3;
 pub use stampc3::StampC3;
 pub mod stampc3u;
 pub use stampc3u::StampC3U;
+pub mod lilygo_additional;
 
 pub fn make_board(name:&str)->Option<Board> {
-    match name {"none"|"bare"=>Some(Box::new(NoBoard)),"stampc3"=>Some(Box::new(StampC3::new())),"stampc3u"=>Some(Box::new(StampC3U::new())),_=>None}
+    match name {
+        "none"|"bare"=>Some(Box::new(NoBoard)),"stampc3"=>Some(Box::new(StampC3::new())),"stampc3u"=>Some(Box::new(StampC3U::new())),
+        "lilygo-t8-c3"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::t8_c3())),
+        "lilygo-watch-keyboard-c3-v1-0"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::watch_keyboard_c3())),
+        "lilygo-t-01c3"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::t01_c3())),
+        "lilygo-t-zigbee"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::t_zigbee())),
+        _=>None,
+    }
 }
 
 #[cfg(test)]

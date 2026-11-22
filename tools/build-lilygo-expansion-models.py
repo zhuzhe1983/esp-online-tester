@@ -138,7 +138,7 @@ def build(product_id, output):
         if out.resolve()!=folder.resolve():shutil.copyfile(folder/filename,out/filename)
     model={k:plan[k]for k in ['id','dimensions','presentation','derivedParts','referencePhotos','provenance','limitations','reviewViews','debugPreview','photoDerivation','dimensionChecks','representationScope','manualPhotoCalibration','omittedComponents']if k in plan}
     if plan.get('cad'):
-        transform_note='STL does not encode units; coordinates interpreted as mm using cited dimension checks, with no rescaling.'if plan['cad'].get('format')=='stl'else'Selected product local coordinates; no assembly placement inferred; rigid viewing transform only.'if plan['cad'].get('extraction')else'Rigid transform only; supplied assembly placements and native millimetres retained.'
+        transform_note='STL does not encode units; see sourceUnit and dimensionChecks for the stated interpretation and independent checks. No rescaling.'if plan['cad'].get('format')=='stl'else'Selected product local coordinates; no assembly placement inferred; rigid viewing transform only.'if plan['cad'].get('extraction')else'Rigid transform only; supplied assembly placements and native millimetres retained.'
         model['sourceTransform']={'matrixRows':plan['cad']['matrixRows'],'scale':1,'sourceUnit':plan['cad'].get('sourceUnit','mm'),'note':transform_note}
         if plan['cad'].get('extraction'):model['cadExtraction']=plan['cad']['extraction']
         if plan.get('additionalCad'):model['sourceTransform']['additionalSources']=[{'file':source['file'],'matrixRows':source['matrixRows'],'sourceUnit':source.get('sourceUnit','mm')}for source in plan['additionalCad']]

@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "evidenceDate": "2026-11-22",
+  "updatedAt": "2026-11-22T09:48:40+00:00",
+  "status": "validation-in-progress",
+  "scope": {
+    "catalogProducts": 127,
+    "newDiagnosticProfiles": 121,
+    "preservedPartialProfiles": 5,
+    "runtimeProducts": 126,
+    "modelProducts": 127,
+    "nonStandaloneAccessory": "lilygo-t-radar",
+    "factoryImagesNewlyVerified": 0,
+    "physicalHardwareVerified": false
+  },
+  "baselineCommit": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "wasm": {
+    "path": "web/wasm/esp32sim.wasm",
+    "sha256": "2abff05748fdc09e2da58afe75ed11a17251b1197e1b72886ff5523279adb224",
+    "bytes": 6572710,
+    "build": "CARGO_BUILD_JOBS=1 tools/wasm-build.sh",
+    "dwarfAbsent": true,
+    "nameRetained": true
+  },
+  "modelReproduction": {
+    "receipt": "docs/platform/research/lilygo-model-reproduction-2026-11-22.json",
+    "sha256": "cd20d3c0f84a9667422d8e8a38c9b0ca08562b90405712f78a6ea39ce92b6993"
+  },
+  "checks": [
+    {
+      "id": "catalog",
+      "name": "目录与知识资料",
+      "status": "passed",
+      "command": "python3 tools/validate-platform-catalog.py; node --test tools/platform-knowledge-test.mjs",
+      "detail": "219 products / 10 accessories / 178 firmware entries / 122 watchlist entries; knowledge tests passed"
+    },
+    {
+      "id": "workspace-clippy",
+      "name": "工作区 Clippy",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 cargo clippy --workspace --all-targets -- -D warnings",
+      "detail": "final native source; no compiler or manifest warnings"
+    },
+    {
+      "id": "wasm-clippy",
+      "name": "WASM release Clippy",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "detail": "final WASM source; warnings denied"
+    },
+    {
+      "id": "wasm-build",
+      "name": "生产 WASM",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 tools/wasm-build.sh; node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "detail": "6572710 bytes; no DWARF; name section retained"
+    },
+    {
+      "id": "public-probes",
+      "name": "真实 Worker / WASM 诊断",
+      "status": "passed",
+      "command": "node --test --test-concurrency=1 tools/platform-lilygo-board-construction-test.mjs tools/platform-lilygo-s2-test.mjs tools/platform-lilygo-c5-test.mjs tools/platform-lilygo-p4-test.mjs tools/platform-lilygo-s3-test.mjs tools/platform-lilygo-c6-test.mjs",
+      "detail": "8 tests passed; all 126 advertised boards plus bare S2 construct; actual CPU frames, input, UART, P4 XL9535 and S2 unsupported-instruction error propagation"
+    },
+    {
+      "id": "platform",
+      "name": "平台完整回归",
+      "status": "passed",
+      "command": "node --test --test-concurrency=1 tools/platform-*-test.mjs",
+      "detail": "446 tests passed, 0 failed, 0 skipped; 66.79 seconds"
+    },
+    {
+      "id": "p4-native",
+      "name": "P4 数字外设与复位",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 cargo test -p esp32p4 --test lilygo",
+      "detail": "5 tests passed; two full 8-bit I2C fractional clocks, BOOT state, XL9535 routes and SDMMC block DMA"
+    },
+    {
+      "id": "s2-native",
+      "name": "独立 S2 原生后端",
+      "status": "passed",
+      "command": "CARGO_BUILD_JOBS=1 cargo test -p esp32s2 --test diagnostic",
+      "detail": "7 tests passed; ISA gate, aliased memory, image validation, polled UART, GPIO, software SPI, full frames and reset"
+    },
+    {
+      "id": "model-loader",
+      "name": "生产模型加载器",
+      "status": "passed",
+      "command": "node tools/verify-lilygo-expansion-models.mjs",
+      "detail": "122 new models; 44 CAD and 78 photograph outlines; no loader/source-hash failures"
+    },
+    {
+      "id": "model-reproduction",
+      "name": "模型独立重现",
+      "status": "passed",
+      "command": "python3 tools/build-lilygo-expansion-models.py --output target/lilygo-final-model-repro",
+      "detail": "122 models; 837/837 compared files byte-identical; 597 frozen input hashes unchanged; see lilygo-model-reproduction-2026-11-22.json"
+    },
+    {
+      "id": "privacy",
+      "name": "证据隐私与来源审阅",
+      "status": "passed",
+      "command": "node tools/check-evidence-privacy.mjs",
+      "detail": "2378 tracked evidence files (22 gzip) passed; manual review found no local host paths or credentials in 406 JSON records and verified 376 photo hashes before final S2 integration"
+    },
+    {
+      "id": "native-release",
+      "name": "原生 release 全工作区",
+      "status": "running",
+      "command": "CARGO_BUILD_JOBS=1 ESP32SIM_ROM_DIR=web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+      "detail": "Serial fat-LTO build; result pending"
+    },
+    {
+      "id": "performance",
+      "name": "最终性能对照",
+      "status": "pending",
+      "command": "python3 tools/bench-lilygo-cpu.py --baseline <baseline-tree> --candidate <final-tree> --assets web/wasm/fw --rounds 8 --workloads all --output <receipt> --raw-dir <ignored-output>",
+      "detail": "Wait for all builds/tests/model conversions to finish; retain previous measured negative results"
+    },
+    {
+      "id": "browser",
+      "name": "真实 Chromium 渲染",
+      "status": "pending-ci",
+      "command": "node tools/check-lilygo-expansion-browser.mjs --url <served-platform-url> --output <evidence-directory>",
+      "detail": "Pages CI must render all 127 models and execute actual C5/S2 input/frame probes before deployment. Local Chromium socket creation was denied and the escalation was rejected by automatic approval review; this is not recorded as a passed browser test."
+    }
+  ],
+  "retainedNegativeResults": [
+    {
+      "gate": "platform first final run",
+      "passed": 445,
+      "failed": 1,
+      "total": 446,
+      "failure": "14 new control labels lacked English translations",
+      "resolutionCommit": "2639516",
+      "recheck": "all 446 tests passed after integration"
+    },
+    {
+      "gate": "first performance checkpoint",
+      "receipt": "docs/platform/research/lilygo-performance-2026-11-22.json",
+      "limits": "C3 median +5.272%; C6 paired median +3.244%; concurrent build interference unresolved until final controlled recheck"
+    }
+  ],
+  "resetSemantics": {
+    "nativeMcuReset": "Same-machine board/GPIO reset behavior is tested in native board suites.",
+    "publicRuntimeReset": "runtime.reset() reconstructs Worker and Machine and reloads the same verified firmware; host button state is not retained."
+  },
+  "publication": {
+    "status": "pending-authentication-and-final-gates",
+    "repository": "https://github.com/zhuzhe1983/esp-online-tester",
+    "requestedBranch": "main",
+    "requestedHosting": "GitHub Pages",
+    "remoteBaseConfirmed": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+    "observedBlocker": "CLI has no GitHub HTTPS credentials; authorized GitHub integration create-blob returned HTTP403 Resource not accessible by integration. No remote write or deployment has succeeded."
+  }
+}

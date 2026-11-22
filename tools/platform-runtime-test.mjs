@@ -435,14 +435,14 @@ try {
 
 // Input contract only: hardware FIFO/scan/IRQ is tested in Rust and the opt-in
 // official product probes. This transport stand-in is not firmware evidence.
-for(const matrixBoard of ['cardputer-adv','cardputer','tdeck']){
-const matrixCatalog=structuredClone(catalog),matrixProduct=matrixCatalog.products.find(p=>p.id===(matrixBoard==='tdeck'?'lilygo-t-deck':'m5stack-k132-adv'));
-const columns=matrixBoard==='tdeck'?10:14,lastColumn=columns-1;
+for(const matrixBoard of ['cardputer-adv','cardputer','tdeck','lilygo-t-deck-pro']){
+const matrixCatalog=structuredClone(catalog),matrixProduct=matrixCatalog.products.find(p=>p.id===(matrixBoard==='tdeck'?'lilygo-t-deck':matrixBoard==='lilygo-t-deck-pro'?matrixBoard:'m5stack-k132-adv'));
+const columns=['tdeck','lilygo-t-deck-pro'].includes(matrixBoard)?10:14,lastColumn=columns-1;
 matrixProduct.runtime={...matrixProduct.runtime,board:matrixBoard,flashMb:8,psramMb:0,status:'partial'};
 const matrixManifest=JSON.parse(await readFile(new URL('web/wasm/fw/hello.json',root),'utf8'));matrixManifest.board=matrixBoard;matrixManifest.psram_mb=0;
 responseOverrides.set('https://platform.example/wasm/fw/cardputer-contract.json',JSON.stringify(matrixManifest));
 const matrixMessages=[],matrixTransport={
-  postMessage(m){let reply;if(m.op==='init')reply={ready:true};else if(m.op==='create')reply={created:true};else if(m.op==='load')reply={loaded:m.kind,ok:true};else if(m.op==='start')reply={started:true};else if(m.op==='stop')reply={stopped:true};else if(m.op==='text'){matrixMessages.push(JSON.parse(m.data));reply={inputQueued:m.inputId,time:0.25};}if(reply)queueMicrotask(()=>this.onmessage?.({data:reply}));},terminate(){},
+  postMessage(m){let reply;if(m.op==='init')reply={ready:true};else if(m.op==='create')reply={created:true,flashStorage:matrixBoard==='lilygo-t-deck-pro'};else if(m.op==='load')reply={loaded:m.kind,ok:true};else if(m.op==='start')reply={started:true};else if(m.op==='stop')reply={stopped:true};else if(m.op==='flash-snapshot')reply={flashReply:m.requestId,data:new ArrayBuffer(8*1024*1024)};else if(m.op.startsWith('flash-'))reply={flashReply:m.requestId,ok:true};else if(m.op.startsWith('sd-'))reply={sdReply:m.requestId,ok:true};else if(m.op==='text'){matrixMessages.push(JSON.parse(m.data));reply={inputQueued:m.inputId,time:0.25};}if(reply)queueMicrotask(()=>this.onmessage?.({data:reply}));},terminate(){},
 };
 const matrixRuntime=createPlatformRuntime({catalog:matrixCatalog,fetchImpl:fileFetch,workerFactory:()=>matrixTransport,baseUrl,assetBaseUrl:'https://platform.example/'});
 try{
@@ -451,6 +451,7 @@ try{
   await matrixRuntime.loadFirmware({manifestUrl:'https://platform.example/wasm/fw/cardputer-contract.json'});await matrixRuntime.start();
   for(const event of [{row:-1,column:0,pressed:true},{row:4,column:0,pressed:true},{row:0,column:columns,pressed:true},{row:0.5,column:0,pressed:true},{row:0,column:0,pressed:1}])await expectCode(()=>matrixRuntime.input({type:'matrix-key',...event}),'INVALID_INPUT');
   if(matrixBoard==='tdeck')for(const column of [0,3,5,6,9])await expectCode(()=>matrixRuntime.input({type:'matrix-key',row:3,column,pressed:true}),'INVALID_INPUT');
+  if(matrixBoard==='lilygo-t-deck-pro')for(const column of [0,1,2,3,4])await expectCode(()=>matrixRuntime.input({type:'matrix-key',row:3,column,pressed:true}),'INVALID_INPUT');
   await matrixRuntime.input({type:'matrix-key',row:2,column:lastColumn,pressed:true});
   assert.deepEqual(matrixMessages,[{t:'matrix-key',row:2,column:lastColumn,pressed:1}]);
   await matrixRuntime.pause();await matrixRuntime.input({type:'matrix-key',row:2,column:lastColumn,pressed:false});

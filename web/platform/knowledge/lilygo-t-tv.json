@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-tv",
   "title": "LILYGO T-TV",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32；具体硬件版次及配置待核对。",
+  "summary": "已接入透明 OLED 版 T-TV：SSD1309 128×64、真实 GPIO 软件 SPI、硬件 SPI，以及两路供电与复位门控。触摸键、红外遥控和 RTC 尚未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "LilyGo-Tv-lite renamed manufacturer repository LilyGo-TTV; transparent blue SSD1309 option",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-TV",
@@ -52,6 +52,82 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-11-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-tv",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 64,
+          "controller": "SSD1309",
+          "interface": "spi",
+          "type": "OLED",
+          "diagonalInch": 1.54,
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp page RAM",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": null,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "simulation",
+        "physicalPsramMb": null,
+        "controls": [],
+        "pins": {
+          "display": {
+            "sclk": 18,
+            "mosi": 23,
+            "miso": null,
+            "cs": 5,
+            "dc": 19,
+            "reset": 4,
+            "enable": [
+              2,
+              33
+            ],
+            "enableActiveHigh": true
+          },
+          "touchKey": {
+            "signal": 15,
+            "power": 32,
+            "implemented": false
+          },
+          "rtc": {
+            "sda": 26,
+            "scl": 25,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-lilygo-ttv-01e6d9ffed05",
+        "classic-lilygo-ttv-c3c4be694f7d",
+        "classic-lilygo-ttv-1e49a5cc0b65",
+        "classic-lilygo-ttv-684d2e6c9c24",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +156,160 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-tv-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_2.jpg?v=1699856667",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_2.jpg?v=1699856667",
+      "fetchedAt": "2026-11-22T06:58:16Z",
+      "bytes": 55190,
+      "sha256": "ada72a05a3db6f72e04b126a802464df523c8be7e5e1cb5368231e19f1873421",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t tv official photo 0",
+      "archiveName": "lilygo-t-tv-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-tv-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_1.jpg?v=1699856671",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_1.jpg?v=1699856671",
+      "fetchedAt": "2026-11-22T06:58:16Z",
+      "bytes": 53257,
+      "sha256": "0694d209056b4edc839397bdcc3f30b3508dee65138eec046d26a19c84eb759b",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t tv official photo 1",
+      "archiveName": "lilygo-t-tv-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-tv-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_4.jpg?v=1699856671",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_4.jpg?v=1699856671",
+      "fetchedAt": "2026-11-22T06:58:16Z",
+      "bytes": 51045,
+      "sha256": "f72471db074b3769bb213d7f1b386cb6de151b443a8ccf71ad25da07a72c3ee0",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t tv official photo 2",
+      "archiveName": "lilygo-t-tv-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "classic-lilygo-ttv-01e6d9ffed05",
+      "repository": "Xinyuan-LilyGO/LilyGo-TTV",
+      "path": "README.MD",
+      "revision": "2ef4e2edf908dcc586ce3c83c04286bb30740f57",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "79404fae965e7054335b43c882d5646e167c4005",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/README.MD",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1084,
+      "sha256": "8b968f2e0e81efb3880a0c7efadf3f123a876bf4e716f458cec02518e64d9677",
+      "archiveName": "classic-lilygo-ttv-01e6d9ffed05.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-ttv-01e6d9ffed05.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-TTV/README.MD"
+    },
+    {
+      "id": "classic-lilygo-ttv-c3c4be694f7d",
+      "repository": "Xinyuan-LilyGO/LilyGo-TTV",
+      "path": "examples/DISPALY/DesktopClock/utilities.h",
+      "revision": "2ef4e2edf908dcc586ce3c83c04286bb30740f57",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "f33baa705c92feafd4c91edc6e9d0519f7e1a215",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/examples/DISPALY/DesktopClock/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/examples/DISPALY/DesktopClock/utilities.h",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 430,
+      "sha256": "d36b8a3a3427bf6f4441f7bf043120b8cf51a8ca27dbc45f336d7d7872922ad3",
+      "archiveName": "classic-lilygo-ttv-c3c4be694f7d.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-ttv-c3c4be694f7d.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-TTV/examples/DISPALY/DesktopClock/utilities.h"
+    },
+    {
+      "id": "classic-lilygo-ttv-1e49a5cc0b65",
+      "repository": "Xinyuan-LilyGO/LilyGo-TTV",
+      "path": "examples/DISPALY/DesktopClock/DesktopClock.ino",
+      "revision": "2ef4e2edf908dcc586ce3c83c04286bb30740f57",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e10c8bb766e221a1cacd884083138e4ed6b0f79c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/examples/DISPALY/DesktopClock/DesktopClock.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/examples/DISPALY/DesktopClock/DesktopClock.ino",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 8152,
+      "sha256": "528f50f9317fd91d0509394dbdc25c98371e63e8d34a4dda49f7039b9e673236",
+      "archiveName": "classic-lilygo-ttv-1e49a5cc0b65.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-ttv-1e49a5cc0b65.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-TTV/examples/DISPALY/DesktopClock/DesktopClock.ino"
+    },
+    {
+      "id": "classic-lilygo-ttv-684d2e6c9c24",
+      "repository": "Xinyuan-LilyGO/LilyGo-TTV",
+      "path": "schematic/LilyGo_TTV(11-28).pdf",
+      "revision": "2ef4e2edf908dcc586ce3c83c04286bb30740f57",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "54b3cd0784789f8478427197e592d599b8de8ff9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/schematic/LilyGo_TTV%2811-28%29.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-TTV/2ef4e2edf908dcc586ce3c83c04286bb30740f57/schematic/LilyGo_TTV%2811-28%29.pdf",
+      "fetchedAt": "2026-11-22T08:35:23Z",
+      "status": "fetched",
+      "mediaType": "application/octet-stream",
+      "bytes": 222681,
+      "sha256": "8af43d7e062f284b1d351fa8dc1ca37a5f3328278c6ea1271d8ff7e2246f9feb",
+      "archiveName": "classic-lilygo-ttv-684d2e6c9c24.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-ttv-684d2e6c9c24.raw",
+      "kind": "manufacturer-schematic",
+      "title": "Xinyuan-LilyGO/LilyGo-TTV/schematic/LilyGo_TTV(11-28).pdf"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-tv-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_2.jpg?v=1699856667",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-tv/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-tv-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_1.jpg?v=1699856671",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-tv/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-tv-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-TV_4.jpg?v=1699856671",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-tv/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +322,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +329,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +339,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +349,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +359,194 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
+    },
+    {
+      "id": "memory",
+      "label": "实体存储容量仍需核对",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "classic-lilygo-ttv-01e6d9ffed05",
+        "classic-lilygo-ttv-c3c4be694f7d",
+        "classic-lilygo-ttv-1e49a5cc0b65",
+        "classic-lilygo-ttv-684d2e6c9c24",
+        "official-store-shopify-1"
+      ],
+      "notes": "部分实体 Flash / PSRAM 容量未确认；运行时字段是所选调试或编译配置，PSRAM 为 0 不表示实板没有该器件。冲突、已知候选值和容量依据见本型号适配来源记录。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-tv/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-tv-official-photo-0",
+      "lilygo-t-tv-official-photo-1",
+      "lilygo-t-tv-official-photo-2",
+      "classic-lilygo-ttv-01e6d9ffed05",
+      "classic-lilygo-ttv-c3c4be694f7d",
+      "classic-lilygo-ttv-1e49a5cc0b65",
+      "classic-lilygo-ttv-684d2e6c9c24"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "classic-lilygo-ttv-01e6d9ffed05",
+        "classic-lilygo-ttv-c3c4be694f7d",
+        "classic-lilygo-ttv-1e49a5cc0b65",
+        "classic-lilygo-ttv-684d2e6c9c24",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-tv",
+    "status": "diagnostic",
+    "scope": "已接入透明 OLED 版 T-TV：SSD1309 128×64、真实 GPIO 软件 SPI、硬件 SPI，以及两路供电与复位门控。触摸键、红外遥控和 RTC 尚未实现。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "The bundled ST7789 Setup136 file describes a different LCD variant and is not applied.",
+      "TTP223 touch key, HS0038 IR receiver/remote, RTC, charging and analog transparency/brightness are unmodeled.",
+      "Power loss clears undefined OLED SRAM deterministically and resets display configuration. Power restoration alone does not restore an image.",
+      "Flash capacity is not confirmed from this exact SKU source; 4 MiB is an explicit runtime allocation, not a measured physical value.",
+      "No complete T-TV factory firmware was run. SSD1309 scrolling, analog current/contrast and readback remain unmodeled.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-tv",
+    "boardId": "lilygo-t-tv",
+    "name": "LILYGO T-TV",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": null,
+    "psramMB": 0,
+    "psramMbBasis": "unknown-physical-capacity",
+    "hardwareRevision": "LilyGo-Tv-lite renamed manufacturer repository LilyGo-TTV; transparent blue SSD1309 option",
+    "display": {
+      "width": 128,
+      "height": 64,
+      "controller": "SSD1309",
+      "interface": "spi",
+      "type": "OLED",
+      "diagonalInch": 1.54,
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp page RAM",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sclk": 18,
+        "mosi": 23,
+        "miso": null,
+        "cs": 5,
+        "dc": 19,
+        "reset": 4,
+        "enable": [
+          2,
+          33
+        ],
+        "enableActiveHigh": true
+      },
+      "touchKey": {
+        "signal": 15,
+        "power": 32,
+        "implemented": false
+      },
+      "rtc": {
+        "sda": 26,
+        "scl": 25,
+        "implemented": false
+      }
+    },
+    "controls": [],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "transparent_tv_ssd1309_receives_software_and_hardware_spi_with_real_power_gates"
+      ]
+    },
+    "scope": "已接入透明 OLED 版 T-TV：SSD1309 128×64、真实 GPIO 软件 SPI、硬件 SPI，以及两路供电与复位门控。触摸键、红外遥控和 RTC 尚未实现。",
+    "scopeEn": "Transparent OLED T-TV: distinct SSD1309 128x64 endpoint driven by GPIO software SPI or routed hardware SPI, with both supply enables and reset. Touch key/IR/RTC unmodeled.",
+    "sourceIds": [
+      "classic-lilygo-ttv-01e6d9ffed05",
+      "classic-lilygo-ttv-c3c4be694f7d",
+      "classic-lilygo-ttv-1e49a5cc0b65",
+      "classic-lilygo-ttv-684d2e6c9c24",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "The bundled ST7789 Setup136 file describes a different LCD variant and is not applied.",
+      "TTP223 touch key, HS0038 IR receiver/remote, RTC, charging and analog transparency/brightness are unmodeled.",
+      "Power loss clears undefined OLED SRAM deterministically and resets display configuration. Power restoration alone does not restore an image.",
+      "Flash capacity is not confirmed from this exact SKU source; 4 MiB is an explicit runtime allocation, not a measured physical value.",
+      "No complete T-TV factory firmware was run. SSD1309 scrolling, analog current/contrast and readback remain unmodeled.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "chronology": {
+      "date": "2023-11-13",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-tv",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 55,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "physicalFlashMB": null,
+    "flashMbBasis": "simulation"
+  }
 }

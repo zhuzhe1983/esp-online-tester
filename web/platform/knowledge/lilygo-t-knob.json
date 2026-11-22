@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-knob",
   "title": "LILYGO T-Knob",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-C6-MINI-1U；具体硬件版次及配置待核对。",
+  "summary": "GPIO9 BOOT 和 GPIO23/22/21/20 四颗低有效绿灯已建模；MT6701 角度、TMC6300 力反馈和蜂鸣器未实现，无虚拟正交旋钮。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-MotorDriver-C6 V1.0 / ESP32-C6-MINI-1U",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Knob",
@@ -52,6 +52,135 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-07-13",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-knob",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 9,
+          "bootActiveLow": true,
+          "strapPullups": [
+            8,
+            9
+          ],
+          "leds": [
+            {
+              "id": "LED1",
+              "pin": 23,
+              "activeLow": true,
+              "color": "green"
+            },
+            {
+              "id": "LED2",
+              "pin": 22,
+              "activeLow": true,
+              "color": "green"
+            },
+            {
+              "id": "LED3",
+              "pin": 21,
+              "activeLow": true,
+              "color": "green"
+            },
+            {
+              "id": "LED4",
+              "pin": 20,
+              "activeLow": true,
+              "color": "green"
+            }
+          ],
+          "hall": {
+            "controller": "MT6701",
+            "interface": "SSI",
+            "cs": 7,
+            "clock": 14,
+            "data": 15,
+            "implemented": false
+          },
+          "motor": {
+            "controller": "TMC6300",
+            "uh": 6,
+            "ul": 5,
+            "vh": 1,
+            "vl": 3,
+            "wh": 0,
+            "wl": 4,
+            "fault": 2,
+            "implemented": false
+          },
+          "buzzer": {
+            "pin": 18,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "t-knob-readme",
+        "t-knob-schematic",
+        "t-knob-motor-example",
+        "t-knob-hall-source",
+        "official-store-shopify-1",
+        "espressif-c6-psram"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flash": "4 MB manufacturer module/flash specification",
+          "psram": "No external PSRAM supported by ESP32-C6; conflicting wiki/README labels are not allocated",
+          "sourceIds": [
+            "espressif-c6-psram"
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "t-knob-readme",
+        "t-knob-schematic",
+        "t-knob-motor-example",
+        "t-knob-hall-source",
+        "official-store-shopify-1",
+        "espressif-c6-psram"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +209,284 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-knob-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_2.jpg?v=1720849314",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_2.jpg?v=1720849314",
+      "fetchedAt": "2026-11-22T06:57:30Z",
+      "bytes": 44198,
+      "sha256": "d5e51bc4573c5de0e7803f6765ddd9ac14338ffefd22e8a7729ab1876868289c",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t knob official photo 0",
+      "archiveName": "lilygo-t-knob-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-knob-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_6.jpg?v=1720849315",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_6.jpg?v=1720849315",
+      "fetchedAt": "2026-11-22T06:57:30Z",
+      "bytes": 37781,
+      "sha256": "7ce6345f34f132b2cab352529ed0ea6fa5ab148bd7091a0040ffda96c4f5d7c0",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t knob official photo 1",
+      "archiveName": "lilygo-t-knob-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-knob-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_5.jpg?v=1720849314",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_5.jpg?v=1720849314",
+      "fetchedAt": "2026-11-22T06:57:30Z",
+      "bytes": 31027,
+      "sha256": "31fa8993e4562bcaa86249a65e9ce235f6aa6f64703c9f445c91892bd5ba7c7a",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t knob official photo 2",
+      "archiveName": "lilygo-t-knob-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-knob-manufacturer-cad",
+      "productId": "lilygo-t-knob",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/3D_File/H718-20240809.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/3D_File/H718-20240809.stp",
+      "repository": "Xinyuan-LilyGO/T-Knob",
+      "repositoryPath": "3D_File/H718-20240809.stp",
+      "scope": "H718 assembly dated 2024-08-09",
+      "fetchedAt": "2026-11-22T07:04:08Z",
+      "bytes": 1385323,
+      "sha256": "52e46dba3972fc4b729c35f4ce258dbde2662583266265961d42039db76c5f55",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "52e46dba3972fc4b729c35f4ce258dbde2662583266265961d42039db76c5f55",
+      "archiveSha256": "56903b0ae59ae688a2fb24eb3241b48c862cbd018f249a84da6ce698ffd5672e",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "56903b0ae59ae688a2fb24eb3241b48c862cbd018f249a84da6ce698ffd5672e",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "64d001100abc0a48a71ac5291c598018980b9172",
+      "revisionType": "pinned-git-revision",
+      "revision": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "title": "lilygo t knob manufacturer cad",
+      "archiveName": "lilygo-t-knob-manufacturer-cad.gz"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-knob",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-knob/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-knob/index.md",
+      "fetchedAt": "2026-11-22T06:42:34Z",
+      "mediaType": "text/plain",
+      "bytes": 3879,
+      "sha256": "0be266c843a9a17bc67f5165e11b625e5a1ef401e3cccf388bb4012f6696ed91",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitBlobSha": "96b2c7b17fce81e27f43597a76f0300548a1ec43",
+      "path": "en/products/other/t-knob/index.md",
+      "title": "official-wiki-t-knob",
+      "kind": "manufacturer-documentation",
+      "archiveName": "official-wiki-t-knob.md",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/README.md",
+      "fetchedAt": "2026-11-22T07:06:48Z",
+      "bytes": 3753,
+      "sha256": "2ab79299562097d4ecb5a8ad610755921e855ca18cfaf74ace64544ce3f2064b",
+      "mediaType": "text/plain",
+      "revision": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "path": "README.md",
+      "repository": "Xinyuan-LilyGO/T-Knob",
+      "gitBlobSha": "deb2d5d2c50a63021cc844f4f80a9545d8c8b59c",
+      "id": "t-knob-readme",
+      "status": "fetched",
+      "title": "T-Knob official README and factory-program mapping",
+      "kind": "manufacturer-documentation",
+      "archiveName": "Xinyuan-LilyGO__T-Knob__README.md",
+      "commit": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "fa6759361b25c64e367f281ea048b77c712b1c89",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Knob/git/commits/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Knob/git/commits/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1111,
+        "sha256": "eac59b6b96c283c276258ab15e063fa3d6a69d93ff7da0071c5e9458c832f487",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Knob.raw"
+      },
+      "sourceCachePath": "target/lilygo-c6-sources/Xinyuan-LilyGO__T-Knob__README.md"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/hardware/T-MotorDriver-C6%20V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/hardware/T-MotorDriver-C6%20V1.0.pdf",
+      "fetchedAt": "2026-11-22T07:06:53Z",
+      "bytes": 352144,
+      "sha256": "a5d24c6112a7e56269688b7fd55a9288af38760f968d5fa23b7388ecc9753d98",
+      "mediaType": "application/octet-stream",
+      "revision": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "path": "hardware/T-MotorDriver-C6 V1.0.pdf",
+      "repository": "Xinyuan-LilyGO/T-Knob",
+      "gitBlobSha": "32fb3037906ea53f4afcc90b5d94a9977bd2b006",
+      "id": "t-knob-schematic",
+      "status": "fetched",
+      "title": "T-MotorDriver-C6 V1.0 schematic, page 2 MCU/BOOT/green LEDs",
+      "kind": "schematic",
+      "archiveName": "Xinyuan-LilyGO__T-Knob__hardware__T-MotorDriver-C6_V1.0.pdf",
+      "commit": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "fa6759361b25c64e367f281ea048b77c712b1c89",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Knob/git/commits/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Knob/git/commits/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1111,
+        "sha256": "eac59b6b96c283c276258ab15e063fa3d6a69d93ff7da0071c5e9458c832f487",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Knob.raw"
+      },
+      "sourceCachePath": "target/lilygo-c6-sources/Xinyuan-LilyGO__T-Knob__hardware__T-MotorDriver-C6 V1.0.pdf"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/examples/1_simple_drive/1_simple_drive.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/examples/1_simple_drive/1_simple_drive.ino",
+      "fetchedAt": "2026-11-22T07:06:48Z",
+      "bytes": 2686,
+      "sha256": "048be923b56928904057aa0524eee58834276c3c2e31c54611f3aecdb4360511",
+      "mediaType": "text/plain",
+      "revision": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "path": "examples/1_simple_drive/1_simple_drive.ino",
+      "repository": "Xinyuan-LilyGO/T-Knob",
+      "gitBlobSha": "80afc55ef0c48ad3275e0909ad95c99eff8bd01a",
+      "id": "t-knob-motor-example",
+      "status": "fetched",
+      "title": "T-Knob three-phase motor example",
+      "kind": "manufacturer-source",
+      "archiveName": "Xinyuan-LilyGO__T-Knob__examples__1_simple_drive__1_simple_drive.ino",
+      "commit": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "fa6759361b25c64e367f281ea048b77c712b1c89",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Knob/git/commits/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Knob/git/commits/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1111,
+        "sha256": "eac59b6b96c283c276258ab15e063fa3d6a69d93ff7da0071c5e9458c832f487",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Knob.raw"
+      },
+      "sourceCachePath": "target/lilygo-c6-sources/Xinyuan-LilyGO__T-Knob__examples__1_simple_drive__1_simple_drive.ino"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/examples/2_encoder_mt6701/MT6701.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Knob/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f/examples/2_encoder_mt6701/MT6701.h",
+      "fetchedAt": "2026-11-22T07:06:48Z",
+      "bytes": 965,
+      "sha256": "f27c7f590daed4f32cb9e100c7c44ebbbf02718ff19b1ffa5306970063d03c64",
+      "mediaType": "text/plain",
+      "revision": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "path": "examples/2_encoder_mt6701/MT6701.h",
+      "repository": "Xinyuan-LilyGO/T-Knob",
+      "gitBlobSha": "814b38157146d6559c4afcff3deef2571bff8bcf",
+      "id": "t-knob-hall-source",
+      "status": "fetched",
+      "title": "T-Knob MT6701 SSI sensor source",
+      "kind": "manufacturer-source",
+      "archiveName": "Xinyuan-LilyGO__T-Knob__examples__2_encoder_mt6701__MT6701.h",
+      "commit": "055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "fa6759361b25c64e367f281ea048b77c712b1c89",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Knob/git/commits/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Knob/git/commits/055ce6d8f21d21bd27cc107afb4dd2e6926f1f1f",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1111,
+        "sha256": "eac59b6b96c283c276258ab15e063fa3d6a69d93ff7da0071c5e9458c832f487",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Knob.raw"
+      },
+      "sourceCachePath": "target/lilygo-c6-sources/Xinyuan-LilyGO__T-Knob__examples__2_encoder_mt6701__MT6701.h"
+    },
+    {
+      "url": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "resolvedUrl": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "fetchedAt": "2026-11-22T07:07:06Z",
+      "bytes": 38300,
+      "sha256": "9f01971adeba15437d287ef9ad696fcd6d6dbcfd11b29d51734eb6803d474fd8",
+      "mediaType": "text/html",
+      "id": "espressif-c6-psram",
+      "status": "fetched",
+      "title": "Espressif FAQ: ESP32-C6 does not support external PSRAM",
+      "kind": "manufacturer-documentation",
+      "archiveName": "espressif-psram-faq.html",
+      "sourceCachePath": "target/lilygo-c6-sources/espressif-psram-faq.html"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-knob-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_2.jpg?v=1720849314",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-knob/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-knob-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_6.jpg?v=1720849315",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-knob/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-knob-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Knob-lilygo_5.jpg?v=1720849314",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-knob/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +499,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +506,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +516,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +526,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +536,198 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "factory-source-described-image-not-located",
+    "sourceIds": [
+      "t-knob-readme"
+    ],
+    "candidates": [],
+    "simulationVerified": false,
+    "notes": "README explicitly identifies example 8 PID/low-pass compilation as the factory program and describes a firmare folder. The complete pinned Git tree contains 68 entries and no firmare/firmware directory or .bin image. Do not invent a download link."
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-knob/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：H718 assembly dated 2024-08-09；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-knob",
+      "lilygo-t-knob-official-photo-0",
+      "lilygo-t-knob-official-photo-1",
+      "lilygo-t-knob-official-photo-2",
+      "lilygo-t-knob-manufacturer-cad",
+      "t-knob-readme",
+      "t-knob-schematic",
+      "t-knob-motor-example",
+      "t-knob-hall-source",
+      "espressif-c6-psram"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-knob",
+    "status": "diagnostic",
+    "scope": "GPIO9 BOOT 和 GPIO23/22/21/20 四颗低有效绿灯已建模；MT6701 角度、TMC6300 力反馈和蜂鸣器未实现，无虚拟正交旋钮。",
+    "unsupported": [
+      "MT6701 SSI angle/parity, TMC6300 motor current/commutation, detents and haptic feedback are not modeled.",
+      "Buzzer, analog current/fault circuits and optional expansion-board accessories are not modeled.",
+      "No board-owned screen or SD slot. Factory startup and RF communication are unverified.",
+      "LED output supports GPIO latch drives in this first profile; peripheral PWM is not yet observed."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-knob",
+    "boardId": "lilygo-t-knob",
+    "name": "LILYGO T-Knob",
+    "chip": "esp32c6",
+    "flashMB": 4,
+    "psramMB": 0,
+    "display": null,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 9,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "trialAvailable": false,
+      "hardwareValidated": false
+    },
+    "chronology": {
+      "date": "2024-07-13",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-knob",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "memoryEvidence": {
+      "flash": "4 MB manufacturer module/flash specification",
+      "psram": "No external PSRAM supported by ESP32-C6; conflicting wiki/README labels are not allocated",
+      "sourceIds": [
+        "espressif-c6-psram"
+      ]
+    },
+    "hardwareRevision": "T-MotorDriver-C6 V1.0 / ESP32-C6-MINI-1U",
+    "pins": {
+      "boot": 9,
+      "bootActiveLow": true,
+      "strapPullups": [
+        8,
+        9
+      ],
+      "leds": [
+        {
+          "id": "LED1",
+          "pin": 23,
+          "activeLow": true,
+          "color": "green"
+        },
+        {
+          "id": "LED2",
+          "pin": 22,
+          "activeLow": true,
+          "color": "green"
+        },
+        {
+          "id": "LED3",
+          "pin": 21,
+          "activeLow": true,
+          "color": "green"
+        },
+        {
+          "id": "LED4",
+          "pin": 20,
+          "activeLow": true,
+          "color": "green"
+        }
+      ],
+      "hall": {
+        "controller": "MT6701",
+        "interface": "SSI",
+        "cs": 7,
+        "clock": 14,
+        "data": 15,
+        "implemented": false
+      },
+      "motor": {
+        "controller": "TMC6300",
+        "uh": 6,
+        "ul": 5,
+        "vh": 1,
+        "vl": 3,
+        "wh": 0,
+        "wl": 4,
+        "fault": 2,
+        "implemented": false
+      },
+      "buzzer": {
+        "pin": 18,
+        "implemented": false
+      }
+    },
+    "scope": "GPIO9 BOOT 和 GPIO23/22/21/20 四颗低有效绿灯已建模；MT6701 角度、TMC6300 力反馈和蜂鸣器未实现，无虚拟正交旋钮。",
+    "scopeEn": "Exact T-MotorDriver-C6 V1.0 BOOT plus four low-active GPIO green LEDs. The physical magnetic sensor and motor are not represented by an unrelated quadrature encoder.",
+    "sourceIds": [
+      "t-knob-readme",
+      "t-knob-schematic",
+      "t-knob-motor-example",
+      "t-knob-hall-source",
+      "official-store-shopify-1",
+      "espressif-c6-psram"
+    ],
+    "unsupported": [
+      "MT6701 SSI angle/parity, TMC6300 motor current/commutation, detents and haptic feedback are not modeled.",
+      "Buzzer, analog current/fault circuits and optional expansion-board accessories are not modeled.",
+      "No board-owned screen or SD slot. Factory startup and RF communication are unverified.",
+      "LED output supports GPIO latch drives in this first profile; peripheral PWM is not yet observed."
+    ],
+    "conflicts": [
+      {
+        "fact": "buzzer pin",
+        "sources": [
+          "t-knob-readme",
+          "t-knob-schematic",
+          "official-store-shopify-1"
+        ],
+        "resolution": "Store table says IO14 but the pinned README and schematic assign the buzzer to GPIO18; GPIO14 is the MT6701 clock. Buzzer remains unmodeled."
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "factory-source-described-image-not-located",
+      "sourceIds": [
+        "t-knob-readme"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "notes": "README explicitly identifies example 8 PID/low-pass compilation as the factory program and describes a firmare folder. The complete pinned Git tree contains 68 entries and no firmare/firmware directory or .bin image. Do not invent a download link."
+    }
+  }
 }

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-mini-e-paper-core",
   "title": "LILYGO Mini E-Paper",
-  "summary": "Spark 将此商品归入其他产品，标注 MCU 为 ESP32；具体硬件版次及配置待核对。",
+  "summary": "已接入经典 PICO-D4 Mini E-Paper Core 的 UC8175 原生 80×128、GPIO27 电源、GPIO0/36/39 三键及 SPI TF 卡；接线独立于 S3 Mini。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "LILYGO_MINI_EPAPER_ESP32 exact HelloWorld GxGDGDEW0102T4 target, not ESP32-S3 or GDEW0102I4F alternative",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "Mini E-Paper",
@@ -52,6 +52,102 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/mini-e-paper-core",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 80,
+          "height": 128,
+          "controller": "UC8175 / GDEW0102T4",
+          "interface": "spi",
+          "type": "e-paper",
+          "diagonalInch": 1.02,
+          "pixelFormat": "RGB565",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false,
+          "orientation": "Native portrait driver geometry; storefront landscape dimensions are not a hardware conflict",
+          "visibleImage": "Retained optical image, published only when an explicit refresh completes",
+          "controllerRam": {
+            "planes": 2,
+            "width": 80,
+            "height": 128,
+            "bitsPerPlane": 1
+          }
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          },
+          {
+            "id": "button-1",
+            "name": "按键1",
+            "type": "button",
+            "pin": 36,
+            "activeLow": true
+          },
+          {
+            "id": "button-2",
+            "name": "按键2",
+            "type": "button",
+            "pin": 39,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "display": {
+            "sclk": 22,
+            "mosi": 21,
+            "miso": null,
+            "cs": 5,
+            "dc": 19,
+            "reset": 4,
+            "busy": 34,
+            "busyActiveHigh": false,
+            "enable": 27,
+            "enableActiveHigh": true
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-lilygo-mini-epaper-b33563055168",
+        "classic-lilygo-mini-epaper-be6a3c229cfc",
+        "classic-lilygo-mini-epaper-ef602c11eb5c",
+        "classic-lilygo-mini-epaper-7dfaad16544e",
+        "classic-lilygo-mini-epaper-4df7367dc7fc",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +176,232 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-mini-e-paper-core-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H501-MiniE-Paper-Core-LILYGO_4.jpg?v=1666406301",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H501-MiniE-Paper-Core-LILYGO_4.jpg?v=1666406301",
+      "fetchedAt": "2026-11-22T07:00:06Z",
+      "bytes": 56181,
+      "sha256": "108218c5ab3c2d5e41314af748eb982d6b251fe5846831f0d358bf58c40afd83",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo mini e paper core official photo 0",
+      "archiveName": "lilygo-mini-e-paper-core-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-mini-e-paper-core-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H501-MiniE-Paper-Core-LILYGO_8.jpg?v=1666406316",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H501-MiniE-Paper-Core-LILYGO_8.jpg?v=1666406316",
+      "fetchedAt": "2026-11-22T07:00:06Z",
+      "bytes": 42983,
+      "sha256": "23deb8caad1f840e64ab9c42f59b9be6e5e5fe498fa9270e4d4bb34b6a7ca780",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo mini e paper core official photo 1",
+      "archiveName": "lilygo-mini-e-paper-core-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-mini-e-paper-core-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/MINI1.02CORE.jpg?v=1666406316",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/MINI1.02CORE.jpg?v=1666406316",
+      "fetchedAt": "2026-11-22T07:00:06Z",
+      "bytes": 348069,
+      "sha256": "7d927592f23fac57330989a934ee19dfde808e0b1fccf0f9dd09348f6e46952d",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo mini e paper core official photo 2",
+      "archiveName": "lilygo-mini-e-paper-core-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-mini-e-paper-core-manufacturer-box_shell-stl",
+      "productId": "lilygo-mini-e-paper-core",
+      "file": "manufacturer-box_shell.stl.gz",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/3D_file/box_shell.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/3D_file/box_shell.stl",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper",
+      "repositoryPath": "3D_file/box_shell.stl",
+      "blobSha": "1abf58ce5daf63fc5fb3cf2c97749487564f9c03",
+      "fetchedAt": "2026-11-22T07:32:13Z",
+      "bytes": 132984,
+      "sha256": "119fe1a341c6505219f7cc5d8e05707e86a50682cccecce89b744f9a61444b5d",
+      "mediaType": "application/octet-stream",
+      "status": "fetched",
+      "revisionType": "pinned-git-revision",
+      "kind": "manufacturer-cad",
+      "sourceFormat": "STL",
+      "sourceUnit": "not-encoded",
+      "storedSha256": "34d5cc74c3d60a43025e61fbf0a2fe57a611fc7a18d076781ed47d44170de7b1",
+      "archiveSha256": "34d5cc74c3d60a43025e61fbf0a2fe57a611fc7a18d076781ed47d44170de7b1",
+      "compression": "gzip",
+      "revision": "73441be24a207b9789e49c5781b137550eef1f56",
+      "hashScope": "sha256/bytes describe original fetched source; storedSha256 describes gzip artifact.",
+      "title": "lilygo mini e paper core manufacturer box_shell stl",
+      "archiveName": "lilygo-mini-e-paper-core-manufacturer-box_shell-stl.gz"
+    },
+    {
+      "id": "lilygo-mini-e-paper-core-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/LICENSE",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:37:28Z",
+      "sha256": "2a9352675d2914c96ab6444efca745ba7e91ebe2f75bef9e9f28d7ee6c066b8c",
+      "bytes": 1071,
+      "mediaType": "text/plain",
+      "file": "SOURCE-LICENSE.txt",
+      "title": "lilygo mini e paper core repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-mini-e-paper-core-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "classic-lilygo-mini-epaper-b33563055168",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper",
+      "path": "README.md",
+      "revision": "73441be24a207b9789e49c5781b137550eef1f56",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "885de47f96702df0a6cd70fad4a111b45f50d0ee",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/README.md",
+      "fetchedAt": "2026-11-22T08:06:27Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 3301,
+      "sha256": "6e63caceb5f2fc3d32cd403857f7f60496362eccbdbe9e43301cbe715d0bffa8",
+      "archiveName": "classic-lilygo-mini-epaper-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-mini-epaper-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO-Mini-Epaper/README.md"
+    },
+    {
+      "id": "classic-lilygo-mini-epaper-be6a3c229cfc",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper",
+      "path": "examples/GxEPD_Hello_world/GxEPD_Hello_world.ino",
+      "revision": "73441be24a207b9789e49c5781b137550eef1f56",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "1beef73dfae3fc3088fba1d4355b018700695923",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/examples/GxEPD_Hello_world/GxEPD_Hello_world.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/examples/GxEPD_Hello_world/GxEPD_Hello_world.ino",
+      "fetchedAt": "2026-11-22T08:06:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1748,
+      "sha256": "d667d3443c2b10f40f854a2cd47e86ec88157838179cfaac6bf2b327f3f177f2",
+      "archiveName": "classic-lilygo-mini-epaper-be6a3c229cfc.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-mini-epaper-be6a3c229cfc.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO-Mini-Epaper/examples/GxEPD_Hello_world/GxEPD_Hello_world.ino"
+    },
+    {
+      "id": "classic-lilygo-mini-epaper-ef602c11eb5c",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper",
+      "path": "lib/GxEPD/src/boards.h",
+      "revision": "73441be24a207b9789e49c5781b137550eef1f56",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "54e7803188489cecb574be140b84e9a769631885",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/lib/GxEPD/src/boards.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/lib/GxEPD/src/boards.h",
+      "fetchedAt": "2026-11-22T08:09:47Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 8196,
+      "sha256": "71e29b2f4c5d259747c60c01e58da81e854af3ee7ef8066c8c25293af1afed03",
+      "archiveName": "classic-lilygo-mini-epaper-ef602c11eb5c.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-mini-epaper-ef602c11eb5c.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO-Mini-Epaper/lib/GxEPD/src/boards.h"
+    },
+    {
+      "id": "classic-lilygo-mini-epaper-7dfaad16544e",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper",
+      "path": "lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.h",
+      "revision": "73441be24a207b9789e49c5781b137550eef1f56",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "2a3b96c5d47e097b246f77477db7449ea8938628",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.h",
+      "fetchedAt": "2026-11-22T08:09:46Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 5292,
+      "sha256": "69024ec5511fea07c5086e5365483a25467d863ad09913f920bdcff5fc87a4e4",
+      "archiveName": "classic-lilygo-mini-epaper-7dfaad16544e.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-mini-epaper-7dfaad16544e.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO-Mini-Epaper/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.h"
+    },
+    {
+      "id": "classic-lilygo-mini-epaper-4df7367dc7fc",
+      "repository": "Xinyuan-LilyGO/LilyGO-Mini-Epaper",
+      "path": "lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.cpp",
+      "revision": "73441be24a207b9789e49c5781b137550eef1f56",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "205545dfccb6de5a43e7697ba6e0bf73d41d28b1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGO-Mini-Epaper/73441be24a207b9789e49c5781b137550eef1f56/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.cpp",
+      "fetchedAt": "2026-11-22T08:09:53Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 17844,
+      "sha256": "6be2af909403a9cf0f4a07454cfe833890952131c557a1616e2bd39c3e83cdf2",
+      "archiveName": "classic-lilygo-mini-epaper-4df7367dc7fc.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-mini-epaper-4df7367dc7fc.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGO-Mini-Epaper/lib/GxEPD/src/GxGDGDEW0102T4/GxGDGDEW0102T4.cpp"
+    },
+    {
+      "id": "classic-esp32-pico-d4-datasheet",
+      "url": "https://www.espressif.com/sites/default/files/documentation/esp32-pico-d4_datasheet_en.pdf",
+      "resolvedUrl": "https://documentation.espressif.com/esp32-pico_series_datasheet_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:11:46Z",
+      "bytes": 4549458,
+      "sha256": "177eb1517274eea5056ce725951091ebe8e2bce1d8635f064081fdad1cec0918",
+      "mediaType": "application/pdf",
+      "archiveName": "esp32-pico-d4-datasheet.pdf",
+      "sourceCachePath": "target/lilygo-classic-sources/esp32-pico-d4-datasheet.pdf",
+      "kind": "chip-manufacturer-datasheet",
+      "title": "classic esp32 pico d4 datasheet"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-mini-e-paper-core-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H501-MiniE-Paper-Core-LILYGO_4.jpg?v=1666406301",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-mini-e-paper-core/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-mini-e-paper-core-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H501-MiniE-Paper-Core-LILYGO_8.jpg?v=1666406316",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-mini-e-paper-core/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-mini-e-paper-core-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/MINI1.02CORE.jpg?v=1666406316",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-mini-e-paper-core/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +414,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +421,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +431,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +441,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +451,232 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-mini-e-paper-core/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 部分模型；版本、单位、未知内部和显示/键帽估计见来源说明。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-mini-e-paper-core-official-photo-0",
+      "lilygo-mini-e-paper-core-official-photo-1",
+      "lilygo-mini-e-paper-core-official-photo-2",
+      "lilygo-mini-e-paper-core-manufacturer-box_shell-stl",
+      "lilygo-mini-e-paper-core-repository-license",
+      "classic-lilygo-mini-epaper-b33563055168",
+      "classic-lilygo-mini-epaper-be6a3c229cfc",
+      "classic-lilygo-mini-epaper-ef602c11eb5c",
+      "classic-lilygo-mini-epaper-7dfaad16544e",
+      "classic-lilygo-mini-epaper-4df7367dc7fc",
+      "classic-esp32-pico-d4-datasheet"
+    ],
+    "displayHint": {
+      "width": 80,
+      "height": 128,
+      "sourceIds": [
+        "classic-lilygo-mini-epaper-b33563055168",
+        "classic-lilygo-mini-epaper-be6a3c229cfc",
+        "classic-lilygo-mini-epaper-ef602c11eb5c",
+        "classic-lilygo-mini-epaper-7dfaad16544e",
+        "classic-lilygo-mini-epaper-4df7367dc7fc",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-mini-e-paper-core",
+    "status": "diagnostic",
+    "scope": "已接入经典 PICO-D4 Mini E-Paper Core 的 UC8175 原生 80×128、GPIO27 电源、GPIO0/36/39 三键及 SPI TF 卡；接线独立于 S3 Mini。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "An e-paper RAM write is not a completed frame: BUSY and a frozen pending image are separate, reset/power loss cancel unfinished refresh, and the previous optical image is retained.",
+      "Analog LUT waveforms, temperature/voltage, ghosting, calibrated reflectance and physical update-time validation are unmodeled. The visible RGB565 values are digital debug colors.",
+      "SPI bytes require the exact clock/MOSI/CS/DC and reset/supply routes. Unsupported command/data effects are not substituted with host-drawn frames.",
+      "Manufacturer product table explicitly states no PSRAM; generic build BOARD_HAS_PSRAM flags are not treated as physical memory evidence.",
+      "Full/partial nominal completion2000/700ms follows the selected UC8175 driver convention; no measured physical optical timing is claimed.",
+      "RTC, IMU, motor12, battery ADC35 and extension I2C26/25 are unmodeled."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-mini-e-paper-core",
+    "boardId": "lilygo-mini-e-paper-core",
+    "name": "LILYGO Mini E-Paper",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": 0,
+    "psramMB": 0,
+    "psramMbBasis": "physical-capacity",
+    "hardwareRevision": "LILYGO_MINI_EPAPER_ESP32 exact HelloWorld GxGDGDEW0102T4 target, not ESP32-S3 or GDEW0102I4F alternative",
+    "display": {
+      "width": 80,
+      "height": 128,
+      "controller": "UC8175 / GDEW0102T4",
+      "interface": "spi",
+      "type": "e-paper",
+      "diagonalInch": 1.02,
+      "pixelFormat": "RGB565",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false,
+      "orientation": "Native portrait driver geometry; storefront landscape dimensions are not a hardware conflict",
+      "visibleImage": "Retained optical image, published only when an explicit refresh completes",
+      "controllerRam": {
+        "planes": 2,
+        "width": 80,
+        "height": 128,
+        "bitsPerPlane": 1
+      }
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sclk": 22,
+        "mosi": 21,
+        "miso": null,
+        "cs": 5,
+        "dc": 19,
+        "reset": 4,
+        "busy": 34,
+        "busyActiveHigh": false,
+        "enable": 27,
+        "enableActiveHigh": true
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      },
+      {
+        "id": "button-1",
+        "name": "按键1",
+        "type": "button",
+        "pin": 36,
+        "activeLow": true
+      },
+      {
+        "id": "button-2",
+        "name": "按键2",
+        "type": "button",
+        "pin": 39,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "classic_mini_uc8175_has_its_own_spi_supply_busy_and_retained_frame",
+        "classic_epaper_tf_cards_exchange_real_spi_register_packets"
+      ]
+    },
+    "scope": "已接入经典 PICO-D4 Mini E-Paper Core 的 UC8175 原生 80×128、GPIO27 电源、GPIO0/36/39 三键及 SPI TF 卡；接线独立于 S3 Mini。",
+    "scopeEn": "Classic PICO-D4 Mini E-Paper Core: UC8175 native80x128, GPIO27 supply, GPIO0/36/39 and actual SPI TF card. Its wiring is independent of Mini S3.",
+    "sourceIds": [
+      "classic-lilygo-mini-epaper-b33563055168",
+      "classic-lilygo-mini-epaper-be6a3c229cfc",
+      "classic-lilygo-mini-epaper-ef602c11eb5c",
+      "classic-lilygo-mini-epaper-7dfaad16544e",
+      "classic-lilygo-mini-epaper-4df7367dc7fc",
+      "classic-esp32-pico-d4-datasheet",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "An e-paper RAM write is not a completed frame: BUSY and a frozen pending image are separate, reset/power loss cancel unfinished refresh, and the previous optical image is retained.",
+      "Analog LUT waveforms, temperature/voltage, ghosting, calibrated reflectance and physical update-time validation are unmodeled. The visible RGB565 values are digital debug colors.",
+      "SPI bytes require the exact clock/MOSI/CS/DC and reset/supply routes. Unsupported command/data effects are not substituted with host-drawn frames.",
+      "Manufacturer product table explicitly states no PSRAM; generic build BOARD_HAS_PSRAM flags are not treated as physical memory evidence.",
+      "Full/partial nominal completion2000/700ms follows the selected UC8175 driver convention; no measured physical optical timing is claimed.",
+      "RTC, IMU, motor12, battery ADC35 and extension I2C26/25 are unmodeled."
+    ],
+    "chronology": {
+      "date": "2022-10-25",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/mini-e-paper-core",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 102,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "sdCard": {
+      "slot": true,
+      "transport": "spi",
+      "implemented": true,
+      "transportSupported": true,
+      "pins": {
+        "sclk": 14,
+        "mosi": 15,
+        "miso": 2,
+        "cs": 13
+      },
+      "sourceIds": [
+        "classic-lilygo-mini-epaper-ef602c11eb5c"
+      ],
+      "preparedImage": {
+        "sizeMB": 64,
+        "filesystem": "FAT32"
+      },
+      "notes": "Actual SPI card protocol on routed CLK/MOSI/MISO/CS, card-presence and CMD0/CMD8/ACMD41/CMD17 read tested through classic ESP32 SPI registers. Common virtual SPI card also supports writes; no physical-media timing claim."
+    },
+    "module": "ESP32-PICO-D4",
+    "refreshTiming": {
+      "fullMs": 2000,
+      "partialMs": 700,
+      "basis": "selected UC8175 nominal driver delay convention",
+      "measured": false
+    }
+  }
 }

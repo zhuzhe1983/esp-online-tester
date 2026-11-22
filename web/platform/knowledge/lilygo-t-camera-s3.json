@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-camera-s3",
   "title": "LILYGO T-Camera S3",
-  "summary": "Spark 将此商品归入T-Camera 系列，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "已实现 BOOT0、SDA7/SCL6 上的 128×64 SSD1306 OLED RAM/方向/开关和 AXP2101 标识/配置子集；摄像头、PIR、麦克风及整机电源控制未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-Camera-S3 V1.6/I2S and V1.7/PDM share the implemented OLED/BOOT routes; audio is unimplemented",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Camera S3",
@@ -52,6 +52,134 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-12-28",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-camera-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "controller": "SSD1306",
+          "width": 128,
+          "height": 64,
+          "type": "OLED",
+          "interface": "I2C",
+          "address": 60,
+          "sda": 7,
+          "scl": 6,
+          "implemented": true
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "pmic": {
+            "controller": "AXP2101",
+            "address": 52,
+            "sda": 7,
+            "scl": 6,
+            "interrupt": 2,
+            "interruptImplemented": false,
+            "implementedRegisters": [
+              "0x03",
+              "0x30",
+              "0x90",
+              "0x94"
+            ]
+          },
+          "cameraSccb": {
+            "sda": 5,
+            "scl": 4,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-Cam-ESP32S3-README.MD",
+        "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+        "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+        "LilyGo-Cam-ESP32S3-firmware-README.MD",
+        "LilyGo-Cam-ESP32S3-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-camera-s3",
+        "AXP2101-Datasheet-V1.0",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "LilyGo-Cam-ESP32S3-README.MD",
+            "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+            "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+            "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+            "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+            "LilyGo-Cam-ESP32S3-firmware-README.MD",
+            "LilyGo-Cam-ESP32S3-tree",
+            "official-store-shopify-1",
+            "official-wiki-t-camera-s3",
+            "AXP2101-Datasheet-V1.0",
+            "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+            "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+          ],
+          "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-Cam-ESP32S3-README.MD",
+        "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+        "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+        "LilyGo-Cam-ESP32S3-firmware-README.MD",
+        "LilyGo-Cam-ESP32S3-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-camera-s3",
+        "AXP2101-Datasheet-V1.0",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +208,294 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-camera-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_3.jpg?v=1672197750",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_3.jpg?v=1672197750",
+      "fetchedAt": "2026-11-22T06:59:28Z",
+      "bytes": 81540,
+      "sha256": "5ef82b30459c1abc24041415d032be076c52021c9c6c639effbe9fb200cdc853",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t camera s3 official photo 0",
+      "archiveName": "lilygo-t-camera-s3-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-camera-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_5.jpg?v=1672197751",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_5.jpg?v=1672197751",
+      "fetchedAt": "2026-11-22T06:59:28Z",
+      "bytes": 58707,
+      "sha256": "3396cd8188a0342dd43d437194ff8cbbbcd23d5feaa81ba6cfe9f20b3ab8106e",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t camera s3 official photo 1",
+      "archiveName": "lilygo-t-camera-s3-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-camera-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_12.jpg?v=1672197751",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_12.jpg?v=1672197751",
+      "fetchedAt": "2026-11-22T06:59:28Z",
+      "bytes": 143448,
+      "sha256": "a5f0b674ed71b219b834916b6a65744801ec8d2b3fbbc4269d312dbb6c9b5017",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t camera s3 official photo 2",
+      "archiveName": "lilygo-t-camera-s3-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-camera-s3",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-camera-series/t-camera-s3/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-camera-series/t-camera-s3/index.md",
+      "fetchedAt": "2026-11-22T06:42:45Z",
+      "mediaType": "text/plain",
+      "bytes": 4975,
+      "sha256": "2486b625ba394eb565c38312024ff91152c84e01a8c28620a961397afde96605",
+      "gitBlobSha": "a220154ce7aee5e822d6f247ac3cb9947ebddabc",
+      "path": "en/products/t-camera-series/t-camera-s3/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "archiveName": "en__products__t-camera-series__t-camera-s3__index.md",
+      "title": "LILYGO official wiki t camera s3",
+      "kind": "manufacturer-documentation",
+      "sourceCachePath": "target/lilygo-audit/wiki/en__products__t-camera-series__t-camera-s3__index.md"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "README.MD",
+      "id": "LilyGo-Cam-ESP32S3-README.MD",
+      "gitBlobSha": "3b838d4f12cc98562feed1d5d7f854d4441740c9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "ef0a7f9b74f373defb5d4de66d49ccfec275af2f982a73b25ac8f2e6814f71ef",
+      "bytes": 7723,
+      "archiveName": "LilyGo-Cam-ESP32S3-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-README.MD.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "examples/factory/utilities.h",
+      "id": "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+      "gitBlobSha": "0fbf94e45f1627acdd4c7e003bfaa762abc8f693",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/examples/factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/examples/factory/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "87ae95563ccbef249f11aec3e91a7aa762c1944c1dbbbfca8eda10fc21295c3c",
+      "bytes": 2807,
+      "archiveName": "LilyGo-Cam-ESP32S3-examples-factory-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / examples/factory/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-examples-factory-utilities.h.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "examples/MinimalScreenExample/MinimalScreenExample.ino",
+      "id": "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+      "gitBlobSha": "f4cf839d3848b52df0472b70c7dd2e75d5960158",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/examples/MinimalScreenExample/MinimalScreenExample.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/examples/MinimalScreenExample/MinimalScreenExample.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "c5e6b9ad6d58d8a36d9f52547d51572054f0aa211f62b010f01993bd5c3d92fb",
+      "bytes": 7809,
+      "archiveName": "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / examples/MinimalScreenExample/MinimalScreenExample.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "schematic/T-Camera-S3-V1.6.pdf",
+      "id": "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+      "gitBlobSha": "8274ca5e8d107fc8b7574da27a233032c6e8168a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/schematic/T-Camera-S3-V1.6.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/schematic/T-Camera-S3-V1.6.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "01c95e5daf3eda905091ffb1440d953b77200e57c95c67fcdfe3548a6b31363f",
+      "bytes": 725299,
+      "archiveName": "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / schematic/T-Camera-S3-V1.6.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "schematic/T-Camera-S3-V1.7.pdf",
+      "id": "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+      "gitBlobSha": "306618f671f212cdf53e9023422e0ed44e06046a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/schematic/T-Camera-S3-V1.7.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/schematic/T-Camera-S3-V1.7.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:25Z",
+      "sha256": "456a112f706d26afe752f40e978caa4f82192be1a372ee25f470f2fee244f351",
+      "bytes": 469702,
+      "archiveName": "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / schematic/T-Camera-S3-V1.7.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf.raw"
+    },
+    {
+      "id": "LilyGo-Cam-ESP32S3-firmware-README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "firmware/README.MD",
+      "gitBlobSha": "125799d7f2786679713d520c2add8184c4f49345",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:38Z",
+      "sha256": "2641a829eb0284e92ea638e90bb35ea019f779bfe53dd6f2311fcd735277bae4",
+      "bytes": 178,
+      "archiveName": "LilyGo-Cam-ESP32S3-firmware-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / firmware/README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-firmware-README.MD.raw"
+    },
+    {
+      "id": "LilyGo-Cam-ESP32S3-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:02Z",
+      "mediaType": "application/json",
+      "sha256": "47898b2a04fe6249e6f519adf4328791f4852d141b91a77d9b0edb9e24c1745c",
+      "bytes": 154909,
+      "archiveName": "LilyGo-Cam-ESP32S3-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash.",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Cam-ESP32S3-tree.raw"
+    },
+    {
+      "id": "AXP2101-Datasheet-V1.0",
+      "repository": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3",
+      "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+      "path": "lib/XPowersLib/datasheet/AXP2101_Datasheet_V1.0_en.pdf",
+      "gitBlobSha": "202df83fc5d96e319e5775b7f3701c8860209005",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/lib/XPowersLib/datasheet/AXP2101_Datasheet_V1.0_en.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/lib/XPowersLib/datasheet/AXP2101_Datasheet_V1.0_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:22:49Z",
+      "sha256": "421011983c56034e1074d28e22826e8414d55f8dc5344cd67967942e3bc8b8d9",
+      "bytes": 1586117,
+      "archiveName": "AXP2101-Datasheet-V1.0.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Cam-ESP32S3 / lib/XPowersLib/datasheet/AXP2101_Datasheet_V1.0_en.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-s3-io-sources/AXP2101-Datasheet-V1.0.raw"
+    },
+    {
+      "id": "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "gitBlobSha": "6595969938dfaf4ca834dbd693497b49182a7821",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:21:20Z",
+      "sha256": "ee5ae2828fdf6583600e228f4be927ddd20e0299e6c71dc292469d16f27b366e",
+      "bytes": 10604,
+      "archiveName": "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / lib/XPowersLib/src/REG/AXP2101Constants.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h.raw"
+    },
+    {
+      "id": "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp",
+      "repository": "Xinyuan-LilyGO/LilyGo-T-SIM7080G",
+      "pinnedGitRevision": "39f7886a9436c8a460eb50c86e2d6c8e21de9b1e",
+      "path": "lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "gitBlobSha": "b3ed78ceb8bc535cf17aa08aab53621b837a6740",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-SIM7080G/39f7886a9436c8a460eb50c86e2d6c8e21de9b1e/lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:21:20Z",
+      "sha256": "c011507358b160f35c75de5b022cc54143ca70f84ad00b004d8859b5548ad9ff",
+      "bytes": 95347,
+      "archiveName": "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-T-SIM7080G / lib/XPowersLib/src/XPowersAXP2101.tpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-camera-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_3.jpg?v=1672197750",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-camera-s3/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-camera-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_5.jpg?v=1672197751",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-camera-s3/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-camera-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/LILYGO-T-CAMERA-S3_12.jpg?v=1672197751",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-camera-s3/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +508,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +515,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +525,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +535,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +545,293 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-entries-linked",
+    "sourceIds": [
+      "LilyGo-Cam-ESP32S3-tree",
+      "LilyGo-Cam-ESP32S3-README.MD",
+      "LilyGo-Cam-ESP32S3-firmware-README.MD"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/blob/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+        "path": "firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+        "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+        "gitBlobSha": "3ad27b6ca659eb9aa98248bde910a6f1d71c6b58",
+        "bytes": 1264432,
+        "status": "linked",
+        "sourceId": "LilyGo-Cam-ESP32S3-tree",
+        "role": "factory",
+        "identityEvidence": "README maps factory example to v1.6/I2S; exact binary filename declares factory v1.6 and 0x0.",
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "documentedFlashOffset": 0
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/blob/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+        "path": "firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+        "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+        "gitBlobSha": "b6e2a19ac66f71caefa4044985608f8e69068304",
+        "bytes": 1264400,
+        "status": "linked",
+        "sourceId": "LilyGo-Cam-ESP32S3-tree",
+        "role": "factory",
+        "identityEvidence": "Separate factory v1.7/PDM filename; do not substitute its audio wiring for v1.6.",
+        "binaryFetched": false,
+        "simulationVerified": false,
+        "documentedFlashOffset": 0
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Both hardware revisions have separately named factory images. Retained as exact remote entries; no binary header download/full-factory boot claim.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-camera-s3/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-camera-s3",
+      "lilygo-t-camera-s3-official-photo-0",
+      "lilygo-t-camera-s3-official-photo-1",
+      "lilygo-t-camera-s3-official-photo-2",
+      "LilyGo-Cam-ESP32S3-README.MD",
+      "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+      "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+      "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+      "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+      "LilyGo-Cam-ESP32S3-firmware-README.MD",
+      "LilyGo-Cam-ESP32S3-tree",
+      "AXP2101-Datasheet-V1.0",
+      "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+      "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "LilyGo-Cam-ESP32S3-README.MD",
+        "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+        "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+        "LilyGo-Cam-ESP32S3-firmware-README.MD",
+        "LilyGo-Cam-ESP32S3-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-camera-s3",
+        "AXP2101-Datasheet-V1.0",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-camera-s3",
+    "status": "diagnostic",
+    "scope": "已实现 BOOT0、SDA7/SCL6 上的 128×64 SSD1306 OLED RAM/方向/开关和 AXP2101 标识/配置子集；摄像头、PIR、麦克风及整机电源控制未实现。",
+    "unsupported": [
+      "SDA5/SCL4 are camera SCCB, not OLED. Camera OV2640/OV5640 SKU capture, optics and DVP are unmodeled rather than silently selecting one sensor.",
+      "PIR, I2S/PDM microphones and AXP2101 power key/whole-board shutdown, PMIC IRQ, battery/USB readings, charging and analog rails are unmodeled. OLED/DCDC1 is powered with the running SoC as documented; external power removal is outside this profile.",
+      "OLED uses shared SSD1306 digital RAM/controller subset; scrolling oscillator/analog contrast, charge pump and reads are unmodeled. I2C is the hardware-controller transport, not software bit-banging.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-camera-s3",
+    "boardId": "lilygo-t-camera-s3",
+    "name": "LILYGO T-Camera S3",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-Camera-S3 V1.6/I2S and V1.7/PDM share the implemented OLED/BOOT routes; audio is unimplemented",
+    "display": {
+      "controller": "SSD1306",
+      "width": 128,
+      "height": 64,
+      "type": "OLED",
+      "interface": "I2C",
+      "address": 60,
+      "sda": 7,
+      "scl": 6,
+      "implemented": true
+    },
+    "physicalDisplay": true,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "已实现 BOOT0、SDA7/SCL6 上的 128×64 SSD1306 OLED RAM/方向/开关和 AXP2101 标识/配置子集；摄像头、PIR、麦克风及整机电源控制未实现。",
+    "scopeEn": "BOOT0, onboard SSD1306 128x64 I2C OLED and bounded AXP2101 ID/configuration registers on SDA7/SCL6. Firmware writes drive actual display RAM; no camera frame is fabricated.",
+    "chronology": {
+      "date": "2022-12-28",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-camera-s3",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "LilyGo-Cam-ESP32S3-README.MD",
+      "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+      "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+      "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+      "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+      "LilyGo-Cam-ESP32S3-firmware-README.MD",
+      "LilyGo-Cam-ESP32S3-tree",
+      "official-store-shopify-1",
+      "official-wiki-t-camera-s3",
+      "AXP2101-Datasheet-V1.0",
+      "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+      "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "SDA5/SCL4 are camera SCCB, not OLED. Camera OV2640/OV5640 SKU capture, optics and DVP are unmodeled rather than silently selecting one sensor.",
+      "PIR, I2S/PDM microphones and AXP2101 power key/whole-board shutdown, PMIC IRQ, battery/USB readings, charging and analog rails are unmodeled. OLED/DCDC1 is powered with the running SoC as documented; external power removal is outside this profile.",
+      "OLED uses shared SSD1306 digital RAM/controller subset; scrolling oscillator/analog contrast, charge pump and reads are unmodeled. I2C is the hardware-controller transport, not software bit-banging.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "pins": {
+      "boot": 0,
+      "pmic": {
+        "controller": "AXP2101",
+        "address": 52,
+        "sda": 7,
+        "scl": 6,
+        "interrupt": 2,
+        "interruptImplemented": false,
+        "implementedRegisters": [
+          "0x03",
+          "0x30",
+          "0x90",
+          "0x94"
+        ]
+      },
+      "cameraSccb": {
+        "sda": 5,
+        "scl": 4,
+        "implemented": false
+      }
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "LilyGo-Cam-ESP32S3-README.MD",
+        "LilyGo-Cam-ESP32S3-examples-factory-utilities.h",
+        "LilyGo-Cam-ESP32S3-examples-MinimalScreenExample-MinimalScreenExample.ino",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.6.pdf",
+        "LilyGo-Cam-ESP32S3-schematic-T-Camera-S3-V1.7.pdf",
+        "LilyGo-Cam-ESP32S3-firmware-README.MD",
+        "LilyGo-Cam-ESP32S3-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-camera-s3",
+        "AXP2101-Datasheet-V1.0",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-REG-AXP2101Constants.h",
+        "LilyGo-T-SIM7080G-lib-XPowersLib-src-XPowersAXP2101.tpp"
+      ],
+      "notes": "Explicit selected product/build configuration; no memory inferred from a sibling."
+    },
+    "conflicts": [
+      {
+        "fact": "OLED I2C pins",
+        "resolution": "Official wiki OLED table says SDA5/SCL4; pinned README, factory utilities, MinimalScreenExample and schematics distinguish camera SCCB5/4 from OLED/PMU7/6. Implement 7/6.",
+        "sourceIds": [
+          "official-wiki-t-camera-s3",
+          "LilyGo-Cam-ESP32S3-README.MD",
+          "LilyGo-Cam-ESP32S3-examples-factory-utilities.h"
+        ]
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "official-entries-linked",
+      "sourceIds": [
+        "LilyGo-Cam-ESP32S3-tree",
+        "LilyGo-Cam-ESP32S3-README.MD",
+        "LilyGo-Cam-ESP32S3-firmware-README.MD"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/blob/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+          "path": "firmware/i2s.cams3.firmware.factory.v1.6.20260930_0x0.bin",
+          "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+          "gitBlobSha": "3ad27b6ca659eb9aa98248bde910a6f1d71c6b58",
+          "bytes": 1264432,
+          "status": "linked",
+          "sourceId": "LilyGo-Cam-ESP32S3-tree",
+          "role": "factory",
+          "identityEvidence": "README maps factory example to v1.6/I2S; exact binary filename declares factory v1.6 and 0x0.",
+          "binaryFetched": false,
+          "simulationVerified": false,
+          "documentedFlashOffset": 0
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/blob/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Cam-ESP32S3/64eae201d5f88dcb9077fcb20909bc0d266af625/firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+          "path": "firmware/pdm.cams3.firmware.factory.v1.7.20260930_0x0.bin",
+          "pinnedGitRevision": "64eae201d5f88dcb9077fcb20909bc0d266af625",
+          "gitBlobSha": "b6e2a19ac66f71caefa4044985608f8e69068304",
+          "bytes": 1264400,
+          "status": "linked",
+          "sourceId": "LilyGo-Cam-ESP32S3-tree",
+          "role": "factory",
+          "identityEvidence": "Separate factory v1.7/PDM filename; do not substitute its audio wiring for v1.6.",
+          "binaryFetched": false,
+          "simulationVerified": false,
+          "documentedFlashOffset": 0
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Both hardware revisions have separately named factory images. Retained as exact remote entries; no binary header download/full-factory boot claim.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+      }
+    },
+    "controllerEvidenceReport": "docs/platform/research/lilygo-oled-controller-2026-11-22.json"
+  }
 }

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-display-s3-amoled-1-64",
   "title": "LILYGO T-Display S3 AMOLED (DS)",
-  "summary": "Spark 将此商品归入T-Display 系列，标注 MCU 为 ESP32-S3R8；具体硬件版次及配置待核对。",
+  "summary": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "V1.0 2024-04-08",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Display S3 AMOLED (DS)",
@@ -52,6 +52,100 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-04-08",
+        "basis": "hardware-release",
+        "revision": "V1.0",
+        "sourceId": "amoled164-readme-md",
+        "sourceUrl": "https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/blob/e236a4dfb3295c473d8ac7c240cbea93313707c0/README.md",
+        "confidence": "high",
+        "hardwareRevision": "V1.0",
+        "notes": "Explicit V1.0 update date in the exact manufacturer repository README."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "amoled164-readme-md"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 280,
+          "height": 456,
+          "controller": "CO5300",
+          "interface": "qspi",
+          "pixelFormat": "RGB565",
+          "crop": [
+            20,
+            0,
+            280,
+            456
+          ],
+          "commandCoordinateCanvas": [
+            320,
+            456
+          ],
+          "physicalTouch": true,
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "pin": 0,
+            "activeLow": true,
+            "type": "button",
+            "name": "BOOT"
+          }
+        ],
+        "pins": {
+          "display": {
+            "sclk": 12,
+            "mosi": 11,
+            "cs": 10,
+            "dc": null,
+            "reset": 17,
+            "enable": 16,
+            "backlight": null,
+            "ledcGate": false,
+            "quadData": [
+              11,
+              13,
+              14,
+              15
+            ]
+          },
+          "touch": {
+            "controller": "FT3168",
+            "address": 56,
+            "sda": 7,
+            "scl": 6,
+            "irq": 9,
+            "reset": 8
+          },
+          "encoder": null
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "amoled164-readme-md",
+        "amoled164-examples-gfx-gfx-ino",
+        "amoled164-libraries-mylibrary-pin_config-h",
+        "official-store-shopify-1",
+        "official-wiki-t-display-s3-amoled-1.64",
+        "amoled164-ft3168-address"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +174,227 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-display-s3-amoled-1-64-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_8_dab52018-1a9a-4f93-9f98-df57b5984f42.jpg?v=1721282952",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_8_dab52018-1a9a-4f93-9f98-df57b5984f42.jpg?v=1721282952",
+      "fetchedAt": "2026-11-22T06:57:36Z",
+      "bytes": 78435,
+      "sha256": "70ad83126fa0da93add3469db89d1e8980311bc5ab289bc1fe07c6f58277af7c",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display s3 amoled 1 64 official photo 0",
+      "archiveName": "lilygo-t-display-s3-amoled-1-64-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-display-s3-amoled-1-64-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_6_9a34c797-53d1-4dc3-9979-3e69db326121.jpg?v=1721282952",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_6_9a34c797-53d1-4dc3-9979-3e69db326121.jpg?v=1721282952",
+      "fetchedAt": "2026-11-22T06:57:36Z",
+      "bytes": 56436,
+      "sha256": "1d82a6ca4964074622183bc195b00f6031580ed854cd061169b2f93b13e03099",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display s3 amoled 1 64 official photo 1",
+      "archiveName": "lilygo-t-display-s3-amoled-1-64-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-display-s3-amoled-1-64-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_5_3698e023-3243-4ac1-b69a-af21abc27593.jpg?v=1721282952",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_5_3698e023-3243-4ac1-b69a-af21abc27593.jpg?v=1721282952",
+      "fetchedAt": "2026-11-22T06:57:36Z",
+      "bytes": 75889,
+      "sha256": "cb3abb12d827fc89bb6270dd4c6ff70a07556ca58855061a3c7960f8a36f2b75",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display s3 amoled 1 64 official photo 2",
+      "archiveName": "lilygo-t-display-s3-amoled-1-64-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-display-s3-amoled-1-64-reviewed-cad-1",
+      "productId": "lilygo-t-display-s3-amoled-1-64",
+      "title": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64 information/3D_File.stp",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/e236a4dfb3295c473d8ac7c240cbea93313707c0/information/3D_File.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/e236a4dfb3295c473d8ac7c240cbea93313707c0/information/3D_File.stp",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64",
+      "repositoryPath": "information/3D_File.stp",
+      "revision": "e236a4dfb3295c473d8ac7c240cbea93313707c0",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "5a990b8c29a5877f3e0db944ebd78c37161a5a12",
+      "fetchedAt": "2026-11-22T08:50:36Z",
+      "bytes": 1038706,
+      "sha256": "c620629d139ba551c305652002d137e555c98a54e3682ed49ddc823d6ccab517",
+      "rawSha256": "c620629d139ba551c305652002d137e555c98a54e3682ed49ddc823d6ccab517",
+      "file": "manufacturer-3D_File.stp.gz",
+      "archiveName": "manufacturer-3D_File.stp.gz",
+      "storedSha256": "06ca547f497270008651d77d1450e32de3b84394b7e4dc7b3340bde612c1a41c",
+      "archiveSha256": "06ca547f497270008651d77d1450e32de3b84394b7e4dc7b3340bde612c1a41c",
+      "compression": "gzip",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "scope": "Official 1.64-inch reference assembly, including PCB/display representations and optional H708 enclosure. Solids 0–6 retain their supplied placement. The zero-thickness two-triangle reference plane (component 7) is omitted. The 37 × 67 × 24 mm envelope belongs to these enclosure components, not the shipped bare-board dimensions; compatibility with the separate July 2026 enclosure is not claimed.",
+      "hashScope": "sha256 and bytes refer to the exact fetched source; storedSha256 refers to the deterministic gzip artifact."
+    },
+    {
+      "id": "lilygo-t-display-s3-amoled-1-64-reviewed-cad-license",
+      "title": "Manufacturer repository LICENSE",
+      "kind": "license",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/e236a4dfb3295c473d8ac7c240cbea93313707c0/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/e236a4dfb3295c473d8ac7c240cbea93313707c0/LICENSE",
+      "fetchedAt": "2026-11-22T08:50:36Z",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149,
+      "file": "manufacturer-LICENSE.txt",
+      "archiveName": "manufacturer-LICENSE.txt",
+      "revision": "e236a4dfb3295c473d8ac7c240cbea93313707c0"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-display-s3-amoled-1.64",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-display-series/t-display-s3-amoled-1.64/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-display-series/t-display-s3-amoled-1.64/index.md",
+      "fetchedAt": "2026-11-22T06:42:57Z",
+      "mediaType": "text/plain",
+      "bytes": 6012,
+      "sha256": "df989eaf79ae159f43858562550734c483f7bf300658c57d82d42a52921050a7",
+      "gitBlobSha": "60ca01f372838a159dfe6363114483092203700e",
+      "path": "en/products/t-display-series/t-display-s3-amoled-1.64/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t display s3 amoled 1.64",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-display-series__t-display-s3-amoled-1.64__index.md"
+    },
+    {
+      "id": "amoled164-readme-md",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64",
+      "path": "README.md",
+      "revision": "e236a4dfb3295c473d8ac7c240cbea93313707c0",
+      "gitBlobSha": "ea69f89ef59ad9034392cf6a5d5f203b9e20ecaf",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/blob/e236a4dfb3295c473d8ac7c240cbea93313707c0/README.md",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "amoled164-readme-md-README.md",
+      "sha256": "991f3e33209be50879a0d7623770759a5ce61b2700f6daa6849179c95a1b028d",
+      "bytes": 12772,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "amoled164-examples-gfx-gfx-ino",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64",
+      "path": "examples/GFX/GFX.ino",
+      "revision": "e236a4dfb3295c473d8ac7c240cbea93313707c0",
+      "gitBlobSha": "d22459b5ad9dbe20e6e55a409e27caa2b5f947f7",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/blob/e236a4dfb3295c473d8ac7c240cbea93313707c0/examples/GFX/GFX.ino",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/examples/GFX/GFX.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "amoled164-examples-gfx-gfx-ino-GFX.ino",
+      "sha256": "3a5918e0f13453a3a1e5784d9f480512d42be59d02d4bfeecbb5a26be4d15fef",
+      "bytes": 1752,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "amoled164-libraries-mylibrary-pin_config-h",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64",
+      "path": "libraries/Mylibrary/pin_config.h",
+      "revision": "e236a4dfb3295c473d8ac7c240cbea93313707c0",
+      "gitBlobSha": "847a844cd8d7fa7c867f9ee76ae17b8d44ca8425",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/blob/e236a4dfb3295c473d8ac7c240cbea93313707c0/libraries/Mylibrary/pin_config.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/libraries/Mylibrary/pin_config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "amoled164-libraries-mylibrary-pin_config-h-pin_config.h",
+      "sha256": "bdba43bd4752c6e47c6e117645508b3ce8e0a80aa539e2cd1fd6ff5e7a8fd3e3",
+      "bytes": 918,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "amoled164-ft3168-address",
+      "repository": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64",
+      "path": "libraries/Arduino_DriveBus/src/touch_chip/Arduino_FT3x68.h",
+      "revision": "e236a4dfb3295c473d8ac7c240cbea93313707c0",
+      "url": "https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/blob/e236a4dfb3295c473d8ac7c240cbea93313707c0/libraries/Arduino_DriveBus/src/touch_chip/Arduino_FT3x68.h",
+      "title": "Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/libraries/Arduino_DriveBus/src/touch_chip/Arduino_FT3x68.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:04:55Z",
+      "archiveName": "amoled164-ft3168-address-Arduino_FT3x68.h",
+      "bytes": 4655,
+      "sha256": "2b3ec414037921d53e9598c8bce6b7f9797c97224df4aec9055ff5f844cdc1c8",
+      "gitBlobSha": "e618f571c2ba50c8da79a3512793064a162d9ad5",
+      "mediaType": "text/plain; charset=utf-8",
+      "type": "manufacturer-source",
+      "checkedAt": "2026-11-22"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-display-s3-amoled-1-64-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_8_dab52018-1a9a-4f93-9f98-df57b5984f42.jpg?v=1721282952",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-s3-amoled-1-64/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-display-s3-amoled-1-64-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_6_9a34c797-53d1-4dc3-9979-3e69db326121.jpg?v=1721282952",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-s3-amoled-1-64/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-display-s3-amoled-1-64-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-Display-AMOLED-1_5_3698e023-3243-4ac1-b69a-af21abc27593.jpg?v=1721282952",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-s3-amoled-1-64/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +407,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +414,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +424,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +434,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +444,185 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-display-s3-amoled-1.64"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-display-s3-amoled-1-64/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "采用已审查的官方 CAD 部件；具体版次、遗漏部分及未标定项见模型资料。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-display-s3-amoled-1.64",
+      "lilygo-t-display-s3-amoled-1-64-official-photo-0",
+      "lilygo-t-display-s3-amoled-1-64-official-photo-1",
+      "lilygo-t-display-s3-amoled-1-64-official-photo-2",
+      "amoled164-readme-md",
+      "amoled164-examples-gfx-gfx-ino",
+      "amoled164-libraries-mylibrary-pin_config-h",
+      "amoled164-ft3168-address",
+      "lilygo-t-display-s3-amoled-1-64-reviewed-cad-1",
+      "lilygo-t-display-s3-amoled-1-64-reviewed-cad-license"
+    ],
+    "displayHint": {
+      "width": 280,
+      "height": 456,
+      "sourceIds": [
+        "amoled164-readme-md",
+        "amoled164-examples-gfx-gfx-ino",
+        "amoled164-libraries-mylibrary-pin_config-h",
+        "official-store-shopify-1",
+        "official-wiki-t-display-s3-amoled-1.64",
+        "amoled164-ft3168-address"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-display-s3-amoled-1-64",
+    "status": "diagnostic",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile.",
+      "QSPI checks SCLK, D0 and CS; the shared SpiPins API has no D1/D2/D3 route masks, so those lane routes and quad electrical timing are not validated.",
+      "AMOLED brightness is an on/off gate; luminance, per-level dimming and OLED power behavior are not calibrated."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-display-s3-amoled-1-64",
+    "boardId": "lilygo-t-display-s3-amoled-1-64",
+    "name": "LILYGO T-Display S3 AMOLED (DS)",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "display": {
+      "width": 280,
+      "height": 456,
+      "controller": "CO5300",
+      "interface": "qspi",
+      "pixelFormat": "RGB565",
+      "crop": [
+        20,
+        0,
+        280,
+        456
+      ],
+      "commandCoordinateCanvas": [
+        320,
+        456
+      ],
+      "physicalTouch": true,
+      "touchImplemented": false
+    },
+    "pins": {
+      "display": {
+        "sclk": 12,
+        "mosi": 11,
+        "cs": 10,
+        "dc": null,
+        "reset": 17,
+        "enable": 16,
+        "backlight": null,
+        "ledcGate": false,
+        "quadData": [
+          11,
+          13,
+          14,
+          15
+        ]
+      },
+      "touch": {
+        "controller": "FT3168",
+        "address": 56,
+        "sda": 7,
+        "scl": 6,
+        "irq": 9,
+        "reset": 8
+      },
+      "encoder": null
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "pin": 0,
+        "activeLow": true,
+        "type": "button",
+        "name": "BOOT"
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "nativeGuestProbeVerified": true,
+      "nativeVerificationScope": "Authored Xtensa stores to IO_MUX/GPIO matrix and GP-SPI produce source-window pixels; wrong MOSI and reset checked."
+    },
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile.",
+      "QSPI checks SCLK, D0 and CS; the shared SpiPins API has no D1/D2/D3 route masks, so those lane routes and quad electrical timing are not validated.",
+      "AMOLED brightness is an on/off gate; luminance, per-level dimming and OLED power behavior are not calibrated."
+    ],
+    "sourceIds": [
+      "amoled164-readme-md",
+      "amoled164-examples-gfx-gfx-ino",
+      "amoled164-libraries-mylibrary-pin_config-h",
+      "official-store-shopify-1",
+      "official-wiki-t-display-s3-amoled-1.64",
+      "amoled164-ft3168-address"
+    ],
+    "chronology": {
+      "date": "2024-04-08",
+      "basis": "hardware-release",
+      "revision": "V1.0",
+      "sourceId": "amoled164-readme-md",
+      "sourceUrl": "https://github.com/Xinyuan-LilyGO/T-Display-S3-AMOLED-1.64/blob/e236a4dfb3295c473d8ac7c240cbea93313707c0/README.md",
+      "confidence": "high",
+      "hardwareRevision": "V1.0",
+      "notes": "Explicit V1.0 update date in the exact manufacturer repository README."
+    },
+    "priorityRank": 38,
+    "additionalChronologyEvidence": {
+      "date": "2024-04-08",
+      "basis": "hardware-release",
+      "revision": "V1.0",
+      "sourceId": "amoled164-readme-md",
+      "note": "Audit date2024-05-20 differs; source review must resolve before replacing catalog chronology."
+    },
+    "hardwareRevision": "V1.0 2024-04-08",
+    "scopeEn": "Selects V1.0 280x456 CO5300/ICNA3311, column offset20 from GFX example, GPIO16 display enable. FT3168 touch, SY6970 charger and camera are absent. 320x456 model canvas is not a physical GRAM capacity claim.",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+  }
 }

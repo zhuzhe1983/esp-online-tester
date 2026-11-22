@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-twr",
   "title": "LILYGO T-TWR/ SOLD OUT",
-  "summary": "Spark 将此商品归入T-TWR 系列，标注 MCU 为 ESP32-S3-WROOM-1-N16R8；具体硬件版次及配置待核对。",
+  "summary": "适配原始 Rev1.x 的 SSD1306、SDA13/SCL14、四个实际按键及 GPIO9/5 编码器。原理图确认 GPIO21 只控制 OLED 的 VBAT 发光电源，数字 VDD 始终为 3.3V，因此关闭显示仍允许 I2C 写入并保留显存。未混入 Plus 的 PMU、SH1106 或 TF 卡。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "Original T-TWR Rev1.x; archived official Rev1.x factory source and T-TWR_1.x schematic, not Plus/Rev2.x",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-TWR/ SOLD OUT",
@@ -52,6 +52,118 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-01-12",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-twr",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 64,
+          "controller": "SSD1306",
+          "type": "OLED",
+          "interface": "i2c",
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp eight pages; eight vertical pixels per RAM byte",
+          "controllerRamWidth": 128,
+          "physicalColumnOffset": 0,
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          },
+          {
+            "id": "user",
+            "name": "User",
+            "type": "button",
+            "pin": 3,
+            "activeLow": true
+          },
+          {
+            "id": "ptt",
+            "name": "PTT",
+            "type": "button",
+            "pin": 38,
+            "activeLow": true
+          },
+          {
+            "id": "encoder-press",
+            "name": "Encoder press",
+            "type": "button",
+            "pin": 7,
+            "activeLow": true
+          },
+          {
+            "id": "encoder",
+            "name": "Rotary encoder",
+            "type": "encoder",
+            "pins": {
+              "a": 9,
+              "b": 5
+            },
+            "detents": 24,
+            "detentsBasis": "simulation",
+            "physicalDetents": null,
+            "notes": "Debug stepping count only; physical encoder detents were not measured."
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "display": {
+            "sda": 13,
+            "scl": 14,
+            "address": 60,
+            "reset": null,
+            "emissionEnable": 21,
+            "activeHigh": true,
+            "supplyEvidence": "Official schematic page 3: EN1/GPIO21 drives Q3 S8050 and Q2 SI2307 to gate OLED pin6 VBAT; pin9 VDD is directly 3V3. I2C logic and RAM remain powered.",
+            "sourceId": "s3add-twr-original-schematic"
+          },
+          "encoder": {
+            "a": 9,
+            "b": 5
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "s3add-twr-original-readme",
+        "s3add-twr-original-config",
+        "s3add-twr-original-pins",
+        "s3add-twr-original-factory",
+        "s3add-twr-original-schematic",
+        "ssd1306-datasheet"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +192,207 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-twr-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_4.jpg?v=1673405184",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_4.jpg?v=1673405184",
+      "fetchedAt": "2026-11-22T06:59:21Z",
+      "bytes": 67350,
+      "sha256": "3da61bc5c9d980970243391d6580d2ab73abb5f49515395255be39ef9cf18a3a",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t twr official photo 0",
+      "archiveName": "lilygo-t-twr-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-twr-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_5.jpg?v=1673405184",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_5.jpg?v=1673405184",
+      "fetchedAt": "2026-11-22T06:59:22Z",
+      "bytes": 60307,
+      "sha256": "41163876f7867c658d3c5c332ba67996463cdf4853a3062b61c10366e65f3b53",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t twr official photo 1",
+      "archiveName": "lilygo-t-twr-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-twr-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_6.jpg?v=1673405187",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_6.jpg?v=1673405187",
+      "fetchedAt": "2026-11-22T06:59:22Z",
+      "bytes": 62577,
+      "sha256": "8f11be94a682a05377a3199146fc2a9a02d24b617a7c6ff6ea6ce58e78faaa46",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t twr official photo 2",
+      "archiveName": "lilygo-t-twr-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-twr",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-twr-series/t-twr/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-twr-series/t-twr/index.md",
+      "fetchedAt": "2026-11-22T06:43:43Z",
+      "mediaType": "text/plain",
+      "bytes": 7009,
+      "sha256": "1f33b4c9547672bcd762bd580956aebd9d02c478124d68d76cbeaf9c056983f9",
+      "gitBlobSha": "5fd45d70d1602806ea4a0b252d6d4dbb9fbaac1e",
+      "path": "en/products/t-twr-series/t-twr/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t twr",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-twr-series__t-twr__index.md"
+    },
+    {
+      "id": "s3add-twr-original-readme",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "README.md",
+      "gitBlobSha": "bc8b8435a0331b11868f63616762497a04080bd9",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/README.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/README.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T08:45:52Z",
+      "sha256": "f17ce5c09dd634bb9be89b3b865e8873c45a4f5ee15787972f7437dc493a24d3",
+      "bytes": 238,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-original-readme.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-config",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "examples/Rev1.x/walkie_talkie/config.h",
+      "gitBlobSha": "87460c5e4869b6c07166357b5a7357a8f816e442",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/examples/Rev1.x/walkie_talkie/config.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/examples/Rev1.x/walkie_talkie/config.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:45:52Z",
+      "sha256": "51d95adbf860e581e50fe3881c52807e0117ef4f73e023a7f41e169c8a2a948f",
+      "bytes": 1177,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-original-config.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-pins",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "examples/Rev1.x/at_debug/pin.h",
+      "gitBlobSha": "ac2d0b50bbe46dd505937b4a57de259cdaa0b798",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/examples/Rev1.x/at_debug/pin.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/examples/Rev1.x/at_debug/pin.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:46:08Z",
+      "sha256": "eb953c068e160e179b784814a2856eb8e020d31f185ea7678f8d98ee7989b413",
+      "bytes": 158,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-original-pins.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-factory",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "examples/Rev1.x/walkie_talkie/walkie_talkie.ino",
+      "gitBlobSha": "e38db4fd4f4bcceb16519efeacf198299232e69c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/examples/Rev1.x/walkie_talkie/walkie_talkie.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/examples/Rev1.x/walkie_talkie/walkie_talkie.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:46:09Z",
+      "sha256": "b10aec987ebaca368ffb6e33d369df46f8ba108ff2dc48dc3e52bd71ebde86e9",
+      "bytes": 25724,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "s3add-twr-original-factory.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "s3add-twr-original-schematic",
+      "repository": "Xinyuan-LilyGO/T-TWR",
+      "revision": "0795b5c939e780a2e13c5e778293a25f78fcd0d6",
+      "path": "sch/T-TWR_1.x.pdf",
+      "gitBlobSha": "3e61be2e20b76292b8045477cefb4955d924c5b7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-TWR/0795b5c939e780a2e13c5e778293a25f78fcd0d6/sch/T-TWR_1.x.pdf",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-TWR/sch/T-TWR_1.x.pdf",
+      "kind": "official-schematic",
+      "fetchedAt": "2026-11-22T08:46:59Z",
+      "sha256": "a9769c5970eca381e09f25707ea51407423bacfd3e324dda001d0b0f32fe1c74",
+      "bytes": 93471,
+      "mediaType": "application/pdf",
+      "archiveName": "s3add-twr-original-schematic.pdf",
+      "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "ssd1306-datasheet",
+      "status": "linked",
+      "kind": "manufacturer-datasheet",
+      "title": "Solomon Systech SSD1306 rev 1.1, April 2008",
+      "url": "https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf",
+      "inspection": "Manufacturer PDF text and tables inspected through public web retrieval; raw binary not retained or hashed. §§8.1.5, 8.5, 9, 10.1.3-15."
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-twr-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_4.jpg?v=1673405184",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-twr/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-twr-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_5.jpg?v=1673405184",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-twr/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-twr-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H592-T-TWR-LILYGO_6.jpg?v=1673405187",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-twr/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +405,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +412,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +422,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +432,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +442,225 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "source-reference-only",
+    "sourceIds": [
+      "s3add-twr-original-factory"
+    ],
+    "candidates": [],
+    "simulationVerified": false,
+    "notes": "Official source code was inspected. No binary was downloaded, relabeled or asserted to boot."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-twr/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-twr",
+      "lilygo-t-twr-official-photo-0",
+      "lilygo-t-twr-official-photo-1",
+      "lilygo-t-twr-official-photo-2",
+      "s3add-twr-original-readme",
+      "s3add-twr-original-config",
+      "s3add-twr-original-pins",
+      "s3add-twr-original-factory",
+      "s3add-twr-original-schematic",
+      "ssd1306-datasheet"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "official-store-shopify-1",
+        "s3add-twr-original-readme",
+        "s3add-twr-original-config",
+        "s3add-twr-original-pins",
+        "s3add-twr-original-factory",
+        "s3add-twr-original-schematic",
+        "ssd1306-datasheet"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-twr",
+    "status": "diagnostic",
+    "scope": "适配原始 Rev1.x 的 SSD1306、SDA13/SCL14、四个实际按键及 GPIO9/5 编码器。原理图确认 GPIO21 只控制 OLED 的 VBAT 发光电源，数字 VDD 始终为 3.3V，因此关闭显示仍允许 I2C 写入并保留显存。未混入 Plus 的 PMU、SH1106 或 TF 卡。",
+    "unsupported": [
+      "No official factory binary boot has been verified; native authored Xtensa MMIO probes establish the stated display/GPIO/I2C contracts.",
+      "OLED analog brightness, oscillator timing and scrolling are unmodeled.",
+      "Radio/RF propagation, GNSS, RTC, audio, microphone, vibration, battery/charger/ADC and PMU key/IRQ behavior are unmodeled.",
+      "Physical encoder detents are unverified; the public control uses a documented simulation setting.",
+      "Original TWR has no documented TF slot in this selected revision; no SD or PMU adapter is created."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-twr",
+    "boardId": "lilygo-t-twr",
+    "name": "LILYGO T-TWR",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "Original T-TWR Rev1.x; archived official Rev1.x factory source and T-TWR_1.x schematic, not Plus/Rev2.x",
+    "display": {
+      "width": 128,
+      "height": 64,
+      "controller": "SSD1306",
+      "type": "OLED",
+      "interface": "i2c",
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp eight pages; eight vertical pixels per RAM byte",
+      "controllerRamWidth": 128,
+      "physicalColumnOffset": 0,
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "pins": {
+      "boot": 0,
+      "display": {
+        "sda": 13,
+        "scl": 14,
+        "address": 60,
+        "reset": null,
+        "emissionEnable": 21,
+        "activeHigh": true,
+        "supplyEvidence": "Official schematic page 3: EN1/GPIO21 drives Q3 S8050 and Q2 SI2307 to gate OLED pin6 VBAT; pin9 VDD is directly 3V3. I2C logic and RAM remain powered.",
+        "sourceId": "s3add-twr-original-schematic"
+      },
+      "encoder": {
+        "a": 9,
+        "b": 5
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      },
+      {
+        "id": "user",
+        "name": "User",
+        "type": "button",
+        "pin": 3,
+        "activeLow": true
+      },
+      {
+        "id": "ptt",
+        "name": "PTT",
+        "type": "button",
+        "pin": 38,
+        "activeLow": true
+      },
+      {
+        "id": "encoder-press",
+        "name": "Encoder press",
+        "type": "button",
+        "pin": 7,
+        "activeLow": true
+      },
+      {
+        "id": "encoder",
+        "name": "Rotary encoder",
+        "type": "encoder",
+        "pins": {
+          "a": 9,
+          "b": 5
+        },
+        "detents": 24,
+        "detentsBasis": "simulation",
+        "physicalDetents": null,
+        "notes": "Debug stepping count only; physical encoder detents were not measured."
+      }
+    ],
+    "sdCard": {
+      "slot": false,
+      "implemented": false,
+      "transportSupported": false
+    },
+    "runtimeLevel": "partial",
+    "scope": "适配原始 Rev1.x 的 SSD1306、SDA13/SCL14、四个实际按键及 GPIO9/5 编码器。原理图确认 GPIO21 只控制 OLED 的 VBAT 发光电源，数字 VDD 始终为 3.3V，因此关闭显示仍允许 I2C 写入并保留显存。未混入 Plus 的 PMU、SH1106 或 TF 卡。",
+    "scopeEn": "Original T-TWR Rev1.x; archived official Rev1.x factory source and T-TWR_1.x schematic, not Plus/Rev2.x: exact OLED, controls and documented card subset.",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "s3add-twr-original-readme",
+      "s3add-twr-original-config",
+      "s3add-twr-original-pins",
+      "s3add-twr-original-factory",
+      "s3add-twr-original-schematic",
+      "ssd1306-datasheet"
+    ],
+    "chronology": {
+      "date": "2023-01-12",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-twr",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 82,
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "mvsr_kit_and_three_twr_revisions_execute_their_own_oled_encoder_and_gpio_maps"
+      ]
+    },
+    "unsupported": [
+      "No official factory binary boot has been verified; native authored Xtensa MMIO probes establish the stated display/GPIO/I2C contracts.",
+      "OLED analog brightness, oscillator timing and scrolling are unmodeled.",
+      "Radio/RF propagation, GNSS, RTC, audio, microphone, vibration, battery/charger/ADC and PMU key/IRQ behavior are unmodeled.",
+      "Physical encoder detents are unverified; the public control uses a documented simulation setting.",
+      "Original TWR has no documented TF slot in this selected revision; no SD or PMU adapter is created."
+    ],
+    "variantEvidence": {
+      "selectedHardware": "Original T-TWR Rev1.x; archived official Rev1.x factory source and T-TWR_1.x schematic, not Plus/Rev2.x",
+      "automaticRevisionDetection": false,
+      "sourceIds": [
+        "official-store-shopify-1",
+        "s3add-twr-original-readme",
+        "s3add-twr-original-config",
+        "s3add-twr-original-pins",
+        "s3add-twr-original-factory",
+        "s3add-twr-original-schematic",
+        "ssd1306-datasheet"
+      ],
+      "basis": "Independently established exact product mapping and board revision pin table/factory implementation; no family-name alias."
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "source-reference-only",
+      "sourceIds": [
+        "s3add-twr-original-factory"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "notes": "Official source code was inspected. No binary was downloaded, relabeled or asserted to boot."
+    }
+  }
 }

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-01c3",
   "title": "LILYGO T-01 C3",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-C3；具体硬件版次及配置待核对。",
+  "summary": "已实现 GPIO3 高有效绿灯。GPIO9 是下载排针，并非板载按钮；不虚构 BOOT 按键、屏幕或继电器。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-01C3 manufacturer schematic / H534 bare module",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-01 C3",
@@ -52,6 +52,82 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-09-06",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-01c3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [],
+        "pins": {
+          "leds": [
+            {
+              "id": "GREEN_LED",
+              "pin": 3,
+              "activeLow": false,
+              "color": "green"
+            }
+          ],
+          "downloadPad": 9
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-01C3-README.md",
+        "T-01C3-ESP32-C3-Schematic.pdf",
+        "T-01C3-example-deepsleep-deepsleep.ino",
+        "T-01C3-image-T-01C3pin.jpg",
+        "T-01C3-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flash": "Official pin photo4M Byte/32Mbit and schematic W25Q32FVSS",
+          "psram": "No PSRAM on exact C3 schematic",
+          "sourceIds": [
+            "T-01C3-ESP32-C3-Schematic.pdf",
+            "T-01C3-image-T-01C3pin.jpg"
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-01C3-README.md",
+        "T-01C3-ESP32-C3-Schematic.pdf",
+        "T-01C3-example-deepsleep-deepsleep.ino",
+        "T-01C3-image-T-01C3pin.jpg",
+        "T-01C3-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +156,176 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-01c3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_3.jpg?v=1709192909",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_3.jpg?v=1709192909",
+      "fetchedAt": "2026-11-22T07:00:22Z",
+      "bytes": 24300,
+      "sha256": "f89d82b46bc86b3f9684a6c7981189c30ce1155890f0a6eff97caf353959dcc7",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t 01c3 official photo 0",
+      "archiveName": "lilygo-t-01c3-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-01c3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_5.jpg?v=1709192909",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_5.jpg?v=1709192909",
+      "fetchedAt": "2026-11-22T07:00:27Z",
+      "bytes": 35919,
+      "sha256": "ce6eb165481f39f342d40466e8fb038991cb489c1d6a134b674a88913041c14c",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t 01c3 official photo 1",
+      "archiveName": "lilygo-t-01c3-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-01c3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_7.jpg?v=1709192909",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_7.jpg?v=1709192909",
+      "fetchedAt": "2026-11-22T07:00:27Z",
+      "bytes": 46914,
+      "sha256": "f30afab02a0f91bd61f2fe9f22218e68d24f7cb037b2b13e259e0c1f95dc9a11",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t 01c3 official photo 2",
+      "archiveName": "lilygo-t-01c3-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-01C3",
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "path": "README.md",
+      "id": "T-01C3-README.md",
+      "gitBlobSha": "9ec9f4bff01aab94f3bf7342e4b079f92229887e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:12Z",
+      "sha256": "bc61fa7b6fb4fbbbcefef8450b453ee33c102941990a97fb0669969d5ed27cb0",
+      "bytes": 1011,
+      "archiveName": "T-01C3-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-01C3 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-01C3-README.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-01C3",
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "path": "ESP32-C3-Schematic.pdf",
+      "id": "T-01C3-ESP32-C3-Schematic.pdf",
+      "gitBlobSha": "a25bae1626b80c1f1b5e40186aceb2244047d66c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/ESP32-C3-Schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/ESP32-C3-Schematic.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "2d1477fec286b5b795299799782f0dd15dd93cf09f5422c9b88a1771b4176ef0",
+      "bytes": 33090,
+      "archiveName": "T-01C3-ESP32-C3-Schematic.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-01C3 / ESP32-C3-Schematic.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-01C3-ESP32-C3-Schematic.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-01C3",
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "path": "example/deepsleep/deepsleep.ino",
+      "id": "T-01C3-example-deepsleep-deepsleep.ino",
+      "gitBlobSha": "bfe2112883ca94d7bb6dc505b36e3451e16854af",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/example/deepsleep/deepsleep.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/example/deepsleep/deepsleep.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:57:54Z",
+      "sha256": "10ade81db4638a7b409452cbff546e227482e95cffe8ada964b6f4d5ea3bb540",
+      "bytes": 1754,
+      "archiveName": "T-01C3-example-deepsleep-deepsleep.ino.raw",
+      "title": "Xinyuan-LilyGO/T-01C3 / example/deepsleep/deepsleep.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-01C3-example-deepsleep-deepsleep.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-01C3",
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "path": "image/T-01C3pin.jpg",
+      "id": "T-01C3-image-T-01C3pin.jpg",
+      "gitBlobSha": "7c15ed375eeef6be2ac734c106cc84b02a4ac40d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/image/T-01C3pin.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-01C3/e4e6dda5ef07e33936ded354b3abea463857b67d/image/T-01C3pin.jpg",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:18Z",
+      "sha256": "d17d8ff78f8813501e384c6209b05288bbc14d9397869945c50d6ca0a54e9dee",
+      "bytes": 1135560,
+      "archiveName": "T-01C3-image-T-01C3pin.jpg.raw",
+      "title": "Xinyuan-LilyGO/T-01C3 / image/T-01C3pin.jpg",
+      "kind": "manufacturer-photo",
+      "mediaType": "image/jpeg",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/T-01C3-image-T-01C3pin.jpg.raw"
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-01C3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:47:04Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "T-01C3-tree",
+      "title": "Official T-01C3 complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-01C3/git/trees/HEAD?recursive=1",
+      "sha256": "31190418cd1e63c69588ea97c24eb230bf043db09f205f94b4cbfbe290f9977c",
+      "bytes": 6206,
+      "pinnedGitRevision": "e4e6dda5ef07e33936ded354b3abea463857b67d",
+      "truncated": false,
+      "entryCount": 26,
+      "archiveName": "Xinyuan-LilyGO__T-01C3.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint.",
+      "sourceCachePath": "target/lilygo-model-audit/Xinyuan-LilyGO__T-01C3.tree.json"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-01c3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_3.jpg?v=1709192909",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-01c3/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-01c3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_5.jpg?v=1709192909",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-01c3/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-01c3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H534-T-01C3-LILYGO_7.jpg?v=1709192909",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-01c3/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +338,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +345,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +355,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +365,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +375,133 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-example-source-only",
+    "sourceIds": [
+      "T-01C3-README.md",
+      "T-01C3-tree"
+    ],
+    "candidates": [],
+    "simulationVerified": false,
+    "binaryFetched": false,
+    "notes": "Complete26-entry official tree contains relay/deepsleep examples and no.bin or.uf2; no exact factory image located."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-01c3/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-01c3-official-photo-0",
+      "lilygo-t-01c3-official-photo-1",
+      "lilygo-t-01c3-official-photo-2",
+      "T-01C3-README.md",
+      "T-01C3-ESP32-C3-Schematic.pdf",
+      "T-01C3-example-deepsleep-deepsleep.ino",
+      "T-01C3-image-T-01C3pin.jpg",
+      "T-01C3-tree"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-01c3",
+    "status": "diagnostic",
+    "scope": "已实现 GPIO3 高有效绿灯。GPIO9 是下载排针，并非板载按钮；不虚构 BOOT 按键、屏幕或继电器。",
+    "unsupported": [
+      "Optional externally wired relay boards are not attached implicitly.",
+      "Wireless networking, analog supply and sleep current are unmodeled; no PWM LED brightness."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-01c3",
+    "boardId": "lilygo-t-01c3",
+    "name": "LILYGO T-01 C3",
+    "chip": "esp32c3",
+    "flashMB": 4,
+    "psramMB": 0,
+    "hardwareRevision": "T-01C3 manufacturer schematic / H534 bare module",
+    "display": null,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [],
+    "runtimeLevel": "partial",
+    "scope": "已实现 GPIO3 高有效绿灯。GPIO9 是下载排针，并非板载按钮；不虚构 BOOT 按键、屏幕或继电器。",
+    "scopeEn": "Exact bare T-01C3 GPIO3 high-active green LED. GPIO9 is only a header download pad, so no onboard button control is invented.",
+    "chronology": {
+      "date": "2022-09-06",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-01c3",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "T-01C3-README.md",
+      "T-01C3-ESP32-C3-Schematic.pdf",
+      "T-01C3-example-deepsleep-deepsleep.ino",
+      "T-01C3-image-T-01C3pin.jpg",
+      "T-01C3-tree",
+      "official-store-shopify-1"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "trialAvailable": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "Optional externally wired relay boards are not attached implicitly.",
+      "Wireless networking, analog supply and sleep current are unmodeled; no PWM LED brightness."
+    ],
+    "conflicts": [],
+    "pins": {
+      "leds": [
+        {
+          "id": "GREEN_LED",
+          "pin": 3,
+          "activeLow": false,
+          "color": "green"
+        }
+      ],
+      "downloadPad": 9
+    },
+    "memoryEvidence": {
+      "flash": "Official pin photo4M Byte/32Mbit and schematic W25Q32FVSS",
+      "psram": "No PSRAM on exact C3 schematic",
+      "sourceIds": [
+        "T-01C3-ESP32-C3-Schematic.pdf",
+        "T-01C3-image-T-01C3pin.jpg"
+      ]
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "official-example-source-only",
+      "sourceIds": [
+        "T-01C3-README.md",
+        "T-01C3-tree"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "binaryFetched": false,
+      "notes": "Complete26-entry official tree contains relay/deepsleep examples and no.bin or.uf2; no exact factory image located."
+    }
+  }
 }

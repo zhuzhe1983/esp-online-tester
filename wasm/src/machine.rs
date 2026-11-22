@@ -34,7 +34,7 @@ impl<S: Soc> MachineApi for Machine<S> {
     }
     fn write_flash(&mut self, off: usize, d: &[u8]) -> Result<(), String> { Machine::write_flash(self, off, d) }
     fn boot(&mut self, app_direct: bool) -> Result<(), String> {
-        if S::NAME == "esp32c5" && !app_direct { return Err("Stamp-C5 currently supports SRAM app-direct images; ROM/Flash boot is not implemented".into()); }
+        if matches!(S::NAME, "esp32c5" | "esp32s2") && !app_direct { return Err(format!("{} currently supports SRAM app-direct images; ROM/Flash boot is not implemented", S::NAME)); }
         // A ROM boot can come back up through the ROM, so the page's `reset` message is honoured (run_slice reboots on
         // the reset; the flash and the strap survive). An app-mode run has no ROM to take a reset through.
         self.web_restart = !app_direct;
@@ -81,7 +81,7 @@ impl<S: Soc> MachineApi for Machine<S> {
     fn approximate_jit_timing(&mut self, cpi: u32, quantum: u32) -> u32 {
         match self.set_approximate_jit_timing(cpi, quantum) { Ok(()) => 0, Err(reason) => { log(&reason); 1 } }
     }
-    fn set_jit(&mut self, enabled: bool) { for core in &mut self.cores { xtensa_lx7::Core::set_jit(core, enabled); } }
+    fn set_jit(&mut self, enabled: bool) { for core in &mut self.cores { xtensa_lx7::Core::set_jit(core, enabled && S::NAME != "esp32s2"); } }
 }
 
 /// A load kind or flash offset with this bit set goes to the co-processor (`esp32sim_load`,
@@ -148,6 +148,7 @@ impl<R: esp32p4::Revision> MachineApi for esp32p4::coproc::CoSim<R> {
 /// Chip-specific ABI calls borrow an S3 directly; no runtime type erasure or downcasts.
 pub(super) enum MachineKind {
     S3(Box<esp32s3::Machine>),
+    S2(Box<esp32s2::Machine>),
     C3(Box<esp32c3::Machine>),
     C5(Box<esp32c5::Machine>),
     C6(Box<esp32c6::Machine>),
@@ -164,7 +165,7 @@ impl MachineKind {
     /// Read-only primary-chip flash export; a co-processor has its own flash and is not
     /// included. No guest instruction, tick or cache state changes.
     pub fn flash(&self) -> &[u8] {
-        match self { Self::S3(m) => &m.bus.flash, Self::C3(m) => &m.bus.flash, Self::C5(m) => &m.bus.flash, Self::C6(m) => &m.bus.flash, Self::Esp32(m) => &m.bus.flash, Self::P4(m) => &m.bus.flash,
+        match self { Self::S3(m) => &m.bus.flash, Self::S2(m) => &m.bus.flash, Self::C3(m) => &m.bus.flash, Self::C5(m) => &m.bus.flash, Self::C6(m) => &m.bus.flash, Self::Esp32(m) => &m.bus.flash, Self::P4(m) => &m.bus.flash,
             Self::C61(m) => &m.bus.flash, Self::S31(m) => &m.bus.flash, Self::P4Rev3(m) => &m.bus.flash, Self::P4C6(m) => &m.p4.bus.flash, Self::P4Rev3C6(m) => &m.p4.bus.flash }
     }
     pub fn s3_mut(&mut self) -> Option<&mut esp32s3::Machine> {
@@ -175,14 +176,14 @@ impl MachineKind {
 impl std::ops::Deref for MachineKind {
     type Target = dyn MachineApi;
     fn deref(&self) -> &Self::Target {
-        match self { Self::S3(m) => m.as_ref(), Self::C3(m) => m.as_ref(), Self::C5(m) => m.as_ref(), Self::C6(m) => m.as_ref(), Self::Esp32(m) => m.as_ref(), Self::P4(m) => m.as_ref(),
+        match self { Self::S3(m) => m.as_ref(), Self::S2(m) => m.as_ref(), Self::C3(m) => m.as_ref(), Self::C5(m) => m.as_ref(), Self::C6(m) => m.as_ref(), Self::Esp32(m) => m.as_ref(), Self::P4(m) => m.as_ref(),
             Self::C61(m) => m.as_ref(), Self::S31(m) => m.as_ref(), Self::P4Rev3(m) => m.as_ref(), Self::P4C6(m) => m.as_ref(), Self::P4Rev3C6(m) => m.as_ref() }
     }
 }
 
 impl std::ops::DerefMut for MachineKind {
     fn deref_mut(&mut self) -> &mut Self::Target {
-        match self { Self::S3(m) => m.as_mut(), Self::C3(m) => m.as_mut(), Self::C5(m) => m.as_mut(), Self::C6(m) => m.as_mut(), Self::Esp32(m) => m.as_mut(), Self::P4(m) => m.as_mut(),
+        match self { Self::S3(m) => m.as_mut(), Self::S2(m) => m.as_mut(), Self::C3(m) => m.as_mut(), Self::C5(m) => m.as_mut(), Self::C6(m) => m.as_mut(), Self::Esp32(m) => m.as_mut(), Self::P4(m) => m.as_mut(),
             Self::C61(m) => m.as_mut(), Self::S31(m) => m.as_mut(), Self::P4Rev3(m) => m.as_mut(), Self::P4C6(m) => m.as_mut(), Self::P4Rev3C6(m) => m.as_mut() }
     }
 }

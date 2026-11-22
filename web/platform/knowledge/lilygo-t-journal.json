@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-journal",
   "title": "LILYGO T-Journal",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "已纠正 T-Journal 为经典 ESP32-PICO-D4，接入 128×32 SSD1306 的 SDA14/SCL13 与 GPIO32 用户键。OV2640 摄像头和舵机尚未模拟。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "Camera-Series t-camera-journal esp32dev target / docs/T_Joranl.md exact pin table",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Journal",
@@ -52,6 +52,72 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-journal",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 32,
+          "controller": "SSD1306",
+          "interface": "i2c",
+          "type": "OLED",
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false,
+          "diagonalInch": 0.91
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": null,
+        "controls": [
+          {
+            "id": "user",
+            "name": "用户键",
+            "type": "button",
+            "pin": 32,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "display": {
+            "sda": 14,
+            "scl": 13,
+            "address": 60,
+            "reset": null
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-Camera-Series-docs-T_Joranl.md",
+        "LilyGo-Camera-Series-platformio.ini",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +146,135 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-journal-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Journal-lilygo_2.jpg?v=1666338066",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Journal-lilygo_2.jpg?v=1666338066",
+      "fetchedAt": "2026-11-22T07:00:01Z",
+      "bytes": 43345,
+      "sha256": "752bee2765d5db64a0e221a89355703d02b67a51759a5f5b19b505b633376bfb",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t journal official photo 0",
+      "archiveName": "lilygo-t-journal-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-journal-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Journal-lilygo_1.jpg?v=1666338066",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Journal-lilygo_1.jpg?v=1666338066",
+      "fetchedAt": "2026-11-22T07:00:01Z",
+      "bytes": 306251,
+      "sha256": "9a216ca7a12f4d6d41d0c79c2e74ec804b22626f73b340df7434fccd73dbaf32",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t journal official photo 1",
+      "archiveName": "lilygo-t-journal-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-journal-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-cam_2.jpg?v=1666338226",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-cam_2.jpg?v=1666338226",
+      "fetchedAt": "2026-11-22T07:00:06Z",
+      "bytes": 34770,
+      "sha256": "fed8a815582015e61012cb3efec4425be3d715ea0ab023a61014f235a592c273",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t journal official photo 2",
+      "archiveName": "lilygo-t-journal-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "LilyGo-Camera-Series-docs-T_Joranl.md",
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "docs/T_Joranl.md",
+      "gitBlobSha": "571f21d934ef42890f843a7931775cbf8bc07a28",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/docs/T_Joranl.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/docs/T_Joranl.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:38:53Z",
+      "sha256": "f36d44edc28206e93fb688240716b416ff95cdd471fe6643a180569db33d69a0",
+      "bytes": 1065,
+      "archiveName": "LilyGo-Camera-Series-docs-T_Joranl.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / docs/T_Joranl.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain; charset=utf-8",
+      "gitObjectType": "not-independently-checked",
+      "sourceCachePath": "target/lilygo-s3-io2-sources/LilyGo-Camera-Series-docs-T_Joranl.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "platformio.ini",
+      "id": "LilyGo-Camera-Series-platformio.ini",
+      "gitBlobSha": "0356fb1e23ff5185dadfe9c803aef998f6ae5015",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "417e8ffc88950cf7833b78e8aacd55e5b3a2e8be86122dc9c6e5a13ff299dd8f",
+      "bytes": 3776,
+      "archiveName": "LilyGo-Camera-Series-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-platformio.ini.raw"
+    },
+    {
+      "id": "classic-esp32-pico-d4-datasheet",
+      "url": "https://www.espressif.com/sites/default/files/documentation/esp32-pico-d4_datasheet_en.pdf",
+      "resolvedUrl": "https://documentation.espressif.com/esp32-pico_series_datasheet_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:11:46Z",
+      "bytes": 4549458,
+      "sha256": "177eb1517274eea5056ce725951091ebe8e2bce1d8635f064081fdad1cec0918",
+      "mediaType": "application/pdf",
+      "archiveName": "esp32-pico-d4-datasheet.pdf",
+      "sourceCachePath": "target/lilygo-classic-sources/esp32-pico-d4-datasheet.pdf",
+      "kind": "chip-manufacturer-datasheet",
+      "title": "classic esp32 pico d4 datasheet"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-journal-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Journal-lilygo_2.jpg?v=1666338066",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-journal/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-journal-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Journal-lilygo_1.jpg?v=1666338066",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-journal/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-journal-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/lilygo-cam_2.jpg?v=1666338226",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-journal/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +287,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +294,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +304,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +314,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +324,186 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
+    },
+    {
+      "id": "memory",
+      "label": "实体存储容量仍需核对",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "LilyGo-Camera-Series-docs-T_Joranl.md",
+        "LilyGo-Camera-Series-platformio.ini",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "notes": "部分实体 Flash / PSRAM 容量未确认；运行时字段是所选调试或编译配置，PSRAM 为 0 不表示实板没有该器件。冲突、已知候选值和容量依据见本型号适配来源记录。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-journal/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-journal-official-photo-0",
+      "lilygo-t-journal-official-photo-1",
+      "lilygo-t-journal-official-photo-2",
+      "LilyGo-Camera-Series-docs-T_Joranl.md",
+      "LilyGo-Camera-Series-platformio.ini",
+      "classic-esp32-pico-d4-datasheet"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 32,
+      "sourceIds": [
+        "LilyGo-Camera-Series-docs-T_Joranl.md",
+        "LilyGo-Camera-Series-platformio.ini",
+        "classic-esp32-pico-d4-datasheet",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-journal",
+    "status": "diagnostic",
+    "scope": "已纠正 T-Journal 为经典 ESP32-PICO-D4，接入 128×32 SSD1306 的 SDA14/SCL13 与 GPIO32 用户键。OV2640 摄像头和舵机尚未模拟。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "The camera SCCB and pixel buses, OV2640 registers, image data, servo PWM/load and battery supply are unmodeled.",
+      "Store generic QSPI capacity wording is not used as memory capacity evidence. PICO-D4 internal Flash4MiB is independently sourced; external PSRAM fitting remains unknown.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-journal",
+    "boardId": "lilygo-t-journal",
+    "name": "LILYGO T-Journal",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": null,
+    "psramMB": 0,
+    "psramMbBasis": "unknown-physical-capacity",
+    "hardwareRevision": "Camera-Series t-camera-journal esp32dev target / docs/T_Joranl.md exact pin table",
+    "display": {
+      "width": 128,
+      "height": 32,
+      "controller": "SSD1306",
+      "interface": "i2c",
+      "type": "OLED",
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false,
+      "diagonalInch": 0.91
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "display": {
+        "sda": 14,
+        "scl": 13,
+        "address": 60,
+        "reset": null
+      }
+    },
+    "controls": [
+      {
+        "id": "user",
+        "name": "用户键",
+        "type": "button",
+        "pin": 32,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "journal_has_a_128_by_32_glass_and_its_own_sda_scl_pins",
+        "independent_classic_revisions_keep_their_button_and_led_polarities"
+      ]
+    },
+    "scope": "已纠正 T-Journal 为经典 ESP32-PICO-D4，接入 128×32 SSD1306 的 SDA14/SCL13 与 GPIO32 用户键。OV2640 摄像头和舵机尚未模拟。",
+    "scopeEn": "Corrected classic ESP32-PICO-D4 Journal: native 128x32 SSD1306 on SDA14/SCL13 and GPIO32 input. Camera and servo unmodeled.",
+    "sourceIds": [
+      "LilyGo-Camera-Series-docs-T_Joranl.md",
+      "LilyGo-Camera-Series-platformio.ini",
+      "classic-esp32-pico-d4-datasheet",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "The camera SCCB and pixel buses, OV2640 registers, image data, servo PWM/load and battery supply are unmodeled.",
+      "Store generic QSPI capacity wording is not used as memory capacity evidence. PICO-D4 internal Flash4MiB is independently sourced; external PSRAM fitting remains unknown.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "chronology": {
+      "date": "2022-10-25",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-journal",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 101,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    },
+    "module": "ESP32-PICO-D4",
+    "correctedChip": {
+      "from": "ESP32-S3",
+      "to": "ESP32-PICO-D4",
+      "sourceIds": [
+        "LilyGo-Camera-Series-docs-T_Joranl.md",
+        "LilyGo-Camera-Series-platformio.ini",
+        "official-store-shopify-1"
+      ]
+    }
+  }
 }

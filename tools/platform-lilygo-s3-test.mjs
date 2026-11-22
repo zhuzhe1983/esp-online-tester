@@ -49,9 +49,9 @@ parentPort.on('message',data=>globalThis.onmessage({data}));`;
   return adapter;
 };
 
-test('all 19 explicit LilyGO S3 display boards construct in the real WASM build', async () => {
-  const profiles = JSON.parse(await readFile(new URL('docs/platform/research/lilygo-runtime-profiles-2026-11-22.json', root))).items;
-  assert.equal(profiles.length, 19);
+test('all 21 explicit LilyGO S3 TFT and e-paper boards construct in the real WASM build', async () => {
+  const profiles = (await Promise.all(['runtime','epaper'].map(async kind=>JSON.parse(await readFile(new URL(`docs/platform/research/lilygo-${kind}-profiles-2026-11-22.json`, root)))))).flatMap(report=>report.items);
+  assert.equal(profiles.length, 21);
   let wasm;
   const messages = [];
   const jit = createJitHost(() => wasm);

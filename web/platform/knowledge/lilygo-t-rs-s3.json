@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-rs-s3",
   "title": "LILYGO T-RSS3",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "已实现 S3 分支 BOOT0、GPIO5 用户键与 GPIO1 的真实 RMT/WS2812；采用官方 8MB/无 PSRAM 构建配置，保留 N4 原理图冲突，RS232/RS485 未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-RSS3 S3 branch, 8MB/no-PSRAM official build target; schematic module marking N4 conflicts",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-RSS3",
@@ -52,6 +52,119 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-11-14",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-rs-s3",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 8,
+        "simulatedFlashMb": 8,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          },
+          {
+            "id": "user",
+            "name": "USER",
+            "type": "button",
+            "pin": 5,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "userButton": 5,
+          "leds": {
+            "controller": "WS2812C/W",
+            "pin": 1,
+            "wireOrder": "GRB",
+            "count": 1,
+            "transport": "RMT"
+          },
+          "rs485": {
+            "rx": 2,
+            "tx": 3,
+            "direction": 4,
+            "implemented": false
+          },
+          "rs232": {
+            "rx": 42,
+            "tx": 41,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-RSC3-README.md",
+        "T-RSC3-example-Integration-utilities.h",
+        "T-RSC3-example-Integration-Integration.ino",
+        "T-RSC3-schematic-T-RSS3.pdf",
+        "T-RSC3-boards-esp32s3_nopsram.json",
+        "T-RSC3-platformio.ini",
+        "T-RSC3-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 8,
+          "psramMB": 0,
+          "sourceIds": [
+            "T-RSC3-README.md",
+            "T-RSC3-example-Integration-utilities.h",
+            "T-RSC3-example-Integration-Integration.ino",
+            "T-RSC3-schematic-T-RSS3.pdf",
+            "T-RSC3-boards-esp32s3_nopsram.json",
+            "T-RSC3-platformio.ini",
+            "T-RSC3-tree",
+            "official-store-shopify-1"
+          ],
+          "notes": "Manufacturer store and boards/esp32s3_nopsram.json specify 8MB flash/no PSRAM. schematic/T-RSS3.pdf instead labels ESP32-S3-MINI-1U-N4 (4MB). Selected runtime matches official 8MB build, without claiming the N4 drawing is a verified 8MB BOM."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "T-RSC3-README.md",
+        "T-RSC3-example-Integration-utilities.h",
+        "T-RSC3-example-Integration-Integration.ino",
+        "T-RSC3-schematic-T-RSS3.pdf",
+        "T-RSC3-boards-esp32s3_nopsram.json",
+        "T-RSC3-platformio.ini",
+        "T-RSC3-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +193,252 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-rs-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_5.jpg?v=1699865957",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_5.jpg?v=1699865957",
+      "fetchedAt": "2026-11-22T06:58:09Z",
+      "bytes": 58670,
+      "sha256": "903c88a49aaa01456a791771f3aa64c4601f359d4d5b0a124a36dbc5c4c080af",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t rs s3 official photo 0",
+      "archiveName": "lilygo-t-rs-s3-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-rs-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_7.jpg?v=1699865957",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_7.jpg?v=1699865957",
+      "fetchedAt": "2026-11-22T06:58:16Z",
+      "bytes": 47544,
+      "sha256": "9bb6a7341c23004322dfb79497cf40203643f50a3ea20bc8604c7ce2ae64db75",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t rs s3 official photo 1",
+      "archiveName": "lilygo-t-rs-s3-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-rs-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_8.jpg?v=1699865957",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_8.jpg?v=1699865957",
+      "fetchedAt": "2026-11-22T06:58:16Z",
+      "bytes": 43879,
+      "sha256": "e4132a6c90b911475df6b774da2f6c482f67c624c86bdccf949fc816635672d9",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t rs s3 official photo 2",
+      "archiveName": "lilygo-t-rs-s3-official-photo-2.jpg"
+    },
+    {
+      "id": "lilygo-t-rs-s3-manufacturer-cad",
+      "productId": "lilygo-t-rs-s3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/Shell_file/t-rss3-shell-003-1223.stp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/Shell_file/t-rss3-shell-003-1223.stp",
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "repositoryPath": "Shell_file/t-rss3-shell-003-1223.stp",
+      "scope": "T-RSS3 shell, not T-RSC3",
+      "fetchedAt": "2026-11-22T07:04:08Z",
+      "bytes": 2713295,
+      "sha256": "ccf2651096d11fef919be16ab19d80262d8d0af8073c4411f277472c5cbbf003",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "manufacturer-source.step.gz",
+      "rawSha256": "ccf2651096d11fef919be16ab19d80262d8d0af8073c4411f277472c5cbbf003",
+      "archiveSha256": "b2f7c2001ce4a78a385ae59c1962ce6e154f97cbfad63d3e8df5017cea03e99a",
+      "sourceFormat": "STEP",
+      "sourceUnit": "mm",
+      "compression": "gzip",
+      "kind": "manufacturer-cad",
+      "storedSha256": "b2f7c2001ce4a78a385ae59c1962ce6e154f97cbfad63d3e8df5017cea03e99a",
+      "hashScope": "sha256/bytes describe original fetched STEP; storedSha256 describes gzip artifact.",
+      "blobSha": "b8f6881e3edc3a89ffce1a65ec07ade0bf5e8e8c",
+      "revisionType": "pinned-git-revision",
+      "revision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "title": "lilygo t rs s3 manufacturer cad",
+      "archiveName": "lilygo-t-rs-s3-manufacturer-cad.gz"
+    },
+    {
+      "id": "lilygo-t-rs-s3-repository-license",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/LICENSE",
+      "fetchedAt": "2026-11-22T07:10:19Z",
+      "bytes": 1071,
+      "sha256": "c0aacbcf39b9a4a2c97edfe0fd2b1944bfe898c0002c970621e05c297b650e12",
+      "mediaType": "text/plain",
+      "status": "fetched",
+      "file": "SOURCE-LICENSE.txt",
+      "scope": "Upstream repository license; no claim that unrelated photographs or CAD from another repository share it.",
+      "title": "lilygo t rs s3 repository license",
+      "kind": "official-product-document",
+      "archiveName": "lilygo-t-rs-s3-repository-license.txt"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "README.md",
+      "id": "T-RSC3-README.md",
+      "gitBlobSha": "e6d22561397cb440035b653ff21c1355b70ba7ae",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "162064745c35a7d8e01ce8e4fee6223fee87e364859f80e44b9ea7b8fdde9dc1",
+      "bytes": 2361,
+      "archiveName": "T-RSC3-README.md.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / README.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-RSC3-README.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "example/Integration/utilities.h",
+      "id": "T-RSC3-example-Integration-utilities.h",
+      "gitBlobSha": "d59305ccd2c473529e60615d5558d40257afde7f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/example/Integration/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/example/Integration/utilities.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "9986bed51586a4a83879308562868acb10573cd878809f270eeb6d4599640727",
+      "bytes": 1131,
+      "archiveName": "T-RSC3-example-Integration-utilities.h.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / example/Integration/utilities.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-RSC3-example-Integration-utilities.h.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "example/Integration/Integration.ino",
+      "id": "T-RSC3-example-Integration-Integration.ino",
+      "gitBlobSha": "f015c15b86a48edd999d5f59fb06612810d3845e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/example/Integration/Integration.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/example/Integration/Integration.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "ad95d91a00816bef2db7ccce3d723efc31ee98cfb40d56f2b5508708c571a7d0",
+      "bytes": 6162,
+      "archiveName": "T-RSC3-example-Integration-Integration.ino.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / example/Integration/Integration.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-RSC3-example-Integration-Integration.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "schematic/T-RSS3.pdf",
+      "id": "T-RSC3-schematic-T-RSS3.pdf",
+      "gitBlobSha": "eaee4bc446d012ce55736dfd6897a883df9af19c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/schematic/T-RSS3.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/schematic/T-RSS3.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "f22973aa8246d7d7975c8002b4999c7b2efd826ba0de8999ffbee1f87337f23d",
+      "bytes": 298850,
+      "archiveName": "T-RSC3-schematic-T-RSS3.pdf.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / schematic/T-RSS3.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-RSC3-schematic-T-RSS3.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "boards/esp32s3_nopsram.json",
+      "id": "T-RSC3-boards-esp32s3_nopsram.json",
+      "gitBlobSha": "ca3c9ba4c1be74326f5b18de69a8e0cc07c3589b",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/boards/esp32s3_nopsram.json",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/boards/esp32s3_nopsram.json",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:16:42Z",
+      "sha256": "521765f5156825f57a6490d6bac22b8c882709e0fa6567ee3daed4a264c59dbc",
+      "bytes": 950,
+      "archiveName": "T-RSC3-boards-esp32s3_nopsram.json.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / boards/esp32s3_nopsram.json",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-RSC3-boards-esp32s3_nopsram.json.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "path": "platformio.ini",
+      "id": "T-RSC3-platformio.ini",
+      "gitBlobSha": "0c610aad849be6ad2b87ff4e7d40974a6921513c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:08Z",
+      "sha256": "9f2d1fd56d57b89d658e5e78f1763b67cb7af7d2ac5c1d54db985c129d03a256",
+      "bytes": 1026,
+      "archiveName": "T-RSC3-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/T-RSC3 / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-RSC3-platformio.ini.raw"
+    },
+    {
+      "id": "T-RSC3-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-RSC3/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:48:00Z",
+      "mediaType": "application/json",
+      "sha256": "5beef037debe07e6c7019889da2c6d64fb76ec0a5e02c9e2891c0b148da82d3e",
+      "bytes": 93134,
+      "archiveName": "T-RSC3-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/T-RSC3",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/T-RSC3",
+      "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash.",
+      "sourceCachePath": "target/lilygo-s3-io-sources/T-RSC3-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-rs-s3-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_5.jpg?v=1699865957",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-rs-s3/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-rs-s3-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_7.jpg?v=1699865957",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-rs-s3/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-rs-s3-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/T-RSS3-lilygo_8.jpg?v=1699865957",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-rs-s3/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +451,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +458,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +468,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +478,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +488,228 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-factory-candidate-linked",
+    "sourceIds": [
+      "T-RSC3-tree"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/T-RSC3/blob/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+        "path": "frimware/T_RSS3_Factory.bin",
+        "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+        "gitBlobSha": "5bc4f40ecef71da09def5f828f9fe6bf896e727a",
+        "bytes": 346336,
+        "status": "linked",
+        "sourceId": "T-RSC3-tree",
+        "role": "factory-candidate",
+        "identityEvidence": "Exact S3 product factory filename in official repository; binary revision/layout not separately documented.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Official factory-named S3 file is present; C3 binary is excluded. Filename establishes a candidate, not verified memory revision/layout or successful boot.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "manufacturer-cad",
+      "url": "./assets/lilygo-t-rs-s3/model.json",
+      "status": "partial",
+      "basis": "manufacturer-cad",
+      "mode": "manufacturer-cad",
+      "notes": "官方 CAD 局部预览：T-RSS3 shell, not T-RSC3；缺失部分和调试面板位置见模型来源。"
+    },
+    "mode": "manufacturer-cad",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-rs-s3-official-photo-0",
+      "lilygo-t-rs-s3-official-photo-1",
+      "lilygo-t-rs-s3-official-photo-2",
+      "lilygo-t-rs-s3-manufacturer-cad",
+      "T-RSC3-README.md",
+      "T-RSC3-example-Integration-utilities.h",
+      "T-RSC3-example-Integration-Integration.ino",
+      "T-RSC3-schematic-T-RSS3.pdf",
+      "T-RSC3-boards-esp32s3_nopsram.json",
+      "T-RSC3-platformio.ini",
+      "T-RSC3-tree"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-rs-s3",
+    "status": "diagnostic",
+    "scope": "已实现 S3 分支 BOOT0、GPIO5 用户键与 GPIO1 的真实 RMT/WS2812；采用官方 8MB/无 PSRAM 构建配置，保留 N4 原理图冲突，RS232/RS485 未实现。",
+    "unsupported": [
+      "RS232 and RS485 isolated transceivers, line drivers, direction timing, external peers and analog isolation/power behavior are unmodeled.",
+      "WS2812 uses the shared digital RMT ratio decoder, not timing-calibrated GPIO pulses. This profile does not claim every production revision has the same flash capacity.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-rs-s3",
+    "boardId": "lilygo-t-rs-s3",
+    "name": "LILYGO T-RSS3",
+    "chip": "esp32s3",
+    "flashMB": 8,
+    "psramMB": 0,
+    "hardwareRevision": "T-RSS3 S3 branch, 8MB/no-PSRAM official build target; schematic module marking N4 conflicts",
+    "display": null,
+    "physicalDisplay": false,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      },
+      {
+        "id": "user",
+        "name": "USER",
+        "type": "button",
+        "pin": 5,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "已实现 S3 分支 BOOT0、GPIO5 用户键与 GPIO1 的真实 RMT/WS2812；采用官方 8MB/无 PSRAM 构建配置，保留 N4 原理图冲突，RS232/RS485 未实现。",
+    "scopeEn": "S3 branch BOOT0, user button GPIO5 and RMT-routed WS2812 on GPIO1; official 8MB/no-PSRAM build target selected with schematic N4 conflict retained.",
+    "chronology": {
+      "date": "2023-11-14",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-rs-s3",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "T-RSC3-README.md",
+      "T-RSC3-example-Integration-utilities.h",
+      "T-RSC3-example-Integration-Integration.ino",
+      "T-RSC3-schematic-T-RSS3.pdf",
+      "T-RSC3-boards-esp32s3_nopsram.json",
+      "T-RSC3-platformio.ini",
+      "T-RSC3-tree",
+      "official-store-shopify-1"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "RS232 and RS485 isolated transceivers, line drivers, direction timing, external peers and analog isolation/power behavior are unmodeled.",
+      "WS2812 uses the shared digital RMT ratio decoder, not timing-calibrated GPIO pulses. This profile does not claim every production revision has the same flash capacity.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "pins": {
+      "boot": 0,
+      "userButton": 5,
+      "leds": {
+        "controller": "WS2812C/W",
+        "pin": 1,
+        "wireOrder": "GRB",
+        "count": 1,
+        "transport": "RMT"
+      },
+      "rs485": {
+        "rx": 2,
+        "tx": 3,
+        "direction": 4,
+        "implemented": false
+      },
+      "rs232": {
+        "rx": 42,
+        "tx": 41,
+        "implemented": false
+      }
+    },
+    "memoryEvidence": {
+      "flashMB": 8,
+      "psramMB": 0,
+      "sourceIds": [
+        "T-RSC3-README.md",
+        "T-RSC3-example-Integration-utilities.h",
+        "T-RSC3-example-Integration-Integration.ino",
+        "T-RSC3-schematic-T-RSS3.pdf",
+        "T-RSC3-boards-esp32s3_nopsram.json",
+        "T-RSC3-platformio.ini",
+        "T-RSC3-tree",
+        "official-store-shopify-1"
+      ],
+      "notes": "Manufacturer store and boards/esp32s3_nopsram.json specify 8MB flash/no PSRAM. schematic/T-RSS3.pdf instead labels ESP32-S3-MINI-1U-N4 (4MB). Selected runtime matches official 8MB build, without claiming the N4 drawing is a verified 8MB BOM."
+    },
+    "conflicts": [
+      {
+        "fact": "flash",
+        "resolution": "Manufacturer store and boards/esp32s3_nopsram.json specify 8MB flash/no PSRAM. schematic/T-RSS3.pdf instead labels ESP32-S3-MINI-1U-N4 (4MB). Selected runtime matches official 8MB build, without claiming the N4 drawing is a verified 8MB BOM.",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "T-RSC3-boards-esp32s3_nopsram.json",
+          "T-RSC3-schematic-T-RSS3.pdf"
+        ]
+      },
+      {
+        "fact": "user button",
+        "resolution": "Store says IO2. Exact S3 preprocessor branch and schematic show KEY GPIO5; IO2 is RS485 RX. GPIO2 is a user button only on the different C3 branch.",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "T-RSC3-example-Integration-utilities.h",
+          "T-RSC3-schematic-T-RSS3.pdf"
+        ]
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "official-factory-candidate-linked",
+      "sourceIds": [
+        "T-RSC3-tree"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-RSC3/blob/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+          "path": "frimware/T_RSS3_Factory.bin",
+          "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+          "gitBlobSha": "5bc4f40ecef71da09def5f828f9fe6bf896e727a",
+          "bytes": 346336,
+          "status": "linked",
+          "sourceId": "T-RSC3-tree",
+          "role": "factory-candidate",
+          "identityEvidence": "Exact S3 product factory filename in official repository; binary revision/layout not separately documented.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Official factory-named S3 file is present; C3 binary is excluded. Filename establishes a candidate, not verified memory revision/layout or successful boot.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+      }
+    }
+  }
 }

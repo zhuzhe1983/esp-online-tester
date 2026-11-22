@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-helium-t-beam",
   "title": "LILYGO T-Beam Helium",
-  "summary": "Spark 将此商品归入T-Beam 系列，标注 MCU 为 ESP32；具体硬件版次及配置待核对。",
+  "summary": "已接入官方 Helium 示例选定的 T-Beam V1.1：SSD1306 显示、GPIO38 用户键与低有效红灯 GPIO4。新版 AXP2101、Helium 网络及整机固件尚未验证。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T_BEAM_V10 / physical T-Beam V1.1 in pinned Helium mapper source; OLED SSD1306 option",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Beam Helium",
@@ -52,6 +52,77 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2023-07-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/helium-t-beam",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 128,
+          "height": 64,
+          "controller": "SSD1306",
+          "interface": "i2c",
+          "type": "OLED",
+          "pixelFormat": "RGB565",
+          "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+          "implemented": true,
+          "physicalTouch": false,
+          "touchImplemented": false
+        },
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "user",
+            "name": "用户键",
+            "type": "button",
+            "pin": 38,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "indicator": {
+            "pin": 4,
+            "activeHigh": false,
+            "color": "red"
+          },
+          "display": {
+            "sda": 21,
+            "scl": 22,
+            "address": 60,
+            "reset": null
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-tbeam-helium-mapper-b33563055168",
+        "classic-tbeam-helium-mapper-6872e01ccc06",
+        "classic-tbeam-helium-mapper-1e3433718112",
+        "classic-tbeam-helium-mapper-18b7c19417a4",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +151,160 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-helium-t-beam-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_4.jpg?v=1690272502",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_4.jpg?v=1690272502",
+      "fetchedAt": "2026-11-22T06:58:54Z",
+      "bytes": 64093,
+      "sha256": "c0baae2b6b06acd542891a8821dc0bd089d172ca00da09be6ad87349a162b1f6",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo helium t beam official photo 0",
+      "archiveName": "lilygo-helium-t-beam-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-helium-t-beam-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_6.jpg?v=1690272502",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_6.jpg?v=1690272502",
+      "fetchedAt": "2026-11-22T06:58:54Z",
+      "bytes": 68826,
+      "sha256": "2c9b8158fe282aa96c4ab94803bd80100ffd6c739baf6feec09046a72c7436ee",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo helium t beam official photo 1",
+      "archiveName": "lilygo-helium-t-beam-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-helium-t-beam-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_8.jpg?v=1690272501",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_8.jpg?v=1690272501",
+      "fetchedAt": "2026-11-22T06:58:54Z",
+      "bytes": 57742,
+      "sha256": "41a94e298bee2a83602bd63c2a443a32ca324a95425cfd05a6ca963a8dd2cb03",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo helium t beam official photo 2",
+      "archiveName": "lilygo-helium-t-beam-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "classic-tbeam-helium-mapper-b33563055168",
+      "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
+      "path": "README.md",
+      "revision": "00cec9c130d4452839dcf933905f5624d9711e41",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "d5c16e138edd5f84e56c416624120bcf3fa4299f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/README.md",
+      "fetchedAt": "2026-11-22T08:06:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 34895,
+      "sha256": "f016f750f13118338a7928ec0017e7923a37489ab4091da1cc566c0434a5bb06",
+      "archiveName": "classic-tbeam-helium-mapper-b33563055168.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-b33563055168.raw",
+      "kind": "manufacturer-source",
+      "title": "tbeam-helium-mapper/README.md"
+    },
+    {
+      "id": "classic-tbeam-helium-mapper-6872e01ccc06",
+      "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
+      "path": "main/configuration.h",
+      "revision": "00cec9c130d4452839dcf933905f5624d9711e41",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "12a57d531a102560ac25899e482b886ac44d45d3",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/configuration.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/configuration.h",
+      "fetchedAt": "2026-11-22T08:09:53Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 10548,
+      "sha256": "3917d4fd0e23ec7a6166090255773d10f43508bf0093b1694b088134ffab6921",
+      "archiveName": "classic-tbeam-helium-mapper-6872e01ccc06.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-6872e01ccc06.raw",
+      "kind": "manufacturer-source",
+      "title": "tbeam-helium-mapper/main/configuration.h"
+    },
+    {
+      "id": "classic-tbeam-helium-mapper-1e3433718112",
+      "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
+      "path": "main/screen.cpp",
+      "revision": "00cec9c130d4452839dcf933905f5624d9711e41",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "e7726c3f47a2d21ab4aa5774dff71fbaefa9143d",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/screen.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/screen.cpp",
+      "fetchedAt": "2026-11-22T08:09:53Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 8838,
+      "sha256": "420f0c70d783e5be93cce38c71c891cc33527aba26cd84e038fd0668658fe6d5",
+      "archiveName": "classic-tbeam-helium-mapper-1e3433718112.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-1e3433718112.raw",
+      "kind": "manufacturer-source",
+      "title": "tbeam-helium-mapper/main/screen.cpp"
+    },
+    {
+      "id": "classic-tbeam-helium-mapper-18b7c19417a4",
+      "repository": "Xinyuan-LilyGO/tbeam-helium-mapper",
+      "path": "main/main.cpp",
+      "revision": "00cec9c130d4452839dcf933905f5624d9711e41",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "12f507b39a1eb9d1b54953334d255e6586884396",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/main.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/tbeam-helium-mapper/00cec9c130d4452839dcf933905f5624d9711e41/main/main.cpp",
+      "fetchedAt": "2026-11-22T08:09:53Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 41206,
+      "sha256": "fd01e4983607d551017c2cbcd8fb97197f309046fae4e64899182bfd078878bd",
+      "archiveName": "classic-tbeam-helium-mapper-18b7c19417a4.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-tbeam-helium-mapper-18b7c19417a4.raw",
+      "kind": "manufacturer-source",
+      "title": "tbeam-helium-mapper/main/main.cpp"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-helium-t-beam-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_4.jpg?v=1690272502",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-helium-t-beam/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-helium-t-beam-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_6.jpg?v=1690272502",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-helium-t-beam/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-helium-t-beam-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-Helium-T-Beam_8.jpg?v=1690272501",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-helium-t-beam/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +317,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +324,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +334,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +344,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +354,172 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-helium-t-beam/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-helium-t-beam-official-photo-0",
+      "lilygo-helium-t-beam-official-photo-1",
+      "lilygo-helium-t-beam-official-photo-2",
+      "classic-tbeam-helium-mapper-b33563055168",
+      "classic-tbeam-helium-mapper-6872e01ccc06",
+      "classic-tbeam-helium-mapper-1e3433718112",
+      "classic-tbeam-helium-mapper-18b7c19417a4"
+    ],
+    "displayHint": {
+      "width": 128,
+      "height": 64,
+      "sourceIds": [
+        "classic-tbeam-helium-mapper-b33563055168",
+        "classic-tbeam-helium-mapper-6872e01ccc06",
+        "classic-tbeam-helium-mapper-1e3433718112",
+        "classic-tbeam-helium-mapper-18b7c19417a4",
+        "official-store-shopify-1"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-helium-t-beam",
+    "status": "diagnostic",
+    "scope": "已接入官方 Helium 示例选定的 T-Beam V1.1：SSD1306 显示、GPIO38 用户键与低有效红灯 GPIO4。新版 AXP2101、Helium 网络及整机固件尚未验证。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "Pinned Helium code targets AXP192 V1.1 while the current storefront states AXP2101. This profile deliberately represents the source-backed older V1.1, not every board sold under this handle.",
+      "SH1106 optional OLED autodetection/readback and no-OLED variants are not represented. A virtual always-powered OLED rail is assumed.",
+      "AXP192/AXP2101, GNSS, SX1276, LoRaWAN/Helium backend, provisioning credentials and complete factory boot are unmodeled.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-helium-t-beam",
+    "boardId": "lilygo-helium-t-beam",
+    "name": "LILYGO T-Beam Helium",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": 8,
+    "psramMB": 4,
+    "psramMbBasis": "simulation-capacity-limit",
+    "hardwareRevision": "T_BEAM_V10 / physical T-Beam V1.1 in pinned Helium mapper source; OLED SSD1306 option",
+    "display": {
+      "width": 128,
+      "height": 64,
+      "controller": "SSD1306",
+      "interface": "i2c",
+      "type": "OLED",
+      "pixelFormat": "RGB565",
+      "controllerRamFormat": "1bpp page RAM, 8 vertical pixels per byte",
+      "implemented": true,
+      "physicalTouch": false,
+      "touchImplemented": false
+    },
+    "physicalDisplay": true,
+    "pins": {
+      "indicator": {
+        "pin": 4,
+        "activeHigh": false,
+        "color": "red"
+      },
+      "display": {
+        "sda": 21,
+        "scl": 22,
+        "address": 60,
+        "reset": null
+      }
+    },
+    "controls": [
+      {
+        "id": "user",
+        "name": "用户键",
+        "type": "button",
+        "pin": 38,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "oled_i2c_windows_go_through_both_classic_controllers_and_real_routes",
+        "independent_classic_revisions_keep_their_button_and_led_polarities"
+      ]
+    },
+    "scope": "已接入官方 Helium 示例选定的 T-Beam V1.1：SSD1306 显示、GPIO38 用户键与低有效红灯 GPIO4。新版 AXP2101、Helium 网络及整机固件尚未验证。",
+    "scopeEn": "Selected manufacturer Helium source T_BEAM_V10 (physical V1.1): SSD1306-fitted option, user38 and active-low red GPIO4. Helium network/factory boot unverified.",
+    "sourceIds": [
+      "classic-tbeam-helium-mapper-b33563055168",
+      "classic-tbeam-helium-mapper-6872e01ccc06",
+      "classic-tbeam-helium-mapper-1e3433718112",
+      "classic-tbeam-helium-mapper-18b7c19417a4",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "Pinned Helium code targets AXP192 V1.1 while the current storefront states AXP2101. This profile deliberately represents the source-backed older V1.1, not every board sold under this handle.",
+      "SH1106 optional OLED autodetection/readback and no-OLED variants are not represented. A virtual always-powered OLED rail is assumed.",
+      "AXP192/AXP2101, GNSS, SX1276, LoRaWAN/Helium backend, provisioning credentials and complete factory boot are unmodeled.",
+      "OLED hardware I2C on both classic ESP32 controllers and software I2C are routed to the documented pins. Continuous scroll, analog contrast/current, readback and electrical signal timing are unmodeled.",
+      "The physical board declares 8 MiB PSRAM; the current classic ESP32 backend supports only 0/4 MiB and this profile explicitly allocates 4 MiB. Firmware requiring the full physical capacity is outside this subset."
+    ],
+    "chronology": {
+      "date": "2023-07-25",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/helium-t-beam",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 66,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    }
+  }
 }
