@@ -61,11 +61,12 @@ def analyze(path,resolution=None,override=None):
     return {'imageSize':[width,height],'analysisScale':ratio,'cropXYXY':override.get('cropXYXY'),'background':override.get('background','white'),'hull':hull.tolist(),'bounds':[x,y,w,h],'occupancy':occupancy,'color':color,'screen':screen,'score':occupancy+(0.25 if screen else 0)}
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--photo-bank',type=Path,required=True);p.add_argument('--audit',type=Path,required=True);p.add_argument('--runtime-profiles',type=Path);p.add_argument('--patches',type=Path,required=True);p.add_argument('--overrides',type=Path,default=Path(__file__).with_name('lilygo-photo-outline-overrides.json'));args=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--photo-bank',type=Path,required=True);p.add_argument('--audit',type=Path,required=True);p.add_argument('--runtime-profiles',type=Path);p.add_argument('--patches',type=Path,required=True);p.add_argument('--overrides',type=Path,default=Path(__file__).with_name('lilygo-photo-outline-overrides.json'));p.add_argument('--ids',nargs='*');args=p.parse_args()
     overrides=json.loads(args.overrides.read_text()) if args.overrides.exists() else {}
     audit=json.loads(args.audit.read_text());runtime=json.loads(args.runtime_profiles.read_text())if args.runtime_profiles else{'items':[],'sources':[]};runtime_by_id={r['productId']:r for r in runtime['items']};runtime_sources={s['id']:s for s in runtime.get('sources',[])};patches=json.loads(args.patches.read_text());patch_by_id={r['id']:r for r in patches['items']};rows=[]
     for row in audit['items']:
         id=row['id'];folder=ASSETS/id;planfile=folder/'model-plan.json'
+        if args.ids and id not in args.ids:continue
         if not row['wasRuntimeUnavailable']or not planfile.exists():continue
         plan=json.loads(planfile.read_text())
         if plan.get('cad')or plan.get('manualPhotoCalibration'):continue

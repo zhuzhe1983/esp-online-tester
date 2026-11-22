@@ -10,6 +10,7 @@ import argparse
 import gzip
 import hashlib
 import importlib.util
+import io
 import json
 import math
 from pathlib import Path
@@ -93,8 +94,12 @@ def cad_values(folder, specification):
         if extraction['sha256']!=specification['extraction']['sha256']:raise ValueError('CAD product extraction hash mismatch')
     module_spec=importlib.util.spec_from_file_location('retained_lilygo_cad_exporter',ROOT/'tools/build-lilygo-models.py')
     module=importlib.util.module_from_spec(module_spec);module_spec.loader.exec_module(module)
-    with tempfile.TemporaryDirectory(prefix='lilygo-cad-') as temp:
-        path=Path(temp)/'source.step';path.write_bytes(raw);meshes=module.load_step(path)
+    if specification.get('format')=='stl':
+        import trimesh
+        meshes=[trimesh.load(io.BytesIO(raw),file_type='stl',force='mesh',process=False)]
+    else:
+        with tempfile.TemporaryDirectory(prefix='lilygo-cad-') as temp:
+            path=Path(temp)/'source.step';path.write_bytes(raw);meshes=module.load_step(path)
     matrix=np.array(specification['matrixRows'],dtype=float);r=matrix[:3,:3]
     if not np.allclose(r.T@r,np.eye(3),atol=1e-8) or not np.isclose(np.linalg.det(r),1):raise ValueError('Only rigid CAD transforms are allowed')
     groups=specification.get('groups') or [{'name':f'cad-part-{i:03d}','components':[i],'role':'component','color':'#9aa3a5'} for i,m in enumerate(meshes) if m is not None]
@@ -112,6 +117,7 @@ def build(product_id, output):
     if plan['id']!=product_id:raise ValueError('Plan identity mismatch')
     records=[];buffers=[];offset=0;errors=[]
     items=list(cad_values(folder,plan['cad'])) if plan.get('cad') else []
+    for additional in plan.get('additionalCad',[]):items.extend(cad_values(folder,additional))
     items.extend(({k:v for k,v in part.items() if k not in ['geometry','kind','sizeMm','radiusMm','openingMm','innerRadiusMm','centerMm','rotation','outlineMm']},primitive(part))for part in plan.get('parts',[]))
     if len(items)>512:raise ValueError('Too many parts for the browser contract')
     for record,values in items:
@@ -132,8 +138,10 @@ def build(product_id, output):
         if out.resolve()!=folder.resolve():shutil.copyfile(folder/filename,out/filename)
     model={k:plan[k]for k in ['id','dimensions','presentation','derivedParts','referencePhotos','provenance','limitations','reviewViews','debugPreview','photoDerivation','dimensionChecks','representationScope','manualPhotoCalibration','omittedComponents']if k in plan}
     if plan.get('cad'):
-        model['sourceTransform']={'matrixRows':plan['cad']['matrixRows'],'scale':1,'sourceUnit':plan['cad'].get('sourceUnit','mm'),'note':'Selected product local coordinates; no assembly placement inferred; rigid viewing transform only.'if plan['cad'].get('extraction')else'Rigid transform only; supplied assembly placements and native millimetres retained.'}
+        transform_note='STL does not encode units; coordinates interpreted as mm using cited dimension checks, with no rescaling.'if plan['cad'].get('format')=='stl'else'Selected product local coordinates; no assembly placement inferred; rigid viewing transform only.'if plan['cad'].get('extraction')else'Rigid transform only; supplied assembly placements and native millimetres retained.'
+        model['sourceTransform']={'matrixRows':plan['cad']['matrixRows'],'scale':1,'sourceUnit':plan['cad'].get('sourceUnit','mm'),'note':transform_note}
         if plan['cad'].get('extraction'):model['cadExtraction']=plan['cad']['extraction']
+        if plan.get('additionalCad'):model['sourceTransform']['additionalSources']=[{'file':source['file'],'matrixRows':source['matrixRows'],'sourceUnit':source.get('sourceUnit','mm')}for source in plan['additionalCad']]
     model.update(schemaVersion='1',unit='mm',strideFloats=6,binary=binary_name,parts=records,artifacts=artifacts)
     if compressed:model['binaryCompression']='gzip'
     write(out/'model.json',model)
