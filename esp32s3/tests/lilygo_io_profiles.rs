@@ -140,3 +140,95 @@ fn sim7080_native_sd_dma_requires_exact_routes_and_explicit_axp_aldo3_supply() {
     b.write32(0x6000_4154+4*179,0x80|6).unwrap();cmd(&mut b,8,0x1aa,CMD_RESP);assert_ne!(b.read32(0x6002_8000+reg::RINTSTS).unwrap()&int::RTO,0);
     assert_eq!((b.periph.sdmmc.stats.bytes_written,b.periph.sdmmc.stats.bytes_read),(512,512));
 }
+
+#[test]
+fn eight_more_exact_boards_expose_only_present_controls_and_source_proven_gpio() {
+    for mut board in [LilygoIo::t_keyboard_s3_pro(),LilygoIo::t_micro32_s3(),LilygoIo::t_panel_s3(),LilygoIo::t_camera_plus_s3(),LilygoIo::t_vending(),LilygoIo::t_track(),LilygoIo::t_fpga(),LilygoIo::t7_s3()] {
+        assert!(!board.uses_gpio_waveform());assert!(board.camera_frame().is_none());assert!(board.lora_snapshot().is_none());
+        if board.name()=="lilygo-t-micro32-s3" {assert!(board.input_levels().is_empty());assert_eq!(board.named_pin("boot"),None);assert!(!board.button_at(10,"boot",true));assert!(board.i2c_devices().is_empty());assert!(board.display().is_none());assert!(board.leds().is_none());}
+        else {assert_eq!(board.named_pin("boot"),Some(0));assert!(board.button_at(10,"boot",true));assert_eq!(board.take_edges()[0].pin,0);assert!(board.button_at(11,"boot",false));assert!(board.take_edges()[0].level);}
+        assert!(!board.button_at(12,"reset",true));assert!(!board.button_at(12,"power",true));
+    }
+    for (board,pin,color) in [(LilygoIo::t7_s3(),17,[0,255,0]),(LilygoIo::t_fpga(),46,[0,0,255])] {
+        let mut b=machine(board);drive(&mut b,pin,true);assert_eq!(b.board.leds().unwrap().0,[color]);disable(&mut b,pin);assert_eq!(b.board.leds().unwrap().0,[[0;3]]);
+        drive(&mut b,pin,true);route(&mut b,pin,256|1<<9);assert_eq!(b.board.leds().unwrap().0,[[0;3]]);drive(&mut b,pin,true);b.write32(0x6000_9004+4*u32::from(pin),0).unwrap();assert_eq!(b.board.leds().unwrap().0,[[0;3]]);
+    }
+    let mut b=machine(LilygoIo::t_fpga());i2c_route(&mut b,(38,39));assert!(i2c_write(&mut b,0x34,&[3]));assert_eq!(i2c_read(&mut b,0x34),Some(0x4a));assert!(!i2c_write(&mut b,0x34,&[0]));assert!(b.board.report().contains("FPGA/Cortex-M3"));
+    let mut b=machine(LilygoIo::t_vending());assert!(b.board.report().contains("capacity unknown"));drive(&mut b,16,true);drive(&mut b,4,true);assert!(b.board.report().contains("pulse drive=Some(true), GPIO4 peripheral supply=true"));disable(&mut b,16);assert!(b.board.report().contains("pulse drive=None"));assert!(b.board.leds().is_none());
+}
+
+fn screen_spi(b:&mut SocBus,clk:u8,mosi:u8,dc:u8,cs:Option<u8>) {route(b,clk,101);route(b,mosi,103);drive(b,dc,false);if let Some(cs)=cs {drive(b,cs,false);}b.write32(0x6002_4020,0x3f).unwrap();}
+fn dcs(b:&mut SocBus,dc:u8,cmd:u8,data:&[u8]) {level(b,dc,false);spi(b,&[cmd]);if !data.is_empty() {level(b,dc,true);spi(b,data);}}
+fn pixel(b:&mut SocBus,dc:u8,x:u16,y:u16,color:u16) {let x=x.to_be_bytes();let y=y.to_be_bytes();dcs(b,dc,0x2a,&[x[0],x[1],x[0],x[1]]);dcs(b,dc,0x2b,&[y[0],y[1],y[0],y[1]]);dcs(b,dc,0x2c,&color.to_be_bytes());}
+fn keyboard_init(b:&mut SocBus) {dcs(b,39,0x11,&[]);dcs(b,39,0x3a,&[5]);dcs(b,39,0x36,&[0xc8]);dcs(b,39,0x21,&[]);dcs(b,39,0x29,&[]);}
+#[test]
+fn keyboard_original_stm32_delays_cs_and_key_snapshots_and_keeps_four_panels_independent() {
+    let mut b=machine(LilygoIo::t_keyboard_s3_pro());screen_spi(&mut b,41,40,39,None);drive(&mut b,38,true);drive(&mut b,1,false);
+    i2c_route(&mut b,(6,7));assert!(!i2c_write(&mut b,1,&[1,31]));i2c_route(&mut b,(42,2));assert!(i2c_write(&mut b,1,&[1,31]));keyboard_init(&mut b);pixel(&mut b,39,2,1,0xf800);assert_eq!(b.board.display_frames(),0,"first CS write has not yet reached the original STM32 address callback");
+    assert!(i2c_write(&mut b,1,&[1,31]));keyboard_init(&mut b);pixel(&mut b,39,2,1,0xf800);let (w,h,p,v)=b.board.display().unwrap();assert_eq!((w,h),(512,128));assert_eq!([p[0],p[128],p[256],p[384]],[0xf800;4]);assert_eq!(v,b.board.display_version());
+    assert!(i2c_write(&mut b,1,&[1,8]));pixel(&mut b,39,2,1,0x07e0);let p=b.board.display().unwrap().2;assert_eq!([p[0],p[128],p[256],p[384]],[0x07e0;4],"new selection is still pending");
+    assert!(i2c_write(&mut b,1,&[1,8]));pixel(&mut b,39,2,1,0x001f);let p=b.board.display().unwrap().2;assert_eq!([p[0],p[128],p[256],p[384]],[0x07e0,0x001f,0x07e0,0x07e0]);
+    let version=b.board.display_version();route(&mut b,40,103|1<<9);pixel(&mut b,39,2,1,65535);assert_eq!(b.board.display_version(),version,"inverted MOSI route is not a valid frame");route(&mut b,40,103);
+    assert!(i2c_write(&mut b,1,&[1,1]));assert!(i2c_write(&mut b,1,&[1,1]));let frames=b.board.display_frames();pixel(&mut b,39,2,1,65535);assert_eq!(b.board.display_frames(),frames,"5th bit is the unattached expansion slot, not a fabricated fifth screen");
+    assert!(b.board.button_at(40,"key1",true));assert!(b.board.button_at(41,"knob",true));assert_eq!(b.board.take_edges(),[esp_soc::board::BoardEdge{cycle:41,pin:0,level:false}]);assert_eq!(b.board.encoder(),Some((4,5)));
+    assert!(i2c_write(&mut b,1,&[2]));assert!(i2c_write(&mut b,1,&[2]));assert_eq!(i2c_read(&mut b,1),Some(0x11));assert!(b.board.button_at(42,"key1",false));assert_eq!(i2c_read(&mut b,1),Some(0x11),"read returns retained key snapshot");assert!(i2c_write(&mut b,1,&[2]));assert_eq!(i2c_read(&mut b,1),Some(1));
+    assert!(i2c_write(&mut b,1,&[0x10]));assert!(i2c_write(&mut b,1,&[0x10]));assert_eq!(i2c_read(&mut b,1),Some(2));assert!(!i2c_write(&mut b,1,&[3,0]),"LED mode registers are explicitly unsupported");
+    level(&mut b,1,true);assert!(b.board.display().unwrap().2.iter().all(|&p|p==0));level(&mut b,1,false);assert_eq!(b.board.display().unwrap().2[128],0x001f);level(&mut b,38,false);assert!(b.board.display().unwrap().2.iter().all(|&p|p==0));
+}
+
+#[test]
+fn camera_plus_v12_spi_window_touch_and_user_button_do_not_alias_v10_or_capture_camera() {
+    let mut b=machine(LilygoIo::t_camera_plus_s3());screen_spi(&mut b,35,34,45,Some(36));drive(&mut b,21,true);drive(&mut b,46,true);
+    dcs(&mut b,45,0x11,&[]);dcs(&mut b,45,0x3a,&[0x55]);dcs(&mut b,45,0x36,&[0]);dcs(&mut b,45,0x21,&[]);dcs(&mut b,45,0x29,&[]);pixel(&mut b,45,0,0,0xf800);assert_eq!(b.board.display().unwrap().2[0],0xf800);
+    let frames=b.board.display_frames();pixel(&mut b,45,240,0,65535);assert_eq!(b.board.display_frames(),frames,"outside documented native glass is not folded onto valid pixels");route(&mut b,34,256);route(&mut b,35,103);route(&mut b,36,101);pixel(&mut b,45,0,0,65535);assert_eq!(b.board.display_frames(),frames,"old revision SPI pins do not write V1.2");screen_spi(&mut b,35,34,45,Some(36));
+    i2c_route(&mut b,(1,2));assert!(!i2c_write(&mut b,0x15,&[2]));i2c_route(&mut b,(33,37));b.board.touch(700,12,true);for (reg,value) in [(2,1),(3,0),(4,239),(5,0),(6,12)] {assert!(i2c_write(&mut b,0x15,&[reg]));assert_eq!(i2c_read(&mut b,0x15),Some(value));}
+    b.board.touch(20,30,false);assert!(i2c_write(&mut b,0x15,&[2]));assert_eq!(i2c_read(&mut b,0x15),Some(0));assert!(!i2c_write(&mut b,0x15,&[0xa7]));assert!(!i2c_write(&mut b,0x6a,&[0]));assert_eq!(b.board.input_levels().iter().find(|p|p.0==47),Some(&(47,true)));assert!(b.board.camera_frame().is_none());assert!(b.board.button_at(50,"user",true));assert_eq!(b.board.take_edges()[0].pin,17);
+}
+
+#[test]
+fn camera_plus_backlight_uses_real_ledc_duty_clock_mux_and_output_enable() {
+    let mut b=machine(LilygoIo::t_camera_plus_s3());screen_spi(&mut b,35,34,45,Some(36));drive(&mut b,46,true);dcs(&mut b,45,0x11,&[]);dcs(&mut b,45,0x3a,&[5]);dcs(&mut b,45,0x21,&[]);dcs(&mut b,45,0x29,&[]);pixel(&mut b,45,0,0,65535);assert_eq!(b.board.display().unwrap().2[0],65535);
+    for (addr,value) in [(0x600c0018,1<<11),(0x600190d0,3),(0x600190a0,8|(256<<4)|(1<<25)),(0x60019008,64<<4),(0x6001900c,1<<31),(0x60019000,4|(1<<4))] {b.write32(addr,value).unwrap();}b.tick(10000);route(&mut b,46,73);b.refresh_board_outputs();assert_eq!(b.board.display().unwrap().2[0],(7<<11)|(15<<5)|7);
+    route(&mut b,46,73|1<<9);b.refresh_board_outputs();assert_eq!(b.board.display().unwrap().2[0],(23<<11)|(47<<5)|23);disable(&mut b,46);assert_eq!(b.board.display().unwrap().2[0],0);drive(&mut b,46,true);route(&mut b,46,73);b.write32(0x600c0018,0).unwrap();b.refresh_board_outputs();assert_eq!(b.board.display().unwrap().2[0],0);
+}
+
+#[test]
+fn keyboard_active_low_pwm_and_hardware_reset_update_the_visible_version() {
+    let mut b=machine(LilygoIo::t_keyboard_s3_pro());screen_spi(&mut b,41,40,39,None);drive(&mut b,38,true);drive(&mut b,1,false);i2c_route(&mut b,(42,2));for _ in 0..2 {assert!(i2c_write(&mut b,1,&[1,16]));}keyboard_init(&mut b);for i in 0..20 {pixel(&mut b,39,2+i,1,65535);}let version=b.board.display_version();
+    for (addr,value) in [(0x600c0018,1<<11),(0x600190d0,3),(0x600190a0,8|(256<<4)|(1<<25)),(0x60019008,64<<4),(0x6001900c,1<<31),(0x60019000,4|(1<<4))] {b.write32(addr,value).unwrap();}b.tick(10000);route(&mut b,1,73);b.refresh_board_outputs();assert_eq!(b.board.display().unwrap().2[0],(23<<11)|(47<<5)|23,"25% high duty means 75% brightness on the low-active transistor");
+    route(&mut b,1,73|1<<9);b.refresh_board_outputs();assert_eq!(b.board.display().unwrap().2[0],(7<<11)|(15<<5)|7);disable(&mut b,1);assert_eq!(b.board.display().unwrap().2[0],0);drive(&mut b,1,false);level(&mut b,38,false);assert!(b.board.display_version()>version,"reset must not reuse an old version after clearing a pixel counter");assert!(b.board.display().unwrap().2.iter().all(|&p|p==0));
+}
+
+#[test]
+fn track_jd9613_pages_mount_orientation_and_shared_sensor_power_follow_factory_pins() {
+    let mut b=machine(LilygoIo::t_track());screen_spi(&mut b,5,6,7,Some(9));drive(&mut b,8,true);assert!(!b.board.button_at(1,"track-right",true));dcs(&mut b,7,0x11,&[]);pixel(&mut b,7,125,0,0xf800);assert_eq!(b.board.display_frames(),0);
+    drive(&mut b,4,true);dcs(&mut b,7,0xfe,&[1]);dcs(&mut b,7,0x11,&[]);dcs(&mut b,7,0x2c,&[0xf8,0]);assert_eq!(b.board.display_frames(),0,"page1 voltage/gamma data is not DCS RAMWR");dcs(&mut b,7,0xfe,&[0]);dcs(&mut b,7,0x11,&[]);dcs(&mut b,7,0x3a,&[0x55]);dcs(&mut b,7,0x36,&[0]);dcs(&mut b,7,0x51,&[255]);dcs(&mut b,7,0x29,&[]);pixel(&mut b,7,125,0,0xf800);assert_eq!(b.board.display().unwrap().2[0],0,"BCTRL must enable the brightness block");dcs(&mut b,7,0x53,&[0x28]);let (w,h,p,_)=b.board.display().unwrap();assert_eq!((w,h),(294,126));assert_eq!(p[0],0xf800);pixel(&mut b,7,0,0,0x001f);assert_eq!(b.board.display().unwrap().2[125*294],0x001f);
+    let frames=b.board.display_frames();pixel(&mut b,7,126,0,65535);assert_eq!(b.board.display_frames(),frames);dcs(&mut b,7,0x3a,&[6]);pixel(&mut b,7,125,0,65535);assert_eq!(b.board.display_frames(),frames,"18-bit mode is not mislabeled as supported RGB565");
+    assert!(b.board.button_at(2,"track-right",true));assert_eq!(b.board.take_edges()[0].pin,1);assert!(b.board.button_at(3,"track-down",true));assert_eq!(b.board.take_edges()[0].pin,10);assert_eq!(b.board.display().unwrap().2[0],0xf800,"GPIO10 belongs to sensor, not invalid TFT_BL macro");
+    disable(&mut b,4);assert!(b.board.display().unwrap().2.iter().all(|&p|p==0));let edges=b.board.take_edges();assert_eq!(edges.len(),2);assert!(edges.iter().all(|e|e.level));assert!(b.board.leds().is_none(),"conflicting source LED colors are not invented");
+}
+
+#[test]
+fn camera_plus_and_panel_spi_sd_slots_roundtrip_blocks_on_distinct_exact_buses() {
+    for (board,pins) in [(LilygoIo::t_camera_plus_s3(),[35,34,48,21]),(LilygoIo::t_panel_s3(),[36,35,37,38])] {
+        let mut b=machine(board);if b.board.name()=="lilygo-t-camera-plus-s3" {drive(&mut b,36,true);}spi_card(&mut b,pins);init_card(&mut b,pins[3]);assert_eq!(command(&mut b,24,3),[255,0]);let mut bytes=vec![0xfe];bytes.extend((0..512).map(|i|(i%251) as u8));bytes.extend([255;2]);spi(&mut b,&bytes);assert_eq!(spi(&mut b,&[255]),[5]);assert_eq!(read_block(&mut b),bytes[1..513]);
+        b.write32(0x6000_9004+4*u32::from(pins[1]),0).unwrap();assert_eq!(command(&mut b,58,0),[255;2]);route(&mut b,pins[1],103);level(&mut b,pins[3],true);assert_eq!(command(&mut b,58,0),[255;2]);
+    }
+}
+
+fn panel_serial(b:&mut SocBus,data:bool,value:u8) {let word=u16::from(value)|u16::from(data)<<8;for bit in (0..9).rev() {let data=if word&(1<<bit)!=0 {64}else{0};assert!(i2c_write(b,0x20,&[3,data]));assert!(i2c_write(b,0x20,&[3,data|32]));}assert!(i2c_write(b,0x20,&[3,128]));}
+fn panel_routes(b:&mut SocBus) {for (pin,signal) in [(41,154),(39,151),(40,152)] {route(b,pin,signal);}for (i,pin) in [1,2,3,4,5,6,7,8,9,10,11,12,13,42,46,45].into_iter().enumerate() {route(b,pin,133+i as u32);}drive(b,14,true);}
+fn panel_dma(b:&mut SocBus,wide:bool) {
+    const DESC:u32=0x3fc88000;const DATA:u32=0x3fc8a000;let total=480*480*2;for i in 0..total/2 {let value=if i==0 {0xf800u16}else if i==1 {0x07e0}else if i==480*479 {0x001f}else{0};b.write16(DATA+2*i,value).unwrap();}
+    let mut pos=0;let mut index=0;while pos<total {let len=(total-pos).min(4092);let last=pos+len==total;for (i,value) in [1<<31|u32::from(last)<<30|len<<12|len,DATA+pos,if last {0}else{DESC+12*(index+1)}].into_iter().enumerate() {b.write32(DESC+12*index+4*i as u32,value).unwrap();}pos+=len;index+=1;}
+    for (address,value) in [(0x60041014,0),(0x600c001c,1<<8),(0x6003f0a8,5),(0x6003f080,(DESC&0xfffff)|(1<<21)),(0x60041000,(3<<29)|(20<<9)|(1<<6)),(0x60041020,(479<<8)|(501<<20)),(0x6004101c,(1<<31)|(479<<11)|(518<<21)),(0x60041014,(1<<27)|(1<<24)|if wide {1<<23}else{0})] {b.write32(address,value).unwrap();}
+    b.tick(8_000_000);
+}
+#[test]
+fn panel_xl9535_serial_init_and_rgb_dma_require_direction_reset_routes_and_native_geometry() {
+    let mut b=machine(LilygoIo::t_panel_s3());i2c_route(&mut b,(17,18));assert!(!i2c_write(&mut b,0x5a,&[0]),"CST3240 touch is not fabricated");assert!(i2c_write(&mut b,0x20,&[6]));assert_eq!(i2c_read(&mut b,0x20),Some(255));assert!(i2c_write(&mut b,0x20,&[2,0x20,0x80]));panel_serial(&mut b,false,0x11);assert!(b.board.report().contains("commands=0"),"latch writes cannot drive input-configured pins");
+    assert!(i2c_write(&mut b,0x20,&[6,0xdf,0x1f]));assert!(i2c_write(&mut b,0x20,&[2,0,0x80]));assert!(i2c_write(&mut b,0x20,&[2,0x20,0x80]));panel_serial(&mut b,false,0x11);panel_serial(&mut b,false,0x3a);panel_serial(&mut b,true,0x55);panel_serial(&mut b,false,0x29);panel_routes(&mut b);assert_eq!(b.board.display_frames(),0,"initialization does not create display pixels");panel_dma(&mut b,true);assert_eq!(b.board.display_frames(),1);let p=b.board.display().unwrap().2;assert_eq!([p[0],p[1],p[479*480]],[0xf800,0x07e0,0x001f]);
+    let version=b.board.display_version();panel_serial(&mut b,false,0x36);panel_serial(&mut b,true,0x18);let p=b.board.display().unwrap().2;assert_eq!([p[0],p[479*480]],[0xf800,0x001f]);assert!(b.board.display_version()>version,"BGR and ML alter displayed scan, with no fake RAMWR");
+    route(&mut b,42,146|1<<9);panel_dma(&mut b,true);assert_eq!(b.board.display_frames(),1,"inverted physical RGB data route rejects a completed DMA frame");route(&mut b,42,146);panel_dma(&mut b,false);assert_eq!(b.board.display_frames(),1,"8-bit DMA is not accepted as RGB565");
+    assert!(i2c_write(&mut b,0x20,&[2,0]));panel_dma(&mut b,true);assert_eq!(b.board.display_frames(),1);assert!(b.board.display().unwrap().2.iter().all(|&p|p==0));assert!(b.periph.lcd_cam.lcd_frames>=3,"negative board cases still traverse real LCD DMA");
+}
