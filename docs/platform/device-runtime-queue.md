@@ -112,11 +112,24 @@ Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已�
 | 70 | [M5Stack StickS3 · K150](https://docs.m5stack.com/en/core/StickS3) · `m5stack-k150` | esp32s3 / ST7789P3 | 待实现 | ST7789P3 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 71 | [M5Stack StickT2](https://docs.m5stack.com/en/core/StickT2) · `m5stack-k016-t2` | esp32 / ST7789 | 待实现 | ST7789 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 72 | [M5Stack Tab5 · C145](https://docs.m5stack.com/en/core/Tab5) · `m5stack-c145` | esp32p4 / ILI9881C / ST7123 / ST7121（按批次核对） | 待实现 | ILI9881C / ST7123 / ST7121（按批次核对） 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 73 | [M5Stack Tough](https://docs.m5stack.com/en/core/Tough) · `m5stack-k034` | esp32 / ILI9342C | 待实现 | ILI9342C 引脚/窗口/批次，按键/触摸，供电及板载外设 |
+| 73 | [M5Stack Tough](https://docs.m5stack.com/en/core/Tough) · `m5stack-k034` | esp32 / ILI9342C | 资料已核验并入目录，板级未实现 | 已合入官方引脚/接口来源与知识记录（`docs/platform/evidence/tough/`）；仍缺 ILI9342C 引脚/窗口/批次、按键/触摸、供电及出厂固件验收 |
 | 74 | [M5Stack VAMeter](https://docs.m5stack.com/en/core/VAMeter) · `m5stack-k136` | esp32s3 / ST7789 | 待实现 | ST7789 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 75 | [M5Stack Xiaozhi Card Kit · K146](https://docs.m5stack.com/en/core/Xiaozhi_Card_Kit) · `m5stack-k146` | esp32s3 / GDEY027T91 | 待实现 | GDEY027T91 刷新通道、存储、触摸/按键、电源 |
 | 76 | [M5Stack NanoH2](https://docs.m5stack.com/en/core/NanoH2) · `m5stack-c149` | esp32h2 / 无屏幕 | 待实现 | 先实现对应芯片平台，再核对产品外设 |
 | 77 | [M5Stack Stamp-C5](https://docs.m5stack.com/en/core/Stamp-C5) · `m5stack-s016` | esp32c5 / 无屏幕 | 待实现 | 先实现对应芯片平台，再核对产品外设 |
+
+## 2026-11-22 · 23 新增型号与 Core 家族状态
+
+本轮目录共 220 项：`partial` 60 项、`unavailable` 160 项；M5Stack `m5-core` 家族仍是 **1/16** 有板型（只有 CoreMatrix C158），`m5-chain` 家族新增第 1 项。固件目录 179 项（`available` 17、`trial` 132、`reference` 30），其中 15 项标记 `simulationVerified`；watchlist 123 项中 7 项 `product-verified`。
+
+| 产品 | 芯片 / 控制器 | 当前状态 | 缺项/入口 |
+| --- | --- | --- | --- |
+| [M5Stack Chain Captain · C160](https://docs.m5stack.com/en/chain/Chain_Captain) · `m5stack-c160` | esp32s3 / JD9853A 240×240 | 已交付 partial 板型 + 官方 V0.2 真实 ROM 启动与按键验收 | 见 [运行记录](chain-captain-runtime.md) 与 [证据](evidence/chain-captain/README.md)；RTC/IR/Chain UART/Ext.Port/I2S 未建模，Chain Port A 收发方向与官网冲突保留，3D 模型未验收 |
+| [M5Stack Chain DualKey · C147](https://docs.m5stack.com/en/chain/Chain_DualKey) · `m5stack-c147` | esp32s3 / 无屏幕 | 资料核对中，目录与板型未落盘 | 官方 PinMap 已抓（KEY_1 G0、KEY_2 G17、WS2812 G21 与供电 G40、ADC G8/G7/G10/G2/G9、USB G19/G20、两路 HY2.0-4P 为 G48/G47 与 G5/G6）；出厂镜像候选的哈希与来源仍未复核 |
+| [M5Stack Tough · K034](https://docs.m5stack.com/en/core/Tough) · `m5stack-k034` | esp32 / ILI9342C | 证据已并入，板级未实现 | 见 [证据](evidence/tough/sources.json)；仍缺显示/按键/触摸/供电实现与出厂固件验收 |
+| Core2 家族 `k010` / `k010-v11` / `k010-v13` / `k010-aws` / `k010-aws-v13` | esp32 / ILI9342C | 知识记录已按原理图与数据手册重核（5 条 K010 记录 + 6 份来源清单），板级未实现 | 工作树 `2d6e81fc`；目录条目与 AXP192/RTC/蜂鸣器等实现待落地，出厂固件验收未做 |
+| CoreS3 家族 `k128` / `k128-se` / `k128-lite` / `k149` | esp32s3 / ILI9342C-E | 未落盘 | 工作树 `esp-lane-cores3` 本轮无新产出，需重新派发 |
+| Basic `k001` / `k001-v27`、FIRE `k007-v27`、M5GO `k006-v27`、Faces `k005` | esp32 / ILI9342C | 未落盘 | 出厂固件调查仍在 `esp-lane-core-fw` 进行（docs 与 M5Burner 抓取收据）；板级实现未开始 |
 
 ## 新增双角色设备
 

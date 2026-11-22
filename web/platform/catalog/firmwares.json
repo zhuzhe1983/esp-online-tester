@@ -12401,6 +12401,57 @@
           "checkedAt": "2026-11-14"
         }
       ]
+    },
+    {
+      "id": "m5stack-c160-userdemo-v0-2",
+      "name": "Chain Captain 官方 User Demo · V0.2",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "productIds": [
+        "m5stack-c160"
+      ],
+      "status": "available",
+      "source": {
+        "url": "https://github.com/m5stack/M5Chain-Captain-UserDemo/releases/download/V0.2/C160-M5Chain-Captain-UserDemo-V0.2_0x0.bin",
+        "sha256": "fe8404adc64c12638eeec92be6fd545ec456a257bd784509b6c269ee6edc67b0",
+        "bootMode": "rom"
+      },
+      "version": "V0.2",
+      "revision": "V0.2",
+      "sdk": "ESP-IDF >=5.5.5,<6.0.0",
+      "watchlistId": "m5-official-github-userdemo-c160",
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "simulationVerified": true,
+      "hardwareValidated": false,
+      "publicationUrl": "https://github.com/m5stack/M5Chain-Captain-UserDemo/releases/tag/V0.2",
+      "verification": {
+        "simulationVerified": true,
+        "hardwareValidated": false,
+        "evidence": "docs/platform/evidence/chain-captain/README.md"
+      },
+      "sources": [
+        {
+          "title": "Official M5Chain-Captain-UserDemo release V0.2 asset",
+          "url": "https://github.com/m5stack/M5Chain-Captain-UserDemo/releases/tag/V0.2",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "M5Chain-Captain-UserDemo source at commit 192d1fe17f766609080f055a4538417fba266b97",
+          "url": "https://github.com/m5stack/M5Chain-Captain-UserDemo/tree/192d1fe17f766609080f055a4538417fba266b97",
+          "checkedAt": "2026-11-21"
+        }
+      ],
+      "limitations": [
+        "0x0 合并镜像（2 571 488 B，SHA-256 fe8404ad…c67b0），V0.2 发布于 2026-10-12，是该仓库唯一公开镜像；ESP-IDF 版本要求取自 main/idf_component.yml。",
+        "浏览器直载实测被 GitHub CORS 策略拒绝（release 资产响应没有 Access-Control-Allow-Origin）。请从官方发布页下载后通过本地文件导入；本站不转存第三方镜像。",
+        "M5Burner 已登记 Chain Captain 与 “Chain Captain UserDemo V0.2”“UIFlow2.0 Chain Captain” 两个 OFFICIAL 项目；其 /versions/<versionId>/download 端点返回 400（同 headers 早前返回 401），按 binFileName 猜测的 CDN 路径返回 404，本轮未取得可直载的 Burner 文件名与校验值。Burner 文件名 C160-Chain-Captain-UserDemo-Di-V0.2-20260928_0x0.bin 与 GitHub 资产名不同，不声称同一构建。",
+      "未建模外设以 guest 自身错误暴露：HAL-RTC RX8130 读写报 ESP_ERR_INVALID_STATE（不是 NACK）；Wi-Fi 只到 guest 初始化（无保存网络，station 未启动，Chain IoT 显示离线）；Chain UART、IR、Ext.Port、I2S 与麦克风未实现。",
+      "镜像头声明 SPI Flash Size 8MB，与厂家规格 16MB 冲突，guest 按头声明使用。验收明细见 docs/platform/evidence/chain-captain/README.md 与 runtime-v02.json。",
+        "已在页面 worker 的实际 WASM JIT 中完成 ROM 启动与输入验收：LVGL Launcher 与 Chain IoT / Pomodoro Timer / IMU Bubble Level / IR Copy / Recorder / Settings 菜单出现，240×240 面板首帧非空（63 色，SHA-256 c1302df0…b681）；M5PM1@0x6E、BMI270、RGB、IR、显示、ES8311 + 22050 Hz I2S、storage 分区 FAT 挂载均由 guest 日志确认。",
+      "按键已实测：G4 打开 Chain IoT 并使 M5PM1 Boost Enabled，G5 触发 HAL-CHAIN 两路扫描（Port A TX=7/RX=6、Port B TX=18/RX=17，均 received=0 bytes），G1 只改变面板帧；电源键走 board-button 通道被接受。未做实体对照。"
+      ]
     }
   ]
 }

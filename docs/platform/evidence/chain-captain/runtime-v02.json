@@ -1,0 +1,199 @@
+{
+  "productId": "m5stack-c160",
+  "board": "chain-captain",
+  "status": "pass",
+  "runs": [
+    {
+      "runAt": "2026-11-22T19:06:54.203Z",
+      "guestSeconds": 7.56,
+      "frames": 46,
+      "insns": 347638516,
+      "mips": 24.77562767180414,
+      "speed": 1.0878365581605205,
+      "chainScanObserved": "button-c delta contained Port A scan only"
+    },
+    {
+      "runAt": "2026-11-22T19:10:52.314Z",
+      "guestSeconds": 7.5,
+      "frames": 46,
+      "insns": 348181450,
+      "mips": 25.373933341979708,
+      "speed": 1.0786002699129968,
+      "chainScanObserved": "button-c delta contained Port A and Port B scans"
+    }
+  ],
+  "backend": "actual-page-worker-wasm-jit",
+  "firmwarePatched": false,
+  "executionMode": "wasm-jit",
+  "wasmSha256": "18a414809281dac3602531717469b0722274f3aef3a52e3f836e1cc20819d40b",
+  "wasmBytes": 5938483,
+  "image": {
+    "url": "https://github.com/m5stack/M5Chain-Captain-UserDemo/releases/download/V0.2/C160-M5Chain-Captain-UserDemo-V0.2_0x0.bin",
+    "sha256": "fe8404adc64c12638eeec92be6fd545ec456a257bd784509b6c269ee6edc67b0",
+    "bytes": 2571488
+  },
+  "rom": {
+    "file": "esp32s3_rev0_rom.elf",
+    "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+    "bytes": 949552
+  },
+  "guestBuild": {
+    "project": "ChainCaptain-UserDemo",
+    "appVersion": "V0.2",
+    "idf": "v5.5.5",
+    "chipRevision": "v0.0",
+    "efuseBlockRevision": "v1.0",
+    "elfSha256Prefix": "8acf8303d...",
+    "appCompileTime": "Sep 23 2026 14:53:06",
+    "bootloaderCompileTime": "Sep 23 2026 14:55:02",
+    "psram": "Found 8MB PSRAM device / Speed 80MHz"
+  },
+  "display": {
+    "width": 240,
+    "height": 240,
+    "frameNumber": 81,
+    "firstFrameSha256": "c1302df064cb7acad5bb5ff5684a6087bb53cc415da2d51500d02096b4b2b681",
+    "distinctColours": 63,
+    "blank": false
+  },
+  "partitions": [
+    [
+      "nvs",
+      "0x9000",
+      "0x6000"
+    ],
+    [
+      "phy_init",
+      "0xf000",
+      "0x1000"
+    ],
+    [
+      "factory",
+      "0x10000",
+      "0x580000"
+    ],
+    [
+      "storage",
+      "0x590000",
+      "0x270000"
+    ]
+  ],
+  "serialBytes": {
+    "total": 13481,
+    "uart0": 6694
+  },
+  "bootMarkers": [
+    "I (7) boot: SPI Flash Size : 8MB",
+    "W (284) spi_flash: Detected size(16384k) larger than the size in the binary image header(8192k). Using the size in the binary image header.",
+    "W MSPI Timing: tuning fail, best point is fallen back to index 5",
+    "I (275) esp_psram: SPI SRAM memory test OK",
+    "Found 8MB PSRAM device / Speed 80MHz",
+    "M5PM1_SYS: Device: ID=0x50 MODEL=0x20 HW=0x05 SW=0x06",
+    "M5PM1_I2C: M5PM1 initialized at address 0x6E (100000 Hz)",
+    "HAL-PWR: power initialized, external rails and IR are off",
+    "HAL-FS: mounted FAT filesystem at /storage (2477568 bytes free)",
+    "HAL-IMU: BMI270 initialized",
+    "HAL-RGB: RGB initialized and off",
+    "HAL-IR: IR initialized with power off",
+    "LVGL: Starting LVGL task",
+    "HAL-DISP: display initialized",
+    "ES8311: Work in Slave mode",
+    "I2S_IF STD: TX/RX 22050 Hz mono",
+    "HAL-AUDIO: audio output started",
+    "[Launcher] on create",
+    "[Launcher] on open"
+  ],
+  "launcherApps": [
+    "Chain IoT",
+    "Pomodoro Timer",
+    "IMU Bubble Level",
+    "IR Copy",
+    "Recorder",
+    "Settings"
+  ],
+  "chainPorts": [
+    {
+      "label": "left/Port A",
+      "tx": 7,
+      "rx": 6,
+      "officialPinMap": {
+        "tx": 6,
+        "rx": 7,
+        "net": "UART2"
+      },
+      "scan": "no valid response (index=255 cmd=0xFE received=0 bytes)"
+    },
+    {
+      "label": "right/Port B",
+      "tx": 18,
+      "rx": 17,
+      "officialPinMap": {
+        "tx": 18,
+        "rx": 17,
+        "net": "UART1"
+      },
+      "scan": "no valid response (index=255 cmd=0xFE received=0 bytes)"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "button-a",
+      "gpio": 1,
+      "transport": "board-gpio",
+      "serialDeltaBytes": 0,
+      "frameChanged": true,
+      "heldFrameSha256": "034a2e941a060cbe149e898e62755598690ef7dddf9d7ff97fa3693e2eb8e8c2",
+      "releasedFrameSha256": "5023bf0fd02602e452d7fb19d99ae32ca8d6e6f773ec3b9fafe6deeb9171be74",
+      "observed": "面板帧变化；串口无新增行"
+    },
+    {
+      "id": "button-b",
+      "gpio": 4,
+      "transport": "board-gpio",
+      "serialDeltaBytes": 3620,
+      "frameChanged": true,
+      "heldFrameSha256": "e2f2bf75cfa3d6aef24e5d1aff21d37b59ab92cb84ba55f8e6b89b804bed9e69",
+      "releasedFrameSha256": "ad3573f62a1b0d65c232ce16fe0630f66a009d1c4e99ef930e3ad497efe0d1a4",
+      "observed": "[Launcher] open app id: 1 -> [Chain IoT] on open；随后 M5PM1 Boost Enabled 与两路 Chain UART ready"
+    },
+    {
+      "id": "button-c",
+      "gpio": 5,
+      "transport": "board-gpio",
+      "serialDeltaBytes": 486,
+      "frameChanged": true,
+      "heldFrameSha256": "6a6449bd8b0d338e440405ca9bfdabeb6737885b56aea9cbb0fd40cb13081209",
+      "releasedFrameSha256": "7c9fe61db95d22e5b23399e956302fdacfaf7ffdaaf20dc7238e5b63b580facf",
+      "observed": "HAL-CHAIN Port A/Port B 扫描各一行，received=0 bytes；应用关闭后 M5PM1 Boost Disabled"
+    },
+    {
+      "id": "power",
+      "transport": "board",
+      "message": {
+        "t": "board-button",
+        "id": "power",
+        "pressed": 1
+      },
+      "observed": "runtime 接受并派发到 bus.board().button_at()"
+    }
+  ],
+  "unmodelledPeripheralErrors": {
+    "HAL-RTC: RX8130 flag read failed: ESP_ERR_INVALID_STATE": "ESP_ERR_INVALID_STATE",
+    "HAL-RTC: RX8130 time read failed: ESP_ERR_INVALID_STATE": "ESP_ERR_INVALID_STATE"
+  },
+  "wifi": {
+    "guestInit": "wifi driver task / wifi firmware version b9f67df printed; HAL-WIFI initialized with hostname chain-captain-<redacted>",
+    "station": "HAL-WIFI cannot start station without a saved network; [Chain IoT] Wi-Fi unavailable; Chain controls remain offline",
+    "claim": "只到 guest 初始化为止，未做无线链路或 Chain 设备应答验证"
+  },
+  "omitted": [
+    "完整串口捕获与逐键 serialDelta 原文留在被 gitignore 的 output/chain-captain/probe-dump.txt 与 probe-stderr.txt，未提交"
+  ],
+  "caveats": [
+    "探针的 serialDelta 采样窗口重叠，同一行在增量摘录中出现两次；完整捕获中每行只出现一次。",
+    "hardwareDiagnostics 为 null：worker.js 与 runtime.js 目前只对 stopwatch/corematrix 开放该通道，chain_captain.rs 已实现的 hardware_diagnostics() 未接线。",
+    "leds 与 imu 字段为空：本轮验收以 guest 串口输出与面板帧为准，未读取宿主侧 RGB/IMU 建模状态。",
+    "W MSPI Timing tuning fail 属于模拟器 PSRAM 时序调优伪影，不代表实物故障。",
+    "未连接真实设备，未做刷机或实机对照。"
+  ]
+}

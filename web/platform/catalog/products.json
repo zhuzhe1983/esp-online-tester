@@ -21168,6 +21168,347 @@
         "id": "mosaico",
         "name": "ESP-Mosaico"
       }
+    },
+    {
+      "id": "m5stack-c160",
+      "name": "M5Stack Chain Captain · C160",
+      "manufacturer": "M5Stack",
+      "sku": "C160",
+      "summary": "Chain 系列主机：ESP32-S3R8、16 MB Flash 与 8 MB PSRAM、1.54 英寸 240×240 LCD、BMI270 六轴 IMU、RX8130CE RTC、ES8311 音频链路加 1 W 喇叭、红外收发（正对 6 m）、三只用户键与电源键、可编程 RGB，配 Stamp Timer Power2（M5PM1）与 M5IOE1 扩展器，提供 USB-C、Grove、Chain 与 15P Ext.Port。",
+      "hardwareRevision": "用户实物版本未标注；已核验原理图为 Chain Captain V0.6（2026-11-04）",
+      "chip": "esp32s3",
+      "module": "ESP32-S3R8",
+      "runtime": {
+        "board": "chain-captain",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "display": {
+        "width": 240,
+        "height": 240,
+        "type": "LCD",
+        "controller": "JD9853A",
+        "bus": "SPI",
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "用户按键 A · G1",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "button-b",
+          "name": "用户按键 B · G4",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "button-c",
+          "name": "用户按键 C · G5",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "power",
+          "name": "电源按键 · M5PM1 时序",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C（5V 输入/刷机）",
+          "external": true,
+          "pins": [
+            {
+              "name": "VBUS",
+              "role": "5V"
+            },
+            {
+              "name": "GND",
+              "role": "ground"
+            },
+            {
+              "name": "USB_D_P"
+            },
+            {
+              "name": "USB_D_N"
+            }
+          ],
+          "notes": "原理图把 16P USB-C 的 DP/DM 经一只 DPDT 模拟开关接到模组的 USB_D_P/USB_D_N 网名；官方 PinMap 未列出对应 GPIO 编号，开关另一端的连接与具体编号仍未确认。"
+        },
+        {
+          "id": "chain-port",
+          "type": "HY2.0-4P",
+          "name": "CHAIN（Chain Bus 出入）",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND",
+              "color": "黑"
+            },
+            {
+              "name": "5V",
+              "color": "红"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "color": "黄",
+              "role": "UART1_TX"
+            },
+            {
+              "name": "G17",
+              "gpio": 17,
+              "color": "白",
+              "role": "UART1_RX"
+            }
+          ],
+          "notes": "按官方 PinMap 与原理图网名 G17_UART1_RX/G18_UART1_TX 登记；出厂 UserDemo 源码 hal_chain.cpp 使用 GPIO6/7 作 UART1、GPIO17/18 作 UART2，与官网不一致，冲突保留在产品知识记录中。"
+        },
+        {
+          "id": "grove",
+          "type": "HY2.0-4P",
+          "name": "PORT.A（Grove）",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND",
+              "color": "黑"
+            },
+            {
+              "name": "5V",
+              "color": "红"
+            },
+            {
+              "name": "G6",
+              "gpio": 6,
+              "color": "黄",
+              "role": "UART2_TX"
+            },
+            {
+              "name": "G7",
+              "gpio": 7,
+              "color": "白",
+              "role": "UART2_RX"
+            }
+          ],
+          "notes": "官方 PinMap 只列 1 个 Grove；原理图出现 GROVE ×2（GROVEA & GROVEB）与 PMG0/PMG1 两路 5V 使能，端口数量待实机确认。"
+        },
+        {
+          "id": "ext-port",
+          "type": "2.54mm-15P",
+          "name": "Ext.Port（15P 排针）",
+          "external": true,
+          "pins": [
+            {
+              "name": "5VIN",
+              "role": "5V in"
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "G8",
+              "gpio": 8
+            },
+            {
+              "name": "G9",
+              "gpio": 9
+            },
+            {
+              "name": "G10",
+              "gpio": 10
+            },
+            {
+              "name": "G11",
+              "gpio": 11
+            },
+            {
+              "name": "G12",
+              "gpio": 12
+            },
+            {
+              "name": "G13",
+              "gpio": 13
+            },
+            {
+              "name": "G14",
+              "gpio": 14
+            },
+            {
+              "name": "G19",
+              "gpio": 19
+            },
+            {
+              "name": "G20",
+              "gpio": 20
+            },
+            {
+              "name": "G36",
+              "gpio": 36
+            },
+            {
+              "name": "G47",
+              "gpio": 47
+            },
+            {
+              "name": "G48",
+              "gpio": 48
+            },
+            {
+              "name": "3V3",
+              "role": "3V3 out"
+            }
+          ],
+          "notes": "15 脚按官方 PinMap 逐脚登记（原理图网名 G8..G13_HED_P8..P13 对应排针）；本平台未实现该排针的电气路由。"
+        },
+        {
+          "id": "internal-i2c",
+          "type": "I2C",
+          "name": "内部 I2C0（SDA3/SCL2）",
+          "external": false,
+          "pins": [
+            {
+              "name": "G3",
+              "gpio": 3,
+              "role": "SDA"
+            },
+            {
+              "name": "G2",
+              "gpio": 2,
+              "role": "SCL"
+            }
+          ],
+          "notes": "挂在 0x6e M5PM1、0x4f M5IOE1、0x68 BMI270、0x18 ES8311；官方 V0.2 验收中这四个器件均由 guest 日志确认初始化。0x32 RX8130CE RTC 未建模，guest 的 HAL-RTC 读写报 ESP_ERR_INVALID_STATE（不是 NACK）。"
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "LCD（JD9853A，GPSPI2）",
+          "external": false,
+          "pins": [
+            {
+              "name": "G15",
+              "gpio": 15,
+              "role": "SCK"
+            },
+            {
+              "name": "G16",
+              "gpio": 16,
+              "role": "MOSI"
+            },
+            {
+              "name": "G45",
+              "gpio": 45,
+              "role": "CS"
+            },
+            {
+              "name": "G46",
+              "gpio": 46,
+              "role": "DC"
+            }
+          ],
+          "notes": "无 MISO；面板由 M5IOE1 的 IO12（电源）与 IO1（复位）同时有效才选中，背光走 IOE1 PWM CH11（源码为 PWM_CH3 通道号，映射见知识记录）。"
+        },
+        {
+          "id": "audio-i2s",
+          "type": "I2S",
+          "name": "音频（ES8311 + AW8737A）",
+          "external": false,
+          "pins": [
+            {
+              "name": "G40",
+              "gpio": 40,
+              "role": "MCLK"
+            },
+            {
+              "name": "G38",
+              "gpio": 38,
+              "role": "BCLK"
+            },
+            {
+              "name": "G41",
+              "gpio": 41,
+              "role": "LRCLK"
+            },
+            {
+              "name": "G42",
+              "gpio": 42,
+              "role": "DOUT"
+            },
+            {
+              "name": "G39",
+              "gpio": 39,
+              "role": "DIN"
+            },
+            {
+              "name": "G21",
+              "gpio": 21,
+              "role": "AW8737A SHDN"
+            }
+          ],
+          "notes": "ES8311 控制寄存器走内部 I2C0；麦克风为 LMA3729T381-0Y3S 模拟 MEMS，本平台未实现 I2S 收发。"
+        }
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Chain Captain · C160 official product documentation",
+          "url": "https://docs.m5stack.com/en/chain/Chain_Captain",
+          "checkedAt": "2026-11-21"
+        },
+        {
+          "title": "Chain Captain V0.6 schematic PDF (2026-11-04)",
+          "url": "https://m5stack-download.oss-cn-shenzhen.aliyuncs.com/attachment/1295/Chain_Captain_V0.6_SCH_PDF_20261104.pdf",
+          "checkedAt": "2026-11-21"
+        },
+        {
+          "title": "Official M5Chain-Captain-UserDemo release V0.2",
+          "url": "https://github.com/m5stack/M5Chain-Captain-UserDemo/releases/tag/V0.2",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "M5Burner Chain Captain device (deviceId 2122580583806615554)",
+          "url": "https://burner.m5stack.com/api/v1/firmwares?deviceId=2122580583806615554",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "chain-captain 板型只实现 240×240 显示窗口、G1/G4/G5 用户键、M5PM1 电源键时序、M5IOE1 PWM 红绿蓝、BMI270 I2C 子集与供电/背光门控。",
+        "RX8130CE RTC、红外收发、Chain UART、Ext.Port、I2S 音频与麦克风未建模：官方 V0.2 中 RTC 报 ESP_ERR_INVALID_STATE，Chain 扫描收到 0 字节应答。Wi-Fi 只到 guest 初始化，没有保存网络时 station 不启动，Chain IoT 显示离线。",
+        "JD9853A 控制器内部 GRAM 行数未由数据手册确认；240×320 是本平台的模拟配置，不作为厂家事实。",
+        "官网 PinMap 与出厂 UserDemo 的 Chain/Grove UART 收发方向互相冲突：固件运行期打印 left/Port A UART ready (TX=7 RX=6)、right/Port B UART ready (TX=18 RX=17)，与官网 PORT.A G6=UART2_TX/G7=UART2_RX 相反、与 PORT.CHAIN G18/G17 一致。目录按官网登记，冲突保留在知识记录。",
+        "厂家 CAD 已定位并复算校验，尚无经 1:1 照片叠合验收的 3D 模型条目。",
+        "未连接真实设备，未做刷机或实机核对。",
+    "官方 UserDemo V0.2 已在实际页面 worker WASM 中完成 ROM 启动与按键验收（docs/platform/evidence/chain-captain/README.md）；该镜像头声明 SPI Flash Size 8MB，与厂家规格 16MB 不一致，guest 按头声明使用。"
+      ],
+      "knowledgeUrl": "./knowledge/m5stack-c160.json",
+      "dimensions": {
+        "width": 56.0,
+        "height": 40.0,
+        "depth": 17.0,
+        "unit": "mm",
+        "basis": "official",
+        "sourceId": "model-size"
+      },
+      "family": {
+        "id": "m5-chain",
+        "name": "Chain 系列"
+      },
+      "defaultFirmwareId": "m5stack-c160-userdemo-v0-2"
     }
   ]
 }
