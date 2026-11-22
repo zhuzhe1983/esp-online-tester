@@ -28,7 +28,8 @@ jobs:
       deploy: false
   build:
     needs: firmware-catalog
-    runs-on: ubuntu-latest
+    # Playwright 1.57.0 supports Ubuntu 24.04, not the newer ubuntu-latest image.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
