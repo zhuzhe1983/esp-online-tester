@@ -24,6 +24,7 @@ pub mod stackchan;
 mod stackchan_host;
 mod stackchan_base;
 pub mod dinmeter;
+mod chain_captain;
 mod tembed_cc1101;
 mod stamps3;
 mod stamps3bat;
@@ -87,6 +88,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "stampfly" | "m5stack-k138" => Some(Box::new(stampfly::StampFly::new())),
         "stampfly-v11" | "m5stack-k138-v11" => Some(Box::new(stampfly::StampFly::v11())),
         "dinmeter" | "m5stack-dinmeter" => Some(Box::new(DinMeter::new())),
+        "chain-captain" | "m5stack-c160" => Some(Box::new(chain_captain::ChainCaptain::new())),
         "dinmeter-v11" | "m5stack-k134-v11" => Some(Box::new(DinMeter::v11())),
         "dial-v11" | "m5stack-dial-v11" => Some(Box::new(Dial::v11())),
         "atoms3-lite" | "m5stack-atoms3-lite" => Some(Box::new(AtomS3Lite::new())),
