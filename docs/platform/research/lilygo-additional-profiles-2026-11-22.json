@@ -1,0 +1,2766 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-22T08:03:24Z",
+  "implementation": "esp32s3/src/board/lilygo_additional.rs",
+  "status": "partial board contracts; no factory boot claims",
+  "notes": [
+    "Each catalog ID has a distinct BoardModel name and an explicitly selected hardware target. Sharing protocol mechanics follows independent manufacturer mapping, not name similarity.",
+    "Only native authored Xtensa SRAM probes are verified for the three TFT variants. Pro has native protocol tests; no new variant has a complete factory or Meshtastic boot claim.",
+    "No CPU, bus, per-tick or shared peripheral changes; exact board pin routing and SPI card wiring are local.",
+    "All four physical TF slots use the platform prepared 64 MiB FAT32 card policy. Board tests use smaller deterministic images solely to verify real SPI block read/write.",
+    "Storefront publication dates are retained only as low-confidence ordering proxies, not advertised as hardware release dates."
+  ],
+  "sources": [
+    {
+      "id": "deck-readme",
+      "repository": "Xinyuan-LilyGO/T-Deck",
+      "path": "README.MD",
+      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
+      "gitBlobSha": "9cf029e9855f2282d4f6422c8af8626aa39ed6ed",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/README.MD",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck/README.MD",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "f8dc7598ddbdfd6d673a55af3bb1032b49b715c3dd9033634bfec76f56fdabe2",
+      "bytes": 5421,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "deck-readme.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
+      "gitRevisionEvidence": {
+        "status": "fetched",
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
+        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
+      }
+    },
+    {
+      "id": "deck-pins",
+      "repository": "Xinyuan-LilyGO/T-Deck",
+      "path": "examples/UnitTest/utilities.h",
+      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
+      "gitBlobSha": "c2e7ff5baae629939763271c15b94c98218e1111",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/examples/UnitTest/utilities.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck/examples/UnitTest/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "b6b7f887136ec4962d8d9dbfb0b0d919c1f927d3eeb9fdb2c90956d02e8cd44e",
+      "bytes": 1811,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "deck-pins.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
+      "gitRevisionEvidence": {
+        "status": "fetched",
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
+        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
+      }
+    },
+    {
+      "id": "deck-firmware",
+      "repository": "Xinyuan-LilyGO/T-Deck",
+      "path": "firmware/README.MD",
+      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
+      "gitBlobSha": "f6550e9a8e384e26172d232fe355c1b260fc5f27",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/README.MD",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck/firmware/README.MD",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "f26b7b1c4ee4d6089c6d17ebd64ce1b371bea5660fdf6da5a3ae36a21d641337",
+      "bytes": 8390,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "deck-firmware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
+      "gitRevisionEvidence": {
+        "status": "fetched",
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
+        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
+      }
+    },
+    {
+      "id": "lib-deck-hardware",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "docs/hardware/lilygo-t-deck.md",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "c443472ecba495e638eab5760e262b751ebc19ea",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/docs/hardware/lilygo-t-deck.md",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/docs/hardware/lilygo-t-deck.md",
+      "kind": "official-documentation",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "d5abc55458cb7d0e7b4f86ceadbbc1534c79648fc5c892096d0db4cababd9bb0",
+      "bytes": 10210,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lib-deck-hardware.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lib-deck-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/LilyGo_T_Deck.cpp",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "4bdb356dd3584558bcbbaac32d4b616c2d433129",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/LilyGo_T_Deck.cpp",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/LilyGo_T_Deck.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "d9eb866c90ea84f4ffccd0c0de325a1f790d62b906be873972f1090e55b02eff",
+      "bytes": 24993,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lib-deck-cpp.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lib-deck-display",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "src/display/TDeckDisplayConfig.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "9438818026ea22e828a13343db40b66ad151c745",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/src/display/TDeckDisplayConfig.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/src/display/TDeckDisplayConfig.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "da2754954dab222260e7a1c76a08ea87ef124c0b12ac74fd8f6efb4ef420df21",
+      "bytes": 1782,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lib-deck-display.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "lib-deck-pins",
+      "repository": "Xinyuan-LilyGO/LilyGoLib",
+      "path": "variants/lilygo_tdeck/pins_arduino.h",
+      "revision": "9116bf41ca551d75a42d16cab391fe254f21ab2c",
+      "gitBlobSha": "5c449f99a1150de41a6a7b8ffc525716749ffe5e",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/variants/lilygo_tdeck/pins_arduino.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGoLib/variants/lilygo_tdeck/pins_arduino.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:49:27Z",
+      "sha256": "26c6a46d5418933bda7c32f232143d6a91b3e377c50f4322521c180c6e140962",
+      "bytes": 1638,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lib-deck-pins.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "deck-keyboard",
+      "repository": "Xinyuan-LilyGO/T-Deck",
+      "path": "examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
+      "revision": "9aac147a313975ad063594b3fe11e28a96d94936",
+      "gitBlobSha": "9b9113a803f65ebddee1ac3ef255c4c7656799f1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck/examples/Keyboard_ESP32C3/Keyboard_ESP32C3.ino",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T07:59:17Z",
+      "sha256": "81133f226e69b4d32cec8190e71737f5cfd7d158a555f7906e3f5a798357236d",
+      "bytes": 11588,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "deck-keyboard.source",
+      "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "89692c34b9ba935d6ad162c34fc5b47cb7214da5",
+      "gitRevisionEvidence": {
+        "status": "fetched",
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck/git/commits/9aac147a313975ad063594b3fe11e28a96d94936",
+        "result": "Git commit endpoint confirms this revision and its tree; no public author identifiers retained."
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/readme.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/readme.md",
+      "fetchedAt": "2026-11-22T06:59:48Z",
+      "bytes": 14484,
+      "sha256": "c44f5bf56231858d8be52d07c9d1d250fa639c14d115273165497ab62679a1a4",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "readme.md",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-readme",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/readme.md",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "2350c8a8f2f5794ce3cf090cbc985829174b5e03",
+      "archiveName": "T-Deck-Pro__readme.md",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22ba6fd606a2d4200a104358a72c798b41c993bf",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1133,
+        "sha256": "28255ba9114917dd947bc48ce16d660f70af16225c655bb2964759d3d491d996",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/utilities.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/utilities.h",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 3023,
+      "sha256": "d8773ba9b65310f1d0c7618739a9334b9c911a1973f554c658052cfc29558fd4",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "examples/factory/utilities.h",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-v1-pins",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/examples/factory/utilities.h",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "61aad691ef9e79dc3d43ee3670a0891762a8e272",
+      "archiveName": "T-Deck-Pro__examples__factory__utilities.h",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22ba6fd606a2d4200a104358a72c798b41c993bf",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1133,
+        "sha256": "28255ba9114917dd947bc48ce16d660f70af16225c655bb2964759d3d491d996",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/peri_keypad.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/peri_keypad.cpp",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 2389,
+      "sha256": "43cb77dbf4eb3b01e8030a60afdf1ee4f574de9633c8e357177e7e1d4423e3c5",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "examples/factory/peri_keypad.cpp",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-keyboard",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/examples/factory/peri_keypad.cpp",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "c526eaaba6643cff559ff42512532e50621a3bc6",
+      "archiveName": "T-Deck-Pro__examples__factory__peri_keypad.cpp",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22ba6fd606a2d4200a104358a72c798b41c993bf",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1133,
+        "sha256": "28255ba9114917dd947bc48ce16d660f70af16225c655bb2964759d3d491d996",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/hyn_cst3xx.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/hyn_cst3xx.c",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 7133,
+      "sha256": "6aaba7656b931e16ca539b42ea29668b4d1853eecbb1e538b8f0a595210a70b1",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "examples/factory/hyn_cst3xx.c",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-cst328",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/examples/factory/hyn_cst3xx.c",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "51dfcb7bfdfa66fa675f1c95383b0c132fa227ed",
+      "archiveName": "T-Deck-Pro__examples__factory__hyn_cst3xx.c",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22ba6fd606a2d4200a104358a72c798b41c993bf",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1133,
+        "sha256": "28255ba9114917dd947bc48ce16d660f70af16225c655bb2964759d3d491d996",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/hyn_touch.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/examples/factory/hyn_touch.cpp",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 7290,
+      "sha256": "3dbc96ba0cda276c7e866f9118e43da5dbd0642e6c5e7fff0d5db2c2bb223b96",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "examples/factory/hyn_touch.cpp",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-touch-init",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/examples/factory/hyn_touch.cpp",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "3691bc45ede27edd696bf8384de729ba83e72c07",
+      "archiveName": "T-Deck-Pro__examples__factory__hyn_touch.cpp",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22ba6fd606a2d4200a104358a72c798b41c993bf",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1133,
+        "sha256": "28255ba9114917dd947bc48ce16d660f70af16225c655bb2964759d3d491d996",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.cpp",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 13085,
+      "sha256": "a5332026a4bd5318a58a4d5dcfe45ba24df7a3a6d7e4ec0ec1877841fc64d090",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.cpp",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-uc8253-driver",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.cpp",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "3cb1e9f797bd2c92fde834abb19764226d07ef09",
+      "archiveName": "T-Deck-Pro__lib__GxEPD2__src__gdeq__GxEPD2_310_GDEQ031T10.cpp",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22ba6fd606a2d4200a104358a72c798b41c993bf",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1133,
+        "sha256": "28255ba9114917dd947bc48ce16d660f70af16225c655bb2964759d3d491d996",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.h",
+      "fetchedAt": "2026-11-22T06:59:41Z",
+      "bytes": 6367,
+      "sha256": "9b488bc6b8ce483b6faa8d79b68fdeeed14652f939fc6be9cb0ef77c48f3b7b4",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.h",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-uc8253-panel",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/lib/GxEPD2/src/gdeq/GxEPD2_310_GDEQ031T10.h",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "9a4458b1e41899719625e79f73ffa74a45b5b1c4",
+      "archiveName": "T-Deck-Pro__lib__GxEPD2__src__gdeq__GxEPD2_310_GDEQ031T10.h",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22ba6fd606a2d4200a104358a72c798b41c993bf",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1133,
+        "sha256": "28255ba9114917dd947bc48ce16d660f70af16225c655bb2964759d3d491d996",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/README.md",
+      "fetchedAt": "2026-11-22T06:59:48Z",
+      "bytes": 2621,
+      "sha256": "88a85a8e6aa44112640a0743b1677628df6d2a27cbfde3038812928b3f8a9588",
+      "mediaType": "text/plain",
+      "commit": "e3246046972716edd5f264a6047ba3572a851b23",
+      "path": "firmware/README.md",
+      "repository": "Xinyuan-LilyGO/T-Deck-Pro",
+      "id": "deck-pro-factory-readme",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/T-Deck-Pro/firmware/README.md",
+      "kind": "official-documentation",
+      "type": "manufacturer-source",
+      "revision": "e3246046972716edd5f264a6047ba3572a851b23",
+      "gitBlobSha": "d03f491f5a8d0c478c35cf46c9985410e29c4835",
+      "archiveName": "T-Deck-Pro__firmware__README.md",
+      "archiveStorage": "Untracked audit cache under target/lilygo-epaper-sources; fetch the pinned URL and verify SHA-256 to reproduce. Upstream source bodies are not redistributed by this profile.",
+      "revisionKind": "git-commit",
+      "gitTreeSha": "22ba6fd606a2d4200a104358a72c798b41c993bf",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/T-Deck-Pro/git/commits/e3246046972716edd5f264a6047ba3572a851b23",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1133,
+        "sha256": "28255ba9114917dd947bc48ce16d660f70af16225c655bb2964759d3d491d996",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
+      }
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation"
+    }
+  ],
+  "items": [
+    {
+      "productId": "lilygo-t-deck-pro-meshtastic",
+      "boardId": "lilygo-t-deck-pro-meshtastic",
+      "name": "LILYGO T-Deck Pro Meshtastic (V1.0)",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Deck Pro V1.0 / HD-V1-250326; manufacturer-documented Meshtastic V1.0 target only",
+      "display": {
+        "width": 240,
+        "height": 320,
+        "controller": "UC8253",
+        "panel": "GDEQ031T10",
+        "interface": "spi",
+        "pixelFormat": "RGB565",
+        "diagonalInch": 3.1,
+        "physicalTouch": true,
+        "touchImplemented": true,
+        "touchScope": "CST328 single-contact report/ACK only; initialization identity registers are unmodeled",
+        "orientation": "Native portrait controller RAM; storefront width/height are landscape presentation",
+        "controllerRamFormat": "1bpp black/white; 1=white, 0=black; RGB565 publication",
+        "type": "E-paper"
+      },
+      "pins": {
+        "display": {
+          "sclk": 36,
+          "mosi": 33,
+          "miso": null,
+          "cs": 34,
+          "dc": 35,
+          "busy": 37,
+          "busyActiveLow": true,
+          "reset": null,
+          "enable": null,
+          "enableActiveHigh": null,
+          "backlight": null
+        },
+        "touch": {
+          "address": 26,
+          "sda": 13,
+          "scl": 14,
+          "irq": 12,
+          "reset": 45,
+          "controller": "CST328",
+          "registerAddressBytes": 2
+        },
+        "keyboard": {
+          "address": 52,
+          "sda": 13,
+          "scl": 14,
+          "irq": 15,
+          "controller": "TCA8418",
+          "matrix": [
+            4,
+            10
+          ],
+          "physicalKeyCount": 35
+        }
+      },
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "pins": {
+          "sclk": 36,
+          "mosi": 33,
+          "miso": 47,
+          "cs": 48
+        },
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform existing TF-card storage service; board only attaches supplied image",
+        "supply": "Fixed digital powered socket; PMIC supply sequencing is unmodeled",
+        "sourceIds": [
+          "deck-pro-v1-pins"
+        ],
+        "verification": "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection",
+        "transportSupported": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true
+        },
+        {
+          "id": "key-r0-c0",
+          "name": "Q",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyQ"
+        },
+        {
+          "id": "key-r0-c1",
+          "name": "W",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyW"
+        },
+        {
+          "id": "key-r0-c2",
+          "name": "E",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 2,
+          "activeLow": true,
+          "defaultKeyCode": "KeyE"
+        },
+        {
+          "id": "key-r0-c3",
+          "name": "R",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyR"
+        },
+        {
+          "id": "key-r0-c4",
+          "name": "T",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyT"
+        },
+        {
+          "id": "key-r0-c5",
+          "name": "Y",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyY"
+        },
+        {
+          "id": "key-r0-c6",
+          "name": "U",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyU"
+        },
+        {
+          "id": "key-r0-c7",
+          "name": "I",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 7,
+          "activeLow": true,
+          "defaultKeyCode": "KeyI"
+        },
+        {
+          "id": "key-r0-c8",
+          "name": "O",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 8,
+          "activeLow": true,
+          "defaultKeyCode": "KeyO"
+        },
+        {
+          "id": "key-r0-c9",
+          "name": "P",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 9,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "key-r1-c0",
+          "name": "A",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "key-r1-c1",
+          "name": "S",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyS"
+        },
+        {
+          "id": "key-r1-c2",
+          "name": "D",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 2,
+          "activeLow": true,
+          "defaultKeyCode": "KeyD"
+        },
+        {
+          "id": "key-r1-c3",
+          "name": "F",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyF"
+        },
+        {
+          "id": "key-r1-c4",
+          "name": "G",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyG"
+        },
+        {
+          "id": "key-r1-c5",
+          "name": "H",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyH"
+        },
+        {
+          "id": "key-r1-c6",
+          "name": "J",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyJ"
+        },
+        {
+          "id": "key-r1-c7",
+          "name": "K",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 7,
+          "activeLow": true,
+          "defaultKeyCode": "KeyK"
+        },
+        {
+          "id": "key-r1-c8",
+          "name": "L",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 8,
+          "activeLow": true,
+          "defaultKeyCode": "KeyL"
+        },
+        {
+          "id": "key-r1-c9",
+          "name": "Key R2 C10",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 9,
+          "activeLow": true
+        },
+        {
+          "id": "key-r2-c0",
+          "name": "Key R3 C1",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 0,
+          "activeLow": true
+        },
+        {
+          "id": "key-r2-c1",
+          "name": "Z",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyZ"
+        },
+        {
+          "id": "key-r2-c2",
+          "name": "X",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 2,
+          "activeLow": true,
+          "defaultKeyCode": "KeyX"
+        },
+        {
+          "id": "key-r2-c3",
+          "name": "C",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 3,
+          "activeLow": true,
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "key-r2-c4",
+          "name": "V",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "key-r2-c5",
+          "name": "B",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "key-r2-c6",
+          "name": "N",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyN"
+        },
+        {
+          "id": "key-r2-c7",
+          "name": "M",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 7,
+          "activeLow": true,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "key-r2-c8",
+          "name": "Key R3 C9",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 8,
+          "activeLow": true
+        },
+        {
+          "id": "key-r2-c9",
+          "name": "Key R3 C10",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 9,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c5",
+          "name": "Key R4 C6",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 5,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c6",
+          "name": "Key R4 C7",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 6,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c7",
+          "name": "Key R4 C8",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 7,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c8",
+          "name": "Key R4 C9",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 8,
+          "activeLow": true
+        },
+        {
+          "id": "key-r3-c9",
+          "name": "Key R4 C10",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 9,
+          "activeLow": true
+        },
+        {
+          "id": "touch",
+          "name": "CST328 触摸屏",
+          "type": "touch",
+          "controller": "CST328"
+        }
+      ],
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "hardwareValidated": false,
+        "nativeGuestProbeVerified": false,
+        "factoryTrialAvailable": false,
+        "tests": [
+          "pro_meshtastic_v1_keeps_epaper_busy_and_cst328_ack_semantics",
+          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+        ]
+      },
+      "chronology": {
+        "date": "2025-08-19",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-deck-pro-meshtastic",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 5,
+      "scope": "选定 Pro V1.0 / HD-V1-250326 的 Meshtastic 硬件目标；SPI 墨水屏 RAM、刷新和 BUSY、35 键矩阵、CST328 单点报告/ACK 与 SPI TF 卡已建模。V1.1/MAX、射频、定位、语音及 4G 未模拟，Meshtastic/出厂固件启动未验证。",
+      "scopeEn": "Exact manufacturer-documented Meshtastic V1.0 target: UC8253 display, TCA8418 matrix, CST328 reports and SPI SD. V1.1/MAX, radio, GNSS, voice and cellular are excluded; factory and Meshtastic boot unverified.",
+      "sourceIds": [
+        "deck-pro-readme",
+        "deck-pro-v1-pins",
+        "deck-pro-keyboard",
+        "deck-pro-cst328",
+        "deck-pro-touch-init",
+        "deck-pro-uc8253-driver",
+        "deck-pro-uc8253-panel",
+        "deck-pro-factory-readme",
+        "official-store-shopify-1"
+      ],
+      "unsupported": [
+        "Monochrome digital RAM and command-triggered refresh only. E-paper LUTs, analog waveform drive, grayscale, temperature dependence and ghosting are unmodeled.",
+        "SPI-only transport is implemented; bit-banged software SPI and nine-bit SPI are not implemented.",
+        "Unknown display commands are ignored and counted. Unsupported panel-setting values cannot publish a frame.",
+        "No official factory image has been executed. Native protocol tests are not proof of a working complete factory firmware or physical device.",
+        "PMIC, battery state, charger, RF/LoRa, GNSS, IMU, RTC, ambient sensors, audio and vibration are unmodeled; their I2C addresses remain absent.",
+        "CST328 unknown firmware information/configuration reads NACK. The manufacturer factory probe requests 0xD1F4; that initialization path is deliberately not claimed as implemented.",
+        "Only 35 physical keys are accepted: rows 0-2 columns 0-9, row 3 columns 5-9. Uppercase factory legend codes for non-letter keys do not establish the printed physical key legend.",
+        "CST328 IRQ follows a digital pending-report latch inferred from the official read/ACK sequence; scan timing and multiple simultaneous contacts are unmodeled.",
+        "The storefront spans optional A7682E and PCM5102A variants and does not identify PCB revision. This profile explicitly selects manufacturer-documented V1.0; V1.1 and MAX are not interchangeable.",
+        "Audio part naming differs between storefront PCM5102A and repository PCM512A. Neither audio nor cellular is emulated; no substitution is inferred."
+      ],
+      "protocol": {
+        "ramCurrent": 19,
+        "ramPrevious": 16,
+        "refresh": 18,
+        "powerOn": 4,
+        "powerOff": 2,
+        "deepSleep": 7,
+        "deepSleepCheckByte": 165,
+        "partialIn": 145,
+        "partialOut": 146,
+        "partialWindow": 144,
+        "partialWindowBytes": 7,
+        "supportedPanelSettings": [
+          [
+            31,
+            13
+          ]
+        ],
+        "ramVisibleOnlyAfterRefreshBusyCompletion": true,
+        "malformedWindows": "reject without drawing or wrapping writes",
+        "opticalImageRetainedAcrossResetAndPowerLoss": true,
+        "timing": {
+          "powerMs": 50,
+          "fullRefreshMs": 1100,
+          "partialRefreshMs": 700,
+          "basis": "UC8253 timings use official bundled GxEPD2 nominal constants; not measured hardware"
+        }
+      },
+      "keyboardMapping": {
+        "physicalToTca8418": "(row, 9-column)",
+        "factoryKeyCodes": [
+          [
+            "q",
+            "w",
+            "e",
+            "r",
+            "t",
+            "y",
+            "u",
+            "i",
+            "o",
+            "p"
+          ],
+          [
+            "a",
+            "s",
+            "d",
+            "f",
+            "g",
+            "h",
+            "j",
+            "k",
+            "l",
+            "0"
+          ],
+          [
+            "2",
+            "z",
+            "x",
+            "c",
+            "v",
+            "b",
+            "n",
+            "m",
+            "$",
+            "E"
+          ],
+          [
+            " ",
+            " ",
+            " ",
+            " ",
+            " ",
+            "-",
+            "*",
+            "S",
+            "0",
+            "U"
+          ]
+        ],
+        "unpopulated": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            1
+          ],
+          [
+            3,
+            2
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "scanDebounceMs": 50,
+        "sourceId": "deck-pro-keyboard",
+        "note": "Non-letter physical legends remain unverified; controls use row/column names instead of inventing arrows or function labels."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "deck-pro-readme",
+          "deck-pro-factory-readme"
+        ],
+        "candidates": [
+          {
+            "name": "firmware-t-deck-pro-2.7.10.94d4bdf.bin",
+            "target": "T-Deck Pro V1.0",
+            "status": "documented-name",
+            "binaryFetched": false,
+            "layoutVerified": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer README lists this Meshtastic firmware for V1.0. Directory/binary layout and factory identity have not been inspected; no default factory image is claimed."
+      },
+      "variantEvidence": {
+        "sourceIds": [
+          "official-store-shopify-1",
+          "deck-pro-readme",
+          "deck-pro-v1-pins"
+        ],
+        "basis": "Official Meshtastic storefront links T-Deck-Pro. Repository revision table explicitly selects V1.0/HD-V1-250326, and manufacturer-tested firmware table maps that V1.0 to firmware-t-deck-pro-2.7.10.94d4bdf.bin; V1.1 has a separate target.",
+        "automaticRevisionDetection": false,
+        "selectedHardware": "V1.0",
+        "excludedHardware": [
+          "V1.1",
+          "MAX"
+        ]
+      }
+    },
+    {
+      "productId": "lilygo-t-deck-meshtastic",
+      "boardId": "lilygo-t-deck-meshtastic",
+      "name": "LILYGO T-Deck Meshtastic",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "Original T-Deck SX1262-equipped ST7789/GT911 hardware; excludes T-Deck V2, Pro and no-LoRa SKUs",
+      "display": {
+        "width": 320,
+        "height": 240,
+        "nativeWidth": 240,
+        "nativeHeight": 320,
+        "controller": "ST7789",
+        "interface": "spi",
+        "pixelFormat": "RGB565",
+        "diagonalInch": 2.8,
+        "physicalTouch": true,
+        "touchImplemented": true,
+        "touchScope": "GT911 0x5d single-contact status/report/ACK subset; no firmware calibration or alternative 0x14 address",
+        "orientation": "Manufacturer landscape MADCTL=0x60; native controller RAM is 240x320",
+        "type": "LCD"
+      },
+      "pins": {
+        "display": {
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 12,
+          "dc": 11,
+          "reset": null,
+          "enable": 10,
+          "enableActiveHigh": true,
+          "backlight": 42
+        },
+        "touch": {
+          "address": 93,
+          "sda": 18,
+          "scl": 8,
+          "irq": 16,
+          "reset": null,
+          "controller": "GT911",
+          "registerAddressBytes": 2
+        },
+        "keyboard": {
+          "address": 85,
+          "sda": 18,
+          "scl": 8,
+          "irq": 46,
+          "controller": "T-Keyboard ESP32-C3 firmware I2C protocol",
+          "physicalKeyCount": 35
+        },
+        "trackball": {
+          "center": 0,
+          "up": 3,
+          "right": 2,
+          "down": 15,
+          "left": 1
+        },
+        "radio": {
+          "controller": "SX1262",
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 9,
+          "busy": 13,
+          "reset": 17,
+          "dio1": 45
+        }
+      },
+      "controls": [
+        {
+          "id": "trackball-center",
+          "name": "轨迹球中键 / BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Escape"
+        },
+        {
+          "id": "trackball-up",
+          "name": "轨迹球向上",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowUp"
+        },
+        {
+          "id": "trackball-right",
+          "name": "轨迹球向右",
+          "type": "button",
+          "pin": 2,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "trackball-down",
+          "name": "轨迹球向下",
+          "type": "button",
+          "pin": 15,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowDown"
+        },
+        {
+          "id": "trackball-left",
+          "name": "轨迹球向左",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "touch",
+          "name": "GT911 触摸屏",
+          "type": "touch",
+          "controller": "GT911"
+        },
+        {
+          "id": "key-q",
+          "name": "Q",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 0,
+          "defaultKeyCode": "KeyQ"
+        },
+        {
+          "id": "key-w",
+          "name": "W",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 1,
+          "defaultKeyCode": "KeyW"
+        },
+        {
+          "id": "key-e",
+          "name": "E",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 2,
+          "defaultKeyCode": "KeyE"
+        },
+        {
+          "id": "key-r",
+          "name": "R",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 3,
+          "defaultKeyCode": "KeyR"
+        },
+        {
+          "id": "key-t",
+          "name": "T",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 4,
+          "defaultKeyCode": "KeyT"
+        },
+        {
+          "id": "key-y",
+          "name": "Y",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 5,
+          "defaultKeyCode": "KeyY"
+        },
+        {
+          "id": "key-u",
+          "name": "U",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 6,
+          "defaultKeyCode": "KeyU"
+        },
+        {
+          "id": "key-i",
+          "name": "I",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 7,
+          "defaultKeyCode": "KeyI"
+        },
+        {
+          "id": "key-o",
+          "name": "O",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 8,
+          "defaultKeyCode": "KeyO"
+        },
+        {
+          "id": "key-p",
+          "name": "P",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 9,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "key-a",
+          "name": "A",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 0,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "key-s",
+          "name": "S",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 1,
+          "defaultKeyCode": "KeyS"
+        },
+        {
+          "id": "key-d",
+          "name": "D",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 2,
+          "defaultKeyCode": "KeyD"
+        },
+        {
+          "id": "key-f",
+          "name": "F",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 3,
+          "defaultKeyCode": "KeyF"
+        },
+        {
+          "id": "key-g",
+          "name": "G",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 4,
+          "defaultKeyCode": "KeyG"
+        },
+        {
+          "id": "key-h",
+          "name": "H",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 5,
+          "defaultKeyCode": "KeyH"
+        },
+        {
+          "id": "key-j",
+          "name": "J",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 6,
+          "defaultKeyCode": "KeyJ"
+        },
+        {
+          "id": "key-k",
+          "name": "K",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 7,
+          "defaultKeyCode": "KeyK"
+        },
+        {
+          "id": "key-l",
+          "name": "L",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 8,
+          "defaultKeyCode": "KeyL"
+        },
+        {
+          "id": "key-backspace",
+          "name": "Backspace",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 9,
+          "defaultKeyCode": "Backspace"
+        },
+        {
+          "id": "key-alt",
+          "name": "Alt",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 0,
+          "defaultKeyCode": "AltLeft"
+        },
+        {
+          "id": "key-z",
+          "name": "Z",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 1,
+          "defaultKeyCode": "KeyZ"
+        },
+        {
+          "id": "key-x",
+          "name": "X",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 2,
+          "defaultKeyCode": "KeyX"
+        },
+        {
+          "id": "key-c",
+          "name": "C",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 3,
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "key-v",
+          "name": "V",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 4,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "key-b",
+          "name": "B",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 5,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "key-n",
+          "name": "N",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 6,
+          "defaultKeyCode": "KeyN"
+        },
+        {
+          "id": "key-m",
+          "name": "M",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 7,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "key-dollar",
+          "name": "$",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 8,
+          "defaultKeyCode": "Digit4"
+        },
+        {
+          "id": "key-enter",
+          "name": "Enter",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 9,
+          "defaultKeyCode": "Enter"
+        },
+        {
+          "id": "key-shiftleft",
+          "name": "Shift / 左",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 1,
+          "defaultKeyCode": "ShiftLeft"
+        },
+        {
+          "id": "key-microphone",
+          "name": "麦克风键",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 2
+        },
+        {
+          "id": "key-space",
+          "name": "Space",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 4,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key-symbol",
+          "name": "sym",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 7,
+          "defaultKeyCode": "ControlLeft"
+        },
+        {
+          "id": "key-shiftright",
+          "name": "Shift / 右",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 8,
+          "defaultKeyCode": "ShiftRight"
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 39
+        },
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform existing TF-card storage service; board only attaches supplied image",
+        "supply": "GPIO10 digital peripheral rail; power/card removal resets the protocol without erasing supplied storage",
+        "sourceIds": [
+          "deck-pins",
+          "lib-deck-hardware"
+        ],
+        "verification": "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+      },
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "real_guest_spi_and_gpio_use_exact_tft_routes_power_and_controls",
+          "tft_keyboard_scans_and_gt911_touch_keep_their_real_i2c_protocols",
+          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+        ]
+      },
+      "scope": "选定原版 T-Deck 的 SX1262 版本；ST7789 显示、GT911 单点触摸、35 键 I²C 键盘、轨迹球、SX1262 数字寄存器子集及真实 SPI TF 卡已接入。原生 Xtensa 指令已验证显示写入和按键按下/释放；定位、音频、电池和完整 Meshtastic/出厂固件启动未验证。",
+      "scopeEn": "Exact original T-Deck SX1262 SKU: routed SPI ST7789, GT911 0x5d touch, C3 keyboard protocol, trackball, digital SX1262 subset and SPI SD. Real native Xtensa MMIO probes verify screen writes and button press/release; factory/Meshtastic boot unverified.",
+      "sourceIds": [
+        "deck-readme",
+        "deck-pins",
+        "deck-firmware",
+        "deck-keyboard",
+        "lib-deck-hardware",
+        "lib-deck-cpp",
+        "lib-deck-display",
+        "lib-deck-pins",
+        "official-store-shopify-1"
+      ],
+      "variantEvidence": {
+        "sourceIds": [
+          "official-store-shopify-1",
+          "lib-deck-hardware",
+          "deck-firmware",
+          "deck-pins"
+        ],
+        "basis": "Official product listing links T-Deck. Manufacturer LilyGoLib hardware document explicitly states original and Plus share the main GPIO mapping; firmware README labels the same factory image for both and documents the shared TFT Meshtastic target. Exact current pin header agrees.",
+        "selectedHardware": "Original T-Deck SX1262",
+        "excludedHardware": [
+          "T-Deck V2",
+          "T-Deck Pro",
+          "no-LoRa SKU"
+        ],
+        "automaticRevisionDetection": false
+      },
+      "unsupported": [
+        "No official factory or Meshtastic binary for these selected catalog variants has been executed. Native authored SRAM probes verify only their stated peripheral contracts.",
+        "SX1262 model is a digital register/packet subset. RF propagation, antennas, RF filters, transmit power and an independent over-the-air network are unmodeled.",
+        "GT911 is one contact at address 0x5d; address strap 0x14, multiple contacts and touch-panel repair/calibration firmware are not modeled.",
+        "The keyboard models the manufacturer I2C protocol and 35 ms scan, not execution of the secondary ESP32-C3 CPU.",
+        "Backlight is modeled as routed steady on/off only; the physical 16-level pulse-coded brightness driver is not implemented.",
+        "GNSS, I2S microphone/speaker, battery ADC, charging, RF analog behavior and USB are unmodeled.",
+        "SPI SD requires the exact clock/MOSI/MISO/CS routes and exclusive chip selection. Only SPI controller transfers are implemented; software bit-banged SD is not."
+      ],
+      "keyboardMapping": {
+        "physicalRows": 4,
+        "physicalColumns": 10,
+        "physicalKeyCount": 35,
+        "scanMs": 35,
+        "unpopulated": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            9
+          ]
+        ],
+        "sourceIds": [
+          "deck-keyboard",
+          "lib-deck-hardware"
+        ],
+        "note": "Physical control layout maps into the documented C3 5x7 electrical matrix; holes are rejected."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "deck-firmware"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "8404918622a68aa6c0fa692aba261ee9a91e4dc7",
+            "bytesFromTree": 16711680,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
+            "status": "linked",
+            "gitBlobSha": "68d70860be5f4658776b968e6d04c519f705939a",
+            "bytesFromTree": 3563024,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer labels shared T-Deck/T-Deck-Plus factory target and TFT Meshtastic image. Exact bytes and merged/app layout have not been inspected; filename/size alone do not establish a bootable platform image."
+      },
+      "gnss": {
+        "physical": false,
+        "implemented": false,
+        "pins": null,
+        "sourceIds": [
+          "lib-deck-hardware",
+          "deck-readme"
+        ]
+      },
+      "grove": {
+        "physicalConnector": true,
+        "availableAsExpansion": true,
+        "implemented": false,
+        "pins": [
+          43,
+          44
+        ],
+        "note": "Plus uses these pins for onboard GNSS; original exposes Grove UART/I2C wiring but no attached peripheral is emulated.",
+        "sourceIds": [
+          "lib-deck-hardware",
+          "deck-readme"
+        ]
+      },
+      "chronology": {
+        "date": "2025-05-05",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-deck-meshtastic",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 15
+    },
+    {
+      "productId": "lilygo-t-deck-plus-meshtastic",
+      "boardId": "lilygo-t-deck-plus-meshtastic",
+      "name": "LILYGO T-Deck Plus Meshtastic",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Deck Plus SX1262-equipped ST7789/GT911 hardware; excludes T-Deck V2, Pro and no-LoRa SKUs",
+      "display": {
+        "width": 320,
+        "height": 240,
+        "nativeWidth": 240,
+        "nativeHeight": 320,
+        "controller": "ST7789",
+        "interface": "spi",
+        "pixelFormat": "RGB565",
+        "diagonalInch": 2.8,
+        "physicalTouch": true,
+        "touchImplemented": true,
+        "touchScope": "GT911 0x5d single-contact status/report/ACK subset; no firmware calibration or alternative 0x14 address",
+        "orientation": "Manufacturer landscape MADCTL=0x60; native controller RAM is 240x320",
+        "type": "LCD"
+      },
+      "pins": {
+        "display": {
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 12,
+          "dc": 11,
+          "reset": null,
+          "enable": 10,
+          "enableActiveHigh": true,
+          "backlight": 42
+        },
+        "touch": {
+          "address": 93,
+          "sda": 18,
+          "scl": 8,
+          "irq": 16,
+          "reset": null,
+          "controller": "GT911",
+          "registerAddressBytes": 2
+        },
+        "keyboard": {
+          "address": 85,
+          "sda": 18,
+          "scl": 8,
+          "irq": 46,
+          "controller": "T-Keyboard ESP32-C3 firmware I2C protocol",
+          "physicalKeyCount": 35
+        },
+        "trackball": {
+          "center": 0,
+          "up": 3,
+          "right": 2,
+          "down": 15,
+          "left": 1
+        },
+        "radio": {
+          "controller": "SX1262",
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 9,
+          "busy": 13,
+          "reset": 17,
+          "dio1": 45
+        }
+      },
+      "controls": [
+        {
+          "id": "trackball-center",
+          "name": "轨迹球中键 / BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Escape"
+        },
+        {
+          "id": "trackball-up",
+          "name": "轨迹球向上",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowUp"
+        },
+        {
+          "id": "trackball-right",
+          "name": "轨迹球向右",
+          "type": "button",
+          "pin": 2,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "trackball-down",
+          "name": "轨迹球向下",
+          "type": "button",
+          "pin": 15,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowDown"
+        },
+        {
+          "id": "trackball-left",
+          "name": "轨迹球向左",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "touch",
+          "name": "GT911 触摸屏",
+          "type": "touch",
+          "controller": "GT911"
+        },
+        {
+          "id": "key-q",
+          "name": "Q",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 0,
+          "defaultKeyCode": "KeyQ"
+        },
+        {
+          "id": "key-w",
+          "name": "W",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 1,
+          "defaultKeyCode": "KeyW"
+        },
+        {
+          "id": "key-e",
+          "name": "E",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 2,
+          "defaultKeyCode": "KeyE"
+        },
+        {
+          "id": "key-r",
+          "name": "R",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 3,
+          "defaultKeyCode": "KeyR"
+        },
+        {
+          "id": "key-t",
+          "name": "T",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 4,
+          "defaultKeyCode": "KeyT"
+        },
+        {
+          "id": "key-y",
+          "name": "Y",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 5,
+          "defaultKeyCode": "KeyY"
+        },
+        {
+          "id": "key-u",
+          "name": "U",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 6,
+          "defaultKeyCode": "KeyU"
+        },
+        {
+          "id": "key-i",
+          "name": "I",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 7,
+          "defaultKeyCode": "KeyI"
+        },
+        {
+          "id": "key-o",
+          "name": "O",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 8,
+          "defaultKeyCode": "KeyO"
+        },
+        {
+          "id": "key-p",
+          "name": "P",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 9,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "key-a",
+          "name": "A",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 0,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "key-s",
+          "name": "S",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 1,
+          "defaultKeyCode": "KeyS"
+        },
+        {
+          "id": "key-d",
+          "name": "D",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 2,
+          "defaultKeyCode": "KeyD"
+        },
+        {
+          "id": "key-f",
+          "name": "F",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 3,
+          "defaultKeyCode": "KeyF"
+        },
+        {
+          "id": "key-g",
+          "name": "G",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 4,
+          "defaultKeyCode": "KeyG"
+        },
+        {
+          "id": "key-h",
+          "name": "H",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 5,
+          "defaultKeyCode": "KeyH"
+        },
+        {
+          "id": "key-j",
+          "name": "J",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 6,
+          "defaultKeyCode": "KeyJ"
+        },
+        {
+          "id": "key-k",
+          "name": "K",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 7,
+          "defaultKeyCode": "KeyK"
+        },
+        {
+          "id": "key-l",
+          "name": "L",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 8,
+          "defaultKeyCode": "KeyL"
+        },
+        {
+          "id": "key-backspace",
+          "name": "Backspace",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 9,
+          "defaultKeyCode": "Backspace"
+        },
+        {
+          "id": "key-alt",
+          "name": "Alt",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 0,
+          "defaultKeyCode": "AltLeft"
+        },
+        {
+          "id": "key-z",
+          "name": "Z",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 1,
+          "defaultKeyCode": "KeyZ"
+        },
+        {
+          "id": "key-x",
+          "name": "X",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 2,
+          "defaultKeyCode": "KeyX"
+        },
+        {
+          "id": "key-c",
+          "name": "C",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 3,
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "key-v",
+          "name": "V",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 4,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "key-b",
+          "name": "B",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 5,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "key-n",
+          "name": "N",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 6,
+          "defaultKeyCode": "KeyN"
+        },
+        {
+          "id": "key-m",
+          "name": "M",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 7,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "key-dollar",
+          "name": "$",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 8,
+          "defaultKeyCode": "Digit4"
+        },
+        {
+          "id": "key-enter",
+          "name": "Enter",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 9,
+          "defaultKeyCode": "Enter"
+        },
+        {
+          "id": "key-shiftleft",
+          "name": "Shift / 左",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 1,
+          "defaultKeyCode": "ShiftLeft"
+        },
+        {
+          "id": "key-microphone",
+          "name": "麦克风键",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 2
+        },
+        {
+          "id": "key-space",
+          "name": "Space",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 4,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key-symbol",
+          "name": "sym",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 7,
+          "defaultKeyCode": "ControlLeft"
+        },
+        {
+          "id": "key-shiftright",
+          "name": "Shift / 右",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 8,
+          "defaultKeyCode": "ShiftRight"
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 39
+        },
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform existing TF-card storage service; board only attaches supplied image",
+        "supply": "GPIO10 digital peripheral rail; power/card removal resets the protocol without erasing supplied storage",
+        "sourceIds": [
+          "deck-pins",
+          "lib-deck-hardware"
+        ],
+        "verification": "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+      },
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "real_guest_spi_and_gpio_use_exact_tft_routes_power_and_controls",
+          "tft_keyboard_scans_and_gt911_touch_keep_their_real_i2c_protocols",
+          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+        ]
+      },
+      "scope": "选定 Plus 的 SX1262 版本；ST7789 显示、GT911 单点触摸、35 键 I²C 键盘、轨迹球、SX1262 数字寄存器子集及真实 SPI TF 卡已接入。原生 Xtensa 指令已验证显示写入和按键按下/释放；定位、音频、电池和完整 Meshtastic/出厂固件启动未验证。Plus 的 GPIO43/44 被 GNSS 占用，Grove 接口不可用。",
+      "scopeEn": "Exact Plus SX1262 SKU: routed SPI ST7789, GT911 0x5d touch, C3 keyboard protocol, trackball, digital SX1262 subset and SPI SD. Real native Xtensa MMIO probes verify screen writes and button press/release; factory/Meshtastic boot unverified.",
+      "sourceIds": [
+        "deck-readme",
+        "deck-pins",
+        "deck-firmware",
+        "deck-keyboard",
+        "lib-deck-hardware",
+        "lib-deck-cpp",
+        "lib-deck-display",
+        "lib-deck-pins",
+        "official-store-shopify-1"
+      ],
+      "variantEvidence": {
+        "sourceIds": [
+          "official-store-shopify-1",
+          "lib-deck-hardware",
+          "deck-firmware",
+          "deck-pins"
+        ],
+        "basis": "Official product listing links T-Deck. Manufacturer LilyGoLib hardware document explicitly states original and Plus share the main GPIO mapping; firmware README labels the same factory image for both and documents the shared TFT Meshtastic target. Exact current pin header agrees.",
+        "selectedHardware": "Plus SX1262",
+        "excludedHardware": [
+          "T-Deck V2",
+          "T-Deck Pro",
+          "no-LoRa SKU"
+        ],
+        "automaticRevisionDetection": false
+      },
+      "unsupported": [
+        "No official factory or Meshtastic binary for these selected catalog variants has been executed. Native authored SRAM probes verify only their stated peripheral contracts.",
+        "SX1262 model is a digital register/packet subset. RF propagation, antennas, RF filters, transmit power and an independent over-the-air network are unmodeled.",
+        "GT911 is one contact at address 0x5d; address strap 0x14, multiple contacts and touch-panel repair/calibration firmware are not modeled.",
+        "The keyboard models the manufacturer I2C protocol and 35 ms scan, not execution of the secondary ESP32-C3 CPU.",
+        "Backlight is modeled as routed steady on/off only; the physical 16-level pulse-coded brightness driver is not implemented.",
+        "GNSS, I2S microphone/speaker, battery ADC, charging, RF analog behavior and USB are unmodeled.",
+        "SPI SD requires the exact clock/MOSI/MISO/CS routes and exclusive chip selection. Only SPI controller transfers are implemented; software bit-banged SD is not."
+      ],
+      "keyboardMapping": {
+        "physicalRows": 4,
+        "physicalColumns": 10,
+        "physicalKeyCount": 35,
+        "scanMs": 35,
+        "unpopulated": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            9
+          ]
+        ],
+        "sourceIds": [
+          "deck-keyboard",
+          "lib-deck-hardware"
+        ],
+        "note": "Physical control layout maps into the documented C3 5x7 electrical matrix; holes are rejected."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "deck-firmware"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "8404918622a68aa6c0fa692aba261ee9a91e4dc7",
+            "bytesFromTree": 16711680,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
+            "status": "linked",
+            "gitBlobSha": "68d70860be5f4658776b968e6d04c519f705939a",
+            "bytesFromTree": 3563024,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer labels shared T-Deck/T-Deck-Plus factory target and TFT Meshtastic image. Exact bytes and merged/app layout have not been inspected; filename/size alone do not establish a bootable platform image."
+      },
+      "gnss": {
+        "physical": true,
+        "implemented": false,
+        "pins": {
+          "tx": 43,
+          "rx": 44
+        },
+        "sourceIds": [
+          "lib-deck-hardware",
+          "deck-readme"
+        ]
+      },
+      "grove": {
+        "physicalConnector": true,
+        "availableAsExpansion": false,
+        "implemented": false,
+        "pins": [
+          43,
+          44
+        ],
+        "note": "Plus uses these pins for onboard GNSS; original exposes Grove UART/I2C wiring but no attached peripheral is emulated.",
+        "sourceIds": [
+          "lib-deck-hardware",
+          "deck-readme"
+        ]
+      },
+      "chronology": {
+        "date": "2025-04-22",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-deck-plus-meshtastic",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 17
+    },
+    {
+      "productId": "lilygo-t-deck-plus-1",
+      "boardId": "lilygo-t-deck-plus-1",
+      "name": "LILYGO T-Deck Plus",
+      "chip": "esp32s3",
+      "flashMB": 16,
+      "psramMB": 8,
+      "hardwareRevision": "T-Deck Plus SX1262-equipped ST7789/GT911 hardware; excludes T-Deck V2, Pro and no-LoRa SKUs",
+      "display": {
+        "width": 320,
+        "height": 240,
+        "nativeWidth": 240,
+        "nativeHeight": 320,
+        "controller": "ST7789",
+        "interface": "spi",
+        "pixelFormat": "RGB565",
+        "diagonalInch": 2.8,
+        "physicalTouch": true,
+        "touchImplemented": true,
+        "touchScope": "GT911 0x5d single-contact status/report/ACK subset; no firmware calibration or alternative 0x14 address",
+        "orientation": "Manufacturer landscape MADCTL=0x60; native controller RAM is 240x320",
+        "type": "LCD"
+      },
+      "pins": {
+        "display": {
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 12,
+          "dc": 11,
+          "reset": null,
+          "enable": 10,
+          "enableActiveHigh": true,
+          "backlight": 42
+        },
+        "touch": {
+          "address": 93,
+          "sda": 18,
+          "scl": 8,
+          "irq": 16,
+          "reset": null,
+          "controller": "GT911",
+          "registerAddressBytes": 2
+        },
+        "keyboard": {
+          "address": 85,
+          "sda": 18,
+          "scl": 8,
+          "irq": 46,
+          "controller": "T-Keyboard ESP32-C3 firmware I2C protocol",
+          "physicalKeyCount": 35
+        },
+        "trackball": {
+          "center": 0,
+          "up": 3,
+          "right": 2,
+          "down": 15,
+          "left": 1
+        },
+        "radio": {
+          "controller": "SX1262",
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 9,
+          "busy": 13,
+          "reset": 17,
+          "dio1": 45
+        }
+      },
+      "controls": [
+        {
+          "id": "trackball-center",
+          "name": "轨迹球中键 / BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Escape"
+        },
+        {
+          "id": "trackball-up",
+          "name": "轨迹球向上",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowUp"
+        },
+        {
+          "id": "trackball-right",
+          "name": "轨迹球向右",
+          "type": "button",
+          "pin": 2,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "trackball-down",
+          "name": "轨迹球向下",
+          "type": "button",
+          "pin": 15,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowDown"
+        },
+        {
+          "id": "trackball-left",
+          "name": "轨迹球向左",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "touch",
+          "name": "GT911 触摸屏",
+          "type": "touch",
+          "controller": "GT911"
+        },
+        {
+          "id": "key-q",
+          "name": "Q",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 0,
+          "defaultKeyCode": "KeyQ"
+        },
+        {
+          "id": "key-w",
+          "name": "W",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 1,
+          "defaultKeyCode": "KeyW"
+        },
+        {
+          "id": "key-e",
+          "name": "E",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 2,
+          "defaultKeyCode": "KeyE"
+        },
+        {
+          "id": "key-r",
+          "name": "R",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 3,
+          "defaultKeyCode": "KeyR"
+        },
+        {
+          "id": "key-t",
+          "name": "T",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 4,
+          "defaultKeyCode": "KeyT"
+        },
+        {
+          "id": "key-y",
+          "name": "Y",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 5,
+          "defaultKeyCode": "KeyY"
+        },
+        {
+          "id": "key-u",
+          "name": "U",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 6,
+          "defaultKeyCode": "KeyU"
+        },
+        {
+          "id": "key-i",
+          "name": "I",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 7,
+          "defaultKeyCode": "KeyI"
+        },
+        {
+          "id": "key-o",
+          "name": "O",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 8,
+          "defaultKeyCode": "KeyO"
+        },
+        {
+          "id": "key-p",
+          "name": "P",
+          "type": "matrix-key",
+          "row": 0,
+          "column": 9,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "key-a",
+          "name": "A",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 0,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "key-s",
+          "name": "S",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 1,
+          "defaultKeyCode": "KeyS"
+        },
+        {
+          "id": "key-d",
+          "name": "D",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 2,
+          "defaultKeyCode": "KeyD"
+        },
+        {
+          "id": "key-f",
+          "name": "F",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 3,
+          "defaultKeyCode": "KeyF"
+        },
+        {
+          "id": "key-g",
+          "name": "G",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 4,
+          "defaultKeyCode": "KeyG"
+        },
+        {
+          "id": "key-h",
+          "name": "H",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 5,
+          "defaultKeyCode": "KeyH"
+        },
+        {
+          "id": "key-j",
+          "name": "J",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 6,
+          "defaultKeyCode": "KeyJ"
+        },
+        {
+          "id": "key-k",
+          "name": "K",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 7,
+          "defaultKeyCode": "KeyK"
+        },
+        {
+          "id": "key-l",
+          "name": "L",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 8,
+          "defaultKeyCode": "KeyL"
+        },
+        {
+          "id": "key-backspace",
+          "name": "Backspace",
+          "type": "matrix-key",
+          "row": 1,
+          "column": 9,
+          "defaultKeyCode": "Backspace"
+        },
+        {
+          "id": "key-alt",
+          "name": "Alt",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 0,
+          "defaultKeyCode": "AltLeft"
+        },
+        {
+          "id": "key-z",
+          "name": "Z",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 1,
+          "defaultKeyCode": "KeyZ"
+        },
+        {
+          "id": "key-x",
+          "name": "X",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 2,
+          "defaultKeyCode": "KeyX"
+        },
+        {
+          "id": "key-c",
+          "name": "C",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 3,
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "key-v",
+          "name": "V",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 4,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "key-b",
+          "name": "B",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 5,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "key-n",
+          "name": "N",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 6,
+          "defaultKeyCode": "KeyN"
+        },
+        {
+          "id": "key-m",
+          "name": "M",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 7,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "key-dollar",
+          "name": "$",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 8,
+          "defaultKeyCode": "Digit4"
+        },
+        {
+          "id": "key-enter",
+          "name": "Enter",
+          "type": "matrix-key",
+          "row": 2,
+          "column": 9,
+          "defaultKeyCode": "Enter"
+        },
+        {
+          "id": "key-shiftleft",
+          "name": "Shift / 左",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 1,
+          "defaultKeyCode": "ShiftLeft"
+        },
+        {
+          "id": "key-microphone",
+          "name": "麦克风键",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 2
+        },
+        {
+          "id": "key-space",
+          "name": "Space",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 4,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key-symbol",
+          "name": "sym",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 7,
+          "defaultKeyCode": "ControlLeft"
+        },
+        {
+          "id": "key-shiftright",
+          "name": "Shift / 右",
+          "type": "matrix-key",
+          "row": 3,
+          "column": 8,
+          "defaultKeyCode": "ShiftRight"
+        }
+      ],
+      "sdCard": {
+        "slot": true,
+        "transport": "spi",
+        "implemented": true,
+        "transportSupported": true,
+        "pins": {
+          "sclk": 40,
+          "mosi": 41,
+          "miso": 38,
+          "cs": 39
+        },
+        "defaultImageMiB": 64,
+        "defaultFilesystem": "FAT32",
+        "defaultImagePreparedBy": "platform existing TF-card storage service; board only attaches supplied image",
+        "supply": "GPIO10 digital peripheral rail; power/card removal resets the protocol without erasing supplied storage",
+        "sourceIds": [
+          "deck-pins",
+          "lib-deck-hardware"
+        ],
+        "verification": "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+      },
+      "runtimeLevel": "partial",
+      "verification": {
+        "sourcePinsVerified": true,
+        "nativeProtocolTests": true,
+        "nativeGuestProbeVerified": true,
+        "factoryBootVerified": false,
+        "wasmFirmwareVerified": false,
+        "factoryTrialAvailable": false,
+        "hardwareValidated": false,
+        "tests": [
+          "real_guest_spi_and_gpio_use_exact_tft_routes_power_and_controls",
+          "tft_keyboard_scans_and_gt911_touch_keep_their_real_i2c_protocols",
+          "all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection"
+        ]
+      },
+      "scope": "选定 Plus 的 SX1262 版本；ST7789 显示、GT911 单点触摸、35 键 I²C 键盘、轨迹球、SX1262 数字寄存器子集及真实 SPI TF 卡已接入。原生 Xtensa 指令已验证显示写入和按键按下/释放；定位、音频、电池和完整 Meshtastic/出厂固件启动未验证。Plus 的 GPIO43/44 被 GNSS 占用，Grove 接口不可用。",
+      "scopeEn": "Exact Plus SX1262 SKU: routed SPI ST7789, GT911 0x5d touch, C3 keyboard protocol, trackball, digital SX1262 subset and SPI SD. Real native Xtensa MMIO probes verify screen writes and button press/release; factory/Meshtastic boot unverified.",
+      "sourceIds": [
+        "deck-readme",
+        "deck-pins",
+        "deck-firmware",
+        "deck-keyboard",
+        "lib-deck-hardware",
+        "lib-deck-cpp",
+        "lib-deck-display",
+        "lib-deck-pins",
+        "official-store-shopify-1"
+      ],
+      "variantEvidence": {
+        "sourceIds": [
+          "official-store-shopify-1",
+          "lib-deck-hardware",
+          "deck-firmware",
+          "deck-pins"
+        ],
+        "basis": "Official product listing links T-Deck. Manufacturer LilyGoLib hardware document explicitly states original and Plus share the main GPIO mapping; firmware README labels the same factory image for both and documents the shared TFT Meshtastic target. Exact current pin header agrees.",
+        "selectedHardware": "Plus SX1262",
+        "excludedHardware": [
+          "T-Deck V2",
+          "T-Deck Pro",
+          "no-LoRa SKU"
+        ],
+        "automaticRevisionDetection": false
+      },
+      "unsupported": [
+        "No official factory or Meshtastic binary for these selected catalog variants has been executed. Native authored SRAM probes verify only their stated peripheral contracts.",
+        "SX1262 model is a digital register/packet subset. RF propagation, antennas, RF filters, transmit power and an independent over-the-air network are unmodeled.",
+        "GT911 is one contact at address 0x5d; address strap 0x14, multiple contacts and touch-panel repair/calibration firmware are not modeled.",
+        "The keyboard models the manufacturer I2C protocol and 35 ms scan, not execution of the secondary ESP32-C3 CPU.",
+        "Backlight is modeled as routed steady on/off only; the physical 16-level pulse-coded brightness driver is not implemented.",
+        "GNSS, I2S microphone/speaker, battery ADC, charging, RF analog behavior and USB are unmodeled.",
+        "SPI SD requires the exact clock/MOSI/MISO/CS routes and exclusive chip selection. Only SPI controller transfers are implemented; software bit-banged SD is not."
+      ],
+      "keyboardMapping": {
+        "physicalRows": 4,
+        "physicalColumns": 10,
+        "physicalKeyCount": 35,
+        "scanMs": 35,
+        "unpopulated": [
+          [
+            3,
+            0
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            9
+          ]
+        ],
+        "sourceIds": [
+          "deck-keyboard",
+          "lib-deck-hardware"
+        ],
+        "note": "Physical control layout maps into the documented C3 5x7 electrical matrix; holes are rejected."
+      },
+      "factoryFirmwareInvestigation": {
+        "status": "reference-only",
+        "sourceIds": [
+          "deck-firmware"
+        ],
+        "candidates": [
+          {
+            "path": "firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+            "status": "linked",
+            "gitBlobSha": "8404918622a68aa6c0fa692aba261ee9a91e4dc7",
+            "bytesFromTree": 16711680,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          },
+          {
+            "path": "firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
+            "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
+            "status": "linked",
+            "gitBlobSha": "68d70860be5f4658776b968e6d04c519f705939a",
+            "bytesFromTree": 3563024,
+            "layoutVerified": false,
+            "binaryFetched": false,
+            "sha256": null
+          }
+        ],
+        "simulationVerified": false,
+        "notes": "Manufacturer labels shared T-Deck/T-Deck-Plus factory target and TFT Meshtastic image. Exact bytes and merged/app layout have not been inspected; filename/size alone do not establish a bootable platform image."
+      },
+      "gnss": {
+        "physical": true,
+        "implemented": false,
+        "pins": {
+          "tx": 43,
+          "rx": 44
+        },
+        "sourceIds": [
+          "lib-deck-hardware",
+          "deck-readme"
+        ]
+      },
+      "grove": {
+        "physicalConnector": true,
+        "availableAsExpansion": false,
+        "implemented": false,
+        "pins": [
+          43,
+          44
+        ],
+        "note": "Plus uses these pins for onboard GNSS; original exposes Grove UART/I2C wiring but no attached peripheral is emulated.",
+        "sourceIds": [
+          "lib-deck-hardware",
+          "deck-readme"
+        ]
+      },
+      "chronology": {
+        "date": "2024-12-09",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-deck-plus-1",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 23
+    }
+  ],
+  "verification": {
+    "commands": [
+      "CARGO_BUILD_JOBS=1 cargo test -p esp32s3 --test lilygo_additional",
+      "CARGO_BUILD_JOBS=1 cargo clippy -p esp32s3 --lib --test lilygo_additional -- -D warnings"
+    ],
+    "testCount": 5,
+    "status": "passed",
+    "factoryFirmwareExecuted": false,
+    "hardwareTested": false
+  }
+}
