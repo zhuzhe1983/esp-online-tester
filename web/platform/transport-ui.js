@@ -251,6 +251,32 @@ export function createKnowledgePanel(mount) {
 }
 
 // Version metadata belongs to the selected, product-filtered firmware entry.
+// Reference entries can list documentation and several distinct firmware files.
+function referenceLinks(firmware) {
+  const links = new Map();
+  if (firmware.source) return links;
+  for (const source of firmware.sources || []) {
+    const url = safeUrl(source.url);
+    if (url && !links.has(url)) links.set(url, link(`${source.title || '资料链接'} ↗`, url));
+  }
+  const publication = safeUrl(firmware.publicationUrl);
+  if (publication && !links.has(publication)) links.set(publication, link('发布方说明 ↗', publication));
+  return links;
+}
+
+export function showFirmwareReferences(details, firmwares) {
+  const body = details.querySelector('.knowledge-body');
+  body.replaceChildren();
+  for (const firmware of firmwares.filter(item => !item.source && !item.sharedTargetId)) {
+    const links = referenceLinks(firmware);
+    if (!links.size) continue;
+    const section = node('section', 'knowledge-group'), actions = node('div', 'firmware-update-actions');
+    actions.append(...links.values());
+    section.append(node('h3', '', firmware.name), actions); body.append(section);
+  }
+  details.hidden = !body.childElementCount;
+}
+
 export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
   if (!mount) return {show() {}, dispose() {}};
   const body = node('div', 'firmware-updates'), identity = node('p', 'firmware-update-identity'), hints = node('div', 'hint-list'), actions = node('div', 'firmware-update-actions');
@@ -279,8 +305,12 @@ export async function mountFirmwareUpdates(mount, {getProductId} = {}) {
     if (entry) hintItems.push({id: 'update-check', icon: 'clock', label: '版本核对', title: '发布版本与同步时间', paragraphs: ['发布前按产品、渠道和镜像格式同步版本；缺少匹配文件或可信 hash 时保留原镜像。检查版本只核对当前设备的固件，读取本站快照，不直接调用 GitHub API，也不下载固件正文。运行所需固件可缓存在当前浏览器，服务器不保存。', '资源链接核对可能受上游 CORS 设置限制。版本快照过期或同步失败不代表固件链接已经失效。']});
     renderHintList(hints, hintItems);
     const releaseUrl = entry?.releaseUrl || firmware.sources?.find(source => /releases/.test(source.url))?.url || firmware.sources?.[0]?.url;
-    if (releaseUrl) actions.append(link('上游发布页 ↗', releaseUrl));
-    if (entry?.browserInstallUrl && entry.browserInstallUrl !== releaseUrl) actions.append(link('下载入口 ↗', entry.browserInstallUrl));
+    const links = referenceLinks(firmware);
+    for (const [href, label] of [[releaseUrl, '上游发布页 ↗'], [entry?.browserInstallUrl, '下载入口 ↗']]) {
+      const url = safeUrl(href);
+      if (url && !links.has(url)) links.set(url, link(label, url));
+    }
+    actions.append(...links.values());
     check.hidden = !entry; check.disabled = false; actions.append(check);
     if (listError) result.append(node('p', 'helper', '版本元信息暂时无法读取，仍可打开上游发布页。'));
   }
