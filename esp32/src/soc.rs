@@ -85,6 +85,9 @@ impl Soc for Esp32 {
 
 impl esp_soc::SocBus for SocBus {
     fn set_psram_size(&mut self, bytes: usize) -> Result<(), String> { self.configure_psram(bytes) }
+    fn attach_sd_card(&mut self,image:Box<dyn esp_periph::sdmmc::SdStore>,config:esp_periph::sdmmc::SdCardConfig)->Result<String,String> {
+        self.board.attach_spi_sd_card(image,config)
+    }
     fn enable_ble(&mut self, elf: &esp_soc::elf::Elf) -> Result<(), String> {
         self.ble.enable(&elf.by_name, elf.symbol_sizes.get("esp_bt_controller_init").copied().unwrap_or(0), &<Self as esp_soc::ble::vhci::VhciBus>::abi())
     }
