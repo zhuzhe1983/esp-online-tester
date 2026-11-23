@@ -31,6 +31,7 @@ pub struct Axp192Rails { pub dc1:bool, pub dc2:bool, pub dc3:bool, pub ldo2:bool
 pub struct Axp192State {
     pub regs:[u8;256],
     pub power_off_requested:bool,
+    panel_reset_count:u64,
     clock_hz:u64,
     pressed:Option<u64>,
     long_sent:bool,
@@ -40,7 +41,7 @@ impl Axp192State {
     /// Cold reset profile. Channel enables are left off: the Core2 guest firmware has to write
     /// 0x12 (and the panel/audio rails) before the display or touch answers. 0x03 IC_TYPE is
     /// read-only and reports 0x03, the AXP192 code XPowersLib compares against.
-    pub fn new(clock_hz:u64)->Self {let mut s=Self{regs:[0;256],power_off_requested:false,clock_hz:clock_hz.max(1),pressed:None,long_sent:false};s.regs[3]=3;s}
+    pub fn new(clock_hz:u64)->Self {let mut s=Self{regs:[0;256],power_off_requested:false,panel_reset_count:0,clock_hz:clock_hz.max(1),pressed:None,long_sent:false};s.regs[3]=3;s}
     pub fn rails(&self)->Axp192Rails {let c=self.regs[usize::from(REG_CTL)];Axp192Rails{dc1:c&1!=0,dc3:c&2!=0,ldo2:c&4!=0,ldo3:c&8!=0,dc2:c&16!=0,exten:c&64!=0}}
     /// Panel 3V3 (LDO2) and backlight (DC3) are only up while the PMIC is not shut down.
     pub fn panel_powered(&self)->bool {!self.power_off_requested && self.rails().ldo2}
@@ -48,18 +49,26 @@ impl Axp192State {
     pub fn vibration_on(&self)->bool {!self.power_off_requested && self.rails().ldo3}
     pub fn external_5v_on(&self)->bool {!self.power_off_requested && self.rails().exten}
     pub fn ldo2_mv(&self)->u16 {1800+u16::from((self.regs[0x28]>>4)&0xf)*100}
-    pub fn ldo3_mv(&self)->u16 {1800+u16::from(self.regs[0x29]&0xf)*100}
+    pub fn ldo3_mv(&self)->u16 {1800+u16::from(self.regs[0x28]&0xf)*100}
     pub fn dc3_mv(&self)->u16 {700+u16::from(self.regs[0x27])*25}
-    /// AXP192 GPIO output level as written through XPowersLib's `digitalWrite`:
-    /// IO0 0x90 bit0, IO1 0x92 bit0, IO2 0x93 bit0, IO3 0x96 bit3, IO4 0x96 bit4, IO5 0x9E bit5.
+    /// M5Core2 67099371 AXP192.cpp::SetLCDRSet and M5Unified AXP192_Class::_set_GPIO3_4:
+    /// these outputs use 96h[1:0]; 95h selects open-drain mode.
+    pub fn gpio34_high(&self,io:u8)->bool {
+        let Some(index)=io.checked_sub(3).filter(|&index|index<2) else {return false;};
+        (self.regs[0x95]>>(index*2))&3==1 && self.regs[0x96]&(1<<index)!=0
+    }
+    pub fn panel_ready(&self)->bool {self.panel_powered()&&self.gpio34_high(4)}
+    /// Count reset assertions even if the next LCD transaction comes after release.
+    pub fn panel_reset_count(&self)->u64 {self.panel_reset_count}
+    /// AXP192 GPIO output level through XPowersLib's `digitalWrite`:
+    /// IO0 90h bit0, IO1 92h bit0, IO2 93h bit0, IO5 9Eh bit5. IO3/4 use the board-proven mapping above.
     pub fn io_output(&self,io:u8)->Option<bool> {
         let regs=&self.regs;
         Some(match io {
             0=>regs[0x90]&1!=0,
             1=>regs[0x92]&1!=0,
             2=>regs[0x93]&1!=0,
-            3=>regs[0x96]&8!=0,
-            4=>regs[0x96]&16!=0,
+            3|4=>self.gpio34_high(io),
             5=>regs[0x9e]&32!=0,
             _=>return None,
         })
@@ -100,6 +109,7 @@ impl Axp192State {
         }
     }
     fn write_register(&mut self,reg:u8,value:u8) {
+        let ready=self.panel_ready();
         match reg {
             3|0x26|0x56..=0x5d|0x62..=0x6b|0x78|0x79|0xb0..=0xb8=>{},
             0x44..=0x47|0x4d=>self.regs[usize::from(reg)]&=!value,
@@ -108,6 +118,7 @@ impl Axp192State {
             |0x80..=0x9e=>self.regs[usize::from(reg)]=value,
             _=>{},
         }
+        if ready && !self.panel_ready() {self.panel_reset_count=self.panel_reset_count.wrapping_add(1);}
     }
 }
 
@@ -142,7 +153,7 @@ impl I2cDevice for Axp192 {
     }
     #[test] fn voltage_codes_match_xpowers_ranges() {
         let mut p=Axp192State::new(HZ);
-        p.write_register(0x28,0xf0);p.write_register(0x29,0x0f);p.write_register(0x27,0x50);
+        p.write_register(0x28,0xff);p.write_register(0x27,0x50);
         assert_eq!((p.ldo2_mv(),p.ldo3_mv(),p.dc3_mv()),(3300,3300,2_700));
         p.write_register(0x28,0);assert_eq!(p.ldo2_mv(),1800);
     }
@@ -181,12 +192,17 @@ impl I2cDevice for Axp192 {
         let mut p=Axp192State::new(HZ);
         for reg in [0x26u8,0x56,0x64,0x78,0xb0,0xb8] {p.write_register(reg,0xff);assert_eq!(p.read_register(reg),0,"register {reg:#04x} must not report a fake measurement");}
     }
-    #[test] fn gpio_outputs_match_xpowers_digitalwrite() {
+    #[test] fn gpio_outputs_follow_the_board_driver_mode_and_signal_bits() {
         let mut p=Axp192State::new(HZ);
         p.write_register(0x90,1);p.write_register(0x93,1);p.write_register(0x96,0x18);
+        assert!(!p.gpio34_high(4));
+        p.write_register(0x95,0x85);p.write_register(0x96,3);
         assert_eq!(p.io_output(0),Some(true));assert_eq!(p.io_output(2),Some(true));
         assert_eq!((p.io_output(3),p.io_output(4)),(Some(true),Some(true)));
         assert_eq!((p.io_output(1),p.io_output(6)),(Some(false),None));
+        p.write_register(0x12,4);assert!(p.panel_ready());
+        p.write_register(0x96,1);p.write_register(0x96,3);assert_eq!(p.panel_reset_count(),1);
+        p.write_register(0x12,0);assert_eq!(p.panel_reset_count(),2);
     }
     #[test] fn pwm1_duty_is_io1_and_pwm2_duty_is_io2() {
         let mut p=Axp192State::new(HZ);
