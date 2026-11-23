@@ -1,0 +1,195 @@
+{
+  "schemaVersion": "1",
+  "productId": "m5stack-k005",
+  "checkedAt": "2026-11-23T05:16:32Z",
+  "boardImplementationCommit": "6e65140a",
+  "backend": "classic ESP32 native JIT with Espressif ECO3 mask ROM",
+  "board": "m5stack-basic",
+  "romSha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+  "emulatorSha256": "b59474cbf4bf84503842b05d17466e76ec57a38381c3190f50a24ad67c965f67",
+  "psramMiB": 0,
+  "card": {
+    "sizeMiB": 64,
+    "filesystem": "FAT32",
+    "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+  },
+  "factoryExtraction": {
+    "sourceId": "faces-factory-exe",
+    "sourceReceipt": "../core-family/sources.json",
+    "layoutReceipt": "../core-family/layouts.json",
+    "mergedFlashBytes": 4194304,
+    "resourceSourceOffset": "0x4c3d37",
+    "resourceFlashOffset": "0x1000",
+    "transformation": "Layout extracted from the official installer and prefixed with erased bytes to the published flash offset. Guest and bootloader bytes unchanged."
+  },
+  "currentPrimarySources": {
+    "faces-docs-refresh": {
+      "url": "https://docs.m5stack.com/en/core/Faces_Kit",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Faces_Kit",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T05:14:22Z",
+      "archiveName": "faces-docs-refresh.html",
+      "mediaType": "text/html",
+      "bytes": 148283,
+      "sha256": "cf7985fe7402070c31b71c426abc67f64d8f30c61608519f99b16f0bbeffba5b"
+    },
+    "gray-host-official-docs": {
+      "url": "https://docs.m5stack.com/en/core/Gray",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Gray",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T05:14:22Z",
+      "archiveName": "gray-host-official-docs.html",
+      "mediaType": "text/html",
+      "bytes": 149448,
+      "sha256": "cf40798e3c1eef8c01711605a1caf2629bf1c0f9e6d80790164f94e141b73e9c"
+    }
+  },
+  "command": "esp32sim --chip esp32 --board m5stack-basic --boot rom --rom ESP32_ROM --flash-mb FLASH_MIB --psram-mb 0 --flash-image IMAGE_BIN --sd CARD_IMG --max-seconds GUEST_SECONDS --console uart0 --no-dump --tft-png OUTPUT_PNG [--script INPUT_TXT]",
+  "cases": [
+    {
+      "id": "factory-legacy-4m",
+      "flashMiB": 4,
+      "guestSeconds": 6,
+      "firmwareSha256": "ec245094674157fa1145c1457c8537cdfb674a30874343bf94e850d2a9e6bc05",
+      "factoryApplicationOffset": "0x10000",
+      "result": "freertos-queue-assert",
+      "frameSizePx": [
+        320,
+        240
+      ],
+      "tftRamWrites": 0,
+      "tftPixelWrites": 0,
+      "finalPngSha256": "6459562cf8e7ecb546a07fe0bc74d0fa575dca514f1cb1f5a8be86a1336bf7cd",
+      "sdCommands": 0,
+      "sdReadBlocks": 0,
+      "sdWrittenBlocks": 0,
+      "serialProof": [
+        "ESP-IDF v3.3-beta1-270-g6ffef3bc1",
+        "xQueueGenericReceive assertion",
+        "CPU halted"
+      ]
+    },
+    {
+      "id": "factory-present-16m",
+      "flashMiB": 16,
+      "guestSeconds": 6,
+      "firmwareSha256": "ec245094674157fa1145c1457c8537cdfb674a30874343bf94e850d2a9e6bc05",
+      "factoryApplicationOffset": "0x10000",
+      "result": "freertos-queue-assert",
+      "frameSizePx": [
+        320,
+        240
+      ],
+      "tftRamWrites": 0,
+      "tftPixelWrites": 0,
+      "finalPngSha256": "6459562cf8e7ecb546a07fe0bc74d0fa575dca514f1cb1f5a8be86a1336bf7cd",
+      "sdCommands": 0,
+      "sdReadBlocks": 0,
+      "sdWrittenBlocks": 0,
+      "serialProof": [
+        "ESP-IDF v3.3-beta1-270-g6ffef3bc1",
+        "xQueueGenericReceive assertion",
+        "CPU halted"
+      ]
+    },
+    {
+      "id": "uiflow1-present-16m",
+      "flashMiB": 16,
+      "guestSeconds": 7,
+      "firmwareSha256": "8558f670ce0db612b5dbe8f8dfc89be4c52b6efd2fa0d307b2ac4dd3ae96dc9c",
+      "result": "integer-division-by-zero",
+      "frameSizePx": [
+        320,
+        240
+      ],
+      "tftRamWrites": 0,
+      "tftPixelWrites": 0,
+      "finalPngSha256": "6459562cf8e7ecb546a07fe0bc74d0fa575dca514f1cb1f5a8be86a1336bf7cd",
+      "sdCommands": 0,
+      "sdReadBlocks": 0,
+      "sdWrittenBlocks": 0,
+      "serialProof": [
+        "UIFlow1 banner",
+        "Core 1 IntegerDivideByZero",
+        "Rebooting"
+      ]
+    },
+    {
+      "id": "uiflow2-baseline",
+      "flashMiB": 16,
+      "guestSeconds": 7,
+      "firmwareSha256": "63841aa3065ac02e729fccc9e3a9e931f587cec5e8ea57850a720cfdbc67d8f2",
+      "result": "develop",
+      "frameSizePx": [
+        320,
+        240
+      ],
+      "tftRamWrites": 4634,
+      "tftPixelWrites": 240596,
+      "finalPngSha256": "402bcfaeba268bab62d4be52c7a85cc1cb570ec2ddaa005e45ca62ec1d8010cd",
+      "sdCommands": 0,
+      "sdReadBlocks": 0,
+      "sdWrittenBlocks": 0,
+      "serialProof": [
+        "UIFlow V2.5.5",
+        "Startup with network type: WIFI",
+        "WiFi initialized"
+      ]
+    },
+    {
+      "id": "uiflow2-press-a",
+      "flashMiB": 16,
+      "guestSeconds": 7,
+      "firmwareSha256": "63841aa3065ac02e729fccc9e3a9e931f587cec5e8ea57850a720cfdbc67d8f2",
+      "result": "app-run",
+      "frameSizePx": [
+        320,
+        240
+      ],
+      "tftRamWrites": 7944,
+      "tftPixelWrites": 322889,
+      "finalPngSha256": "8ce1ecd685b293fcffb77811d3f902bce3da67e0879a65b384cbdf5ec38eae83",
+      "sdCommands": 0,
+      "sdReadBlocks": 0,
+      "sdWrittenBlocks": 0,
+      "serialProof": [
+        "UIFlow V2.5.5",
+        "Startup with network type: WIFI",
+        "WiFi initialized"
+      ],
+      "script": "5.0 press 39 300"
+    },
+    {
+      "id": "uiflow2-wrong-pin",
+      "flashMiB": 16,
+      "guestSeconds": 7,
+      "firmwareSha256": "63841aa3065ac02e729fccc9e3a9e931f587cec5e8ea57850a720cfdbc67d8f2",
+      "result": "develop",
+      "frameSizePx": [
+        320,
+        240
+      ],
+      "tftRamWrites": 4634,
+      "tftPixelWrites": 240596,
+      "finalPngSha256": "402bcfaeba268bab62d4be52c7a85cc1cb570ec2ddaa005e45ca62ec1d8010cd",
+      "sdCommands": 0,
+      "sdReadBlocks": 0,
+      "sdWrittenBlocks": 0,
+      "serialProof": [
+        "UIFlow V2.5.5",
+        "Startup with network type: WIFI",
+        "WiFi initialized"
+      ],
+      "script": "5.0 press 34 300"
+    }
+  ],
+  "scope": "Stock Gray UIFlow2 v2.5.5 on the documented 16 MiB Gray host profile. A/B/C routing and SD transport follow the matching host schematics. The factory and UIFlow1 failure signatures are scoped to these runtime probes.",
+  "limits": [
+    "K005 original interchangeable keyboard panels and expansion base are outside the board model.",
+    "The UIFlow2 stock menus exercised here did not transact on the provided FAT32 card.",
+    "Physical hardware not tested."
+  ],
+  "redaction": "Retain selected UART markers and computed digests. Raw terminal output and framebuffer images may contain compiler paths and device identifiers and are omitted."
+}

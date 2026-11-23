@@ -13465,13 +13465,13 @@
       "hardwareRevision": "unspecified",
       "chip": "esp32",
       "module": "ESP32-D0WDQ6",
-      "summary": "含ESP32 GrayCore、三种可换键盘和扩展底座的套件。官方二维图已抓取；尚未验证整套装配尺寸或可用整机3D CAD。",
+      "summary": "含 ESP32 Gray 主机、三款可换键盘和充电底座的套件。模拟器支持当前 16 MiB Gray 主机的屏幕、三颗前面板按键和 SPI TF 卡接口。",
       "knowledgeUrl": "./knowledge/m5stack-k005.json",
       "runtime": {
-        "board": null,
+        "board": "m5stack-basic",
         "flashMb": 16,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": {
         "width": 320,
@@ -13480,7 +13480,32 @@
         "driver": "ILI9342C",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "Button A",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "button-b",
+          "name": "Button B",
+          "type": "button",
+          "pin": 38,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "button-c",
+          "name": "Button C",
+          "type": "button",
+          "pin": 37,
+          "activeLow": true,
+          "defaultKeyCode": "KeyC"
+        }
+      ],
       "interfaces": [
         {
           "external": true,
@@ -13510,6 +13535,30 @@
             "official-docs"
           ],
           "notes": "数量按主机规格；不从通用表任意指定物理口或接线。"
+        },
+        {
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 18
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ]
         }
       ],
       "dimensions": {
@@ -13522,9 +13571,11 @@
         "scope": "Unresolved official Product Size; not established as complete kit envelope."
       },
       "limitations": [
-        "未建立厂家完整装配3D模型；只交来源与知识，不能以通用方盒代表套件。",
-        "三款键盘及核心主机接口资料有记录，尚无板级模拟器或完整键盘交互。",
-        "官方尺寸作用域未核；旧版Flash4MB，当前表格16MB，不推断用户版本。"
+        "运行配置对应官方规格表的 16 MiB Gray 主机。早期套件采用 4 MiB Flash，屏幕面板和 IMU 也有批次差异。",
+        "官方 Gray UIFlow2 v2.5.5 已在模拟器中显示菜单，主机按键 A 可切换至 APP RUN。兼容范围为 Gray 主机子集。",
+        "出厂 EasyLoader 内的 4 MiB 镜像在 FreeRTOS 队列初始化阶段退出。选择官方 Gray UIFlow2 试运行可查看主机界面。",
+        "三款 I²C 0x08 键盘、充电底座、IMU、扬声器及电源状态不在模拟范围内。",
+        "外观资料为厂家二维图及照片，整套装配的 3D 模型及尺寸范围待核对。"
       ],
       "sources": [
         {

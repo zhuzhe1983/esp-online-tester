@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:03:24Z",
+  "updatedAt": "2026-11-23T05:16:32Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -685,6 +685,60 @@
         "official-docs"
       ],
       "notes": "Official table gives this size, but photo depicts a taller assembled core+keyboard+base; do not apply it to whole kit without a drawing."
+    },
+    {
+      "id": "gray-host-pins",
+      "label": "Gray 主机屏幕、按键与 TF 路由",
+      "group": "pins",
+      "basis": "official",
+      "value": {
+        "lcd": {
+          "controller": "ILI9342C",
+          "bidirectionalData": 23,
+          "clock": 18,
+          "chipSelect": 14,
+          "dataCommand": 27,
+          "reset": 33,
+          "backlight": 32
+        },
+        "buttons": {
+          "A": 39,
+          "B": 38,
+          "C": 37,
+          "activeLow": true
+        },
+        "tfSpi": {
+          "clock": 18,
+          "mosi": 23,
+          "miso": 19,
+          "chipSelect": 4
+        }
+      },
+      "sourceIds": [
+        "faces-docs-refresh",
+        "gray-host-official-docs",
+        "schematic-3dd7d9a880"
+      ],
+      "notes": "套件页确认附带 Gray 主机及 LCD/TF 引脚。主机按键对应关系见 Gray PinMap，原理图上的触点接地。"
+    },
+    {
+      "id": "interchangeable-faces-panels",
+      "label": "可换键盘协议",
+      "group": "interfaces",
+      "basis": "official",
+      "value": {
+        "controller": "MEGA328",
+        "i2cAddress": "0x08",
+        "panels": [
+          "GameBoy",
+          "Calculator",
+          "QWERTY"
+        ]
+      },
+      "sourceIds": [
+        "faces-docs-refresh"
+      ],
+      "notes": "这三个面板由主机经 I²C 读取。"
     }
   ],
   "revisions": [
@@ -972,6 +1026,32 @@
       "bytes": 28765,
       "mediaType": "application/octet-stream",
       "sha256": "a5f614042729a6c8b302fe746896f003a83b30bcd434dc958cc1679305199984"
+    },
+    {
+      "id": "faces-docs-refresh",
+      "title": "M5Stack Faces Kit",
+      "url": "https://docs.m5stack.com/en/core/Faces_Kit",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Faces_Kit",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T05:14:22Z",
+      "archiveName": "faces-docs-refresh.html",
+      "mediaType": "text/html",
+      "bytes": 148283,
+      "sha256": "cf7985fe7402070c31b71c426abc67f64d8f30c61608519f99b16f0bbeffba5b"
+    },
+    {
+      "id": "gray-host-official-docs",
+      "title": "M5Stack Gray host pin map",
+      "url": "https://docs.m5stack.com/en/core/Gray",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Gray",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T05:14:22Z",
+      "archiveName": "gray-host-official-docs.html",
+      "mediaType": "text/html",
+      "bytes": 149448,
+      "sha256": "cf40798e3c1eef8c01711605a1caf2629bf1c0f9e6d80790164f94e141b73e9c"
     }
   ],
   "assets": [
@@ -1105,6 +1185,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "板级模拟配置采用官方列出的 16 MiB Gray 主机。运行证据见 docs/platform/evidence/m5stack-k005/gray-host-runtime.json，原厂镜像启动失败和 UIFlow2 主机菜单分别记录。"
   ]
 }
