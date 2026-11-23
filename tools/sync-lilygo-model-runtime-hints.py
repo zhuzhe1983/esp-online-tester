@@ -57,16 +57,22 @@ for f in ASSETS.glob('lilygo-*/model-plan.json'):
   display=None
  if display:
   ratio=display['width']/display['height'];old=plan.get('presentation',{}).get('screen');wrong=not old or abs(old['sizeMm'][0]/old['sizeMm'][1]-ratio)>1e-7
+  calibrated=plan['debugPreview'].get('displayPlacement')=='calibrated-assembly-front'
+  if calibrated and wrong:
+   raise ValueError(f'{id}: runtime aspect changed; recheck the calibrated assembly screen')
   if wrong:
    sw=45*display['width']/max(display['width'],display['height']);sh=sw/ratio;sx=bw/2+8+sw/2
    plan['parts']=[p for p in plan['parts']if p['name']!='debug-screen-frame'];plan['derivedParts']=[p for p in plan.get('derivedParts',[])if p['id']!='debug-panel-label']
    plan['parts'].append({'name':'debug-screen-frame','role':'component','kind':'ring','sizeMm':[sw+3,sh+8,1.4],'openingMm':[sw,sh],'radiusMm':2,'innerRadiusMm':.2,'centerMm':[sx,0,0],'color':'#20343d','basis':'debug-layout'})
    plan['presentation']['screen']={'sizeMm':[sw,sh],'positionMm':[sx,1,.72],'rotation':[0,0,0],'notes':'Separate native-orientation debug panel, not an uncalibrated physical window.'};plan['derivedParts'].append({'id':'debug-panel-label','kind':'printed-marking','basis':'debug-layout','sourceIds':profile['sourceIds'],'lines':['LIVE DEBUG'],'color':'#bde5d8','geometry':{'sizeMm':[sw,3.2],'centerMm':[sx,-sh/2-2,.72]}});plan['presentation']['bodySizeMm']=[bw+sw+12,max(bh,sh+8),max(depth,1.4)]
   implemented=display.get('implemented') is not False
-  patch['displayHint']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds'],'basis':'exact selected BSP/controller native orientation'if implemented else'verified physical panel; runtime frame output not implemented','physicalSizeMm':None,'implemented':implemented}
+  physical_size=patch.get('displayHint',{}).get('physicalSizeMm') if calibrated else None
+  patch['displayHint']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds'],'basis':'exact selected BSP/controller native orientation'if implemented else'verified physical panel; runtime frame output not implemented','physicalSizeMm':physical_size,'implemented':implemented}
   plan['displayNativeOrientation']={'width':display['width'],'height':display['height'],'sourceIds':profile['sourceIds'],'implemented':implemented}
   plan['debugPreview']['liveFramebuffer']=implemented
-  plan['debugPreview']['physicalDisplay']=True;plan['debugPreview']['displayPlacement']='separate-native-orientation-debug-panel'
+  plan['debugPreview']['physicalDisplay']=True
+  if not calibrated:
+   plan['debugPreview']['displayPlacement']='separate-native-orientation-debug-panel'
   for part in plan.get('derivedParts',[]):
    if part['id']=='debug-panel-label':part['lines']=['LIVE DEBUG'if implemented else'DISPLAY PREVIEW']
   if implemented:

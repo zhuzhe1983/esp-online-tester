@@ -5,59 +5,83 @@
   "mode": "manufacturer-cad",
   "priorityRank": 25,
   "dimensions": {
-    "width": 129.41477534143195,
-    "height": 69.63902505982732,
-    "depth": 10.621865041092967,
-    "basis": "manufacturer-cad; conservative OpenCascade source bounds; emitted mesh bounds in build-check.json"
+    "width": 69.4,
+    "height": 129.1500011798,
+    "depth": 10.600000000404,
+    "basis": "Native CAD placed assembly mesh bounds (portrait viewing orientation)."
   },
   "presentation": {
     "bodySizeMm": [
-      214.41477534143195,
-      89.63902505982732,
-      10.621865041092967
+      69.4,
+      149.1500011798,
+      10.600000000404
     ],
     "screen": {
       "sizeMm": [
-        45.0,
-        25.3125
+        103.68,
+        58.32
       ],
       "positionMm": [
-        95.20738767071597,
-        1,
-        0.72
+        0,
+        1.95,
+        5.325000000202
       ],
       "rotation": [
         0,
         0,
-        0
+        -1.5707963267948966
       ],
-      "notes": "Separate native-aspect live debug panel until CAD screen plane is calibrated."
-    }
+      "notes": "ED047TC1 有效区为 58.32 × 103.68 mm。按正面照片定位偏移，原生 960×540 帧保持像素比例并旋转到竖持姿态。"
+    },
+    "inspectionGroups": [
+      {
+        "id": "front-display",
+        "parts": [
+          "display-cover",
+          "display-support",
+          "live-display"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          18
+        ],
+        "sourceIds": [
+          "lilygo-t5-e-paper-s3-pro-manufacturer-cad",
+          "t5-s3-pro-ed047tc1-dimensions"
+        ],
+        "notes": "沿屏幕法线分开展示显示层和中部组件。"
+      },
+      {
+        "id": "enclosure",
+        "parts": [
+          "enclosure",
+          "charging-magnet",
+          "rear-label",
+          "cad-part-05",
+          "cad-part-06",
+          "cad-part-07",
+          "cad-part-08",
+          "cad-part-09",
+          "cad-part-10",
+          "side-panel-left",
+          "side-panel-right",
+          "cad-part-11",
+          "cad-part-12"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -20
+        ],
+        "sourceIds": [
+          "lilygo-t5-e-paper-s3-pro-manufacturer-cad"
+        ],
+        "notes": "外壳和随壳零件向后移开；合起时恢复源文件原位。"
+      }
+    ]
   },
   "parts": [
-    {
-      "name": "debug-screen-frame",
-      "role": "component",
-      "kind": "ring",
-      "sizeMm": [
-        48.0,
-        33.3125,
-        1.4
-      ],
-      "openingMm": [
-        45.0,
-        25.3125
-      ],
-      "radiusMm": 2,
-      "innerRadiusMm": 0.2,
-      "centerMm": [
-        95.20738767071597,
-        0,
-        0
-      ],
-      "color": "#20343d",
-      "basis": "debug-layout"
-    },
     {
       "name": "debug-control:boot",
       "role": "component",
@@ -68,8 +92,8 @@
         1.3
       ],
       "centerMm": [
-        88.70738767071597,
-        -42.81951252991366,
+        -6.5,
+        -72.575,
         0
       ],
       "radiusMm": 0.5,
@@ -98,8 +122,8 @@
         1.3
       ],
       "centerMm": [
-        101.70738767071597,
-        -42.81951252991366,
+        6.5,
+        -72.575,
         0
       ],
       "radiusMm": 0.5,
@@ -120,29 +144,6 @@
     }
   ],
   "derivedParts": [
-    {
-      "id": "debug-panel-label",
-      "kind": "printed-marking",
-      "basis": "debug-layout",
-      "sourceIds": [
-        "lilygo-t5-e-paper-s3-pro-manufacturer-cad"
-      ],
-      "lines": [
-        "LIVE DEBUG"
-      ],
-      "color": "#bde5d8",
-      "geometry": {
-        "sizeMm": [
-          45.0,
-          3.2
-        ],
-        "centerMm": [
-          95.20738767071597,
-          -14.65625,
-          0.72
-        ]
-      }
-    },
     {
       "id": "debug-control-label:boot",
       "kind": "printed-marking",
@@ -168,8 +169,8 @@
           3.2
         ],
         "centerMm": [
-          88.70738767071597,
-          -42.81951252991366,
+          -6.5,
+          -72.575,
           0.67
         ]
       }
@@ -199,8 +200,8 @@
           3.2
         ],
         "centerMm": [
-          101.70738767071597,
-          -42.81951252991366,
+          6.5,
+          -72.575,
           0.67
         ]
       }
@@ -230,8 +231,8 @@
           3
         ],
         "centerMm": [
-          95.20738767071597,
-          -38.81951252991366,
+          0,
+          -68.575,
           0.67
         ]
       }
@@ -489,6 +490,19 @@
         "mediaType": "application/pdf",
         "archiveName": "s3add-t5pro-raw-panel.pdf",
         "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "t5-s3-pro-ed047tc1-dimensions",
+        "title": "ED047TC1 显示区尺寸",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/hardware/ED047TC1.pdf",
+        "kind": "manufacturer-datasheet",
+        "status": "fetched",
+        "fetchedAt": "2026-11-23T07:03:41Z",
+        "mediaType": "application/pdf",
+        "bytes": 1182427,
+        "sha256": "c8c3d8be57e8ff3d798739f38458b07a386286293d465f95ede462c1069b5c37",
+        "commit": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+        "path": "hardware/ED047TC1.pdf"
       }
     ],
     "license": "No license declaration found in this upstream repository snapshot. Manufacturer CAD copyright is retained; no MIT license is asserted.",
@@ -496,18 +510,17 @@
     "tessellation": "OpenCascade 7.8.1.1; 0.05 mm absolute deflection, 0.2 rad angular deflection; native millimetres and retained rigid source transform."
   },
   "limitations": [
-    "采用固定仓库快照的官方 STEP 几何，保留原始毫米尺度；本条只表示文件中实际提供的部分。",
-    "未提供的组件、PCB 内部或精确显示窗口不从名字推定；保留官方照片用于比较。",
-    "独立 LIVE DEBUG 面板仅提供原生比例的实时调试画面，不代表未校准的实体屏幕位置。",
-    "供应商 CAD 文件与商品实物的版本差异仍需逐款核验；无制造精度或整机支持保证。",
-    "标记 DEBUG INPUT 的按键是独立调试控件，不表示已核实的实物按键位置。"
+    "此视图保留官方 H752 STEP 内的装配位置和毫米尺度。",
+    "屏幕有效区依据 ED047TC1 数据表，偏移通过正面照片估算。盖板与外壳表面颜色参照商品照片，未测量材料反射。",
+    "原厂文件未包括完整板上元件、背标细节与全部电气连接。",
+    "BOOT 和 Function 仍由 DEBUG INPUT 提供独立点击区域。"
   ],
   "debugPreview": {
     "mode": "manufacturer-cad",
     "isPhysicalReplica": false,
     "physicalDimensionsVerified": false,
-    "displayPlacement": "separate-native-orientation-debug-panel",
-    "reason": "Manufacturer CAD exists; selected scope and omitted geometry are explicit. CAD availability does not imply firmware or dimensional validation.",
+    "displayPlacement": "calibrated-assembly-front",
+    "reason": "保留厂家装配位置，同时依正面照片和 ED047TC1 尺寸放置实时屏幕。CAD 零件功能与外观位置经当前范围核对。",
     "liveFramebuffer": true,
     "physicalDisplay": true,
     "controlPlacement": "Separate labeled debugging controls where physical locations are uncalibrated; official physical matches are preserved."
@@ -517,25 +530,25 @@
       "position": [
         0,
         0,
-        300
+        220
       ],
-      "span": 257.2977304097183
+      "span": 174.35250159273002
     },
     "back": {
       "position": [
         0,
         0,
-        -300
+        -220
       ],
-      "span": 257.2977304097183
+      "span": 174.35250159273002
     },
     "side": {
       "position": [
-        300,
+        220,
         0,
         0
       ],
-      "span": 257.2977304097183
+      "span": 174.35250159273002
     }
   },
   "cad": {
@@ -545,32 +558,341 @@
     "sourceUnit": "mm",
     "matrixRows": [
       [
+        0.0,
+        0.0,
         1.0,
-        0.0,
-        0.0,
-        -0.12133119552768079
+        -0.0
       ],
       [
+        -1.0,
         0.0,
+        0.0,
+        5.898999972941965e-07
+      ],
+      [
         0.0,
         -1.0,
-        0.08147318839999684
+        0.0,
+        0.20000000020200037
       ],
       [
-        0.0,
-        1.0,
-        0.0,
-        -0.19975758962817558
-      ],
-      [
-        0.0,
-        0.0,
-        0.0,
-        1.0
+        0,
+        0,
+        0,
+        1
       ]
+    ],
+    "groups": [
+      {
+        "name": "display-cover",
+        "components": [
+          0
+        ],
+        "role": "component",
+        "color": "#b9c8cf",
+        "sourceName": "000",
+        "sourceColor": "#a3a3a3",
+        "material": {
+          "roughness": 0.36
+        }
+      },
+      {
+        "name": "display-support",
+        "components": [
+          1
+        ],
+        "role": "component",
+        "color": "#82919a",
+        "sourceName": "000"
+      },
+      {
+        "name": "side-panel-right",
+        "components": [
+          2
+        ],
+        "role": "component",
+        "color": "#60656b",
+        "sourceName": "00"
+      },
+      {
+        "name": "enclosure",
+        "components": [
+          3
+        ],
+        "role": "shell",
+        "color": "#565a61",
+        "sourceName": "00",
+        "sourceColor": "#cd6b32",
+        "material": {
+          "roughness": 0.67
+        }
+      },
+      {
+        "name": "side-panel-left",
+        "components": [
+          4
+        ],
+        "role": "component",
+        "color": "#60656b",
+        "sourceName": "00"
+      },
+      {
+        "name": "cad-part-05",
+        "components": [
+          5
+        ],
+        "role": "component",
+        "color": "#646971",
+        "sourceName": "2-3-32"
+      },
+      {
+        "name": "cad-part-06",
+        "components": [
+          6
+        ],
+        "role": "component",
+        "color": "#646971",
+        "sourceName": "2-3-32"
+      },
+      {
+        "name": "cad-part-07",
+        "components": [
+          7
+        ],
+        "role": "component",
+        "color": "#646971",
+        "sourceName": "2-3-32"
+      },
+      {
+        "name": "cad-part-08",
+        "components": [
+          8
+        ],
+        "role": "component",
+        "color": "#646971",
+        "sourceName": "2-3-32"
+      },
+      {
+        "name": "cad-part-09",
+        "components": [
+          9
+        ],
+        "role": "component",
+        "color": "#646971",
+        "sourceName": "2-3-32"
+      },
+      {
+        "name": "cad-part-10",
+        "components": [
+          10
+        ],
+        "role": "component",
+        "color": "#646971",
+        "sourceName": "2-3-32"
+      },
+      {
+        "name": "cad-part-11",
+        "components": [
+          11
+        ],
+        "role": "component",
+        "color": "#646971",
+        "sourceName": "4-5-6"
+      },
+      {
+        "name": "cad-part-12",
+        "components": [
+          12
+        ],
+        "role": "component",
+        "color": "#646971",
+        "sourceName": "4-5-6"
+      },
+      {
+        "name": "battery",
+        "components": [
+          13
+        ],
+        "role": "battery",
+        "color": "#747f8b",
+        "sourceName": "电池505060",
+        "sourceColor": "#aaaaaa"
+      },
+      {
+        "name": "main-pcb",
+        "components": [
+          14
+        ],
+        "role": "pcb",
+        "color": "#1c5d3c",
+        "sourceName": "PCB",
+        "sourceColor": "#009400"
+      },
+      {
+        "name": "usb-c",
+        "components": [
+          15
+        ],
+        "role": "component",
+        "color": "#b9b9b9",
+        "sourceName": "TYPE-C-CHA",
+        "material": {
+          "roughness": 0.31,
+          "metalness": 0.52
+        }
+      },
+      {
+        "name": "cad-part-16",
+        "components": [
+          16
+        ],
+        "role": "component",
+        "color": "#ffffff",
+        "sourceName": "PRT0001",
+        "sourceColor": "#ffffff"
+      },
+      {
+        "name": "cad-part-17",
+        "components": [
+          17
+        ],
+        "role": "component",
+        "color": "#ffffff",
+        "sourceName": "PRT0001",
+        "sourceColor": "#ffffff"
+      },
+      {
+        "name": "cad-part-18",
+        "components": [
+          18
+        ],
+        "role": "component",
+        "color": "#ffffff",
+        "sourceName": "PRT0001",
+        "sourceColor": "#ffffff"
+      },
+      {
+        "name": "cad-part-19",
+        "components": [
+          19
+        ],
+        "role": "component",
+        "color": "#ffffff",
+        "sourceName": "PRT0001",
+        "sourceColor": "#ffffff"
+      },
+      {
+        "name": "board-socket",
+        "components": [
+          20
+        ],
+        "role": "component",
+        "color": "#e6ddd4",
+        "sourceName": "COMPOUND-171696_1",
+        "sourceColor": "#ffffff"
+      },
+      {
+        "name": "daughterboard",
+        "components": [
+          21
+        ],
+        "role": "pcb",
+        "color": "#254554",
+        "sourceName": "PCB2",
+        "sourceColor": "#003d69"
+      },
+      {
+        "name": "cad-part-22",
+        "components": [
+          22
+        ],
+        "role": "component",
+        "color": "#804000",
+        "sourceName": "COMPOUND-232_1",
+        "sourceColor": "#804000"
+      },
+      {
+        "name": "cad-part-23",
+        "components": [
+          23
+        ],
+        "role": "component",
+        "color": "#804000",
+        "sourceName": "COMPOUND-232_2",
+        "sourceColor": "#804000"
+      },
+      {
+        "name": "cad-part-24",
+        "components": [
+          24
+        ],
+        "role": "component",
+        "color": "#804000",
+        "sourceName": "COMPOUND-232_3",
+        "sourceColor": "#804000"
+      },
+      {
+        "name": "cad-part-25",
+        "components": [
+          25
+        ],
+        "role": "component",
+        "color": "#804000",
+        "sourceName": "COMPOUND-232_4",
+        "sourceColor": "#804000"
+      },
+      {
+        "name": "charging-magnet",
+        "components": [
+          26
+        ],
+        "role": "component",
+        "color": "#565b65",
+        "sourceName": "磁铁54-46"
+      },
+      {
+        "name": "spring",
+        "components": [
+          27
+        ],
+        "role": "component",
+        "color": "#a4a3a3",
+        "sourceName": "弹簧55",
+        "material": {
+          "roughness": 0.4,
+          "metalness": 0.34
+        }
+      },
+      {
+        "name": "rear-label",
+        "components": [
+          28
+        ],
+        "role": "component",
+        "color": "#3d434a",
+        "sourceName": "贴纸"
+      },
+      {
+        "name": "silicone",
+        "components": [
+          29
+        ],
+        "role": "component",
+        "color": "#262c32",
+        "sourceName": "硅胶片"
+      },
+      {
+        "name": "insulator",
+        "components": [
+          30
+        ],
+        "role": "component",
+        "color": "#b9a97d",
+        "sourceName": "青稞纸"
+      }
     ]
   },
-  "representationScope": "H752 enclosure assembly",
+  "representationScope": "H752-01 厂商仓库的 H752 STEP 装配。保留盖板、外壳、机械 PCB、磁环与电池的相对位置。",
   "binaryCompression": "gzip",
   "displayNativeOrientation": {
     "width": 960,
@@ -587,5 +909,34 @@
       "official-wiki-t5-e-paper-s3-pro"
     ],
     "implemented": true
+  },
+  "manualPhotoCalibration": {
+    "sourceId": "lilygo-t5-e-paper-s3-pro-official-photo-0",
+    "imageSizePx": [
+      1000,
+      1000
+    ],
+    "deviceBoundsPx": [
+      119,
+      186,
+      455,
+      815
+    ],
+    "activeBoundsPx": [
+      145,
+      239,
+      430,
+      743
+    ],
+    "activeSizeMm": [
+      58.32,
+      103.68
+    ],
+    "activeSizeSourceId": "t5-s3-pro-ed047tc1-dimensions",
+    "activeCenterOffsetMm": [
+      0,
+      1.95
+    ],
+    "cadReferencePart": "display-cover"
   }
 }

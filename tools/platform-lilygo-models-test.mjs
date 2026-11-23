@@ -44,3 +44,28 @@ test('all 122 previously missing LilyGO previews have intact geometry and explic
     }
   }
 });
+
+test('T4-S3 and T5 S3 Pro place their live display on the assembled cover', async () => {
+  const covers = {'lilygo-t4-s3':'display-glass','lilygo-t5-e-paper-s3-pro':'display-cover'};
+  for (const [id, coverName] of Object.entries(covers)) {
+    const model = await read(`web/platform/assets/${id}/model.json`);
+    const cover = model.parts.find(part => part.name === coverName);
+    assert.equal(cover?.basis, 'manufacturer-cad', id);
+    assert.ok(model.parts.some(part => part.role === 'shell'), id);
+    assert.ok(model.parts.some(part => part.role === 'pcb'), id);
+    assert.ok(!model.parts.some(part => part.name === 'debug-screen-frame'), id);
+
+    const {sizeMm, positionMm, rotation} = model.presentation.screen;
+    const [x, y, z] = positionMm, angle = rotation[2];
+    const width = Math.abs(Math.cos(angle)) * sizeMm[0] + Math.abs(Math.sin(angle)) * sizeMm[1];
+    const height = Math.abs(Math.sin(angle)) * sizeMm[0] + Math.abs(Math.cos(angle)) * sizeMm[1];
+    const [[left, bottom], [right, top, front]] = cover.boundsMm;
+    assert.ok(left < x - width / 2 && right > x + width / 2, id);
+    assert.ok(bottom < y - height / 2 && top > y + height / 2, id);
+    assert.ok(z > front && z - front < 0.05, id);
+
+    const displayGroup = model.presentation.inspectionGroups.find(group => group.parts.includes('live-display'));
+    assert.ok(displayGroup?.parts.includes(coverName), id);
+    assert.ok(displayGroup.offsetMm[2] > 0, id);
+  }
+});

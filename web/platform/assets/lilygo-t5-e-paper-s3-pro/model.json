@@ -1,59 +1,83 @@
 {
   "id": "lilygo-t5-e-paper-s3-pro",
   "dimensions": {
-    "width": 129.41477534143195,
-    "height": 69.63902505982732,
-    "depth": 10.621865041092967,
-    "basis": "manufacturer-cad; conservative OpenCascade source bounds; emitted mesh bounds in build-check.json"
+    "width": 69.4,
+    "height": 129.1500011798,
+    "depth": 10.600000000404,
+    "basis": "Native CAD placed assembly mesh bounds (portrait viewing orientation)."
   },
   "presentation": {
     "bodySizeMm": [
-      214.41477534143195,
-      89.63902505982732,
-      10.621865041092967
+      69.4,
+      149.1500011798,
+      10.600000000404
     ],
     "screen": {
       "sizeMm": [
-        45.0,
-        25.3125
+        103.68,
+        58.32
       ],
       "positionMm": [
-        95.20738767071597,
-        1,
-        0.72
+        0,
+        1.95,
+        5.325000000202
       ],
       "rotation": [
         0,
         0,
-        0
+        -1.5707963267948966
       ],
-      "notes": "Separate native-aspect live debug panel until CAD screen plane is calibrated."
-    }
+      "notes": "ED047TC1 有效区为 58.32 × 103.68 mm。按正面照片定位偏移，原生 960×540 帧保持像素比例并旋转到竖持姿态。"
+    },
+    "inspectionGroups": [
+      {
+        "id": "front-display",
+        "parts": [
+          "display-cover",
+          "display-support",
+          "live-display"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          18
+        ],
+        "sourceIds": [
+          "lilygo-t5-e-paper-s3-pro-manufacturer-cad",
+          "t5-s3-pro-ed047tc1-dimensions"
+        ],
+        "notes": "沿屏幕法线分开展示显示层和中部组件。"
+      },
+      {
+        "id": "enclosure",
+        "parts": [
+          "enclosure",
+          "charging-magnet",
+          "rear-label",
+          "cad-part-05",
+          "cad-part-06",
+          "cad-part-07",
+          "cad-part-08",
+          "cad-part-09",
+          "cad-part-10",
+          "side-panel-left",
+          "side-panel-right",
+          "cad-part-11",
+          "cad-part-12"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -20
+        ],
+        "sourceIds": [
+          "lilygo-t5-e-paper-s3-pro-manufacturer-cad"
+        ],
+        "notes": "外壳和随壳零件向后移开；合起时恢复源文件原位。"
+      }
+    ]
   },
   "derivedParts": [
-    {
-      "id": "debug-panel-label",
-      "kind": "printed-marking",
-      "basis": "debug-layout",
-      "sourceIds": [
-        "lilygo-t5-e-paper-s3-pro-manufacturer-cad"
-      ],
-      "lines": [
-        "LIVE DEBUG"
-      ],
-      "color": "#bde5d8",
-      "geometry": {
-        "sizeMm": [
-          45.0,
-          3.2
-        ],
-        "centerMm": [
-          95.20738767071597,
-          -14.65625,
-          0.72
-        ]
-      }
-    },
     {
       "id": "debug-control-label:boot",
       "kind": "printed-marking",
@@ -79,8 +103,8 @@
           3.2
         ],
         "centerMm": [
-          88.70738767071597,
-          -42.81951252991366,
+          -6.5,
+          -72.575,
           0.67
         ]
       }
@@ -110,8 +134,8 @@
           3.2
         ],
         "centerMm": [
-          101.70738767071597,
-          -42.81951252991366,
+          6.5,
+          -72.575,
           0.67
         ]
       }
@@ -141,8 +165,8 @@
           3
         ],
         "centerMm": [
-          95.20738767071597,
-          -38.81951252991366,
+          0,
+          -68.575,
           0.67
         ]
       }
@@ -394,6 +418,19 @@
         "mediaType": "application/pdf",
         "archiveName": "s3add-t5pro-raw-panel.pdf",
         "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+      },
+      {
+        "id": "t5-s3-pro-ed047tc1-dimensions",
+        "title": "ED047TC1 显示区尺寸",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/hardware/ED047TC1.pdf",
+        "kind": "manufacturer-datasheet",
+        "status": "fetched",
+        "fetchedAt": "2026-11-23T07:03:41Z",
+        "mediaType": "application/pdf",
+        "bytes": 1182427,
+        "sha256": "c8c3d8be57e8ff3d798739f38458b07a386286293d465f95ede462c1069b5c37",
+        "commit": "87436b5c9d0d4fc09f44ef43a4fb5d41a757494a",
+        "path": "hardware/ED047TC1.pdf"
       }
     ],
     "license": "No license declaration found in this upstream repository snapshot. Manufacturer CAD copyright is retained; no MIT license is asserted.",
@@ -401,74 +438,102 @@
     "tessellation": "OpenCascade 7.8.1.1; 0.05 mm absolute deflection, 0.2 rad angular deflection; native millimetres and retained rigid source transform."
   },
   "limitations": [
-    "采用固定仓库快照的官方 STEP 几何，保留原始毫米尺度；本条只表示文件中实际提供的部分。",
-    "未提供的组件、PCB 内部或精确显示窗口不从名字推定；保留官方照片用于比较。",
-    "独立 LIVE DEBUG 面板仅提供原生比例的实时调试画面，不代表未校准的实体屏幕位置。",
-    "供应商 CAD 文件与商品实物的版本差异仍需逐款核验；无制造精度或整机支持保证。",
-    "标记 DEBUG INPUT 的按键是独立调试控件，不表示已核实的实物按键位置。"
+    "此视图保留官方 H752 STEP 内的装配位置和毫米尺度。",
+    "屏幕有效区依据 ED047TC1 数据表，偏移通过正面照片估算。盖板与外壳表面颜色参照商品照片，未测量材料反射。",
+    "原厂文件未包括完整板上元件、背标细节与全部电气连接。",
+    "BOOT 和 Function 仍由 DEBUG INPUT 提供独立点击区域。"
   ],
   "reviewViews": {
     "front": {
       "position": [
         0,
         0,
-        300
+        220
       ],
-      "span": 257.2977304097183
+      "span": 174.35250159273002
     },
     "back": {
       "position": [
         0,
         0,
-        -300
+        -220
       ],
-      "span": 257.2977304097183
+      "span": 174.35250159273002
     },
     "side": {
       "position": [
-        300,
+        220,
         0,
         0
       ],
-      "span": 257.2977304097183
+      "span": 174.35250159273002
     }
   },
   "debugPreview": {
     "mode": "manufacturer-cad",
     "isPhysicalReplica": false,
     "physicalDimensionsVerified": false,
-    "displayPlacement": "separate-native-orientation-debug-panel",
-    "reason": "Manufacturer CAD exists; selected scope and omitted geometry are explicit. CAD availability does not imply firmware or dimensional validation.",
+    "displayPlacement": "calibrated-assembly-front",
+    "reason": "保留厂家装配位置，同时依正面照片和 ED047TC1 尺寸放置实时屏幕。CAD 零件功能与外观位置经当前范围核对。",
     "liveFramebuffer": true,
     "physicalDisplay": true,
     "controlPlacement": "Separate labeled debugging controls where physical locations are uncalibrated; official physical matches are preserved."
   },
-  "representationScope": "H752 enclosure assembly",
+  "representationScope": "H752-01 厂商仓库的 H752 STEP 装配。保留盖板、外壳、机械 PCB、磁环与电池的相对位置。",
+  "manualPhotoCalibration": {
+    "sourceId": "lilygo-t5-e-paper-s3-pro-official-photo-0",
+    "imageSizePx": [
+      1000,
+      1000
+    ],
+    "deviceBoundsPx": [
+      119,
+      186,
+      455,
+      815
+    ],
+    "activeBoundsPx": [
+      145,
+      239,
+      430,
+      743
+    ],
+    "activeSizeMm": [
+      58.32,
+      103.68
+    ],
+    "activeSizeSourceId": "t5-s3-pro-ed047tc1-dimensions",
+    "activeCenterOffsetMm": [
+      0,
+      1.95
+    ],
+    "cadReferencePart": "display-cover"
+  },
   "sourceTransform": {
     "matrixRows": [
       [
+        0.0,
+        0.0,
         1.0,
-        0.0,
-        0.0,
-        -0.12133119552768079
+        -0.0
       ],
       [
+        -1.0,
         0.0,
+        0.0,
+        5.898999972941965e-07
+      ],
+      [
         0.0,
         -1.0,
-        0.08147318839999684
+        0.0,
+        0.20000000020200037
       ],
       [
-        0.0,
-        1.0,
-        0.0,
-        -0.19975758962817558
-      ],
-      [
-        0.0,
-        0.0,
-        0.0,
-        1.0
+        0,
+        0,
+        0,
+        1
       ]
     ],
     "scale": 1,
@@ -481,766 +546,805 @@
   "binary": "geometry.bin.gz",
   "parts": [
     {
-      "name": "cad-part-000",
+      "name": "display-cover",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#b9c8cf",
+      "sourceName": "000",
+      "sourceColor": "#a3a3a3",
+      "material": {
+        "roughness": 0.36
+      },
       "basis": "manufacturer-cad",
       "sourceComponents": [
         0
       ],
       "sourceFile": "manufacturer-source.step.gz",
       "byteOffset": 0,
-      "vertexCount": 52572,
+      "vertexCount": 49242,
       "boundsMm": [
         [
-          -63.600799560546875,
-          -33.17245864868164,
-          -5.299757480621338
+          -33.25393295288086,
+          -63.479366302490234,
+          2.7750000953674316
         ],
         [
-          63.35813903808594,
-          33.33540725708008,
-          -2.7747576236724854
+          33.25393295288086,
+          63.479469299316406,
+          5.300000190734863
         ]
       ]
     },
     {
-      "name": "cad-part-001",
+      "name": "display-support",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#82919a",
+      "sourceName": "000",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         1
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 1261728,
+      "byteOffset": 1181808,
       "vertexCount": 1176,
       "boundsMm": [
         [
-          -62.146331787109375,
-          -32.06852722167969,
-          -4.599757671356201
+          -32.150001525878906,
+          -62.27499771118164,
+          3.5999999046325684
         ],
         [
-          62.15366744995117,
-          32.23147201538086,
-          -3.599757671356201
+          32.150001525878906,
+          62.025001525878906,
+          4.599999904632568
         ]
       ]
     },
     {
-      "name": "cad-part-002",
+      "name": "side-panel-right",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#60656b",
+      "sourceName": "00",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         2
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 1289952,
-      "vertexCount": 11844,
+      "byteOffset": 1210032,
+      "vertexCount": 11784,
       "boundsMm": [
         [
-          -2.496347427368164,
-          -34.618526458740234,
-          -2.4392831325531006
+          31.200000762939453,
+          -34.02501678466797,
+          -2.75
         ],
         [
-          33.9036865234375,
-          -31.118526458740234,
-          2.7502424716949463
+          34.70000076293945,
+          2.375016927719116,
+          2.439525604248047
         ]
       ]
     },
     {
-      "name": "cad-part-003",
-      "role": "component",
-      "color": "#9aa3a5",
+      "name": "enclosure",
+      "role": "shell",
+      "color": "#565a61",
+      "sourceName": "00",
+      "sourceColor": "#cd6b32",
+      "material": {
+        "roughness": 0.67
+      },
       "basis": "manufacturer-cad",
       "sourceComponents": [
         3
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 1574208,
-      "vertexCount": 50784,
+      "byteOffset": 1492848,
+      "vertexCount": 50136,
       "boundsMm": [
         [
-          -64.69633483886719,
-          -34.26852798461914,
-          -5.299757480621338
+          -34.349998474121094,
+          -64.57499694824219,
+          -5.300000190734863
         ],
         [
-          64.45366668701172,
-          34.43147277832031,
-          5.3002424240112305
+          34.349998474121094,
+          64.57499694824219,
+          5.300000190734863
         ]
       ]
     },
     {
-      "name": "cad-part-004",
+      "name": "side-panel-left",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#60656b",
+      "sourceName": "00",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         4
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 2793024,
-      "vertexCount": 11844,
+      "byteOffset": 2696112,
+      "vertexCount": 11784,
       "boundsMm": [
         [
-          -2.496347427368164,
-          31.28147315979004,
-          -2.4392831325531006
+          -34.70000076293945,
+          -34.02501678466797,
+          -2.75
         ],
         [
-          33.9036865234375,
-          34.78147506713867,
-          2.7502424716949463
+          -31.200000762939453,
+          2.375016927719116,
+          2.439525604248047
         ]
       ]
     },
     {
-      "name": "cad-part-005",
+      "name": "cad-part-05",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#646971",
+      "sourceName": "2-3-32",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         5
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3077280,
+      "byteOffset": 2978928,
       "vertexCount": 1536,
       "boundsMm": [
         [
-          -56.99039840698242,
-          -28.518526077270508,
-          2.3002424240112305
+          25.399999618530273,
+          53.6690673828125,
+          -5.300000190734863
         ],
         [
-          -53.79039764404297,
-          -25.318527221679688,
-          5.3002424240112305
+          28.600000381469727,
+          56.86906814575195,
+          -2.299999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-006",
+      "name": "cad-part-06",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#646971",
+      "sourceName": "2-3-32",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         6
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3114144,
+      "byteOffset": 3015792,
       "vertexCount": 1536,
       "boundsMm": [
         [
-          -56.99039840698242,
-          25.481473922729492,
-          2.3002424240112305
+          -28.600000381469727,
+          53.6690673828125,
+          -5.300000190734863
         ],
         [
-          -53.79039764404297,
-          28.681472778320312,
-          5.3002424240112305
+          -25.399999618530273,
+          56.86906814575195,
+          -2.299999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-007",
+      "name": "cad-part-07",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#646971",
+      "sourceName": "2-3-32",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         7
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3151008,
+      "byteOffset": 3052656,
       "vertexCount": 1536,
       "boundsMm": [
         [
-          -8.721331596374512,
-          -24.918527603149414,
-          2.3002424240112305
+          21.799999237060547,
+          5.40000057220459,
+          -5.300000190734863
         ],
         [
-          -5.521331310272217,
-          -21.71852684020996,
-          5.3002424240112305
+          25.0,
+          8.600000381469727,
+          -2.299999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-008",
+      "name": "cad-part-08",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#646971",
+      "sourceName": "2-3-32",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         8
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3187872,
+      "byteOffset": 3089520,
       "vertexCount": 1536,
       "boundsMm": [
         [
-          -9.334161758422852,
-          26.481473922729492,
-          2.3002424240112305
+          -29.600000381469727,
+          6.01283073425293,
+          -5.300000190734863
         ],
         [
-          -6.134161472320557,
-          29.681472778320312,
-          5.3002424240112305
+          -26.399999618530273,
+          9.212830543518066,
+          -2.299999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-009",
+      "name": "cad-part-09",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#646971",
+      "sourceName": "2-3-32",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         9
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3224736,
+      "byteOffset": 3126384,
       "vertexCount": 1536,
       "boundsMm": [
         [
-          55.87828826904297,
-          -21.868526458740234,
-          2.3002424240112305
+          18.75,
+          -59.19961929321289,
+          -5.300000190734863
         ],
         [
-          59.07828903198242,
-          -18.668527603149414,
-          5.3002424240112305
+          21.950000762939453,
+          -55.9996223449707,
+          -2.299999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-010",
+      "name": "cad-part-10",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#646971",
+      "sourceName": "2-3-32",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         10
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3261600,
+      "byteOffset": 3163248,
       "vertexCount": 1536,
       "boundsMm": [
         [
-          55.87828826904297,
-          18.831472396850586,
-          2.3002424240112305
+          -21.950000762939453,
+          -59.19961929321289,
+          -5.300000190734863
         ],
         [
-          59.07828903198242,
-          22.03147315979004,
-          5.3002424240112305
+          -18.75,
+          -55.9996223449707,
+          -2.299999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-011",
+      "name": "cad-part-11",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#646971",
+      "sourceName": "4-5-6",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         11
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3298464,
+      "byteOffset": 3200112,
       "vertexCount": 1536,
       "boundsMm": [
         [
-          -64.42133331298828,
-          -22.418527603149414,
-          -2.799757480621338
+          16.5,
+          59.29999923706055,
+          -3.200000047683716
         ],
         [
-          -59.421329498291016,
-          -16.418527603149414,
-          3.200242519378662
+          22.5,
+          64.30000305175781,
+          2.799999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-012",
+      "name": "cad-part-12",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#646971",
+      "sourceName": "4-5-6",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         12
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3335328,
+      "byteOffset": 3236976,
       "vertexCount": 1536,
       "boundsMm": [
         [
-          -64.42133331298828,
-          16.581472396850586,
-          -2.799757480621338
+          -22.5,
+          59.29999923706055,
+          -3.200000047683716
         ],
         [
-          -59.421329498291016,
-          22.581472396850586,
-          3.200242519378662
+          -16.5,
+          64.30000305175781,
+          2.799999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-013",
-      "role": "component",
-      "color": "#9aa3a5",
+      "name": "battery",
+      "role": "battery",
+      "color": "#747f8b",
+      "sourceName": "电池505060",
+      "sourceColor": "#aaaaaa",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         13
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3372192,
+      "byteOffset": 3273840,
       "vertexCount": 36,
       "boundsMm": [
         [
-          -55.62133026123047,
-          -25.055770874023438,
-          -2.6997575759887695
+          -29.862754821777344,
+          5.500000476837158,
+          -2.299999952316284
         ],
         [
-          -5.621331214904785,
-          29.944229125976562,
-          2.3002424240112305
+          25.137245178222656,
+          55.5,
+          2.700000047683716
         ]
       ]
     },
     {
-      "name": "cad-part-014",
-      "role": "component",
-      "color": "#9aa3a5",
+      "name": "main-pcb",
+      "role": "pcb",
+      "color": "#1c5d3c",
+      "sourceName": "PCB",
+      "sourceColor": "#009400",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         14
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3373056,
+      "byteOffset": 3274704,
       "vertexCount": 11388,
       "boundsMm": [
         [
-          -4.646331310272217,
-          -30.918527603149414,
-          -2.349757671356201
+          -31.0,
+          -62.474998474121094,
+          -2.8499999046325684
         ],
         [
-          62.353668212890625,
-          31.081472396850586,
-          2.8502423763275146
+          31.0,
+          4.52500057220459,
+          2.3499999046325684
         ]
       ]
     },
     {
-      "name": "cad-part-015",
+      "name": "usb-c",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#b9b9b9",
+      "sourceName": "TYPE-C-CHA",
+      "material": {
+        "roughness": 0.31,
+        "metalness": 0.52
+      },
       "basis": "manufacturer-cad",
       "sourceComponents": [
         15
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 3646368,
-      "vertexCount": 40662,
+      "byteOffset": 3548016,
+      "vertexCount": 40656,
       "boundsMm": [
         [
-          55.403656005859375,
-          -15.518527030944824,
-          -1.3897590637207031
+          6.64998722076416,
+          -63.474998474121094,
+          -2.811129570007324
         ],
         [
-          63.353668212890625,
-          -6.568513870239258,
-          2.8113720417022705
+          15.600000381469727,
+          -55.524986267089844,
+          1.3900015354156494
         ]
       ]
     },
     {
-      "name": "cad-part-016",
+      "name": "cad-part-16",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#ffffff",
+      "sourceName": "PRT0001",
+      "sourceColor": "#ffffff",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         16
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 4622256,
+      "byteOffset": 4523760,
       "vertexCount": 32742,
       "boundsMm": [
         [
-          7.378668785095215,
-          27.381473541259766,
-          -0.7497575879096985
+          -31.600000381469727,
+          -12.149999618530273,
+          -1.5499999523162842
         ],
         [
-          12.028668403625488,
-          31.681472778320312,
-          1.5502424240112305
+          -27.299999237060547,
+          -7.499999523162842,
+          0.75
         ]
       ]
     },
     {
-      "name": "cad-part-017",
+      "name": "cad-part-17",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#ffffff",
+      "sourceName": "PRT0001",
+      "sourceColor": "#ffffff",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         17
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 5408064,
+      "byteOffset": 5309568,
       "vertexCount": 32742,
       "boundsMm": [
         [
-          7.378668785095215,
-          -31.518526077270508,
-          -0.7497575879096985
+          27.299999237060547,
+          -12.149999618530273,
+          -1.5499999523162842
         ],
         [
-          12.028668403625488,
-          -27.21852684020996,
-          1.5502424240112305
+          31.600000381469727,
+          -7.499999523162842,
+          0.75
         ]
       ]
     },
     {
-      "name": "cad-part-018",
+      "name": "cad-part-18",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#ffffff",
+      "sourceName": "PRT0001",
+      "sourceColor": "#ffffff",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         18
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 6193872,
+      "byteOffset": 6095376,
       "vertexCount": 32742,
       "boundsMm": [
         [
-          19.37866973876953,
-          -31.518526077270508,
-          -0.7497575879096985
+          27.299999237060547,
+          -24.149999618530273,
+          -1.5499999523162842
         ],
         [
-          24.028669357299805,
-          -27.21852684020996,
-          1.5502424240112305
+          31.600000381469727,
+          -19.5,
+          0.75
         ]
       ]
     },
     {
-      "name": "cad-part-019",
+      "name": "cad-part-19",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#ffffff",
+      "sourceName": "PRT0001",
+      "sourceColor": "#ffffff",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         19
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 6979680,
+      "byteOffset": 6881184,
       "vertexCount": 32742,
       "boundsMm": [
         [
-          19.37866973876953,
-          27.381473541259766,
-          -0.7497575879096985
+          -31.600000381469727,
+          -24.149999618530273,
+          -1.5499999523162842
         ],
         [
-          24.028669357299805,
-          31.681472778320312,
-          1.5502424240112305
+          -27.299999237060547,
+          -19.5,
+          0.75
         ]
       ]
     },
     {
-      "name": "cad-part-020",
+      "name": "board-socket",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#e6ddd4",
+      "sourceName": "COMPOUND-171696_1",
+      "sourceColor": "#ffffff",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         20
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 7765488,
+      "byteOffset": 7666992,
       "vertexCount": 8640,
       "boundsMm": [
         [
-          57.853668212890625,
-          9.731472969055176,
-          -0.349757581949234
+          -16.0,
+          -62.974998474121094,
+          -2.8499999046325684
         ],
         [
-          62.853668212890625,
-          16.081472396850586,
-          2.8502423763275146
+          -9.65000057220459,
+          -57.974998474121094,
+          0.3499999940395355
         ]
       ]
     },
     {
-      "name": "cad-part-021",
-      "role": "component",
-      "color": "#9aa3a5",
+      "name": "daughterboard",
+      "role": "pcb",
+      "color": "#254554",
+      "sourceName": "PCB2",
+      "sourceColor": "#003d69",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         21
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 7972848,
+      "byteOffset": 7874352,
       "vertexCount": 900,
       "boundsMm": [
         [
-          33.37863540649414,
-          -17.41853141784668,
-          1.9502424001693726
+          -17.5000057220459,
+          -48.49996566772461,
+          -4.25
         ],
         [
-          48.37863540649414,
-          17.581478118896484,
-          4.250242233276367
+          17.5000057220459,
+          -33.49996566772461,
+          -1.9500000476837158
         ]
       ]
     },
     {
-      "name": "cad-part-022",
+      "name": "cad-part-22",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#804000",
+      "sourceName": "COMPOUND-232_1",
+      "sourceColor": "#804000",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         22
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 7994448,
+      "byteOffset": 7895952,
       "vertexCount": 1632,
       "boundsMm": [
         [
-          39.453670501708984,
-          -22.188526153564453,
-          -2.299757480621338
+          22.1200008392334,
+          -40.4739990234375,
+          1.3300000429153442
         ],
         [
-          40.35266876220703,
-          -22.03852653503418,
-          -1.329757571220398
+          22.270000457763672,
+          -39.57500076293945,
+          2.299999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-023",
+      "name": "cad-part-23",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#804000",
+      "sourceName": "COMPOUND-232_2",
+      "sourceColor": "#804000",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         23
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 8033616,
-      "vertexCount": 17544,
+      "byteOffset": 7935120,
+      "vertexCount": 17514,
       "boundsMm": [
         [
-          37.103668212890625,
-          -22.418527603149414,
-          -2.349757671356201
+          17.489999771118164,
+          -40.474998474121094,
+          1.3300000429153442
         ],
         [
-          40.353668212890625,
-          -17.408527374267578,
-          -1.329757571220398
+          22.5,
+          -37.224998474121094,
+          2.3499999046325684
         ]
       ]
     },
     {
-      "name": "cad-part-024",
+      "name": "cad-part-24",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#804000",
+      "sourceName": "COMPOUND-232_3",
+      "sourceColor": "#804000",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         24
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 8454672,
+      "byteOffset": 8355456,
       "vertexCount": 108,
       "boundsMm": [
         [
-          36.853668212890625,
-          -21.868526458740234,
-          -2.349757671356201
+          18.049999237060547,
+          -38.92499923706055,
+          1.7000000476837158
         ],
         [
-          38.80366897583008,
-          -17.96852684020996,
-          -1.6997575759887695
+          21.950000762939453,
+          -36.974998474121094,
+          2.3499999046325684
         ]
       ]
     },
     {
-      "name": "cad-part-025",
+      "name": "cad-part-25",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#804000",
+      "sourceName": "COMPOUND-232_4",
+      "sourceColor": "#804000",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         25
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 8457264,
+      "byteOffset": 8358048,
       "vertexCount": 1632,
       "boundsMm": [
         [
-          39.453670501708984,
-          -17.798526763916016,
-          -2.299757480621338
+          17.729999542236328,
+          -40.4739990234375,
+          1.3300000429153442
         ],
         [
-          40.35266876220703,
-          -17.648527145385742,
-          -1.329757571220398
+          17.8799991607666,
+          -39.57500076293945,
+          2.299999952316284
         ]
       ]
     },
     {
-      "name": "cad-part-026",
+      "name": "charging-magnet",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#565b65",
+      "sourceName": "磁铁54-46",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         26
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 8496432,
+      "byteOffset": 8397216,
       "vertexCount": 1704,
       "boundsMm": [
         [
-          -52.82133102416992,
-          -26.89419937133789,
-          3.400242328643799
+          -26.975671768188477,
+          -1.2999993562698364,
+          -4.699999809265137
         ],
         [
-          1.1786688566207886,
-          27.057146072387695,
-          4.700242519378662
+          26.975671768188477,
+          52.70000076293945,
+          -3.4000000953674316
         ]
       ]
     },
     {
-      "name": "cad-part-027",
+      "name": "spring",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#a4a3a3",
+      "sourceName": "弹簧55",
+      "material": {
+        "roughness": 0.4,
+        "metalness": 0.34
+      },
       "basis": "manufacturer-cad",
       "sourceComponents": [
         27
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 8537328,
-      "vertexCount": 361662,
+      "byteOffset": 8438112,
+      "vertexCount": 356448,
       "boundsMm": [
         [
-          -33.87010955810547,
-          -31.305767059326172,
-          -2.9496054649353027
+          25.887245178222656,
+          5.251221656799316,
+          -2.5499942302703857
         ],
         [
-          -5.372552394866943,
-          -25.805770874023438,
-          2.550236701965332
+          31.38724136352539,
+          33.748779296875,
+          2.949847936630249
         ]
       ]
     },
     {
-      "name": "cad-part-028",
+      "name": "rear-label",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#3d434a",
+      "sourceName": "贴纸",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         28
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 17217216,
+      "byteOffset": 16992864,
       "vertexCount": 3204,
       "boundsMm": [
         [
-          33.478668212890625,
-          -17.318527221679688,
-          4.250242233276367
+          -17.399999618530273,
+          -48.39999771118164,
+          -4.849999904632568
         ],
         [
-          48.27866744995117,
-          17.481473922729492,
-          4.850242614746094
+          17.399999618530273,
+          -33.599998474121094,
+          -4.25
         ]
       ]
     },
     {
-      "name": "cad-part-029",
+      "name": "silicone",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#262c32",
+      "sourceName": "硅胶片",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         29
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 17294112,
+      "byteOffset": 17069760,
       "vertexCount": 456,
       "boundsMm": [
         [
-          54.55400848388672,
-          -30.516996383666992,
-          -2.8747575283050537
+          -30.401531219482422,
+          -60.67499923706055,
+          2.375
         ],
         [
-          60.55366897583008,
-          30.483003616333008,
-          -2.3747575283050537
+          30.598468780517578,
+          -54.67533874511719,
+          2.875
         ]
       ]
     },
     {
-      "name": "cad-part-030",
+      "name": "insulator",
       "role": "component",
-      "color": "#9aa3a5",
+      "color": "#b9a97d",
+      "sourceName": "青稞纸",
       "basis": "manufacturer-cad",
       "sourceComponents": [
         30
       ],
       "sourceFile": "manufacturer-source.step.gz",
-      "byteOffset": 17305056,
+      "byteOffset": 17080704,
       "vertexCount": 804,
       "boundsMm": [
         [
-          -57.29970932006836,
-          -30.918527603149414,
-          2.1002423763275146
+          -31.0,
+          4.178379058837891,
+          -2.299999952316284
         ],
         [
-          -4.299709796905518,
-          31.081472396850586,
-          2.3002424240112305
-        ]
-      ]
-    },
-    {
-      "name": "debug-screen-frame",
-      "role": "component",
-      "color": "#20343d",
-      "basis": "debug-layout",
-      "byteOffset": 17324352,
-      "vertexCount": 1056,
-      "boundsMm": [
-        [
-          71.20738983154297,
-          -16.65625,
-          -0.699999988079071
-        ],
-        [
-          119.20738983154297,
-          16.65625,
-          0.699999988079071
+          31.0,
+          57.17837905883789,
+          -2.0999999046325684
         ]
       ]
     },
@@ -1261,17 +1365,17 @@
         "official-store-shopify-1",
         "official-wiki-t5-e-paper-s3-pro"
       ],
-      "byteOffset": 17349696,
+      "byteOffset": 17100000,
       "vertexCount": 528,
       "boundsMm": [
         [
-          83.20738983154297,
-          -44.81951141357422,
+          -12.0,
+          -74.57499694824219,
           -0.6499999761581421
         ],
         [
-          94.20738983154297,
-          -40.81951141357422,
+          -1.0,
+          -70.57499694824219,
           0.6499999761581421
         ]
       ]
@@ -1293,24 +1397,24 @@
         "official-store-shopify-1",
         "official-wiki-t5-e-paper-s3-pro"
       ],
-      "byteOffset": 17362368,
+      "byteOffset": 17112672,
       "vertexCount": 528,
       "boundsMm": [
         [
-          96.20738983154297,
-          -44.81951141357422,
+          1.0,
+          -74.57499694824219,
           -0.6499999761581421
         ],
         [
-          107.20738983154297,
-          -40.81951141357422,
+          12.0,
+          -70.57499694824219,
           0.6499999761581421
         ]
       ]
     }
   ],
   "artifacts": {
-    "geometry.bin.gz": "cbcf68fe064f865465c61f0ca4d3a951269956ff2b06c4853c8aaa89414f8529",
+    "geometry.bin.gz": "5d32aee48e008c31ac6e95aad76da8d74e88feaae275f4f0fd8375016b8a0525",
     "reference-0.jpg": "682ef33b7e66df43c68a7deb9aef266e9bd7f9cf76843336ba5dd5fe5927f5ff",
     "reference-1.jpg": "bd4d2eed256223b4352451daeec8489f3e990aa5629a881070154b73474219e1",
     "reference-2.jpg": "844fe6513d9df963ec87631c6f4cd4e367f506ec71a8cc14dd2406e047ddcf7f",
