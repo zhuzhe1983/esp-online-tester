@@ -14,11 +14,13 @@ pub mod atom_matrix_v11;
 pub mod stamppico;
 pub mod ulanzi;
 pub mod cyd;
+pub mod core2;
 
 pub use tdisplay::*;
 
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "core2" => Some(Box::new(core2::Core2::new())),
         "stamppico" => Some(Box::new(stamppico::StampPico::new())),
         "lilygo-t-beam-v1-2" => Some(Box::new(tbeam::TBeam::new())),
         "atom-matrix-v11" | "m5stack-c008-b-v11" => Some(Box::new(atom_matrix_v11::AtomMatrixV11::new())),
