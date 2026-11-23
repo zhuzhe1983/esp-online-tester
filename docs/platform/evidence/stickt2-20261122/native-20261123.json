@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-11-23T06:49:37Z",
+  "productId": "m5stack-k016-t2",
+  "sharedCoreCommit": "74a45346fb70d71ee6a0846a6ae88a5c64db2c3f",
+  "sourceSha256": {
+    "esp32/src/board/stickt2.rs": "d21ef07125e12041910a4461edb788bc285c00e3189b869b034e00e8409f0904",
+    "esp32/src/board/stickt2/lepton.rs": "905fc964c219da4d71bcffadcfeebfee925095cd6124962a95ca47940a675e0a",
+    "esp32/tests/stickt2_factory.rs": "17af4928eff263167f5302ab39770d590df99a0b665fe1b10c3b5acedb872ff6"
+  },
+  "environment": {"os": "Darwin", "architecture": "arm64", "rustc": "1.100.0 (0ef1bc386 2026-11-09)"},
+  "firmware": {
+    "url": "https://m5burner-cdn.m5stack.com/firmware/8babd7ac4c0a36ae63b4d0127e2c2e63.bin",
+    "fetchedAt": "2026-11-23T06:41:17Z",
+    "sha256": "bb33ffd41f9c6f9235b2fb44eac893b7ce6f70879f48eed9cb1ff75ef9419cd7",
+    "bytes": 4194304
+  },
+  "rom": {"name": "esp32_rev300_rom.elf", "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31", "bytes": 857500},
+  "command": "STICKT2_FACTORY_BIN=<original.bin> ESP32SIM_ROM_DIR=<roms> cargo test --release -p esp32 --test stickt2_factory -- --ignored --nocapture",
+  "before": {"sharedCoreCommit": "a44892305e02ea667bea76c2ea2c5b09b0c49152", "result": "fail", "guestError": "error=2"},
+  "after": {
+    "result": "pass",
+    "virtualCyclesPerScene": 1920000000,
+    "field": {"background": 8000, "hotspot": 9000, "radius": 12},
+    "perScene": {"cciReads": 310, "cciWrites": 108, "cciCommands": 104, "spiReads": 37080, "voSpiPackets": 12360, "lcdRamWr": 139, "lcdPixelsWritten": 2034974, "lcdDroppedBytes": 0, "redPixels": 410},
+    "scenes": [
+      {"center": [80, 60], "instructions": 512474150, "displayRedCentroid": [69.5195121951, 84.8341463415]},
+      {"center": [40, 30], "instructions": 512474151, "displayRedCentroid": [99.5195121951, 44.8341463415]}
+    ],
+    "verifiedDelta": [30, -40],
+    "guestErrorsAbsent": ["error=2", "MPU ERROR", "StoreProhibited"]
+  }
+}

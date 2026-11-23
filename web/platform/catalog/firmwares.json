@@ -2235,9 +2235,9 @@
       "compatibility": "unverified",
       "publicationUrl": "https://docs.m5stack.com/en/core/StickT2",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
-        "官方 StickT2 V1.0 原文件的 bootloader 附加摘要与 SPI mode=3 的头部不一致；仅将该字节改为 2 时与已存摘要匹配。保留原始下载和固定文件 hash，不自动改写；运行/实机兼容性未验证。"
+        "已核对厂家出厂镜像的 SHA-256、芯片和分区布局。固件保持试用。",
+        "原始启动段的附加摘要与 SPI mode=3 的头部不一致。诊断副本改用 mode=2 才能重算出附加摘要；实际加载保留原文件和整文件哈希。",
+        "原生探针已观察到固件经 CCI、VoSPI 采集并绘制两个合成 Raw14 场。温度标定、完整功能和实机兼容仍待验证。见 docs/platform/stickt2-runtime.md。"
       ],
       "sources": [
         {
