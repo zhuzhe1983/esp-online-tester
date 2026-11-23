@@ -1,0 +1,621 @@
+{
+  "schemaVersion": "1",
+  "id": "seeed-xiao-epaper-ee03-p103-mono",
+  "kind": "product",
+  "catalogId": "seeed-xiao-epaper-ee03-p103-mono",
+  "title": "Seeed Studio XIAO EE03 DIY Kit · 10.3\" Monochrome eInk",
+  "summary": "EE03 主控板（SKU 100080566）＋指定 10.3\" Monochrome eInk（SKU 100071485）。这是官方可配置套件的明确选屏配置。",
+  "summarySourceIds": [
+    "official-spec"
+  ],
+  "updatedAt": "2026-11-22T09:17:02Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "manufacturer": "Seeed Studio",
+    "sku": "E26012301",
+    "scope": "exact SKU or explicitly selected commercial kit configuration",
+    "family": {
+      "id": "seeed-xiao-epaper",
+      "name": "Seeed Studio XIAO 电子纸主控与套件"
+    },
+    "releaseDateBasis": "unknown"
+  },
+  "facts": [
+    {
+      "id": "commercial-identity",
+      "label": "Commercial board / kit identity",
+      "value": {
+        "sku": "E26012301",
+        "boardSku": "100080566",
+        "board": "EE03",
+        "screenIncluded": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-spec",
+        "official-hub"
+      ]
+    },
+    {
+      "id": "processor",
+      "label": "Main microcontroller",
+      "value": {
+        "module": "XIAO ESP32-S3 Plus",
+        "chip": "ESP32-S3"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki",
+        "module-spec"
+      ]
+    },
+    {
+      "id": "flash-memory",
+      "label": "Main Flash capacity",
+      "value": {
+        "value": 16,
+        "unit": "MB"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "module-spec"
+      ]
+    },
+    {
+      "id": "psram-memory",
+      "label": "Main PSRAM capacity",
+      "value": {
+        "value": 8,
+        "unit": "MB"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "module-spec"
+      ]
+    },
+    {
+      "id": "panel-connector",
+      "label": "External panel connector",
+      "value": "40-pin FPC, 0.5 mm",
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ]
+    },
+    {
+      "id": "pins",
+      "label": "Board signal routing, native ESP32 GPIO numbers",
+      "value": {
+        "display": {
+          "cs": 44,
+          "rst": 38,
+          "busy": 4,
+          "enable": 43,
+          "sck": 7,
+          "mosi": 9,
+          "miso": 8
+        },
+        "buttons": {
+          "key1": 2,
+          "key2": 3,
+          "key3": 5
+        },
+        "batteryAdc": 1,
+        "adcEnable": 6
+      },
+      "basis": "official",
+      "sourceIds": [
+        "pcb-source",
+        "board-config",
+        "firmware-board-config",
+        "chip-pinmap"
+      ],
+      "notes": "The attached panel is a separate selected component. Bare-board BUSY is not synthesized as if a screen were attached."
+    },
+    {
+      "id": "battery-divider",
+      "label": "Gated nominal battery measurement",
+      "value": {
+        "adcGpio": 1,
+        "enableGpio": 6,
+        "dividerOhms": [
+          10000,
+          10000
+        ],
+        "batteryIncluded": false
+      },
+      "basis": "official",
+      "sourceIds": [
+        "pcb-source"
+      ],
+      "notes": "The connector permits an external lithium battery; this bare-board/selected-panel SKU does not establish a bundled cell capacity."
+    },
+    {
+      "id": "selected-panel",
+      "label": "Exact selected external panel configuration",
+      "value": {
+        "panelId": "P103_MONO",
+        "panelSku": "100071485",
+        "nativeWidth": 1872,
+        "nativeHeight": 1404,
+        "advertisedResolution": "1404x1872",
+        "diagonalInches": 10.3,
+        "colorType": "mono",
+        "panelInterface": "TTL",
+        "hostInterface": "SPI",
+        "compatibilityDriver": "IT8951 / ED103TC2"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "panel-spec",
+        "official-hub",
+        "panel-config"
+      ],
+      "notes": "Advertised orientation and native transport orientation are retained separately. Firmware must match both board and panel. Driver names are software compatibility names, not an unsupported claim about hidden silicon."
+    },
+    {
+      "id": "tcon",
+      "label": "Controller to raw TTL panel",
+      "value": {
+        "tcon": "IT8951",
+        "panel": "ED103TC2",
+        "host": "SPI",
+        "panelOutput": "TTL",
+        "nativeWidth": 1872,
+        "nativeHeight": 1404
+      },
+      "basis": "official",
+      "sourceIds": [
+        "pcb-source",
+        "panel-config"
+      ]
+    },
+    {
+      "id": "factory-flash-layout",
+      "label": "Official production image layout",
+      "value": {
+        "version": "1.1.5",
+        "flashSizeMb": 16,
+        "segments": [
+          {
+            "offset": "0x0",
+            "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.bootloader.bin?sha256=2a71d69b471e20c2",
+            "sha256": "2a71d69b471e20c2bac7fb469f3c6a807b3ebee780e348e5889db0da849ca363",
+            "bytes": 15104
+          },
+          {
+            "offset": "0x8000",
+            "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.partitions.bin?sha256=8c89af569f12152b",
+            "sha256": "8c89af569f12152bc34ea3fbf7ae0c1763d808e1a64dc13eed4136e1655fd1a0",
+            "bytes": 3072
+          },
+          {
+            "offset": "0xe000",
+            "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/boot_app0.bin?sha256=f94c5d786a7a8fab",
+            "sha256": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0",
+            "bytes": 8192
+          },
+          {
+            "offset": "0x90000",
+            "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.bin?sha256=28ff437a611eca46",
+            "sha256": "28ff437a611eca4673c0a563822517a9e4b488957fc5eaacc90ab36266b7bb70",
+            "bytes": 2748128
+          }
+        ],
+        "appDescriptor": {
+          "chipId": 9,
+          "version": "esp-idf: v4.4.7 38eeba213a",
+          "project": "arduino-lib-builder",
+          "idfVersion": "v4.4.7-dirty"
+        },
+        "partitions": [
+          {
+            "type": 1,
+            "subtype": 2,
+            "offset": "0x10000",
+            "size": "0x7d000",
+            "label": "nvs"
+          },
+          {
+            "type": 1,
+            "subtype": 0,
+            "offset": "0x8d000",
+            "size": "0x2000",
+            "label": "otadata"
+          },
+          {
+            "type": 1,
+            "subtype": 1,
+            "offset": "0x8f000",
+            "size": "0x1000",
+            "label": "phy_init"
+          },
+          {
+            "type": 0,
+            "subtype": 16,
+            "offset": "0x90000",
+            "size": "0x500000",
+            "label": "app0"
+          },
+          {
+            "type": 0,
+            "subtype": 17,
+            "offset": "0x590000",
+            "size": "0x500000",
+            "label": "app1"
+          },
+          {
+            "type": 1,
+            "subtype": 130,
+            "offset": "0xa90000",
+            "size": "0x500000",
+            "label": "spiffs"
+          },
+          {
+            "type": 1,
+            "subtype": 3,
+            "offset": "0xf90000",
+            "size": "0x10000",
+            "label": "coredump"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory-manifest",
+        "factory-segment-1",
+        "factory-segment-2",
+        "factory-segment-3",
+        "factory-segment-4"
+      ],
+      "notes": "The official build does not include its SPIFFS payload."
+    }
+  ],
+  "sources": [
+    {
+      "id": "official-spec",
+      "title": "Official exact product / bundle SKU datasheet",
+      "url": "https://files.seeedstudio.com/Bazaar/product_pdf/E26012301.pdf",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://files.seeedstudio.com/Bazaar/product_pdf/E26012301.pdf",
+      "fetchedAt": "2026-11-22T08:58:18Z",
+      "sha256": "35874d429b7647e7cc000eaa484bcfd10415a405c95a2ee3a995da6263b88793",
+      "bytes": 1900906,
+      "mediaType": "application/pdf",
+      "archiveName": "scope-32b1426317a0e95a.pdf"
+    },
+    {
+      "id": "official-wiki",
+      "title": "Official EE board guide",
+      "url": "https://wiki.seeedstudio.com/getting_started_with_ee03/",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/getting_started_with_ee03/",
+      "fetchedAt": "2026-11-22T08:50:57Z",
+      "sha256": "fb4a5175d70abce3b09e0cdcb24fe718c875a226c24da1c2527ec4099b75d1d5",
+      "bytes": 69344,
+      "mediaType": "text/html",
+      "archiveName": "scope-28efacbfc8b51d17.txt"
+    },
+    {
+      "id": "official-product",
+      "title": "Official exact storefront item",
+      "url": "https://www.seeedstudio.com/XIAO-ePaper-DIY-Kit-EE03-for-10-3-Monochrome-ePaper-Display.html",
+      "kind": "official-documentation",
+      "status": "failed",
+      "attemptedAt": "2026-11-22T08:51:38Z",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    },
+    {
+      "id": "official-hub",
+      "title": "Pinned official board / panel compatibility catalog",
+      "url": "https://raw.githubusercontent.com/Seeed-Projects/OSHW-reTerminal-Series-E-D/8e03627d41f63b4133e606cb25c5c81b9d251494/web/js/firmwares.js",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Projects/OSHW-reTerminal-Series-E-D/8e03627d41f63b4133e606cb25c5c81b9d251494/web/js/firmwares.js",
+      "fetchedAt": "2026-11-22T08:56:44Z",
+      "sha256": "c05d4972906a33a178943adb4c98e32ef2fe36982ad245a4fe371a176370a676",
+      "bytes": 115584,
+      "mediaType": "text/plain",
+      "archiveName": "scope-2c6905bc5d415c7d.txt"
+    },
+    {
+      "id": "firmware-board-config",
+      "title": "Pinned SenseCraft board buttons and ADC configuration",
+      "url": "https://raw.githubusercontent.com/Seeed-Projects/OSHW-reTerminal-Series-E-D/8e03627d41f63b4133e606cb25c5c81b9d251494/examples/official/SenseCraft_HMI/src/boards/xiao_diy/config.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Projects/OSHW-reTerminal-Series-E-D/8e03627d41f63b4133e606cb25c5c81b9d251494/examples/official/SenseCraft_HMI/src/boards/xiao_diy/config.h",
+      "fetchedAt": "2026-11-22T08:56:44Z",
+      "sha256": "6f522af29f42ef1b519af12fe19a7bae9b6404eec7f050528d502cbb88f91730",
+      "bytes": 1613,
+      "mediaType": "text/plain",
+      "archiveName": "scope-3d4bfe0d12ed454f.txt"
+    },
+    {
+      "id": "firmware-board-code",
+      "title": "Pinned SenseCraft early power and peripheral initialization",
+      "url": "https://raw.githubusercontent.com/Seeed-Projects/OSHW-reTerminal-Series-E-D/8e03627d41f63b4133e606cb25c5c81b9d251494/examples/official/SenseCraft_HMI/src/boards/xiao_diy/xiao_diy.cpp",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Projects/OSHW-reTerminal-Series-E-D/8e03627d41f63b4133e606cb25c5c81b9d251494/examples/official/SenseCraft_HMI/src/boards/xiao_diy/xiao_diy.cpp",
+      "fetchedAt": "2026-11-22T08:56:44Z",
+      "sha256": "4528a1e59b2f0c296863ddac7c2ddd2afa657b2adc7651662d91c8c80bfe6fa3",
+      "bytes": 2645,
+      "mediaType": "text/plain",
+      "archiveName": "scope-a0df1db0307b4779.txt"
+    },
+    {
+      "id": "pcb-source",
+      "title": "Official board schematic and PCB archive V1.0, 2025-12-17",
+      "url": "https://files.seeedstudio.com/wiki/Epaper/EE03/XIAO_ePaper_Display_Board_EE03_V1.0_SCH_&_PCB_251217.zip",
+      "kind": "official-design-files",
+      "status": "fetched",
+      "resolvedUrl": "https://files.seeedstudio.com/wiki/Epaper/EE03/XIAO_ePaper_Display_Board_EE03_V1.0_SCH_&_PCB_251217.zip",
+      "fetchedAt": "2026-11-22T08:53:12Z",
+      "sha256": "0249332677757c0065ba6dd10ce6bb0adab1e74bbaf26caea814a1438729ebe3",
+      "bytes": 3036844,
+      "mediaType": "application/zip",
+      "archiveName": "scope-ee03-pcb.zip"
+    },
+    {
+      "id": "module-spec",
+      "title": "XIAO ESP32-S3 Plus 官方内存规格",
+      "url": "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/",
+      "fetchedAt": "2026-11-22T07:12:30Z",
+      "sha256": "242451755ce3bd15c3642752d49eb73cb9aec3a3f7f70bca43eb4554d4817075",
+      "bytes": 151162,
+      "mediaType": "text/html",
+      "archiveName": "c1cce3758b6fdfb0.html"
+    },
+    {
+      "id": "chip-pinmap",
+      "title": "Espressif XIAO ESP32-S3 Plus 数字引脚映射",
+      "url": "https://github.com/espressif/arduino-esp32/blob/master/variants/XIAO_ESP32S3_Plus/pins_arduino.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/arduino-esp32/master/variants/XIAO_ESP32S3_Plus/pins_arduino.h",
+      "fetchedAt": "2026-11-22T06:54:00Z",
+      "sha256": "1c4ec96ee832e5e53f654cbb17b570dcd41c1d580af8cafdd1a5dd0723f907f7",
+      "bytes": 2387,
+      "mediaType": "text/plain",
+      "archiveName": "028d4df7d5b25a01.txt"
+    },
+    {
+      "id": "board-config",
+      "title": "Seeed_GFX2 XIAO 电子纸不同板型的 GPIO 配置",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/configs/XIAO_ePaper_Board_Configs.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/configs/XIAO_ePaper_Board_Configs.h",
+      "fetchedAt": "2026-11-22T07:12:31Z",
+      "sha256": "6e28ce93004d8f24eaced5e360d9cc9a4dab900db9de640f246ecc4e82a640a5",
+      "bytes": 3319,
+      "mediaType": "text/plain",
+      "archiveName": "f84c3d562118e65c.txt"
+    },
+    {
+      "id": "panel-config",
+      "title": "Seeed_GFX2 pinned per-panel visible / storage geometry and compatibility driver",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/panel/configs/Seeed_Panel_Configs.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/panel/configs/Seeed_Panel_Configs.h",
+      "fetchedAt": "2026-11-22T07:00:15Z",
+      "sha256": "d161ff28e31499b730f9a5ea64d42aea5f16330f3315bf216a48b926f6b74050",
+      "bytes": 21298,
+      "mediaType": "text/plain",
+      "archiveName": "50ce12cf9fb7d65a.txt"
+    },
+    {
+      "id": "panel-spec",
+      "title": "Official exact panel SKU product PDF",
+      "url": "https://files.seeedstudio.com/Bazaar/product_pdf/100071485.pdf",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://files.seeedstudio.com/Bazaar/product_pdf/100071485.pdf",
+      "fetchedAt": "2026-11-22T09:02:37Z",
+      "sha256": "76d0794e22925d3a546ad28376eaea41d030bd40a8b8d5424065c740fc847000",
+      "bytes": 1684661,
+      "mediaType": "application/pdf",
+      "archiveName": "scope-7ff77fc4893607c3.pdf"
+    },
+    {
+      "id": "uiflow1-guide",
+      "title": "M5Stack UIFlow1 官方设备入口",
+      "url": "https://docs.m5stack.com/en/uiflow/uiflow_web",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow/uiflow_web",
+      "fetchedAt": "2026-11-22T07:05:10Z",
+      "sha256": "813a40fedd984c50e71f2039c033453be3ffd2d71514ba257a6dbccf6d6950ae",
+      "bytes": 267692,
+      "mediaType": "text/html",
+      "archiveName": "46a04534dcc20b0a.html"
+    },
+    {
+      "id": "uiflow2-source",
+      "title": "UIFlow2 固定提交官方项目说明",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/README.md",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/README.md",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "1c10ad4b5d86789a4eb5e8c87b7c499ac670fbfdcbfcc17dae736ea69a2ed4a9",
+      "bytes": 3777,
+      "mediaType": "text/plain",
+      "archiveName": "c70f132f0306edb1.txt"
+    },
+    {
+      "id": "uiflow2-xiao-board",
+      "title": "UIFlow2 基础 XIAO ESP32-S3 目标（不是整机屏幕适配）",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/third-party/boards/SEEED_STUDIO_XIAO_ESP32S3/board.json",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/third-party/boards/SEEED_STUDIO_XIAO_ESP32S3/board.json",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "68d76df90144f2f5d86b13b19a177723472ac52be5d8c279757edb9bb732b183",
+      "bytes": 336,
+      "mediaType": "text/plain",
+      "archiveName": "2f8b229988ce9bcc.json"
+    },
+    {
+      "id": "xiaozhi-board-inventory",
+      "title": "小智固定提交板型目录（逐型号调查范围）",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards",
+      "kind": "upstream-source-code",
+      "status": "linked"
+    },
+    {
+      "id": "factory-manifest",
+      "title": "Original manufacturer flash manifest",
+      "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/manifest.json",
+      "kind": "official-firmware-manifest",
+      "status": "fetched",
+      "resolvedUrl": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/manifest.json",
+      "fetchedAt": "2026-11-22T08:58:43Z",
+      "sha256": "0e2a098ff105b6773f38b5a87a26dc032aceab1b2b36e80c9ce404267739742f",
+      "bytes": 729,
+      "mediaType": "application/json",
+      "archiveName": "scope-9e4e466dd632f3e1.txt"
+    },
+    {
+      "id": "factory-segment-1",
+      "title": "Original manufacturer flash segment 0x0",
+      "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.bootloader.bin?sha256=2a71d69b471e20c2",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.bootloader.bin?sha256=2a71d69b471e20c2",
+      "fetchedAt": "2026-11-22T09:00:17Z",
+      "sha256": "2a71d69b471e20c2bac7fb469f3c6a807b3ebee780e348e5889db0da849ca363",
+      "bytes": 15104,
+      "mediaType": "application/octet-stream",
+      "archiveName": "scope-b3b05ae4be054f65.bin"
+    },
+    {
+      "id": "factory-segment-2",
+      "title": "Original manufacturer flash segment 0x8000",
+      "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.partitions.bin?sha256=8c89af569f12152b",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.partitions.bin?sha256=8c89af569f12152b",
+      "fetchedAt": "2026-11-22T09:00:17Z",
+      "sha256": "8c89af569f12152bc34ea3fbf7ae0c1763d808e1a64dc13eed4136e1655fd1a0",
+      "bytes": 3072,
+      "mediaType": "application/octet-stream",
+      "archiveName": "scope-cfdf3ebb39e30069.bin"
+    },
+    {
+      "id": "factory-segment-3",
+      "title": "Original manufacturer flash segment 0xe000",
+      "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/boot_app0.bin?sha256=f94c5d786a7a8fab",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/boot_app0.bin?sha256=f94c5d786a7a8fab",
+      "fetchedAt": "2026-11-22T09:00:17Z",
+      "sha256": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0",
+      "bytes": 8192,
+      "mediaType": "application/octet-stream",
+      "archiveName": "scope-246e6eeba8210fb5.bin"
+    },
+    {
+      "id": "factory-segment-4",
+      "title": "Original manufacturer flash segment 0x90000",
+      "url": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.bin?sha256=28ff437a611eca46",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://seeed-projects.github.io/OSHW-reTerminal-Series-E-D/firmware/SenseCraft_HMI_EE03_P103_MONO/1.1.5/SenseCraft_HMI_EE03_P103_MONO.ino.bin?sha256=28ff437a611eca46",
+      "fetchedAt": "2026-11-22T09:00:17Z",
+      "sha256": "28ff437a611eca4673c0a563822517a9e4b488957fc5eaacc90ab36266b7bb70",
+      "bytes": 2748128,
+      "mediaType": "application/octet-stream",
+      "archiveName": "scope-fdbc449368afe184.bin"
+    }
+  ],
+  "revisions": [],
+  "assets": [],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "Exact commercial announcement date",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Not established. Neither source modification time nor a date-like SKU is used as a launch date."
+    },
+    {
+      "id": "hardware-revision",
+      "label": "User hardware manufacturing revision",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Document/PCB revisions are source identities, not a claim about the user’s unit."
+    },
+    {
+      "id": "complete-runtime",
+      "label": "Complete emulation and real hardware compatibility",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Partial bus models and individual firmware output tests are reported separately; no real hardware test was performed."
+    },
+    {
+      "id": "uiflow1",
+      "label": "UIFlow1 exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "uiflow1-guide"
+      ],
+      "notes": "Official UIFlow1 entry was checked; no exact SKU / screen configuration target was located. This is not a claim that future upstream support is impossible."
+    },
+    {
+      "id": "uiflow2",
+      "label": "UIFlow2 exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "uiflow2-source",
+        "uiflow2-xiao-board"
+      ],
+      "notes": "The base XIAO ESP32-S3 board does not establish compatibility with this exact peripheral set or selected panel."
+    },
+    {
+      "id": "xiaozhi",
+      "label": "XiaoZhi exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "xiaozhi-board-inventory"
+      ],
+      "notes": "The reviewed fixed board inventory did not establish this exact commercial edition or panel configuration. No same-MCU compatibility is inferred."
+    },
+    {
+      "id": "touch-title-conflict",
+      "label": "Touch function on this exact kit selection",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec",
+        "panel-spec",
+        "pcb-source"
+      ],
+      "notes": "The kit storefront title says Touch; the selected panel SKU and its electrical documentation do not establish a touch controller/pin path. This is distinct from the touch-equipped reTerminal E1003."
+    }
+  ],
+  "collectionNotes": [
+    "Fetched sources identify actual original HTTP bodies with final URL, UTC, bytes and SHA-256. Linked/failed sources do not invent body receipts.",
+    "A pinned firmware image and a source-based model do not establish complete runtime or physical-hardware validation.",
+    "Published chronology is used only when an announcement is found; document update dates and dates embedded in SKUs are not release dates."
+  ]
+}

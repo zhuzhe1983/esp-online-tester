@@ -1,0 +1,66 @@
+$ python tools/validate-platform-catalog.py
+products: 267 entries
+accessories: 10 entries
+firmwares: 234 entries
+watchlist: 149 entries
+Catalog schemas and unique entry IDs passed.
+
+$ node tools/platform-lora-test.mjs
+✔ LoRa peer validation preserves explicit channel and payload (1.622077ms)
+✔ LoRa peer input rejects invalid sizes, non-finite and lossy values (0.776722ms)
+✔ Indicator radio editions require exact board identity and the S3 chip (0.386443ms)
+✔ Indicator radio API routes only the three populated editions and preserves packet rejection (42.579428ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 49.862747
+
+$ node tools/platform-app-image-test.mjs
+ok app-only checksum/digest/chip/layout checks, pinned mode history, portable source, hardware flashing refusal
+
+$ node tools/platform-seeed-catalog-test.mjs --source-dir <source-bodies>
+seeed-catalog: 48 product identities (23 independent devices/boards + 25 explicit kit selections), firmware boundaries and layouts passed; 267 original HTTP bodies hash-verified.
+
+$ node tools/platform-knowledge-test.mjs
+platform-knowledge: 275 record(s), evidence/reference/revision boundaries passed; 0 downloaded source hashes verified (use --source-dir to verify originals).
+
+$ node tools/platform-i18n-test.mjs
+✔ locale priority: saved > ?lang= > navigator > fallback (1.48425ms)
+✔ translation: exact, interpolated, and untouched when partial (3.402153ms)
+✔ every static workbench, mini and agent-guide string has an English entry (7.566585ms)
+✔ dynamic UI templates preserve product data and use natural English word order (1.590229ms)
+✔ catalog control and connector labels have English UI translations (10.140058ms)
+✔ device tools translate composed states and destructive-action scope accurately (1.007981ms)
+✔ language selection survives unavailable storage and retains the shared scene (0.588558ms)
+✔ English issue drafts translate headings while retaining guest output and product identity (2.169793ms)
+✔ firmware history dates follow the selected UI language (18.751921ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65.830096
+
+$ node tools/platform-firmware-target-test.mjs
+✔ omitted and explicit self targets preserve direct product behavior (3.280749ms)
+✔ shared targets preserve artifact identity but not factory or validation claims (0.989062ms)
+✔ shared documentation without an image stays reference-only (0.323348ms)
+✔ an exact product mapping wins even when the product also declares a shared target (0.472643ms)
+✔ old string selection remains scoped while product selection includes shared trials and prefers direct firmware (0.896413ms)
+✔ invalid, missing, cross-chip and chained mappings fail as catalog errors (1.208093ms)
+✔ TriviaPOD shares StopWatch firmware discovery while keeping its own hardware and support state (44.610968ms)
+✔ PaperMono Lite discovers the shared catalog without losing its verified direct factory mapping (41.663627ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 101.297971

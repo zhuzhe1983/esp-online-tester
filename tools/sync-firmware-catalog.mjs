@@ -113,7 +113,11 @@ export async function runCatalogSync({base=new URL('../',import.meta.url),fetchI
   const products=await read('products.json'),firmwares=await read('firmwares.json'),watchlist=await read('firmware-watchlist.json');let previous={entries:[]};try{previous=await read('firmware-release-snapshot.json');}catch{}
   const snapshot=snapshotOnly?copy(previous):await syncReleaseMetadata(watchlist,{previous,token,fetchImpl,now});
   if(snapshotOnly)for(const entry of snapshot.entries){const watch=watchlist.entries.find(w=>w.id===entry.id);if(watch&&entry.releases?.length){entry.releases=compactReleaseHistory(watch,entry.releases);entry.release=entry.releases.find(release=>releaseMatchesChannel(release,watch.releaseChannel))||entry.release;}}
-  if(Buffer.byteLength(encoded(snapshot))>2*1024*1024)throw Error('Release snapshot exceeds the browser metadata limit');const manifests={};
+  // This is a bounded, machine-read response. Count and save the same compact
+  // bytes; pretty-printing hundreds of upstream assets can exceed the response
+  // limit without adding any release, hash, target or historical information.
+  const snapshotText=JSON.stringify(snapshot)+'\n';
+  if(Buffer.byteLength(snapshotText)>2*1024*1024)throw Error('Release snapshot exceeds the browser metadata limit');const manifests={};
   for(const target of watchlist.entries.flatMap(e=>e.catalogTargets||[]))if(target.manifestUrl&&!manifests[target.manifestUrl])manifests[target.manifestUrl]=JSON.parse(await readFile(new URL(target.manifestUrl,platform),'utf8'));
   const result=updateFirmwareCatalog({products,firmwares,watchlist,snapshot,manifests,now});
   if(!snapshotOnly)await resolveCatalogDownloads(result,{fetchImpl,now});
@@ -126,7 +130,7 @@ export async function runCatalogSync({base=new URL('../',import.meta.url),fetchI
     });
     if(sameObservation)recordedReport=oldReport;
   }
-  const files=new Map([[new URL('firmwares.json',catalog),encoded(result.firmwares)],[new URL('firmware-watchlist.json',catalog),encoded(result.watchlist)],[new URL('firmware-release-snapshot.json',catalog),encoded(snapshot)],[reportUrl,encoded(recordedReport)]]);
+  const files=new Map([[new URL('firmwares.json',catalog),encoded(result.firmwares)],[new URL('firmware-watchlist.json',catalog),encoded(result.watchlist)],[new URL('firmware-release-snapshot.json',catalog),snapshotText],[reportUrl,encoded(recordedReport)]]);
   for(const[url,manifest]of Object.entries(result.manifests))files.set(new URL(url,platform),encoded(manifest));
   const changed=[];for(const[url,text]of files){let old='';try{old=await readFile(url,'utf8');}catch{}if(old===text)continue;changed.push(fileURLToPath(url).slice(fileURLToPath(base).length));if(!dryRun){await mkdir(dirname(fileURLToPath(url)),{recursive:true});await writeFile(url,text);}}
   return {report:result.report,changed};

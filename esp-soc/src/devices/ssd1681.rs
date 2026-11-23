@@ -9,6 +9,9 @@ impl Ssd1681 {
  pub fn new(busy_pin:u8,cycles_per_ms:u64)->Self {Self{frame:vec![0xffff;200*200],frames:0,version:0,ram_bytes_written:0,ram:[vec![0xff;BYTES],vec![0;BYTES]],cmd:0,params:[0;4],count:0,read_at:0,entry:3,xs:0,xe:0x15,ys:0,ye:0x127,x:0,y:0,control1:0,control2:255,clock:false,analog:false,asleep:false,cycle:0,deadline:None,refresh:false,edges:Vec::new(),busy_pin,cycles_per_ms}}
  pub fn reset(&mut self) {self.cmd=0;self.count=0;self.read_at=0;self.entry=3;self.xs=0;self.xe=0x15;self.ys=0;self.ye=0x127;self.x=0;self.y=0;self.control1=0;self.control2=255;self.clock=false;self.analog=false;self.asleep=false;self.refresh=false;if self.deadline.take().is_some(){self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:false});}}
  pub fn busy(&self)->bool {self.deadline.is_some()}
+ /// Power loss discards volatile RAM but preserves the bistable visible image.
+ /// Deterministic initial RAM is a simulator policy, not a power-on RAM promise.
+ pub fn power_loss(&mut self) {self.reset();self.ram[0].fill(255);self.ram[1].fill(0);}
  pub fn next_deadline(&self)->Option<VirtualCycle> {self.deadline}
  pub fn take_edges(&mut self)->Vec<BoardEdge> {std::mem::take(&mut self.edges)}
  fn wait(&mut self,ms:u64) {if self.deadline.is_none(){self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:true});}self.deadline=Some(self.cycle.saturating_add(self.cycles_per_ms.saturating_mul(ms).max(1)));}

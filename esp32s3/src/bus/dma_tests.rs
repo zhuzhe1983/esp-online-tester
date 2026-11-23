@@ -34,6 +34,7 @@ fn empty_streaming_descriptor_cycles_raise_error_and_stop() {
                 bus.dma_i2s_step(1);
             }
             _ => {
+                bus.periph.lcd_cam.set_clock_enabled(true); bus.periph.lcd_cam.lcd_clock = (1 << 31) | (3 << 29);
                 bus.periph.lcd_cam.lcd_user = 1 << 27;
                 bus.periph.lcd_cam.lcd_ctrl = 1 << 31;
                 bus.periph.lcd_cam.lcd_ctrl1 = 511 << 8;
@@ -195,6 +196,7 @@ fn streaming_dma_buffer_faults_raise_error_instead_of_emitting_zeros() {
             bus.dma_i2s_step(1);
             assert!(bus.periph.i2s0.pcm.is_empty());
         } else {
+            bus.periph.lcd_cam.set_clock_enabled(true); bus.periph.lcd_cam.lcd_clock = (1 << 31) | (3 << 29);
             bus.periph.lcd_cam.lcd_user = 1 << 27;
             bus.periph.lcd_cam.lcd_ctrl = 1 << 31;
             bus.periph.lcd_cam.lcd_ctrl1 = 511 << 8;
@@ -668,4 +670,217 @@ fn rgb_start_observes_only_running_finite_clock_on_its_physical_gpio() {
     bus.periph.gpio.func_out_sel[18]|=512;bus.write32(0x6004_1014,(1<<27)|(1<<24)).unwrap();assert_eq!(samples.lock().unwrap()[2].3,None,"inverted route");
     bus.write32(0x6004_1014,0).unwrap();assert_eq!(samples.lock().unwrap().len(),3,"stopping is not a new scan");
     bus.write32(0x6004_1014,(1<<28)|(1<<27)).unwrap();assert_eq!(samples.lock().unwrap().len(),3,"reset is not a new scan");
+}
+
+fn rgb_timing(bus: &mut SocBus, width: u32, height: u32) -> u64 {
+    let lcd = &mut bus.periph.lcd_cam;
+    lcd.set_clock_enabled(true);
+    lcd.write(0x00, 0xdf80_0409); // Captured Meshtastic clock: PLL240 / 2 / 10 = 12 MHz.
+    lcd.write(0x1c, (1 << 31) | ((height - 1) << 11) | ((height - 1) << 21));
+    lcd.write(0x20, ((width - 1) << 8) | ((width - 1) << 20));
+    lcd.write(0x18, 1 << 25); // Continuous RGB.
+    lcd.write(0x64, 1);
+    lcd.write(0x14, (1 << 27) | (1 << 24) | (1 << 13));
+    lcd.lcd_geometry().3
+}
+
+#[test]
+fn rgb_empty_dma_vsync_follows_guest_clock_without_a_frame() {
+    let mut bus = SocBus::new(1024, 0, [0; 6]);
+    rgb_timing(&mut bus, 480, 480);
+    let lcd = &mut bus.periph.lcd_cam;
+    lcd.write(0x14, 0x6980_2000); lcd.write(0x1c, 0xc0ae_f839); lcd.write(0x20, 0x2231_df1b);
+    let period = lcd.lcd_geometry().3;
+    assert_eq!(period, 5_677_280);
+    bus.dma_lcd_step(period - 1);
+    assert_eq!(bus.periph.lcd_cam.read(0x68), 0);
+    bus.dma_lcd_step(1);
+    assert_eq!(bus.periph.lcd_cam.read(0x68), 1); assert_eq!(bus.periph.lcd_cam.read(0x6c), 1);
+    assert!(bus.irq_dirty); assert_eq!(bus.periph.lcd_cam.lcd_frames, 0);
+    assert_eq!(bus.periph.lcd_cam.lcd_acc, 0, "unserved dummy time is not pixel debt for a new DMA chain");
+    assert!(bus.periph.lcd_cam.lcd_line.is_empty()); assert!(bus.periph.lcd_cam.lcd_fifo.is_empty());
+    assert!(bus.periph.gdma.out_channel_for(5).is_none(), "an interrupt does not restart DMA");
+    bus.periph.lcd_cam.write(0x70, 1);
+    bus.dma_lcd_step(2 * period + 7);
+    assert_eq!(bus.periph.lcd_cam.read(0x68), 1); assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, 7);
+    bus.periph.lcd_cam.write(0x70, 1);
+    bus.dma_lcd_step(period - 8); assert_eq!(bus.periph.lcd_cam.read(0x68), 0);
+    bus.dma_lcd_step(1); assert_eq!(bus.periph.lcd_cam.read(0x68), 1);
+    assert_eq!(bus.periph.lcd_cam.lcd_frames, 0);
+}
+
+#[test]
+fn rgb_clock_stop_start_reset_and_one_shot_gate_starved_vsync() {
+    let mut bus = SocBus::new(1024, 0, [0; 6]);
+    let period = rgb_timing(&mut bus, 32, 32);
+    bus.dma_lcd_step(period / 2);
+    bus.periph.lcd_cam.set_clock_enabled(false); bus.dma_lcd_step(period);
+    assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, period / 2);
+    bus.periph.lcd_cam.set_clock_enabled(true);
+    for clock in [0x5f80_0409, 0x9f80_0409] { // CLK_EN off; CLK_SEL zero.
+        bus.periph.lcd_cam.write(0, clock); bus.dma_lcd_step(period);
+        assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, period / 2); assert_eq!(bus.periph.lcd_cam.int_raw, 0);
+    }
+    bus.periph.lcd_cam.write(0, 0xdf80_0409); bus.dma_lcd_step(period / 2);
+    assert_eq!(bus.periph.lcd_cam.int_raw, 1);
+    let user = bus.periph.lcd_cam.read(0x14);
+    bus.periph.lcd_cam.write(0x70, 1); bus.periph.lcd_cam.write(0x14, user & !(1 << 27));
+    bus.dma_lcd_step(period); assert_eq!(bus.periph.lcd_cam.int_raw, 0);
+    assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, 0);
+    bus.periph.lcd_cam.write(0x14, user); bus.dma_lcd_step(period - 1);
+    assert_eq!(bus.periph.lcd_cam.int_raw, 0);
+    bus.periph.lcd_cam.write(0x14, user | (1 << 28));
+    assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, 0); assert!(!bus.periph.lcd_cam.lcd_underflow);
+    assert!(bus.periph.lcd_cam.lcd_line.is_empty()); assert!(bus.periph.lcd_cam.lcd_fifo.is_empty());
+    bus.periph.lcd_cam.write(0x14, user); bus.dma_lcd_step(period - 1);
+    assert_eq!(bus.periph.lcd_cam.int_raw, 0);
+    bus.periph.lcd_cam.write(0x18, 0); bus.dma_lcd_step(1);
+    assert_eq!(bus.periph.lcd_cam.int_raw, 1); assert!(!bus.periph.lcd_cam.lcd_running());
+    bus.periph.lcd_cam.write(0x70, 1); bus.dma_lcd_step(period);
+    assert_eq!(bus.periph.lcd_cam.int_raw, 0); assert_eq!(bus.periph.lcd_cam.lcd_frames, 0);
+}
+
+type RgbFrames = std::sync::Arc<std::sync::Mutex<Vec<Vec<u8>>>>;
+struct RgbCapture(RgbFrames);
+impl crate::board::BoardModel for RgbCapture {
+    fn name(&self) -> &'static str { "rgb-dma-capture" }
+    fn lcd_frame(&mut self, _width: u32, _height: u32, bytes: &[u8]) { self.0.lock().unwrap().push(bytes.to_vec()); }
+}
+
+fn rgb_dma_capture(length: u32, next: u32) -> (SocBus, RgbFrames, Vec<u8>) {
+    let mut bus = SocBus::new(8192, 0, [0; 6]);
+    let frames = RgbFrames::default(); bus.board = Box::new(RgbCapture(frames.clone()));
+    let bytes: Vec<u8> = (0..length).map(|n| n as u8).collect();
+    for (i, chunk) in bytes.as_chunks::<4>().0.iter().enumerate() { bus.write32(INPUT + 4 * i as u32, u32::from_le_bytes(*chunk)).unwrap(); }
+    bus.write32(DESC, (1 << 31) | (length << 12) | length).unwrap();
+    bus.write32(DESC + 4, INPUT).unwrap(); bus.write32(DESC + 8, next).unwrap();
+    bus.periph.gdma.write(0xa8, 5); bus.periph.gdma.write(0x80, (DESC & 0xfffff) | (1 << 21));
+    (bus, frames, bytes)
+}
+
+#[test]
+fn rgb_complete_dma_keeps_original_frame_boundary_bytes_and_fifo() {
+    let (mut bus, frames, bytes) = rgb_dma_capture(512, DESC);
+    let period = rgb_timing(&mut bus, 32, 16);
+    bus.dma_lcd_step(period - 1); assert!(frames.lock().unwrap().is_empty()); assert_eq!(bus.periph.lcd_cam.int_raw, 0);
+    bus.dma_lcd_step(1);
+    assert_eq!(frames.lock().unwrap().as_slice(), std::slice::from_ref(&bytes)); assert_eq!(bus.periph.lcd_cam.lcd_frames, 1);
+    assert_eq!(bus.periph.lcd_cam.lcd_fifo.len(), 34); assert_eq!(bus.periph.lcd_cam.int_raw, 1);
+    bus.periph.lcd_cam.write(0x70, 1); bus.dma_lcd_step(period);
+    assert_eq!(frames.lock().unwrap().as_slice(), [bytes.clone(), bytes]); assert_eq!(bus.periph.lcd_cam.lcd_frames, 2);
+    assert_eq!(bus.periph.lcd_cam.lcd_fifo.len(), 34); assert_eq!(bus.periph.lcd_cam.int_raw, 1);
+    let (mut bus, frames, bytes) = rgb_dma_capture(512, 0);
+    let period = rgb_timing(&mut bus, 32, 16); bus.dma_lcd_step(2 * period);
+    assert_eq!(frames.lock().unwrap().as_slice(), [bytes]); assert_eq!(bus.periph.lcd_cam.lcd_frames, 1, "a whole frame before starvation is retained");
+}
+
+#[test]
+fn rgb565_vsync_dma_restart_preserves_the_34_prefetched_bytes() {
+    let (mut bus, frames, bytes) = rgb_dma_capture(512, DESC);
+    let period = rgb_timing(&mut bus, 16, 16);
+    let user = bus.periph.lcd_cam.read(0x14); bus.periph.lcd_cam.write(0x14, user | (1 << 23));
+    assert_eq!(bus.periph.lcd_cam.lcd_geometry().2, 2);
+    bus.dma_lcd_step(period);
+    assert_eq!(frames.lock().unwrap().as_slice(), std::slice::from_ref(&bytes));
+    assert_eq!(bus.periph.lcd_cam.lcd_fifo.iter().copied().collect::<Vec<_>>(), bytes[..34]);
+    // The real driver resets only GDMA and restarts after its 17 RGB565 FIFO pixels.
+    const RESTART: u32 = DRAM_LOW + 0x80;
+    bus.write32(RESTART, (1 << 31) | (478 << 12) | 478).unwrap();
+    bus.write32(RESTART + 4, INPUT + 34).unwrap(); bus.write32(RESTART + 8, DESC).unwrap();
+    bus.periph.gdma.write(0x60, 1); bus.periph.gdma.write(0x60, 0);
+    bus.periph.gdma.write(0x80, (RESTART & 0xfffff) | (1 << 21)); bus.periph.lcd_cam.write(0x70, 1);
+    bus.dma_lcd_step(period);
+    assert_eq!(frames.lock().unwrap().as_slice(), [bytes.clone(), bytes.clone()]);
+    assert_eq!(bus.periph.lcd_cam.lcd_frames, 2); assert_eq!(bus.periph.lcd_cam.int_raw, 1);
+    assert_eq!(bus.periph.lcd_cam.lcd_fifo.iter().copied().collect::<Vec<_>>(), bytes[..34]);
+}
+
+#[test]
+fn rgb_partial_scan_is_discarded_before_guest_dma_restart() {
+    let (mut bus, frames, _) = rgb_dma_capture(128, 0);
+    let period = rgb_timing(&mut bus, 32, 32);
+    bus.dma_lcd_step(period / 2);
+    assert!(frames.lock().unwrap().is_empty()); assert!(bus.periph.lcd_cam.lcd_line.is_empty());
+    assert_eq!(bus.periph.lcd_cam.int_raw, 0); assert_eq!(bus.periph.gdma.out[0].int_raw, 9);
+    bus.dma_lcd_step(period / 2); assert_eq!(bus.periph.lcd_cam.int_raw, 1);
+    assert_eq!(bus.periph.lcd_cam.lcd_frames, 0); assert!(bus.periph.gdma.out_channel_for(5).is_none());
+    // Only the simulated guest's register writes choose and restart the valid chain.
+    let bytes: Vec<u8> = (0..1024u32).map(|n| (n ^ 0xa5) as u8).collect();
+    for (i, chunk) in bytes.as_chunks::<4>().0.iter().enumerate() { bus.write32(INPUT + 4 * i as u32, u32::from_le_bytes(*chunk)).unwrap(); }
+    bus.write32(DESC, (1 << 31) | (1024 << 12) | 1024).unwrap(); bus.write32(DESC + 8, DESC).unwrap();
+    bus.periph.gdma.write(0x60, 1); bus.periph.gdma.write(0x60, 0);
+    bus.periph.gdma.write(0x80, (DESC & 0xfffff) | (1 << 21)); bus.periph.lcd_cam.write(0x70, 1);
+    bus.dma_lcd_step(period / 2); assert!(frames.lock().unwrap().is_empty()); assert_eq!(bus.periph.lcd_cam.int_raw, 0);
+    bus.dma_lcd_step(period / 2);
+    assert_eq!(frames.lock().unwrap().as_slice(), [bytes]); assert_eq!(bus.periph.lcd_cam.lcd_frames, 1);
+}
+
+#[test]
+fn rgb_sync_remainder_handles_large_elapsed_cycles_without_overflow() {
+    let mut lcd = crate::periph::LcdCam::new(); lcd.lcd_sync_acc = 6;
+    assert!(lcd.lcd_sync_step(u64::MAX, 17));
+    assert_eq!(lcd.lcd_sync_acc, ((u128::from(u64::MAX) + 6) % 17) as u64);
+}
+
+#[test]
+fn rgb565_513_byte_batch_cannot_consume_past_the_vsync_boundary() {
+    let (mut bus, frames, bytes) = rgb_dma_capture(1024, DESC);
+    let period = rgb_timing(&mut bus, 32, 16);
+    let user = bus.periph.lcd_cam.read(0x14); bus.periph.lcd_cam.write(0x14, user | (1 << 23));
+    bus.dma_lcd_step(period / 2 + period / 1024); // Credit for 513 bytes.
+    bus.dma_lcd_step(period / 2); // Crosses the frame by one byte in the old engine.
+    assert_eq!(frames.lock().unwrap().as_slice(), std::slice::from_ref(&bytes));
+    assert!(bus.periph.lcd_cam.lcd_line.is_empty(), "VSYNC must not consume a byte from the next frame");
+    assert_eq!(bus.periph.lcd_cam.lcd_fifo.iter().copied().collect::<Vec<_>>(), bytes[..34]);
+}
+
+#[test]
+fn rgb565_irregular_ticks_preserve_byte_phase_with_and_without_isr_restart() {
+    for restart in [false, true] {
+        let (mut bus, frames, bytes) = rgb_dma_capture(1024, DESC);
+        let period = rgb_timing(&mut bus, 32, 16);
+        let user = bus.periph.lcd_cam.read(0x14); bus.periph.lcd_cam.write(0x14, user | (1 << 23));
+        bus.periph.lcd_cam.write(0x64, u32::from(restart));
+        const RESTART: u32 = DRAM_LOW + 0x80;
+        bus.write32(RESTART, (1 << 31) | (990 << 12) | 990).unwrap();
+        bus.write32(RESTART + 4, INPUT + 34).unwrap(); bus.write32(RESTART + 8, DESC).unwrap();
+        let mut elapsed = 0u64; let mut seen = 0;
+        for tick in 0..1800 {
+            let cycles = [31, 253, 64, 127, 251][tick % 5]; elapsed += cycles;
+            bus.dma_lcd_step(cycles);
+            let count = frames.lock().unwrap().len();
+            if count != seen {
+                assert_eq!(count, seen + 1);
+                assert_eq!(frames.lock().unwrap()[seen], bytes, "frame {seen}, restart={restart}");
+                assert!(bus.periph.lcd_cam.lcd_line.is_empty());
+                assert_eq!(bus.periph.lcd_cam.lcd_fifo.iter().copied().collect::<Vec<_>>(), bytes[..34]);
+                seen = count;
+                if restart {
+                    // ISR execution costs time; there is no special wait-for-ACK path.
+                    bus.dma_lcd_step(20); elapsed += 20; bus.periph.lcd_cam.write(0x70, 1);
+                    bus.periph.gdma.write(0x60, 1); bus.dma_lcd_step(32); elapsed += 32;
+                    bus.periph.gdma.write(0x60, 0); bus.dma_lcd_step(16); elapsed += 16;
+                    bus.periph.gdma.write(0x80, (RESTART & 0xfffff) | (1 << 21));
+                }
+            }
+        }
+        assert!(seen > 20); assert_eq!(seen as u64, elapsed / period, "fractional service credit must not lose guest time");
+    }
+}
+
+#[test]
+fn rgb565_large_elapsed_credit_is_exact_and_services_at_most_one_frame() {
+    let (mut bus, frames, bytes) = rgb_dma_capture(512, DESC);
+    let period = rgb_timing(&mut bus, 16, 16);
+    let user = bus.periph.lcd_cam.read(0x14); bus.periph.lcd_cam.write(0x14, user | (1 << 23));
+    bus.dma_lcd_step(u64::MAX);
+    assert_eq!(frames.lock().unwrap().as_slice(), std::slice::from_ref(&bytes));
+    assert!(bus.periph.lcd_cam.lcd_line.is_empty()); assert_eq!(bus.periph.lcd_cam.lcd_fifo.len(), 34);
+    let credit = u128::from(u64::MAX) * 512 - u128::from(period) * 512;
+    assert_eq!(bus.periph.lcd_cam.lcd_acc, credit);
+    assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, u64::MAX % period);
+    bus.dma_lcd_step(0);
+    assert_eq!(frames.lock().unwrap().as_slice(), [bytes.clone(), bytes]);
+    assert_eq!(bus.periph.lcd_cam.lcd_acc, credit - u128::from(period) * 512);
+    assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, u64::MAX % period);
 }

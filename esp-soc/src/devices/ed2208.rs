@@ -1,16 +1,20 @@
 //! ED2208/EL040EF1 digital SPI subset, M5GFX 5268353 Panel_ED2208.{hpp,cpp}.
-//! Fixed 400x600 RAM; native 4bpp palette, refresh/power/sleep and active-low BUSY.
+//! Fixed 400x600 or 800x480 RAM; native 4bpp palette, refresh/power/sleep and active-low BUSY.
+//! 800x480: Seeed_GFX2 556df7cb0b4a097d9b81026a26fd5511f9c934d6
+//! Driver_ED2208.cpp / Config_reTerminal_E1002_ED2208, GDEP073E01 glass.
 //! Ideal manufacturer-driver colors, not measured Spectra 6 reflectance or waveforms.
 use crate::board::{BoardEdge,VirtualCycle};
 
 pub struct Ed2208 {
     pub frame:Vec<u16>,pub frames:u64,pub version:u64,pub ram_bytes_written:u64,pub invalid_colors:u64,
-    ram:Vec<u8>,command:u8,params:[u8;6],count:usize,at:usize,ready:bool,power:bool,sleep:bool,
+    ram:Vec<u8>,width:usize,height:usize,command:u8,params:[u8;6],count:usize,at:usize,ready:bool,power:bool,sleep:bool,
     cycle:VirtualCycle,busy_until:Option<VirtualCycle>,refresh:bool,edges:Vec<BoardEdge>,busy_pin:u8,cycles_per_ms:u64,
 }
 impl Ed2208 {
     pub const WIDTH:usize=400;pub const HEIGHT:usize=600;
-    pub fn new(busy_pin:u8,cycles_per_ms:u64)->Self {Self{frame:vec![0xffff;Self::WIDTH*Self::HEIGHT],frames:0,version:0,ram_bytes_written:0,invalid_colors:0,ram:vec![0x11;Self::WIDTH*Self::HEIGHT/2],command:0,params:[0;6],count:0,at:0,ready:false,power:false,sleep:false,cycle:0,busy_until:None,refresh:false,edges:Vec::new(),busy_pin,cycles_per_ms}}
+    pub fn new(busy_pin:u8,cycles_per_ms:u64)->Self {Self::with_size(Self::WIDTH,Self::HEIGHT,busy_pin,cycles_per_ms)}
+    pub fn e1002(busy_pin:u8,cycles_per_ms:u64)->Self {Self::with_size(800,480,busy_pin,cycles_per_ms)}
+    fn with_size(width:usize,height:usize,busy_pin:u8,cycles_per_ms:u64)->Self {Self{frame:vec![0xffff;width*height],frames:0,version:0,ram_bytes_written:0,invalid_colors:0,ram:vec![0x11;width*height/2],width,height,command:0,params:[0;6],count:0,at:0,ready:false,power:false,sleep:false,cycle:0,busy_until:None,refresh:false,edges:Vec::new(),busy_pin,cycles_per_ms}}
     /// Hardware/controller reset retains the visible bistable image. RAM retention is not
     /// claimed; clients must rewrite it before their next refresh.
     pub fn reset(&mut self) {self.command=0;self.count=0;self.at=0;self.ready=false;self.power=false;self.sleep=false;self.refresh=false;self.ram.fill(0x11);if self.busy_until.take().is_some(){self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:true});}}
@@ -29,7 +33,7 @@ impl Ed2208 {
         if self.command==0x10 {if self.at<self.ram.len(){self.ram[self.at]=b;self.at+=1;self.ram_bytes_written+=1;}return;}
         if self.count<self.params.len(){self.params[self.count]=b;}self.count=self.count.saturating_add(1);
         match (self.command,self.count) {
-            (0x61,4)=>self.ready=u16::from_be_bytes([self.params[0],self.params[1]])==400 && u16::from_be_bytes([self.params[2],self.params[3]])==600,
+            (0x61,4)=>self.ready=usize::from(u16::from_be_bytes([self.params[0],self.params[1]]))==self.width && usize::from(u16::from_be_bytes([self.params[2],self.params[3]]))==self.height,
             // Bounded synthetic completion, not the glass's 15–30 second optical timing.
             (0x12,1) if b==0 && self.ready && self.power=>{self.refresh=true;self.busy_for(20);},
             (0x02,1) if b==0=>{self.power=false;self.refresh=false;self.busy_for(1);},

@@ -1,0 +1,687 @@
+{
+  "schemaVersion": "1",
+  "id": "seeed-sensecap-indicator-d1pro",
+  "kind": "product",
+  "catalogId": "seeed-sensecap-indicator-d1pro",
+  "title": "Seeed Studio SenseCAP Indicator D1Pro · Sensors + LoRa",
+  "summary": "Seeed Studio SenseCAP Indicator D1Pro · Sensors + LoRa；480×480 电容屏，ESP32-S3 + RP2040。采用独立 LoRa 板型；RP2040、传感器及物理射频仍未完整模拟。",
+  "summarySourceIds": [
+    "official-spec"
+  ],
+  "updatedAt": "2026-11-22T10:02:25Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "manufacturer": "Seeed Studio",
+    "sku": "114993071",
+    "scope": "exact SKU or explicitly selected commercial kit configuration",
+    "family": {
+      "id": "seeed-sensecap",
+      "name": "Seeed Studio SenseCAP"
+    },
+    "releaseDateBasis": "unknown"
+  },
+  "facts": [
+    {
+      "id": "commercial-identity",
+      "label": "Independent commercial SKU",
+      "value": {
+        "sku": "114993071",
+        "edition": "D1Pro"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-spec"
+      ]
+    },
+    {
+      "id": "processor",
+      "label": "主控与协处理器",
+      "value": {
+        "main": "ESP32-S3 + RP2040",
+        "coprocessor": "RP2040"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ]
+    },
+    {
+      "id": "flash-memory",
+      "label": "主控 Flash",
+      "value": 8,
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "容量单位 MB；不是协处理器 Flash。"
+    },
+    {
+      "id": "display",
+      "label": "显示与触摸规格",
+      "value": {
+        "width": 480,
+        "height": 480,
+        "diagonalInches": 3.95,
+        "type": "RGB capacitive touch LCD",
+        "interface": "RGB",
+        "touch": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ]
+    },
+    {
+      "id": "native-rgb-wiring",
+      "label": "原厂 RGB 与初始化总线",
+      "value": {
+        "dataGpios": [
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1,
+          0
+        ],
+        "pclk": 21,
+        "hsync": 16,
+        "vsync": 17,
+        "de": 18,
+        "backlight": 45,
+        "gxInit": {
+          "sclk": 41,
+          "mosi": 48,
+          "csExpanderBit": 4,
+          "resetExpanderBit": 5
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "indicator-bsp-v1",
+        "indicator-gx-init"
+      ]
+    },
+    {
+      "id": "native-input-wiring",
+      "label": "原厂输入线序与屏幕版本",
+      "value": {
+        "sda": 39,
+        "scl": 40,
+        "expanderAddress": 32,
+        "touchResetExpanderBit": 7,
+        "gxTouchAddress": 72,
+        "dxTouchAddress": 56,
+        "userButton": 38
+      },
+      "basis": "official",
+      "sourceIds": [
+        "indicator-bsp-v1",
+        "indicator-touch-v1"
+      ]
+    },
+    {
+      "id": "commercial-sku",
+      "label": "Exact commercial SKU",
+      "value": "114993071",
+      "basis": "official",
+      "sourceIds": [
+        "official-spec"
+      ]
+    },
+    {
+      "id": "variant-population",
+      "label": "Factory hardware options",
+      "value": {
+        "model": "D1Pro",
+        "loraSx1262": true,
+        "scd41Co2": true,
+        "sgp40Tvoc": true,
+        "externalAht20Included": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "hardware-variants"
+      ],
+      "notes": "The generic sales text describes optional family functions. The explicit per-model hardware table determines which components are present."
+    },
+    {
+      "id": "native-lora-wiring",
+      "label": "Official SX1262 digital routing",
+      "basis": "official",
+      "sourceIds": [
+        "indicator-radio-board",
+        "indicator-bsp-v1",
+        "meshtastic-2511-variant",
+        "hardware-variants"
+      ],
+      "value": {
+        "sck": 41,
+        "mosi": 48,
+        "miso": 47,
+        "expanderAddress": 32,
+        "csExpanderBit": 0,
+        "resetExpanderBit": 1,
+        "busyExpanderBit": 2,
+        "irqExpanderBit": 3,
+        "expanderInterruptGpio": 42,
+        "expanderInterruptPolarity": "active-low",
+        "firmwareInterruptEdge": "falling",
+        "rfSwitchControl": "SX126x DIO2"
+      },
+      "notes": "The Seeed native board driver and exact Meshtastic target agree on routing. These sources do not establish analog RF, antenna, power-rail fidelity or real mesh interoperability."
+    }
+  ],
+  "sources": [
+    {
+      "id": "official-wiki",
+      "title": "Seeed Studio 官方设备文档",
+      "url": "https://wiki.seeedstudio.com/Sensor/SenseCAP/SenseCAP_Indicator/Get_started_with_SenseCAP_Indicator/",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/Sensor/SenseCAP/SenseCAP_Indicator/Get_started_with_SenseCAP_Indicator/",
+      "fetchedAt": "2026-11-22T06:54:06Z",
+      "sha256": "4d3ed4ece6d5a33cfbfa1fc0e7107b0c71e692bec675744277976d504e5855e3",
+      "bytes": 59782,
+      "mediaType": "text/html",
+      "archiveName": "1e3033839fd47940.html"
+    },
+    {
+      "id": "official-model",
+      "title": "官方 CAD / 结构模型入口",
+      "url": "https://files.seeedstudio.com/wiki/SenseCAP_Indicator/Indicator_3D.stp",
+      "kind": "manufacturer-cad",
+      "status": "linked"
+    },
+    {
+      "id": "board-config",
+      "title": "Seeed_GFX2 固定提交 SenseCAP 板级定义",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/boards/SenseCAP_Products.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/boards/SenseCAP_Products.h",
+      "fetchedAt": "2026-11-22T07:00:15Z",
+      "sha256": "8fa2940d8594ff143ddfbbc02403341fbc64d7e3bfe51d1bee7dc04ad0149e74",
+      "bytes": 3480,
+      "mediaType": "text/plain",
+      "archiveName": "ba85750325be08b2.txt"
+    },
+    {
+      "id": "board-implementation",
+      "title": "Seeed_GFX2 固定提交 SenseCAP 总线及 GPIO",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/boards/SenseCAP_Products.cpp",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/boards/SenseCAP_Products.cpp",
+      "fetchedAt": "2026-11-22T07:00:15Z",
+      "sha256": "bb169f55bbd9f4c101dafc8c350d367b2035a1d78c185b2a53189359f844d704",
+      "bytes": 12175,
+      "mediaType": "text/plain",
+      "archiveName": "2401511bb0a22f6f.txt"
+    },
+    {
+      "id": "variant-guide",
+      "title": "SenseCAP Indicator D1/D1S/D1L/D1Pro 版本边界",
+      "url": "https://wiki.seeedstudio.com/SenseCAP_Indicator_Native_Firmware/",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/SenseCAP_Indicator_Native_Firmware/",
+      "fetchedAt": "2026-11-22T07:00:16Z",
+      "sha256": "aac11c2b6063032e7aaaf1e4baebb1eff4e0c4652e305d3be40718abae4209bf",
+      "bytes": 55646,
+      "mediaType": "text/html",
+      "archiveName": "991dec00dcad0859.html"
+    },
+    {
+      "id": "idf-spi-registers",
+      "title": "idf spi registers",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/soc/esp32s3/include/soc/spi_reg.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/soc/esp32s3/include/soc/spi_reg.h",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "3cf76a029a7aa3cd1f9eb694cec9d4c7478409e1f7e8d8912b7e1c0163136c20",
+      "bytes": 84925,
+      "mediaType": "text/plain",
+      "archiveName": "0544e7455f2ffd8d.txt"
+    },
+    {
+      "id": "idf-spi-hal",
+      "title": "idf spi hal",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/hal/esp32s3/include/hal/spi_ll.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/hal/esp32s3/include/hal/spi_ll.h",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "b6009b7cd5fc905b0b2fab58c4299050f9c1193d97ddc659681840774cf8c8fc",
+      "bytes": 41331,
+      "mediaType": "text/plain",
+      "archiveName": "45af5f5851132b60.txt"
+    },
+    {
+      "id": "idf-s3-signals-5",
+      "title": "idf s3 signals 5",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "eede7f33a5b4569dfbc828baf35c2827aacb935602110863e5839e19c5a5a8d9",
+      "bytes": 18749,
+      "mediaType": "text/plain",
+      "archiveName": "bf7cb71e437fb878.txt"
+    },
+    {
+      "id": "idf-s3-signals-4",
+      "title": "idf s3 signals 4",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v4.4.3/components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v4.4.3/components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "126e03e4fa7c3fe15c7d48c90e08785ae89a88513067b4c77b963705d4b828aa",
+      "bytes": 19088,
+      "mediaType": "text/plain",
+      "archiveName": "e719295b3472527b.txt"
+    },
+    {
+      "id": "indicator-bsp-current",
+      "title": "indicator bsp current",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/components/bsp/src/boards/sensecap_indicator_board.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/components/bsp/src/boards/sensecap_indicator_board.c",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "sha256": "fe1b67a80a9d84baceb41dd62e8590986003922111f5e501feab061585a93d77",
+      "bytes": 9503,
+      "mediaType": "text/plain",
+      "archiveName": "778adcc7b2b50395.txt"
+    },
+    {
+      "id": "indicator-gx-init",
+      "title": "indicator gx init",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/components/bsp/src/boards/lcd_panel_config.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/components/bsp/src/boards/lcd_panel_config.c",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "sha256": "e0db50a81b3e70c1adc10efffb0d4a4a6ad0ce0860304d77b4ffaf6e94d8a808",
+      "bytes": 27096,
+      "mediaType": "text/plain",
+      "archiveName": "45a28da5b56f92ff.txt"
+    },
+    {
+      "id": "indicator-touch-current",
+      "title": "indicator touch current",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/components/i2c_devices/touch_panel/ft5x06.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/components/i2c_devices/touch_panel/ft5x06.c",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "sha256": "d21410f4c12cc8d9be65c274566752affdf31df880c0f171c7314085ca2b19de",
+      "bytes": 4882,
+      "mediaType": "text/plain",
+      "archiveName": "b86fe796430d16ff.txt"
+    },
+    {
+      "id": "indicator-touch-dispatch",
+      "title": "indicator touch dispatch",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/components/bsp/src/indev/indev_tp.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/components/bsp/src/indev/indev_tp.c",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "sha256": "129d50865b290db05e738f5e37358692f46eacd6b08f2ced54d0a672e26ec5fe",
+      "bytes": 4831,
+      "mediaType": "text/plain",
+      "archiveName": "9be64234b0d625a0.txt"
+    },
+    {
+      "id": "indicator-config-current",
+      "title": "indicator config current",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/examples/indicator_basis/sdkconfig.defaults",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/77edb8d2b9a92fc67965c1b2d4a838f0d09a1800/examples/indicator_basis/sdkconfig.defaults",
+      "fetchedAt": "2026-11-22T07:21:40Z",
+      "sha256": "b0bd68852d669247e34320e00f7b03d7423a86656b24712379a4ecaf5208060a",
+      "bytes": 2038,
+      "mediaType": "text/plain",
+      "archiveName": "03a6ee9389d24055.txt"
+    },
+    {
+      "id": "indicator-bsp-v1",
+      "title": "indicator bsp v1",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/components/bsp/src/boards/sensecap_indicator_board.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/components/bsp/src/boards/sensecap_indicator_board.c",
+      "fetchedAt": "2026-11-22T07:46:35Z",
+      "sha256": "fe1b67a80a9d84baceb41dd62e8590986003922111f5e501feab061585a93d77",
+      "bytes": 9503,
+      "mediaType": "text/plain",
+      "archiveName": "1208c0c944c25f56.txt"
+    },
+    {
+      "id": "indicator-touch-v1",
+      "title": "indicator touch v1",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/components/i2c_devices/touch_panel/ft5x06.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/components/i2c_devices/touch_panel/ft5x06.c",
+      "fetchedAt": "2026-11-22T07:46:35Z",
+      "sha256": "d21410f4c12cc8d9be65c274566752affdf31df880c0f171c7314085ca2b19de",
+      "bytes": 4882,
+      "mediaType": "text/plain",
+      "archiveName": "634a61ceeb4369fc.txt"
+    },
+    {
+      "id": "indicator-config-v1",
+      "title": "indicator config v1",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/examples/terminal_demo/sdkconfig.defaults",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/examples/terminal_demo/sdkconfig.defaults",
+      "fetchedAt": "2026-11-22T07:46:35Z",
+      "sha256": "16957990502b64e15841f8714d3445b5c30a9c63b13d0898c5b8dd0b6d8f5db0",
+      "bytes": 61708,
+      "mediaType": "text/plain",
+      "archiveName": "f941266c990b7c5f.txt"
+    },
+    {
+      "id": "indicator-lvgl-v1",
+      "title": "indicator lvgl v1",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/examples/terminal_demo/main/lv_port.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/examples/terminal_demo/main/lv_port.c",
+      "fetchedAt": "2026-11-22T07:46:35Z",
+      "sha256": "d8594a5b6ddc84c5a25d65ad281b3e1c8108806beb8fbf2fb0ce62c797e8e6b3",
+      "bytes": 11183,
+      "mediaType": "text/plain",
+      "archiveName": "e60e80d248a4dadc.txt"
+    },
+    {
+      "id": "commercial-sku-spec",
+      "title": "Shared family base SKU datasheet (not this edition identity)",
+      "url": "https://files.seeedstudio.com/Bazaar/product_pdf/114993068.pdf",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://files.seeedstudio.com/Bazaar/product_pdf/114993068.pdf",
+      "fetchedAt": "2026-11-22T08:58:09Z",
+      "sha256": "4d52d209b477ff8000f4601b89a8dc3e37e440c642d05cd0a716ace81d9a9b34",
+      "bytes": 3024248,
+      "mediaType": "application/pdf",
+      "archiveName": "scope-4e377275b3fa42a4.pdf"
+    },
+    {
+      "id": "official-spec",
+      "title": "Official exact commercial SKU datasheet",
+      "url": "https://files.seeedstudio.com/Bazaar/product_pdf/114993071.pdf",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://files.seeedstudio.com/Bazaar/product_pdf/114993071.pdf",
+      "fetchedAt": "2026-11-22T08:58:14Z",
+      "sha256": "73876c91e21813d45cefc5ff24ce2ae978cfa3b9237fc1ef4fbf60b9cc295351",
+      "bytes": 5535954,
+      "mediaType": "application/pdf",
+      "archiveName": "scope-025661df5094a220.pdf"
+    },
+    {
+      "id": "official-product",
+      "title": "Official exact storefront item",
+      "url": "https://www.seeedstudio.com/SenseCAP-Indicator-D1Pro-p-5644.html",
+      "kind": "official-documentation",
+      "status": "failed",
+      "attemptedAt": "2026-11-22T08:51:28Z",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    },
+    {
+      "id": "uiflow1-guide",
+      "title": "M5Stack UIFlow1 官方设备入口",
+      "url": "https://docs.m5stack.com/en/uiflow/uiflow_web",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow/uiflow_web",
+      "fetchedAt": "2026-11-22T07:05:10Z",
+      "sha256": "813a40fedd984c50e71f2039c033453be3ffd2d71514ba257a6dbccf6d6950ae",
+      "bytes": 267692,
+      "mediaType": "text/html",
+      "archiveName": "46a04534dcc20b0a.html"
+    },
+    {
+      "id": "uiflow2-source",
+      "title": "UIFlow2 固定提交官方项目说明",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/README.md",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/README.md",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "1c10ad4b5d86789a4eb5e8c87b7c499ac670fbfdcbfcc17dae736ea69a2ed4a9",
+      "bytes": 3777,
+      "mediaType": "text/plain",
+      "archiveName": "c70f132f0306edb1.txt"
+    },
+    {
+      "id": "uiflow2-xiao-board",
+      "title": "UIFlow2 基础 XIAO ESP32-S3 目标（不是整机屏幕适配）",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/third-party/boards/SEEED_STUDIO_XIAO_ESP32S3/board.json",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/third-party/boards/SEEED_STUDIO_XIAO_ESP32S3/board.json",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "68d76df90144f2f5d86b13b19a177723472ac52be5d8c279757edb9bb732b183",
+      "bytes": 336,
+      "mediaType": "text/plain",
+      "archiveName": "2f8b229988ce9bcc.json"
+    },
+    {
+      "id": "xiaozhi-board-inventory",
+      "title": "小智固定提交板型目录（逐型号调查范围）",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards",
+      "kind": "upstream-source-code",
+      "status": "linked"
+    },
+    {
+      "id": "hardware-variants",
+      "title": "Official four-variant hardware manual",
+      "url": "https://files.seeedstudio.com/products/SenseCAP/SenseCAP_Indicator/SenseCAP%20Indicator%20User%20Manual_v2023.4.20.01.pdf",
+      "kind": "official-datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://files.seeedstudio.com/products/SenseCAP/SenseCAP_Indicator/SenseCAP%20Indicator%20User%20Manual_v2023.4.20.01.pdf",
+      "fetchedAt": "2026-11-22T09:00:55Z",
+      "sha256": "877b400c8c804632826ab1c667f6b25c691e657399a842a33fc53448be3bbf9d",
+      "bytes": 3429374,
+      "mediaType": "application/pdf",
+      "archiveName": "scope-b75b276967da3f86.pdf"
+    },
+    {
+      "id": "native-family",
+      "title": "Official common native UI / factory family",
+      "url": "https://wiki.seeedstudio.com/SenseCAP_Indicator_Native_Firmware/",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/SenseCAP_Indicator_Native_Firmware/",
+      "fetchedAt": "2026-11-22T09:00:54Z",
+      "sha256": "aac11c2b6063032e7aaaf1e4baebb1eff4e0c4652e305d3be40718abae4209bf",
+      "bytes": 55646,
+      "mediaType": "text/html",
+      "archiveName": "scope-991dec00dcad0859.txt"
+    },
+    {
+      "id": "factory-source-1",
+      "title": "官方出厂恢复说明",
+      "url": "https://wiki.seeedstudio.com/SenseCAP_Indicator_How_To_Flash_The_Default_Firmware/",
+      "kind": "official-firmware-source",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/SenseCAP_Indicator_How_To_Flash_The_Default_Firmware/",
+      "fetchedAt": "2026-11-22T07:00:16Z",
+      "sha256": "e1d55830c2c9d253c7894b7f585020bac5b93c44456b40ebd3c04bb33e26dc79",
+      "bytes": 98186,
+      "mediaType": "text/html",
+      "archiveName": "4f32f597607fa755.html"
+    },
+    {
+      "id": "factory-source-2",
+      "title": "四款硬件共用原生 UI 的官方说明",
+      "url": "https://wiki.seeedstudio.com/SenseCAP_Indicator_Native_Firmware/",
+      "kind": "official-firmware-source",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/SenseCAP_Indicator_Native_Firmware/",
+      "fetchedAt": "2026-11-22T07:00:16Z",
+      "sha256": "aac11c2b6063032e7aaaf1e4baebb1eff4e0c4652e305d3be40718abae4209bf",
+      "bytes": 55646,
+      "mediaType": "text/html",
+      "archiveName": "991dec00dcad0859.html"
+    },
+    {
+      "id": "factory-source-3",
+      "title": "官方固定版本",
+      "url": "https://github.com/Seeed-Solution/SenseCAP_Indicator_ESP32/releases/tag/v1.0.0",
+      "kind": "official-firmware-source",
+      "status": "linked"
+    },
+    {
+      "id": "factory-image",
+      "title": "已下载并校验的官方完整镜像",
+      "url": "https://github.com/Seeed-Solution/SenseCAP_Indicator_ESP32/releases/download/v1.0.0/Default_Factory_Firmware_ESP32-S3_v1.0.0.bin",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://release-assets.githubusercontent.com/github-production-release-asset/629399393/124d9d90-6792-4f9b-84f0-87bd7a732454",
+      "fetchedAt": "2026-11-22T07:03:07Z",
+      "sha256": "749c9b77222405e2b2ffc1a08f3d51a0752e762e10b6bba6c426f5440d638cf2",
+      "bytes": 2036000,
+      "mediaType": "application/octet-stream",
+      "archiveName": "fad1a8961e29b2d2.bin",
+      "notes": "Final redirect host and path were observed; its temporary signed query was deliberately omitted from this public receipt."
+    },
+    {
+      "id": "indicator-radio-board",
+      "title": "Official fixed Indicator SX126x board wiring",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/components/lora/sx126x_sensecap_board.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/components/lora/sx126x_sensecap_board.c",
+      "fetchedAt": "2026-11-22T10:01:17Z",
+      "sha256": "5856c30232d804514af089035828afbafa9239e6e1bc0feb988d6047625b9965",
+      "bytes": 11519,
+      "mediaType": "text/plain",
+      "archiveName": "scope-indicator-lora-sx126x_sensecap_board.c"
+    },
+    {
+      "id": "meshtastic-2511-variant",
+      "title": "Official Meshtastic fixed Indicator target wiring",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/meshtastic/firmware/v2.5.11.8e2a3e5/variants/seeed-sensecap-indicator/variant.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/meshtastic/firmware/v2.5.11.8e2a3e5/variants/seeed-sensecap-indicator/variant.h",
+      "fetchedAt": "2026-11-22T10:01:17Z",
+      "sha256": "37aff1a5c08419463295be8a1b585708bad61a992f7363f02e9548dbe29a34a9",
+      "bytes": 1626,
+      "mediaType": "text/plain",
+      "archiveName": "scope-indicator-lora-variant.h"
+    }
+  ],
+  "revisions": [],
+  "assets": [],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "Exact commercial announcement date",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Not established. Neither source modification time nor a date-like SKU is used as a launch date."
+    },
+    {
+      "id": "hardware-revision",
+      "label": "User hardware manufacturing revision",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Document/PCB revisions are source identities, not a claim about the user’s unit."
+    },
+    {
+      "id": "complete-runtime",
+      "label": "Complete emulation and real hardware compatibility",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Partial bus models and individual firmware output tests are reported separately; no real hardware test was performed."
+    },
+    {
+      "id": "uiflow1",
+      "label": "UIFlow1 exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "uiflow1-guide"
+      ],
+      "notes": "Official UIFlow1 entry was checked; no exact SKU / screen configuration target was located. This is not a claim that future upstream support is impossible."
+    },
+    {
+      "id": "uiflow2",
+      "label": "UIFlow2 exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "uiflow2-source",
+        "uiflow2-xiao-board"
+      ],
+      "notes": "The base XIAO ESP32-S3 board does not establish compatibility with this exact peripheral set or selected panel."
+    },
+    {
+      "id": "xiaozhi",
+      "label": "XiaoZhi exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "xiaozhi-board-inventory"
+      ],
+      "notes": "The reviewed fixed board inventory did not establish this exact commercial edition or panel configuration. No same-MCU compatibility is inferred."
+    },
+    {
+      "id": "physical-psram",
+      "label": "Physical PSRAM capacity of exact SKU",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec",
+        "hardware-variants"
+      ],
+      "notes": "The simulator is configured with 8 MiB. Official evidence collected here states main Flash and RP2040 Flash but not a precise PSRAM value."
+    },
+    {
+      "id": "radio-power-electrical",
+      "label": "Exact radio power and antenna electrical model",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "indicator-radio-board",
+        "indicator-bsp-v1"
+      ],
+      "notes": "No complete schematic was acquired. The empty board power callback is not proof of the physical absence of rail controls. The simulator uses an ideal USB-powered digital domain only."
+    }
+  ],
+  "collectionNotes": [
+    "Fetched sources identify actual original HTTP bodies with final URL, UTC, bytes and SHA-256. Linked/failed sources do not invent body receipts.",
+    "A pinned firmware image and a source-based model do not establish complete runtime or physical-hardware validation.",
+    "Published chronology is used only when an announcement is found; document update dates and dates embedded in SKUs are not release dates.",
+    "The 3D model uses the evidenced family exterior CAD. Its variant-specific internal sensor/LoRa BOM is not established by that CAD, so the interior board envelope is explicitly UNKNOWN rather than copied as a verified populated assembly."
+  ]
+}

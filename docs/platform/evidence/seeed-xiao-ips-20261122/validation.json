@@ -1,0 +1,71 @@
+{
+  "verifiedAt": "2026-11-22T07:09:25.661161+00:00",
+  "baseCommit": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+  "rust": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "checks": [
+    {
+      "command": "cargo test -p esp32s3 seeed_xiao_ips --lib",
+      "passed": 5,
+      "failed": 0
+    },
+    {
+      "command": "cargo test -p esp32s3 --test seeed_xiao_ips",
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "command": "cargo clippy -p esp32s3 --all-targets -- -D warnings",
+      "exitCode": 0
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32s3/src/board/seeed_xiao_ips.rs",
+      "sha256": "a6eb6742042d39acc94da53f5e386b8996bf9d0d2a2c3ebb228212d8d978c800"
+    },
+    {
+      "path": "esp32s3/tests/seeed_xiao_ips.rs",
+      "sha256": "b7100761317ed83e610a4a051dc75085a9df2f0ab2b9da8b4cf2838c6c2a8967"
+    },
+    {
+      "path": "tools/probe-seeed-xiao-ips.py",
+      "sha256": "283949f2c5a658e85a2274426d38ecf2df5aadaf5e17924faf4c554962547b3c"
+    }
+  ],
+  "nativeFactoryInputs": {
+    "result": "pass",
+    "models": 3,
+    "scenarios": 12,
+    "receipt": "native-factory-inputs.json",
+    "unmodifiedFirmware": true,
+    "romBoot": true,
+    "assertions": [
+      "All three factory boot markers and colorful guest-written dashboards",
+      "All USR1 brightness responses and visibly dimmed framebuffers",
+      "All USR2 backlight-off responses and zero lit pixels",
+      "1.14 third-button header change",
+      "1.47 AXS5106L initial probe, exact screen coordinates and release"
+    ]
+  },
+  "provisionalBootResults": {
+    "status": "Superseded by the complete native-factory-inputs.json; original 1.47 touch-absent failure remains under retainedNegativeResults."
+  },
+  "retainedNegativeResults": [
+    {
+      "case": "Undriven GPIO13 initially treated as asserted reset",
+      "effect": "Factory probes touch before configuring this pin, so the touch controller was incorrectly absent.",
+      "resolution": "Undriven reset is deasserted in the explicitly scoped USB-powered digital model; active low still resets LCD and NACKs touch. Final official factory touch probe, coordinate and release checks pass."
+    },
+    {
+      "case": "Concurrent release fat-LTO builds",
+      "effect": "One CLI link was SIGKILLed; no Rust diagnostic or test failure.",
+      "resolution": "Serialize release builds; no performance conclusion is drawn from probe wall times."
+    }
+  ],
+  "limitations": [
+    "Native execution is not silicon validation.",
+    "No IMU, PDM transducer, battery, SD transport or deep sleep/wake model.",
+    "0.96-inch glass mapping is verified only for the official rotation-2 layout.",
+    "Touch IRQ is host-report event-level, without calibrated scan rate or pulse width."
+  ]
+}

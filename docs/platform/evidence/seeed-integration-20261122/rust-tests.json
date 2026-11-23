@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-22T08:36:28.891808Z",
+  "scope": "Final Rust workspace release test gate for integrated Seeed changes; no browser, hardware or deployment assertion.",
+  "checkedAtCommit": "7955e306e6c0007a3a71ab1bef72b4e250f94483",
+  "command": "ESP32SIM_ROM_DIR=$ROM_DIR CARGO_BUILD_JOBS=2 cargo test --release --workspace -- --include-ignored --skip external_",
+  "toolchain": [
+    "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "binary: rustc",
+    "commit-hash: 0ef1bc386059596dada8fb65b50425aab2ea637a",
+    "commit-date: 2026-11-09",
+    "host: x86_64-unknown-linux-gnu",
+    "release: 1.100.0",
+    "LLVM version: 23.1.5"
+  ],
+  "exitCode": 0,
+  "groups": 177,
+  "passed": 2274,
+  "failed": 0,
+  "ignored": 0,
+  "filtered": 95,
+  "filterReason": "CI excludes names containing external_ that require external/local-only fixtures. Ignored hermetic tests were included.",
+  "buildSummary": "Finished `release` profile [optimized + debuginfo] target(s) in 22m 25s",
+  "warnings": [
+    "Pre-existing bringup example targets in esp32c5 and esp32s31 share output filenames. Cargo warns this may become a future hard error."
+  ],
+  "rawLog": {
+    "bytes": 261756,
+    "sha256": "3221ecbc6ae6e61b3a1fb41426d0bc111669546e5bf1da06834cfa0cca2cbaab"
+  },
+  "publishedLog": {
+    "path": "full-rust-tests.log.gz",
+    "uncompressedBytes": 260751,
+    "uncompressedSha256": "8ae4c54e4ca22072e043f08e9e3950e54250c446fac15c43bbd444c7c78674a1",
+    "archiveBytes": 58493,
+    "archiveSha256": "d42f5ff567df03c297f46f4d4080692541515cbfc7c1a34f5e314c341e1dd5ee",
+    "redaction": "Absolute repository path prefix replaced by <repo>; four emulated BLE MAC occurrences replaced by <virtual-mac>. Test names, counts, durations, warnings and outcomes remain unchanged.",
+    "macOccurrencesRedacted": 4,
+    "sensitivePatternCounts": {
+      "machinePaths": 0,
+      "mac": 0,
+      "signedQuery": 0
+    }
+  },
+  "changedRustSources": [
+    {
+      "path": "esp-soc/src/board.rs",
+      "sha256": "9110106ec9ae3a5225e3fd844740a03f41bdcb98469aa85c6005058531d4fba8"
+    },
+    {
+      "path": "esp-soc/src/board/seeed_xiao_epaper.rs",
+      "sha256": "1f0ef517f21fccca22e6fdc466e8926f5f8fe8fbcdbbd6b5efa85db0ca297326"
+    },
+    {
+      "path": "esp-soc/src/devices/ed2208.rs",
+      "sha256": "d68f215d86850b0e701ba767563c34a7defcbe39abbb9577046787dc66a2d8f1"
+    },
+    {
+      "path": "esp-soc/src/devices/it8951.rs",
+      "sha256": "6179dbc7f7d8196e0ae2ffc0a82ce83e6d3452cf6d09a6f12cc15ca4ab02152d"
+    },
+    {
+      "path": "esp-soc/src/devices/mod.rs",
+      "sha256": "6405602008e76c9766105c2a0f66b04d6e6889cbe3130d4f4a3fd123b9429744"
+    },
+    {
+      "path": "esp-soc/src/devices/t133a01.rs",
+      "sha256": "c9bc774dacc4bcc1cd02ad9008ae7074a17446ec0b08cc8010ef4b91f3963f97"
+    },
+    {
+      "path": "esp-soc/src/devices/uc8179.rs",
+      "sha256": "b4120df9e7e7dc10b2a22c075b7a7afa5003e17525d594768ff55bf56c09f083"
+    },
+    {
+      "path": "esp-soc/src/pins.rs",
+      "sha256": "68a4642ec9e229947ad6e101ad5ccbb143a974a904e1dc28ee0b102e0fdac568"
+    },
+    {
+      "path": "esp32/src/board/tdisplay.rs",
+      "sha256": "d5c5d9a6c7e0031321b5eaca3d642d07da3325976806b91e0728f45b16ae987b"
+    },
+    {
+      "path": "esp32/src/bus.rs",
+      "sha256": "c77abcffc54189666e73abf147d952e0008cec1a26b12130afe39adb98fc324a"
+    },
+    {
+      "path": "esp32c3/src/board/mod.rs",
+      "sha256": "0588b362f92ff2b51b473b7a26457450aba02bc68b0ec137fbdeee40cb085470"
+    },
+    {
+      "path": "esp32c3/src/bus.rs",
+      "sha256": "8a41d0641bd6c80f069f589a57bb095e9a76a051487d0b9844babdfbb1044fc6"
+    },
+    {
+      "path": "esp32c3/tests/pin_transport.rs",
+      "sha256": "a2a70a25318953d47a69747a4352bf8b3dbe55c20d6002cea547e9f7b0d2ed4e"
+    },
+    {
+      "path": "esp32c3/tests/seeed_xiao_epaper.rs",
+      "sha256": "c22d205c6c53b87743114cae0278fafecbe0f724418ab1e2348ddcf943b87f22"
+    },
+    {
+      "path": "esp32c6/src/board/stamp_c6lora.rs",
+      "sha256": "f01797235bdd9b2946eb4fb59fac6bca6dcdd32772a9372f18d48ef0d4d7546e"
+    },
+    {
+      "path": "esp32c6/tests/spi_routes.rs",
+      "sha256": "47652c1722a794ab7d4fc03753a2c30806f77098ee0e1007368552e2258930bc"
+    },
+    {
+      "path": "esp32c61/src/board/corematrix.rs",
+      "sha256": "c8f45aff37c965b95da89b6047e89b6b8ae31488e20f0f53ffd4a7ed922f5a4b"
+    },
+    {
+      "path": "esp32s3/src/board/mod.rs",
+      "sha256": "fdaa945debc2c74fcfb7e7074a876510b6e72f9195c4a583e55f70638827194b"
+    },
+    {
+      "path": "esp32s3/src/board/paperdiy.rs",
+      "sha256": "dec7f9f60576a7fc581090fcc9f9798b51c2bf72c265276e82823a4fd621a07f"
+    },
+    {
+      "path": "esp32s3/src/board/papermono.rs",
+      "sha256": "944bee9e246e16e1361027ba566f60bcad21cfb6f81acbf8b782d5632dde8ddf"
+    },
+    {
+      "path": "esp32s3/src/board/papers3.rs",
+      "sha256": "79b9c42ad37ed5886b3ac444016795832445a4af09b8fbd62e886bff8832d562"
+    },
+    {
+      "path": "esp32s3/src/board/seeed_indicator.rs",
+      "sha256": "71be030fee209aaabee8552d6538de18126fc91fd9ada209ef3d10fbe9efe1df"
+    },
+    {
+      "path": "esp32s3/src/board/seeed_reterminal.rs",
+      "sha256": "8419e21b6fc2a3b94a8e1c4acb186cbe382ea4cfc6f9fe1944fcf972eb1c6c40"
+    },
+    {
+      "path": "esp32s3/src/board/seeed_sensecap.rs",
+      "sha256": "930549f7f464c6ffac7467c1388894c11392b5625523dac71388b22dc4177429"
+    },
+    {
+      "path": "esp32s3/src/board/seeed_xiao_ips.rs",
+      "sha256": "a6eb6742042d39acc94da53f5e386b8996bf9d0d2a2c3ebb228212d8d978c800"
+    },
+    {
+      "path": "esp32s3/src/board/stampfly.rs",
+      "sha256": "08ccefb267eb271752e4b45d84171444fc74f8d72cb80f00d5dc8a1ffa0235e6"
+    },
+    {
+      "path": "esp32s3/src/board/stamplc.rs",
+      "sha256": "5dfdd9f76d6f03f745834db3390c37f23140cc5172ee71bac5d634f8f23196a7"
+    },
+    {
+      "path": "esp32s3/src/board/tdeck.rs",
+      "sha256": "c926d0fa7226d1686c8f1016f3c12db083ecc7c456328b8b4e9387687e588e3a"
+    },
+    {
+      "path": "esp32s3/tests/pin_transport.rs",
+      "sha256": "eb83ba7a73cb36ab690d2831b940e33be6f290d9327734f65e42168ecdc7845f"
+    },
+    {
+      "path": "esp32s3/tests/seeed_xiao_ips.rs",
+      "sha256": "b7100761317ed83e610a4a051dc75085a9df2f0ab2b9da8b4cf2838c6c2a8967"
+    }
+  ]
+}

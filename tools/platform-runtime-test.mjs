@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import {firmwareZip} from './fixtures/firmware-zip.mjs';
+import {firmwareZip,firmwareZipEntries} from './fixtures/firmware-zip.mjs';
 // Boundary checks plus the actual browser worker/WASM protocol in a Node Worker.
 // Build web/wasm/esp32sim.wasm and fetch demo ROMs before running this test.
 import assert from 'node:assert/strict';
@@ -229,6 +229,66 @@ try {
     await runtime.configure(shared);await runtime.loadFirmware();assert.equal(fetchCounts.get(url),1);
     const bad='https://platform.example/wrong-hash.zip';responseOverrides.set(bad,firmwareZip(data,{name:'hello.bin'}));
     await expectCode(()=>runtime.loadFirmware({...source,url:bad,sha256:'0'.repeat(64)}),'HASH_MISMATCH');
+  });
+
+  await step('named ZIP manifest segments boot through ROM and retain separate cache identities',async()=>{
+    const manifest=JSON.parse(await readFile(new URL('web/wasm/fw/hello.json',root),'utf8'));
+    const url='https://platform.example/factory-segments.zip',manifestUrl='https://platform.example/factory-segments.json',entries=[];
+    const raw={};
+    for(const kind of ['bootloader','ptable','app']){
+      const data=await readFile(new URL(`web/wasm/fw/${manifest.files[kind]}`,root));raw[kind]=data;
+      entries.push({name:`${kind}.bin`,data,descriptor:kind==='app'});
+    }
+    entries.push({name:'README_flash.txt',data:Buffer.from('Use the pinned manifest offsets.')},{name:'alternate.bin',data:raw.app});
+    const archive=firmwareZipEntries(entries),containerHash=await sha256(archive);
+    delete manifest.files.rom;
+    for(const [kind,data] of Object.entries(raw))manifest.files[kind]={url,sha256:await sha256(data),archive:{format:'zip-entry',entry:`${kind}.bin`,sha256:containerHash}};
+    const bytes=new TextEncoder().encode(JSON.stringify(manifest)),source={manifestUrl,sha256:await sha256(bytes)};
+    responseOverrides.set(url,archive);responseOverrides.set(manifestUrl,bytes);
+    const loaded=await runtime.loadFirmware(source);assert.equal(loaded.firmware.appDirect,false);
+    assert.equal(fetchCounts.get(url),1,'A single load downloads the shared container once');
+    for(const [kind,data] of Object.entries(raw)){
+      const receipt=loaded.firmware.artifacts.find(entry=>entry.kind===kind);
+      assert.equal(receipt.bytes,data.length);assert.equal(receipt.sha256,await sha256(data));
+      assert.deepEqual(receipt.archive,manifest.files[kind].archive);
+    }
+    await runtime.start();await api.waitFor({serialIncludes:'Hello world!',port:'uart0',timeoutMs:30000});await runtime.pause();
+    assert.equal(workerStarts.at(-1),false,'Split factory images must use real ROM boot.');
+    const shared=decodeScene(new URLSearchParams(new URL(await api.share()).hash.slice(1)).get('scene'));
+    assert.deepEqual(shared.firmware,source);
+    const requests=fetchCounts.get(url);responseOverrides.set(url,Buffer.from('verified extracted cache required'));
+    await runtime.configure(shared);await runtime.loadFirmware();assert.equal(fetchCounts.get(url),requests);
+
+    const variant=async(label,edit)=>{
+      const archiveUrl=`https://platform.example/${label}.zip`,planUrl=`https://platform.example/${label}.json`,plan=structuredClone(manifest);
+      for(const entry of Object.values(plan.files))entry.url=archiveUrl;
+      edit?.(plan);const body=new TextEncoder().encode(JSON.stringify(plan));
+      responseOverrides.set(archiveUrl,archive);responseOverrides.set(planUrl,body);
+      return {archiveUrl,source:{manifestUrl:planUrl,sha256:await sha256(body)}};
+    };
+    const alternate=structuredClone(manifest);alternate.files.app.archive.entry='alternate.bin';
+    const alternateBytes=new TextEncoder().encode(JSON.stringify(alternate)),alternateUrl='https://platform.example/next-member.json';
+    responseOverrides.set(url,archive);responseOverrides.set(alternateUrl,alternateBytes);
+    await runtime.loadFirmware({manifestUrl:alternateUrl,sha256:await sha256(alternateBytes)});
+    assert.equal(fetchCounts.get(url),requests+1,'An uncached member in the next load must fetch its container again');
+
+    const wrongContainer=await variant('container-hash-boundary',plan=>{plan.files.ptable.archive.sha256='0'.repeat(64);});
+    await expectCode(()=>runtime.loadFirmware(wrongContainer.source),'HASH_MISMATCH');
+    assert.equal(fetchCounts.get(wrongContainer.archiveUrl),2,'A different container hash cannot reuse the prior slot');
+    const wrongMember=await variant('member-hash-boundary',plan=>{plan.files.ptable.sha256='0'.repeat(64);});
+    await expectCode(()=>runtime.loadFirmware(wrongMember.source),'HASH_MISMATCH');
+    assert.equal(fetchCounts.get(wrongMember.archiveUrl),1,'A reused container still checks each selected BIN hash');
+
+    const cancelled=await variant('cancelled-container-load');let cancelAction;
+    const unsubscribe=runtime.subscribe(event=>{
+      if(event.type==='load-progress'&&event.stage==='extract'&&event.kind==='ptable'){
+        unsubscribe();cancelAction=runtime.cancelPendingLoad();
+      }
+    });
+    await expectCode(()=>runtime.loadFirmware(cancelled.source),'FETCH_ABORTED');await cancelAction;
+    assert.equal((await runtime.observe()).status,'configured');assert.equal(fetchCounts.get(cancelled.archiveUrl),1);
+    await runtime.loadFirmware(cancelled.source);
+    assert.equal(fetchCounts.get(cancelled.archiveUrl),2,'Cancellation releases the container slot; verified individual members may still be cached');
   });
 
   const stopwatchScene = createDefaultScene(catalog, 'm5stack-stopwatch');

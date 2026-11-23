@@ -121,7 +121,7 @@ mod tests {
         assert_eq!(b.sample.lock().unwrap().accel_g,[0.2,0.1,1.0]);
         let mut bare=esp_soc::board::NoBoard;assert!(bare.flight_motor_pwm().is_none());assert!(!bare.set_flight_sample([0.0;3],[0.0;3],None,None));
     }
-    fn pins()->SpiPins {SpiPins{sclk:1<<44,mosi:1<<14,miso:Some(43),cs:1<<46}}
+    fn pins()->SpiPins {SpiPins {sclk:1<<44,mosi:1<<14,miso:Some(43),cs:1<<46,keep_cs:false}}
     #[test]
     fn imu_requires_physical_routes_and_input_is_finite() {
         let mut b=StampFly::new();assert_eq!(b.spi_transfer_pins(2,pins(),&[0x80,0,0],3),[0xff,0,0x24]);

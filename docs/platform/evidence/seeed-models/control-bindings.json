@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-22T07:56:59.228601Z",
+  "scope": "Static source, geometry and control-identity evidence; browser and firmware execution are separate.",
+  "rebuildCommand": "python3 tools/build-seeed-models.py seeed-sensecap-watcher seeed-sensecap-indicator --output web/platform/assets",
+  "sources": [
+    {
+      "id": "watcher-header.h",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/components/sensecap-watcher/include/sensecap-watcher.h",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "httpStatus": 200,
+      "rights": "Original manufacturer source notices retained; no relicensing asserted.",
+      "sourceBytes": 20813,
+      "sourceSha256": "339cb0b5e54e5a6ed0ef24a092c5536c11b5d40c19e7d8a4ecc11cd2b9addfd5",
+      "archiveFile": "controls/watcher-header.h.gz",
+      "archiveEncoding": "gzip",
+      "archiveBytes": 3345,
+      "archiveSha256": "ffa54ce443ebee6858a4955f2fc57cf881909e3c6ef038b3a36eeb0ececf2e15"
+    },
+    {
+      "id": "watcher-bsp.c",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/components/sensecap-watcher/sensecap-watcher.c",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "httpStatus": 200,
+      "rights": "Original manufacturer source notices retained; no relicensing asserted.",
+      "sourceBytes": 41435,
+      "sourceSha256": "863ddc65720174d08090d2fd93ffab6f9b830e1281cf908c01862f3335f3e0fe",
+      "archiveFile": "controls/watcher-bsp.c.gz",
+      "archiveEncoding": "gzip",
+      "archiveBytes": 9585,
+      "archiveSha256": "a7b8a3ef745dcb63984a7445474a6ea7f43856cd7360864e6566b59bd20f4c0e"
+    },
+    {
+      "id": "indicator-bsp.c",
+      "url": "https://raw.githubusercontent.com/Seeed-Solution/SenseCAP_Indicator_ESP32/ed94f161a51b2ed1077d7eb4b887ac9f0d45fdaf/components/bsp/src/boards/sensecap_indicator_board.c",
+      "fetchedAt": "2026-11-22T07:46:35Z",
+      "httpStatus": 200,
+      "rights": "Original manufacturer source notices retained; no relicensing asserted.",
+      "sourceBytes": 9503,
+      "sourceSha256": "fe1b67a80a9d84baceb41dd62e8590986003922111f5e501feab061585a93d77",
+      "archiveFile": "controls/indicator-bsp.c.gz",
+      "archiveEncoding": "gzip",
+      "archiveBytes": 2343,
+      "archiveSha256": "b5e21955eb1b7bce0193c09500fda6f4db5eeab065965f76aea3452319688233"
+    }
+  ],
+  "bindings": [
+    {
+      "productId": "seeed-sensecap-watcher",
+      "part": "wheel",
+      "controlId": "knob",
+      "interaction": "button press/release",
+      "sourceComponents": [
+        37
+      ],
+      "hardwareMapping": "PCA9535 P03; press only. Encoder A/B GPIO41/GPIO42 are separate inputs.",
+      "sourceIds": [
+        "watcher-header.h",
+        "watcher-bsp.c"
+      ],
+      "beforeSha256": {
+        "geometry.bin": "f27fded41e0771d6db966b8134294b435f7a59049ea742833219db844d7c63c4",
+        "model.json": "2468a5430c89d51ad27003d8a183e5cf74ee13e589f2b83a83169af319cfe549",
+        "model-plan.json": "b51aabc6a96bb9d4eca11b47b8cc4762c130f0eaa692c8a8be2b49097f89a6f1",
+        "build-check.json": "798d418951d96eb3703b9dda3c6881d9d1182a48f8cb28d170e5839709aa3db6"
+      },
+      "afterSha256": {
+        "geometry.bin": "f27fded41e0771d6db966b8134294b435f7a59049ea742833219db844d7c63c4",
+        "model.json": "41df4a15364d442e240683094e750f79053aa8a21efac95c790549ba019d91a0",
+        "model-plan.json": "b9bf9ae09582becab5bb4ecdc1a145ff2aa67fecc7503712c4fee087df708f26",
+        "build-check.json": "40b9dcb35584bf328db482c43463dde94f261417f3404da95487f09513154cab"
+      },
+      "geometryByteIdentical": true
+    },
+    {
+      "productId": "seeed-sensecap-indicator",
+      "part": "top-button",
+      "controlId": "button",
+      "interaction": "button press/release",
+      "sourceComponents": [
+        46
+      ],
+      "hardwareMapping": "GPIO38, active low.",
+      "sourceIds": [
+        "indicator-bsp.c"
+      ],
+      "beforeSha256": {
+        "geometry.bin": "39f06870de0f59f58a6552c49a5e44f73f6c2709e6cfc9f341c0a85a672bfe54",
+        "model.json": "b10264aec09368a2ba6f1a3afb58f7240d2d4b91c7c5a95eaf99765aa663e283",
+        "model-plan.json": "a38a2ade03939952738e8ce78c6dae25cd361d4465632cab60ce4d6d022dc675",
+        "build-check.json": "38fcd916c92d6783cffa8488f50d8d434689a2a378e0fd5101d9f639ec303632"
+      },
+      "afterSha256": {
+        "geometry.bin": "39f06870de0f59f58a6552c49a5e44f73f6c2709e6cfc9f341c0a85a672bfe54",
+        "model.json": "9cec0f717e9607426ff158995358117aa64f3107dda6b948b4e15d57afc67532",
+        "model-plan.json": "7ea5ccd9f513082b0759205a31ce69eac9b80fb25de79a36a0c3d27837978026",
+        "build-check.json": "2955a18f977e982ea35d60f8900477810b14c856d05a7bf0c5e9c22d1c653282"
+      },
+      "geometryByteIdentical": true
+    }
+  ],
+  "catalogValidation": {
+    "status": "pass",
+    "catalogRole": "candidate Seeed SenseCAP input integration catalog; not the merged main catalog",
+    "catalogSha256": "048e8beb374750ce74a16b72535a9a99195402708b97b32a1770c36c8c04d268",
+    "scope": "Exact button ID and type checks for the two new bindings. Full 13-model results are recorded in checks.json; the integration tree must rerun those checks after merging."
+  }
+}

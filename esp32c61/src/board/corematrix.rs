@@ -246,7 +246,7 @@ mod tests {
     }
     #[test]
     fn sd_detect_power_routing_and_protocol_reset_preserve_storage() {
-        let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();let pins=SpiPins{sclk:1<<25,mosi:1<<27,miso:Some(26),cs:1<<28};let cmd=[0x40,0,0,0,0,0x95];
+        let mut b=CoreMatrix::new();let mut ds=b.i2c_devices();let pins=SpiPins {sclk:1<<25,mosi:1<<27,miso:Some(26),cs:1<<28,keep_cs:false};let cmd=[0x40,0,0,0,0,0x95];
         assert_eq!(read(&mut ds,0x4f,8,1)[0]&2,2);b.attach_spi_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0;1<<20])),Default::default()).unwrap();assert_eq!(read(&mut ds,0x4f,8,1)[0]&2,0);
         b.spi_transfer_pins(2,pins,&cmd,0);assert_eq!(b.spi_transfer_pins(2,pins,&[],2),[255;2]);enable(&mut ds,1);
         b.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);

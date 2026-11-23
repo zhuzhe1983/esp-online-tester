@@ -1,0 +1,688 @@
+{
+  "schemaVersion": "1",
+  "id": "seeed-sensecap-watcher-w1-a",
+  "kind": "product",
+  "catalogId": "seeed-sensecap-watcher-w1-a",
+  "title": "Seeed Studio SenseCAP Watcher W1-A · Clear / AI Vision",
+  "summary": "Seeed Studio SenseCAP Watcher W1-A · Clear / AI Vision；412×412 触摸屏，ESP32-S3 + Himax HX6538。明确区分外壳/软件商业版次，显示与数字输入为部分适配。",
+  "summarySourceIds": [
+    "official-spec"
+  ],
+  "updatedAt": "2026-11-22T09:54:21Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "manufacturer": "Seeed Studio",
+    "sku": "113991315",
+    "scope": "exact SKU or explicitly selected commercial kit configuration",
+    "family": {
+      "id": "seeed-sensecap",
+      "name": "Seeed Studio SenseCAP"
+    },
+    "releaseDateBasis": "unknown"
+  },
+  "facts": [
+    {
+      "id": "commercial-identity",
+      "label": "Independent commercial SKU",
+      "value": {
+        "sku": "113991315",
+        "edition": "clear"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-spec"
+      ]
+    },
+    {
+      "id": "processor",
+      "label": "主控与协处理器",
+      "value": {
+        "main": "ESP32-S3 + Himax HX6538",
+        "coprocessor": "Himax HX6538"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ]
+    },
+    {
+      "id": "flash-memory",
+      "label": "主控 Flash",
+      "value": 32,
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "容量单位 MB；不是协处理器 Flash。"
+    },
+    {
+      "id": "psram-memory",
+      "label": "主控 PSRAM",
+      "value": 8,
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "未查证容量保留未知，不按芯片系列猜测。"
+    },
+    {
+      "id": "display",
+      "label": "显示与触摸规格",
+      "value": {
+        "width": 412,
+        "height": 412,
+        "diagonalInches": 1.45,
+        "type": "LCD",
+        "interface": "QSPI",
+        "touch": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ]
+    },
+    {
+      "id": "battery",
+      "label": "电池容量",
+      "value": 400,
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "单位 mAh；续航取决于实际工作负载。"
+    },
+    {
+      "id": "native-display-wiring",
+      "label": "原厂显示总线",
+      "value": {
+        "controller": "SPD2010",
+        "cs": 45,
+        "sclk": 7,
+        "io0": 9,
+        "io1": 1,
+        "io2": 14,
+        "io3": 13,
+        "backlight": 8,
+        "power": {
+          "controller": "PCA9535",
+          "bit": 9
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "watcher-bsp-header",
+        "watcher-bsp-source"
+      ]
+    },
+    {
+      "id": "native-input-wiring",
+      "label": "原厂输入总线",
+      "value": {
+        "touch": {
+          "controller": "SPD2010",
+          "address": 83,
+          "sda": 39,
+          "scl": 38,
+          "irqExpanderBit": 5
+        },
+        "encoder": {
+          "a": 41,
+          "b": 42,
+          "pressExpanderBit": 3
+        },
+        "expander": {
+          "address": 33,
+          "sda": 47,
+          "scl": 48,
+          "irq": 2
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "watcher-bsp-header",
+        "watcher-bsp-source",
+        "spd2010-touch-header"
+      ]
+    },
+    {
+      "id": "native-rtc-wiring",
+      "label": "RTC 地址与线序",
+      "value": {
+        "controller": "PCF8563",
+        "address": 81,
+        "sda": 47,
+        "scl": 48
+      },
+      "basis": "official",
+      "sourceIds": [
+        "watcher-bsp-header",
+        "watcher-bsp-source",
+        "pcf8563-datasheet"
+      ]
+    },
+    {
+      "id": "native-battery-adc",
+      "label": "电池 ADC 与分压算法",
+      "value": {
+        "gpio": 3,
+        "adcChannel": 2,
+        "attenuationDb": 2.5,
+        "supplyExpanderBit": 15,
+        "firmwareBatteryMultiplier": "82 / 20"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "watcher-bsp-header",
+        "watcher-bsp-source"
+      ]
+    },
+    {
+      "id": "commercial-sku",
+      "label": "Exact commercial SKU",
+      "value": "113991315",
+      "basis": "official",
+      "sourceIds": [
+        "official-spec"
+      ]
+    },
+    {
+      "id": "commercial-edition-boundary",
+      "label": "Watcher edition boundary",
+      "value": {
+        "edition": "clear",
+        "sameAiVisionFirmwareAsW1B": true,
+        "xiaozhiEdition": false
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "W1-A is the clear AI Vision edition. The XiaoZhi commercial SKU has a separately audited software image; names or same MCU do not merge their firmware identities."
+    }
+  ],
+  "sources": [
+    {
+      "id": "official-wiki",
+      "title": "Seeed Studio 官方设备文档",
+      "url": "https://wiki.seeedstudio.com/watcher_hardware_overview/",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/watcher_hardware_overview/",
+      "fetchedAt": "2026-11-22T06:54:11Z",
+      "sha256": "42897eceaff2a4761aaf9285e9467a191558fa9e942e9d49a8a68944cb2d8cef",
+      "bytes": 76288,
+      "mediaType": "text/html",
+      "archiveName": "cc1a250dae11eeb9.html"
+    },
+    {
+      "id": "official-model",
+      "title": "官方 CAD / 结构模型入口",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/main/Hardware/SenseCAP_Watcher-3D-Shell_v1.stp",
+      "kind": "manufacturer-cad",
+      "status": "linked"
+    },
+    {
+      "id": "board-config",
+      "title": "Seeed_GFX2 固定提交 SenseCAP 板级定义",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/boards/SenseCAP_Products.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/boards/SenseCAP_Products.h",
+      "fetchedAt": "2026-11-22T07:00:15Z",
+      "sha256": "8fa2940d8594ff143ddfbbc02403341fbc64d7e3bfe51d1bee7dc04ad0149e74",
+      "bytes": 3480,
+      "mediaType": "text/plain",
+      "archiveName": "ba85750325be08b2.txt"
+    },
+    {
+      "id": "board-implementation",
+      "title": "Seeed_GFX2 固定提交 SenseCAP 总线及 GPIO",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/boards/SenseCAP_Products.cpp",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/Seeed_GFX2/556df7cb0b4a097d9b81026a26fd5511f9c934d6/src/board/boards/SenseCAP_Products.cpp",
+      "fetchedAt": "2026-11-22T07:00:15Z",
+      "sha256": "bb169f55bbd9f4c101dafc8c350d367b2035a1d78c185b2a53189359f844d704",
+      "bytes": 12175,
+      "mediaType": "text/plain",
+      "archiveName": "2401511bb0a22f6f.txt"
+    },
+    {
+      "id": "xiaozhi-family-target",
+      "title": "小智 Watcher 家族目标；须服从 W1-B 商品版次限定",
+      "url": "https://raw.githubusercontent.com/78/xiaozhi-esp32/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards/sensecap-watcher/README_en.md",
+      "kind": "upstream-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/78/xiaozhi-esp32/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards/sensecap-watcher/README_en.md",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "3e185e44b2322dd14c84779f784953c17c1b1c4f21c880a8c93b75538b2cd19a",
+      "bytes": 1713,
+      "mediaType": "text/plain",
+      "archiveName": "6d1c0e926004bd4d.txt"
+    },
+    {
+      "id": "idf-spi-registers",
+      "title": "idf spi registers",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/soc/esp32s3/include/soc/spi_reg.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/soc/esp32s3/include/soc/spi_reg.h",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "3cf76a029a7aa3cd1f9eb694cec9d4c7478409e1f7e8d8912b7e1c0163136c20",
+      "bytes": 84925,
+      "mediaType": "text/plain",
+      "archiveName": "0544e7455f2ffd8d.txt"
+    },
+    {
+      "id": "idf-spi-hal",
+      "title": "idf spi hal",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/hal/esp32s3/include/hal/spi_ll.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/hal/esp32s3/include/hal/spi_ll.h",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "b6009b7cd5fc905b0b2fab58c4299050f9c1193d97ddc659681840774cf8c8fc",
+      "bytes": 41331,
+      "mediaType": "text/plain",
+      "archiveName": "45af5f5851132b60.txt"
+    },
+    {
+      "id": "idf-s3-signals-5",
+      "title": "idf s3 signals 5",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.2.1/components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "eede7f33a5b4569dfbc828baf35c2827aacb935602110863e5839e19c5a5a8d9",
+      "bytes": 18749,
+      "mediaType": "text/plain",
+      "archiveName": "bf7cb71e437fb878.txt"
+    },
+    {
+      "id": "watcher-bsp-header",
+      "title": "watcher bsp header",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/components/sensecap-watcher/include/sensecap-watcher.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/components/sensecap-watcher/include/sensecap-watcher.h",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "sha256": "339cb0b5e54e5a6ed0ef24a092c5536c11b5d40c19e7d8a4ecc11cd2b9addfd5",
+      "bytes": 20813,
+      "mediaType": "text/plain",
+      "archiveName": "a21f90524b771e73.txt"
+    },
+    {
+      "id": "watcher-bsp-source",
+      "title": "watcher bsp source",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/components/sensecap-watcher/sensecap-watcher.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/components/sensecap-watcher/sensecap-watcher.c",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "sha256": "863ddc65720174d08090d2fd93ffab6f9b830e1281cf908c01862f3335f3e0fe",
+      "bytes": 41435,
+      "mediaType": "text/plain",
+      "archiveName": "c5a217e700ebe27f.txt"
+    },
+    {
+      "id": "watcher-dependencies",
+      "title": "watcher dependencies",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/components/sensecap-watcher/idf_component.yml",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/components/sensecap-watcher/idf_component.yml",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "sha256": "be3a6ec653883b52b259309b318775d1ab6852a8d5bf527ba819b726a593b354",
+      "bytes": 697,
+      "mediaType": "text/plain",
+      "archiveName": "557b0deea5c55297.txt"
+    },
+    {
+      "id": "watcher-config",
+      "title": "watcher config",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/examples/factory_firmware/sdkconfig.defaults",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/SenseCAP-Watcher-Firmware/8e37f7ccd3d836bb99f483e0f6e74e8252406644/examples/factory_firmware/sdkconfig.defaults",
+      "fetchedAt": "2026-11-22T07:21:32Z",
+      "sha256": "f67b91350534660aef7cbb6f9da6b46d372641989ebb38f67abf9e62bd6c9665",
+      "bytes": 2998,
+      "mediaType": "text/plain",
+      "archiveName": "49d75edf824b1896.txt"
+    },
+    {
+      "id": "spd2010-lcd",
+      "title": "spd2010 lcd",
+      "url": "https://raw.githubusercontent.com/espressif/esp-iot-solution/f721a40c032f6168844fe3bd321bc182e2593348/components/display/lcd/esp_lcd_spd2010/esp_lcd_spd2010.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-iot-solution/f721a40c032f6168844fe3bd321bc182e2593348/components/display/lcd/esp_lcd_spd2010/esp_lcd_spd2010.c",
+      "fetchedAt": "2026-11-22T07:21:40Z",
+      "sha256": "96abc66d799b4afc195e375ac3b75b957a24fc16c5e15948c0d1f0c77bdf9536",
+      "bytes": 29274,
+      "mediaType": "text/plain",
+      "archiveName": "342b947e7bf5fc9d.txt"
+    },
+    {
+      "id": "spd2010-touch",
+      "title": "spd2010 touch",
+      "url": "https://raw.githubusercontent.com/espressif/esp-iot-solution/f721a40c032f6168844fe3bd321bc182e2593348/components/display/lcd_touch/esp_lcd_touch_spd2010/esp_lcd_touch_spd2010.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-iot-solution/f721a40c032f6168844fe3bd321bc182e2593348/components/display/lcd_touch/esp_lcd_touch_spd2010/esp_lcd_touch_spd2010.c",
+      "fetchedAt": "2026-11-22T07:21:40Z",
+      "sha256": "5ac57428dbef4282e636d4ea60bed162d49602fad111e0582ff1d07b53f1ab8f",
+      "bytes": 17456,
+      "mediaType": "text/plain",
+      "archiveName": "a323cb3201ab4446.txt"
+    },
+    {
+      "id": "spd2010-touch-header",
+      "title": "spd2010 touch header",
+      "url": "https://raw.githubusercontent.com/espressif/esp-iot-solution/f721a40c032f6168844fe3bd321bc182e2593348/components/display/lcd_touch/esp_lcd_touch_spd2010/include/esp_lcd_touch_spd2010.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-iot-solution/f721a40c032f6168844fe3bd321bc182e2593348/components/display/lcd_touch/esp_lcd_touch_spd2010/include/esp_lcd_touch_spd2010.h",
+      "fetchedAt": "2026-11-22T07:21:40Z",
+      "sha256": "61e5105782b128d1d10df1a41c3ada842724c4ac4ed00f40a90c5da76279d62f",
+      "bytes": 1570,
+      "mediaType": "text/plain",
+      "archiveName": "deb15d1060c57224.txt"
+    },
+    {
+      "id": "codec-i2c-address",
+      "title": "codec i2c address",
+      "url": "https://raw.githubusercontent.com/espressif/esp-adf/8d74459b090ed19df061c81a2f90b7755cea69d9/components/esp_codec_dev/platform/audio_codec_ctrl_i2c.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-adf/8d74459b090ed19df061c81a2f90b7755cea69d9/components/esp_codec_dev/platform/audio_codec_ctrl_i2c.c",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "89d1340f040d03743808ba924f9e21ae671ac6208f1f08783ed25b281eb5d838",
+      "bytes": 7694,
+      "mediaType": "text/plain",
+      "archiveName": "40eccff2872d8af3.txt"
+    },
+    {
+      "id": "es8311-register-init",
+      "title": "es8311 register init",
+      "url": "https://raw.githubusercontent.com/espressif/esp-adf/8d74459b090ed19df061c81a2f90b7755cea69d9/components/esp_codec_dev/device/es8311/es8311.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-adf/8d74459b090ed19df061c81a2f90b7755cea69d9/components/esp_codec_dev/device/es8311/es8311.c",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "0da6374b8b3bb1dea81b2d2077c2f95683bfb39077086e162f5a1bc98749ca67",
+      "bytes": 29265,
+      "mediaType": "text/plain",
+      "archiveName": "f44db11ffd129b6c.txt"
+    },
+    {
+      "id": "es7243e-register-init",
+      "title": "es7243e register init",
+      "url": "https://raw.githubusercontent.com/espressif/esp-adf/8d74459b090ed19df061c81a2f90b7755cea69d9/components/esp_codec_dev/device/es7243e/es7243e.c",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-adf/8d74459b090ed19df061c81a2f90b7755cea69d9/components/esp_codec_dev/device/es7243e/es7243e.c",
+      "fetchedAt": "2026-11-22T07:35:23Z",
+      "sha256": "ab7b7e10e89efbe400033ef2fe036f223d38e7ea568c9d51db4c999a24dde675",
+      "bytes": 9063,
+      "mediaType": "text/plain",
+      "archiveName": "9c88e2c95c4fce6a.txt"
+    },
+    {
+      "id": "pcf8563-datasheet",
+      "title": "pcf8563 datasheet",
+      "url": "https://www.nxp.com/docs/en/data-sheet/PCF8563.pdf",
+      "kind": "official-datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://www.nxp.com/docs/en/data-sheet/PCF8563.pdf",
+      "fetchedAt": "2026-11-22T07:47:11Z",
+      "sha256": "2ed5d1b0a1051d0e81399417c4ff0ced0658fa36e13c0487670f9cb6dfb4f1d4",
+      "bytes": 601986,
+      "mediaType": "application/pdf",
+      "archiveName": "2a7d917a149f71c8.txt"
+    },
+    {
+      "id": "commercial-sku-spec",
+      "title": "Shared family base SKU datasheet (not this edition identity)",
+      "url": "https://files.seeedstudio.com/Bazaar/product_pdf/113991275.pdf",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://files.seeedstudio.com/Bazaar/product_pdf/113991275.pdf",
+      "fetchedAt": "2026-11-22T08:58:09Z",
+      "sha256": "57b83bcd921baed7204b67b5d34895e97eca27c2dd36cce29af058adce69559c",
+      "bytes": 1308548,
+      "mediaType": "application/pdf",
+      "archiveName": "scope-6b5d3871d57ea0be.pdf"
+    },
+    {
+      "id": "official-spec",
+      "title": "Official exact commercial SKU datasheet",
+      "url": "https://files.seeedstudio.com/Bazaar/product_pdf/113991315.pdf",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://files.seeedstudio.com/Bazaar/product_pdf/113991315.pdf",
+      "fetchedAt": "2026-11-22T08:58:08Z",
+      "sha256": "b9167bd07f70e644abd876268d1dafca9fd679c0969e02c4c93c26c081fa08ad",
+      "bytes": 1573573,
+      "mediaType": "application/pdf",
+      "archiveName": "scope-38167bf72b0e6eef.pdf"
+    },
+    {
+      "id": "official-product",
+      "title": "Official exact storefront item",
+      "url": "https://www.seeedstudio.com/SenseCAP-Watcher-W1-A-p-5979.html",
+      "kind": "official-documentation",
+      "status": "failed",
+      "attemptedAt": "2026-11-22T08:51:18Z",
+      "error": "HTTPError: HTTP Error 403: Forbidden"
+    },
+    {
+      "id": "uiflow1-guide",
+      "title": "M5Stack UIFlow1 官方设备入口",
+      "url": "https://docs.m5stack.com/en/uiflow/uiflow_web",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow/uiflow_web",
+      "fetchedAt": "2026-11-22T07:05:10Z",
+      "sha256": "813a40fedd984c50e71f2039c033453be3ffd2d71514ba257a6dbccf6d6950ae",
+      "bytes": 267692,
+      "mediaType": "text/html",
+      "archiveName": "46a04534dcc20b0a.html"
+    },
+    {
+      "id": "uiflow2-source",
+      "title": "UIFlow2 固定提交官方项目说明",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/README.md",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/README.md",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "1c10ad4b5d86789a4eb5e8c87b7c499ac670fbfdcbfcc17dae736ea69a2ed4a9",
+      "bytes": 3777,
+      "mediaType": "text/plain",
+      "archiveName": "c70f132f0306edb1.txt"
+    },
+    {
+      "id": "uiflow2-xiao-board",
+      "title": "UIFlow2 基础 XIAO ESP32-S3 目标（不是整机屏幕适配）",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/third-party/boards/SEEED_STUDIO_XIAO_ESP32S3/board.json",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/third-party/boards/SEEED_STUDIO_XIAO_ESP32S3/board.json",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "68d76df90144f2f5d86b13b19a177723472ac52be5d8c279757edb9bb732b183",
+      "bytes": 336,
+      "mediaType": "text/plain",
+      "archiveName": "2f8b229988ce9bcc.json"
+    },
+    {
+      "id": "xiaozhi-board-inventory",
+      "title": "小智固定提交板型目录（逐型号调查范围）",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards",
+      "kind": "upstream-source-code",
+      "status": "linked"
+    },
+    {
+      "id": "factory-source-1",
+      "title": "官方原厂恢复与分区地址",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/README.md",
+      "kind": "official-firmware-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/README.md",
+      "fetchedAt": "2026-11-22T07:03:07Z",
+      "sha256": "33bae4ef6f4df1e9508531f06c6a5fc93dee40dcdc063a4c2e0477b9b8a6f24a",
+      "bytes": 5337,
+      "mediaType": "text/plain",
+      "archiveName": "19a2997de1273b9f.txt"
+    },
+    {
+      "id": "factory-segment-1",
+      "title": "已校验的官方固件分段 1",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/bootloader/bootloader.bin",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/bootloader/bootloader.bin",
+      "fetchedAt": "2026-11-22T07:03:02Z",
+      "sha256": "20e027296feb6e2b07212c50dbd86437925b41644a2e195ffafe38a4db3bf31a",
+      "bytes": 22992,
+      "mediaType": "application/octet-stream",
+      "archiveName": "5106643a21c6d943.bin"
+    },
+    {
+      "id": "factory-segment-2",
+      "title": "已校验的官方固件分段 2",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/partition_table/partition-table.bin",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/partition_table/partition-table.bin",
+      "fetchedAt": "2026-11-22T07:03:02Z",
+      "sha256": "48e7911c26bd38efb5e2fd809dec70c47cebbc61665c9f5074ccb77c73e30afb",
+      "bytes": 3072,
+      "mediaType": "application/octet-stream",
+      "archiveName": "c51dcd9ecf1ac108.bin"
+    },
+    {
+      "id": "factory-segment-3",
+      "title": "已校验的官方固件分段 3",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/ota_data_initial.bin",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/ota_data_initial.bin",
+      "fetchedAt": "2026-11-22T07:03:02Z",
+      "sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f",
+      "bytes": 8192,
+      "mediaType": "application/octet-stream",
+      "archiveName": "e9c0adb640526926.bin"
+    },
+    {
+      "id": "factory-segment-4",
+      "title": "已校验的官方固件分段 4",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/factory_firmware.bin",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/factory_firmware.bin",
+      "fetchedAt": "2026-11-22T07:03:02Z",
+      "sha256": "520526ff477e64db859040f332ac43b2950a51ba6415c185140d2872354ad29f",
+      "bytes": 7447904,
+      "mediaType": "application/octet-stream",
+      "archiveName": "ffdec84b05106086.bin"
+    },
+    {
+      "id": "factory-segment-5",
+      "title": "已校验的官方固件分段 5",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/srmodels/srmodels.bin",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/srmodels/srmodels.bin",
+      "fetchedAt": "2026-11-22T07:03:07Z",
+      "sha256": "9f3d842748d8c413024870de4eefb4a793782d9b1cca3e2f80723daa1aa85b46",
+      "bytes": 291168,
+      "mediaType": "application/octet-stream",
+      "archiveName": "08215633aaf29163.bin"
+    },
+    {
+      "id": "factory-segment-6",
+      "title": "已校验的官方固件分段 6",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/storage.bin",
+      "kind": "official-firmware-image",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/OSHW-SenseCAP-Watcher/3ca69aefa8441f57d38993a39df714048633d032/Firmware/ESP32/V1.1.7/storage.bin",
+      "fetchedAt": "2026-11-22T07:03:07Z",
+      "sha256": "b9035feb8e50eb10ed90041df592c560123108d88ed4f6a755dec6ecad62eb3e",
+      "bytes": 6225920,
+      "mediaType": "application/octet-stream",
+      "archiveName": "aa392d9bd78b8935.bin"
+    }
+  ],
+  "revisions": [],
+  "assets": [],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "Exact commercial announcement date",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Not established. Neither source modification time nor a date-like SKU is used as a launch date."
+    },
+    {
+      "id": "hardware-revision",
+      "label": "User hardware manufacturing revision",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Document/PCB revisions are source identities, not a claim about the user’s unit."
+    },
+    {
+      "id": "complete-runtime",
+      "label": "Complete emulation and real hardware compatibility",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-spec"
+      ],
+      "notes": "Partial bus models and individual firmware output tests are reported separately; no real hardware test was performed."
+    },
+    {
+      "id": "uiflow1",
+      "label": "UIFlow1 exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "uiflow1-guide"
+      ],
+      "notes": "Official UIFlow1 entry was checked; no exact SKU / screen configuration target was located. This is not a claim that future upstream support is impossible."
+    },
+    {
+      "id": "uiflow2",
+      "label": "UIFlow2 exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "uiflow2-source",
+        "uiflow2-xiao-board"
+      ],
+      "notes": "The base XIAO ESP32-S3 board does not establish compatibility with this exact peripheral set or selected panel."
+    },
+    {
+      "id": "xiaozhi",
+      "label": "XiaoZhi exact product build",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "xiaozhi-board-inventory"
+      ],
+      "notes": "The reviewed fixed board inventory did not establish this exact commercial edition or panel configuration. No same-MCU compatibility is inferred."
+    }
+  ],
+  "collectionNotes": [
+    "Fetched sources identify actual original HTTP bodies with final URL, UTC, bytes and SHA-256. Linked/failed sources do not invent body receipts.",
+    "A pinned firmware image and a source-based model do not establish complete runtime or physical-hardware validation.",
+    "Published chronology is used only when an announcement is found; document update dates and dates embedded in SKUs are not release dates."
+  ]
+}

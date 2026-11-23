@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "recordedAt": "2026-11-22T10:06:19.235248+00:00",
+  "scope": "Native targeted digital-board wiring correctness; no factory boot or physical RF claim.",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "profile": "debug; unmodified repository configuration",
+  "buildConcurrency": 2,
+  "checks": [
+    {
+      "command": "cargo test -p esp32s3 --lib seeed_indicator",
+      "exitCode": 0,
+      "passed": 9,
+      "tests": [
+        "radio_identity_needs_actual_expander_nss_and_each_spi_route",
+        "nss_edges_from_i2c_preserve_split_reads_without_board_ticks",
+        "reset_busy_and_common_supply_gate_are_observed_through_port_registers",
+        "tx_completion_reaches_port_dio1_and_gpio42_then_only_read_port_clears_irq",
+        "explicit_receive_requires_matching_radio_config_and_delivers_guest_fifo",
+        "shared_lcd_selection_and_expander_input_direction_do_not_select_radio",
+        "indicator_gx_requires_nine_bit_init_reset_backlight_and_every_rgb_lane",
+        "indicator_revisions_expose_only_their_real_touch_address_and_reset_gate",
+        "dx_rgb_profile_needs_reset_and_routing_without_inventing_a_spi_controller"
+      ]
+    },
+    {
+      "command": "cargo test -p esp32s3 --test seeed_indicator_lora",
+      "exitCode": 0,
+      "passed": 3,
+      "tests": [
+        "only_exact_lora_profiles_allocate_a_radio_and_keep_the_gx_geometry",
+        "hardware_i2c_controls_radio_spi_and_rejects_wrong_sda_clock_and_miso",
+        "busy_transitions_assert_real_gpio42_until_the_input_port_is_read"
+      ]
+    },
+    {
+      "command": "cargo clippy -p esp32s3 --all-targets -- -D warnings",
+      "exitCode": 0
+    }
+  ],
+  "sourceHashes": {
+    "esp32s3/src/board/seeed_indicator_lora.rs": "7a2a87ef47b8b3021ec5ba745b6b8a4aa72520262966b1b3811a17338f9afa42",
+    "esp32s3/src/board/seeed_indicator.rs": "2ff5cccb7195cd26947af8290fdc73933f815e0d433596fd8f952b36e0f9e447",
+    "esp32s3/src/board/mod.rs": "2dd57f03b077bbbfed8ef4786352ca62497ef71ab6e1b46acdfda16d3d955078",
+    "esp32s3/tests/seeed_indicator_lora.rs": "4b21ed3fe250f39cd38ec546db678f6b020be0c9b1fcbb041421874c91200088"
+  },
+  "limits": [
+    "No CPU/bus/scheduler or shared SX1262 changes.",
+    "No extra radio state in ordinary D1/D1S; new wrappers allocate the optional device.",
+    "Power-off is an internal ideal powered-domain fixture, not a new user power-control interface.",
+    "No complete LoRa supply schematic was obtained; GPIO wiring is supported by two fixed official source versions.",
+    "No production WASM was rebuilt for this targeted test run. Firmware startup and end-to-end platform packet validation remain independent integration checks."
+  ]
+}

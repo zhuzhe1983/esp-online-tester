@@ -1130,6 +1130,7 @@ fn read_flush_reports_terminal_i2s_and_lcd_dma_descriptors() {
             3 => { bus.periph.i2s0.write(0x2c, 15 << 13); bus.periph.i2s0.write(0x54, (1 << 16) | 3); bus.periph.i2s0.write(0x24, 4); bus.periph.i2s0.sample_rate = crate::periph::CPU_HZ as u32; }
             4 => { bus.periph.i2s1.write(0x2c, 15 << 13); bus.periph.i2s1.write(0x54, (1 << 16) | 3); bus.periph.i2s1.write(0x24, 4); bus.periph.i2s1.sample_rate = crate::periph::CPU_HZ as u32; }
             _ => {
+                bus.periph.lcd_cam.set_clock_enabled(true); bus.periph.lcd_cam.lcd_clock = (1 << 31) | (3 << 29);
                 bus.periph.lcd_cam.lcd_user = 1 << 27;
                 bus.periph.lcd_cam.lcd_ctrl = 1 << 31;
                 bus.periph.lcd_cam.lcd_ctrl1 = 511 << 8;

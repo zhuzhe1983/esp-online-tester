@@ -28,6 +28,11 @@ pub mod stackchan;
 mod stackchan_host;
 mod stackchan_base;
 pub mod dinmeter;
+pub mod seeed_xiao_ips;
+pub mod seeed_ee;
+pub mod seeed_sensecap;
+pub mod seeed_indicator;
+pub mod seeed_indicator_lora;
 mod tembed_cc1101;
 mod stamps3;
 mod stamps3bat;
@@ -41,6 +46,7 @@ pub mod paperdiy;
 pub mod papercolor;
 mod papers3;
 pub mod metalio_ink4;
+pub mod seeed_reterminal;
 pub mod cardputer_adv;
 pub mod cardputer;
 pub mod tdeck;
@@ -89,6 +95,23 @@ pub fn make_board(name: &str) -> Option<Board> {
         "lilygo-t-sim7080-s3" => Some(Box::new(lilygo_io::LilygoIo::t_sim7080_s3())),
         "lilygo-t-camera-s3" => Some(Box::new(lilygo_io::LilygoIo::t_camera_s3())),
         "lilygo-t-simcam" => Some(Box::new(lilygo_io::LilygoIo::t_simcam())),
+        name if name.starts_with("seeed-xiao-epaper-ee") => seeed_ee::make_board(name),
+        "seeed-trmnl-75-diy" => Some(Box::new(esp_soc::board::seeed_xiao_epaper::SeeedXiaoEpaper::new(esp_soc::board::seeed_xiao_epaper::Variant::TrmnlS3,crate::periph::CPU_HZ/1000))),
+        "seeed-sensecap-watcher" => Some(Box::new(seeed_sensecap::SeeedWatcher::new())),
+        "seeed-sensecap-indicator" | "seeed-sensecap-indicator-gx" => Some(Box::new(seeed_indicator::SeeedIndicator::new(seeed_indicator::IndicatorPanel::Gx))),
+        "seeed-sensecap-indicator-dx" => Some(Box::new(seeed_indicator::SeeedIndicator::new(seeed_indicator::IndicatorPanel::Dx))),
+        "seeed-sensecap-indicator-d1l" => Some(Box::new(seeed_indicator_lora::SeeedIndicatorLoRa::new(seeed_indicator_lora::Variant::D1L))),
+        "seeed-sensecap-indicator-d1pro" => Some(Box::new(seeed_indicator_lora::SeeedIndicatorLoRa::new(seeed_indicator_lora::Variant::D1Pro))),
+        "seeed-sensecap-indicator-meshtastic" => Some(Box::new(seeed_indicator_lora::SeeedIndicatorLoRa::new(seeed_indicator_lora::Variant::Meshtastic))),
+        "seeed-reterminal-sticky" => Some(Box::new(seeed_reterminal::SeeedReTerminal::new(seeed_reterminal::Variant::Sticky))),
+        "seeed-reterminal-e1001" => Some(Box::new(seeed_reterminal::SeeedReTerminal::new(seeed_reterminal::Variant::E1001))),
+        "seeed-reterminal-e1002" => Some(Box::new(seeed_reterminal::SeeedReTerminal::new(seeed_reterminal::Variant::E1002))),
+        "seeed-reterminal-e1004" => Some(Box::new(seeed_reterminal::SeeedReTerminal::new(seeed_reterminal::Variant::E1004))),
+        "seeed-reterminal-e1003" => Some(Box::new(seeed_reterminal::SeeedReTerminal::new(seeed_reterminal::Variant::E1003))),
+        "seeed-xiao-ips-147" => Some(Box::new(seeed_xiao_ips::SeeedXiaoIps::new(seeed_xiao_ips::IpsSize::Touch147))),
+        "seeed-xiao-ips-114" => Some(Box::new(seeed_xiao_ips::SeeedXiaoIps::new(seeed_xiao_ips::IpsSize::Lcd114))),
+        "seeed-xiao-ips-096" => Some(Box::new(seeed_xiao_ips::SeeedXiaoIps::new(seeed_xiao_ips::IpsSize::Lcd096))),
+
         "tembed-cc1101" | "lilygo-t-embed-cc1101" => Some(Box::new(tembed_cc1101::TEmbedCc1101::new())),
         "airquality" | "m5stack-k131" => Some(Box::new(airquality::AirQuality::new())),
         "airquality-v11" | "m5stack-k131-v11" => Some(Box::new(airquality::AirQuality::v11())),

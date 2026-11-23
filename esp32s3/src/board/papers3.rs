@@ -87,7 +87,7 @@ mod tests {
     use super::*;
     #[test]
     fn spi_sd_needs_correct_clock_mosi_miso_select_and_survives_board_reinitialization() {
-        let mut b=PaperS3::new();let pins=SpiPins{sclk:1<<39,mosi:1<<38,miso:Some(40),cs:1<<47};
+        let mut b=PaperS3::new();let pins=SpiPins {sclk:1<<39,mosi:1<<38,miso:Some(40),cs:1<<47,keep_cs:false};
         assert_eq!(b.spi_transfer_pins(2,pins,&[0x40,0,0,0,0,0x95],0),Vec::<u8>::new());assert_eq!(b.spi_transfer_pins(2,pins,&[],2),[255,255]);
         b.attach_spi_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0;1<<20])),Default::default()).unwrap();
         b.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);

@@ -1183,7 +1183,7 @@ impl<S: Soc> Machine<S> {
                 "knob" => {
                     let mut p = rest.split_whitespace(); let dir = p.next().unwrap_or("cw"); let n: usize = p.next().map(|x| x.parse().unwrap_or(1)).unwrap_or(1);
                     let (clk, dt) = board.encoder().ok_or_else(|| format!("line {}: this board has no encoder", ln + 1))?;
-                    let step = (0.002 * hz) as u64;   // 2 ms per quadrature phase
+                    let step = (f64::from(board.encoder_phase_ms().max(1)) * hz / 1000.) as u64;
                     let mut tc = c;
                     for _ in 0..n {
                         for (pn, l) in Self::quadrature(clk, dt, dir == "cw") { ev.push((tc, ScriptAction::Gpio(pn, l))); tc += step; }

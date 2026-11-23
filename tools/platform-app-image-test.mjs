@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {validateAppImage} from '../web/platform/app-image.js';
+import {validateAppImage,chipIdForBoard} from '../web/platform/app-image.js';
 import {createFirmwareHistory} from '../web/platform/firmware-history.js';
 import {burnerHistoryFirmware} from '../web/platform/m5burner.js';
 import {validateScene,createDefaultScene,encodeScene,decodeScene} from '../web/platform/catalog.js';
@@ -10,6 +10,8 @@ const app=new Uint8Array(await readFile(new URL('../web/wasm/fw/public/hello_wor
 const good=await validateAppImage(app,'stopwatch',16*1024*1024);assert.equal(good.chipId,9);
 const reject=(bytes,code,board='stopwatch',size=16*1024*1024)=>assert.rejects(()=>validateAppImage(bytes,board,size),{code});
 await reject(app,'CHIP_MISMATCH','esp32c3');await reject(app,'CHIP_MISMATCH','atom-lite');await reject(app,'CHIP_MISMATCH','atom-matrix');await reject(app,'CHIP_MISMATCH','atom-matrix-v11');await reject(app,'FLASH_OVERFLOW','stopwatch',65536);
+await reject(app,'CHIP_MISMATCH','seeed-xiao-epaper-75');assert.equal(chipIdForBoard('seeed-xiao-epaper-75'),5);assert.equal(chipIdForBoard('seeed-trmnl-75-diy'),9);
+for(const board of ['seeed-sensecap-indicator-d1l','seeed-sensecap-indicator-d1pro','seeed-sensecap-indicator-meshtastic'])assert.equal((await validateAppImage(app,board,8*1024*1024)).chipId,9);
 await reject(app.subarray(0,app.length-40),'APP_IMAGE_INVALID');
 const damaged=app.slice();damaged[300]^=1;await reject(damaged,'APP_IMAGE_CHECKSUM');
 const digest=app.slice();digest[good.imageBytes-1]^=1;await reject(digest,'APP_IMAGE_DIGEST');
@@ -19,6 +21,7 @@ const trailer=new Uint8Array(app.length+10);trailer.set(app);trailer[app.length]
 
 const c6app=new Uint8Array(await readFile(new URL('../web/wasm/fw/public/c6-hello_world.bin',import.meta.url)));
 assert.equal((await validateAppImage(c6app,'nesso-n1',16*1024*1024)).chipId,13);
+for(const board of ['seeed-sensecap-indicator-d1l','seeed-sensecap-indicator-d1pro','seeed-sensecap-indicator-meshtastic'])await reject(c6app,'CHIP_MISMATCH',board);
 await reject(app,'CHIP_MISMATCH','nesso-n1');
 
 const memory=new Map(),storage={getItem:k=>memory.get(k),setItem:(k,v)=>memory.set(k,v)};

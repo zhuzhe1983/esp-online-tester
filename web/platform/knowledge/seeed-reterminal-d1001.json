@@ -1,0 +1,583 @@
+{
+  "schemaVersion": "1",
+  "id": "seeed-reterminal-d1001",
+  "kind": "product",
+  "catalogId": "seeed-reterminal-d1001",
+  "title": "Seeed Studio reTerminal D1001",
+  "summary": "ESP32-P4NRW32 + ESP32-C6；8 英寸 800×1280 IPS LCD。已固定官方 P4 原厂镜像和外观模型，整机运行适配尚未完成。",
+  "summarySourceIds": [
+    "official-wiki",
+    "factory-p4-image"
+  ],
+  "updatedAt": "2026-11-22T07:52:02Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "manufacturer": "Seeed Studio",
+    "sku": "100058144",
+    "family": {
+      "id": "seeed-reterminal",
+      "name": "Seeed Studio reTerminal"
+    },
+    "scope": "exact catalog model / commercial edition",
+    "releaseDateBasis": "official-announcement"
+  },
+  "facts": [
+    {
+      "id": "processor",
+      "label": "主控与协处理器",
+      "value": {
+        "main": "ESP32-P4NRW32 + ESP32-C6",
+        "coprocessor": "ESP32-C6"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ]
+    },
+    {
+      "id": "flash-memory",
+      "label": "主控 Flash",
+      "value": 32,
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "容量单位 MB；不是协处理器 Flash。"
+    },
+    {
+      "id": "psram-memory",
+      "label": "主控 PSRAM",
+      "value": 32,
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "未查证容量保留未知，不按芯片系列猜测。"
+    },
+    {
+      "id": "display",
+      "label": "显示与触摸规格",
+      "value": {
+        "width": 800,
+        "height": 1280,
+        "diagonalInches": 8,
+        "type": "IPS LCD",
+        "interface": "MIPI-DSI",
+        "touch": true,
+        "touchDriver": "GSL3670"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ]
+    },
+    {
+      "id": "display-controller",
+      "label": "屏幕控制器 / 面板",
+      "value": {
+        "driver": "9365DA-H3"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ]
+    },
+    {
+      "id": "battery",
+      "label": "电池容量",
+      "value": 2500,
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "单位 mAh；续航取决于实际工作负载。"
+    },
+    {
+      "id": "announcement-date",
+      "label": "官方发布公告日期",
+      "value": {
+        "date": "2026-03-19",
+        "precision": "day"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "launch-announcement"
+      ],
+      "notes": "用于本批优先级排序；公告日不等于每个地区的首发销售日，也不是 Wiki 最后更新日期。"
+    },
+    {
+      "id": "factory-image",
+      "label": "已固定的官方 P4 原厂完整镜像",
+      "value": {
+        "fileVersion": "2025-12-17_01",
+        "appVersion": "1.0.1",
+        "project": "esp_brookesia_demo",
+        "idf": "v5.4.2-dirty",
+        "chipId": 18,
+        "bytes": 13697024,
+        "sha256": "50e63daf5380383f9b89990b664bf4a825dd49aab0d58bdd7d52d542a2dd7c55",
+        "repositoryCommit": "5074d3b2f45626b261298e305aaf792036febc5a"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory-p4-image",
+        "factory-source-1"
+      ],
+      "notes": "实际下载并解析头部与分区；发布文件名日期不是产品上市时间，不宣称每批实物预装此版本。完整镜像仍未通过模拟执行。"
+    },
+    {
+      "id": "factory-flash-layout",
+      "label": "P4 原厂镜像启动与分区布局",
+      "value": {
+        "flash_at": "0x0",
+        "bootloader_at": "0x2000",
+        "partition_table_at": "0x8000",
+        "app_at": "0x10000",
+        "partitions": [
+          {
+            "label": "nvs",
+            "type": 1,
+            "subtype": 2,
+            "offset": "0x9000",
+            "size": "0x6000"
+          },
+          {
+            "label": "phy_init",
+            "type": 1,
+            "subtype": 1,
+            "offset": "0xf000",
+            "size": "0x1000"
+          },
+          {
+            "label": "factory",
+            "type": 0,
+            "subtype": 0,
+            "offset": "0x10000",
+            "size": "0x900000"
+          },
+          {
+            "label": "storage",
+            "type": 1,
+            "subtype": 130,
+            "offset": "0x910000",
+            "size": "0x400000"
+          }
+        ],
+        "storage_image_included": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory-p4-image"
+      ],
+      "notes": "来自完整镜像实际分区表；只包含 P4 Flash。第三方 BIN 不进入仓库。"
+    },
+    {
+      "id": "factory-flash-configuration",
+      "label": "此原厂构建的 Flash 配置",
+      "value": 16,
+      "unit": "MiB",
+      "basis": "official",
+      "sourceIds": [
+        "factory-p4-image",
+        "factory-build-defaults"
+      ],
+      "notes": "镜像头、启动输出与 sdkconfig 均为 16 MiB；这是本构建配置，不替代 Wiki 的 32 MB 物理容量描述。"
+    },
+    {
+      "id": "factory-c6-image",
+      "label": "独立 ESP32-C6 协处理器镜像",
+      "value": {
+        "fileVersion": "2025-09-11_01",
+        "chipId": 13,
+        "bytes": 1182496,
+        "sha256": "290354bd291ee7c307dfa87d206733be1c46370c324decced2bcb59c00fadc58",
+        "partOfP4Flash": false
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory-c6-image"
+      ],
+      "notes": "实际下载，文件头目标为 ESP32-C6；不是 P4 Flash 的分段，不能拼接或作为本 P4 固件源替换。未运行或实机刷写。"
+    },
+    {
+      "id": "display-driver-path",
+      "label": "官方 BSP 实际显示链路",
+      "value": {
+        "panelDriver": "JD9365_8",
+        "control": "DSI DBI",
+        "video": "DSI DPI",
+        "dma": "DW_GDMA",
+        "lanes": 2,
+        "laneBitRateMbps": 1000,
+        "pixelClockMHz": 60,
+        "defaultPixelFormat": "RGB565",
+        "framebuffers": 2,
+        "useDma2d": true,
+        "phyLdoChannel": 3,
+        "phyMillivolts": 2500
+      },
+      "basis": "official",
+      "sourceIds": [
+        "bsp-implementation",
+        "bsp-display",
+        "jd9365-dpi",
+        "factory-build-defaults",
+        "idf-dsi-dpi"
+      ],
+      "notes": "采用 BSP 实际调用的 DPI 宏及 1000 Mbps 配置，不采用未使用 helper 的 1500 Mbps 默认值；不是 LCD_CAM 或 GP-SPI 显示。"
+    },
+    {
+      "id": "bsp-display-input-pins",
+      "label": "显示电源、背光与触摸连接",
+      "value": {
+        "i2c0": {
+          "sda": 37,
+          "scl": 38,
+          "touch": "GSL3670",
+          "touchIrq": 16
+        },
+        "i2c1": {
+          "sda": 20,
+          "scl": 21,
+          "expander": "PCA9535"
+        },
+        "backlightPwm": 14,
+        "expanderBits": {
+          "lcdPower": 0,
+          "lcdReset": 2,
+          "backlightEnable": 7,
+          "boardPowerHold": 8,
+          "touchReset": 12
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "bsp-pins",
+        "bsp-implementation"
+      ],
+      "notes": "expanderBits 是 PCA9535 输出位，不是 P4 GPIO 编号。"
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "official-wiki",
+      "title": "Seeed Studio 官方设备文档",
+      "url": "https://wiki.seeedstudio.com/getting_started_with_reterminal_d1001/",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/getting_started_with_reterminal_d1001/",
+      "fetchedAt": "2026-11-22T06:54:06Z",
+      "sha256": "deabcc6029c537c0c94a2b1e69f044d66993c3875f2e0b24177f3f8eedf15b3d",
+      "bytes": 68519,
+      "mediaType": "text/html",
+      "archiveName": "f18006db4411d7a9.html"
+    },
+    {
+      "id": "launch-announcement",
+      "title": "官方发布公告（不是网页更新日期）",
+      "url": "https://www.seeedstudio.com/blog/2026/03/19/no-more-compromise-reterminal-d1001-8-inch-touch-display-redefines-hmi-with-esp32-p4/",
+      "kind": "official-announcement",
+      "status": "fetched",
+      "resolvedUrl": "https://www.seeedstudio.com/blog/2026/03/19/no-more-compromise-reterminal-d1001-8-inch-touch-display-redefines-hmi-with-esp32-p4/",
+      "fetchedAt": "2026-11-22T07:00:27Z",
+      "sha256": "89f69bc7df0368f5e3d7d88c29b368f6f40147050e1152d56a310b7a4b6d2749",
+      "bytes": 208248,
+      "mediaType": "text/html",
+      "archiveName": "4fe5f1beed46efd6.html"
+    },
+    {
+      "id": "official-model",
+      "title": "官方 CAD / 结构模型入口",
+      "url": "https://files.seeedstudio.com/wiki/reTerminal_d10xx/res/D1001_asm.stp",
+      "kind": "manufacturer-cad",
+      "status": "linked"
+    },
+    {
+      "id": "factory-source-1",
+      "title": "官方工厂演示构建说明",
+      "url": "https://wiki.seeedstudio.com/getting_started_with_reterminal_d1001/",
+      "kind": "official-firmware-source",
+      "status": "fetched",
+      "resolvedUrl": "https://wiki.seeedstudio.com/getting_started_with_reterminal_d1001/",
+      "fetchedAt": "2026-11-22T06:54:06Z",
+      "sha256": "deabcc6029c537c0c94a2b1e69f044d66993c3875f2e0b24177f3f8eedf15b3d",
+      "bytes": 68519,
+      "mediaType": "text/html",
+      "archiveName": "f18006db4411d7a9.html"
+    },
+    {
+      "id": "factory-source-2",
+      "title": "官方固定提交源码",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/README.md",
+      "kind": "official-firmware-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/README.md",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "e366000b293de95a3737adf55f34a185b32ed683913a90e3ef93179d37b85c4e",
+      "bytes": 1924,
+      "mediaType": "text/plain",
+      "archiveName": "6030412fa27f7aaf.txt"
+    },
+    {
+      "id": "uiflow1-guide",
+      "title": "M5Stack UIFlow1 官方设备入口",
+      "url": "https://docs.m5stack.com/en/uiflow/uiflow_web",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow/uiflow_web",
+      "fetchedAt": "2026-11-22T07:05:10Z",
+      "sha256": "813a40fedd984c50e71f2039c033453be3ffd2d71514ba257a6dbccf6d6950ae",
+      "bytes": 267692,
+      "mediaType": "text/html",
+      "archiveName": "46a04534dcc20b0a.html"
+    },
+    {
+      "id": "uiflow2-source",
+      "title": "UIFlow2 固定提交官方项目说明",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/README.md",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/README.md",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "1c10ad4b5d86789a4eb5e8c87b7c499ac670fbfdcbfcc17dae736ea69a2ed4a9",
+      "bytes": 3777,
+      "mediaType": "text/plain",
+      "archiveName": "c70f132f0306edb1.txt"
+    },
+    {
+      "id": "uiflow2-xiao-board",
+      "title": "UIFlow2 基础 XIAO ESP32-S3 目标（不是整机屏幕适配）",
+      "url": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/third-party/boards/SEEED_STUDIO_XIAO_ESP32S3/board.json",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/uiflow-micropython/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6/third-party/boards/SEEED_STUDIO_XIAO_ESP32S3/board.json",
+      "fetchedAt": "2026-11-22T07:02:58Z",
+      "sha256": "68d76df90144f2f5d86b13b19a177723472ac52be5d8c279757edb9bb732b183",
+      "bytes": 336,
+      "mediaType": "text/plain",
+      "archiveName": "2f8b229988ce9bcc.json"
+    },
+    {
+      "id": "xiaozhi-board-inventory",
+      "title": "小智固定提交板型目录（逐型号调查范围）",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards",
+      "kind": "upstream-source-code",
+      "status": "linked"
+    },
+    {
+      "id": "factory-p4-image",
+      "title": "官方固定 P4 原厂完整镜像",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/firmware/reTerminal_D1001_esp32p4_factory_firmware_2025_12_17_01.bin",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:49:50Z",
+      "sha256": "50e63daf5380383f9b89990b664bf4a825dd49aab0d58bdd7d52d542a2dd7c55",
+      "bytes": 13697024,
+      "mediaType": "application/octet-stream",
+      "archiveName": "50e63daf5380383f.bin",
+      "kind": "official-firmware-image",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/firmware/reTerminal_D1001_esp32p4_factory_firmware_2025_12_17_01.bin"
+    },
+    {
+      "id": "factory-c6-image",
+      "title": "官方独立 C6 协处理器固件（不是 P4 Flash 分段）",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/firmware/reTerminal_D1001_esp32c6_factory_firmware_2025_09_11_01.bin",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:49:50Z",
+      "sha256": "290354bd291ee7c307dfa87d206733be1c46370c324decced2bcb59c00fadc58",
+      "bytes": 1182496,
+      "mediaType": "application/octet-stream",
+      "archiveName": "290354bd291ee7c3.bin",
+      "kind": "official-firmware-image",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/firmware/reTerminal_D1001_esp32c6_factory_firmware_2025_09_11_01.bin"
+    },
+    {
+      "id": "bsp-implementation",
+      "title": "官方固定 D1001 板级实现",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/components/esp32_p4_re_terminal_d1001/src/esp32_p4_re_terminal_d1001.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:49:49Z",
+      "sha256": "925c453be98d8426f1035a79afecb66e41e0795d0efa327eb3ac6761c5cff717",
+      "bytes": 48554,
+      "mediaType": "text/plain",
+      "archiveName": "925c453be98d8426.txt",
+      "kind": "official-source-code",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/components/esp32_p4_re_terminal_d1001/src/esp32_p4_re_terminal_d1001.c"
+    },
+    {
+      "id": "bsp-pins",
+      "title": "官方固定 D1001 引脚定义",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/components/esp32_p4_re_terminal_d1001/include/esp32_p4_re_terminal_d1001.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:49:49Z",
+      "sha256": "e61bb67c54c67b208db4139e560bae7f359cb9b0426280c53e3d4085c340de34",
+      "bytes": 16853,
+      "mediaType": "text/plain",
+      "archiveName": "e61bb67c54c67b20.txt",
+      "kind": "official-source-code",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/components/esp32_p4_re_terminal_d1001/include/esp32_p4_re_terminal_d1001.h"
+    },
+    {
+      "id": "bsp-display",
+      "title": "官方固定 D1001 显示配置",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/components/esp32_p4_re_terminal_d1001/include/display.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "2fd6c2139a8799201b550f543f2efe8175681f807612b8740b3e0558d10499ee",
+      "bytes": 6199,
+      "mediaType": "text/plain",
+      "archiveName": "2fd6c2139a879920.txt",
+      "kind": "official-source-code",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/components/esp32_p4_re_terminal_d1001/include/display.h"
+    },
+    {
+      "id": "jd9365-dpi",
+      "title": "官方固定 JD9365 DPI 时序",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/components/esp_lcd_jd9365_8/include/esp_lcd_jd9365_8.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "6b1d47b1290debb2a70f9c0dfffd5b92ff5c1aed35cff44a4ef4e3fd62147a02",
+      "bytes": 5619,
+      "mediaType": "text/plain",
+      "archiveName": "6b1d47b1290debb2.txt",
+      "kind": "official-source-code",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/components/esp_lcd_jd9365_8/include/esp_lcd_jd9365_8.h"
+    },
+    {
+      "id": "factory-build-defaults",
+      "title": "官方固定 D1001 原厂构建配置",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/examples/factory_firmware/sdkconfig.defaults",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "73e495625ba9585a4c03c14851d822fb6818d1ede7321dc6a7361d628116e98e",
+      "bytes": 3188,
+      "mediaType": "text/plain",
+      "archiveName": "73e495625ba9585a.txt",
+      "kind": "official-source-code",
+      "resolvedUrl": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/examples/factory_firmware/sdkconfig.defaults"
+    },
+    {
+      "id": "idf-boot-adc",
+      "title": "ESP-IDF v5.4.2 P4 启动熵源 ADC 等待",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.4.2/components/bootloader_support/src/bootloader_random_esp32p4.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:49:54Z",
+      "sha256": "8ea72346126d2507a772bb1e0e13c0ab42a8910e724aca09dd20f36723fdc7dd",
+      "bytes": 3645,
+      "mediaType": "text/plain",
+      "archiveName": "8ea72346126d2507.txt",
+      "kind": "official-source-code",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.4.2/components/bootloader_support/src/bootloader_random_esp32p4.c"
+    },
+    {
+      "id": "idf-dsi-dpi",
+      "title": "ESP-IDF v5.4.2 DSI DPI / DW_GDMA 链路",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.4.2/components/esp_lcd/dsi/esp_lcd_panel_dpi.c",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:50:01Z",
+      "sha256": "7bda5a71686ba9d1507d135a1b88a2e66c881dd036fbf3389f9bf436f78e95a8",
+      "bytes": 29694,
+      "mediaType": "text/plain",
+      "archiveName": "7bda5a71686ba9d1.txt",
+      "kind": "official-source-code",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.4.2/components/esp_lcd/dsi/esp_lcd_panel_dpi.c"
+    }
+  ],
+  "assets": [
+    {
+      "id": "official-cad",
+      "sourceId": "official-model",
+      "role": "manufacturer-cad",
+      "url": "https://files.seeedstudio.com/wiki/reTerminal_d10xx/res/D1001_asm.stp",
+      "localUrl": "./assets/seeed-reterminal-d1001/model.json"
+    },
+    {
+      "id": "factory-p4-image",
+      "sourceId": "factory-p4-image",
+      "role": "official-firmware-image",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/firmware/reTerminal_D1001_esp32p4_factory_firmware_2025_12_17_01.bin"
+    },
+    {
+      "id": "factory-c6-image",
+      "sourceId": "factory-c6-image",
+      "role": "coprocessor-firmware-image",
+      "url": "https://raw.githubusercontent.com/Seeed-Studio/reTerminal-D1001/5074d3b2f45626b261298e305aaf792036febc5a/firmware/reTerminal_D1001_esp32c6_factory_firmware_2025_09_11_01.bin"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "product-envelope",
+      "label": "官方外形尺寸",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "本轮不从商品照片推定精确外形尺寸；CAD / 重建的测量信息见 model.json provenance。"
+    },
+    {
+      "id": "hardware-revision",
+      "label": "用户实物的 PCB / 生产版次",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-wiki"
+      ],
+      "notes": "不将当前官方文档版次当作用户实物的版次。"
+    },
+    {
+      "id": "uiflow1",
+      "label": "此精确整机的官方 UIFlow1 适配",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "uiflow1-guide"
+      ],
+      "notes": "已检查 UIFlow1 官方设备入口和 Seeed 官方设备文档；未定位此精确整机目标。不是断言上游永不支持。"
+    },
+    {
+      "id": "uiflow2",
+      "label": "此精确整机的官方 UIFlow2 适配",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "uiflow2-source",
+        "uiflow2-xiao-board"
+      ],
+      "notes": "固定 UIFlow2 提交中有基础 XIAO ESP32-S3 目标；未找到本机屏幕、引脚和容量的完整整机适配，不能继承基础板兼容性。"
+    },
+    {
+      "id": "xiaozhi",
+      "label": "此精确整机的小智固件映射",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "xiaozhi-board-inventory"
+      ],
+      "notes": "已检查固定小智板型目录及本机官方文档；未确认此精确屏幕整机目标，不借用同 MCU 的其它板型。"
+    },
+    {
+      "id": "complete-runtime",
+      "label": "完整模拟与实机兼容性",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "factory-p4-image",
+        "idf-boot-adc",
+        "idf-dsi-dpi",
+        "bsp-implementation"
+      ],
+      "notes": "当前 runtime unavailable。真 ROM 启动到第二阶段 bootloader，在 PC 0x4ff2de80 等待 ADC_INT_RAW 0x500de054 bit31；3 秒 guest 尚未进入 app。DSI/DW_GDMA、DMA2D、I2C0/GSL3670 与扩展器是源码确认的后续缺口，不能称为本次已执行到的故障。证据见 docs/platform/evidence/seeed-d1001-20261122/validation.json；未实机验证。"
+    }
+  ],
+  "collectionNotes": [
+    "按官方公告日期优先近期带屏设备；未知日期排在已查证公告之后。",
+    "所有 fetched 记录来自实际 HTTP 原文，含最终 URL、UTC、字节数和 SHA-256；linked / failed 不伪造下载收据。",
+    "第三方固件二进制只在临时审计目录中校验；仓库保存远程链接、清单与元信息。",
+    "模型加载器 type 为 manufacturer-cad；实际模型依据为 manufacturer-cad，细节与误差见模型 provenance。",
+    "尚未完成本产品板级运行适配。原厂 P4 完整镜像已核验；现有 P4 真 ROM 启动首先停在启动加载器的 ADC 转换完成等待，尚未进入应用。",
+    "源码还要求 MIPI-DSI Host/Bridge、DW_GDMA、DMA2D 帧复制、I2C0/GSL3670 触摸和 PCA9535 电源复位控制；这些后续链路未验证，不能用 SPI 屏板型代替。",
+    "官方独立 C6 固件属于另一颗 MCU，不能作为 P4 镜像的追加分段或写入 P4 Flash。",
+    "P4 源程序与完整镜像、独立 C6 镜像及相关 IDF 驱动均已实际获取并留存 HTTP/UTC/hash 收据；仅远程链接与元信息入库。"
+  ]
+}

@@ -1,0 +1,685 @@
+{
+  "schema": 1,
+  "reviewedAt": "2026-11-22T11:35:54.262125Z",
+  "decision": "Intentionally update only the four panel_sid goldens for the adopted fractional-credit / whole-frame RGB correctness change. This is not a performance optimization, hardware calibration, or a claim that physical IRQ timestamps have been measured.",
+  "baselineRevision": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+  "candidateSource": {
+    "revision": "819989b129de90f0cc19bf6d83b3e88a7d53d4b9",
+    "revisionStatus": "Unpublished integration checkpoint; executable and input hashes are the reproducible identities.",
+    "mechanismEvidence": "../seeed-lcd-vsync-20261122/boundary-review.md"
+  },
+  "privateReceiptHashes": {
+    "run-receipt.private.json": "88846c05ef4b0f01bcd591bffa81ca910b66f2a6099d8f2a44b976088792dfdf",
+    "comparison.private.json": "f32b0aa5c4b4c105cfc978f2ccba370076e1699c0058d88a9b421307a5637244",
+    "audio-comparison.private.json": "a8fd061fc6c19c756fb1037245e199fa6e5182c2a36499b38dc08d0a3d6e1c21",
+    "aligned-output-comparison.private.json": "4876f8a23f25e3d3cc939958ed6f7a57e5f42ffb1097fd82f7c107fbd5660a53"
+  },
+  "inputs": [
+    {
+      "path": "<rom-dir>/esp32s3_rev0_rom.elf",
+      "bytes": 949552,
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    {
+      "path": "web/wasm/fw/public/panel-bootloader.bin",
+      "bytes": 22272,
+      "sha256": "f804e8ef245d68ee0932650062e8f4d6b14df22d61fb39ba50f5e33977127801"
+    },
+    {
+      "path": "web/wasm/fw/public/panel-ptable.bin",
+      "bytes": 3072,
+      "sha256": "fb462bc675bf6928afe8de87977f72c7dfce38491d32aa89a9204b6d4d5b1066"
+    },
+    {
+      "path": "web/wasm/fw/public/panel-demo.bin",
+      "bytes": 1651104,
+      "sha256": "8094e4be95f8d92c7ce41fe1acbbecbcdb3b31725fc292a1eef63cfcc22cf5a0"
+    },
+    {
+      "path": "web/wasm/fw/public/energydata.json",
+      "bytes": 2846,
+      "sha256": "aa8d5326406a83aa254d953d16f18f644c0112d523ef2e2e66b3ab1add4ff0cb"
+    },
+    {
+      "path": "web/wasm/fw/public/panel-sid.txt",
+      "bytes": 477,
+      "sha256": "bb6e0b1f1d5945265f0310f2a40b59b03602b257b412f52f649fc2c66823f420"
+    }
+  ],
+  "runs": [
+    {
+      "arm": "baseline",
+      "binary": {
+        "bytes": 34395672,
+        "sha256": "22954f6f7ef68a1d12e76a07ed3494c25e9cc2c231781ea912d479af8f3a87be"
+      },
+      "exitCode": 0,
+      "argv": [
+        "<baseline-binary>",
+        "--rom",
+        "<rom-dir>/esp32s3_rev0_rom.elf",
+        "--board",
+        "waveshare-lcd4b",
+        "--boot",
+        "rom",
+        "--no-dump",
+        "--flash-mb",
+        "16",
+        "--psram-mb",
+        "8",
+        "--console",
+        "usb",
+        "--bootloader",
+        "web/wasm/fw/public/panel-bootloader.bin",
+        "--ptable",
+        "web/wasm/fw/public/panel-ptable.bin",
+        "--app",
+        "web/wasm/fw/public/panel-demo.bin",
+        "--flash-at",
+        "0x610000=web/wasm/fw/public/energydata.json",
+        "--script",
+        "web/wasm/fw/public/panel-sid.txt",
+        "--wav",
+        "<output-dir>/panel.wav",
+        "--max-seconds",
+        "7",
+        "--tft-png",
+        "<output-dir>/panel.png"
+      ],
+      "cwd": "<repository-root>",
+      "stdout": {
+        "raw": {
+          "bytes": 5126,
+          "sha256": "942ce18d2c00e8738f36be7ce3a1d318b7ab363dd8fa0090dfc8e147fd0f92d2"
+        },
+        "normalization": "none; no paths or identifiers present",
+        "normalized": {
+          "bytes": 5126,
+          "sha256": "942ce18d2c00e8738f36be7ce3a1d318b7ab363dd8fa0090dfc8e147fd0f92d2"
+        },
+        "crlfCount": 97,
+        "bareLfCount": 0
+      },
+      "stderr": {
+        "raw": {
+          "bytes": 2156,
+          "sha256": "3bbec969cc7738badb383fb58a83c2ef43ebe51032e62af36e766b1292a3e1c8"
+        },
+        "normalizedFile": "baseline.stderr.txt",
+        "normalized": {
+          "bytes": 2022,
+          "sha256": "dd93da47abf83654ab13743bf4eadfcebbd85fd6830d7d8bdf4db8a1503f0381"
+        }
+      },
+      "report": {
+        "fileBytes": {
+          "bytes": 378,
+          "sha256": "f91fbe2c2ef92f876b532b3356621854892c3fa0df573e4f794fc993fe23dd56"
+        },
+        "exceptions": 569599,
+        "interrupts": 47868,
+        "irqCounts": [
+          {
+            "core": 0,
+            "cpuInt": 2,
+            "count": 1133,
+            "sources": [
+              59
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 3,
+            "count": 7112,
+            "sources": [
+              79
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 5,
+            "count": 6448,
+            "sources": [
+              57
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 9,
+            "count": 6202,
+            "sources": [
+              42
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 12,
+            "count": 353,
+            "sources": [
+              24
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 13,
+            "count": 17285,
+            "sources": [
+              71
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 17,
+            "count": 519,
+            "sources": [
+              72
+            ]
+          },
+          {
+            "core": 1,
+            "cpuInt": 0,
+            "count": 1875,
+            "sources": [
+              80
+            ]
+          },
+          {
+            "core": 1,
+            "cpuInt": 1,
+            "count": 6941,
+            "sources": [
+              58
+            ]
+          }
+        ]
+      },
+      "perCoreInsns": [
+        264427873,
+        134240194
+      ],
+      "insns": 398668067,
+      "wav": {
+        "file": {
+          "bytes": 270202,
+          "sha256": "37b4961b189338e0977f283e2485080f5f8078380fac956f969283cc20ca2171"
+        },
+        "format": {
+          "channels": 1,
+          "sampleWidthBytes": 2,
+          "sampleRateHz": 22050,
+          "sampleCount": 135079,
+          "compression": "NONE"
+        },
+        "pcm": {
+          "bytes": 270158,
+          "sha256": "17cfcc663065b4b71f7dbe698b8ed02fbc76c89648e7ce745aae02ec7db2a6c7"
+        }
+      },
+      "png": {
+        "bytes": 691798,
+        "sha256": "436e648ffc5c11fffc456c0e986a43d47f7c8ed11fbaa4620818815c142735da"
+      },
+      "rgba": {
+        "width": 480,
+        "height": 480,
+        "bytes": 921600,
+        "sha256": "5776d3aadc3153a8cdb06370c7544989f91f355913a92397933381cee98f51a4"
+      },
+      "lcdFrames": 369
+    },
+    {
+      "arm": "candidate",
+      "binary": {
+        "bytes": 35168624,
+        "sha256": "cf80f0cd643e3cfaea707c44c629f6cdd133bbf9a3b61b35ab0b69e317230111"
+      },
+      "exitCode": 0,
+      "argv": [
+        "<candidate-binary>",
+        "--rom",
+        "<rom-dir>/esp32s3_rev0_rom.elf",
+        "--board",
+        "waveshare-lcd4b",
+        "--boot",
+        "rom",
+        "--no-dump",
+        "--flash-mb",
+        "16",
+        "--psram-mb",
+        "8",
+        "--console",
+        "usb",
+        "--bootloader",
+        "web/wasm/fw/public/panel-bootloader.bin",
+        "--ptable",
+        "web/wasm/fw/public/panel-ptable.bin",
+        "--app",
+        "web/wasm/fw/public/panel-demo.bin",
+        "--flash-at",
+        "0x610000=web/wasm/fw/public/energydata.json",
+        "--script",
+        "web/wasm/fw/public/panel-sid.txt",
+        "--wav",
+        "<output-dir>/panel.wav",
+        "--max-seconds",
+        "7",
+        "--tft-png",
+        "<output-dir>/panel.png"
+      ],
+      "cwd": "<repository-root>",
+      "stdout": {
+        "raw": {
+          "bytes": 5126,
+          "sha256": "86f232a489d3b5baf27199339f212b5bf19898b44f0cbbce62a7162c75092b2d"
+        },
+        "normalization": "none; no paths or identifiers present",
+        "normalized": {
+          "bytes": 5126,
+          "sha256": "86f232a489d3b5baf27199339f212b5bf19898b44f0cbbce62a7162c75092b2d"
+        },
+        "crlfCount": 97,
+        "bareLfCount": 0
+      },
+      "stderr": {
+        "raw": {
+          "bytes": 2158,
+          "sha256": "32483b72f76cd869decbc596dc9a7105778d270d4918a0f2bfcd54406a562c9e"
+        },
+        "normalizedFile": "candidate.stderr.txt",
+        "normalized": {
+          "bytes": 2022,
+          "sha256": "ca5844fc4a180992694fb26c1561e1df8b493966cace711a426e8b4313b2bc15"
+        }
+      },
+      "report": {
+        "fileBytes": {
+          "bytes": 378,
+          "sha256": "4c7cd552cfcd1036e2f10cd387ca1a9276248c5751278358e9a8c93675254cb5"
+        },
+        "exceptions": 569899,
+        "interrupts": 47835,
+        "irqCounts": [
+          {
+            "core": 0,
+            "cpuInt": 2,
+            "count": 1114,
+            "sources": [
+              59
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 3,
+            "count": 7114,
+            "sources": [
+              79
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 5,
+            "count": 6407,
+            "sources": [
+              57
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 9,
+            "count": 6196,
+            "sources": [
+              42
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 12,
+            "count": 350,
+            "sources": [
+              24
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 13,
+            "count": 17309,
+            "sources": [
+              71
+            ]
+          },
+          {
+            "core": 0,
+            "cpuInt": 17,
+            "count": 513,
+            "sources": [
+              72
+            ]
+          },
+          {
+            "core": 1,
+            "cpuInt": 0,
+            "count": 1891,
+            "sources": [
+              80
+            ]
+          },
+          {
+            "core": 1,
+            "cpuInt": 1,
+            "count": 6941,
+            "sources": [
+              58
+            ]
+          }
+        ]
+      },
+      "perCoreInsns": [
+        264578203,
+        136133761
+      ],
+      "insns": 400711964,
+      "wav": {
+        "file": {
+          "bytes": 270202,
+          "sha256": "e4f1ebab78263ffa94ac5182c0778989fd78761929b3b6d4dc02e6bd4fc70a1d"
+        },
+        "format": {
+          "channels": 1,
+          "sampleWidthBytes": 2,
+          "sampleRateHz": 22050,
+          "sampleCount": 135079,
+          "compression": "NONE"
+        },
+        "pcm": {
+          "bytes": 270158,
+          "sha256": "148699faff735e3fb7de67e23db27d3c493159e0802d58ce59cfa5ec4b9bf180"
+        }
+      },
+      "png": {
+        "bytes": 691798,
+        "sha256": "436e648ffc5c11fffc456c0e986a43d47f7c8ed11fbaa4620818815c142735da"
+      },
+      "rgba": {
+        "width": 480,
+        "height": 480,
+        "bytes": 921600,
+        "sha256": "5776d3aadc3153a8cdb06370c7544989f91f355913a92397933381cee98f51a4"
+      },
+      "lcdFrames": 369
+    }
+  ],
+  "goldenChanges": [
+    {
+      "path": "tests/golden/panel-sid.console.txt",
+      "old": {
+        "bytes": 5126,
+        "sha256": "942ce18d2c00e8738f36be7ce3a1d318b7ab363dd8fa0090dfc8e147fd0f92d2"
+      },
+      "new": {
+        "bytes": 5126,
+        "sha256": "86f232a489d3b5baf27199339f212b5bf19898b44f0cbbce62a7162c75092b2d"
+      },
+      "baselineMatchedOld": true,
+      "candidateMatchesNew": true,
+      "derivation": "Exact captured stdout bytes; CRLF preserved."
+    },
+    {
+      "path": "tests/golden/panel-sid.report.txt",
+      "old": {
+        "bytes": 378,
+        "sha256": "f91fbe2c2ef92f876b532b3356621854892c3fa0df573e4f794fc993fe23dd56"
+      },
+      "new": {
+        "bytes": 378,
+        "sha256": "4c7cd552cfcd1036e2f10cd387ca1a9276248c5751278358e9a8c93675254cb5"
+      },
+      "baselineMatchedOld": true,
+      "candidateMatchesNew": true,
+      "derivation": "Same stop-event suffix plus core lines extraction as cli/tests/goldens.rs::panel_sid."
+    },
+    {
+      "path": "tests/golden/panel-sid.insns",
+      "old": {
+        "bytes": 10,
+        "sha256": "61f00f17e882c4e55f21c932cfce58fae830d5c12d84a65cc3e257ab9deb3274"
+      },
+      "new": {
+        "bytes": 10,
+        "sha256": "81e7c27318b929d9c4523f7e82b287c6b487093371e70c568a67a4d8bc27e117"
+      },
+      "baselineMatchedOld": true,
+      "candidateMatchesNew": true,
+      "derivation": "Sum of both instruction counts on the captured stop line."
+    },
+    {
+      "path": "tests/golden/panel-sid.wav.sha256",
+      "old": {
+        "bytes": 65,
+        "sha256": "d76a1dbdcc7aef23b0c7283d8439262a4948799fa52316c731dc49e431197ebb"
+      },
+      "new": {
+        "bytes": 65,
+        "sha256": "fd2f084492ced5ca49d077d9b9bcc1bd147f1c58a5b47b8a9e9ee4ee41aeee60"
+      },
+      "baselineMatchedOld": true,
+      "candidateMatchesNew": true,
+      "derivation": "SHA-256 of the complete captured WAV, followed by LF."
+    }
+  ],
+  "consoleDifference": {
+    "bytesEach": 5126,
+    "changedByteOffsetsZeroBased": [
+      4911,
+      5064
+    ],
+    "allOtherBytesIdentical": true,
+    "crlfCountEach": 97,
+    "lines": [
+      {
+        "line": 94,
+        "baseline": "I (1147) demo: demo mode: 2026-08-28, prices 96+96 slots, 24 energy hours; network off",
+        "candidate": "I (1146) demo: demo mode: 2026-08-28, prices 96+96 slots, 24 energy hours; network off",
+        "millisecondDifference": -1
+      },
+      {
+        "line": 97,
+        "baseline": "I (5778) sidplay: playing \"Commando\" by Rob Hubbard (subtune 1/19)",
+        "candidate": "I (5777) sidplay: playing \"Commando\" by Rob Hubbard (subtune 1/19)",
+        "millisecondDifference": -1
+      }
+    ]
+  },
+  "countDifferences": {
+    "exceptions": {
+      "baseline": 569599,
+      "candidate": 569899,
+      "delta": 300
+    },
+    "interrupts": {
+      "baseline": 47868,
+      "candidate": 47835,
+      "delta": -33
+    },
+    "insns": {
+      "baseline": 398668067,
+      "candidate": 400711964,
+      "delta": 2043897
+    },
+    "perCoreInsns": [
+      {
+        "core": 0,
+        "baseline": 264427873,
+        "candidate": 264578203,
+        "delta": 150330
+      },
+      {
+        "core": 1,
+        "baseline": 134240194,
+        "candidate": 136133761,
+        "delta": 1893567
+      }
+    ],
+    "irqCounts": [
+      {
+        "core": 0,
+        "cpuInt": 2,
+        "sources": [
+          59
+        ],
+        "baseline": 1133,
+        "candidate": 1114,
+        "delta": -19
+      },
+      {
+        "core": 0,
+        "cpuInt": 3,
+        "sources": [
+          79
+        ],
+        "baseline": 7112,
+        "candidate": 7114,
+        "delta": 2
+      },
+      {
+        "core": 0,
+        "cpuInt": 5,
+        "sources": [
+          57
+        ],
+        "baseline": 6448,
+        "candidate": 6407,
+        "delta": -41
+      },
+      {
+        "core": 0,
+        "cpuInt": 9,
+        "sources": [
+          42
+        ],
+        "baseline": 6202,
+        "candidate": 6196,
+        "delta": -6
+      },
+      {
+        "core": 0,
+        "cpuInt": 12,
+        "sources": [
+          24
+        ],
+        "baseline": 353,
+        "candidate": 350,
+        "delta": -3
+      },
+      {
+        "core": 0,
+        "cpuInt": 13,
+        "sources": [
+          71
+        ],
+        "baseline": 17285,
+        "candidate": 17309,
+        "delta": 24
+      },
+      {
+        "core": 0,
+        "cpuInt": 17,
+        "sources": [
+          72
+        ],
+        "baseline": 519,
+        "candidate": 513,
+        "delta": -6
+      },
+      {
+        "core": 1,
+        "cpuInt": 0,
+        "sources": [
+          80
+        ],
+        "baseline": 1875,
+        "candidate": 1891,
+        "delta": 16
+      },
+      {
+        "core": 1,
+        "cpuInt": 1,
+        "sources": [
+          58
+        ],
+        "baseline": 6941,
+        "candidate": 6941,
+        "delta": 0
+      }
+    ]
+  },
+  "audio": {
+    "wavHeaderBytes": 44,
+    "wavHeadersByteIdentical": true,
+    "completeOverlappingSamples": 135078,
+    "completeOverlapByteIdentical": true,
+    "equation": "candidate[0:135078] == baseline[1:135079] (signed 16-bit PCM samples)",
+    "alignedPcmSha256": "816ccae6fb79a647467fe01a57dbc89a686671001b09ca7861ba888e425ba857",
+    "omittedBaselineLeadingSample": 0,
+    "unpairedCandidateTrailingSample": 3370,
+    "sampleRate": 22050,
+    "shiftSamples": -1,
+    "overlapBytes": 270156,
+    "overlapDifferentBytes": 0,
+    "overlapDifferentSamples": 0,
+    "candidateShiftSeconds": -4.5351473922902495e-05,
+    "baselineFirstNonzeroSample": 106229,
+    "candidateFirstNonzeroSample": 106228,
+    "unalignedDifferentSamples": 15595,
+    "activeOverlapSamples": 28850,
+    "activeOverlapDifferentSamples": 0,
+    "meaning": "Exact fixed-window one-sample displacement of all overlapping PCM content. The new final sample is outside the baseline window, not independently validated as a future baseline sample."
+  },
+  "frame": {
+    "width": 480,
+    "height": 480,
+    "rgbaBytes": 921600,
+    "baselineRgbaSha256": "5776d3aadc3153a8cdb06370c7544989f91f355913a92397933381cee98f51a4",
+    "candidateRgbaSha256": "5776d3aadc3153a8cdb06370c7544989f91f355913a92397933381cee98f51a4",
+    "byteIdentical": true,
+    "changedPixels": 0,
+    "changedBoundsExclusive": null
+  },
+  "validation": {
+    "baselineMatchesAllFourOriginalGoldens": true,
+    "binariesUnchangedDuringRuns": true,
+    "inputsAndGoldensUnchangedDuringRuns": true,
+    "guestSecondsPerRun": 7,
+    "guestCyclesPerRun": 1680000000,
+    "additionalEmulatorRunsDuringGoldenCuration": 0,
+    "cargoInvocationsDuringGoldenCuration": 0,
+    "globalUpdateGoldensUsed": false,
+    "postChangeGoldenTest": "Pending integration: rerun panel_sid with UPDATE_GOLDENS unset, then the full workspace gate.",
+    "curationChecks": {
+      "exactCapturedBytesAndReceiptAudit": "PASS",
+      "evidencePrivacy": "PASS: four evidence files; manual review also completed.",
+      "defaultGitDiffCheck": {
+        "exitCode": 2,
+        "reason": "The two changed console lines retain the pre-existing raw CRLF; default whitespace checking reports their CR bytes as trailing whitespace."
+      },
+      "crlfAwareGitDiffCheck": {
+        "exitCode": 0,
+        "command": [
+          "git",
+          "-c",
+          "core.whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol",
+          "diff",
+          "--cached",
+          "--check"
+        ],
+        "reason": "Preserves all default whitespace categories while recognizing the required CRLF line ending; no Git configuration or golden bytes were normalized."
+      }
+    }
+  },
+  "normalization": [
+    "Raw stdout hashes refer to complete bytes including all 97 CRLF endings; the candidate console golden is copied without text-mode conversion.",
+    "Committed stderr logs replace the ROM directory with <rom-dir> and each arm output directory with <output-dir>.",
+    "Only incidental CLI wall-seconds and Minsn/s fields are replaced with <omitted>; these single functional runs are not CPU benchmarks.",
+    "All guest times, cycle/instruction counts, exceptions, IRQ counts, script events, audio counts and LCD counts remain unchanged.",
+    "Raw stderr, WAV and PNG bodies are not committed; original and normalized hashes retain provenance. No raw process inventory or device identifiers are included."
+  ]
+}

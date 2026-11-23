@@ -173,7 +173,7 @@ mod tests {
         for (r,v) in [(3,2),(4,2),(5,2),(6,2),(0x13,0),(0x14,0)] {write(devices[ioe].2.as_mut(),r,v);}
         assert!(!board.wiring.lora.as_ref().unwrap().lock().unwrap().snapshot().contains("\"powered\":true"),"open-drain release does not drive the enable high");
         write(devices[pm].2.as_mut(),0x13,0x1b);board.advance_to(1_000_000);
-        let pins=SpiPins{sclk:1<<39,mosi:1<<38,miso:Some(40),cs:1<<41};let tx=[0x1d,3,0x20,0,0];
+        let pins=SpiPins {sclk:1<<39,mosi:1<<38,miso:Some(40),cs:1<<41,keep_cs:false};let tx=[0x1d,3,0x20,0,0];
         for (host,route,expected) in [(3,pins,b'S'),(2,pins,b'S'),(3,SpiPins{sclk:1<<15,..pins},255),(3,SpiPins{miso:Some(20),..pins},255),(3,SpiPins{cs:0,..pins},255)] {
             board.gpio_output_at(2_000_000,&[],1<<41,0);assert_eq!(board.spi_transfer_pins(host,route,&tx,5)[4],expected);board.gpio_output_at(2_000_001,&[],1<<41,1<<41);
         }

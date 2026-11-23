@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { createFlasher, prepareFlashPlan, validateFlashLayout, flasherCapabilities } from '../web/platform/flasher.js';
 import { createDefaultScene } from '../web/platform/catalog.js';
 import { withPlatformTestFixtures } from './fixtures/platform-catalog.mjs';
+import { firmwareZipEntries } from './fixtures/firmware-zip.mjs';
 import SparkMD5 from '../web/platform/vendor/spark-md5-3.0.2/spark-md5.js';
 import { ESPLoader, Transport } from '../web/platform/vendor/esptool-js-0.7.0/bundle.js';
 
@@ -52,6 +53,44 @@ assert.deepEqual(localPlan.files.map(x=>x.data.length),plan.files.map(x=>x.data.
 assert.ok(localPlan.receipt.artifacts.every(x=>x.url===null));
 assert.equal(localPlan.files.reduce((n,x)=>n+x.data.length,0),plan.files.reduce((n,x)=>n+x.data.length,0),'Unspecified flash gaps must not become hardware writes');
 console.log('ok local split hardware plan: original segments only, no gap erasure or remote fetch; no hardware connected');
+
+// A manufacturer archive may contain several flash segments and instructions.
+// Only exact, independently pinned BIN entries from a complete manifest may be
+// written; neither the container nor gaps between its segments are flash data.
+{
+  const hash = data => createHash('sha256').update(data).digest('hex');
+  const kinds = ['bootloader','ptable','app'];
+  const zip = firmwareZipEntries([...plan.files.map((file,i) => ({name:`${kinds[i]}.bin`,data:file.data,descriptor:i===2})),{name:'README_flash.txt',data:Buffer.from('Explicit offsets are in the manufacturer manifest.')}]);
+  const zipUrl='https://platform.example/manufacturer/factory.zip';
+  const manifest={board:plan.product.runtime.board,flash_mb:plan.product.runtime.flashMb,files:Object.fromEntries(plan.files.map((file,i)=>[kinds[i],{url:zipUrl,sha256:hash(file.data),archive:{format:'zip-entry',entry:`${kinds[i]}.bin`,sha256:hash(zip)}}]))};
+  const bytes=new TextEncoder().encode(JSON.stringify(manifest));
+  let requested=0;
+  const read=async url=>{requested++;return new Response(url===zipUrl?zip:bytes);};
+  const packed=await prepareFlashPlan({scene,catalog,source:{manifestUrl:'https://platform.example/manufacturer/flash.json',sha256:hash(bytes)},fetchImpl:read,baseUrl});
+  assert.deepEqual(packed.files.map(file=>file.address),plan.files.map(file=>file.address));
+  for(let i=0;i<plan.files.length;i++)assert.deepEqual(packed.files[i].data,plan.files[i].data);
+  assert.equal(packed.files.reduce((n,file)=>n+file.data.length,0),plan.files.reduce((n,file)=>n+file.data.length,0));
+  assert.ok(packed.receipt.artifacts.every(entry=>entry.archive?.sha256===hash(zip)));
+  const explicit={...manifest,files:{},flash_at:Object.fromEntries(plan.files.map((file,i)=>[`0x${file.address.toString(16)}`,manifest.files[kinds[i]]]))};
+  const explicitBytes=new TextEncoder().encode(JSON.stringify(explicit));
+  const addressed=await prepareFlashPlan({scene,catalog,source:{manifestUrl:'https://platform.example/manufacturer/explicit.json',sha256:hash(explicitBytes)},fetchImpl:async()=>new Response(explicitBytes),baseUrl});
+  assert.deepEqual(addressed.files,packed.files,'All-explicit factory layouts must retain exactly the same original BIN writes.');
+  const incomplete={...explicit,flash_at:{...explicit.flash_at}};delete incomplete.flash_at['0x8000'];
+  const incompleteBytes=new TextEncoder().encode(JSON.stringify(incomplete));
+  await assert.rejects(()=>prepareFlashPlan({scene,catalog,source:{manifestUrl:'https://platform.example/manufacturer/incomplete.json',sha256:hash(incompleteBytes)},fetchImpl:async()=>new Response(incompleteBytes),baseUrl}),{code:'INCOMPLETE_IMAGE'});
+  const before=requested;
+  await prepareFlashPlan({scene,catalog,source:{manifestUrl:'https://platform.example/manufacturer/flash.json',sha256:hash(bytes)},fetchImpl:read,baseUrl});
+  assert.equal(requested,before,'Verified entry caches must preserve segment identities.');
+  for(const broken of ['container','entry']) {
+    const changed=structuredClone(manifest);
+    changed.files.app.url=`${zipUrl}?case=${broken}`;
+    if(broken==='container')changed.files.app.archive.sha256='0'.repeat(64);
+    else changed.files.app.sha256='0'.repeat(64);
+    const wrong=new TextEncoder().encode(JSON.stringify(changed));
+    await assert.rejects(()=>prepareFlashPlan({scene,catalog,source:{manifestUrl:`https://platform.example/manufacturer/${broken}.json`,sha256:hash(wrong)},fetchImpl:async url=>new Response(url.includes('.zip')?zip:wrong),baseUrl}),{code:'HASH_MISMATCH'});
+  }
+  console.log('ok named manufacturer ZIP flash plan: exact segments, offset preservation, cache isolation and both checksum gates; no hardware connected');
+}
 
 
 function fixture({ chip = 'ESP32-S3', size = '16MB', secured = false, activated = true, denied = false, cancelAtBlock = false } = {}) {
