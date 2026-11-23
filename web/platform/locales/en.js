@@ -6,6 +6,9 @@ import deviceTools from './en-device-tools.js';
 
 export default {
   "AXP192 虚拟电源环境": "AXP192 virtual power",
+  "AXP192 PEK · 短按事件（非GPIO）": "AXP192 PEK · short press (no GPIO)",
+  "内部 ST7735SV SPI": "Internal ST7735SV SPI",
+  "AXP192 / MPU6886 / BM8563 内部总线": "AXP192 / MPU6886 / BM8563 internal bus",
   "固件通过 AXP192 ADC 读取虚拟电压。分享保留初始值，运行中的调整随录制分享。": "Firmware reads virtual voltage from the AXP192 ADC. Share links retain initial values and recordings carry live adjustments.",
   "虚拟电源与配件": "Virtual power and accessories",
   "电池虚拟电压 V": "Virtual battery voltage (V)",
