@@ -124,7 +124,7 @@ mod tests {
         write(aw,4,&[0x10]);assert_eq!(read(aw,0,1)[0]&0x10,0x10);
         board.attach_spi_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0;1<<20])),Default::default()).unwrap();
         assert_eq!(read(aw,0,1)[0]&0x10,0);
-        let pins=SpiPins{sclk:1<<36,mosi:1<<37,miso:Some(35),cs:SD_CS};
+        let pins=SpiPins{sclk:1<<36,mosi:1<<37,miso:Some(35),cs:SD_CS,keep_cs:false};
         let init=|b:&mut CoreS3,pins|{
             b.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);
             b.spi_transfer_pins(2,pins,&[0x40,0,0,0,0,0x95],0);
