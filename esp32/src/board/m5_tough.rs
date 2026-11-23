@@ -109,6 +109,7 @@ pub struct M5Tough {
     panel_command: u8,
     read_index: u8,
     read_at: usize,
+    read_started: bool,
     video_version: u64,
     gpio_events: u64,
     spi_bytes: u64,
@@ -128,7 +129,7 @@ impl M5Tough {
     pub fn new() -> Self {
         Self {
             panel: DcsPanel::new(usize::from(WIDTH), usize::from(HEIGHT)),
-            panel_reset_count: 0, panel_command: 0, read_index: 0, read_at: 0,
+            panel_reset_count: 0, panel_command: 0, read_index: 0, read_at: 0, read_started: false,
             video_version: 0, gpio_events: 0, spi_bytes: 0, spi_dropped: 0,
             pmic: Arc::new(Mutex::new(Axp192State::new(CPU_HZ))),
             touch: Arc::new(Mutex::new(Touch::default())),
@@ -161,6 +162,7 @@ impl M5Tough {
             self.panel_command = 0;
             self.read_index = 0;
             self.read_at = 0;
+            self.read_started = false;
             self.video_version = self.video_version.wrapping_add(1);
         }
         pmic.panel_ready()
@@ -199,6 +201,7 @@ impl BoardModel for M5Tough {
             if !self.panel.dc {
                 self.panel_command = byte;
                 self.read_at = 0;
+                self.read_started = false;
             } else if self.panel_command == 0xd9 {
                 self.read_index = byte & 15;
             }
@@ -208,6 +211,15 @@ impl BoardModel for M5Tough {
             self.video_version = self.video_version.wrapping_add(1);
         }
         if pins.miso != Some(LCD_MISO) { return vec![0xff; rx_len]; }
+
+        // ILI9342C RDDID begins with a dummy clock. Legacy M5GFX b9639027
+        // submits that clock separately before its 32-bit read. The classic
+        // SPI adapter rounds a one-bit receive to one byte.
+        if rx_len == 1 && tx.is_empty() && self.panel_command == 0x04 && !self.read_started {
+            self.read_started = true;
+            return vec![0];
+        }
+        self.read_started |= rx_len > 0;
 
         // ILITEK ILI9342C V102 §§8.2.3 and 8.2.46–48, also used by StackChan.
         (0..rx_len).map(|_| {
@@ -336,6 +348,10 @@ mod tests {
         assert_eq!(dcs(&mut board, route(), 0x04, &[], 3), [0xff; 3]);
         power(pmic);
         assert_eq!(dcs(&mut board, route(), 0x04, &[], 3), [0xe3, 0, 0]);
+        dcs(&mut board, route(), 0x04, &[], 0);
+        assert_eq!(board.spi_transfer_pins(3, route(), &[], 1), [0]);
+        assert_eq!(board.spi_transfer_pins(3, route(), &[], 4), [0xe3, 0, 0, 0]);
+        assert_eq!(dcs(&mut board, SpiPins { miso: Some(19), ..route() }, 0x04, &[], 3), [0xff; 3]);
         for pins in [
             SpiPins { cs: 1 << 4, ..route() },
             SpiPins { mosi: 1 << 1, ..route() },

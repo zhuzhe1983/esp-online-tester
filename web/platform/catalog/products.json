@@ -9475,10 +9475,12 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "m5-tough",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
@@ -9501,21 +9503,24 @@
           "type": "button",
           "name": "Front key A (printed circle below the panel)",
           "transport": "board",
-          "controller": "CHSC6540"
+          "controller": "CHSC6540",
+          "defaultKeyCode": "KeyA"
         },
         {
           "id": "btn-b",
           "type": "button",
           "name": "Front key B (printed circle below the panel)",
           "transport": "board",
-          "controller": "CHSC6540"
+          "controller": "CHSC6540",
+          "defaultKeyCode": "KeyB"
         },
         {
           "id": "btn-c",
           "type": "button",
           "name": "Front key C (printed circle below the panel)",
           "transport": "board",
-          "controller": "CHSC6540"
+          "controller": "CHSC6540",
+          "defaultKeyCode": "KeyC"
         },
         {
           "id": "power",
@@ -9769,14 +9774,12 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
-        "内置电池、振动马达与电源指示灯只有旧库 README 提到，当前官方规格未列出，未证实。",
-        "屏下三个圆形按键是 CHSC6540 触摸区（官方页无引脚表）；官方 M5GFX 报 320x240 坐标区，旧 M5Tough 库报 320x280 且把按键放在屏幕下方 40 行，两者的原始范围尚未实机确认。",
-        "面板复位/背光经 AXP192（AXP_IO4、AXP_LDO3），扬声器使能经 AXP_IO2；AXP192 驱动由 Core2 lane 提供，未集成前 Tough 无法驱动这些线路。",
-        "USB 串口桥芯片存在版本冲突：当前官方页写 CH9102，2021 原理图 U3 为 CP2104-F03-GMR。",
-        "NS4168 扬声器、PDM 麦克风、BM8563 RTC、RS485 收发与 6-24V DC-DC、microSD 卡槽尚未在模拟器中实现。",
-        "未连接实物，未做实机验证。"
+        "支持 ILI9342C 的 320×240 SPI 画面、CHSC6540 单点触摸、A/B/C 触摸区和 AXP192 的屏幕供电、复位和背光开关。",
+        "A/B/C 通过同一颗 CHSC6540 触摸控制器上报，按旧版 M5Tough 库的按区中心映射，单点输入。按区和玻璃坐标未做实物校准。",
+        "实物规格为 8 MiB PSRAM，此经典 ESP32 后端提供 4 MiB。ILI9342E 等其他屏幕批次未验证。",
+        "BM8563 支持客体设定的日历，闹钟唤醒未实现。实物电源键、复位键、模拟电压和整机断电未模拟。",
+        "TF 卡镜像可配置，虚拟卡未接到客体 SPI。RS485、6–24V 转换、扬声器和 PDM 麦克风不在板级适配范围。",
+        "外壳尺寸、照片对比及未知件见模型报告。USB 串口桥存在资料版本差异，未做实机验证。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k034.json",
       "model": {
@@ -9795,7 +9798,8 @@
       "family": {
         "id": "m5-core",
         "name": "Core / Basic / FIRE / M5GO"
-      }
+      },
+      "defaultFirmwareId": "m5stack-k034-tough-tools-v102"
     },
     {
       "id": "m5stack-k150",
