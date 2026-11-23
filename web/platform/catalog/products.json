@@ -16541,10 +16541,10 @@
       "chip": "esp32",
       "module": "ESP32-PICO-D4",
       "runtime": {
-        "board": null,
+        "board": "stickc-plus",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": {
         "width": 135,
@@ -16564,6 +16564,12 @@
           "name": "Button B",
           "type": "button",
           "pin": 39
+        },
+        {
+          "id": "power",
+          "name": "Power (AXP192 PEK)",
+          "type": "button",
+          "transport": "board"
         }
       ],
       "interfaces": [
@@ -16605,8 +16611,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "官方 v1.0 出厂固件的试运行覆盖 IMU 倾角、RTC 秒进及 A/B 页面切换。3D 按键区域按照片估算。",
+        "AXP192 电池与 USB 电压是虚拟环境。固件的麦克风频谱已用原生模拟器的虚拟 PCM 验证，浏览器不开放麦克风输入。",
+        "IR Send 和 BLE disconnect 仅验证页面切换。未验收红外光学、BLE 无线连接、GATT 或实机。部分页面切换需要持续按键。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k016-p.json",
       "model": {

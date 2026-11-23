@@ -18,11 +18,13 @@ pub mod lilygo_additional;
 mod m5stack_basic;
 pub mod core2;
 pub mod m5_tough;
+pub mod stickc_plus;
 
 pub use tdisplay::*;
 
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "stickc-plus" | "m5stack-k016-p" => Some(Box::new(stickc_plus::StickCPlus::new())),
         "core2" => Some(Box::new(core2::Core2::new())),
         "core2-v11" => Some(Box::new(core2::Core2::with_revision(core2::Revision::V11))),
         "core2-v13" => Some(Box::new(core2::Core2::with_revision(core2::Revision::V13))),
