@@ -188,8 +188,126 @@
   "scope": "Stock Gray UIFlow2 v2.5.5 on the documented 16 MiB Gray host profile. A/B/C routing and SD transport follow the matching host schematics. The factory and UIFlow1 failure signatures are scoped to these runtime probes.",
   "limits": [
     "K005 original interchangeable keyboard panels and expansion base are outside the board model.",
-    "The UIFlow2 stock menus exercised here did not transact on the provided FAT32 card.",
+    "The native stock-menu cases exercised zero guest SD commands. The separate WASM serial REPL case verifies FAT32 mounting, a file read/write and reload persistence.",
     "Physical hardware not tested."
   ],
-  "redaction": "Retain selected UART markers and computed digests. Raw terminal output and framebuffer images may contain compiler paths and device identifiers and are omitted."
+  "redaction": "Retain selected UART markers and computed digests. Raw terminal output and framebuffer images may contain compiler paths and device identifiers and are omitted.",
+  "browser": {
+    "checkedAt": "2026-11-23T05:24:58Z",
+    "backend": "Headless Chromium workbench on production web worker and compiled WASM/JIT",
+    "wasmSha256": "7b826dbf80ce26fc5c7e531deb2a25cf00f3ed776f45d8b6a4d422fcfcc286e4",
+    "integrationScope": "K005 catalog with Core-family firmware entries and the shared classic Basic board aliases for ROM, image layout and SD on this checkout.",
+    "classicAliasModules": {
+      "app-image.js": "b82bb2230efdfbc8fd5c515c2dce3865f26b51769780e691d4b9b000ff7060b6",
+      "local-firmware.js": "d8ebd736f8abc51f8c42b89214b175f840a74fb03466ba30fc572f5ee553435d",
+      "runtime.js": "6316b1d46f059cffb06c25acd8385332dee36eb7b0cd52f500daf4025d39f14a",
+      "board-compatibility.js": "ecf0c9c42490f51129db77fa73d1cb53d7f0743b4484bb084d944b02beb81ac2"
+    },
+    "firmwareDelivery": "Canonical catalog URL fulfilled from cached, hash-pinned manufacturer bytes. Runtime verified SHA-256.",
+    "humanInput": "2D panel button-a held across at least 0.32 guest seconds",
+    "serialProof": [
+      "UIFlow V2.5.5"
+    ],
+    "result": {
+      "selectedDefault": "m5stack-k005-factory-reference",
+      "selectedAlternative": "m5stack-k005-uiflow2",
+      "cancelDidNotDownload": true,
+      "downloads": 1,
+      "baseline": {
+        "width": 320,
+        "height": 240,
+        "sha256": "2ab737bdb88b4d59bde1dd455a07de4f4dd3fe9e33066255c596d64ddcef97a6",
+        "time": 5.3,
+        "execution": "wasm-jit",
+        "artifacts": [
+          {
+            "kind": "flash",
+            "sha256": "63841aa3065ac02e729fccc9e3a9e931f587cec5e8ea57850a720cfdbc67d8f2",
+            "bytes": 16773120
+          },
+          {
+            "kind": "rom",
+            "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+            "bytes": 857500
+          }
+        ],
+        "view": "2d",
+        "board": "m5stack-basic",
+        "sdCard": {
+          "mounted": true,
+          "sizeBytes": 67108864,
+          "changedPages": 4
+        },
+        "tilePixels": {
+          "develop": [
+            16,
+            134,
+            181
+          ],
+          "run": [
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "pressed": {
+        "width": 320,
+        "height": 240,
+        "sha256": "8c0f1dbc5956516300ec4b6aa7fbd550ed6d7fd50c6714231f33221999fc60dd",
+        "time": 6.48,
+        "execution": "wasm-jit",
+        "artifacts": [
+          {
+            "kind": "flash",
+            "sha256": "63841aa3065ac02e729fccc9e3a9e931f587cec5e8ea57850a720cfdbc67d8f2",
+            "bytes": 16773120
+          },
+          {
+            "kind": "rom",
+            "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+            "bytes": 857500
+          }
+        ],
+        "view": "2d",
+        "board": "m5stack-basic",
+        "sdCard": {
+          "mounted": true,
+          "sizeBytes": 67108864,
+          "changedPages": 4
+        },
+        "tilePixels": {
+          "develop": [
+            0,
+            0,
+            0
+          ],
+          "run": [
+            0,
+            146,
+            214
+          ]
+        }
+      },
+      "errors": []
+    },
+    "guestSdProof": {
+      "source": "UART0 MicroPython raw REPL in pinned official UIFlow2 for Gray. Test file on a dedicated virtual card.",
+      "pins": {
+        "sck": 18,
+        "mosi": 23,
+        "miso": 19,
+        "cs": 4
+      },
+      "configuration": "machine.SDCard(slot=2, width=1, sck=Pin(18), mosi=Pin(23), miso=Pin(19), cs=Pin(4))",
+      "mount": "os.mount(d, \"/sd\")",
+      "file": "/sd/faces-proof.txt",
+      "payload": "FACES_SPI_TEST",
+      "initialEmptyListing": true,
+      "readBackAfterWrite": true,
+      "listedAndReadAfterPageReload": true,
+      "sdkSlot3Probe": "OSError: (-261, 'ESP_ERR_NOT_FOUND')",
+      "scope": "Stock menu and REPL results are tracked separately. The test observes reload persistence with the same browser, board, image, and storage scope."
+    }
+  }
 }
