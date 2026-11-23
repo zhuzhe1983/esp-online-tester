@@ -115,13 +115,18 @@ impl ClassicI2s {
         // Classic keeps a 24-bit sample in a 32-bit word (i2s_ll.h:676-680 sets RX_FIFO_MOD 2;
         // esp_driver_i2s/i2s_common.c:447-448 allocates 4 bytes), so 24-bit RX sets RX_24_FILL_EN.
         let fill24 = if bits == 24 { 1 << 16 } else { 0 };
-        Device::write(&mut self.inner, 0x20, ((conf >> 1) & 1) | ((conf >> 2) & 2) | ((conf >> 3) & 4) | ((conf & (1 << 7)) >> 4) | fill24);
+        // Actual Plus SDK d3e562907 i2s_struct.h PDM_CONF @b4: RX_EN1,
+        // PDM2PCM3, SINC_DSR16_24. Driver i2s.c:435 clocks PCM at BCLK/(64 or128).
+        // Reuse the existing converted-PCM boundary, not a raw PDM filter simulation.
+        let pdm=self.ram.read(0xb4);
+        let pdm_conf=if pdm&2!=0 {(1<<20)|(((pdm>>3)&1)<<21)|(((pdm>>24)&1)<<22)}else{0};
+        Device::write(&mut self.inner, 0x20, ((conf >> 1) & 1) | ((conf >> 2) & 2) | ((conf >> 3) & 4) | ((conf & (1 << 7)) >> 4) | fill24 | pdm_conf);
     }
     #[inline]
     pub(crate) fn data(&mut self, cycles: u64, now: u64, port: usize, gpio: &ClassicGpio, sources: Option<&mut PcmSources>) -> Vec<u8> {
         let (data, clock) = [(155, [27, 28]), (181, [164, 165])][port];
         let signals = esp_periph::i2s::RxSignals { data, clock, input_select_bit: 7, output_mask: 0x3ff };
-        self.inner.receive(cycles, now, false, &gpio.gpio, signals, sources)
+        self.inner.receive(cycles, now, self.camera_capable, &gpio.gpio, signals, sources)
     }
     pub(crate) fn abort_camera_dma(&mut self) {
         self.camera = None;
@@ -183,7 +188,7 @@ impl Device for ClassicI2s {
                 if value & (3 << 29) != 0 { self.dma.desc = 0x3ff0_0000 | (value & 0xfffff); self.dma.buf_pos = 0; self.dma.rx_eof_pos = 0; self.dma.running = true; }
             }
             0x60 => self.dma.conf1 = value & CHECK_OWNER,
-            8 | 0x2c | 0xa8 | 0xac | 0xb0 => self.sync(),
+            8 | 0x2c | 0xa8 | 0xac | 0xb0 | 0xb4 => self.sync(),
             _ => {}
         }
         WriteEffect::NONE
@@ -525,5 +530,49 @@ mod tests {
             let mut i = receiver(bits, 1 << 5);
             assert_eq!(i.inner.rx_data(cycles, false, |_| [1, -2]), frame, "{bits}-bit");
         }
+    }
+
+    fn pdm_receiver(port:usize)->ClassicI2s {
+        let mut i=ClassicI2s::for_port(port);i.write(0xac,0x000fd50b);i.write(0xb0,0x00410145);
+        i.write(0x2c,1<<3);i.write(8,0x00030d20);i.write(0xb4,0x2f);i
+    }
+    #[test]
+    fn classic_pdm_actual_plus_sdk_rate_decimation_and_pure_reads() {
+        let mut i=pdm_receiver(0);assert_eq!(i.inner.rx_rate(),Some(44118));
+        assert_eq!(i.read(0xb4),0x2f);assert_eq!(i.inner.rx_rate(),Some(44118));
+        i.write(0xb4,0x2f|(1<<24));assert_eq!(i.inner.rx_rate(),Some(22059));
+        i.write(0xb4,0);assert_eq!(i.inner.rx_rate(),Some(88235));
+    }
+    #[test]
+    fn classic_pdm_requires_conversion_gate_and_i2s0_not_raw_or_port1() {
+        let g=SocBus::new(0,[0;6]).periph.gpio;
+        for (port,conf,ok) in [(0,2,false),(0,10,true),(1,10,false)] {
+            let mut i=pdm_receiver(port);i.write(0xb4,conf);
+            i.inner.rx_input().push(&[[11,22];8]);
+            let out=i.data(24000,24000,port,&g,None);
+            assert_eq!(!out.is_empty(),ok,"port={port} conf={conf}");
+            if ok {assert!(out.as_chunks::<2>().0.iter().all(|b|*b==[22,0]));}
+        }
+    }
+    #[test]
+    fn classic_pdm_routing_requires_actual_mic_clk0_data34_and_ws_signal() {
+        use esp_periph::i2s::{PcmPins,PcmSource};
+        for (data,clock,expected) in [(34,28,true),(35,28,false),(34,27,false)] {
+            let mut i=pdm_receiver(0);let mut g=SocBus::new(0,[0;6]).periph.gpio;
+            g.gpio.func_in_sel[155]=data|(1<<7);g.gpio.func_out_sel[0]=clock;
+            let mut src=PcmSource::new(44100,PcmPins::Pdm{clk:0,data:34}).unwrap();
+            src.push(&[[11,22];16]);let mut bank=PcmSources::default();bank.inputs.push(Some(src));
+            let bytes=i.data(24000,24000,0,&g,Some(&mut bank));
+            assert_eq!(i.inner.rx_source().is_some(),expected);
+            assert_eq!(bytes.iter().any(|b|*b!=0),expected);
+        }
+    }
+    #[test]
+    fn classic_pdm_stop_reset_and_camera_cannot_leak_prior_audio() {
+        let g=SocBus::new(0,[0;6]).periph.gpio;let mut i=pdm_receiver(0);
+        assert!(!i.data(24000,24000,0,&g,None).is_empty());
+        i.write(8,0);assert!(i.data(24000,48000,0,&g,None).is_empty());
+        i.write(8,0x00030d20);i.write(0xa8,0x21);
+        assert!(i.data(24000,72000,0,&g,None).is_empty());
     }
 }

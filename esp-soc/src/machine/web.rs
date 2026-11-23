@@ -79,6 +79,29 @@ fn accessory_motion_input(board:&mut dyn crate::BoardModel,cycle:crate::board::V
     if matches!(connected.as_str(),"0"|"1")&&matches!(motion.as_str(),"0"|"1") {board.accessory_motion_at(cycle,&model,&port,connected=="1",motion=="1");}
 }
 
+// Product-only cold input path. No framebuffer, CPU or BT state is modified.
+#[cold]
+#[inline(never)]
+fn power_environment_input(board:&mut dyn crate::BoardModel,cycle:crate::board::VirtualCycle,message:&crate::json::Json) {
+    use crate::json::Json;
+    use esp_periph::i2c::axp192::Axp192PowerInput;
+    let voltage=|key,max|match message.get(key) {Some(Json::Int(v)) if (0..=max).contains(v)=>Some(*v as u32),_=>None};
+    let flag=|key|match message.get(key) {Some(Json::Bool(v))=>Some(*v),_=>None};
+    let (Some(battery_voltage_uv),Some(vbus_voltage_uv),Some(battery_present),Some(vbus_present),Some(vbus_valid),Some(charging))=
+        (voltage("batteryVoltageUv",5_000_000),voltage("vbusVoltageUv",7_000_000),flag("batteryPresent"),flag("vbusPresent"),flag("vbusValid"),flag("charging")) else {return};
+    if let Json::Obj(fields)=message {
+        if fields.len()!=7 || fields.iter().any(|(key,_)| !matches!(key.as_str(),"t"|"batteryVoltageUv"|"vbusVoltageUv"|"batteryPresent"|"vbusPresent"|"vbusValid"|"charging")){return;}
+    } else {return;}
+    board.power_environment_at(cycle,Axp192PowerInput{battery_voltage_uv,battery_present,vbus_voltage_uv,vbus_present,vbus_valid,charging});
+}
+
+#[cold]
+#[inline(never)]
+fn thermal_environment_input(board:&mut dyn crate::BoardModel,cycle:crate::board::VirtualCycle,message:&crate::json::Json) {
+    let [Some(background),Some(hotspot),Some(x),Some(y),Some(radius)]=["background","hotspot","centerX","centerY","radius"].map(|key|message.get(key)?.scalar_text()?.parse::<u16>().ok()) else{return};
+    board.thermal_environment_at(cycle,[background,hotspot,x,y,radius]);
+}
+
 impl<S: Soc> Machine<S> {
     // ------------------------------------------------------------------ web UI
     /// Drain each published audio chunk instead of retaining the entire native WAV capture.
@@ -225,6 +248,14 @@ impl<S: Soc> Machine<S> {
                 }
                 "accessory-angle" if S::NAME=="esp32s3" => {
                     let cycle=self.bus.cycles();if let Some((pin,source))=accessory_analog_input(self.bus.board(),cycle,&message) {self.bus.analog_set(pin,source);}
+                }
+                "power-environment" if S::NAME == "esp32" => {
+                    let cycle = self.bus.cycles();
+                    power_environment_input(self.bus.board(), cycle, &message);
+                }
+                "thermal-environment" if S::NAME == "esp32" => {
+                    let cycle = self.bus.cycles();
+                    thermal_environment_input(self.bus.board(), cycle, &message);
                 }
                 "accessory-environment" if matches!(S::NAME,"esp32s3"|"esp32c61") => {
                     let cycle=self.bus.cycles();accessory_environment_input(self.bus.board(),cycle,&message);

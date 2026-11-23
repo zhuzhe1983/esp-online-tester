@@ -143,7 +143,23 @@ impl I2c<$n> {
     pub fn has_device(&self, addr: u8) -> bool { self.devices.iter().any(|(attached, _)| *attached == addr) }
     #[inline(always)]
     pub fn is_active(&self) -> bool { self.remaining.is_some() }
-    pub fn irq(&self) -> bool { self.int_raw & self.int_ena != 0 }
+    // Classic Arduino-ESP32 1.0.1/1.0.6 esp32-hal-i2c.c:i2cProcQueue enables
+    // TXFIFO_EMPTY before TRANS_START and fills TX only in its ISR. These are
+    // FIFO level conditions, independent of an active command/interrupt enable.
+    // IDF 85c43024c (v3.3.5-1), esp32 i2c_reg.h: thresholds bits9:5/4:0;
+    // RAW TXEMPTY/RXFULL bits1/0. Modern controller behavior is unchanged.
+    fn raw_interrupts(&self) -> u32 {
+        if $n != 16 { return self.int_raw; }
+        let conf=self.regs.read(0x18);
+        if conf & (1<<10)!=0 { return self.int_raw; } // non-FIFO access unsupported
+        self.int_raw | (u32::from(self.tx.len() < ((conf>>5)&31) as usize)<<1)
+            | u32::from(self.rx.len() > (conf&31) as usize)
+    }
+    pub fn irq(&self) -> bool {
+        if self.int_raw & self.int_ena != 0 { return true; }
+        // Keep disabled/non-FIFO interrupt observation as cheap as before.
+        $n == 16 && self.int_ena & 3 != 0 && self.raw_interrupts() & self.int_ena != 0
+    }
 
     pub fn read(&mut self, off: u32) -> u32 {
         match off {
@@ -158,9 +174,9 @@ impl I2c<$n> {
             0x08 => (if $n == 16 { self.nack } else { !self.nack } as u32) | ((self.is_active() as u32) << 4) | (u32::from($n == 16 && self.int_raw & INT_TIMEOUT != 0) << 2) | ((self.rx.len() as u32 & 0x3f) << 8) | ((self.tx.len() as u32 & 0x3f) << 18),   // SR: resp_rec, bus_busy, rxfifo_cnt, txfifo_cnt
             0x14 => ((self.rx.len() as u32 & 0x1f) << 5) | ((self.tx.len() as u32 & 0x1f) << 15),                        // FIFO_ST: waddr = count, raddr = 0
             0x1c => self.rx.pop_front().unwrap_or(0) as u32,
-            0x20 => self.int_raw,
+            0x20 => self.raw_interrupts(),
             0x28 => self.int_ena,
-            0x2c => self.int_raw & self.int_ena,
+            0x2c => self.raw_interrupts() & self.int_ena,
             0x58..=0x74 => self.program.cmd[((off - 0x58) / 4) as usize],
             0x78..=0x94 if $n == 16 => self.program.cmd[((off - 0x58) / 4) as usize],
             _ => self.regs.read(off),
@@ -366,6 +382,20 @@ impl I2cDevice for Reg8Device {
 #[cfg(test)]
 mod classic_tests {
     use super::*;
+    #[test]
+    fn classic_fifo_levels_prefill_before_start_and_reassert_until_serviced() {
+        let mut c=I2c::new_classic();c.write(0x18,(3<<5)|2); // TX<3, RX>2
+        assert_eq!(c.read(0x20)&3,2);assert!(!c.irq());c.write(0x28,3);assert!(c.irq());
+        c.write(0x24,3);assert_eq!(c.read(0x2c)&3,2,"level survives W1C while FIFO remains empty");
+        for byte in [0x68,0x28,0xcc] {c.write(0x1c,byte);}
+        assert_eq!(c.read(0x20)&3,0);assert!(!c.irq());
+        c.write(0x18,(3<<5)|2|(1<<13));assert!(c.irq(),"TX reset empties the FIFO");
+        c.rx.extend([1,2]);assert_eq!(c.read(0x20)&1,0);c.rx.push_back(3);assert_eq!(c.read(0x20)&1,1);
+        c.write(0x24,1);assert_eq!(c.read(0x20)&1,1);assert_eq!(c.read(0x1c),1);assert_eq!(c.read(0x20)&1,0);
+        c.write(0x28,0);assert!(!c.irq());assert_eq!(c.read(0x20)&2,2,"RAW is independent of enable");
+        c.write(0x18,(3<<5)|2|(1<<10));assert_eq!(c.read(0x20)&3,0,"non-FIFO mode does not inherit FIFO levels");
+        let mut modern=I2c::new();modern.write(0x18,(3<<5)|2);modern.write(0x28,3);assert_eq!(modern.read(0x20)&3,0);assert!(!modern.irq(),"modern scheduled controller semantics unchanged");
+    }
     #[test]
     fn classic_executes_sixteen_slots_and_old_stop_opcode() {
         let mut classic = I2c::new_classic();

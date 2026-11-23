@@ -256,6 +256,10 @@ impl SocBus {
         // Every FIFO is at offset 0 of its block, so one mask test keeps this off other reads.
         let uart_fifo = if a & 0xfff == 0 { [0x3ff4_0000, 0x3ff5_0000, 0x3ff6_e000].iter().position(|&base| a == base) } else { None };
         let uart_level = uart_fifo.map(|i| self.periph.uart[i].irq_sources());
+        // Classic I2C RX_FULL also follows FIFO occupancy. Only its DATA
+        // register read can lower that source; keep ordinary reads cold.
+        let i2c_fifo = if a & 0xfff == 0x1c { [0x3ff5_301c,0x3ff6_701c].iter().position(|&data|a==data) } else { None };
+        let i2c_level = i2c_fifo.map(|i|self.periph.i2c[i].irq_sources());
         let w = if a == WDEV_RND {
             self.rng.now = self.cycles as u32;
             self.rng.read(0)
@@ -264,6 +268,9 @@ impl SocBus {
         };
         if let (Some(i), Some(before)) = (uart_fifo, uart_level) {
             if self.periph.uart[i].irq_sources() != before { self.irq_dirty = true; }
+        }
+        if let (Some(i),Some(before))=(i2c_fifo,i2c_level) {
+            if self.periph.i2c[i].irq_sources()!=before {self.irq_dirty=true;}
         }
         match size {
             1 => (w >> ((addr & 3) * 8)) & 0xff,
@@ -424,9 +431,9 @@ impl SocBus {
         Some((w, h, frame))
     }
     pub fn attach_board_devices(&mut self) {
-        // AtomMatrix-v11 and Stamp-Pico carry PICO-D4, not default D0WD. Cold board setup;
+        // AtomMatrix-v11, Stamp-Pico and StickC Plus carry PICO-D4. Cold board setup;
         // IDF v5.5.1 efuse_reg.h CHIP_PACKAGE [11:9], v4.4.3 CHIP_VER_PKG=5 (PICO-D4).
-        if matches!(self.board.name(), "atom-matrix-v11" | "stamppico") {
+        if matches!(self.board.name(), "atom-matrix-v11" | "stamppico" | "stickc-plus") {
             let value = self.periph.efuse.ram.read(0x0c);
             self.periph.efuse.ram.write(0x0c, (value & !(7 << 9)) | (5 << 9));
         }
@@ -898,6 +905,21 @@ mod tests {
         assert_eq!(b.page_versions()[rom], 0);
     }
 
+    #[test]
+    fn i2c_fifo_read_presents_the_falling_level_on_both_aliases() {
+        for (base,alias,index) in [(0x3ff5_3000,0x6001_3000,0),(0x3ff6_7000,0x6002_7000,1)] {
+            for data_addr in [base+0x1c,alias+0x1c] {
+                let mut b=SocBus::new(4<<20,[0;6]);let p=&mut b.periph.i2c[index];
+                p.attach(0x68,Box::new(esp_periph::i2c::Reg8Device::new("fixture",&[(0,0x19),(1,0x20)])));
+                // Direct controller setup avoids depending on GPIO routing for
+                // this IRQ-cache regression; the DATA pop itself uses the bus.
+                p.write(0x18,0);p.write(0x1c,0xd1);p.write(0x58,0);p.write(0x5c,0x901);p.write(0x60,0x1002);p.write(0x64,0x1800);p.write(4,32);p.write(0x28,1);
+                assert_eq!(p.read(0x20)&1,1);b.irq_dirty=false;
+                assert_eq!(b.read32(data_addr).unwrap(),0x19);assert!(!b.irq_dirty,"one byte remains above threshold zero");
+                assert_eq!(b.read32(data_addr).unwrap(),0x20);assert!(b.irq_dirty,"last byte lowers live source on both aliases");assert!(!b.periph.i2c[index].irq());
+            }
+        }
+    }
     #[test]
     fn i2c_ahb_alias_and_board_devices_reach_both_controllers() {
         let mut b = SocBus::new(4 << 20, [0; 6]);
