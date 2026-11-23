@@ -55,6 +55,16 @@ try {
  }
  const plate={id:'paper-carrier',kind:'plate',color:'#eeeeee',geometry:{outlineMm:[[-5,-4],[5,-4],[5,4],[-5,4]],holesMm:[[[-1,-1],[1,-1],[1,1],[-1,1]]],depthMm:.08,centerMm:[0,0,3]}};
  metadata={...fixture,derivedParts:[plate]};const paper=createManufacturerModel(product,null);await paper.ready;assert.ok(paper.parts['paper-carrier'].isMesh);assert.equal(paper.parts['paper-carrier'].position.z,3);assert.deepEqual(paper.group.userData.shellMeshes,[]);paper.dispose();
+ const coverPlate={...plate,id:'cover-panel',role:'shell',color:'#c67032'};
+ metadata={...fixture,derivedParts:[plate,coverPlate]};
+ const plateAssembly=createManufacturerModel(product,null);await plateAssembly.ready;
+ const projectedCover=plateAssembly.parts['cover-panel'];
+ assert.deepEqual(plateAssembly.group.userData.shellMeshes,[projectedCover]);
+ assert.equal(plateAssembly.parts.shell,projectedCover);
+ applyShellAppearance(projectedCover,{shell:{color:'#8054b3',opacity:.35,finish:'plastic'}});
+ assert.equal(projectedCover.material.opacity,.35);
+ assert.equal(plateAssembly.parts['paper-carrier'].material.color.getHexString(),'eeeeee');
+ plateAssembly.dispose();
  metadata={...fixture,derivedParts:[{id:'unsupported-marker',kind:'pcb-placeholder',geometry:{shape:'polygon',sizeMm:[10,8,1],outlineMm:plate.geometry.outlineMm,holesMm:plate.geometry.holesMm,labelSizeMm:[1,.5]}}]};const unsupportedMarker=createManufacturerModel(product,null);await assert.rejects(unsupportedMarker.ready,/no continuous support/);unsupportedMarker.dispose();
  const lens={id:'rgb-window',kind:'box',color:'#69746a',ledIndex:0,geometry:{sizeMm:[2.8,.4,.1],centerMm:[0,0,4.64]}};
  const recess={id:'hex-recess',kind:'cylinder',geometry:{radiusMm:1,depthMm:.1,radialSegments:6},color:'#111111'};

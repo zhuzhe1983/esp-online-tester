@@ -96,7 +96,30 @@ export function createManufacturerModel(product, screenTexture) {
         if(Object.keys(surface).some(key=>!['metalness','roughness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid derived material');
         const mesh=new THREE.Mesh(new THREE.LatheGeometry(points.map(p=>new THREE.Vector2(...p)),64),new THREE.MeshStandardMaterial({color:part.color || '#666d69',roughness:surface.roughness??.7,metalness:surface.metalness??0}));mesh.name=part.id;mesh.position.set(...center);mesh.rotation.set(...vector(part.geometry?.rotation));mesh.userData.inputOccluder=true;parts[part.id]=mesh;group.add(mesh);continue;
       }
-      if(['box','cylinder','torus','plate'].includes(part.kind)) {const g=part.geometry || {},surface=part.material || {};if(Object.keys(surface).some(key=>!['metalness','roughness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid derived material');const dimensions=part.kind==='box'?size:part.kind==='plate'?[g.depthMm]:part.kind==='cylinder'?[g.radiusMm,g.depthMm]:[g.radiusMm,g.tubeMm];if(!dimensions.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid derived part dimensions');const radialSegments=g.radialSegments??48;if(part.kind==='cylinder'&&(!Number.isInteger(radialSegments)||radialSegments<3||radialSegments>128))throw Error('Invalid cylinder radial segments');const shape=part.kind==='plate'?createPlateGeometry(g):part.kind==='torus'?new THREE.TorusGeometry(g.radiusMm,g.tubeMm,16,64):part.kind==='cylinder'?new THREE.CylinderGeometry(g.radiusMm,g.radiusMm,g.depthMm,radialSegments).rotateX(Math.PI/2):new THREE.BoxGeometry(...size);const mesh=new THREE.Mesh(shape,new THREE.MeshStandardMaterial({color:part.color || '#666d69',roughness:surface.roughness??.7,metalness:surface.metalness??0}));mesh.name=part.id;mesh.position.set(...center);mesh.rotation.set(...vector(part.geometry?.rotation));mesh.userData.inputOccluder=true;parts[part.id]=mesh;group.add(mesh);continue;}
+      if(['box','cylinder','torus','plate'].includes(part.kind)) {
+        const g=part.geometry || {},surface=part.material || {};
+        if(Object.keys(surface).some(key=>!['metalness','roughness'].includes(key))||Object.values(surface).some(v=>!Number.isFinite(v)||v<0||v>1))throw Error('Invalid derived material');
+        const dimensions=part.kind==='box'?size:part.kind==='plate'?[g.depthMm]:part.kind==='cylinder'?[g.radiusMm,g.depthMm]:[g.radiusMm,g.tubeMm];
+        if(!dimensions.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid derived part dimensions');
+        const radialSegments=g.radialSegments??48;
+        if(part.kind==='cylinder'&&(!Number.isInteger(radialSegments)||radialSegments<3||radialSegments>128))throw Error('Invalid cylinder radial segments');
+        const shape=part.kind==='plate'?createPlateGeometry(g)
+          :part.kind==='torus'?new THREE.TorusGeometry(g.radiusMm,g.tubeMm,16,64)
+          :part.kind==='cylinder'?new THREE.CylinderGeometry(g.radiusMm,g.radiusMm,g.depthMm,radialSegments).rotateX(Math.PI/2)
+          :new THREE.BoxGeometry(...size);
+        const mesh=new THREE.Mesh(shape,new THREE.MeshStandardMaterial({color:part.color || '#666d69',roughness:surface.roughness??.7,metalness:surface.metalness??0}));
+        mesh.name=part.id;
+        mesh.position.set(...center);
+        mesh.rotation.set(...vector(g.rotation));
+        mesh.userData.inputOccluder=true;
+        parts[part.id]=mesh;
+        group.add(mesh);
+        if(part.role==='shell'){
+          shells.push(mesh);
+          parts.shell??=mesh;
+        }
+        continue;
+      }
       if(part.kind==='printed-marking') {
         const lines=part.lines,color=part.color??'#5f655e';if(!Array.isArray(lines)||!lines.length||lines.length>8||lines.some(s=>typeof s!=='string'||!s.length||s.length>100)||!/^#[a-fA-F0-9]{6}$/.test(color)||!Array.isArray(part.geometry?.sizeMm)||part.geometry.sizeMm.length!==2||!part.geometry.sizeMm.every(v=>Number.isFinite(v)&&v>0&&v<=5000))throw Error('Invalid printed marking');
         let map;if(typeof document!=='undefined'){const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=512;const context=canvas.getContext('2d');context.fillStyle=color;context.font='48px monospace';context.textAlign='center';context.textBaseline='middle';lines.forEach((line,i)=>context.fillText(line,512,(i+1)*512/(lines.length+1),980));map=new THREE.CanvasTexture(canvas);}else map=new THREE.Texture();textures.push(map);map.colorSpace=THREE.SRGBColorSpace;
