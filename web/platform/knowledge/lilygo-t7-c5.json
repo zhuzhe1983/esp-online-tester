@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:48Z",
   "hardwareRevision": "T7-C5 V1.1 BOOT source profile; V1.0 manufacturer CAD",
   "identity": {
     "manufacturer": "LILYGO",
@@ -97,6 +97,19 @@
         "t7-c5-arduino-examples-factory-factory-ino"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t7-c5-official-factory",
+        "version": "V1.4"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "T7-C5 主板的 Factory 自检。"
     }
   ],
   "revisions": [],
@@ -271,6 +284,17 @@
       "title": "official wiki t7 c5",
       "kind": "official-product-document",
       "archiveName": "en__products__t7-series__t7-c5__index.md"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "T7-C5-factory-1128_V1.4.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-C5/fbab1a3b8b676dfcc7b1535d514755206602370c/Firmware/T7-C5-factory-1128_V1.4.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:48Z",
+      "sha256": "4851057489b02834a2caacffcb2b0b137f64627b679ecf8defea9266170685ef",
+      "bytes": 1431008,
+      "archiveName": "4851057489b02834a2caacffcb2b0b137f64627b679ecf8defea9266170685ef.bin"
     }
   ],
   "assets": [
@@ -325,16 +349,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -351,27 +365,34 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-image-candidate-inspected",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t7-c5-official-factory",
     "sourceIds": [
-      "t7-c5-readme-md",
-      "t7-c5-arduino-examples-factory-factory-ino"
+      "official-factory-bin"
     ],
-    "artifact": {
-      "productId": "lilygo-t7-c5",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-C5/fbab1a3b8b676dfcc7b1535d514755206602370c/Firmware/T7-C5-factory-1128_V1.4.bin",
-      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-C5/fbab1a3b8b676dfcc7b1535d514755206602370c/Firmware/T7-C5-factory-1128_V1.4.bin",
-      "fetchedAt": "2026-11-22T06:56:49Z",
-      "sha256": "4851057489b02834a2caacffcb2b0b137f64627b679ecf8defea9266170685ef",
-      "bytes": 1431008,
-      "flashMb": 4,
-      "firstBytes": "ffffffffffffffffffffffffffffffffffffffffffffffff",
-      "atPartitionTable": "aa50010200900000005000006e767300",
-      "scope": "Official repository firmware directory. Image reviewed in memory only. C5 ROM/IDF startup unsupported; not a runnable SRAM diagnostic."
-    },
-    "binaryFetched": true,
-    "binaryRetained": false,
-    "simulationVerified": false,
-    "notes": "已在内存读取官方仓库镜像并记录哈希；完整 C5 出厂镜像不属于 SRAM 调试加载范围，不宣称能够运行。"
+    "previousInvestigation": {
+      "status": "official-image-candidate-inspected",
+      "sourceIds": [
+        "t7-c5-readme-md",
+        "t7-c5-arduino-examples-factory-factory-ino"
+      ],
+      "artifact": {
+        "productId": "lilygo-t7-c5",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-C5/fbab1a3b8b676dfcc7b1535d514755206602370c/Firmware/T7-C5-factory-1128_V1.4.bin",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T7-C5/fbab1a3b8b676dfcc7b1535d514755206602370c/Firmware/T7-C5-factory-1128_V1.4.bin",
+        "fetchedAt": "2026-11-22T06:56:49Z",
+        "sha256": "4851057489b02834a2caacffcb2b0b137f64627b679ecf8defea9266170685ef",
+        "bytes": 1431008,
+        "flashMb": 4,
+        "firstBytes": "ffffffffffffffffffffffffffffffffffffffffffffffff",
+        "atPartitionTable": "aa50010200900000005000006e767300",
+        "scope": "Official repository firmware directory. Image reviewed in memory only. C5 ROM/IDF startup unsupported; not a runnable SRAM diagnostic."
+      },
+      "binaryFetched": true,
+      "binaryRetained": false,
+      "simulationVerified": false,
+      "notes": "已在内存读取官方仓库镜像并记录哈希；完整 C5 出厂镜像不属于 SRAM 调试加载范围，不宣称能够运行。"
+    }
   },
   "runtimeSupport": {
     "board": "lilygo-t7-c5",

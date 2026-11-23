@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:45Z",
   "hardwareRevision": "Original T-RGB 2.1-inch Full Circle ST7701S/CST820; selected native RGB order, not 2.1 Half Circle, 2.8 or V2",
   "identity": {
     "manufacturer": "LILYGO",
@@ -221,6 +221,19 @@
         "official-store-shopify-1"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-rgb-official-factory",
+        "version": "359c03f7cd8e"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家固件表将此文件对应到 2.1 英寸整圆屏；README 将 lv_factory 列为出厂示例。镜像中包含该示例的 T-RGB 初始化错误提示、SD 卡检查及时区回退提示。"
     }
   ],
   "revisions": [],
@@ -510,6 +523,17 @@
       "sha256": "86f48a816759842c15c2816a5e7a69fb24d7522aafb6aa074a4db7e30cd235f4",
       "bytes": 8355,
       "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "LILYGO_T_RGB_2_1_INCHES_FULL_CIRCLE.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RGB/359c03f7cd8e9aaadd4bf0f3fbf790844fd95f98/firmware/LILYGO_T_RGB_2_1_INCHES_FULL_CIRCLE.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:45Z",
+      "sha256": "03a34de8b79dd759ad06a51277665d3f42507f624289113f2dcac64eeafce980",
+      "bytes": 3032560,
+      "archiveName": "03a34de8b79dd759ad06a51277665d3f42507f624289113f2dcac64eeafce980.bin"
     }
   ],
   "assets": [
@@ -564,16 +588,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -590,25 +604,32 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-rgb-official-factory",
     "sourceIds": [
-      "s3add-rgb-readme",
-      "s3add-rgb-pins",
-      "s3add-rgb-driver",
-      "s3add-rgb-driver-h",
-      "s3add-rgb-init",
-      "s3add-rgb-platformio",
-      "s3add-rgb-xl9555",
-      "s3add-rgb-xl9555-registers",
-      "s3add-rgb-extension-spi",
-      "s3add-rgb-schematic",
-      "s3add-idf-s3-gpio-map",
-      "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
-      "official-store-shopify-1"
+      "official-factory-bin"
     ],
-    "candidates": [],
-    "simulationVerified": false,
-    "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "s3add-rgb-readme",
+        "s3add-rgb-pins",
+        "s3add-rgb-driver",
+        "s3add-rgb-driver-h",
+        "s3add-rgb-init",
+        "s3add-rgb-platformio",
+        "s3add-rgb-xl9555",
+        "s3add-rgb-xl9555-registers",
+        "s3add-rgb-extension-spi",
+        "s3add-rgb-schematic",
+        "s3add-idf-s3-gpio-map",
+        "bar-lib-sensorlib-src-touch-touchclasscst816-cpp",
+        "official-store-shopify-1"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    }
   },
   "modelReview": {
     "model": {

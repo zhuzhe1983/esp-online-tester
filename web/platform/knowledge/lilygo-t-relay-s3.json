@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:40Z",
   "hardwareRevision": "Six-channel T-Relay S3; schematic filename Rev1.1, internal sheets V1.0",
   "identity": {
     "manufacturer": "LILYGO",
@@ -180,6 +180,19 @@
         "official-wiki-t-relay-s3"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-relay-s3-official-factory",
+        "version": "2024-03-12"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家在六路 T-Relay S3 专属目录发布的出厂程序。"
     }
   ],
   "revisions": [],
@@ -456,6 +469,17 @@
       "gitObjectType": "not-independently-checked",
       "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash.",
       "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-T-Relay-tree.raw"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "firmware_LilyGo-Relay-ChuChang_20240312.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:40Z",
+      "sha256": "730db5943f0d12d763d095212515d074dbf03262577d28610889e9ebd12d883b",
+      "bytes": 737088,
+      "archiveName": "730db5943f0d12d763d095212515d074dbf03262577d28610889e9ebd12d883b.bin"
     }
   ],
   "assets": [
@@ -510,16 +534,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -536,49 +550,56 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-factory-candidate-and-test-image-linked",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-relay-s3-official-factory",
     "sourceIds": [
-      "LilyGo-T-Relay-tree",
-      "LilyGo-T-Relay-firmware-README.MD"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
-        "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
-        "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
-        "gitBlobSha": "c7241453110f572dadb67458b389009fadcbe824",
-        "bytes": 737088,
-        "status": "linked",
-        "sourceId": "LilyGo-T-Relay-tree",
-        "role": "factory-candidate",
-        "identityEvidence": "ChuChang (factory) image under exact LilyGo-T-Relay-S3 directory; binary revision not independently documented.",
-        "binaryFetched": false,
-        "simulationVerified": false,
-        "documentedFlashOffset": 0
-      },
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
-        "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
-        "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
-        "gitBlobSha": "575628954d9fdce533b3ab4d660e09d28a669d52",
-        "bytes": 607680,
-        "status": "linked",
-        "sourceId": "LilyGo-T-Relay-tree",
-        "role": "official-example",
-        "identityEvidence": "Existing pinned-tree S3 UnitTest file; README links an older 20230830 filename that is absent from this tree.",
-        "binaryFetched": false,
-        "simulationVerified": false,
-        "documentedFlashOffset": 0
+    "previousInvestigation": {
+      "status": "official-factory-candidate-and-test-image-linked",
+      "sourceIds": [
+        "LilyGo-T-Relay-tree",
+        "LilyGo-T-Relay-firmware-README.MD"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+          "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-ChuChang_20240312.bin",
+          "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+          "gitBlobSha": "c7241453110f572dadb67458b389009fadcbe824",
+          "bytes": 737088,
+          "status": "linked",
+          "sourceId": "LilyGo-T-Relay-tree",
+          "role": "factory-candidate",
+          "identityEvidence": "ChuChang (factory) image under exact LilyGo-T-Relay-S3 directory; binary revision not independently documented.",
+          "binaryFetched": false,
+          "simulationVerified": false,
+          "documentedFlashOffset": 0
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T-Relay/blob/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T-Relay/aa40a1bf0f4168b36d857a76e0f0b9c79fce099d/firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+          "path": "firmware/LilyGo-T-Relay-S3/firmware_LilyGo-Relay-UnitTest_20240409.bin",
+          "pinnedGitRevision": "aa40a1bf0f4168b36d857a76e0f0b9c79fce099d",
+          "gitBlobSha": "575628954d9fdce533b3ab4d660e09d28a669d52",
+          "bytes": 607680,
+          "status": "linked",
+          "sourceId": "LilyGo-T-Relay-tree",
+          "role": "official-example",
+          "identityEvidence": "Existing pinned-tree S3 UnitTest file; README links an older 20230830 filename that is absent from this tree.",
+          "binaryFetched": false,
+          "simulationVerified": false,
+          "documentedFlashOffset": 0
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Manufacturer quick-test README links T-Relay-S3 but its exact 20230830 binary is stale/absent. Existing S3 candidates are retained without asserting all relay/W5500 variants share a factory image.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
       }
-    ],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "Manufacturer quick-test README links T-Relay-S3 but its exact 20230830 binary is stale/absent. Existing S3 candidates are retained without asserting all relay/W5500 variants share a factory image.",
-    "watchlist": {
-      "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
-      "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
     }
   },
   "modelReview": {

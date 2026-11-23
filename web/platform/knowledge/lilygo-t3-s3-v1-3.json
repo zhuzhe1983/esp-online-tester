@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:49Z",
   "hardwareRevision": "T3-S3 V1.3; shared main-board pins explicitly documented with V1.2",
   "identity": {
     "manufacturer": "LILYGO",
@@ -133,6 +133,19 @@
         "lora-factory-readme"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t3-s3-v1-3-official-factory",
+        "version": "2025-04-25"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "T3-S3 V1.3 搭配 SX1262 的原厂程序。"
     }
   ],
   "revisions": [],
@@ -342,6 +355,17 @@
       "mediaType": "text/plain; charset=utf-8",
       "archiveName": "lora-factory-readme.source",
       "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:49Z",
+      "sha256": "4cde3e0836356f17295241da34e648e5602641b62353c65298f6034086787846",
+      "bytes": 1115248,
+      "archiveName": "4cde3e0836356f17295241da34e648e5602641b62353c65298f6034086787846.bin"
     }
   ],
   "assets": [
@@ -396,16 +420,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -422,24 +436,31 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t3-s3-v1-3-official-factory",
     "sourceIds": [
-      "lora-factory-readme"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "path": "firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
-        "status": "linked",
-        "gitBlobSha": "3c6766afd083093d89b1a8a78bd5f0611cddfdde",
-        "bytesFromTree": 1115248,
-        "binaryFetched": false,
-        "layoutVerified": false,
-        "sha256": null
-      }
-    ],
-    "simulationVerified": false,
-    "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "lora-factory-readme"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3s3-v1.x-all-band-sx1262-factory_20250425_0x0.bin",
+          "status": "linked",
+          "gitBlobSha": "3c6766afd083093d89b1a8a78bd5f0611cddfdde",
+          "bytesFromTree": 1115248,
+          "binaryFetched": false,
+          "layoutVerified": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    }
   },
   "modelReview": {
     "model": {

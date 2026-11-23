@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:32:35Z",
   "hardwareRevision": "RM67162 QSPI touch configuration with GPIO38 display-enable; earlier LED-only GPIO38 revision excluded",
   "identity": {
     "manufacturer": "LILYGO",
@@ -145,6 +145,19 @@
         "bar-lib-sensorlib-src-touch-touchclasscst816-cpp"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-display-s3-amoled-official-factory",
+        "version": "20261111"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家固件表明确列出 AMOLED Lite、原版 T-Display-S3 AMOLED、AMOLED Plus 和 T4-S3 共用同一份出厂测试镜像。"
     }
   ],
   "revisions": [],
@@ -370,6 +383,17 @@
       "sha256": "86f48a816759842c15c2816a5e7a69fb24d7522aafb6aa074a4db7e30cd235f4",
       "bytes": 8355,
       "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "AMOLED Series Factory",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series/1f2f3fb67c646e1f8c5184a1640a4f1acc27d6f4/firmware/esp32s3-t-display-amoled-factory-20261111_0x0.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:32:35Z",
+      "sha256": "3491b7a5cb1e27b96c6fd3d086f5cca75ba1b8a1fd19ab78cb096ac35bca2a6e",
+      "bytes": 2762448,
+      "archiveName": "3491b7a5cb1e27b96c6fd3d086f5cca75ba1b8a1fd19ab78cb096ac35bca2a6e.bin"
     }
   ],
   "assets": [
@@ -424,16 +448,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -450,16 +464,23 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "not-found-in-inspected-pages",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-display-s3-amoled-official-factory",
     "sourceIds": [
-      "official-store-shopify-1",
-      "official-wiki-t-display-s3-amoled"
+      "official-factory-bin"
     ],
-    "links": [],
-    "evidenceNotes": [],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    "previousInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-display-s3-amoled"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    }
   },
   "modelReview": {
     "model": {

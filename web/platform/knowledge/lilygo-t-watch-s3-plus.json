@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:32:56Z",
   "hardwareRevision": "S3 Plus revision with BOOT/RST on case; previous case revisions excluded",
   "identity": {
     "manufacturer": "LILYGO",
@@ -153,6 +153,19 @@
         "official-wiki-t-watch-s3-plus"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-watch-s3-plus-official-factory",
+        "version": "SX1262 · 2026-09-19"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家固件对照表明确列出 S3 Plus 与 S3 共用对应无线选件的程序；此文件仅适用 SX1262。"
     }
   ],
   "revisions": [],
@@ -537,6 +550,17 @@
       "sha256": "7d41623eaab302720c7de58ea39c7e667b13f012587a572d2c391bdf0d30a291",
       "bytes": 2332,
       "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "twatchs3-sx1262-factory-20260919-0x0.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGoLib/9116bf41ca551d75a42d16cab391fe254f21ab2c/firmware/twatchs3-sx1262-factory-20260919-0x0.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:32:56Z",
+      "sha256": "c651f7592c26136b8274cef368fe1ad07aa774b6fc860c13f17b8009d601b502",
+      "bytes": 16711680,
+      "archiveName": "c651f7592c26136b8274cef368fe1ad07aa774b6fc860c13f17b8009d601b502.bin"
     }
   ],
   "assets": [
@@ -591,16 +615,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -617,24 +631,31 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-entry-linked",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-watch-s3-plus-official-factory",
     "sourceIds": [
-      "official-store-shopify-1",
-      "official-wiki-t-watch-s3-plus"
+      "official-factory-bin"
     ],
-    "links": [
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/master/examples/factory/factory.ino",
-        "sourceId": "official-wiki-t-watch-s3-plus",
-        "status": "linked"
-      }
-    ],
-    "evidenceNotes": [
-      "| Factory Program | ✓ | | Factory example |"
-    ],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    "previousInvestigation": {
+      "status": "official-entry-linked",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-watch-s3-plus"
+      ],
+      "links": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGoLib/blob/master/examples/factory/factory.ino",
+          "sourceId": "official-wiki-t-watch-s3-plus",
+          "status": "linked"
+        }
+      ],
+      "evidenceNotes": [
+        "| Factory Program | ✓ | | Factory example |"
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    }
   },
   "modelReview": {
     "model": {
