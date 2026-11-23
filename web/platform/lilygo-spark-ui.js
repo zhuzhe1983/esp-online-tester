@@ -10,10 +10,17 @@ export function mountLilygoSpark(options) {
   note.textContent='若原站不允许浏览器直接下载，可下载原始 ZIP 后在这里导入，无需手动解压。';
   link.textContent='下载原始 ZIP ↗';link.className='text-link';link.target='_blank';link.rel='noopener noreferrer';
   label.textContent='导入已下载的 ZIP / BIN';label.className='field-label';input.type='file';input.accept='.zip,.bin,application/zip,application/octet-stream';input.setAttribute('aria-label','导入当前 Spark 版本的 ZIP 或 BIN');label.append(input);recovery.append(note,link,label,message);
+  const download=document.createElement('a');
+  download.textContent='下载此版本的官方 BIN ↗';download.className='text-link';download.target='_blank';download.rel='noopener noreferrer';download.hidden=true;
   let hub,locked=false,reading=false,lastSource='';
-  const refresh=()=>{const source=hub?.current()?.source,identity=JSON.stringify(source);recovery.hidden=!source?.archive;if(source?.archive)link.href=source.url;input.disabled=locked||reading;if(identity!==lastSource){lastSource=identity;message.textContent='';input.value='';}};
-  hub=mountFirmwareHub({...options,onChange(){refresh();options.onChange?.();},client:options.client||createLilygoSparkClient(),provider:{name:'LILYGO Spark',prefix:'spark',detailsLabel:'查看项目来源 ↗',home:LILYGO_SPARK_HOME,match:matchSparkDevice,firmware:sparkFirmware,history:sparkHistoryFirmware}});
-  options.mount.append(recovery);
+  const client=options.client||createLilygoSparkClient(globalThis.fetch,options.catalog);
+  const refresh=()=>{
+    const selected=hub?.current(),source=selected?.source,identity=JSON.stringify(source);
+    download.hidden=!selected?.downloadUrl;
+    if(selected?.downloadUrl)download.href=selected.downloadUrl;else download.removeAttribute('href');
+    recovery.hidden=!source?.archive;if(source?.archive)link.href=source.url;input.disabled=locked||reading;if(identity!==lastSource){lastSource=identity;message.textContent='';input.value='';}};
+  hub=mountFirmwareHub({...options,onChange(){refresh();options.onChange?.();},client,provider:{name:'LILYGO Spark',prefix:'spark',detailsLabel:'查看项目来源 ↗',home:LILYGO_SPARK_HOME,match:matchSparkDevice,firmware:sparkFirmware,history:client.history||sparkHistoryFirmware}});
+  options.mount.append(download,recovery);
   input.addEventListener('change',async()=>{
     const source=hub.current()?.source,file=input.files[0],identity=JSON.stringify(source);if(!source?.archive||!file||reading)return;
     reading=true;refresh();message.textContent='正在解压并校验所选版本…';
