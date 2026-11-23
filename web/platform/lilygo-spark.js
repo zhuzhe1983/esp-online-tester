@@ -1,4 +1,5 @@
 import {validFirmwareArchive} from './firmware-archive.js';
+import {createSparkReview} from './lilygo-spark-reviewed.js';
 import {pinnedSparkSource} from './lilygo-spark-sources.js';
 // Spark's public, bundled v2 catalog. The configured OSS mirror currently lacks
 // browser CORS; use the official repository copy, not a third-party proxy.
@@ -26,6 +27,20 @@ function githubBinary(value) {
   if(u.hostname==='github.com'&&parts[2]==='raw'&&parts.length>=5)return {owner:parts[0],repo:parts[1],path:parts.slice(parts[3]==='refs'?6:4).join('/')};
   return null;
 }
+// Spark indexes a mixture of manufacturer repositories and community releases.
+function manufacturerRepo(value) {
+  const u=https(value);
+  if(!u||u.port||u.search||!['github.com','raw.githubusercontent.com'].includes(u.hostname))return null;
+  const match=/^\/xinyuan-lilygo\/([a-z0-9_.-]+)(?:\/|$)/i.exec(u.pathname);
+  return match?`https://github.com/Xinyuan-LilyGO/${match[1]}`:null;
+}
+function versionOrigin(project,version) {
+  const community=project.source==='third_party'||Array.isArray(project.type)&&project.type.includes('third_party');
+  let repo=manufacturerRepo(version.download_url);
+  // Some manufacturer releases supply only the OSS ZIP and a repository.
+  if(!version.download_url&&project.author?.name==='LILYGO'&&archiveSource({files:/\.bin$/i},version))repo=manufacturerRepo(project.source_code_url);
+  return {repo,community};
+}
 function directTarget(target,value) {
   const u=https(value);if(!u||u.search||!u.pathname.toLowerCase().endsWith('.bin'))return false;
   if(target.circuitPython)return u.hostname==='downloads.circuitpython.org'&&/^\/bin\/lilygo_twatch_s3\/[a-z_]+\/adafruit-circuitpython-lilygo_twatch_s3-[\w.-]+\.bin$/i.test(u.pathname);
@@ -50,7 +65,7 @@ export function matchSparkDevice(product,devices) {
 function exactVersion(target,project,version) {
   const supported=version.supported_product_ids??project.supported_product_ids;
   if(!Array.isArray(supported)||!supported.includes(target.deviceId))return false;
-  if(target.referenceOnly)return true;
+  if(target.indexed)return true;
   if(directTarget(target,version.download_url))return true;
   // The ZIP's declared payload must still match the exact reviewed hardware.
   // Its SHA belongs to the extracted BIN, never to the ZIP container.
@@ -60,17 +75,38 @@ export function sparkFirmware(project,version,deviceId) {
   const source=version.source?{...version.source}:null;
   return {id:`lilygo-spark:${project.firmwareId}:${version.versionId}`,name:project.firmwareName,revision:version.versionName,version:version.versionName,
     simulationVerified:false,status:source?'trial':'reference',source,provider:'lilygo-spark',deviceId,firmwareId:project.firmwareId,versionId:version.versionId,
-    detailsUrl:project.detailsUrl||LILYGO_SPARK_HOME,sourceNote:version.sourceNote||'Spark 目录版本；运行时仍会核对芯片、容量与镜像布局。'};
+    detailsUrl:version.detailsUrl||project.detailsUrl||LILYGO_SPARK_HOME,downloadUrl:version.downloadUrl||null,sourceNote:version.sourceNote||'Spark 目录版本；运行时仍会核对芯片、容量与镜像布局。'};
 }
-export function sparkHistoryFirmware(entry) {
-  const target=targets[entry?.productId];
-  if(entry?.provider!=='lilygo-spark'||!target||entry.deviceId!==target.deviceId||!digest(entry.sha256)||!slug(entry.firmwareId))return null;
+const defaultReview=createSparkReview();
+const reviewedNote='已核对本机型的厂商 BIN 和 Spark 版本的 SHA-256，可下载试运行。完整启动与外设表现待验证。';
+function expandedVersion(result,origin,match) {
+  if(!origin.community&&match&&origin.repo?.toLowerCase()===manufacturerRepo(match.source.url)?.toLowerCase()) {
+    return {...result,source:match.source,downloadUrl:match.source.url,sourceNote:reviewedNote};
+  }
+  let sourceNote='Spark 将此版本列在当前产品下；发布方、硬件版次与镜像尚未核验。';
+  if(origin.community)sourceNote='第三方项目，由 Spark 收录。当前硬件版次尚未核验，仅供查阅。';
+  else if(origin.repo)sourceNote='此文件来自 LILYGO 仓库。Spark 将它列在此型号下，具体硬件版次与镜像尚未核验。';
+  return {...result,source:null,sourceNote};
+}
+export function sparkHistoryFirmware(entry,review=defaultReview) {
+  if(entry?.provider!=='lilygo-spark'||!digest(entry.sha256)||!slug(entry.firmwareId))return null;
+  const target=targets[entry.productId];
+  if(!target) {
+    const match=review(entry.deviceId,entry.sha256);
+    if(!match||entry.productId!==match.productId||entry.archive)return null;
+    // A catalog refresh may prefer a newer commit containing identical bytes.
+    if(entry.url!==match.source.url&&entry.url!==defaultReview(entry.deviceId,entry.sha256)?.source.url)return null;
+    return sparkFirmware({firmwareId:entry.firmwareId,firmwareName:label(entry.name)||'LILYGO Spark 固件'},
+      {versionId:entry.sha256,versionName:label(entry.version)||'版本未知',source:match.source,downloadUrl:match.source.url,detailsUrl:manufacturerRepo(match.source.url),sourceNote:reviewedNote},entry.deviceId);
+  }
+  if(entry.deviceId!==target.deviceId)return null;
   const archive=entry.archive&&validFirmwareArchive(entry)&&archiveSource(target,{filename:entry.archive.entry,oss_url:entry.url,sha256:entry.sha256});
   if(entry.archive?!archive:!directTarget(target,entry.url))return null;
   return {...sparkFirmware({firmwareId:entry.firmwareId,firmwareName:label(entry.name)||'LILYGO Spark 固件'},
     {versionId:entry.sha256,versionName:label(entry.version)||'版本未知',source:{url:entry.url,sha256:entry.sha256,...(archive?{archive:{...entry.archive}}:{}),...(['rom','app-direct'].includes(entry.bootMode)?{bootMode:entry.bootMode}:{})}},entry.deviceId)};
 }
-export function createLilygoSparkClient(fetchImpl=globalThis.fetch) {
+export function createLilygoSparkClient(fetchImpl=globalThis.fetch,catalog) {
+  const review=catalog?createSparkReview(catalog):defaultReview;
   let cached=null,generatedAt='';
   async function manifest(signal) {
     if(signal?.aborted)signal.throwIfAborted();if(cached)return cached;
@@ -92,28 +128,37 @@ export function createLilygoSparkClient(fetchImpl=globalThis.fetch) {
   async function projects(deviceId,signal) {
     const data=await manifest(signal);
     if(!slug(deviceId)||catalogDevices(data).filter(item=>item.deviceId===deviceId).length!==1)throw Error('LILYGO Spark 型号无效。');
-    const target=Object.values(targets).find(item=>item.deviceId===deviceId)||{deviceId,referenceOnly:true};
-    return data.firmwares.flatMap(project=>{
+    const target=Object.values(targets).find(item=>item.deviceId===deviceId)||{deviceId,indexed:true};
+    const rows=data.firmwares.flatMap(project=>{
       if(!project||!slug(project.id)||!label(project.name)||!Array.isArray(project.versions))return [];
       const versions=project.versions.flatMap((version,index)=>{
         if(!version||!exactVersion(target,project,version))return [];
-        const hash=digest(version.sha256),direct=!target.referenceOnly&&directTarget(target,version.download_url),source=direct&&hash&&(!Number.isFinite(version.size)||version.size>=32768)?{url:pinnedSparkSource(version.download_url,hash),sha256:hash}:!target.referenceOnly&&!version.download_url&&(!Number.isFinite(version.size)||version.size>=32768)?archiveSource(target,version):null;
-        return [{versionId:hash||`reference-${index}`,versionName:label(version.version)||label(version.filename)||'版本未知',publishTime:label(version.published_at),source,
-          sourceNote:target.referenceOnly?'Spark 将此版本列在当前产品下；具体硬件版次与镜像尚未核验，目前仅供查阅。':source?source.archive?'下载后自动解压并校验 BIN，自动识别完整启动或应用直启。':'Spark 目录版本；运行时仍会核对芯片、容量与镜像布局。':direct?'此条目缺少完整校验值或镜像信息；请在 Spark 核对后导入本地文件。':'此压缩包缺少可核验的 BIN 名称、下载地址或 SHA-256；目前仅供查阅。'}];
+        const hash=digest(version.sha256),origin=versionOrigin(project,version);
+        const detailsUrl=https(project.source_code_url||project.homepage)?.href||origin.repo||LILYGO_SPARK_HOME;
+        const result={versionId:hash||`reference-${index}`,versionName:label(version.version)||label(version.filename)||'版本未知',publishTime:label(version.published_at),detailsUrl};
+        if(target.indexed)return [expandedVersion(result,origin,review(deviceId,hash))];
+        const direct=directTarget(target,version.download_url),usableSize=!Number.isFinite(version.size)||version.size>=32768;
+        const source=direct&&hash&&usableSize?{url:pinnedSparkSource(version.download_url,hash),sha256:hash}:!version.download_url&&usableSize?archiveSource(target,version):null;
+        return [{...result,source,
+          sourceNote:source?source.archive?'下载后自动解压并校验 BIN，自动识别完整启动或应用直启。':'Spark 目录版本；运行时仍会核对芯片、容量与镜像布局。':direct?'此条目缺少完整校验值或镜像信息；请在 Spark 核对后导入本地文件。':'此压缩包缺少可核验的 BIN 名称、下载地址或 SHA-256；目前仅供查阅。'}];
       });
       if(!versions.length)return [];
-      const details=https(project.source_code_url||project.homepage);
-      return [{firmwareId:project.id,firmwareName:label(project.name),currentVersionId:versions.some(v=>v.versionId===project.latest_sha256)?project.latest_sha256:versions[0].versionId,
-        detailsUrl:details?.href||LILYGO_SPARK_HOME,versions}];
+      const current=versions.find(v=>v.versionId===project.latest_sha256)||versions[0];
+      const reviewed=target.indexed&&versions.find(v=>v.source);
+      return [{firmwareId:project.id,firmwareName:label(project.name),currentVersionId:reviewed&&!current.source?reviewed.versionId:current.versionId,
+        ...(reviewed?{sourceType:'OFFICIAL'}:{}),detailsUrl:current.detailsUrl,versions}];
     });
+    if(target.indexed)rows.sort((a,b)=>Number(b.sourceType==='OFFICIAL')-Number(a.sourceType==='OFFICIAL'));
+    return rows;
   }
   return {
+    history:entry=>sparkHistoryFirmware(entry,review),
     describe:()=>`官方仓库目录${generatedAt?' '+generatedAt:''}`,
     async devices(signal) {return catalogDevices(await manifest(signal));},
     async search(deviceId,query='',page=1,signal) {
       if(!Number.isSafeInteger(page)||page<1)throw Error('LILYGO Spark 页码无效。');
       const words=label(query).toLowerCase().split(/\s+/).filter(Boolean),all=(await projects(deviceId,signal)).filter(project=>words.every(word=>[project.firmwareName,...project.versions.map(v=>v.versionName)].join(' ').toLowerCase().includes(word)));
-      const rows=all.slice((page-1)*50,page*50);return {total:all.length,page,received:rows.length,rows,note:Object.values(targets).some(item=>item.deviceId===deviceId)?'仅列出已核对型号的条目。':'按 Spark 产品 ID 列出资料；镜像尚未完成型号核验。'};
+      const rows=all.slice((page-1)*50,page*50);return {total:all.length,page,received:rows.length,rows,note:Object.values(targets).some(item=>item.deviceId===deviceId)?'仅列出已核对型号的条目。':'按 Spark 产品 ID 列出；有固定厂商镜像且校验值匹配的版本可试运行。'};
     },
     async versions(firmwareId,deviceId,signal) {const rows=await projects(deviceId,signal);return rows.find(item=>item.firmwareId===firmwareId)?.versions||[];},
   };
