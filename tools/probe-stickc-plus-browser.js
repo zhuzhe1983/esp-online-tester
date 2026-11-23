@@ -5,12 +5,19 @@ async page => {
   page.on('worker', worker => workers.push(new URL(worker.url()).pathname));
   const observe = () => page.evaluate(() => espTester.observe());
 
-  async function until(target) {
-    await page.waitForFunction(async target => {
-      const state = await espTester.observe();
+  async function waitForState(check, label) {
+    const deadline = Date.now() + 120000;
+    while (Date.now() < deadline) {
+      const state = await observe();
       if (state.status === 'error') throw Error(JSON.stringify(state.lastError));
-      return state.stats.time >= target;
-    }, target, {timeout: 120000});
+      if (check(state)) return;
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    throw Error(`Timed out waiting for ${label}`);
+  }
+
+  function until(target) {
+    return waitForState(state => state.stats.time >= target, `guest second ${target}`);
   }
 
   async function advance(seconds) {
@@ -36,17 +43,44 @@ async page => {
     }, label);
   }
 
-  async function hold(key) {
+  function readBuzzer() {
+    return page.evaluate(async () => {
+      const {chunks} = await espTester.readAudio();
+      let activeSamples = 0;
+      let signChanges = 0;
+      let previous = 0;
+      for (const chunk of chunks) {
+        if (chunk.sampleRate !== 16000 || chunk.channels !== 1) {
+          throw Error('Expected mono 16 kHz G2 PCM');
+        }
+        for (const sample of chunk.samples) {
+          if (sample !== 0) activeSamples++;
+          if (previous && sample && (previous < 0) !== (sample < 0)) signChanges++;
+          previous = sample;
+        }
+      }
+      const estimatedHz = signChanges * 16000 / (2 * activeSamples);
+      if (activeSamples < 500 || !(estimatedHz > 3800 && estimatedHz < 4200)) {
+        throw Error(`Expected the factory 4 kHz buzzer, got ${activeSamples} samples at ${estimatedHz} Hz`);
+      }
+      return {activeSamples, estimatedHz, channels: 1, sampleRate: 16000};
+    });
+  }
+
+  async function hold(key, {buzzer = false} = {}) {
+    if (buzzer) await page.evaluate(async () => { await espTester.readAudio(); });
     await page.keyboard.down(key);
     try {
       await advance(0.8);
+      if (buzzer) return await readBuzzer();
     } finally {
       await page.keyboard.up(key);
+      await advance(1.5);
     }
-    await advance(1.5);
   }
 
   try {
+    await waitForState(state => state.scene, 'initial scene');
     const started = await page.evaluate(async () => {
       const {loadCatalog, createDefaultScene} = await import('./catalog.js');
       const catalog = await loadCatalog();
@@ -57,6 +91,9 @@ async page => {
       await espTester.configure(scene);
       const capabilities = await espTester.capabilities();
       if (capabilities.audio.input.available) throw Error('Unexpected public PCM input');
+      if (!capabilities.audio.output.available || capabilities.audio.output.source !== 'guest-routed-ledc-g2') {
+        throw Error('Expected the routed G2 output capability');
+      }
       const {firmware} = await espTester.loadFirmware();
       const flash = firmware.artifacts.find(artifact => artifact.kind === 'flash');
       const rom = firmware.artifacts.find(artifact => artifact.kind === 'rom');
@@ -86,7 +123,7 @@ async page => {
     if (new Set(tilts.map(f => f.sha256)).size !== 3) throw Error('Expected distinct tilt responses');
     await page.evaluate(() => espTester.setImu({enabled: false, quaternion: [0, 0, 0, 1]}));
 
-    await hold('a');
+    const buzzer = await hold('a', {buzzer: true});
     const rtc = await frame('A to RTC');
     await advance(1.1);
     const next = await frame('RTC after another second');
@@ -100,7 +137,10 @@ async page => {
     if (microphone.nonblack || refresh.nonblack || refresh.frame <= microphone.frame) {
       throw Error('Expected the guest to keep drawing its silent FFT');
     }
-    return {started, workers, frames: [boot, ...tilts, rtc, next, microphone, refresh]};
+    return {started, workers, buzzer, frames: [boot, ...tilts, rtc, next, microphone, refresh]};
+  } catch (error) {
+    const state = await observe();
+    throw Error(`${error.message} at guest ${state.stats.time}s (${state.status})\n${state.serial.slice(-1200)}`);
   } finally {
     await page.evaluate(() => espTester.dispose());
   }

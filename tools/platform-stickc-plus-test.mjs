@@ -47,6 +47,9 @@ test('K016-P routes guest buttons and virtual MPU6886 with browser PCM input dis
     assert.equal(capabilities.imu.available, true);
     assert.equal(capabilities.imu.physicalMountingVerified, false);
     assert.equal(capabilities.audio.input.available, false);
+    assert.deepEqual(capabilities.audio.output, {
+      available: true, channels: 1, format: 's16le', source: 'guest-routed-ledc-g2', sampleRate: 16000,
+    });
     assert.equal(imuModelForBoard('stickc-plus'), 'mpu6886-register-subset');
     const sample = await runtime.setImu({quaternion: [0, 0, 0, 1]});
     assert.equal(sample.delivery, 'configured');
