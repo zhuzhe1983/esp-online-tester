@@ -32,6 +32,7 @@ node tools/fixtures/stickc-factory-browser-check.mjs factory.bin target/stickc-b
 ```
 
 The browser check uses the official URL when accessible and records the transport. It falls back to a loopback copy of the matching official bytes if the URL fails. The check records ROM and WASM hashes, guest boot UART messages, visual framebuffer fingerprints and press/release events. `ESP_TEST_PLAYWRIGHT` and `ESP_TEST_CHROME` select an existing Playwright module and Chromium binary if needed.
+Append `--extended` to also check two IMU poses, the return to neutral and four logical PCM stimuli in the factory app.
 
 ## Recovered native board
 
@@ -43,6 +44,30 @@ The first combined classic core and K016-C snapshot `44fcf723` completed 14.7 gu
 | RTC after GPIO37 | 12.7 | 3,834 | `3cb042004227daad` |
 | RTC after a second elapsed | 14.0 | 3,825 | `674c156ff0ef4507` |
 | Microphone after GPIO39 | 14.7 | 1,260 | `8414897c067ac40d` |
+
+After the PICO-D4 eFuse correction in `089ff608`, the same native probe passed. The idle frame had 1,131 lit pixels and RGB565 FNV-1a `ffec0934c1d4fce1`. The RTC and microphone fingerprints matched the table.
+
+## Recovered browser build
+
+The combined `cd49997f` build ran in headless Google Chrome 157.0.8103.80 with Playwright 1.60.0. The 6,926,500-byte WASM had SHA-256 `e01badb6b24df012ec97eee06592d5e96d430ef18d497cee8101054efdee8e15`. The production worker loaded the unchanged official image from M5Burner CDN, used the ROM and JIT, and reported `appDirect:false` with zero stubs. UART reported `SPI_FAST_FLASH_BOOT` and `M5StickC initializing...OK`. A was pressed on the 2D model and B on the keyboard; each action recorded both input edges. The RTC changed from `00:00:14` to `00:00:15`.
+
+| 80×160 capture | Lit pixels | PNG SHA-256 |
+| --- | ---: | --- |
+| MPU6886 idle | 1,237 | `0a733033c67454506b85153a66040e063b2d1fb4cba231bb44d50f4f7397a83f` |
+| RTC after A | 3,816 | `ace5cb7e37222bd0c0b4ed29cc3cef9f0b28e5f729051e067fddb279284d73ef` |
+| RTC after the tick | 3,843 | `87ba4fbf8b9c25b638a155bb63a2cb5541881aa71d5822fe7f6c70c5ca4a898b` |
+| Microphone after B | 1,260 | `7d4c1ef209957fe7c11434a0f31cfae88d4564004379a80fb42db57131932076` |
+
+An extended browser run used the same WASM and the UI snapshot `c06bb9a8`. Two orientation inputs changed the drawn cube and the displayed angles to −30.00°/35.27° and 30.00°/16.78°. Returning to neutral restored 0.00°/0.00°. The microphone page displayed distinct spectra for the positive PCM inputs and a black graph with its header for both negative controls.
+
+| Logical PCM stimulus | Lit LCD pixels | Consumed frames | Underrun frames |
+| --- | ---: | ---: | ---: |
+| 1 kHz, port 0 | 12,536 | 159,709 | 2,725 |
+| 2 kHz, port 0 | 12,593 | 159,709 | 1,623 |
+| Silence, port 0 | 1,260 | 159,709 | 2,726 |
+| 1 kHz, port 1 | 1,260 | 0 | 0 |
+
+The basic 1,485-byte receipt has SHA-256 `ff252da686015ac09588dbc0e723f34cd8bc555fcd765df7f623394dae632de6`. The extended 3,148-byte receipt has SHA-256 `dc5cabfd3830aebf87b3630fb6f5304976d61f3a82d9c986ae0ce0a1bf303f40`. Playback timing and frame numbers depend on the run.
 
 ## November 22 standalone K016-C evidence
 
