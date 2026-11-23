@@ -30,6 +30,7 @@ mod stackchan_base;
 mod cores3;
 pub mod dinmeter;
 mod chain_captain;
+mod chain_dualkey;
 mod tembed_cc1101;
 mod stamps3;
 mod stamps3bat;
@@ -117,6 +118,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "dinmeter" | "m5stack-dinmeter" => Some(Box::new(DinMeter::new())),
         "chain-captain" | "m5stack-c160" => Some(Box::new(chain_captain::ChainCaptain::new())),
         "dinmeter-v11" | "m5stack-k134-v11" => Some(Box::new(DinMeter::v11())),
+        "chain-dualkey" | "m5stack-c147" => Some(Box::new(chain_dualkey::ChainDualKey::new())),
         "dial-v11" | "m5stack-dial-v11" => Some(Box::new(Dial::v11())),
         "atoms3-lite" | "m5stack-atoms3-lite" => Some(Box::new(AtomS3Lite::new())),
         "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),
