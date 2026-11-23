@@ -23,6 +23,6 @@ FIRE 和 Faces 的 UIFlow 条目跟踪具体 M5Burner 项目、设备分类和�
 1. 按来源收据访问官网、恢复指南和发布清单。M5Burner 新接口按项目 ID 复核 `OFFICIAL`、设备分类和 `PUBLIC/PUBLISHED` 版本。旧接口的发布清单给出已公开 CDN 路径。两处记录的项目名、版本、目标容量和厂商发布身份均核对。小智检查厂家分发条目、上游板型目录和五个近期发布的资产名称。 [小智上游板型](https://github.com/78/xiaozhi-esp32/tree/main/main/boards/m5stack) · [小智上游发布](https://github.com/78/xiaozhi-esp32/releases)
 2. 对公开 CDN 直链执行 GET，用 `shasum -a 256` 对比报告。EasyLoader 的本地复核按 `resourcePayloadOffset` 读取 `.NET` ByteArray，检查其前一个类型字节 `0x20` 和后续四字节小端长度。使用该长度提取资源，避免将安装器尾部或完整分区容量误算进固件。Faces 资源自 Flash `0x1000` 开始，验证用的本地合并缓冲区前缀填入 4096 字节的 `0xff`。分别记录容器、原始资源与本地合并缓冲区的 SHA-256。 [.NET 资源读取实现](https://github.com/dotnet/runtime/blob/main/src/libraries/System.Private.CoreLib/src/System/Resources/ResourceReader.cs)
 3. 从报告中的偏移分别取 bootloader 和实际提供的应用分区，用 `esptool image-info` 5.6.0 检查芯片、校验和与镜像尾部摘要。用 `web/platform/runtime.js` 的 `validateMergedImage` 核对 17 份完整布局与配置容量。Basic 的空闲 OTA 槽不随镜像下发。FIRE 容器资源截至 `0x5fe000`，后续配置分区空间由设备 Flash 提供。
-4. `tools/validate-platform-catalog.py` 与相关 Node 测试全部通过。额外确认 Basic v2.7、FIRE v2.7、M5GO v2.7、Faces 的默认 ID 和首项角色，以及 FIRE 与 Faces 新增项的固件和 watchlist 目标一致。
+4. `tools/validate-platform-catalog.py` 与相关 Node 测试全部通过。额外确认 Basic v2.7、FIRE v2.7、M5GO v2.7、Faces 的默认 ID 和首项角色，以及 FIRE 与 Faces 新增项的固件和 watchlist 目标一致。 在 `a3c2f4d8` 的无头 Chromium 工作台切换这四款设备，默认项、备选列表和板型未接入时的运行入口行为均符合预期，无页面错误。
 
 收据保留响应时间、地址、字节数和摘要。原始响应正文、下载请求标识和账号字段不随记录发布。授权门控只留下 HTTP 状态与公开错误码。所有 EXE、BIN 和临时提取物均保存在本地忽略目录。
