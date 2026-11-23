@@ -28,6 +28,6 @@ K016-P 的原厂尺寸图显示顶部是八孔 HAT 母座，节距 2.54 mm。模
 
 原背贴跨过壳体 STL 缺失的上端承载区。按同型号原厂背面照片校正印刷边界后，模型补了上段承载片和磁铁位置，保留两个黄铜安装环和两枚银色螺丝。实测 2,233 个不透明纸面样点都有支撑，最大间隙为 0.025 mm。原色、金色、紫透和两端近景已对照。背贴之外的原厂壳仍可换材质，装配包围盒为 24 × 48 × 13.5 mm。Grove 线序见官方资料，插头装配方向尚未实物核准，连线仍关闭。
 
-分开查看沿模型 −Z 移出后盖。背贴、承载片、磁铁、背部紧固件和 B 键命中区域一起移动，HAT、Type-C、Grove 与 UNKNOWN 板保持原位。22 mm 是最大观察间距。
+爆炸图沿厚度展开为前壳、PCB 和后壳三层。背贴、承载片、磁铁、背部紧固件和 B 键区域随后盖移动，HAT、USB-C、Grove 及其可见卡耳随 UNKNOWN 板一起移动。
 
 可离线重生成模型和贴图。运行 `python tools/rebuild-product-model.py build m5stack-k016-p --scratch <空目录>`，核对原 CAD、原始照片和生成文件的 10 个 SHA-256。[前后对照图](../evidence/m5stack-k016-p/connector-and-label-comparison-20261123.webp) · [验模记录](../evidence/m5stack-k016-p/connector-and-label-20261123.json)

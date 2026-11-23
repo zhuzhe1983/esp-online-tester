@@ -59,21 +59,31 @@ async page => {
     if(!['geometry.bin','back-paper.png'].every(file=>matrixRequests.has(meta.artifacts[file]))) throw Error('Unversioned geometry or paper texture');
 
     const inspection=group.userData.inspection;
-    const moved=meta.presentation.inspectionGroups[0].parts;
-    const fixed=['pcb-main','cad-component-0','hat2-header','usb-c','grove'];
-    const tracked=[...moved,...fixed];
-    const assembled=Object.fromEntries(tracked.map(key=>[key,parts[key].position.clone()]));
+    const [front,board,rear]=meta.presentation.inspectionGroups;
+    const layers=[front,board,rear];
+    const expectedOffsets=[28,3,-23];
+    const terminals=['pcb-main','usb-c','usb-c-insulating-seat','grove','grove-retaining-clip-left',
+      'grove-retaining-clip-right','hat2-header','hat2-pocket-floor'];
+    if(terminals.some(id=>!board.parts.includes(id))) throw Error('A board-mounted terminal left the PCB layer');
+    if(!front.parts.includes('live-display')||!rear.parts.includes('back-paper')||!rear.parts.includes('cover-key:btnB'))
+      throw Error('A display, sticker or case key left its housing layer');
+    if(layers.some((layer,index)=>layer.offsetMm[2]!==expectedOffsets[index])) throw Error('Unexpected inspection layer spacing');
+    const tracked=layers.flatMap(layer=>layer.parts);
+    const objectsByName=new Map(group.children.map(object=>[object.name,object]));
+    const assembled=Object.fromEntries(tracked.map(id=>[id,objectsByName.get(id).position.clone()]));
     const checkProgress=(amount,apply)=>{
       apply();
-      for(const id of tracked) {
-        const expected=assembled[id].clone();
-        if(moved.includes(id)) expected.z-=18*amount;
-        if(expected.distanceTo(parts[id].position)>1e-8) throw Error(`Unexpected inspection displacement on ${id}`);
+      for(const layer of layers) for(const id of layer.parts) {
+        const expected=assembled[id].clone().addScaledVector(new THREE.Vector3(...layer.offsetMm),amount);
+        if(expected.distanceTo(objectsByName.get(id).position)>1e-8) throw Error(`Unexpected inspection displacement on ${id}`);
       }
     };
-    if(typeof inspection.setProgress==='function') checkProgress(.5,()=>inspection.setProgress(.5));
+    checkProgress(.5,()=>inspection.setProgress(.5));
     checkProgress(1,()=>inspection.setExpanded(true));
+    const bounds=layers.map(layer=>layer.parts.reduce((box,id)=>box.expandByObject(objectsByName.get(id),true),new THREE.Box3()));
+    const gaps=[bounds[0].min.z-bounds[1].max.z,bounds[1].min.z-bounds[2].max.z];
+    if(gaps.some(gap=>gap<14)) throw Error('The PCB layer still crowds the shell');
     checkProgress(0,()=>inspection.setExpanded(false));
-    return {dimensions,pockets,usb,grove,mouth,normal,paperCheck,paperPlane:paper.position.toArray(),paperPixels:[width,height],artifactHashes:meta.artifacts,inspection:{moved,fixed,offsetMm:[0,0,-18],reassembled:true}};
+    return {dimensions,pockets,usb,grove,mouth,normal,paperCheck,paperPlane:paper.position.toArray(),paperPixels:[width,height],artifactHashes:meta.artifacts,inspection:{layers,gaps,reassembled:true}};
   });
 }

@@ -54,6 +54,6 @@ python tools/onboard-lane-01.py publish --ids m5stack-k134-v11
 
 旧版 43 × 22 × 1 mm 的矩形 PCB 占位板与后部导轨相交约 121.31 mm³，形成外壁上的灰色横线。两版厂家主壳 STL 内容相同，各用自身官方背照核对装配。v1.1 采用 40.6 × 15.6 mm 的深色占位板，厚度保留 1 mm 的原估算，板面与 Stamp-S3A 盖之间留出约 0.10 mm 的模型间隙。与主壳和 Stamp-S3A 盖的体积相交均为零，主壳最小采样间隙约 0.31 mm。厂家公开 STL 和照片覆盖可见外壳和后口，隐藏板形与元件位置仍为未知。 [官方产品页](https://docs.m5stack.com/en/core/DinMeter_v1.1) · [测量记录](../evidence/m5stack-k134-v11/pcb-clearance.json)
 
-已用 Chromium 检查正面、背面、侧面，金色和半透明紫色下 PCB 保持自身材质。工作台「分开查看」后可从前侧斜视读取 `UNKNOWN`，复位恢复原位。 [前后对照](../evidence/m5stack-k134-v11/pcb-clearance-comparison.webp)
+已用 Chromium 检查正面、背面、侧面，金色和半透明紫色下 PCB 保持自身材质。工作台的爆炸图沿厚度展开前壳、PCB 和后方 Stamp-S3A 盖。USB-C、两路 Grove 和完整的 DC 座随 `UNKNOWN` 板移动。转动后可从前侧斜视读取 `UNKNOWN`，复位恢复原装配。 [前后对照](../evidence/m5stack-k134-v11/pcb-clearance-comparison.webp)
 
 两版共用 `python tools/verify-dinmeter-pcb.py --baseline da0738cd` 的网格测量和 `tools/fixtures/dinmeter-pcb-browser-check.js` 的浏览器复验脚本。

@@ -3,8 +3,8 @@ async page => {
   const base = new URL('./', page.url());
   const context = page.context();
   const sizes = {
-    'm5stack-k134': {button: 'encoder-button', boardMaxZ: -6, rear: 'mounting-bracket', shell: 'shell-panel'},
-    'm5stack-k134-v11': {button: 'encoder-press', boardMaxZ: -8.05, rear: 'stamp-s3a-cover', shell: 'shell'},
+    'm5stack-k134': {button: 'encoder-button', boardMaxZ: -6, rear: 'mounting-bracket', shell: 'shell-panel', rearOffset: -23},
+    'm5stack-k134-v11': {button: 'encoder-press', boardMaxZ: -8.05, rear: 'stamp-s3a-cover', shell: 'shell', rearOffset: -22},
   };
   const views = {
     front: [0, 0, 250], back: [0, 0, -250],
@@ -106,13 +106,19 @@ async page => {
       const slider = page.locator('#inspect-model');
       await slider.waitFor({state: 'visible'});
       check(await slider.inputValue() === '0', `${id} default assembly`);
+      const positions = () => page.evaluate(({id,shell,rear}) => {
+        const group = dinMeterInspection.assembly.getObjectByName(id);
+        const names = [shell,rear,'pcb-main','usb-c','grove-a','grove-b',
+          ...group.children.map(child=>child.name).filter(name=>name.startsWith('power-terminal-'))];
+        return names.map(name=>group.getObjectByName(name).position.toArray());
+      },{id,...expected});
+      const assembled=await positions();
       await slider.press('End');
       await page.waitForFunction(() => document.getElementById('inspection-percent').textContent === '100%');
-      const expanded = await page.evaluate(({id, shell, rear}) => {
-        const group = dinMeterInspection.assembly.getObjectByName(id);
-        return [shell, rear, 'pcb-main'].map(name => group.getObjectByName(name).position.toArray());
-      }, {id, ...expected});
-      check(expanded[0][2] === 16 && expanded[1][2] === -14 && expanded[2][2] < 0, `${id} wrong assembly offsets`);
+      const expanded=await positions();
+      const offsets=[24,expected.rearOffset,...Array(expanded.length-2).fill(3)];
+      check(expanded.every((position,index) => position.every((value,axis) =>
+        Math.abs(value-assembled[index][axis]-(axis===2?offsets[index]:0))<1e-8)), `${id} incorrect housing or board attachment motion`);
       await page.evaluate(async () => {
         const THREE = await import('./vendor/three.module.min.js');
         const orientation = new THREE.Quaternion().setFromEuler(new THREE.Euler(-.88, .25, 0));
@@ -121,12 +127,8 @@ async page => {
       await screenshot(page.locator('#scene-mount canvas').first(), id, 'workbench-expanded');
       await page.locator('#reset-view').click();
       check(await slider.inputValue() === '0', `${id} reset`);
-      const restored = await page.evaluate(({id, shell, rear}) => {
-        const group = dinMeterInspection.assembly.getObjectByName(id);
-        return [shell, rear, 'pcb-main'].map(name => group.getObjectByName(name).position.toArray());
-      }, {id, ...expected});
-      check(JSON.stringify(restored.slice(0, 2)) === JSON.stringify(Object.values(report.products[id].assembly)) &&
-        JSON.stringify(restored[2]) === JSON.stringify(expanded[2]), `${id} assembly coordinates changed after reset`);
+      const restored=await positions();
+      check(JSON.stringify(restored) === JSON.stringify(assembled), `${id} assembly coordinates changed after reset`);
       const rect = await page.locator('#scene-mount canvas').first().boundingBox();
       const initialOrientation = await page.evaluate(() => dinMeterInspection.view.getOrientation());
       await page.mouse.move(rect.x + 12, rect.y + 12);

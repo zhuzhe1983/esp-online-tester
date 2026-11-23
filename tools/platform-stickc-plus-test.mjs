@@ -121,9 +121,11 @@ test('K016-P displays the measured end terminals and rear paper locally', async 
   assert.equal(parts['paper-labels'].geometry.centerMm[2], -6.575);
   assert.deepEqual(model.textures[0].outputPixels, [220,387]);
   assert.equal(model.textures[0].alphaMask.excludeEllipses.length, 2);
-  const [rear] = model.presentation.inspectionGroups;
+  const [front, board, rear] = model.presentation.inspectionGroups;
   assert.deepEqual(model.presentation.inspectionGroups, plan.presentation.inspectionGroups);
-  assert.deepEqual(rear.offsetMm, [0,0,-22]);
+  assert.deepEqual([front.offsetMm, board.offsetMm, rear.offsetMm], [[0,0,28],[0,0,3],[0,0,-25]]);
+  for (const id of ['shell-front','live-display','cover-key:button-a']) assert.ok(front.parts.includes(id));
   for (const id of ['shell-back','rear-label-carrier','paper-labels','rear-magnet','cover-key:button-b']) assert.ok(rear.parts.includes(id));
-  for (const id of ['hat-socket','usb-c','grove','pcb-main']) assert.ok(!rear.parts.includes(id));
+  for (const id of ['hat-socket','hat-socket-cavity','hat-socket-floor','hat-socket-mount','usb-c','grove',
+    'grove-left-mounting-ear','grove-right-mounting-ear','pcb-main']) assert.ok(board.parts.includes(id));
 });

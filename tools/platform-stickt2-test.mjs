@@ -30,11 +30,15 @@ assert.equal(new Set(sourceFaces).size,3130);
 assert.ok(sourceFaces.every(index=>index>=0 && index<3130));
 assert.equal(rear.find(part=>part.name==='rear-m5-engraving').role,'shell');
 assert.deepEqual(model.presentation.buttons.map(button=>button.id),['btnA']);
-const [rearCover]=model.presentation.inspectionGroups;
-assert.deepEqual(rearCover.offsetMm,[0,0,-16]);
+const [frontCover,board,rearCover]=model.presentation.inspectionGroups;
+assert.deepEqual([frontCover.offsetMm,board.offsetMm,rearCover.offsetMm],[[0,0,32],[0,0,3],[0,0,-26]]);
+assert.ok(frontCover.parts.includes('live-display') && frontCover.parts.includes('cover-key:btnA'));
+for (const part of ['pcb-main','usb-c','grove','grove-left-retainer','grove-right-retainer',
+  'rotary-encoder-insert','rotary-recess-back','rotary-grip-1','rotary-grip-2','rotary-grip-3']) assert.ok(board.parts.includes(part));
 assert.deepEqual(rearCover.parts,[
   'shell-back','rear-m5-engraving',
-  'rear-screw-left','rear-screw-left-socket-floor','rear-screw-right','rear-screw-right-socket-floor'
+  'rear-screw-left','rear-screw-left-socket-floor','rear-screw-right','rear-screw-right-socket-floor',
+  'thermal-lens-bezel','thermal-lens-window'
 ]);
 assert.equal(chipIdForBoard('stickt2'),0);
 const candidates=catalog.firmwares.filter(f=>f.productIds.includes(product.id));

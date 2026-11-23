@@ -59,6 +59,6 @@ python tools/onboard-lane-01-extra.py publish --ids m5stack-k016-c
 
 背贴取自同款设备的 3007 × 5314 像素原稿，使用原图透明边界生成 1495 × 2657 像素纹理。背贴面约 20.42 × 36.28 mm，按官方背照对齐顶部排母及下方紧固件。旧 CAD 缺失的两小段承载面按对应照片和现有外壳轮廓补齐。正面、顶部、底部、背面和斜侧面的 Chromium 检查确认了插孔和贴边，原色、金色和半透明紫色下背贴保持原色。[厂家背贴原稿](https://static-cdn.m5stack.com/resource/docs/products/core/m5stickc/m5stickc_04.webp)
 
-分开查看时，后壳、背贴、承载面、可见紧固件和底部装饰框沿模型 −Z 同步移动，PCB 占位和接口留在原装配坐标。12 mm 是查看偏移。原始 STL 与导出的原厂网格保持原有哈希，本次仅更新派生件和贴图，原有外壳尺寸差异仍按前表保留。[复验数据](../evidence/m5stack-k016-c/connector-decal-20261123.json) · [前后对照](../evidence/m5stack-k016-c/connector-decal-20261123.webp)
+爆炸图沿厚度展开为前壳、PCB 和后壳三层。玻璃、屏幕和外壳按键区域随前壳移动，背贴、承载面、紧固件和底部装饰框随后壳移动。USB-C、Grove 和完整 HAT 插座随 UNKNOWN 板移动，板内元件和隐藏的安装结构保留为估算。原始 STL 与导出的原厂网格保持原有哈希，本次仅更新派生件和贴图，原有外壳尺寸差异仍按前表保留。[复验数据](../evidence/m5stack-k016-c/connector-decal-20261123.json) · [前后对照](../evidence/m5stack-k016-c/connector-decal-20261123.webp)
 
 当前模型可用 `python tools/rebuild-product-model.py build m5stack-k016-c --scratch <新目录>` 从仓库提供的文件离线重建。重建覆盖派生件、分开查看分组、贴图及每个已固定的素材。
