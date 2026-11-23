@@ -21847,10 +21847,11 @@
       "summary": "ESP32-PICO-D4 棒状终端，含 0.96 英寸屏幕、MPU6886、AXP192 与 95 mAh 电池；资料与 Plus、StickS3 分开维护。",
       "knowledgeUrl": "./knowledge/m5stack-k016-c.json",
       "runtime": {
-        "board": null,
+        "board": "stickc",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
       },
       "display": {
         "width": 80,
@@ -21859,7 +21860,32 @@
         "technology": "lcd",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "A · GPIO37",
+          "type": "button",
+          "pin": 37,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "button-b",
+          "name": "B · GPIO39",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "power",
+          "name": "AXP192 PEK · 短按事件（非GPIO）",
+          "type": "button",
+          "controller": "AXP192",
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-custom",
@@ -21905,6 +21931,56 @@
             "official-docs"
           ],
           "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "id": "lcd-spi",
+          "name": "内部 ST7735SV SPI",
+          "type": "SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "SCK",
+              "gpio": 13
+            },
+            {
+              "name": "MOSI",
+              "gpio": 15
+            },
+            {
+              "name": "CS",
+              "gpio": 5
+            },
+            {
+              "name": "DC",
+              "gpio": 23
+            },
+            {
+              "name": "RST",
+              "gpio": 18
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        },
+        {
+          "id": "internal-i2c",
+          "name": "AXP192 / MPU6886 / BM8563 内部总线",
+          "type": "I2C",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
         }
       ],
       "model": {
@@ -21921,11 +21997,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模拟覆盖 ST7735SV 屏幕、A/B、红色 LED、AXP192 短按与供电寄存器、MPU6886 轮询和 BM8563 日历。默认温度 25 °C、电池 4.1 V 为模拟输入。",
+        "仅覆盖 MPU6886 版本。早期 SH200Q、物理麦克风、红外输出、无线通信和长按关机尚未验收。运行范围见 docs/platform/stick-k016-c-runtime.md。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Assembled shell estimate is 24×48×13 mm, smaller than current document 25.5×48.2×13.7 mm; all dimensional failures remain visible. The directory may represent another housing revision.",
         "Source assembly transform is estimated. Do not treat this model as a confirmed 1:1 match to current K016-C housing.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
