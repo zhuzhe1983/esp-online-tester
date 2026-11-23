@@ -431,9 +431,10 @@ impl SocBus {
         Some((w, h, frame))
     }
     pub fn attach_board_devices(&mut self) {
-        // AtomMatrix-v11, Stamp-Pico and StickC Plus carry PICO-D4. Cold board setup;
-        // IDF v5.5.1 efuse_reg.h CHIP_PACKAGE [11:9], v4.4.3 CHIP_VER_PKG=5 (PICO-D4).
-        if matches!(self.board.name(), "atom-matrix-v11" | "stamppico" | "stickc-plus") {
+        // Cold package setup for these boards, as listed in the M5Stack specifications.
+        // Factory IDF 85c43024c and IDF v5.5.1 efuse_reg.h: RDATA3 package bits [11:9].
+        // Espressif esptool v4.7.0, targets/esp32.py: the PICO-D4 package code is 5.
+        if matches!(self.board.name(), "atom-matrix-v11" | "stamppico" | "stickc" | "stickc-plus" | "stickt2") {
             let value = self.periph.efuse.ram.read(0x0c);
             self.periph.efuse.ram.write(0x0c, (value & !(7 << 9)) | (5 << 9));
         }
@@ -903,6 +904,28 @@ mod tests {
         b.write32(MMU_PRO + 77 * 4, 2).unwrap();
         assert!(b.page_versions()[code] > before);
         assert_eq!(b.page_versions()[rom], 0);
+    }
+
+    #[test]
+    fn pico_d4_board_attachment_sets_only_the_package_bits() {
+        struct NamedBoard(&'static str);
+        impl esp_soc::BoardModel for NamedBoard {
+            fn name(&self) -> &'static str { self.0 }
+        }
+
+        const EFUSE_RDATA3: u32 = 0x3ff5_a00c;
+        let mut bare = SocBus::new(4 << 20, [0; 6]);
+        let default_word = bare.read32(EFUSE_RDATA3).unwrap();
+        bare.attach_board_devices();
+        assert_eq!(bare.read32(EFUSE_RDATA3).unwrap(), default_word);
+        assert_eq!((default_word >> 9) & 7, 0);
+
+        for name in ["stickc", "stickc-plus", "stickt2", "atom-matrix-v11", "stamppico"] {
+            let mut bus = SocBus::new(4 << 20, [0; 6]);
+            bus.board = Box::new(NamedBoard(name));
+            bus.attach_board_devices();
+            assert_eq!(bus.read32(EFUSE_RDATA3).unwrap(), default_word | (5 << 9), "{name}");
+        }
     }
 
     #[test]
