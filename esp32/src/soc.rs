@@ -246,6 +246,14 @@ impl esp_soc::SocBus for SocBus {
     fn pwm_output(&self, pin: u8) -> Option<(f64, u32)> {
         self.periph.pwm_output(pin as u32)
     }
+    fn refresh_board_outputs(&mut self) {
+        if !self.board.uses_gpio_pwm() { return; }
+        let periph = &self.periph;
+        self.board.gpio_pwm_at(self.cycles, &|pin| periph.pwm_output(u32::from(pin)));
+    }
+    fn attach_sd_card(&mut self, image: Box<dyn esp_periph::sdmmc::SdStore>, config: esp_periph::sdmmc::SdCardConfig) -> Result<String, String> {
+        self.board.attach_spi_sd_card(image, config)
+    }
     fn observe_gpio(&mut self, on: bool) {
         self.gpio_events = on.then(Vec::new);
     }
