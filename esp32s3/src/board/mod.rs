@@ -27,6 +27,7 @@ pub mod dial;
 pub mod stackchan;
 mod stackchan_host;
 mod stackchan_base;
+mod cores3;
 pub mod dinmeter;
 mod chain_captain;
 mod tembed_cc1101;
@@ -102,6 +103,10 @@ pub fn make_board(name: &str) -> Option<Board> {
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
         "stackchan" | "m5stack-k151" => Some(Box::new(stackchan::StackChan::new())),
+        "cores3" | "m5stack-k128" => Some(Box::new(cores3::CoreS3::new(cores3::Variant::Standard))),
+        "cores3-se" | "m5stack-k128-se" => Some(Box::new(cores3::CoreS3::new(cores3::Variant::Se))),
+        "cores3-lite" | "m5stack-k128-lite" => Some(Box::new(cores3::CoreS3::new(cores3::Variant::Lite))),
+        "cores3-thread-br" | "m5stack-k149" => Some(Box::new(cores3::CoreS3::new(cores3::Variant::ThreadBr))),
         "dial" | "m5stack-dial" => Some(Box::new(Dial::new())),
         "stamps3" | "m5stack-s007" => Some(Box::new(stamps3::StampS3::new())),
         "stamps3a" | "m5stack-s007-v033" => Some(Box::new(stamps3::StampS3::s3a())),
