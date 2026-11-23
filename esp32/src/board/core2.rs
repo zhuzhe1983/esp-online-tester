@@ -1,8 +1,9 @@
 //! Original M5Stack Core2 K010: Core2 v1.0 schematic and M5Core2 67099371.
 //! ILI9342C SPI G18/G23/G38/G5/G15; FT6336U on G21/G22 with INT on G39.
 //! AXP192 LDO2 powers LCD logic; IO4 resets LCD/touch; DC3 powers the backlight.
-use std::{cell::Cell,rc::Rc,sync::{Arc,Mutex}};
+use std::{cell::{Cell,RefCell},rc::Rc,sync::{Arc,Mutex}};
 use esp_periph::i2c::{I2cDevice,axp192::{AXP192_ADDRESS,Axp192,Axp192State},ft6336::{Ft6336g,Ft6336State},mpu6886::{Mpu6886,Mpu6886Sample}};
+use esp_periph::sdmmc::{SdCardConfig,SdStore,card::spi::SpiSdCard};
 use esp_soc::board::{BoardEdge,BoardModel,SpiPins,VirtualCycle};
 use esp_soc::devices::{DcsPanel,bm8563::{Bm8563,Bm8563State},i2c_bitbang::I2cBitBang};
 use crate::periph::CPU_HZ;
@@ -13,6 +14,24 @@ const TOUCH_IRQ:u8=39;
 const TOUCH_I2C:u8=0x38;
 const RTC_I2C:u8=0x51;
 const IMU_I2C:u8=0x68;
+
+type TfSlot = Rc<RefCell<Option<SpiSdCard>>>;
+
+// K010 Core2 v1.0 schematic: PERI_VDD supplies both the display and socket.
+// Loss of LDO2 powers the card down without erasing its backing store.
+struct Core2Axp192 {device:Axp192,state:Arc<Mutex<Axp192State>>,tf:TfSlot}
+impl I2cDevice for Core2Axp192 {
+    fn start(&mut self,read:bool)->bool {self.device.start(read)}
+    fn write(&mut self,byte:u8)->bool {
+        let supplied=self.state.lock().unwrap().panel_powered();
+        let ack=self.device.write(byte);
+        if supplied && !self.state.lock().unwrap().panel_powered() {
+            if let Some(card)=self.tf.borrow_mut().as_mut() {card.power_cycle();}
+        }
+        ack
+    }
+    fn read(&mut self)->u8 {self.device.read()}
+}
 
 struct Core2Touch {
     device:Ft6336g,
@@ -55,6 +74,7 @@ pub struct Core2 {
     reset_count:u64,
     display_changes:u64,
     pmic:Arc<Mutex<Axp192State>>,
+    tf:TfSlot,
     touch:Arc<Mutex<Ft6336State>>,
     imu:Arc<Mutex<Mpu6886Sample>>,
     rtc:Arc<Mutex<Bm8563State>>,
@@ -69,7 +89,7 @@ impl Core2 {
     pub fn new()->Self {
         Self{
             panel:DcsPanel::new(LCD_W,LCD_H),command:0,read_at:0,read_index:0,reset_count:0,display_changes:0,
-            pmic:Arc::new(Mutex::new(Axp192State::new(CPU_HZ))),touch:Default::default(),imu:Default::default(),
+            pmic:Arc::new(Mutex::new(Axp192State::new(CPU_HZ))),tf:Default::default(),touch:Default::default(),imu:Default::default(),
             rtc:Arc::new(Mutex::new(Bm8563State::new(CPU_HZ))),cycle:Default::default(),touch_irq_high:true,
             panel_touch:None,touch_keys:[false;3],power_held:false,
         }
@@ -93,14 +113,29 @@ impl Default for Core2 {fn default()->Self {Self::new()}}
 impl BoardModel for Core2 {
     fn name(&self)->&'static str {"core2"}
     fn gpio_changes(&mut self,changes:&[(u8,bool)]) {
-        for &(pin,level) in changes {if pin==15 {self.panel.dc=level;}}
+        for &(pin,level) in changes {
+            match pin {
+                15=>self.panel.dc=level,
+                4 if level=>{if let Some(card)=self.tf.borrow_mut().as_mut() {card.deselect();}}
+                _=>{}
+            }
+        }
     }
     fn uses_spi_pins(&self)->bool {true}
     fn spi_transfer_pins(&mut self,_host:u8,pins:SpiPins,tx:&[u8],rx_len:usize)->Vec<u8> {
-        if pins.sclk&(1<<18)==0 || pins.cs&(1<<5)==0 || (!tx.is_empty() && pins.mosi&(1<<23)==0) {
+        if pins.sclk&(1<<18)==0 || (!tx.is_empty() && pins.mosi&(1<<23)==0) {return vec![0xff;rx_len];}
+        let lcd_selected=pins.cs&(1<<5)!=0;
+        let tf_selected=pins.cs&(1<<4)!=0;
+        let pmic=self.pmic.lock().unwrap();
+        if !lcd_selected {
+            if let (true,Some(card))=(pmic.panel_powered(),self.tf.borrow_mut().as_mut()) {
+                let result=card.transfer(tf_selected,tx,rx_len);
+                if pins.miso==Some(38) {return result;}
+            }
             return vec![0xff;rx_len];
         }
-        let pmic=self.pmic.lock().unwrap();
+        if tf_selected && pmic.panel_powered() && self.tf.borrow().is_some() {return vec![0xff;rx_len];}
+
         if pmic.panel_reset_count()!=self.reset_count {
             self.reset_count=pmic.panel_reset_count();self.panel.reset();
             self.command=0;self.read_at=0;self.read_index=0;
@@ -124,11 +159,14 @@ impl BoardModel for Core2 {
     }
     fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {
         let mut bus=I2cBitBang::new();
-        bus.attach(AXP192_ADDRESS,Box::new(Axp192::new(self.pmic.clone())));
+        bus.attach(AXP192_ADDRESS,Box::new(Core2Axp192{device:Axp192::new(self.pmic.clone()),state:self.pmic.clone(),tf:self.tf.clone()}));
         bus.attach(TOUCH_I2C,Box::new(Core2Touch{device:Ft6336g::new(self.touch.clone()),state:self.touch.clone(),pmic:self.pmic.clone(),reset_count:self.pmic.lock().unwrap().panel_reset_count()}));
         bus.attach(RTC_I2C,Box::new(Core2Rtc{device:Bm8563::new(self.rtc.clone()),state:self.rtc.clone(),cycle:self.cycle.clone()}));
         bus.attach(IMU_I2C,Box::new(Mpu6886::new(self.imu.clone())));
         (0..2).flat_map(|index|bus.controller_devices(Some((21,22))).into_iter().map(move |(address,device)|(index,address,device))).collect()
+    }
+    fn attach_spi_sd_card(&mut self,image:Box<dyn SdStore>,config:SdCardConfig)->Result<String,String> {
+        let card=SpiSdCard::new(image,config)?;let description=card.describe();*self.tf.borrow_mut()=Some(card);Ok(description)
     }
     fn input_levels(&self)->Vec<(u8,bool)> {vec![(21,true),(22,true),(TOUCH_IRQ,self.touch_line_high())]}
     fn touch(&mut self,x:u16,y:u16,down:bool) {
@@ -166,8 +204,8 @@ impl BoardModel for Core2 {
     }
     fn report(&self)->String {
         let pmic=self.pmic.lock().unwrap();
-        format!("[core2] SPI ILI9342C: {} frames, {} pixels, MADCTL={:#04x}, COLMOD={:#04x}, display_on={}, LDO2={}, LCD_RST={}, DC3={}; FT6336U/G39; MPU6886 polled, BM8563 calendar",
-            self.panel.frames,self.panel.pixels_written,self.panel.madctl,self.panel.colmod,self.panel.on,pmic.panel_powered(),pmic.gpio34_high(4),pmic.backlight_on())
+        format!("[core2] SPI ILI9342C: {} frames, {} pixels, MADCTL={:#04x}, COLMOD={:#04x}, display_on={}, LDO2={}, LCD_RST={}, DC3={}; FT6336U/G39; MPU6886 polled, BM8563 calendar; SPI TF={}",
+            self.panel.frames,self.panel.pixels_written,self.panel.madctl,self.panel.colmod,self.panel.on,pmic.panel_powered(),pmic.gpio34_high(4),pmic.backlight_on(),self.tf.borrow().as_ref().map_or_else(||"absent".into(),SpiSdCard::report))
     }
 }
 impl Core2 {
@@ -209,6 +247,25 @@ mod tests {
         write(&mut pmic,0x12,&[7]);assert_eq!(board.display().unwrap().2,on);
         write(&mut pmic,0x96,&[0]);write(&mut pmic,0x96,&[2]);assert!(board.display().unwrap().2.iter().all(|&pixel|pixel==0));
         command(&mut board,0x29,&[]);assert!(board.panel.sleeping);
+    }
+    #[test]
+    fn tf_requires_its_cs_and_supply_and_restarts_after_a_pmic_rail_cut() {
+        let mut board=Core2::new();
+        board.attach_spi_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0;1<<20])),Default::default()).unwrap();
+        let mut devices=board.i2c_devices();
+        let pmic=devices.iter_mut().find(|(n,a,_)|(*n,*a)==(1,AXP192_ADDRESS)).unwrap().2.as_mut();
+        let tf=SpiPins{cs:1<<4,..pins()};
+        let no_select=SpiPins{cs:0,..pins()};
+        let cmd=[0x40,0,0,0,0,0x95];
+        assert_eq!(board.spi_transfer_pins(3,tf,&cmd,2),[0xff;2]);
+        power_panel(pmic);board.spi_transfer_pins(3,no_select,&[255;10],0);
+        board.spi_transfer_pins(3,SpiPins{cs:1<<16,..pins()},&cmd,0);
+        assert_eq!(board.spi_transfer_pins(3,tf,&[],2),[0xff;2]);
+        board.spi_transfer_pins(3,tf,&cmd,0);
+        assert_eq!(board.spi_transfer_pins(3,tf,&[],2),[0xff,1]);
+        write(pmic,0x12,&[0]);write(pmic,0x12,&[4]);
+        board.spi_transfer_pins(3,tf,&cmd,0);
+        assert_eq!(board.spi_transfer_pins(3,tf,&[],2),[0xff;2]);
     }
     #[test]
     fn touchscreen_keys_share_controller_registers_and_use_gpio39_irq() {

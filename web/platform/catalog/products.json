@@ -9946,16 +9946,20 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "core2",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "type": "IPS LCD",
-        "controller": "ILI9342C / ILI9342E"
+        "controller": "ILI9342C / ILI9342E",
+        "touch": true,
+        "touchController": "FT6336U"
       },
       "controls": [
         {
@@ -9971,12 +9975,14 @@
         },
         {
           "id": "power",
-          "name": "AXP192 power key (PWRON/HPWR, not an ESP32 GPIO)",
+          "name": "电源键（AXP192）",
           "type": "button",
           "knowledgeFactIds": [
             "sch-buttons",
             "spec-0-9"
-          ]
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "reset",
@@ -9986,6 +9992,39 @@
             "sch-buttons",
             "sch-m5bus-30pin",
             "spec-0-9"
+          ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "legacy-touch-strip"
+          ]
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "legacy-touch-strip"
+          ]
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "legacy-touch-strip"
           ]
         }
       ],
@@ -10357,7 +10396,8 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "原版 Core2 的 ILI9342C 数字显示、FT6336U 单触点、屏下 A/B/C 触摸键、AXP192 电源寄存器、MPU6886 轮询和 BM8563 日历已建模。",
+        "经典 ESP32 模拟器提供 4 MiB PSRAM，官方硬件配置为 8 MiB。ILI9342E 批次、扬声器和麦克风、实体断电与唤醒、外接传感器和 Wi-Fi 应用仍待适配或验证。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k010.json",
