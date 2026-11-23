@@ -11,6 +11,7 @@ pub mod atom_lite;
 pub mod atom_matrix;
 pub mod atom_voice;
 pub mod atom_matrix_v11;
+pub mod stickt2;
 pub mod stamppico;
 pub mod ulanzi;
 pub mod cyd;
@@ -28,6 +29,7 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
         "core2-v13" => Some(Box::new(core2::Core2::with_revision(core2::Revision::V13))),
         "core2-aws" => Some(Box::new(core2::Core2::with_revision(core2::Revision::Aws))),
         "core2-aws-v13" => Some(Box::new(core2::Core2::with_revision(core2::Revision::AwsV13))),
+        "stickt2" | "m5stack-k016-t2" => Some(Box::new(stickt2::StickT2::new())),
         "stamppico" => Some(Box::new(stamppico::StampPico::new())),
         "lilygo-t-beam-v1-2" => Some(Box::new(tbeam::TBeam::new())),
         "atom-matrix-v11" | "m5stack-c008-b-v11" => Some(Box::new(atom_matrix_v11::AtomMatrixV11::new())),

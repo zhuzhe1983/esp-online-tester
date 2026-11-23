@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:10:30Z",
+  "updatedAt": "2026-11-22T07:10:39Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -538,6 +538,100 @@
       "sourceIds": [
         "dimension-drawing-e82c0175e9"
       ]
+    },
+    {
+      "id": "runtime-display-route",
+      "label": "ST7789 physical SPI route",
+      "value": {
+        "mosi": 15,
+        "sclk": 13,
+        "dc": 23,
+        "reset": 18,
+        "cs": 5
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-runtime-pinmap",
+        "stickt-display-setup"
+      ],
+      "notes": "135x240 visible crop of 240x320 GRAM; digital fixed-supply subset, not AXP192 validation.",
+      "unit": "gpio"
+    },
+    {
+      "id": "runtime-button-route",
+      "label": "Active-low user buttons",
+      "value": {
+        "btnA": 37,
+        "btnB": 39
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-runtime-pinmap",
+        "stickt-config"
+      ],
+      "notes": "Only source-backed direct GPIO inputs; power/encoder pins not inferred.",
+      "unit": "gpio"
+    },
+    {
+      "id": "encoder-host-contract",
+      "label": "Official application encoder host contract",
+      "value": {
+        "address7bit": "0x30",
+        "incrementRegisters": "0x00..0x01 big-endian signed int16",
+        "switchRegister": "0x10",
+        "clear": "write 0xff to 0x20"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "stickt-example"
+      ],
+      "notes": "Host driver evidence only: no verified slave firmware/chip or timing. PA2/PA3/PA4 are not mapped to ESP32 pins. Device intentionally absent/NACK."
+    },
+    {
+      "id": "lepton-cci-host-contract",
+      "label": "Lepton CCI factory-source subset",
+      "value": {
+        "address7bit": "0x2a",
+        "sda": 21,
+        "scl": 22,
+        "reset": 26,
+        "registerFormat": "16-bit big-endian address/word; data length in words",
+        "initialCommands": [
+          "SET 0x4855 GPIO mode=5",
+          "SET 0x4859 VSYNC phase=3"
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "stickt-lepton",
+        "stickt-lepton-header",
+        "flir-cci-document"
+      ],
+      "group": "protocol"
+    },
+    {
+      "id": "lepton-vospi-host-contract",
+      "label": "Lepton3 Raw14 VoSPI host wiring and packet format",
+      "value": {
+        "sclk": 2,
+        "miso": 25,
+        "manualCs": 0,
+        "vsync": 38,
+        "packetsPerSegment": 60,
+        "segmentsPerFrame": 4,
+        "packetBytes": 164,
+        "pixels": [
+          160,
+          120
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "stickt-lepton",
+        "stickt-example",
+        "flir-engineering-document"
+      ],
+      "group": "protocol"
     }
   ],
   "revisions": [],
@@ -822,6 +916,154 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-runtime-pinmap",
+      "title": "official-runtime-pinmap",
+      "url": "https://docs.m5stack.com/en/core/StickT2",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/StickT2",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:14:45Z",
+      "sha256": "f283978f41e0ebe4db14ad41b4bf993175919eaa1a07ec5ba96e29a2e6076086",
+      "bytes": 142320,
+      "mediaType": "text/html; charset=UTF-8",
+      "kind": "official-runtime-reference",
+      "archiveName": "official.html"
+    },
+    {
+      "id": "stickt-example",
+      "title": "stickt-example",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/M5StickT_Lepton_opensource_v1.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/M5StickT_Lepton_opensource_v1.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:14:45Z",
+      "sha256": "a6fb7a0bdcc10bf223d4d7c86c8c9f00f00ac54b2eda0a6e26b6dda8713cea56",
+      "bytes": 16381,
+      "mediaType": "text/plain; charset=utf-8",
+      "kind": "official-runtime-reference",
+      "archiveName": "example.ino"
+    },
+    {
+      "id": "stickt-rotation",
+      "title": "stickt-rotation",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Rotation.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Rotation.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:14:46Z",
+      "sha256": "979ccef71c815f538f4cda8b3d1e077c580e3242dd429345f927a449943dfe7c",
+      "bytes": 1578,
+      "mediaType": "text/plain; charset=utf-8",
+      "kind": "official-runtime-reference",
+      "archiveName": "rotation.h"
+    },
+    {
+      "id": "stickt-config",
+      "title": "stickt-config",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/Config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/Config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:14:46Z",
+      "sha256": "2311f2615564da5d0efe220f9ffa96f542647ebae441b19a53f6b029ee781305",
+      "bytes": 243,
+      "mediaType": "text/plain; charset=utf-8",
+      "kind": "official-runtime-reference",
+      "archiveName": "config.h"
+    },
+    {
+      "id": "stickt-lepton",
+      "title": "stickt-lepton",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/lepton.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/lepton.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:14:47Z",
+      "sha256": "23349a61253807182ea5a2a31ef0667d0ff33165ed628806ff1694520a75d6c0",
+      "bytes": 10492,
+      "mediaType": "text/plain; charset=utf-8",
+      "kind": "official-runtime-reference",
+      "archiveName": "lepton.cpp"
+    },
+    {
+      "id": "stickt-side-photo",
+      "title": "stickt-side-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/core/m5stickt/m5stickt_04.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/m5stickt/m5stickt_04.webp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:14:47Z",
+      "sha256": "978c85a3b243fcc01edbfefc3807476b3839150ea4650294c606dd16831e7d9c",
+      "bytes": 173052,
+      "mediaType": "image/webp",
+      "kind": "official-product-photo",
+      "archiveName": "side.webp"
+    },
+    {
+      "id": "stickt-display-setup",
+      "title": "StickT2 In_eSPI_Setup.h",
+      "kind": "official-runtime-reference",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/In_eSPI_Setup.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/In_eSPI_Setup.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:22:28Z",
+      "checkedAt": "2026-11-22",
+      "sha256": "ac8ca1d25fc684277672c04ebabbef5e17186b934e9ffbef0979e121a509f514",
+      "bytes": 13310,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "display-setup.h"
+    },
+    {
+      "id": "stickt-display-defines",
+      "title": "StickT2 ST7789_Defines.h",
+      "kind": "official-runtime-reference",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Defines.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Defines.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:22:29Z",
+      "checkedAt": "2026-11-22",
+      "sha256": "489b3634370ad3f7a6abf506ee18e12f2ef02b3810a720133d710f9f53c6fffd",
+      "bytes": 4879,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "display-defines.h"
+    },
+    {
+      "id": "stickt-lepton-header",
+      "title": "stickt-lepton-header",
+      "kind": "official-protocol-reference",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/lepton.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/lepton.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:28:30Z",
+      "checkedAt": "2026-11-22",
+      "bytes": 5056,
+      "sha256": "b0d488f3fe043a5a82d0c84915dcc5425c20c0825f6164618350714d7f1e2d60",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lepton.h"
+    },
+    {
+      "id": "flir-cci-document",
+      "title": "flir-cci-document",
+      "kind": "official-protocol-reference",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/application/flir-lepton-software-interface-description-document_en.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/application/flir-lepton-software-interface-description-document_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:28:30Z",
+      "checkedAt": "2026-11-22",
+      "bytes": 1587466,
+      "sha256": "95100c00578d0af30abcf831cadcd456be08fed8a2566317ac3cb6a4fb73dfeb",
+      "mediaType": "application/pdf",
+      "archiveName": "flir-cci.pdf"
+    },
+    {
+      "id": "flir-engineering-document",
+      "title": "flir-engineering-document",
+      "kind": "official-protocol-reference",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/application/flir-lepton-engineering-datasheet_en.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/application/flir-lepton-engineering-datasheet_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:28:31Z",
+      "checkedAt": "2026-11-22",
+      "bytes": 2675096,
+      "sha256": "016a79d3c6f91abffa768bc7c142e201de92964ac857b628727d342aab866b30",
+      "mediaType": "application/pdf",
+      "archiveName": "flir-engineering.pdf"
     }
   ],
   "assets": [
@@ -941,16 +1183,6 @@
       "notes": "Explicit capacity not stated in audited specification; null does not mean zero."
     },
     {
-      "id": "default-firmware-artifact",
-      "label": "Pinned default firmware artifact",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "official-docs"
-      ],
-      "notes": "No pinned binary/layout/hash verified. Software documentation remains linked in source records."
-    },
-    {
       "id": "user-hardware-revision",
       "label": "User hardware revision",
       "value": null,
@@ -969,11 +1201,33 @@
         "manufacturer-cad-cfa964c8a1"
       ],
       "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
+    },
+    {
+      "id": "encoder-secondary-controller",
+      "label": "Encoder secondary controller identity/firmware",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-runtime-pinmap",
+        "stickt-example"
+      ],
+      "notes": "Official page labels PA2/PA3/PA4; official host application talks I2C 0x30. Exact controller and hardware PA mapping remain unknown."
+    },
+    {
+      "id": "runtime-factory-compatibility",
+      "label": "Factory firmware execution compatibility",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-runtime-pinmap"
+      ],
+      "notes": "The original v1.0 image uses CCI and VoSPI to render synthetic Raw14 scenes, with a measured display hotspot shift of approximately (+30, -40) pixels. Full firmware and hardware compatibility are unverified. See docs/platform/stickt2-runtime.md for input hashes and timing."
     }
   ],
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "The stickt2 runtime models the documented ST7789 route, G37/G39 buttons, a polled MPU6886, initialized AXP192 rails with short PEK, and CCI/VoSPI synthetic Raw14 input. Encoder, PDM microphone and RTC support remain unimplemented."
   ]
 }

@@ -16427,10 +16427,12 @@
       "summary": "ESP32-PICO-D4 热成像手持设备，含 FLIR Lepton 3.0、135×240 屏幕和旋钮。厂家壳体包含安装耳，不能缩放到不含耳的标称宽度。",
       "knowledgeUrl": "./knowledge/m5stack-k016-t2.json",
       "runtime": {
-        "board": null,
+        "board": "stickt2",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false,
+        "encoder": false
       },
       "display": {
         "width": 135,
@@ -16439,7 +16441,31 @@
         "driver": "ST7789",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "btnA",
+          "name": "Button A · 调色板",
+          "type": "button",
+          "pin": 37,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "btnB",
+          "name": "Button B · 测温模式",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "power",
+          "name": "Power · PMIC 短按",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-custom",
@@ -16501,12 +16527,16 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "StickT2 板型支持 ST7789 SPI 屏幕、G37/G39 按键和 MPU6886 轮询寄存器。",
+        "AXP192 支持 I²C 0x34、LDO2/3 显示供电门控和 PEK 短按。初始配置为已供电状态；电池、电源循环和长按关机仍待实现。",
+        "Lepton CCI 和 VoSPI 向固件传输合成 Raw14 计数。工作台与 mini 可设置、分享和回放热像场；现场温度标定、完整时序、FFC、旋钮、麦克风与 RTC 仍待实现。",
+        "官方出厂 v1.0 原文件的启动段附加摘要与镜像头不一致。整镜像保持原字节与固定 SHA-256，固件兼容性仍为试用。",
+        "A 键的正面 3D 热区采用照片估算。B 键和电源键可通过 2D 界面、键盘与 API 操作，侧面 CAD 键的对应尚未核实。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "Manufacturer shell width includes mounting flanges (~30.4mm) while official product width is24mm; source not scaled. Thermal optics and encoder seating are not complete CAD."
+        "Manufacturer shell width includes mounting flanges (~30.4mm) while official product width is24mm; source not scaled. Thermal optics and encoder seating are not complete CAD.",
+        "虚拟运行配置 PSRAM=0；官方规格未明确外部 PSRAM，知识库仍保留未知，不以此断言实物不存在。"
       ],
       "sources": [
         {
@@ -16523,6 +16553,118 @@
           "archiveName": "official-docs.html",
           "notes": "Reused actual corpus receipt 2026-10-26T15:19:20.897314Z; no new fetch timestamp invented.",
           "checkedAt": "2026-10-26"
+        },
+        {
+          "id": "official-runtime-pinmap",
+          "title": "official-runtime-pinmap",
+          "url": "https://docs.m5stack.com/en/core/StickT2",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/StickT2",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:45Z",
+          "sha256": "f283978f41e0ebe4db14ad41b4bf993175919eaa1a07ec5ba96e29a2e6076086",
+          "bytes": 142320,
+          "mediaType": "text/html; charset=UTF-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "official.html"
+        },
+        {
+          "id": "stickt-example",
+          "title": "stickt-example",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/M5StickT_Lepton_opensource_v1.ino",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/M5StickT_Lepton_opensource_v1.ino",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:45Z",
+          "sha256": "a6fb7a0bdcc10bf223d4d7c86c8c9f00f00ac54b2eda0a6e26b6dda8713cea56",
+          "bytes": 16381,
+          "mediaType": "text/plain; charset=utf-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "example.ino"
+        },
+        {
+          "id": "stickt-rotation",
+          "title": "stickt-rotation",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Rotation.h",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Rotation.h",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:46Z",
+          "sha256": "979ccef71c815f538f4cda8b3d1e077c580e3242dd429345f927a449943dfe7c",
+          "bytes": 1578,
+          "mediaType": "text/plain; charset=utf-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "rotation.h"
+        },
+        {
+          "id": "stickt-config",
+          "title": "stickt-config",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/Config.h",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/Config.h",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:46Z",
+          "sha256": "2311f2615564da5d0efe220f9ffa96f542647ebae441b19a53f6b029ee781305",
+          "bytes": 243,
+          "mediaType": "text/plain; charset=utf-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "config.h"
+        },
+        {
+          "id": "stickt-lepton",
+          "title": "stickt-lepton",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/lepton.cpp",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/lepton.cpp",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:47Z",
+          "sha256": "23349a61253807182ea5a2a31ef0667d0ff33165ed628806ff1694520a75d6c0",
+          "bytes": 10492,
+          "mediaType": "text/plain; charset=utf-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "lepton.cpp"
+        },
+        {
+          "id": "stickt-side-photo",
+          "title": "stickt-side-photo",
+          "url": "https://static-cdn.m5stack.com/resource/docs/products/core/m5stickt/m5stickt_04.webp",
+          "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/m5stickt/m5stickt_04.webp",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:47Z",
+          "sha256": "978c85a3b243fcc01edbfefc3807476b3839150ea4650294c606dd16831e7d9c",
+          "bytes": 173052,
+          "mediaType": "image/webp",
+          "checkedAt": "2026-11-22",
+          "kind": "official-product-photo",
+          "archiveName": "side.webp"
+        },
+        {
+          "id": "stickt-display-setup",
+          "title": "StickT2 In_eSPI_Setup.h",
+          "kind": "official-runtime-reference",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/In_eSPI_Setup.h",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/In_eSPI_Setup.h",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:22:28Z",
+          "checkedAt": "2026-11-22",
+          "sha256": "ac8ca1d25fc684277672c04ebabbef5e17186b934e9ffbef0979e121a509f514",
+          "bytes": 13310,
+          "mediaType": "text/plain; charset=utf-8",
+          "archiveName": "display-setup.h"
+        },
+        {
+          "id": "stickt-display-defines",
+          "title": "StickT2 ST7789_Defines.h",
+          "kind": "official-runtime-reference",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Defines.h",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Defines.h",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:22:29Z",
+          "checkedAt": "2026-11-22",
+          "sha256": "489b3634370ad3f7a6abf506ee18e12f2ef02b3810a720133d710f9f53c6fffd",
+          "bytes": 4879,
+          "mediaType": "text/plain; charset=utf-8",
+          "archiveName": "display-defines.h"
         }
       ],
       "defaultFirmwareId": "m5stack-k016-t2-official-factory",
