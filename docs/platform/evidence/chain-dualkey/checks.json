@@ -1,0 +1,112 @@
+{
+  "productId": "m5stack-c147",
+  "checkedAt": "2026-11-23T05:18:33Z",
+  "baselineCommit": "65d5ddd7",
+  "wasmSha256": "4ba14b61a50d93c0e8296b851ea8a65bcd047720bff42e67cf29fe295e3e7c3b",
+  "fixtures": {
+    "reproducibleBrowserCheck": "tools/fixtures/chain-dualkey-firmware/browser-check.js",
+    "fixtureSha256": "bb14a92fa9bd602d327f8af32af2931a716b4724bdeb5d7a8dabb809d738ce78",
+    "fixtureSource": "local ESP-IDF v5.5.1 merged diagnostic served by a task-specific HTTP server",
+    "browser": "headless Chromium",
+    "behavior": {
+      "productId": "m5stack-c147",
+      "defaultSelected": "m5stack-c147-userdemo-v0-8",
+      "keyboard": "KEY1 to UART/RGB",
+      "modelPress": "KEY1 to UART/RGB",
+      "panelPress": "KEY2 to UART/RGB",
+      "viewModes": [
+        "2d",
+        "3d"
+      ],
+      "inspection": true,
+      "independentEmbed": true,
+      "errors": []
+    },
+    "appearanceAndFallback": {
+      "materials": {
+        "original": [
+          [
+            "shell-bottom",
+            "d6d4d1",
+            1
+          ],
+          [
+            "shell-lower",
+            "d8d7d4",
+            1
+          ],
+          [
+            "shell-upper",
+            "dedbd8",
+            1
+          ]
+        ],
+        "styles": {
+          "gold": [
+            [
+              "shell-bottom",
+              "d7ab52",
+              1
+            ],
+            [
+              "shell-lower",
+              "d7ab52",
+              1
+            ],
+            [
+              "shell-upper",
+              "d7ab52",
+              1
+            ]
+          ],
+          "purple-clear": [
+            [
+              "shell-bottom",
+              "8456cf",
+              0.36
+            ],
+            [
+              "shell-lower",
+              "8456cf",
+              0.36
+            ],
+            [
+              "shell-upper",
+              "8456cf",
+              0.36
+            ]
+          ]
+        },
+        "independentMeshCount": 39
+      },
+      "modelFailure": "key panel remains visible on 2D fallback"
+    },
+    "modelSha256": {
+      "model.json": "539d2b1e71b4902a7b50ae36d094632c3a41ed400ed0b1ac456919159a7fd334",
+      "geometry.f32": "214086be81c6ae3a47444d1d6eecc462da69ea49db1fac21d5c6fafa689c082d"
+    },
+    "notes": "The localhost origin lacked authorization for the configured public network relay; tested input and firmware behavior used the same local worker."
+  },
+  "checks": [
+    {
+      "command": "cargo test --release -p esp32s3 --lib board::chain_dualkey::tests --offline",
+      "result": "5 passed"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "pass"
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs",
+      "result": "4 passed"
+    },
+    {
+      "command": "node tools/rebuild-chain-dualkey-model.mjs <scratch-dir>",
+      "result": "model.json and geometry.f32 both byte-identical"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass"
+    }
+  ]
+}
