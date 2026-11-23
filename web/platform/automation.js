@@ -86,9 +86,10 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
       setSharedPlayback(new URLSearchParams(),{autostart,autoplay});
       const scene = structuredClone(state.scene);
       if (mode) scene.view.mode = mode;
+      const recordingState = await recorder.api.recordingObserve(), recorded = recordingState.recording;
+      if (!(includeRecording && recorded) && state.thermalEnvironment) scene.thermalEnvironment = structuredClone(state.thermalEnvironment);
       const url = new URL(mode === 'embed' ? 'embed.html' : mode === 'studio' ? 'index.html' : baseUrl, baseUrl);
       const params = setSharedPlayback(new URLSearchParams({scene: encodeScene(scene)}), {autostart:autostart&&!!scene.firmware, autoplay});
-      const recordingState = await recorder.api.recordingObserve(), recorded = recordingState.recording;
       if (includeRecording && ['preparing','recording','playing'].includes(recordingState.status)) throw Object.assign(new Error('Stop recording or playback before sharing its replay payload.'), {code:'RECORDING_NOT_SHAREABLE'});
       if (includeRecording && recorded) {
         const validation = validateRecording(recorded, {scene});

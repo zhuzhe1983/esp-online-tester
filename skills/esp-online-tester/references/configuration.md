@@ -48,3 +48,9 @@ Finish IDs are `plastic`, `glossy-plastic`, `frosted-plastic`, `clear-resin`, `r
 Edit the appropriate `web/platform/catalog/{products,accessories,firmwares}.json` through a PR. Include stable IDs, hardware SKU/revision, model status, limitations and primary source URLs with `checkedAt`. Keep physical metadata separate from implemented runtime support. Mark unresolved firmware projects `status:'reference',source:null`; only use `available` when a concrete loadable source exists. An `available` entry still needs actual runtime assertions before a compatibility claim.
 
 New products require an implemented board model for execution; JSON and a 3D shell alone do not add peripheral behavior. New GPS variants retain separate baud defaults. Keep visible screen geometry and emulator framebuffer geometry distinct. Do not claim silicon validation from emulator-only results.
+
+## M5Stick environment settings
+
+`m5stack-k016-p` accepts optional `scene.environment.power` with the complete voltage and flag fields of the [power input API](api.md#m5stick-environment-inputs). Without this field, the virtual battery starts connected at 4,100,000 µV and VBUS and charging start off. An ordinary share keeps the scene’s initial values. To share live adjustments, include their recording.
+
+`m5stack-k016-t2` accepts optional `scene.thermalEnvironment` with the five integer fields of the [Raw14 input API](api.md#m5stick-environment-inputs). The default uses a background of 8000, hotspot of 9000, center (80, 60) and radius 12. A scene-only share copies the latest virtual stimulus. A share with a matching recording keeps the original initial stimulus alongside the guest-time input events. Reset restores the configured initial values for either product.

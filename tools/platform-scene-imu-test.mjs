@@ -69,6 +69,13 @@ test('blur or hidden tab clears angular velocity without changing acceleration o
 });
 
 test('all host-fed runtime IMUs accept the same documented virtual axes, with no mounting claim',async()=>{
+  const stickProfiles = new Map([
+    ['stickc','mpu6886-register-subset'],
+    ['stickc-plus','mpu6886-register-subset'],
+    ['stickt2','mpu6886-register-subset'],
+    ['sticks3','bmi270-register-subset'],
+  ]);
+  for (const [board,model] of stickProfiles) assert.equal(imuModelForBoard(board),model);
   const catalog={};for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url),'utf8')).items;
   const runtime=createPlatformRuntime({catalog});const seen=new Set();
   try {
@@ -79,7 +86,7 @@ test('all host-fed runtime IMUs accept the same documented virtual axes, with no
       assert.equal((await runtime.observe()).imu.source,'agent');
       const result=await runtime.setImu({source:'scene',quaternion:tilted});assert.ok(Math.abs(result.accelG[0]-1)<1e-8);assert.deepEqual(result.gyroDps,[0,0,0]);
     }
-    assert.equal(seen.size,12);
+    assert.equal([...seen].filter(board=>!stickProfiles.has(board)).length,12);
     await runtime.configure({...createDefaultScene(catalog,'m5stack-k138'),flight:{enabled:true,model:'stampfly-rigid-body-v1'}});
     assert.equal((await runtime.capabilities()).imu.inputOwner,'flight');
     await assert.rejects(runtime.setImu({source:'scene',quaternion:q}),{code:'FLIGHT_OWNS_IMU'});
