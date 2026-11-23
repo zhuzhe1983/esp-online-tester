@@ -26,7 +26,7 @@ Retained source assembled cluster; only the recorded rigid rotation and translat
 
 正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
 
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
+厂家 CAD 按 MIT 许可保留。官方照片及其裁切纹理版权归厂家，独立开放图片许可尚未核实。屏幕由模拟固件输出。`sticks3` 板型为部分适配，官方 UIFlow2 和小智均待下载并验证启动。[板级报告](../sticks3-runtime.md)
 
 重生成：
 
@@ -44,10 +44,14 @@ python tools/onboard-lane-01-extra.py publish --ids m5stack-k150
 
 当前限制：
 
-- Three named buttons and audio/IR hardware are documented but not mapped to unsupported simulator behavior.
+- KEY1/KEY2 通过 GPIO11/12 接入；独立 PM1 电源键不映射为普通 GPIO，音频/IR 仍无板级路由验证。
 - Labels, connector inserts and populated PCB are not part of the imported shell CAD.
-- Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.
+- `sticks3` 板型实现 ST7789P3/PM1 屏幕电源门/BMI270 轮询子集；外观预览不证明官方固件兼容。
 - Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.
 - Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.
 - Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.
 - 本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。
+
+## 按键区域和诊断
+
+厂家组件 `cad-component-3` 对应 KEY1/G11。KEY2/G12 的右侧命中平面根据本型号侧照和背贴估算，误差约 1 mm。Chromium 工作台默认视角通过两个按键区域的悬停、按下和释放检查，诊断固件分别输出红色和绿色。屏幕中心仍可用于旋转设备。嵌入页可恢复 K150 模型。透明与金色材质、极端视角以及内部尺寸待进一步测量。内部 `pcb-main` 标记为 `UNKNOWN`，Grove 连接器的空间朝向尚未校准。[诊断记录](../evidence/sticks3-runtime-20261122/verification.json)
