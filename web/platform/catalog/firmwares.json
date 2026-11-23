@@ -1844,20 +1844,29 @@
       "compatibility": "unverified",
       "publicationUrl": "https://docs.m5stack.com/en/core/Basic_v2.7",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
-        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+        "官方 Core Factory Test v0.4。已重新核对发布地址、SHA-256、ESP32 启动结构和实际应用段。",
+        "镜像内采用 4 MiB 布局，Basic v2.7 实物标称 16 MiB Flash；模拟执行状态见板级验收。"
       ],
       "sources": [
         {
           "title": "M5Stack Basic v2.7 official product documentation",
           "url": "https://docs.m5stack.com/en/core/Basic_v2.7",
-          "checkedAt": "2026-10-27"
+          "checkedAt": "2026-11-22"
         },
         {
-          "title": "Official M5Burner metadata; firmwareId 55b2ee0f3f573f8f4a0b6043d22ffe4e",
+          "title": "M5Stack factory firmware restore guide for Basic / Basic v2.7",
+          "url": "https://docs.m5stack.com/en/guide/m5core/restore_factory",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "Official M5Burner Core Factory Test v0.4 project",
+          "url": "https://burner.m5stack.com/firmware/1897200000000001132",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Official M5Burner legacy CDN catalog; firmwareId 55b2ee0f3f573f8f4a0b6043d22ffe4e",
           "url": "https://m5burner-api.m5stack.com/api/firmware",
-          "checkedAt": "2026-10-27"
+          "checkedAt": "2026-11-22"
         }
       ]
     },
@@ -1939,13 +1948,14 @@
       "publicationUrl": "https://docs.m5stack.com/en/core/Fire_v2.7",
       "sources": [
         {
-          "title": "download",
+          "title": "M5Stack FIRE v2.7 Factory Firmware EasyLoader",
           "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/656/Fire_Factory_Firmware.exe",
-          "checkedAt": "2026-10-27"
+          "checkedAt": "2026-11-21"
         }
       ],
       "limitations": [
-        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+        "官方出厂恢复以 Windows EasyLoader 分发。安装包内的 ESP32 完整启动镜像采用 16 MiB Flash 布局。",
+        "公开来源是 EXE；网页固件加载需要单独发布的 BIN。UIFlow 选项是独立版本。"
       ]
     },
     {
@@ -1962,13 +1972,14 @@
       "publicationUrl": "https://docs.m5stack.com/en/core/M5GO_IoT_Kit_v2.7",
       "sources": [
         {
-          "title": "download",
+          "title": "M5Stack M5GO IoT Kit v2.7 User Demo EasyLoader",
           "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/m5go_v2.7/M5GO%20IoT%20Starter%20Kit%20v2.7.exe",
-          "checkedAt": "2026-10-27"
+          "checkedAt": "2026-11-21"
         }
       ],
       "limitations": [
-        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+        "官方产品页称预装 UIFlow 示例，并提供 Windows User Demo EasyLoader；该包内的 ESP32 镜像采用 4 MiB 布局。",
+        "设备规格为 16 MiB Flash。另列的 UIFlow 16 MiB 项目是可选版本，其内容与 EasyLoader 中的程序分别核对。"
       ]
     },
     {
@@ -2023,9 +2034,9 @@
           "checkedAt": "2026-10-27"
         },
         {
-          "title": "download",
+          "title": "M5Stack Faces Kit Factory Firmware EasyLoader",
           "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/EasyLoader/Windows/CORE/EasyLoader_FACES_FactoryTest.exe",
-          "checkedAt": "2026-10-27"
+          "checkedAt": "2026-11-21"
         },
         {
           "title": "Click here to flash a sample game with one click",
@@ -2034,7 +2045,8 @@
         }
       ],
       "limitations": [
-        "已找到官方出厂源码或 EasyLoader 恢复入口，但本轮未定位并固定该型号可供浏览器直载的完整 BIN；不能把 EXE 当作固件运行。"
+        "官方出厂键盘测试通过 Windows EasyLoader 分发；安装包内有采用 4 MiB Flash 布局的 ESP32 启动镜像。",
+        "GameBoy 示例和 Gamepad3 升级程序用途独立。UIFlow 面向套装内的 Gray 主机，面板功能仍需验证。"
       ]
     },
     {
@@ -12400,6 +12412,192 @@
           "url": "https://github.com/78/xiaozhi-esp32/tree/4de00aed740595a8713b01f8332b9b2cf30685bc/main/boards/espressif/esp-mosaico",
           "checkedAt": "2026-11-14"
         }
+      ]
+    },
+    {
+      "id": "m5stack-k007-v27-uiflow1",
+      "name": "FIRE v2.7 UIFlow1 · v1.15.5",
+      "productIds": [
+        "m5stack-k007-v27"
+      ],
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/0d2fae5f7eef1df4b5262269021e814b.bin",
+        "sha256": "a8a01323f7a0f2d032e784a99ad82e64882278e28b40ae95843f612ea5f93328"
+      },
+      "revision": "v1.15.5",
+      "version": "v1.15.5",
+      "watchlistId": "m5-official-uiflow1-k007-v27",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000003188",
+      "sources": [
+        {
+          "title": "M5Stack device-specific UIFlow guide",
+          "url": "https://docs.m5stack.com/en/uiflow/m5fire/program",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "Official M5Burner project and exact device mapping",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000003188",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Official legacy M5Burner CDN metadata",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-11-22"
+        }
+      ],
+      "limitations": [
+        "Fire 官方文档指向专用 UIFlow 项目；使用 FIRE 设备分类和 Fire 版完整 BIN。",
+        "已核对官方分发镜像的 SHA-256、ESP32 启动结构和应用段；尚未验证模拟运行或实机功能。"
+      ]
+    },
+    {
+      "id": "m5stack-k007-v27-uiflow2",
+      "name": "FIRE v2.7 UIFlow2 · v2.5.5",
+      "productIds": [
+        "m5stack-k007-v27"
+      ],
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/2c134b13fad7a2dc04bcb80a4ce4ddfc.bin",
+        "sha256": "d2485142c5cb3bf717ffeeda903ae222e6e37d7ee7bd0a90cc54add9ee6f7435"
+      },
+      "revision": "v2.5.5",
+      "version": "v2.5.5",
+      "watchlistId": "m5-official-uiflow2-k007-v27",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000003412",
+      "sources": [
+        {
+          "title": "M5Stack device-specific UIFlow guide",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5fire/program",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "Official M5Burner project and exact device mapping",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000003412",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Official legacy M5Burner CDN metadata",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-11-22"
+        }
+      ],
+      "limitations": [
+        "Fire 官方文档指向专用 UIFlow 项目；使用 FIRE 设备分类和 Fire 版完整 BIN。",
+        "已核对官方分发镜像的 SHA-256、ESP32 启动结构和应用段；尚未验证模拟运行或实机功能。"
+      ]
+    },
+    {
+      "id": "m5stack-k005-uiflow1",
+      "name": "Faces Kit (Gray) UIFlow1 · v1.15.5",
+      "productIds": [
+        "m5stack-k005"
+      ],
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/0aaddd0b9dfca7d1e355ff64e675dd58.bin",
+        "sha256": "8558f670ce0db612b5dbe8f8dfc89be4c52b6efd2fa0d307b2ac4dd3ae96dc9c"
+      },
+      "revision": "v1.15.5",
+      "version": "v1.15.5",
+      "watchlistId": "m5-official-uiflow1-k001",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000003173",
+      "sources": [
+        {
+          "title": "Faces Kit includes the Gray Core and points to the Core UIFlow tutorials",
+          "url": "https://docs.m5stack.com/en/core/Faces_Kit",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "M5Stack device-specific UIFlow guide",
+          "url": "https://docs.m5stack.com/en/uiflow/m5core/program",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "Official M5Burner project and exact device mapping",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000003173",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Official legacy M5Burner CDN metadata",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-11-22"
+        }
+      ],
+      "limitations": [
+        "Faces Kit 官方资料将套装内的 Gray 主机指向此 Core 系列项目。本条目用于 16 MiB Flash 主机；旧 4 MiB 硬件应选择对应容量的固件。",
+        "已核对官方分发镜像的 SHA-256、ESP32 启动结构和应用段；尚未验证模拟运行或实机功能。"
+      ]
+    },
+    {
+      "id": "m5stack-k005-uiflow2",
+      "name": "Faces Kit (Gray) UIFlow2 · v2.5.5-16MB",
+      "productIds": [
+        "m5stack-k005"
+      ],
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "trial",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/d13aa198f7aebe2daeec262ab08e46d9.bin",
+        "sha256": "63841aa3065ac02e729fccc9e3a9e931f587cec5e8ea57850a720cfdbc67d8f2"
+      },
+      "revision": "v2.5.5-16MB",
+      "version": "v2.5.5-16MB",
+      "watchlistId": "m5-official-uiflow2-k001",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000000786",
+      "sources": [
+        {
+          "title": "Faces Kit includes the Gray Core and points to the Core UIFlow tutorials",
+          "url": "https://docs.m5stack.com/en/core/Faces_Kit",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "M5Stack device-specific UIFlow guide",
+          "url": "https://docs.m5stack.com/en/uiflow2/m5core/program",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "Official M5Burner project and exact device mapping",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000786",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Official legacy M5Burner CDN metadata",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-11-22"
+        }
+      ],
+      "limitations": [
+        "Faces Kit 官方资料将套装内的 Gray 主机指向此 Core 系列项目。本条目用于 16 MiB Flash 主机；旧 4 MiB 硬件应选择对应容量的固件。",
+        "已核对官方分发镜像的 SHA-256、ESP32 启动结构和应用段；尚未验证模拟运行或实机功能。"
       ]
     }
   ]
