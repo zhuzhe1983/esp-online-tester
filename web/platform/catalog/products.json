@@ -16309,10 +16309,10 @@
       "summary": "ESP32-S3-PICO 棒状终端，集成彩屏、BMI270、音频、红外收发与 250 mAh 电池。",
       "knowledgeUrl": "./knowledge/m5stack-k150.json",
       "runtime": {
-        "board": null,
+        "board": "sticks3",
         "flashMb": 8,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial"
       },
       "display": {
         "width": 135,
@@ -16321,7 +16321,24 @@
         "technology": "lcd",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "btnA",
+          "name": "KEY1 · A",
+          "type": "button",
+          "pin": 11,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "btnB",
+          "name": "KEY2 · B",
+          "type": "button",
+          "pin": 12,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-custom",
@@ -16368,6 +16385,77 @@
             "official-docs"
           ],
           "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "id": "hat2-bus",
+          "name": "Hat2-Bus",
+          "type": "2.54mm-16P",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "G5",
+              "gpio": 5
+            },
+            {
+              "name": "EXT_5V"
+            },
+            {
+              "name": "G4",
+              "gpio": 4
+            },
+            {
+              "name": "Boot",
+              "gpio": 0
+            },
+            {
+              "name": "G6",
+              "gpio": 6
+            },
+            {
+              "name": "G1",
+              "gpio": 1
+            },
+            {
+              "name": "G7",
+              "gpio": 7
+            },
+            {
+              "name": "G8",
+              "gpio": 8
+            },
+            {
+              "name": "G43",
+              "gpio": 43
+            },
+            {
+              "name": "BAT"
+            },
+            {
+              "name": "G44",
+              "gpio": 44
+            },
+            {
+              "name": "3V3_L2"
+            },
+            {
+              "name": "G2",
+              "gpio": 2
+            },
+            {
+              "name": "5V_IN"
+            },
+            {
+              "name": "G3",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "Official pins 1..16, alternating left/right. Electrical knowledge only: mating geometry, accessory routing and power switching are not validated."
         }
       ],
       "model": {
@@ -16384,11 +16472,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "StickS3 板级 partial：SPI ST7789P3、PM1 GPIO2 屏幕电源门、GPIO11/12 按键、BMI270 轮询寄存器子集；尚未验证官方固件完整启动。",
+        "ES8311 仅初始化寄存器；麦克风/扬声器实际 I2S 引脚与 AW8737 脉冲控制、IR、PM1 电源键/主控断电及传感器中断未实现。",
+        "Grove G9/G10 与 Hat2 为资料引脚，不代表附件电气路由或 3D 线缆接插已适配。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Three named buttons and audio/IR hardware are documented but not mapped to unsupported simulator behavior.",
         "Labels, connector inserts and populated PCB are not part of the imported shell CAD.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
