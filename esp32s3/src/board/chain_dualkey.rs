@@ -1,13 +1,13 @@
 //! M5Stack C147 Chain DualKey: a Chain-series main controller with two
 //! hot-swappable mechanical keys and a two-LED WS2812B chain.
 //!
-//! Every pin here comes from three agreeing sources, never from a guess:
+//! Pin assignments are from the official PinMap, schematic and UserDemo:
 //! - the official product page PinMap (`docs.m5stack.com/en/chain/Chain_DualKey`):
 //!   KEY G0 = KEY_1 INPUT, G17 = KEY_2 INPUT; RGB LED G21 = WS2812 INPUT,
 //!   G40 = WS2812_PWR PWR_EN; ADC G8 SWITCH_1, G7 SWITCH_2, G10 ADC_BAT,
 //!   G2 ADC_VBUS, G9 ADC_CHARGE; USB G19 = USB_DN, G20 = USB_DP;
-//!   HY2.0-4P_1 = GND 5V G48 UART1_TX G47 UART1_RX, HY2.0-4P_2 = GND 5V G5
-//!   UART2_RX G6 UART2_TX.
+//!   HY2.0-4P_1 = GND VOUT G48 UART1_TX G47 UART1_RX; HY2.0-4P_2 = GND VOUT
+//!   G5 UART2_RX G6 UART2_TX (PinMap order differs from the rear view).
 //! - the factory image sources `M5DualKey-UserDemo` at 82d7fa60cf2716e6bea01ce30bd916479644140c:
 //!   `bsp/keyboard.h` (`KBD_COL_IO_0 17`, `KBD_COL_IO_1 0`, `KBD_INPUT_IOS {0, 17}`,
 //!   `KBD_WS2812_GPIO 21`, `KBD_WS2812_POWER_IO 40`), `esp_duo.c` and `chain_bus.h`
@@ -18,8 +18,7 @@
 //! `KBD_ATTIVE_LEVEL` is 0 (`kbd_gpio.c:21-31`), sampled by a 1 ms gptimer with
 //! `debounce_ticks = 3` (`keyboard.h:14`, `esp_duo.c:30-33`); `enable_power_save`
 //! arms a low-level GPIO wake source on the same two pins. A press pulls the pad
-//! low, a release returns it to the pull-up high; the pad is never driven by the
-//! emulator. G0 is also the BOOT-side key: the official download-mode recipe holds
+//! low and a release returns it to the board pull-up. G0 is also the BOOT-side key: the official download-mode recipe holds
 //! "the button farther from the lanyard hole" while plugging USB-C in.
 //!
 //! The LEDs are one 2-LED strip: `bsp_ws2812_init` makes G40 a
@@ -45,46 +44,56 @@ const USB_DP:u8=20;const USB_DN:u8=19;
 /// LED indices {1,0}, so the chain order is fixed by the wire, not by the keycaps.
 const LEDS:usize=2;
 
-pub struct ChainDualKey {rgb:Ws2812Chain,powered:bool,frames:u64,ignored:u64,gpio_events:u64,last:Option<(u8,Vec<bool>)>}
+pub struct ChainDualKey {
+    rgb: Ws2812Chain,
+    powered: bool,
+    frames: u64,
+    ignored: u64,
+}
+
 impl ChainDualKey {
-    /// Cold board: G40 is a high-Z pad, so the strip has no supply and reads black.
-    pub fn new()->Self {Self{rgb:Ws2812Chain::new(LEDS),powered:false,frames:0,ignored:0,gpio_events:0,last:None}}
-    /// The accepted bits of the last frame, kept for a replay into a cold board.
-    fn record(&mut self,pin:u8,bits:&[bool]) {self.last=Some((pin,bits.iter().take(LEDS*24).copied().collect()));}
-    /// One place to apply the supply gate. WS2812 pixels hold their last latched colour
-    /// while powered; losing the gate blanks them and invalidates the recording.
-    fn set_gate(&mut self,powered:bool) {
-        if self.powered && !powered {self.rgb.leds.fill([0;3]);self.rgb.updates=self.rgb.updates.wrapping_add(1);}
-        if powered != self.powered {self.last=None;}
-        self.powered=powered;
+    /// G40 starts high-Z, leaving the strip unpowered.
+    pub fn new() -> Self {
+        Self { rgb: Ws2812Chain::new(LEDS), powered: false, frames: 0, ignored: 0 }
+    }
+
+    // The pixel state is volatile across a loss of supply.
+    fn set_gate(&mut self, powered: bool) {
+        if self.powered && !powered {
+            self.rgb.leds.fill([0; 3]);
+            self.rgb.updates = self.rgb.updates.wrapping_add(1);
+        }
+        self.powered = powered;
     }
 }
-impl Default for ChainDualKey {fn default()->Self {Self::new()}}
+
+impl Default for ChainDualKey {
+    fn default() -> Self { Self::new() }
+}
+
 impl BoardModel for ChainDualKey {
-    fn name(&self)->&'static str {"chain-dualkey"}
-    fn gpio_output_at(&mut self,_cycle:VirtualCycle,changes:&[(u8,bool)],enabled:u64,output:u64) {
-        self.gpio_events=self.gpio_events.wrapping_add(changes.len() as u64);
-        // `bsp_ws2812_enable(true)` drives G40 low; an enabled-and-high or an
-        // undriven pad leaves the strip unpowered.
-        let gate=1u64<<RGB_POWER;
-        self.set_gate(enabled&gate!=0 && output&gate==0);
+    fn name(&self) -> &'static str { "chain-dualkey" }
+
+    fn uses_gpio_routes(&self) -> bool { true }
+
+    fn gpio_waveform_at(&mut self, _cycle: VirtualCycle, routes: PinRoutes<'_>) {
+        // Only a routed, driven G40 low closes the LED supply switch. The bus
+        // also reports fresh GPIO routes when the guest reboots.
+        self.set_gate(routes.software_output(RGB_POWER) == Some(false));
     }
-    /// Routes are also observed at board attachment, so a chip reset that leaves every pad
-    /// high-Z reaches the board even though no guest wrote a register afterwards.
-    fn uses_gpio_routes(&self)->bool {true}
-    fn gpio_waveform_at(&mut self,_cycle:VirtualCycle,routes:PinRoutes<'_>) {
-        self.set_gate(routes.software_output(RGB_POWER)==Some(false));
-    }
-    fn gpio_events(&self)->u64 {self.gpio_events}
-    fn rmt_frame(&mut self,pin:u8,bits:&[bool]) {
-        if pin!=RGB_DATA || !self.powered {self.ignored=self.ignored.wrapping_add(1);return;}
-        let before=self.rgb.updates;
+
+    fn rmt_frame(&mut self, pin: u8, bits: &[bool]) {
+        if pin != RGB_DATA || !self.powered {
+            self.ignored = self.ignored.wrapping_add(1);
+            return;
+        }
+        let before = self.rgb.updates;
         self.rgb.from_bits(bits);
-        if self.rgb.updates!=before {
-            self.frames=self.frames.wrapping_add(1);
-            self.record(pin,bits);
+        if self.rgb.updates != before {
+            self.frames = self.frames.wrapping_add(1);
         }
     }
+
     fn input_levels(&self)->Vec<(u8,bool)> {vec![(KEY1,true),(KEY2,true)]}
     fn named_pin(&self,name:&str)->Option<u8> {
         match name {
@@ -120,6 +129,8 @@ mod tests {
     use emu_core::Bus as _;
     use esp_soc::SocBus as _;
 
+    // ESP-IDF v5.5.1 ESP32-S3 register/soc/{gpio_reg,io_mux_reg,gpio_sig_map}.h.
+    // GPIO_IN +0x3c, FUNCn_OUT_SEL +0x554+4n, OEN_SEL bit 10, GPIO mux function 1.
     const GPIO:u32=0x6000_4000;const MUX:u32=0x6000_9000;
     /// GRB on the wire (MSB first, G then R then B) as an RMT bit stream.
     fn grb(bytes:&[u8])->Vec<bool> {bytes.iter().flat_map(|&b|(0..8).map(move|i|b&(0x80>>i)!=0)).collect()}
@@ -145,7 +156,7 @@ mod tests {
         b.rmt_frame(RGB_DATA,&frame);
         assert_eq!(b.leds().unwrap(),(&[[0;3];LEDS][..],0),"the strip is dark while G40 is not driven low");
         assert_eq!(b.ignored,1);
-        b.gpio_output_at(100,&[(40,false)],1<<40,0);
+        b.set_gate(true);
         assert!(b.powered);
         b.rmt_frame(RGB_DATA,&frame);
         assert_eq!(b.leds().unwrap().0,[[0x20,0x10,0x30],[0x05,0x04,0x06]],"GRB on the wire becomes RGB");
@@ -163,37 +174,17 @@ mod tests {
     fn power_off_blanks_the_chain_and_power_on_needs_a_fresh_frame() {
         let mut b=ChainDualKey::new();
         let bits=grb(&[255,0,0,0,255,0]);
-        b.gpio_output_at(0,&[],1<<40,0);
+        b.set_gate(true);
         b.rmt_frame(RGB_DATA,&bits);
         assert_eq!(b.leds().unwrap().0,[[0,255,0],[255,0,0]]);
-        // A pull-up-only write cannot light the strip: the enable bit must be set.
-        let mut no_enable=ChainDualKey::new();no_enable.gpio_output_at(0,&[(40,false)],0,0);no_enable.rmt_frame(RGB_DATA,&bits);
-        assert_eq!(no_enable.leds().unwrap(),(&[[0;3];LEDS][..],0),"G40 as an input leaves the strip unpowered");
-        b.gpio_output_at(10,&[(40,true)],1<<40,1<<40);
+        b.set_gate(false);
         assert!(!b.powered);
         assert_eq!(b.leds().unwrap(),(&[[0;3];LEDS][..],2),"switching the supply off clears the colours");
         b.rmt_frame(RGB_DATA,&bits);
         assert_eq!(b.frames,1,"frames received while unpowered are dropped");
-        b.gpio_output_at(20,&[],1<<40,0);
+        b.set_gate(true);
         b.rmt_frame(RGB_DATA,&bits);
         assert_eq!((b.leds().unwrap().0[0],b.frames),([0,255,0],2),"the strip needs a new frame after re-powering");
-    }
-
-    #[test]
-    fn a_recorded_frame_replays_into_a_cold_board_with_identical_colour() {
-        let mut live=ChainDualKey::new();
-        live.gpio_output_at(0,&[],1<<40,0);
-        for bytes in [[0u8,0,0,0,0,0],[255,0,0,0,255,0],[0,128,255,7,8,9]] {
-            live.rmt_frame(RGB_DATA,&grb(&bytes));
-        }
-        let (pin,bits)=live.last.clone().expect("the accepted frame is recorded");
-        assert_eq!(pin,RGB_DATA);assert_eq!(bits.len(),LEDS*24);
-        let mut replay=ChainDualKey::new();
-        replay.gpio_output_at(0,&[],1<<40,0);
-        replay.rmt_frame(pin,&bits);
-        assert_eq!(replay.leds().unwrap().0,live.leds().unwrap().0);
-        assert_eq!((live.frames,live.last.map(|(_,b)|b.len())),(3,Some(LEDS*24)));
-        assert_eq!(ChainDualKey::new().last.map(|(_,b)|b.len()),None,"a cold board has no recording");
     }
 
     #[test]
@@ -212,6 +203,11 @@ mod tests {
         bus.write32(MUX+4+21*4,1<<12).unwrap();
         bus.write32(GPIO+0x554+21*4,crate::bus::RMT_SIG_OUT0|1024).unwrap();
         bus.write32(GPIO+0x24,1<<21).unwrap();
+        // A stale GPIO latch must not drive the LED gate while G40 is muxed away.
+        bus.write32(GPIO+0x30,1<<8).unwrap();
+        bus.periph.rmt.done.push((0,grb(&[1,2,3,4,5,6])));
+        bus.tick(32_768);
+        assert_eq!(bus.board.leds().unwrap(),(&[[0;3];LEDS][..],0));
         // G40 as an open-drain output driven low: enable set, out clear.
         bus.write32(MUX+4+40*4,1<<12).unwrap();
         bus.write32(GPIO+0x30,1<<8).unwrap();
@@ -222,7 +218,7 @@ mod tests {
         bus.tick(32_768);
         {
             let (leds,updates)=bus.board.leds().unwrap();
-            assert_eq!((leds[0],leds[1],updates),([255,0,0],[0,255,0],1),"one real RMT transmission lights both wire LEDs");
+            assert_eq!((leds[0],leds[1],updates),([255,0,0],[0,255,0],1),"RMT delivery on G21 lights both wire LEDs");
             assert!(bus.board.report().contains("driven_low=true"),"the GPIO write really reached the board's supply gate");
         }
         // Moving G40 high removes the supply, so the next frame must land on a dark chain.
@@ -232,19 +228,18 @@ mod tests {
         bus.periph.rmt.done.push((0,grb(&[1,2,3,4,5,6])));
         bus.tick(32_768);
         assert_eq!(bus.board.leds().unwrap().1,2,"no light without a driven-low G40");
-        // A wrong pad: move RMT TX0 from G21 to G22 so the board gets the same frame on a pin
-        // C147 does not use; it must stay dark. Then press G1, where no key is wired.
+        // A wrong pad: G18 carries the frame instead of G21. Pressing G1 is also unrelated.
         bus.write32(GPIO+0x18,1<<8).unwrap();
         bus.write32(GPIO+0x554+21*4,0).unwrap();
         bus.write32(GPIO+0x28,1<<21).unwrap();
         bus.tick(1);
-        bus.write32(MUX+4+22*4,1<<12).unwrap();
-        bus.write32(GPIO+0x554+22*4,crate::bus::RMT_SIG_OUT0|1024).unwrap();
-        bus.write32(GPIO+0x24,1<<22).unwrap();
+        bus.write32(MUX+4+18*4,1<<12).unwrap();
+        bus.write32(GPIO+0x554+18*4,crate::bus::RMT_SIG_OUT0|1024).unwrap();
+        bus.write32(GPIO+0x24,1<<18).unwrap();
         bus.tick(1);
         bus.periph.rmt.done.push((0,grb(&[9,9,9,9,9,9])));
         bus.tick(32_768);
-        assert_eq!(bus.board.leds().unwrap(),(&[[0;3];LEDS][..],2),"G22 is not the C147 data pin");
+        assert_eq!(bus.board.leds().unwrap(),(&[[0;3];LEDS][..],2),"G18 is not the C147 data pin");
         bus.gpio_set_input(1,false);bus.gpio_set_input(16,false);bus.tick(1);
         assert_eq!(bus.board.leds().unwrap().0,[[0;3];LEDS],"a press on an adjacent pad does nothing on this board");
         assert_eq!(bus.read32(GPIO+0x3c).unwrap()&(1<<1),0,"the pad itself still reads the hostile drive");
@@ -274,7 +269,6 @@ mod tests {
         assert_eq!(bus.board.leds().unwrap(),(&[[0;3];LEDS][..],2),"fresh GPIO clears the strip supply");
         assert!(bus.board.report().contains("accepted_frames=1"),"the frame survives the reset as history");
         assert_eq!(bus.read32(GPIO+0x3c).unwrap()&0x2_0001,0x2_0001,"G0/G17 are pulled up again after the reset");
-        assert_eq!(bus.board.report(),bus.board.report());
         assert!(bus.board.report().contains("unmodeled"));
     }
 }
