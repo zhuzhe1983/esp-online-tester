@@ -5,8 +5,8 @@ import {resolve,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {createDefaultScene,encodeScene} from '../web/platform/catalog.js';
-export async function startStickT2Preview({port=8792, useCatalogSource=false}={}) {
- const root=resolve(fileURLToPath(new URL('../web',import.meta.url))),sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+export async function startStickT2Preview({port=8792, useCatalogSource=false, webRoot=fileURLToPath(new URL('../web',import.meta.url))}={}) {
+ const root=resolve(webRoot),sha=bytes=>createHash('sha256').update(bytes).digest('hex');
  const bin=await readFile(process.env.STICKT2_FACTORY_BIN||'target/stickt2-research/factory-original.bin');
  if(sha(bin)!=='bb33ffd41f9c6f9235b2fb44eac893b7ce6f70879f48eed9cb1ff75ef9419cd7')throw Error('Original StickT2 factory SHA256 mismatch; never patch its bootloader.');
  if(!process.env.ESP32SIM_ROM_DIR)throw Error('Set ESP32SIM_ROM_DIR to the existing public ROM directory.');
