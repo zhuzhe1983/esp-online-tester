@@ -10431,17 +10431,20 @@
       "summary": "ESP32-D0WDQ6-V3 主机，16MB Flash、8MB PSRAM、2英寸触摸屏；v1.1使用AXP2101和INA3221，不能套用旧Core2电源配置。",
       "knowledgeUrl": "./knowledge/m5stack-k010-v11.json",
       "runtime": {
-        "board": null,
+        "board": "core2-v11",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "technology": "lcd",
         "driver": "ILI9342C / ILI9342E",
-        "touch": true
+        "touch": true,
+        "touchController": "FT6336U"
       },
       "controls": [
         {
@@ -10458,11 +10461,13 @@
         {
           "id": "power",
           "type": "button",
-          "name": "AXP2101 power key (PWRON/HPWR, not an ESP32 GPIO)",
+          "name": "电源键（AXP2101）",
           "knowledgeFactIds": [
             "spec-0-9",
             "sch-buttons"
-          ]
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "reset",
@@ -10473,6 +10478,30 @@
             "sch-buttons",
             "sch-m5bus-30pin"
           ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U"
         }
       ],
       "interfaces": [
@@ -10945,11 +10974,9 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP2101 与 INA3221、MPU6886 轮询。",
+        "官方 v2.2 已启动并读取 64 MiB TF，但该镜像没有在当前数字电源模型中释放 ALDO2 复位，屏幕和触摸未通过原厂验证。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
         "Front reference is an official annotated perspective; no orthographic silhouette pass is asserted. Back label and PCB remain incomplete."
       ],
       "sources": [
@@ -10985,16 +11012,20 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "core2-aws",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "type": "LCD",
-        "controller": "ILI9342C / ILI9342E"
+        "controller": "ILI9342C / ILI9342E",
+        "touch": true,
+        "touchController": "FT6336U"
       },
       "controls": [
         {
@@ -11011,11 +11042,13 @@
         {
           "id": "power",
           "type": "button",
-          "name": "AXP192 power key (PWRON/HPWR, not an ESP32 GPIO)",
+          "name": "电源键（AXP192）",
           "knowledgeFactIds": [
             "sch-buttons",
             "spec-0-9"
-          ]
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "reset",
@@ -11026,6 +11059,30 @@
             "sch-m5bus-30pin",
             "spec-0-9"
           ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U"
         }
       ],
       "interfaces": [
@@ -11471,7 +11528,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、MPU6886 轮询。",
+        "官方 v0.0.1 已在本地模拟器显示 AWS IoT EduKit 滑动首页。安全芯片 ATECC608、外接底座灯和 AWS 云流程未模拟。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k010-aws.json",
@@ -11505,17 +11564,20 @@
       "summary": "带 ATECC608B 安全芯片、BMI270、10 颗 RGB LED 和扩展底座的 Core2 for AWS v1.3；不同于原版 MPU6886 配置。",
       "knowledgeUrl": "./knowledge/m5stack-k010-aws-v13.json",
       "runtime": {
-        "board": null,
+        "board": "core2-aws-v13",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "driver": "ILI9342C / ILI9342E",
         "technology": "lcd",
-        "touch": true
+        "touch": true,
+        "touchController": "FT6336U"
       },
       "controls": [
         {
@@ -11532,11 +11594,13 @@
         {
           "id": "power",
           "type": "button",
-          "name": "AXP192 power key (PWRON/HPWR, not an ESP32 GPIO)",
+          "name": "电源键（AXP192）",
           "knowledgeFactIds": [
             "spec-0-9",
             "sch-buttons"
-          ]
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "reset",
@@ -11547,6 +11611,30 @@
             "sch-buttons",
             "sch-m5bus-30pin"
           ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U"
         }
       ],
       "interfaces": [
@@ -12035,14 +12123,9 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "CAD stack depth is 23.5 mm versus 23.7 mm specification; discrepancy retained.",
-        "Security element, AWS identity, certificates and provisioned keys are not emulated or inferred.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
-        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
-        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
-        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、BMI270 轮询。",
+        "官方 EasyLoader 的 User Demo 已启动且初始化 BMI270；ATECC608 初始化失败后固件重新启动。安全芯片、底座灯及 AWS 流程未模拟。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
         "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
       ],
       "sources": [
@@ -13160,16 +13243,20 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "core2-v13",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "type": "LCD",
-        "controller": "ILI9342C / ILI9342E"
+        "controller": "ILI9342C / ILI9342E",
+        "touch": true,
+        "touchController": "FT6336U"
       },
       "controls": [
         {
@@ -13186,11 +13273,13 @@
         {
           "id": "power",
           "type": "button",
-          "name": "AXP192 power key (PWRON/HPWR, not an ESP32 GPIO)",
+          "name": "电源键（AXP192）",
           "knowledgeFactIds": [
             "sch-buttons",
             "spec-0-9"
-          ]
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "reset",
@@ -13201,6 +13290,30 @@
             "sch-m5bus-30pin",
             "spec-0-9"
           ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U"
         }
       ],
       "interfaces": [
@@ -13583,7 +13696,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、BMI270 轮询。",
+        "官方 EasyLoader 内嵌镜像已在本地模拟器启动，检查到 BMI270。屏幕出现 IMU 自检失败，点击屏幕可跳过并进入仪表盘；该镜像能挂载 FAT32。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k010-v13.json",

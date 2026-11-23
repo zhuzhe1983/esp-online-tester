@@ -1,7 +1,7 @@
 //! Original LILYGO T-Beam V1.2 SX1276 (868/915 MHz), no optional OLED fitted.
 //! Wiring: LilyGo-LoRa-Series 1991b1ed docs/en/t_beam/t_beam_hw.md,
 //! examples/Factory/utilities.h and schematic/LilyGo_TBeam_V1.2.pdf.
-mod axp2101;
+pub(super) mod axp2101;
 mod sx1276;
 use std::sync::{Arc,Mutex};
 use esp_periph::i2c::I2cDevice;

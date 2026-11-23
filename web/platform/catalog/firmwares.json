@@ -1511,7 +1511,7 @@
         "m5stack-k010"
       ],
       "name": "Core2 官方出厂固件 · v2.2",
-      "status": "trial",
+      "status": "available",
       "source": {
         "url": "https://m5burner-cdn.m5stack.com/firmware/050cf382ce10e7ab39b6a7489a8531dc.bin",
         "sha256": "4dbddb210d382ed3ca536fc07c962521b238c025016213c947fb4ff7a1bbd4ef"
@@ -1522,15 +1522,14 @@
       "revision": "v2.2",
       "version": "v2.2",
       "watchlistId": "factory-46ecde582ec690c2945c61870fa8af9f",
-      "simulationVerified": false,
+      "simulationVerified": true,
       "hardwareValidated": false,
       "storage": "remote-links-only",
-      "compatibility": "unverified",
+      "compatibility": "partial",
       "publicationUrl": "https://docs.m5stack.com/en/core/Core2",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
-        "共同分发依据：各硬件版本官方资料链接同一出厂项目，或 M5Burner 描述明确列出目标版本；实际兼容性未执行验证。"
+        "原版 K010 已验证官方 v2.2 以 ROM 启动、加载 320×240 仪表盘、FT6336U 触摸坐标改变和默认 64 MiB FAT32 卡挂载。",
+        "模拟 PSRAM 为 4 MiB。音频、实体电源、RTC 闹钟、完整传感器与网络操作、实机复现尚未验收。"
       ],
       "sources": [
         {
@@ -1543,7 +1542,10 @@
           "url": "https://m5burner-api.m5stack.com/api/firmware",
           "checkedAt": "2026-10-27"
         }
-      ]
+      ],
+      "validation": {
+        "evidence": "docs/platform/evidence/m5-core2/runtime.json"
+      }
     },
     {
       "id": "m5stack-k010-v11-official-factory",
