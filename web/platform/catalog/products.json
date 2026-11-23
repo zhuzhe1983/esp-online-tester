@@ -10137,33 +10137,86 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "core2",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "type": "IPS LCD",
-        "controller": "ILI9342C / ILI9342E"
+        "controller": "ILI9342C / ILI9342E",
+        "touch": true,
+        "touchController": "FT6336U"
       },
       "controls": [
         {
           "id": "touch",
           "type": "touch",
           "name": "Capacitive touch",
-          "controller": "FT6336U"
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-4",
+            "table-5"
+          ]
         },
         {
           "id": "power",
-          "name": "AXP192 power button",
-          "type": "button"
+          "name": "电源键（AXP192）",
+          "type": "button",
+          "knowledgeFactIds": [
+            "sch-buttons",
+            "spec-0-9"
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "reset",
-          "name": "Reset",
-          "type": "button"
+          "name": "RST button (M5-Bus pin 6 RST EN -> MCU CHIP_PU)",
+          "type": "button",
+          "knowledgeFactIds": [
+            "sch-buttons",
+            "sch-m5bus-30pin",
+            "spec-0-9"
+          ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "legacy-touch-strip"
+          ]
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "legacy-touch-strip"
+          ]
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "legacy-touch-strip"
+          ]
         }
       ],
       "interfaces": [
@@ -10228,32 +10281,302 @@
           "pins": [
             {
               "name": "G38",
-              "gpio": 38
+              "gpio": 38,
+              "function": "MISO"
             },
             {
               "name": "G23",
-              "gpio": 23
+              "gpio": 23,
+              "function": "MOSI"
             },
             {
               "name": "G18",
-              "gpio": 18
+              "gpio": 18,
+              "function": "SCK"
             },
             {
               "name": "G5",
-              "gpio": 5
+              "gpio": 5,
+              "function": "CS (47R R64)"
             },
             {
               "name": "G15",
-              "gpio": 15
+              "gpio": 15,
+              "function": "D/C"
             }
-          ]
+          ],
+          "knowledgeFactIds": [
+            "sch-lcd-nets",
+            "table-1"
+          ],
+          "notes": "Panel connector M5_CORE2_LCD_10P: pin6 RST = AXP192 AXP_IO4 (net LCD_RST), pin9 LED_A = AXP192 AXP_DC3 (net LCD_BL). Reset and backlight are power-IC outputs, not ESP32 GPIOs."
         },
         {
           "id": "m5-bus",
           "type": "2x15-2.54mm",
           "name": "M5-Bus",
           "external": true,
-          "pins": []
+          "pins": [
+            {
+              "name": "GND",
+              "headerPin": 1,
+              "function": "GND"
+            },
+            {
+              "name": "G35",
+              "headerPin": 2,
+              "gpio": 35,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 3,
+              "function": "GND"
+            },
+            {
+              "name": "G36",
+              "headerPin": 4,
+              "gpio": 36,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 5,
+              "function": "GND"
+            },
+            {
+              "name": "RST",
+              "headerPin": 6,
+              "function": "EN / CHIP_PU"
+            },
+            {
+              "name": "G23",
+              "headerPin": 7,
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G25",
+              "headerPin": 8,
+              "gpio": 25,
+              "function": "DAC"
+            },
+            {
+              "name": "G38",
+              "headerPin": 9,
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G26",
+              "headerPin": 10,
+              "gpio": 26,
+              "function": "DAC"
+            },
+            {
+              "name": "G18",
+              "headerPin": 11,
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "3V3",
+              "headerPin": 12,
+              "function": "3V3"
+            },
+            {
+              "name": "G3",
+              "headerPin": 13,
+              "gpio": 3,
+              "function": "RXD0"
+            },
+            {
+              "name": "G1",
+              "headerPin": 14,
+              "gpio": 1,
+              "function": "TXD0"
+            },
+            {
+              "name": "G13",
+              "headerPin": 15,
+              "gpio": 13,
+              "function": "RXD2"
+            },
+            {
+              "name": "G14",
+              "headerPin": 16,
+              "gpio": 14,
+              "function": "TXD2"
+            },
+            {
+              "name": "G21",
+              "headerPin": 17,
+              "gpio": 21,
+              "function": "Int SDA"
+            },
+            {
+              "name": "G22",
+              "headerPin": 18,
+              "gpio": 22,
+              "function": "Int SCL"
+            },
+            {
+              "name": "G32",
+              "headerPin": 19,
+              "gpio": 32,
+              "function": "PORT.A SDA"
+            },
+            {
+              "name": "G33",
+              "headerPin": 20,
+              "gpio": 33,
+              "function": "PORT.A SCL"
+            },
+            {
+              "name": "G27",
+              "headerPin": 21,
+              "gpio": 27,
+              "function": "GPIO"
+            },
+            {
+              "name": "G19",
+              "headerPin": 22,
+              "gpio": 19,
+              "function": "GPIO"
+            },
+            {
+              "name": "G2",
+              "headerPin": 23,
+              "gpio": 2,
+              "function": "I2S_DOUT"
+            },
+            {
+              "name": "G0",
+              "headerPin": 24,
+              "gpio": 0,
+              "function": "I2S_LRCK"
+            },
+            {
+              "name": "NC",
+              "headerPin": 25,
+              "function": "no net"
+            },
+            {
+              "name": "G34",
+              "headerPin": 26,
+              "gpio": 34,
+              "function": "I2S_DATA"
+            },
+            {
+              "name": "NC",
+              "headerPin": 27,
+              "function": "no net"
+            },
+            {
+              "name": "5V",
+              "headerPin": 28,
+              "function": "5V"
+            },
+            {
+              "name": "NC",
+              "headerPin": 29,
+              "function": "no net"
+            },
+            {
+              "name": "BAT",
+              "headerPin": 30,
+              "function": "battery"
+            }
+          ],
+          "pinCount": 30,
+          "knowledgeFactIds": [
+            "sch-m5bus-30pin",
+            "table-15"
+          ],
+          "notes": "Header order pin 1 -> pin 30 taken from the official PinMap table and confirmed against the drawing net names. Pins 25/27/29 are NC and pin 6 is the RST/EN net; no pull or drive is claimed."
+        },
+        {
+          "id": "internal-i2c",
+          "type": "I2C",
+          "external": false,
+          "name": "Internal I2C (SYS_SDA/SYS_SCL, AXP192)",
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21,
+              "function": "SYS_SDA"
+            },
+            {
+              "name": "SCL",
+              "gpio": 22,
+              "function": "SYS_SCL"
+            },
+            {
+              "name": "TP_INT",
+              "gpio": 39,
+              "function": "FT6336U interrupt (active low)"
+            }
+          ],
+          "devices": [
+            {
+              "name": "AXP192",
+              "address": 52
+            },
+            {
+              "name": "FT6336U",
+              "address": 56
+            },
+            {
+              "name": "BM8563",
+              "address": 81
+            },
+            {
+              "name": "MPU6886",
+              "address": 104
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-11",
+            "table-13",
+            "table-4",
+            "table-9"
+          ],
+          "notes": "Address list is the per-revision roster from the manufacturer PinMap and drawing. FT6336U reset is driven by the power IC, so the touch controller only answers when that rail is on. ATECC608B (AWS SKUs) is a factory-provisioned security element: it is listed, not emulated."
+        },
+        {
+          "id": "i2s-audio",
+          "type": "I2S",
+          "external": false,
+          "name": "NS4168 speaker + SPM1423 PDM microphone (AXP192 enable rail)",
+          "pins": [
+            {
+              "name": "G12",
+              "gpio": 12,
+              "function": "NS4168 BCLK"
+            },
+            {
+              "name": "G0",
+              "gpio": 0,
+              "function": "NS4168 LRCK and SPM1423 CLK (shared pad)"
+            },
+            {
+              "name": "G2",
+              "gpio": 2,
+              "function": "NS4168 SADTA / M5-Bus I2S_DOUT"
+            },
+            {
+              "name": "G34",
+              "gpio": 34,
+              "function": "SPM1423 DATA / M5-Bus I2S_DATA"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-audio-chain",
+            "table-6",
+            "table-7"
+          ],
+          "notes": "Speaker enable (SPK_EN) comes from AXP192 AXP_IO2 (net SPK_EN); the amplifier has no ESP32 enable GPIO. GPIO0 carries both the I2S word clock and the PDM microphone clock, so both roles share one pad."
         }
       ],
       "sources": [
@@ -10264,7 +10587,8 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "原版 Core2 的 ILI9342C 数字显示、FT6336U 单触点、屏下 A/B/C 触摸键、AXP192 电源寄存器、MPU6886 轮询和 BM8563 日历已建模。",
+        "经典 ESP32 模拟器提供 4 MiB PSRAM，官方硬件配置为 8 MiB。ILI9342E 批次、扬声器和麦克风、实体断电与唤醒、外接传感器和 Wi-Fi 应用仍待适配或验证。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k010.json",
@@ -10298,19 +10622,79 @@
       "summary": "ESP32-D0WDQ6-V3 主机，16MB Flash、8MB PSRAM、2英寸触摸屏；v1.1使用AXP2101和INA3221，不能套用旧Core2电源配置。",
       "knowledgeUrl": "./knowledge/m5stack-k010-v11.json",
       "runtime": {
-        "board": null,
+        "board": "core2-v11",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "technology": "lcd",
         "driver": "ILI9342C / ILI9342E",
-        "touch": true
+        "touch": true,
+        "touchController": "FT6336U"
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "touch",
+          "type": "touch",
+          "name": "Capacitive touch",
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-4",
+            "table-5"
+          ]
+        },
+        {
+          "id": "power",
+          "type": "button",
+          "name": "电源键（AXP2101）",
+          "knowledgeFactIds": [
+            "spec-0-9",
+            "sch-buttons"
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "reset",
+          "type": "button",
+          "name": "RST button (M5-Bus pin 6 RST EN -> MCU CHIP_PU)",
+          "knowledgeFactIds": [
+            "spec-0-9",
+            "sch-buttons",
+            "sch-m5bus-30pin"
+          ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-a",
@@ -10421,11 +10805,33 @@
         },
         {
           "external": true,
-          "pins": [],
+          "pins": [
+            {
+              "name": "G38",
+              "gpio": 38,
+              "function": "MISO/DAT0"
+            },
+            {
+              "name": "G23",
+              "gpio": 23,
+              "function": "MOSI/CMD"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "function": "SCK/CLK"
+            },
+            {
+              "name": "G4",
+              "gpio": 4,
+              "function": "CS/DAT3 (10K pull-up)"
+            }
+          ],
           "id": "micro-sd",
           "type": "microSD",
           "name": "microSD 卡槽",
           "knowledgeFactIds": [
+            "sch-tf-nets",
             "table-1",
             "table-2",
             "table-3"
@@ -10433,7 +10839,316 @@
           "sourceIds": [
             "official-docs"
           ],
-          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+          "notes": "Socket nets read from the Core2 drawing (TF_CARD_SOCKET pads 3/5/1/2). The card shares the SPI bus with the panel and is separated by CS G4 versus CS G5; the socket detect pad has no readable ESP32 net, so no detect GPIO is claimed."
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "ILI9342C/E panel SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "G38",
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G23",
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "G5",
+              "gpio": 5,
+              "function": "CS (47R R64)"
+            },
+            {
+              "name": "G15",
+              "gpio": 15,
+              "function": "D/C"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-lcd-nets",
+            "table-1"
+          ],
+          "notes": "Panel connector M5_CORE2_LCD_10P: pin6 RST = AXP2101 AXP_ALDO2 (net LCD_RST), pin9 LED_A = AXP2101 AXP_BLDO1 (net LCD_BL). Reset and backlight are power-IC outputs, not ESP32 GPIOs."
+        },
+        {
+          "id": "internal-i2c",
+          "type": "I2C",
+          "external": false,
+          "name": "Internal I2C (SYS_SDA/SYS_SCL, AXP2101)",
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21,
+              "function": "SYS_SDA"
+            },
+            {
+              "name": "SCL",
+              "gpio": 22,
+              "function": "SYS_SCL"
+            },
+            {
+              "name": "TP_INT",
+              "gpio": 39,
+              "function": "FT6336U interrupt (active low)"
+            }
+          ],
+          "devices": [
+            {
+              "name": "AXP2101",
+              "address": 52
+            },
+            {
+              "name": "FT6336U",
+              "address": 56
+            },
+            {
+              "name": "BM8563",
+              "address": 81
+            },
+            {
+              "name": "MPU6886",
+              "address": 104
+            },
+            {
+              "name": "INA3221",
+              "address": 64
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-11",
+            "table-13",
+            "table-4",
+            "table-9"
+          ],
+          "notes": "Address list is the per-revision roster from the manufacturer PinMap and drawing. FT6336U reset is driven by the power IC, so the touch controller only answers when that rail is on. ATECC608B (AWS SKUs) is a factory-provisioned security element: it is listed, not emulated."
+        },
+        {
+          "id": "i2s-audio",
+          "type": "I2S",
+          "external": false,
+          "name": "NS4168 speaker + SPM1423 PDM microphone (AXP2101 enable rail)",
+          "pins": [
+            {
+              "name": "G12",
+              "gpio": 12,
+              "function": "NS4168 BCLK"
+            },
+            {
+              "name": "G0",
+              "gpio": 0,
+              "function": "NS4168 LRCK and SPM1423 CLK (shared pad)"
+            },
+            {
+              "name": "G2",
+              "gpio": 2,
+              "function": "NS4168 SADTA / M5-Bus I2S_DOUT"
+            },
+            {
+              "name": "G34",
+              "gpio": 34,
+              "function": "SPM1423 DATA / M5-Bus I2S_DATA"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-audio-chain",
+            "table-6",
+            "table-7"
+          ],
+          "notes": "Speaker enable (SPK_EN) comes from AXP2101 AXP_ALDO3 (net SPK_EN); the amplifier has no ESP32 enable GPIO. GPIO0 carries both the I2S word clock and the PDM microphone clock, so both roles share one pad."
+        },
+        {
+          "id": "m5-bus",
+          "type": "2x15-2.54mm",
+          "name": "M5-Bus (2x15 header)",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND",
+              "headerPin": 1,
+              "function": "GND"
+            },
+            {
+              "name": "G35",
+              "headerPin": 2,
+              "gpio": 35,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 3,
+              "function": "GND"
+            },
+            {
+              "name": "G36",
+              "headerPin": 4,
+              "gpio": 36,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 5,
+              "function": "GND"
+            },
+            {
+              "name": "RST",
+              "headerPin": 6,
+              "function": "EN / CHIP_PU"
+            },
+            {
+              "name": "G23",
+              "headerPin": 7,
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G25",
+              "headerPin": 8,
+              "gpio": 25,
+              "function": "DAC"
+            },
+            {
+              "name": "G38",
+              "headerPin": 9,
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G26",
+              "headerPin": 10,
+              "gpio": 26,
+              "function": "DAC"
+            },
+            {
+              "name": "G18",
+              "headerPin": 11,
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "3V3",
+              "headerPin": 12,
+              "function": "3V3"
+            },
+            {
+              "name": "G3",
+              "headerPin": 13,
+              "gpio": 3,
+              "function": "RXD0"
+            },
+            {
+              "name": "G1",
+              "headerPin": 14,
+              "gpio": 1,
+              "function": "TXD0"
+            },
+            {
+              "name": "G13",
+              "headerPin": 15,
+              "gpio": 13,
+              "function": "RXD2"
+            },
+            {
+              "name": "G14",
+              "headerPin": 16,
+              "gpio": 14,
+              "function": "TXD2"
+            },
+            {
+              "name": "G21",
+              "headerPin": 17,
+              "gpio": 21,
+              "function": "Int SDA"
+            },
+            {
+              "name": "G22",
+              "headerPin": 18,
+              "gpio": 22,
+              "function": "Int SCL"
+            },
+            {
+              "name": "G32",
+              "headerPin": 19,
+              "gpio": 32,
+              "function": "PORT.A SDA"
+            },
+            {
+              "name": "G33",
+              "headerPin": 20,
+              "gpio": 33,
+              "function": "PORT.A SCL"
+            },
+            {
+              "name": "G27",
+              "headerPin": 21,
+              "gpio": 27,
+              "function": "GPIO"
+            },
+            {
+              "name": "G19",
+              "headerPin": 22,
+              "gpio": 19,
+              "function": "GPIO"
+            },
+            {
+              "name": "G2",
+              "headerPin": 23,
+              "gpio": 2,
+              "function": "I2S_DOUT"
+            },
+            {
+              "name": "G0",
+              "headerPin": 24,
+              "gpio": 0,
+              "function": "I2S_LRCK"
+            },
+            {
+              "name": "NC",
+              "headerPin": 25,
+              "function": "no net"
+            },
+            {
+              "name": "G34",
+              "headerPin": 26,
+              "gpio": 34,
+              "function": "I2S_DATA"
+            },
+            {
+              "name": "NC",
+              "headerPin": 27,
+              "function": "no net"
+            },
+            {
+              "name": "5V",
+              "headerPin": 28,
+              "function": "5V"
+            },
+            {
+              "name": "NC",
+              "headerPin": 29,
+              "function": "no net"
+            },
+            {
+              "name": "BAT",
+              "headerPin": 30,
+              "function": "battery"
+            }
+          ],
+          "pinCount": 30,
+          "knowledgeFactIds": [
+            "sch-m5bus-30pin",
+            "table-15"
+          ],
+          "notes": "Header order pin 1 -> pin 30 taken from the official PinMap table and confirmed against the drawing net names. Pins 25/27/29 are NC and pin 6 is the RST/EN net; no pull or drive is claimed."
         }
       ],
       "model": {
@@ -10450,11 +11165,9 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP2101 与 INA3221、MPU6886 轮询。",
+        "官方 v2.2 已启动并读取 64 MiB TF，但该镜像没有在当前数字电源模型中释放 ALDO2 复位，屏幕和触摸未通过原厂验证。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
         "Front reference is an official annotated perspective; no orthographic silhouette pass is asserted. Back label and PCB remain incomplete."
       ],
       "sources": [
@@ -10490,33 +11203,77 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "core2-aws",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "type": "LCD",
-        "controller": "ILI9342C / ILI9342E"
+        "controller": "ILI9342C / ILI9342E",
+        "touch": true,
+        "touchController": "FT6336U"
       },
       "controls": [
         {
           "id": "touch",
           "type": "touch",
           "name": "Capacitive touch",
-          "controller": "FT6336U"
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-4",
+            "table-5"
+          ]
         },
         {
           "id": "power",
           "type": "button",
-          "name": "Power control"
+          "name": "电源键（AXP192）",
+          "knowledgeFactIds": [
+            "sch-buttons",
+            "spec-0-9"
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "reset",
           "type": "button",
-          "name": "Reset"
+          "name": "RST button (M5-Bus pin 6 RST EN -> MCU CHIP_PU)",
+          "knowledgeFactIds": [
+            "sch-buttons",
+            "sch-m5bus-30pin",
+            "spec-0-9"
+          ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U"
         }
       ],
       "interfaces": [
@@ -10532,7 +11289,33 @@
           "type": "microSD",
           "name": "microSD",
           "external": true,
-          "pins": []
+          "pins": [
+            {
+              "name": "G38",
+              "gpio": 38,
+              "function": "MISO/DAT0"
+            },
+            {
+              "name": "G23",
+              "gpio": 23,
+              "function": "MOSI/CMD"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "function": "SCK/CLK"
+            },
+            {
+              "name": "G4",
+              "gpio": 4,
+              "function": "CS/DAT3 (10K pull-up)"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-tf-nets",
+            "table-3"
+          ],
+          "notes": "Socket nets read from the Core2 drawing (TF_CARD_SOCKET pads 3/5/1/2). The card shares the SPI bus with the panel and is separated by CS G4 versus CS G5; the socket detect pad has no readable ESP32 net, so no detect GPIO is claimed."
         },
         {
           "id": "grove-port-a",
@@ -10599,6 +11382,333 @@
               "gpio": 13
             }
           ]
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "ILI9342C/E panel SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "G38",
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G23",
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "G5",
+              "gpio": 5,
+              "function": "CS (47R R64)"
+            },
+            {
+              "name": "G15",
+              "gpio": 15,
+              "function": "D/C"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-lcd-nets",
+            "table-1"
+          ],
+          "notes": "Panel connector M5_CORE2_LCD_10P: pin6 RST = AXP192 AXP_IO4 (net LCD_RST), pin9 LED_A = AXP192 AXP_DC3 (net LCD_BL). Reset and backlight are power-IC outputs, not ESP32 GPIOs."
+        },
+        {
+          "id": "internal-i2c",
+          "type": "I2C",
+          "external": false,
+          "name": "Internal I2C (SYS_SDA/SYS_SCL, AXP192)",
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21,
+              "function": "SYS_SDA"
+            },
+            {
+              "name": "SCL",
+              "gpio": 22,
+              "function": "SYS_SCL"
+            },
+            {
+              "name": "TP_INT",
+              "gpio": 39,
+              "function": "FT6336U interrupt (active low)"
+            }
+          ],
+          "devices": [
+            {
+              "name": "AXP192",
+              "address": 52
+            },
+            {
+              "name": "FT6336U",
+              "address": 56
+            },
+            {
+              "name": "BM8563",
+              "address": 81
+            },
+            {
+              "name": "MPU6886",
+              "address": 104
+            },
+            {
+              "name": "ATECC608B",
+              "address": 53
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-11",
+            "table-13",
+            "table-4",
+            "table-9"
+          ],
+          "notes": "Address list is the per-revision roster from the manufacturer PinMap and drawing. FT6336U reset is driven by the power IC, so the touch controller only answers when that rail is on. ATECC608B (AWS SKUs) is a factory-provisioned security element: it is listed, not emulated."
+        },
+        {
+          "id": "i2s-audio",
+          "type": "I2S",
+          "external": false,
+          "name": "NS4168 speaker + SPM1423 PDM microphone (AXP192 enable rail)",
+          "pins": [
+            {
+              "name": "G12",
+              "gpio": 12,
+              "function": "NS4168 BCLK"
+            },
+            {
+              "name": "G0",
+              "gpio": 0,
+              "function": "NS4168 LRCK and SPM1423 CLK (shared pad)"
+            },
+            {
+              "name": "G2",
+              "gpio": 2,
+              "function": "NS4168 SADTA / M5-Bus I2S_DOUT"
+            },
+            {
+              "name": "G34",
+              "gpio": 34,
+              "function": "SPM1423 DATA / M5-Bus I2S_DATA"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-audio-chain",
+            "table-6",
+            "table-7"
+          ],
+          "notes": "Speaker enable (SPK_EN) comes from AXP192 AXP_IO2 (net SPK_EN); the amplifier has no ESP32 enable GPIO. GPIO0 carries both the I2S word clock and the PDM microphone clock, so both roles share one pad."
+        },
+        {
+          "id": "m5-bus",
+          "type": "2x15-2.54mm",
+          "name": "M5-Bus (2x15 header)",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND",
+              "headerPin": 1,
+              "function": "GND"
+            },
+            {
+              "name": "G35",
+              "headerPin": 2,
+              "gpio": 35,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 3,
+              "function": "GND"
+            },
+            {
+              "name": "G36",
+              "headerPin": 4,
+              "gpio": 36,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 5,
+              "function": "GND"
+            },
+            {
+              "name": "RST",
+              "headerPin": 6,
+              "function": "EN / CHIP_PU"
+            },
+            {
+              "name": "G23",
+              "headerPin": 7,
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G25",
+              "headerPin": 8,
+              "gpio": 25,
+              "function": "DAC"
+            },
+            {
+              "name": "G38",
+              "headerPin": 9,
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G26",
+              "headerPin": 10,
+              "gpio": 26,
+              "function": "DAC"
+            },
+            {
+              "name": "G18",
+              "headerPin": 11,
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "3V3",
+              "headerPin": 12,
+              "function": "3V3"
+            },
+            {
+              "name": "G3",
+              "headerPin": 13,
+              "gpio": 3,
+              "function": "RXD0"
+            },
+            {
+              "name": "G1",
+              "headerPin": 14,
+              "gpio": 1,
+              "function": "TXD0"
+            },
+            {
+              "name": "G13",
+              "headerPin": 15,
+              "gpio": 13,
+              "function": "RXD2"
+            },
+            {
+              "name": "G14",
+              "headerPin": 16,
+              "gpio": 14,
+              "function": "TXD2"
+            },
+            {
+              "name": "G21",
+              "headerPin": 17,
+              "gpio": 21,
+              "function": "Int SDA"
+            },
+            {
+              "name": "G22",
+              "headerPin": 18,
+              "gpio": 22,
+              "function": "Int SCL"
+            },
+            {
+              "name": "G32",
+              "headerPin": 19,
+              "gpio": 32,
+              "function": "PORT.A SDA"
+            },
+            {
+              "name": "G33",
+              "headerPin": 20,
+              "gpio": 33,
+              "function": "PORT.A SCL"
+            },
+            {
+              "name": "G27",
+              "headerPin": 21,
+              "gpio": 27,
+              "function": "GPIO"
+            },
+            {
+              "name": "G19",
+              "headerPin": 22,
+              "gpio": 19,
+              "function": "GPIO"
+            },
+            {
+              "name": "G2",
+              "headerPin": 23,
+              "gpio": 2,
+              "function": "I2S_DOUT"
+            },
+            {
+              "name": "G0",
+              "headerPin": 24,
+              "gpio": 0,
+              "function": "I2S_LRCK"
+            },
+            {
+              "name": "NC",
+              "headerPin": 25,
+              "function": "no net"
+            },
+            {
+              "name": "G34",
+              "headerPin": 26,
+              "gpio": 34,
+              "function": "I2S_DATA"
+            },
+            {
+              "name": "NC",
+              "headerPin": 27,
+              "function": "no net"
+            },
+            {
+              "name": "5V",
+              "headerPin": 28,
+              "function": "5V"
+            },
+            {
+              "name": "NC",
+              "headerPin": 29,
+              "function": "no net"
+            },
+            {
+              "name": "BAT",
+              "headerPin": 30,
+              "function": "battery"
+            }
+          ],
+          "pinCount": 30,
+          "knowledgeFactIds": [
+            "sch-m5bus-30pin",
+            "table-15"
+          ],
+          "notes": "Header order pin 1 -> pin 30 taken from the official PinMap table and confirmed against the drawing net names. Pins 25/27/29 are NC and pin 6 is the RST/EN net; no pull or drive is claimed."
+        },
+        {
+          "id": "addressable-leds",
+          "type": "SK6812",
+          "external": true,
+          "name": "SK6812 x 10 on the bottom accessory",
+          "pins": [
+            {
+              "name": "G25",
+              "gpio": 25,
+              "function": "SK6812 DATA"
+            }
+          ],
+          "knowledgeFactIds": [
+            "aws-addressable-leds",
+            "table-12"
+          ],
+          "notes": "Official PinMap names G25 as the addressable-LED data line for the AWS SKUs. Supply domain and the 4.7K clock/data networks are recorded in the knowledge file; the accessory is not part of the main body model."
         }
       ],
       "sources": [
@@ -10609,7 +11719,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、MPU6886 轮询。",
+        "官方 v0.0.1 已在本地模拟器显示 AWS IoT EduKit 滑动首页。安全芯片 ATECC608、外接底座灯和 AWS 云流程未模拟。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k010-aws.json",
@@ -10643,19 +11755,79 @@
       "summary": "带 ATECC608B 安全芯片、BMI270、10 颗 RGB LED 和扩展底座的 Core2 for AWS v1.3；不同于原版 MPU6886 配置。",
       "knowledgeUrl": "./knowledge/m5stack-k010-aws-v13.json",
       "runtime": {
-        "board": null,
+        "board": "core2-aws-v13",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "driver": "ILI9342C / ILI9342E",
         "technology": "lcd",
-        "touch": true
+        "touch": true,
+        "touchController": "FT6336U"
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "touch",
+          "type": "touch",
+          "name": "Capacitive touch",
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-4",
+            "table-5"
+          ]
+        },
+        {
+          "id": "power",
+          "type": "button",
+          "name": "电源键（AXP192）",
+          "knowledgeFactIds": [
+            "spec-0-9",
+            "sch-buttons"
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "reset",
+          "type": "button",
+          "name": "RST button (M5-Bus pin 6 RST EN -> MCU CHIP_PU)",
+          "knowledgeFactIds": [
+            "spec-0-9",
+            "sch-buttons",
+            "sch-m5bus-30pin"
+          ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-a",
@@ -10766,17 +11938,366 @@
         },
         {
           "external": true,
-          "pins": [],
+          "pins": [
+            {
+              "name": "G38",
+              "gpio": 38,
+              "function": "MISO/DAT0"
+            },
+            {
+              "name": "G23",
+              "gpio": 23,
+              "function": "MOSI/CMD"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "function": "SCK/CLK"
+            },
+            {
+              "name": "G4",
+              "gpio": 4,
+              "function": "CS/DAT3 (10K pull-up)"
+            }
+          ],
           "id": "micro-sd",
           "type": "microSD",
           "name": "microSD 卡槽",
           "knowledgeFactIds": [
+            "sch-tf-nets",
             "table-3"
           ],
           "sourceIds": [
             "official-docs"
           ],
-          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+          "notes": "Socket nets read from the Core2 drawing (TF_CARD_SOCKET pads 3/5/1/2). The card shares the SPI bus with the panel and is separated by CS G4 versus CS G5; the socket detect pad has no readable ESP32 net, so no detect GPIO is claimed."
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "ILI9342C/E panel SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "G38",
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G23",
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "G5",
+              "gpio": 5,
+              "function": "CS (47R R64)"
+            },
+            {
+              "name": "G15",
+              "gpio": 15,
+              "function": "D/C"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-lcd-nets",
+            "table-1"
+          ],
+          "notes": "Panel connector M5_CORE2_LCD_10P: pin6 RST = AXP192 AXP_IO4 (net LCD_RST), pin9 LED_A = AXP192 AXP_DC3 (net LCD_BL). Reset and backlight are power-IC outputs, not ESP32 GPIOs."
+        },
+        {
+          "id": "internal-i2c",
+          "type": "I2C",
+          "external": false,
+          "name": "Internal I2C (SYS_SDA/SYS_SCL, AXP192)",
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21,
+              "function": "SYS_SDA"
+            },
+            {
+              "name": "SCL",
+              "gpio": 22,
+              "function": "SYS_SCL"
+            },
+            {
+              "name": "TP_INT",
+              "gpio": 39,
+              "function": "FT6336U interrupt (active low)"
+            }
+          ],
+          "devices": [
+            {
+              "name": "AXP192",
+              "address": 52
+            },
+            {
+              "name": "FT6336U",
+              "address": 56
+            },
+            {
+              "name": "BM8563",
+              "address": 81
+            },
+            {
+              "name": "BMI270",
+              "address": 104
+            },
+            {
+              "name": "ATECC608B",
+              "address": 53
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-11",
+            "table-13",
+            "table-4",
+            "table-9"
+          ],
+          "notes": "Address list is the per-revision roster from the manufacturer PinMap and drawing. FT6336U reset is driven by the power IC, so the touch controller only answers when that rail is on. ATECC608B (AWS SKUs) is a factory-provisioned security element: it is listed, not emulated."
+        },
+        {
+          "id": "i2s-audio",
+          "type": "I2S",
+          "external": false,
+          "name": "NS4168 speaker + SPM1423 PDM microphone (AXP192 enable rail)",
+          "pins": [
+            {
+              "name": "G12",
+              "gpio": 12,
+              "function": "NS4168 BCLK"
+            },
+            {
+              "name": "G0",
+              "gpio": 0,
+              "function": "NS4168 LRCK and SPM1423 CLK (shared pad)"
+            },
+            {
+              "name": "G2",
+              "gpio": 2,
+              "function": "NS4168 SADTA / M5-Bus I2S_DOUT"
+            },
+            {
+              "name": "G34",
+              "gpio": 34,
+              "function": "SPM1423 DATA / M5-Bus I2S_DATA"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-audio-chain",
+            "table-6",
+            "table-7"
+          ],
+          "notes": "Speaker enable (SPK_EN) comes from AXP192 AXP_IO2 (net SPK_EN); the amplifier has no ESP32 enable GPIO. GPIO0 carries both the I2S word clock and the PDM microphone clock, so both roles share one pad."
+        },
+        {
+          "id": "m5-bus",
+          "type": "2x15-2.54mm",
+          "name": "M5-Bus (2x15 header)",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND",
+              "headerPin": 1,
+              "function": "GND"
+            },
+            {
+              "name": "G35",
+              "headerPin": 2,
+              "gpio": 35,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 3,
+              "function": "GND"
+            },
+            {
+              "name": "G36",
+              "headerPin": 4,
+              "gpio": 36,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 5,
+              "function": "GND"
+            },
+            {
+              "name": "RST",
+              "headerPin": 6,
+              "function": "EN / CHIP_PU"
+            },
+            {
+              "name": "G23",
+              "headerPin": 7,
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G25",
+              "headerPin": 8,
+              "gpio": 25,
+              "function": "DAC"
+            },
+            {
+              "name": "G38",
+              "headerPin": 9,
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G26",
+              "headerPin": 10,
+              "gpio": 26,
+              "function": "DAC"
+            },
+            {
+              "name": "G18",
+              "headerPin": 11,
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "3V3",
+              "headerPin": 12,
+              "function": "3V3"
+            },
+            {
+              "name": "G3",
+              "headerPin": 13,
+              "gpio": 3,
+              "function": "RXD0"
+            },
+            {
+              "name": "G1",
+              "headerPin": 14,
+              "gpio": 1,
+              "function": "TXD0"
+            },
+            {
+              "name": "G13",
+              "headerPin": 15,
+              "gpio": 13,
+              "function": "RXD2"
+            },
+            {
+              "name": "G14",
+              "headerPin": 16,
+              "gpio": 14,
+              "function": "TXD2"
+            },
+            {
+              "name": "G21",
+              "headerPin": 17,
+              "gpio": 21,
+              "function": "Int SDA"
+            },
+            {
+              "name": "G22",
+              "headerPin": 18,
+              "gpio": 22,
+              "function": "Int SCL"
+            },
+            {
+              "name": "G32",
+              "headerPin": 19,
+              "gpio": 32,
+              "function": "PORT.A SDA"
+            },
+            {
+              "name": "G33",
+              "headerPin": 20,
+              "gpio": 33,
+              "function": "PORT.A SCL"
+            },
+            {
+              "name": "G27",
+              "headerPin": 21,
+              "gpio": 27,
+              "function": "GPIO"
+            },
+            {
+              "name": "G19",
+              "headerPin": 22,
+              "gpio": 19,
+              "function": "GPIO"
+            },
+            {
+              "name": "G2",
+              "headerPin": 23,
+              "gpio": 2,
+              "function": "I2S_DOUT"
+            },
+            {
+              "name": "G0",
+              "headerPin": 24,
+              "gpio": 0,
+              "function": "I2S_LRCK"
+            },
+            {
+              "name": "NC",
+              "headerPin": 25,
+              "function": "no net"
+            },
+            {
+              "name": "G34",
+              "headerPin": 26,
+              "gpio": 34,
+              "function": "I2S_DATA"
+            },
+            {
+              "name": "NC",
+              "headerPin": 27,
+              "function": "no net"
+            },
+            {
+              "name": "5V",
+              "headerPin": 28,
+              "function": "5V"
+            },
+            {
+              "name": "NC",
+              "headerPin": 29,
+              "function": "no net"
+            },
+            {
+              "name": "BAT",
+              "headerPin": 30,
+              "function": "battery"
+            }
+          ],
+          "pinCount": 30,
+          "knowledgeFactIds": [
+            "sch-m5bus-30pin",
+            "table-15"
+          ],
+          "notes": "Header order pin 1 -> pin 30 taken from the official PinMap table and confirmed against the drawing net names. Pins 25/27/29 are NC and pin 6 is the RST/EN net; no pull or drive is claimed."
+        },
+        {
+          "id": "addressable-leds",
+          "type": "SK6812",
+          "external": true,
+          "name": "SK6812 x 10 on the bottom accessory",
+          "pins": [
+            {
+              "name": "G25",
+              "gpio": 25,
+              "function": "SK6812 DATA"
+            }
+          ],
+          "knowledgeFactIds": [
+            "aws-addressable-leds",
+            "table-12"
+          ],
+          "notes": "Official PinMap names G25 as the addressable-LED data line for the AWS SKUs. Supply domain and the 4.7K clock/data networks are recorded in the knowledge file; the accessory is not part of the main body model."
         }
       ],
       "model": {
@@ -10793,14 +12314,9 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "CAD stack depth is 23.5 mm versus 23.7 mm specification; discrepancy retained.",
-        "Security element, AWS identity, certificates and provisioned keys are not emulated or inferred.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
-        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
-        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
-        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、BMI270 轮询。",
+        "官方 EasyLoader 的 User Demo 已启动且初始化 BMI270；ATECC608 初始化失败后固件重新启动。安全芯片、底座灯及 AWS 流程未模拟。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
         "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
       ],
       "sources": [
@@ -12140,33 +13656,77 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "core2-v13",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
         "height": 240,
         "type": "LCD",
-        "controller": "ILI9342C / ILI9342E"
+        "controller": "ILI9342C / ILI9342E",
+        "touch": true,
+        "touchController": "FT6336U"
       },
       "controls": [
         {
           "id": "touch",
           "type": "touch",
           "name": "Capacitive touch",
-          "controller": "FT6336U"
+          "controller": "FT6336U",
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-4",
+            "table-5"
+          ]
         },
         {
           "id": "power",
           "type": "button",
-          "name": "Power control"
+          "name": "电源键（AXP192）",
+          "knowledgeFactIds": [
+            "sch-buttons",
+            "spec-0-9"
+          ],
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
         },
         {
           "id": "reset",
           "type": "button",
-          "name": "Reset"
+          "name": "RST button (M5-Bus pin 6 RST EN -> MCU CHIP_PU)",
+          "knowledgeFactIds": [
+            "sch-buttons",
+            "sch-m5bus-30pin",
+            "spec-0-9"
+          ]
+        },
+        {
+          "id": "button-a",
+          "type": "button",
+          "name": "A",
+          "transport": "board",
+          "defaultKeyCode": "KeyA",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-b",
+          "type": "button",
+          "name": "B",
+          "transport": "board",
+          "defaultKeyCode": "KeyB",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "button-c",
+          "type": "button",
+          "name": "C",
+          "transport": "board",
+          "defaultKeyCode": "KeyC",
+          "controller": "FT6336U"
         }
       ],
       "interfaces": [
@@ -12201,17 +13761,344 @@
         },
         {
           "external": true,
-          "pins": [],
+          "pins": [
+            {
+              "name": "G38",
+              "gpio": 38,
+              "function": "MISO/DAT0"
+            },
+            {
+              "name": "G23",
+              "gpio": 23,
+              "function": "MOSI/CMD"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "function": "SCK/CLK"
+            },
+            {
+              "name": "G4",
+              "gpio": 4,
+              "function": "CS/DAT3 (10K pull-up)"
+            }
+          ],
           "id": "micro-sd",
           "type": "microSD",
           "name": "microSD 卡槽",
           "knowledgeFactIds": [
+            "sch-tf-nets",
             "table-3"
           ],
           "sourceIds": [
             "official-docs"
           ],
-          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+          "notes": "Socket nets read from the Core2 drawing (TF_CARD_SOCKET pads 3/5/1/2). The card shares the SPI bus with the panel and is separated by CS G4 versus CS G5; the socket detect pad has no readable ESP32 net, so no detect GPIO is claimed."
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "ILI9342C/E panel SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "G38",
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G23",
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G18",
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "G5",
+              "gpio": 5,
+              "function": "CS (47R R64)"
+            },
+            {
+              "name": "G15",
+              "gpio": 15,
+              "function": "D/C"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-lcd-nets",
+            "table-1"
+          ],
+          "notes": "Panel connector M5_CORE2_LCD_10P: pin6 RST = AXP192 AXP_IO4 (net LCD_RST), pin9 LED_A = AXP192 AXP_DC3 (net LCD_BL). Reset and backlight are power-IC outputs, not ESP32 GPIOs."
+        },
+        {
+          "id": "internal-i2c",
+          "type": "I2C",
+          "external": false,
+          "name": "Internal I2C (SYS_SDA/SYS_SCL, AXP192)",
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21,
+              "function": "SYS_SDA"
+            },
+            {
+              "name": "SCL",
+              "gpio": 22,
+              "function": "SYS_SCL"
+            },
+            {
+              "name": "TP_INT",
+              "gpio": 39,
+              "function": "FT6336U interrupt (active low)"
+            }
+          ],
+          "devices": [
+            {
+              "name": "AXP192",
+              "address": 52
+            },
+            {
+              "name": "FT6336U",
+              "address": 56
+            },
+            {
+              "name": "BM8563",
+              "address": 81
+            },
+            {
+              "name": "BMI270",
+              "address": 104
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-internal-i2c",
+            "table-11",
+            "table-13",
+            "table-4",
+            "table-9"
+          ],
+          "notes": "Address list is the per-revision roster from the manufacturer PinMap and drawing. FT6336U reset is driven by the power IC, so the touch controller only answers when that rail is on. ATECC608B (AWS SKUs) is a factory-provisioned security element: it is listed, not emulated."
+        },
+        {
+          "id": "i2s-audio",
+          "type": "I2S",
+          "external": false,
+          "name": "NS4168 speaker + SPM1423 PDM microphone (AXP192 enable rail)",
+          "pins": [
+            {
+              "name": "G12",
+              "gpio": 12,
+              "function": "NS4168 BCLK"
+            },
+            {
+              "name": "G0",
+              "gpio": 0,
+              "function": "NS4168 LRCK and SPM1423 CLK (shared pad)"
+            },
+            {
+              "name": "G2",
+              "gpio": 2,
+              "function": "NS4168 SADTA / M5-Bus I2S_DOUT"
+            },
+            {
+              "name": "G34",
+              "gpio": 34,
+              "function": "SPM1423 DATA / M5-Bus I2S_DATA"
+            }
+          ],
+          "knowledgeFactIds": [
+            "sch-audio-chain",
+            "table-6",
+            "table-7"
+          ],
+          "notes": "Speaker enable (SPK_EN) comes from AXP192 AXP_IO2 (net SPK_EN); the amplifier has no ESP32 enable GPIO. GPIO0 carries both the I2S word clock and the PDM microphone clock, so both roles share one pad."
+        },
+        {
+          "id": "m5-bus",
+          "type": "2x15-2.54mm",
+          "name": "M5-Bus (2x15 header)",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND",
+              "headerPin": 1,
+              "function": "GND"
+            },
+            {
+              "name": "G35",
+              "headerPin": 2,
+              "gpio": 35,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 3,
+              "function": "GND"
+            },
+            {
+              "name": "G36",
+              "headerPin": 4,
+              "gpio": 36,
+              "function": "ADC"
+            },
+            {
+              "name": "GND",
+              "headerPin": 5,
+              "function": "GND"
+            },
+            {
+              "name": "RST",
+              "headerPin": 6,
+              "function": "EN / CHIP_PU"
+            },
+            {
+              "name": "G23",
+              "headerPin": 7,
+              "gpio": 23,
+              "function": "MOSI"
+            },
+            {
+              "name": "G25",
+              "headerPin": 8,
+              "gpio": 25,
+              "function": "DAC"
+            },
+            {
+              "name": "G38",
+              "headerPin": 9,
+              "gpio": 38,
+              "function": "MISO"
+            },
+            {
+              "name": "G26",
+              "headerPin": 10,
+              "gpio": 26,
+              "function": "DAC"
+            },
+            {
+              "name": "G18",
+              "headerPin": 11,
+              "gpio": 18,
+              "function": "SCK"
+            },
+            {
+              "name": "3V3",
+              "headerPin": 12,
+              "function": "3V3"
+            },
+            {
+              "name": "G3",
+              "headerPin": 13,
+              "gpio": 3,
+              "function": "RXD0"
+            },
+            {
+              "name": "G1",
+              "headerPin": 14,
+              "gpio": 1,
+              "function": "TXD0"
+            },
+            {
+              "name": "G13",
+              "headerPin": 15,
+              "gpio": 13,
+              "function": "RXD2"
+            },
+            {
+              "name": "G14",
+              "headerPin": 16,
+              "gpio": 14,
+              "function": "TXD2"
+            },
+            {
+              "name": "G21",
+              "headerPin": 17,
+              "gpio": 21,
+              "function": "Int SDA"
+            },
+            {
+              "name": "G22",
+              "headerPin": 18,
+              "gpio": 22,
+              "function": "Int SCL"
+            },
+            {
+              "name": "G32",
+              "headerPin": 19,
+              "gpio": 32,
+              "function": "PORT.A SDA"
+            },
+            {
+              "name": "G33",
+              "headerPin": 20,
+              "gpio": 33,
+              "function": "PORT.A SCL"
+            },
+            {
+              "name": "G27",
+              "headerPin": 21,
+              "gpio": 27,
+              "function": "GPIO"
+            },
+            {
+              "name": "G19",
+              "headerPin": 22,
+              "gpio": 19,
+              "function": "GPIO"
+            },
+            {
+              "name": "G2",
+              "headerPin": 23,
+              "gpio": 2,
+              "function": "I2S_DOUT"
+            },
+            {
+              "name": "G0",
+              "headerPin": 24,
+              "gpio": 0,
+              "function": "I2S_LRCK"
+            },
+            {
+              "name": "NC",
+              "headerPin": 25,
+              "function": "no net"
+            },
+            {
+              "name": "G34",
+              "headerPin": 26,
+              "gpio": 34,
+              "function": "I2S_DATA"
+            },
+            {
+              "name": "NC",
+              "headerPin": 27,
+              "function": "no net"
+            },
+            {
+              "name": "5V",
+              "headerPin": 28,
+              "function": "5V"
+            },
+            {
+              "name": "NC",
+              "headerPin": 29,
+              "function": "no net"
+            },
+            {
+              "name": "BAT",
+              "headerPin": 30,
+              "function": "battery"
+            }
+          ],
+          "pinCount": 30,
+          "knowledgeFactIds": [
+            "sch-m5bus-30pin",
+            "table-15"
+          ],
+          "notes": "Header order pin 1 -> pin 30 taken from the official PinMap table and confirmed against the drawing net names. Pins 25/27/29 are NC and pin 6 is the RST/EN net; no pull or drive is claimed."
         }
       ],
       "sources": [
@@ -12222,7 +14109,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、BMI270 轮询。",
+        "官方 EasyLoader 内嵌镜像已在本地模拟器启动，检查到 BMI270。屏幕出现 IMU 自检失败，点击屏幕可跳过并进入仪表盘；该镜像能挂载 FAT32。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k010-v13.json",

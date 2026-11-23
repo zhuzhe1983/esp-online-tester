@@ -7,5 +7,7 @@ export const firmwareBoardMatches = (manifestBoard,board) => manifestBoard === b
 // and existing epoch/revision protection plus explicit clear remain unchanged.
 export const persistentBoard = (productId,board) => productId === 'm5stack-c153-lite' && board === 'papermono-lite' ? 'papermono' : board;
 
+export const isCore2Board = board => ['core2','core2-v11','core2-v13','core2-aws','core2-aws-v13'].includes(board);
+
 // Physical card transports are board-specific; this only exposes shared storage UI.
-export const hasSdCard = board => LILYGO_BOARD_CAPABILITIES[board]?.sdCard === true || isPaperMonoBoard(board) || board === 'papers3' || board === 'paperdiy' || board === 'corematrix' || board === 'metalio-ink4' || board === 'metalio-ink4-plus' || ['m5stack-basic','cores3','cores3-se','cores3-lite','cores3-thread-br'].includes(board);
+export const hasSdCard = board => LILYGO_BOARD_CAPABILITIES[board]?.sdCard === true || isPaperMonoBoard(board) || isCore2Board(board) || board === 'papers3' || board === 'paperdiy' || board === 'corematrix' || board === 'metalio-ink4' || board === 'metalio-ink4-plus' || ['m5stack-basic','cores3','cores3-se','cores3-lite','cores3-thread-br'].includes(board);

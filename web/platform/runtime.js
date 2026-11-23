@@ -7,7 +7,7 @@ import {validFirmwareArchive,extractFirmwareZip,firmwareArchiveCacheKey,MAX_FIRM
 import {createNetworkSession} from './network-session.js';
 import {createAudioStream} from './audio-stream.js';
 import {motionParameter} from './motion-input.js';
-import {hasSdCard,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
+import {hasSdCard,isCore2Board,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
 import {LILYGO_BOARD_CAPABILITIES} from './lilygo-board-families.js';
 import {validIlluminance,illuminanceParameter} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
@@ -686,7 +686,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     booted = true; setStatus('running'); return snapshot();
   };
   const controls = () => Array.isArray(product?.controls) ? product.controls : product?.controls?.buttons || [];
-  const boardButton = control => control?.transport==='board' && (LILYGO_BOARD_CAPABILITIES[product?.runtime?.board]?.boardButtons || {'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'chain-captain':['power'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back']}[product?.runtime?.board] || []).includes(control.id);
+  const boardButton = control => control?.transport==='board' && (isCore2Board(product?.runtime?.board) ? ['button-a','button-b','button-c','power'] : LILYGO_BOARD_CAPABILITIES[product?.runtime?.board]?.boardButtons || {'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'chain-captain':['power'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back']}[product?.runtime?.board] || []).includes(control.id);
   const input = async event => {
     const releaseWhilePaused = status === 'paused' && ((['button','matrix-key','accessory-button'].includes(event?.type) && event.pressed === false) || (event?.type==='accessory-connection' && event.connected===false) || (event?.type === 'touch' && event.down === false));
     requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');

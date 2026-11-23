@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:27:21Z",
+  "updatedAt": "2026-11-22T15:25:00Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -1000,9 +1000,563 @@
       "sourceIds": [
         "dimension-drawing-6215ca1106"
       ]
+    },
+    {
+      "id": "sch-flash",
+      "label": "SPI NOR flash (host board schematic)",
+      "value": {
+        "part": "XM25QH128BHIQ",
+        "capacityMb": 16,
+        "wiring": [
+          [
+            "ESP32 GPIO11 (SD_CMD)",
+            "flash CS#"
+          ],
+          [
+            "ESP32 GPIO10 (SD_DATA3)",
+            "flash WP#"
+          ],
+          [
+            "ESP32 GPIO9 (SD_DATA2)",
+            "flash HOLD#"
+          ],
+          [
+            "ESP32 GPIO8 (SD_DATA1)",
+            "flash SI"
+          ],
+          [
+            "ESP32 GPIO7 (SD_DATA0)",
+            "flash SO"
+          ],
+          [
+            "ESP32 GPIO6 (SD_CLK)",
+            "flash SCLK"
+          ]
+        ],
+        "refDes": "U1"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1",
+        "datasheet-esp32"
+      ],
+      "group": "storage",
+      "notes": "The ESP32 symbol names GPIO6-11 SD_*, which are the hard-wired SPI flash pads; they are unrelated to the microSD socket."
+    },
+    {
+      "id": "sch-psram",
+      "label": "Quad SPI PSRAM (host board schematic)",
+      "value": {
+        "part": "ESPSRAM64H",
+        "capacityMb": 8,
+        "mode": "quad",
+        "wiring": [
+          [
+            "ESP32 GPIO16",
+            "PSRAM CS#"
+          ],
+          [
+            "ESP32 GPIO17",
+            "PSRAM SCLK"
+          ],
+          [
+            "ESP32 GPIO8",
+            "PSRAM SIO0"
+          ],
+          [
+            "ESP32 GPIO7",
+            "PSRAM SIO1"
+          ],
+          [
+            "ESP32 GPIO10",
+            "PSRAM SIO2"
+          ],
+          [
+            "ESP32 GPIO9",
+            "PSRAM SIO3"
+          ]
+        ],
+        "refDes": "U2"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1",
+        "datasheet-esp32"
+      ],
+      "group": "storage",
+      "notes": "CS# and SCLK move to GPIO16/GPIO17 for the second SPI device while the four data lanes stay shared with the flash pads."
+    },
+    {
+      "id": "sch-lcd-nets",
+      "label": "LCD 10-pin display connector nets",
+      "value": {
+        "connector": "M5_CORE2_LCD_10P",
+        "seriesResistors": "47R on MOSI/MISO/SCK/CS (R61-R64 in the v1.0 drawing)",
+        "pins": [
+          [
+            "2",
+            "MOSI",
+            "G23"
+          ],
+          [
+            "3",
+            "MISO",
+            "G38"
+          ],
+          [
+            "4",
+            "SCK",
+            "G18"
+          ],
+          [
+            "5",
+            "CS",
+            "G5"
+          ],
+          [
+            "6",
+            "RST",
+            "AXP2101 AXP_ALDO2 (shared LCD RST and FT6336U RST)"
+          ],
+          [
+            "7",
+            "D/C",
+            "G15"
+          ],
+          [
+            "9",
+            "LED_A",
+            "AXP2101 AXP_BLDO1 (net LCD_BL)"
+          ]
+        ],
+        "window": "320 x 240"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1",
+        "datasheet-axp2101"
+      ],
+      "group": "pinmap",
+      "notes": "RST and backlight are PMIC outputs, not ESP32 GPIOs: the driver must release reset and enable the backlight through the power IC named in this record."
+    },
+    {
+      "id": "sch-tf-nets",
+      "label": "microSD socket nets",
+      "value": {
+        "connector": "TF_CARD_SOCKET",
+        "wiring": [
+          [
+            "3 CMD/MOSI",
+            "G23"
+          ],
+          [
+            "5 CLK/SCK",
+            "G18"
+          ],
+          [
+            "1 DAT0/MISO",
+            "G38"
+          ],
+          [
+            "2 DAT3/CS",
+            "G4 (10K pull, R26 in the v1.0 drawing)"
+          ],
+          [
+            "9 Detect",
+            "socket switch pad; no ESP32 net name visible in the text layer"
+          ]
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1"
+      ],
+      "group": "pinmap",
+      "notes": "The socket shares the SPI bus with the LCD panel; the two devices are separated by their chip selects (G4 vs G5)."
+    },
+    {
+      "id": "sch-internal-i2c",
+      "label": "Internal I2C roster (G21 SDA / G22 SCL)",
+      "value": {
+        "sda": "G21",
+        "scl": "G22",
+        "devices": [
+          [
+            "AXP2101",
+            "0x34"
+          ],
+          [
+            "FT6336U",
+            "0x38",
+            "INT on G39, RST on AXP_ALDO2"
+          ],
+          [
+            "BM8563",
+            "0x51"
+          ],
+          [
+            "MPU6886",
+            "0x68"
+          ],
+          [
+            "INA3221",
+            "0x40"
+          ]
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1"
+      ],
+      "group": "pinmap",
+      "notes": "Official v1.1 PinMap lists five devices on G21/G22; INA3221 (0x40) is unique to this revision."
+    },
+    {
+      "id": "sch-audio-chain",
+      "label": "I2S amplifier and PDM microphone",
+      "value": {
+        "amplifier": {
+          "part": "NS4168",
+          "lrck": "G0",
+          "bclk": "G12",
+          "sadta": "G2",
+          "ctrl": {
+            "net": "SPK_EN",
+            "driver": "AXP2101 AXP_ALDO3 (net SPK_EN)"
+          },
+          "output": "VOP/VON bridge to the 1W 0928 speaker"
+        },
+        "microphone": {
+          "part": "SPM1423HM4H-B",
+          "clk": "G0",
+          "data": "G34"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1",
+        "datasheet-ns4168",
+        "datasheet-spm1423"
+      ],
+      "group": "io",
+      "notes": "LRCK and the PDM clock share GPIO0: the I2S transmit path and the microphone PDM path cannot be sampled simultaneously on the same pad."
+    },
+    {
+      "id": "sch-rtc",
+      "label": "RTC and its interrupt",
+      "value": {
+        "part": "BM8563",
+        "i2cAddress": "0x51",
+        "sda": "G21",
+        "scl": "G22",
+        "int": {
+          "net": "RTC_INT",
+          "driver": "AXP2101 IRQ (net RTC_INT)"
+        },
+        "crystal": "32.768 kHz (X1)"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1",
+        "datasheet-bm8563"
+      ],
+      "group": "io",
+      "notes": "The interrupt is a PMIC output, so an alarm cannot be observed from an ESP32 GPIO."
+    },
+    {
+      "id": "sch-pmic-rails",
+      "label": "AXP2101 output assignment",
+      "value": {
+        "AXP_ALDO2": "LCD RST and FT6336U RST",
+        "AXP_ALDO3": "NS4168 SPK_EN",
+        "AXP_BLDO1": "LCD backlight (net LCD_BL)",
+        "AXP_ALDO4": "LCD panel supply",
+        "AXP_DLDO1": "Vibration motor (net VIB_MOTOR)",
+        "AXP_VRTC": "Blue power LED and RTC backup rail",
+        "IRQ": "BM8563 INT",
+        "PWRON": "Power button"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "datasheet-axp2101",
+        "schematic-core2-v1-1"
+      ],
+      "group": "power",
+      "notes": "v1.1 must not reuse the AXP192 rail names: the driver ID and register map differ (M5Unified distinguishes the revisions by the PMIC device ID)."
+    },
+    {
+      "id": "sch-ina3221-channels",
+      "label": "INA3221 channel assignment",
+      "value": {
+        "part": "INA3221AIRGVR (U16)",
+        "i2cAddress": "0x40",
+        "channels": [
+          [
+            "CH1",
+            "BAT",
+            "battery charge/discharge current"
+          ],
+          [
+            "CH2",
+            "VBUS",
+            "USB input current"
+          ],
+          [
+            "CH3",
+            "BUS",
+            "5V expansion bus current"
+          ]
+        ],
+        "inputFilter": "10 ohm series on each IN pin with 100 nF to ground",
+        "shunt": "0.01 ohm sense resistors (R50/R51 area)"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1",
+        "datasheet-ina3221"
+      ],
+      "group": "power",
+      "notes": "Net names CH1/CH2/CH3 connect to BAT, VBUS and BUS in the drawing; the official page lists 0x40 for INA3221."
+    },
+    {
+      "id": "sch-power-indicator",
+      "label": "Power indicator colour",
+      "value": {
+        "color": "Blue",
+        "rail": "AXP2101 VRTC/ALDO side, net SYS_LED",
+        "note": "Official revision table: Core2 = green LED, Core2 v1.1 = blue LED."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261122",
+        "schematic-core2-v1-1"
+      ],
+      "group": "power"
+    },
+    {
+      "id": "sch-m5bus-30pin",
+      "label": "M5-Bus 2x15 header, pin by pin",
+      "value": {
+        "columns": [
+          "FUNC",
+          "PIN",
+          "LEFT",
+          "RIGHT",
+          "PIN",
+          "FUNC"
+        ],
+        "rows": [
+          [
+            "GND",
+            "1",
+            "2",
+            "G35",
+            "ADC"
+          ],
+          [
+            "GND",
+            "3",
+            "4",
+            "G36",
+            "ADC"
+          ],
+          [
+            "GND",
+            "5",
+            "6",
+            "RST",
+            "EN"
+          ],
+          [
+            "MOSI",
+            "G23",
+            "7",
+            "8",
+            "G25",
+            "DAC"
+          ],
+          [
+            "MISO",
+            "G38",
+            "9",
+            "10",
+            "G26",
+            "DAC"
+          ],
+          [
+            "SCK",
+            "G18",
+            "11",
+            "12",
+            "3V3"
+          ],
+          [
+            "RXD0",
+            "G3",
+            "13",
+            "14",
+            "G1",
+            "TXD0"
+          ],
+          [
+            "RXD2",
+            "G13",
+            "15",
+            "16",
+            "G14",
+            "TXD2"
+          ],
+          [
+            "Int SDA",
+            "G21",
+            "17",
+            "18",
+            "G22",
+            "Int SCL"
+          ],
+          [
+            "PORT.A SDA",
+            "G32",
+            "19",
+            "20",
+            "G33",
+            "PORT.A SCL"
+          ],
+          [
+            "GPIO",
+            "G27",
+            "21",
+            "22",
+            "G19",
+            "GPIO"
+          ],
+          [
+            "I2S_DOUT",
+            "G2",
+            "23",
+            "24",
+            "G0",
+            "I2S_LRCK"
+          ],
+          [
+            "NC",
+            "25",
+            "26",
+            "G34",
+            "I2S_DATA"
+          ],
+          [
+            "NC",
+            "27",
+            "28",
+            "5V"
+          ],
+          [
+            "NC",
+            "29",
+            "30",
+            "BAT"
+          ]
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1"
+      ],
+      "group": "pinmap",
+      "notes": "Left column is odd pins 1-29, right column even pins 2-30; NC pads carry no net name."
+    },
+    {
+      "id": "sch-grove-ports",
+      "label": "HY2.0-4P port wiring",
+      "value": {
+        "wires": [
+          "Black",
+          "Red",
+          "Yellow",
+          "White"
+        ],
+        "rows": [
+          [
+            "PORT.A",
+            "GND",
+            "5V",
+            "G32",
+            "G33"
+          ],
+          [
+            "PORT.B",
+            "GND",
+            "5V",
+            "G26",
+            "G36"
+          ],
+          [
+            "PORT.C",
+            "GND",
+            "5V",
+            "G14",
+            "G13"
+          ]
+        ],
+        "portNotes": {
+          "A": "I2C",
+          "B": "DAC/ADC",
+          "C": "UART"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1"
+      ],
+      "group": "pinmap",
+      "notes": "PORT.B/PORT.C are reached through the 2x15 expansion header/bottom accessory; only PORT.A is a socket on the host body in the base SKU drawings."
+    },
+    {
+      "id": "sch-usb-serial",
+      "label": "USB-to-serial bridge",
+      "value": {
+        "part": "CH9102F",
+        "rx": "from ESP32 G1/TXD0",
+        "tx": "to ESP32 G3/RXD0"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic-core2-v1-1"
+      ],
+      "group": "io"
+    },
+    {
+      "id": "sch-battery-charge",
+      "label": "Battery, charge and backup cell",
+      "value": {
+        "cell": "500 mAh @ 3.7V",
+        "rtcBackupBattery": "present (BT1 BATTERY_RTC plus RTC_3V3 rail)",
+        "indicator": "Blue power LED"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261122",
+        "schematic-core2-v1-1"
+      ],
+      "group": "power",
+      "notes": "Official v1.1 release note: an RTC backup battery was added; the base Core2 revision notes no independent backup battery for RTC accuracy."
     }
   ],
-  "revisions": [],
+  "revisions": [
+    {
+      "id": "lcd-batch-2026-08-07",
+      "releaseDate": "2026-08-07",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261122",
+        "datasheet-ili9342c",
+        "datasheet-ili9342e"
+      ],
+      "changes": "Manufacturer release note: the LCD panel changed from ILI9342C to ILI9342E; M5GFX >= 0.2.27 is required when compiling. Both controller datasheets list a 320RGB x 240 window, so the geometry does not change but the initialization/ID path does.",
+      "hardwareRevision": "v1.1 (AXP2101 + INA3221, blue LED, RTC backup battery)."
+    }
+  ],
   "sources": [
     {
       "id": "official-docs",
@@ -1420,6 +1974,136 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-20261122",
+      "title": "Core2 v1.1 (live re-fetch 2026-11-22)",
+      "url": "https://docs.m5stack.com/en/core/Core2_v1.1",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:08Z",
+      "sha256": "186cd9f7e5c687caf077fee65d0a4311abeae14da774b222dd754e0604d3ccac",
+      "bytes": 160966,
+      "mediaType": "text/html",
+      "archiveName": "core2-v1.1.html",
+      "notes": "Live re-fetch in this lane on 2026-11-22; URL, UTC timestamp, bytes and SHA-256 are recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "schematic-core2-v1-1",
+      "title": "Core2 v1.1 Schematics PDF (drawing date 2023-07-20)",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/486/Sch_Core2_v1.1_2023-07-20.pdf",
+      "kind": "schematic",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:10Z",
+      "sha256": "8d24bd11700bb5f0af8f2c8eaa609cb39653cea69d898fd9961a39ff257a099b",
+      "bytes": 1207439,
+      "mediaType": "application/pdf",
+      "archiveName": "core2-v1.1-sch.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; URL, UTC timestamp, bytes and SHA-256 are recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "datasheet-esp32",
+      "title": "ESP32 Datasheet (EN)",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/644/esp32_datasheet_en.pdf",
+      "kind": "component-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:16Z",
+      "sha256": "608f5d36daa88db44da29cf3fe7e4651e0905301948fb22b0af889433bf1ce9b",
+      "bytes": 991747,
+      "mediaType": "application/pdf",
+      "archiveName": "esp32-datasheet-en.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; URL, UTC timestamp, bytes and SHA-256 are recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "datasheet-axp2101",
+      "title": "AXP2101 datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/Core2%20v1.1/axp2101.pdf",
+      "kind": "component-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:13Z",
+      "sha256": "0745cc5e6c21d935c8441264d8996520df0b2114dac96ba2203cac0b57781725",
+      "bytes": 2158673,
+      "mediaType": "application/pdf",
+      "archiveName": "axp2101-datasheet.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; URL, UTC timestamp, bytes and SHA-256 are recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "datasheet-ina3221",
+      "title": "INA3221 datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/Core2%20v1.1/ina3221.pdf",
+      "kind": "component-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:14Z",
+      "sha256": "0394050deed9a4c30400299507c3ec7c4bedfc44dfa596e6a30e9a2b7d1b1919",
+      "bytes": 1549257,
+      "mediaType": "application/pdf",
+      "archiveName": "ina3221-datasheet.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; URL, UTC timestamp, bytes and SHA-256 are recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "datasheet-ili9342c",
+      "title": "ILI9342C datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/ILI9342C-ILITEK.pdf",
+      "kind": "component-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:12Z",
+      "sha256": "604a35c003672cd693cb673ae2da336ab9120629bca3e824e032b76cd9381789",
+      "bytes": 5086747,
+      "mediaType": "application/pdf",
+      "archiveName": "ili9342c-datasheet.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; URL, UTC timestamp, bytes and SHA-256 are recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "datasheet-ili9342e",
+      "title": "ILI9342E datasheet",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/644/ILI9342E.pdf",
+      "kind": "component-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:12Z",
+      "sha256": "2bcca2655e73d4b569583e518dc64b514678dea6ccb8b3ed8bfcf081bdc0c188",
+      "bytes": 4639000,
+      "mediaType": "application/pdf",
+      "archiveName": "ili9342e-datasheet.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; URL, UTC timestamp, bytes and SHA-256 are recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "datasheet-ns4168",
+      "title": "NS4168 datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/NS4168_CN_datasheet.pdf",
+      "kind": "component-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:16Z",
+      "sha256": "479e75a104f48f31584683e5cd3e0d46843884af9da9137680b57700e6a6aab3",
+      "bytes": 829468,
+      "mediaType": "application/pdf",
+      "archiveName": "ns4168-datasheet.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; hash recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "datasheet-spm1423",
+      "title": "SPM1423HM4H-B datasheet (EN)",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/SPM1423HM4H-B_datasheet_en.pdf",
+      "kind": "component-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:17Z",
+      "sha256": "85ecd7d7a42c7853a77a4dbc903606f7da82cf03abd496b75eb526147e1acbb0",
+      "bytes": 1272831,
+      "mediaType": "application/pdf",
+      "archiveName": "spm1423-datasheet.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; hash recorded in docs/platform/evidence/m5-core2/sources.json."
+    },
+    {
+      "id": "datasheet-bm8563",
+      "title": "BM8563 datasheet (V1.1, cn)",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/BM8563_V1.1_cn.pdf",
+      "kind": "component-datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T11:00:15Z",
+      "sha256": "a847c85a8d00121c1338c62797039fa1412d70588873313bd1759c80d4da44ed",
+      "bytes": 590599,
+      "mediaType": "application/pdf",
+      "archiveName": "bm8563-datasheet.pdf",
+      "notes": "Live re-fetch in this lane on 2026-11-22; hash recorded in docs/platform/evidence/m5-core2/sources.json."
     }
   ],
   "assets": [
@@ -1611,6 +2295,38 @@
         "manufacturer-cad-42edae999e"
       ],
       "notes": "No complete populated PCB layout or Gerber verified in the audited files. A manufacturer mechanical board outline, when present, does not establish every component or copper trace. Unknown internals remain a neutral UNKNOWN placeholder."
+    },
+    {
+      "id": "ina3221-register-map",
+      "label": "INA3221 shunt/calibration register contents",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "datasheet-ina3221",
+        "schematic-core2-v1-1"
+      ],
+      "notes": "The drawing gives sense resistors and channel nets only; no calibration values are published for this product."
+    },
+    {
+      "id": "imu-int-net",
+      "label": "MPU6886 interrupt routing",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "schematic-core2-v1-1"
+      ],
+      "notes": "Official PinMap lists SDA/SCL only; no ESP32 net name for the IMU INT pad was read in the v1.1 text layer."
+    },
+    {
+      "id": "panel-init-registers",
+      "label": "Panel initialization register values",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "datasheet-ili9342c",
+        "datasheet-ili9342e"
+      ],
+      "notes": "Register sequences are not published in the schematic or PinMap for either panel batch."
     }
   ],
   "collectionNotes": [
