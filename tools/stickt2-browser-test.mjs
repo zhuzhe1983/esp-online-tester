@@ -7,15 +7,20 @@ import {startStickT2Preview} from './stickt2-preview.mjs';
 const {chromium}=await import(pathToFileURL(resolve(process.env.PLAYWRIGHT_MODULE||'target/stickt2-browser/node_modules/playwright/index.mjs')));
 const out='target/stickt2-research/browser';await mkdir(out,{recursive:true});
 const wasmSha256=createHash('sha256').update(await readFile('web/wasm/esp32sim.wasm')).digest('hex');
-const preview=await startStickT2Preview({port:0,useCatalogSource:true});
+const preview=await startStickT2Preview({port:0,useCatalogSource:true,webRoot:'web'});
 const receipt={wasmSha256,factory:preview.scene.firmware,syntheticRaw14NotCelsius:true,assertions:[],pages:[],externalRequests:[]};
+const altered=Buffer.from(preview.bin);altered[0x1002]=2;
+let sendAlteredOnce=true;
 let browser,context;
 try {
  browser=await chromium.launch({headless:true});receipt.browserVersion=browser.version();const errors=[];
  context=await browser.newContext({viewport:{width:1440,height:1000}});
  await context.route('**/*',route=>{
    const url=new URL(route.request().url());
-   if(url.href===preview.scene.firmware.url)return route.fulfill({body:preview.bin,contentType:'application/octet-stream',headers:{'access-control-allow-origin':'*'}});
+   if(url.href===preview.scene.firmware.url){
+     const body=sendAlteredOnce?altered:preview.bin;sendAlteredOnce=false;
+     return route.fulfill({body,contentType:'application/octet-stream',headers:{'access-control-allow-origin':'*'}});
+   }
    if(url.origin===preview.origin||['data:','blob:'].includes(url.protocol))return route.continue();
    receipt.externalRequests.push(url.origin);return route.abort();
  });
@@ -23,7 +28,14 @@ try {
  const waitConfigured=async()=>{const end=Date.now()+30000;while(Date.now()<end){if(await page.evaluate(async()=>window.espTester&&(await window.espTester.observe()).scene?.productId==='m5stack-k016-t2'))return;await page.waitForTimeout(100);}throw Error('Scene configure timeout');};
  const waitGuest=async seconds=>{const end=Date.now()+240000;while(Date.now()<end){const s=await page.evaluate(()=>window.espTester.observe());if(s.status==='error')throw Error(JSON.stringify(s.lastError));if(Number(s.stats.time)>=seconds)return;await page.waitForTimeout(100);}throw Error('Guest clock timeout at '+seconds);};
  const hotspot=()=>page.evaluate(async()=>{const f=await window.espTester.capture({format:'rgba'});let n=0,x=0,y=0;for(let i=0;i<f.pixels.length;i+=4)if(f.pixels[i]>240&&f.pixels[i+1]<20&&f.pixels[i+2]<20){n++;x+=(i/4)%f.width;y+=Math.floor(i/4/f.width);}return {count:n,center:n?[x/n,y/n]:null};});
- await page.goto(preview.url);await waitConfigured();await page.evaluate(async()=>{await window.espTester.configureNetwork({enabled:false,autoProvision:false});await window.espTester.loadFirmware();await window.espTester.start();});
+ await page.goto(preview.url);await waitConfigured();
+ const invalidImageCode=await page.evaluate(async()=>{
+   await window.espTester.configureNetwork({enabled:false,autoProvision:false});
+   try{await window.espTester.loadFirmware();return null;}catch(error){return error.code;}
+ });
+ assert.equal(invalidImageCode,'HASH_MISMATCH');receipt.assertions.push('a changed SPI mode byte still fails the pinned whole-image SHA-256');
+ await page.locator('#workbench-error').getByRole('button').click();
+ await page.evaluate(async()=>{await window.espTester.loadFirmware();await window.espTester.start();});
  await waitGuest(6.3);receipt.runtime=await page.evaluate(async()=>{const s=await window.espTester.observe(),c=await window.espTester.capabilities();return {executionMode:s.firmware?.executionMode,artifacts:s.firmware?.artifacts,thermal:c.thermal,guestSeconds:s.stats.time};});const before=await hotspot();assert.ok(before.count>100,'real factory hotspot appeared');
  const artifact=receipt.runtime.artifacts.find(item=>item.kind==='flash');
  assert.equal(artifact?.url,preview.scene.firmware.url);assert.equal(artifact?.sha256,preview.scene.firmware.sha256);assert.equal(artifact?.bytes,4194304);
@@ -66,6 +78,21 @@ try {
  while(Date.now()<sharedEnd){const state=await page.evaluate(()=>window.espTester.recordingObserve());if(state.status==='error')throw Error(JSON.stringify(state.error));if(state.receipt?.result==='completed'){sharedReplay=state.receipt;break;}await page.waitForTimeout(100);}
  assert.ok(sharedReplay,'recording URL restored UI replay completes');const sharedHotspot=await hotspot();assert.ok(Math.abs(sharedHotspot.center[0]-before.center[0])<2&&Math.abs(sharedHotspot.center[1]-before.center[1])<2);
  receipt.sharedRecording={replay:sharedReplay,hotspot:sharedHotspot};receipt.assertions.push('recording-bearing shared URL restores its initial environment and UI playback renders the recorded guest hotspot');
+ const button=pressed=>page.evaluate(value=>window.espTester.input({type:'button',id:'btnA',pressed:value}),pressed);
+ const guestTime=()=>page.evaluate(async()=>Number((await window.espTester.observe()).stats.time));
+ const centerRgb=()=>page.evaluate(async center=>{
+   const frame=await window.espTester.capture({format:'rgba'});
+   const offset=4*(Math.round(center[1])*frame.width+Math.round(center[0]));
+   return Array.from(frame.pixels.slice(offset,offset+3));
+ },sharedHotspot.center);
+ const originalCenterRgb=await centerRgb();
+ await button(true);await waitGuest(await guestTime()+.25);
+ await button(false);await waitGuest(await guestTime()+.35);
+ const gray=await hotspot();
+ const newCenterRgb=await centerRgb();
+ assert.ok(originalCenterRgb[0]>240&&originalCenterRgb[1]<20&&originalCenterRgb[2]<20);
+ assert.ok(gray.count<100&&Math.max(...newCenterRgb)-Math.min(...newCenterRgb)<8,JSON.stringify({originalCenterRgb,newCenterRgb,gray}));
+ receipt.buttonA={originalCenterRgb,newCenterRgb};receipt.assertions.push('guest Button A release changes the actual palette from RGB to grayscale');
  await page.evaluate(()=>window.espTester.dispose());assert.deepEqual(errors,[]);assert.deepEqual(receipt.externalRequests,[]);assert.equal(receipt.runtime.executionMode,'wasm-jit');receipt.passed=true;
 } catch(e){receipt.passed=false;receipt.error={message:e.message,stack:e.stack};throw e;}
 finally {try{await context?.close();}finally{try{await browser?.close();}finally{await preview.close();await writeFile(out+'/receipt.json',JSON.stringify(receipt,null,2)+'\n');}}}

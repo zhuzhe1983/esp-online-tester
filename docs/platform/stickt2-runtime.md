@@ -11,7 +11,7 @@ StickT2 使用 ESP32-PICO-D4、4 MiB Flash、135×240 ST7789 屏幕和 FLIR Lept
 
 合成场可设背景和热点计数（1–16383）、热点中心（X 0–159、Y 0–119）和半径（0–160）。屏幕颜色和数字只用于检查固件采集和渲染。环境面板、`input({type:'thermal-environment', background, hotspot, centerX, centerY, radius})`、分享和录制回放共用该输入。录制从初始场开始，并按客体确认的时间记录后续输入。
 
-真实温标、光学响应、完整 FFC 和 VoSPI 时序、RTC、麦克风、电池模拟与长按电源仍待实现。旋钮主机驱动使用 I²C `0x30`，押键读 `0x10`，累计增量读 `0x00..0x01`，向 `0x20` 写 `0xff` 清零。副控固件及 PA2/PA3/PA4 的归属未查明，板型保留地址 NACK。现有厂家 CAD 保留安装耳和原始尺寸，正面 A 键热区采用照片估算，侧面 B 键和 Power 通过 2D、键盘与 API 操作。
+真实温标、光学响应、完整 FFC 和 VoSPI 时序、RTC、麦克风、电池模拟与长按电源仍待实现。旋钮主机驱动使用 I²C `0x30`，从 `0x10` 读按键状态，从 `0x00..0x01` 读累计增量，向 `0x20` 写 `0xff` 清零。副控固件及 PA2/PA3/PA4 的归属未查明，板型保留地址 NACK。现有厂家 CAD 保留安装耳和原始尺寸，正面 A 键热区采用照片估算，侧面 B 键和 Power 通过 2D、键盘与 API 操作。
 
 ## 原厂镜像和验证边界
 
@@ -19,14 +19,16 @@ StickT2 使用 ESP32-PICO-D4、4 MiB Flash、135×240 ST7789 屏幕和 FLIR Lept
 
 [历史记录](evidence/stickt2-20261122/historical.json)保留了共享 I²C FIFO 修复前后的结果。修复前三秒内地址阶段均解码为 `0x00`，客体报告 `error=2`，CCI 和 VoSPI 计数为零。修复后使用同一镜像各运行八秒，两个合成场的客体热点在屏幕上移动约 `(+30, -40)` 像素。历史浏览器记录使用另一份 WASM，文件哈希一并保留。原始日志、截图和会话细节依照[裁剪记录](evidence/stickt2-20261122/redactions.json)保存在测试输出目录或以哈希引用。
 
-2026-11-23 原生复验复现了前置修订的 `error=2`。应用共享 FIFO 修复后，原厂程序在两次八秒运行中均执行 104 条 CCI 命令、读出 12,360 个 VoSPI 包并写入 LCD 139 次。显示热点从 `[69.52, 84.83]` 移到 `[99.52, 44.83]`。[复验收据](evidence/stickt2-20261122/native-20261123.json)
+2026-11-23 原生复验复现了前置修订的 `error=2`。应用共享 FIFO 修复后，原厂程序在两次八秒运行中均执行 104 条 CCI 命令、读出 12,360 个 VoSPI 包并写入 LCD 139 次。显示热点从 `[69.52, 84.83]` 移到 `[99.52, 44.83]`。合并版启用 PICO-D4 封装值后，采集计数和热点位置复验一致。[复验收据](evidence/stickt2-20261122/native-20261123.json)
+
+合并版 WASM 的 Chromium 复验中，篡改 SPI mode 字节的副本触发整文件 `HASH_MISMATCH`，原厂镜像按目录哈希正常启动。工作台热像场操作使热点移动 `(+29.85, -39.81)` 像素，mini 恢复分享的场参数，iframe RPC 与录制链接回放均得到同一客体帧。松开 A 键后，热点由红色变为灰阶白色。复验覆盖 2D 显示和输入，3D 热区与实机温标仍待核验。[浏览器收据](evidence/stickt2-20261122/browser-20261123.json)
 
 ## 复验
 
 将原厂 BIN 和公开的 `esp32_rev300_rom.elf` 路径交给探针。原生探针会校验两份 SHA-256 和启动段摘要负例，运行两种合成场并检查 CCI 初始化、完整 VoSPI 帧和客体绘制的热点位移。
 
 ```sh
-node --test tools/platform-stickt2-test.mjs tools/platform-stickt2-environment-test.mjs
+node --test tools/platform-stickt2-test.mjs tools/platform-stick-environment-test.mjs
 cargo test -p esp32 --lib stickt2
 STICKT2_FACTORY_BIN=/path/to/original.bin ESP32SIM_ROM_DIR=/path/to/roms \
   cargo test --release -p esp32 --test stickt2_factory -- --ignored --nocapture
