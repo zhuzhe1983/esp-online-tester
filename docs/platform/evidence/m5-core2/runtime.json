@@ -213,5 +213,64 @@
     "v1.1 vendor EasyLoader is byte-identical to the v2.2 factory BIN. The guest accesses the AXP2101 and mounts TF but ALDO2 stays disabled with this model. Touch controller NACK and zero LCD writes persist for nine guest seconds.",
     "v1.3 original EasyLoader reaches the dashboard after touching to skip the firmware IMU self-test warning, then shows X:160/Y:120. BMI270 chip ID and FAT32 mount are observed.",
     "AWS v1.3 firmware initializes BMI270 and aborts at ATECC608 initialization. The authentication chip remains absent and its identity is not synthesized."
-  ]
+  ],
+  "core2V11Fixture": {
+    "checkedAt": "2026-11-23T05:24:43Z",
+    "revision": "48b38e6c37c0d0b20b3cf03580ce5fe2ad52211b",
+    "espIdf": "v5.5.1",
+    "source": "tools/fixtures/core2-v11-firmware/main/main.c",
+    "method": "Unmodified diagnostic compiled from repository source, independent of the official factory image. Native classic boot ROM, physical I2C1/SPI/GPIO39, no stubs.",
+    "mergedBin": {
+      "bytes": 292848,
+      "sha256": "47c7210299846a3e7ca6116e33a987b2ba4ae9f49d3ebec54b3b9b9f779ebf5f"
+    },
+    "framePpm": {
+      "bytes": 230415,
+      "sha256": "6392704b94047dbf06f427bbbd47f02204791dd3d8c75f7933c839fcd76ecc57"
+    },
+    "observed": [
+      "CORE2 V11 AXP2101=4A INA3221=3220 LCD ready",
+      "CORE2 V11 TOUCH 160 120",
+      "CORE2 V11 TOUCH 65 260"
+    ],
+    "lastNativeSample": "sec=9 stop=Halted insns=8697663 frame=Some((320, 240, 23, 3, 842126779120516802)) [core2-v11] SPI ILI9342C: 1 frames, 3 pixels, MADCTL=0x00, COLMOD=0x55, display_on=true, logic=true, reset=true, backlight=true; FT6336U/G39; MPU6886 polled, BM8563 calendar; SPI TF=absent",
+    "fixtureSource": {
+      "bytes": 3707,
+      "sha256": "3e0e6eaf51ae383e0b997cd24f626903283281880435cb25102107c47d98dd69"
+    },
+    "firstThreeRgbPixels": [
+      [
+        255,
+        0,
+        0
+      ],
+      [
+        0,
+        255,
+        0
+      ],
+      [
+        0,
+        0,
+        255
+      ]
+    ]
+  },
+  "finalV13NativeCrosscheck": {
+    "boardRevision": "48b38e6c37c0d0b20b3cf03580ce5fe2ad52211b",
+    "mergedBin": {
+      "bytes": 1601552,
+      "sha256": "bfdb4da25dab805ea415fb5bfe7ebfc65e7bc4fd65dbbc21efd6348ce35194ad"
+    },
+    "lastNativeSample": "sec=9 stop=Halted insns=189816255 frame=Some((320, 240, 16923327, 46353, 12065128670263183956)) [core2-v13] SPI ILI9342C: 218 frames, 4230828 pixels, MADCTL=0x08, COLMOD=0x55, display_on=true, logic=true, reset=true, backlight=true; FT6336U/G39; BMI270 polled, BM8563 calendar; SPI TF=commands=11 read-blocks=3 written-blocks=0",
+    "evidence": [
+      "I2C BMI270 Found",
+      "SDCard Size = 64"
+    ],
+    "warnings": 13,
+    "framePpm": {
+      "bytes": 230415,
+      "sha256": "988f5de0a5ed094148852a5f1565f5b900a9f98346f7d371d933b5abd8935959"
+    }
+  }
 }
