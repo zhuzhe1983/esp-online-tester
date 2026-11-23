@@ -25,6 +25,6 @@
 
 旧版 48 × 25 × 1.6 mm 的 PCB 占位板放在外壳中部，与主壳实体相交约 284.39 mm³，从侧面可见灰色横条。根据厂家 STL 的后开口导轨和官方背照，将占位板收至 40.6 × 15.6 mm，保持 1.6 mm 的原估算厚度，板面移至后部，留出 Grove 座的模型空间。与主壳和原安装支架的体积相交均为零，主壳最小采样间隙约 0.29 mm。板形、厚度和位姿是由壳体限定的估算。实物背照中安装支架已拆下，侧面改动前后采用相同的装配状态和相机。 [官方产品页](https://docs.m5stack.com/en/core/DinMeter) · [测量记录](../evidence/m5stack-k134/pcb-clearance.json)
 
-原色、金色和半透明紫色均通过 Chromium 检查。工作台点击「分开查看」后，前壳和后部硬件沿厚度方向分离，转动即可看清板上的 `UNKNOWN`。复位恢复原装配，旋钮区域仍可用。固件运行范围见单独的运行记录。 [前后对照](../evidence/m5stack-k134/pcb-clearance-comparison.webp) · [运行记录](../dinmeter-runtime.md)
+原色、金色和半透明紫色均通过 Chromium 检查。工作台的爆炸图把前壳、PCB 和安装支架沿厚度分为三层。USB-C、两路 Grove 和完整的 DC 座随 `UNKNOWN` 板移动，旋钮及屏幕随前壳移动。复位恢复原装配。固件运行范围见单独的运行记录。 [前后对照](../evidence/m5stack-k134/pcb-clearance-comparison.webp) · [运行记录](../dinmeter-runtime.md)
 
 使用 `python tools/verify-dinmeter-pcb.py --baseline da0738cd` 复核网格，需要 `numpy`、`trimesh`、`rtree` 和 `manifold3d`。用 Playwright 包装脚本打开本地平台，再运行 `run-code --filename=tools/fixtures/dinmeter-pcb-browser-check.js` 复验查看器。
