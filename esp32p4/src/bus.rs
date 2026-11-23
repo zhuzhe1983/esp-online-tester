@@ -282,10 +282,10 @@ impl SocBus {
         }
     }
 
-    /// The board's I2C devices on I2C1 (bus 0 of `BoardModel::i2c_devices`).
+    /// Board bus numbers match the P4's hardware I2C controller numbers.
     pub fn attach_board_devices(&mut self) {
         for (bus, address, device) in self.board.i2c_devices() {
-            if bus == 0 { self.periph.i2c1.attach(address, device); }
+            match bus {0=>self.periph.i2c0.attach(address,device),1=>self.periph.i2c1.attach(address,device),_=>{}}
         }
         for (pin, level) in self.board.input_levels() { self.irq_dirty |= self.periph.gpio.g.set_input(pin, level); }
     }

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-display-amoled-lite",
   "title": "LILYGO T-Display AMOLED Lite",
-  "summary": "Spark 将此商品归入T-Display 系列，标注 MCU 为 ESP32-S3R8；具体硬件版次及配置待核对。",
+  "summary": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "source-defined board; see selected scope",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Display AMOLED Lite",
@@ -52,6 +52,104 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-11-12",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-display-amoled-lite",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": {
+          "width": 368,
+          "height": 194,
+          "controller": "SH8501",
+          "interface": "qspi",
+          "pixelFormat": "RGB565",
+          "crop": [
+            0,
+            0,
+            368,
+            194
+          ],
+          "commandCoordinateCanvas": [
+            368,
+            194
+          ],
+          "physicalTouch": true,
+          "touchImplemented": false
+        },
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "pin": 0,
+            "activeLow": true,
+            "type": "button",
+            "name": "BOOT"
+          },
+          {
+            "id": "user",
+            "pin": 21,
+            "activeLow": true,
+            "type": "button",
+            "name": "User"
+          }
+        ],
+        "pins": {
+          "display": {
+            "sclk": 5,
+            "mosi": 7,
+            "cs": 4,
+            "dc": null,
+            "reset": 40,
+            "enable": null,
+            "backlight": null,
+            "ledcGate": false,
+            "quadData": [
+              7,
+              10,
+              11,
+              12
+            ]
+          },
+          "touch": {
+            "controller": "CHSC5816",
+            "sda": 1,
+            "scl": 2,
+            "irq": 13,
+            "reset": 14
+          },
+          "encoder": null
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "amoled-src-lilygo_amoled-cpp",
+        "amoled-src-lilygo_amoled-h",
+        "amoled-src-initsequence-cpp",
+        "official-store-shopify-1",
+        "official-wiki-t-display-amoled-lite"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +178,168 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-display-amoled-lite-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_5_d6379981-9789-4858-867d-2780cc7258d9.jpg?v=1692691845",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_5_d6379981-9789-4858-867d-2780cc7258d9.jpg?v=1692691845",
+      "fetchedAt": "2026-11-22T06:59:49Z",
+      "bytes": 81823,
+      "sha256": "40380dfae2e0ecbd5f718ff94b2df484aac317807209db13159fb68e31a343dc",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display amoled lite official photo 0",
+      "archiveName": "lilygo-t-display-amoled-lite-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-display-amoled-lite-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_12_eaa3f897-e556-4db1-aa86-d330fdd5da6e.jpg?v=1692691845",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_12_eaa3f897-e556-4db1-aa86-d330fdd5da6e.jpg?v=1692691845",
+      "fetchedAt": "2026-11-22T06:59:49Z",
+      "bytes": 54488,
+      "sha256": "08c34a07ba397dd0de8f78bfa5f2a492d687f91c632664ba8aac0ab9fa044053",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display amoled lite official photo 1",
+      "archiveName": "lilygo-t-display-amoled-lite-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-display-amoled-lite-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_7.jpg?v=1692691845",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_7.jpg?v=1692691845",
+      "fetchedAt": "2026-11-22T06:59:49Z",
+      "bytes": 74249,
+      "sha256": "a9c023dc198fb74274d3dc09293fd34762312c8778aaf8bdd78f662bb7a207d8",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t display amoled lite official photo 2",
+      "archiveName": "lilygo-t-display-amoled-lite-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-display-amoled-lite",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-display-series/t-display-amoled-lite/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-display-series/t-display-amoled-lite/index.md",
+      "fetchedAt": "2026-11-22T06:42:50Z",
+      "mediaType": "text/plain",
+      "bytes": 6804,
+      "sha256": "80ac36cdad98c34980601824ace14a49b288df93c626d42d2ffd4bbbca02972d",
+      "gitBlobSha": "6f7fc8aa1ffef9ebabe70da00a91801e019cf092",
+      "path": "en/products/t-display-series/t-display-amoled-lite/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t display amoled lite",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-display-series__t-display-amoled-lite__index.md"
+    },
+    {
+      "id": "amoled-src-lilygo_amoled-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGo-AMOLED-Series",
+      "path": "src/LilyGo_AMOLED.cpp",
+      "revision": "1f2f3fb67c646e1f8c5184a1640a4f1acc27d6f4",
+      "gitBlobSha": "0df650ff7e9a395b546ddeec54d43794e3fd0880",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series/blob/1f2f3fb67c646e1f8c5184a1640a4f1acc27d6f4/src/LilyGo_AMOLED.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-AMOLED-Series/src/LilyGo_AMOLED.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "amoled-src-lilygo_amoled-cpp-LilyGo_AMOLED.cpp",
+      "sha256": "55e10b027e598ec164b891a6ec1e8b8a712e80a3e44a723fb3bcf29d095dfa1d",
+      "bytes": 38462,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "amoled-src-lilygo_amoled-h",
+      "repository": "Xinyuan-LilyGO/LilyGo-AMOLED-Series",
+      "path": "src/LilyGo_AMOLED.h",
+      "revision": "1f2f3fb67c646e1f8c5184a1640a4f1acc27d6f4",
+      "gitBlobSha": "663aec6dba9ed6e2dbef78839d3984646213721b",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series/blob/1f2f3fb67c646e1f8c5184a1640a4f1acc27d6f4/src/LilyGo_AMOLED.h",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-AMOLED-Series/src/LilyGo_AMOLED.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "amoled-src-lilygo_amoled-h-LilyGo_AMOLED.h",
+      "sha256": "9af677f658a8c928cb1ddd49c7e0d7467db9c3cc4d5523f557b5878da214d13f",
+      "bytes": 13122,
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "amoled-src-initsequence-cpp",
+      "repository": "Xinyuan-LilyGO/LilyGo-AMOLED-Series",
+      "path": "src/initSequence.cpp",
+      "revision": "1f2f3fb67c646e1f8c5184a1640a4f1acc27d6f4",
+      "gitBlobSha": "d668a97a97fb852f05bed08f3b78c7a3a135d1f5",
+      "url": "https://github.com/Xinyuan-LilyGO/LilyGo-AMOLED-Series/blob/1f2f3fb67c646e1f8c5184a1640a4f1acc27d6f4/src/initSequence.cpp",
+      "checkedAt": "2026-11-22",
+      "type": "manufacturer-source",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-AMOLED-Series/src/initSequence.cpp",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T06:56:00Z",
+      "archiveName": "amoled-src-initsequence-cpp-initSequence.cpp",
+      "sha256": "daa3ca59343d81b37e843f8bd85e8f042776b4db716652fb83c5f96b4ea2bdef",
+      "bytes": 21517,
+      "mediaType": "text/plain; charset=utf-8"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-display-amoled-lite-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_5_d6379981-9789-4858-867d-2780cc7258d9.jpg?v=1692691845",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-amoled-lite/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-display-amoled-lite-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_12_eaa3f897-e556-4db1-aa86-d330fdd5da6e.jpg?v=1692691845",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-amoled-lite/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-display-amoled-lite-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-T-DISPLAY_7.jpg?v=1692691845",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-display-amoled-lite/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +352,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +359,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +369,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +379,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +389,178 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-display-amoled-lite"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-display-amoled-lite/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-display-amoled-lite",
+      "lilygo-t-display-amoled-lite-official-photo-0",
+      "lilygo-t-display-amoled-lite-official-photo-1",
+      "lilygo-t-display-amoled-lite-official-photo-2",
+      "amoled-src-lilygo_amoled-cpp",
+      "amoled-src-lilygo_amoled-h",
+      "amoled-src-initsequence-cpp"
+    ],
+    "displayHint": {
+      "width": 368,
+      "height": 194,
+      "sourceIds": [
+        "amoled-src-lilygo_amoled-cpp",
+        "amoled-src-lilygo_amoled-h",
+        "amoled-src-initsequence-cpp",
+        "official-store-shopify-1",
+        "official-wiki-t-display-amoled-lite"
+      ],
+      "basis": "exact selected BSP/controller native orientation",
+      "physicalSizeMm": null,
+      "implemented": true
+    }
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-display-amoled-lite",
+    "status": "diagnostic",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。",
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile.",
+      "QSPI checks SCLK, D0 and CS; the shared SpiPins API has no D1/D2/D3 route masks, so those lane routes and quad electrical timing are not validated.",
+      "AMOLED brightness is an on/off gate; luminance, per-level dimming and OLED power behavior are not calibrated."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-display-amoled-lite",
+    "boardId": "lilygo-t-display-amoled-lite",
+    "name": "LILYGO T-Display AMOLED Lite",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "display": {
+      "width": 368,
+      "height": 194,
+      "controller": "SH8501",
+      "interface": "qspi",
+      "pixelFormat": "RGB565",
+      "crop": [
+        0,
+        0,
+        368,
+        194
+      ],
+      "commandCoordinateCanvas": [
+        368,
+        194
+      ],
+      "physicalTouch": true,
+      "touchImplemented": false
+    },
+    "pins": {
+      "display": {
+        "sclk": 5,
+        "mosi": 7,
+        "cs": 4,
+        "dc": null,
+        "reset": 40,
+        "enable": null,
+        "backlight": null,
+        "ledcGate": false,
+        "quadData": [
+          7,
+          10,
+          11,
+          12
+        ]
+      },
+      "touch": {
+        "controller": "CHSC5816",
+        "sda": 1,
+        "scl": 2,
+        "irq": 13,
+        "reset": 14
+      },
+      "encoder": null
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "pin": 0,
+        "activeLow": true,
+        "type": "button",
+        "name": "BOOT"
+      },
+      {
+        "id": "user",
+        "pin": 21,
+        "activeLow": true,
+        "type": "button",
+        "name": "User"
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "nativeGuestProbeVerified": false,
+      "nativeVerificationScope": "Shared transport/protocol regressions and independent product constructor registration; no per-product guest execution claimed."
+    },
+    "unsupported": [
+      "DCS RGB565 command/pixel subset only; controller analog, gamma, TE timing and color calibration are not simulated.",
+      "No factory firmware boot was verified; source pin verification and native board tests are separate from a working factory image.",
+      "No SD, radio, PMIC/battery/charger, audio, IMU, camera, haptics, sensor, NFC, GPS or RGB LED peripheral support is added by this profile.",
+      "QSPI checks SCLK, D0 and CS; the shared SpiPins API has no D1/D2/D3 route masks, so those lane routes and quad electrical timing are not validated.",
+      "AMOLED brightness is an on/off gate; luminance, per-level dimming and OLED power behavior are not calibrated."
+    ],
+    "sourceIds": [
+      "amoled-src-lilygo_amoled-cpp",
+      "amoled-src-lilygo_amoled-h",
+      "amoled-src-initsequence-cpp",
+      "official-store-shopify-1",
+      "official-wiki-t-display-amoled-lite"
+    ],
+    "chronology": {
+      "date": "2022-11-12",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-display-amoled-lite",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 96,
+    "hardwareRevision": "source-defined board; see selected scope",
+    "scopeEn": "SH8501 native addressing is landscape 368x194 in the official library (storefront portrait 194x368). CHSC5816 touch and AXP2101 power management are absent.",
+    "scope": "仅适配该型号已核实接线的显示、GPIO 按键；官方完整固件启动尚未验证。具体硬件版本和未实现外设见 scopeEn 与 unsupported。"
+  }
 }

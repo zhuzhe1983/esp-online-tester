@@ -51,7 +51,7 @@ test('actual dual-role catalog, stable/alpha targets and missing-SHA update poli
  assert.equal(product.knowledgeUrl,accessory.knowledgeUrl);assert.equal(product.model.url,accessory.visual.modelUrl);assert.equal(product.catalogRoles.accessoryId,accessory.id);assert.equal(accessory.catalogRoles.productId,product.id);
  const mesh=watchlist.entries.find(x=>x.id==='meshtastic');assert.equal(mesh.catalogTargets.filter(t=>t.productIds.every(id=>id.startsWith('m5stack-'))).length,4);
  assert.deepEqual(mesh.catalogTargets.filter(t=>t.productIds.some(id=>id.startsWith('lilygo-'))).map(t=>[t.boardTarget,t.targetChip]),[['t-deck','esp32s3'],['tbeam','esp32'],['t-watch-s3','esp32s3']]);
- const runnableTrials=new Set(['lilygo-t-deck','lilygo-t-beam-v1-2']);
+ const runnableTrials=new Set(['lilygo-t-deck','lilygo-t-beam-v1-2','lilygo-t-watch-s3']);
  for(const t of mesh.catalogTargets){
   const fw=firmwares.items.find(x=>x.id===t.firmwareId),product=products.items.find(p=>p.id===t.productIds[0]);
   assert.match(fw.source.sha256,/^[a-f0-9]{64}$/);assert.ok(fw.source.url.includes(t.boardTarget));

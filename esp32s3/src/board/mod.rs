@@ -13,6 +13,10 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 
 pub mod atech14;
 pub mod tdisplay_s3;
+mod lilygo_display;
+mod lilygo_epaper;
+pub mod lilygo_additional;
+pub mod lilygo_io;
 pub mod airquality;
 pub mod atoms3;
 pub mod atoms3_lite;
@@ -73,6 +77,24 @@ pub use waveshare_lcd4b::*;
 /// Board by name: `atech14` (default), `none`, `stopwatch` or a supported Waveshare board.
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
+        "lilygo-t-keyboard-s3-pro" => Some(Box::new(lilygo_io::LilygoIo::t_keyboard_s3_pro())),
+        "lilygo-t-micro32-s3" => Some(Box::new(lilygo_io::LilygoIo::t_micro32_s3())),
+        "lilygo-t-panel-s3" => Some(Box::new(lilygo_io::LilygoIo::t_panel_s3())),
+        "lilygo-t-camera-plus-s3" => Some(Box::new(lilygo_io::LilygoIo::t_camera_plus_s3())),
+        "lilygo-t-vending" => Some(Box::new(lilygo_io::LilygoIo::t_vending())),
+        "lilygo-t-track" => Some(Box::new(lilygo_io::LilygoIo::t_track())),
+        "lilygo-t-fpga" => Some(Box::new(lilygo_io::LilygoIo::t_fpga())),
+        "lilygo-t7-s3" => Some(Box::new(lilygo_io::LilygoIo::t7_s3())),
+        "lilygo-t-connect" => Some(Box::new(lilygo_io::LilygoIo::t_connect())),
+        "lilygo-t-eth-elite" => Some(Box::new(lilygo_io::LilygoIo::t_eth_elite())),
+        "lilygo-t-energy-s3" => Some(Box::new(lilygo_io::LilygoIo::t_energy_s3())),
+        "lilygo-t-sim7670g-s3" => Some(Box::new(lilygo_io::LilygoIo::t_sim7670g_s3())),
+        "lilygo-t-rs-s3" => Some(Box::new(lilygo_io::LilygoIo::t_rs_s3())),
+        "lilygo-t-eth-lite" => Some(Box::new(lilygo_io::LilygoIo::t_eth_lite())),
+        "lilygo-t-relay-s3" => Some(Box::new(lilygo_io::LilygoIo::t_relay_s3())),
+        "lilygo-t-sim7080-s3" => Some(Box::new(lilygo_io::LilygoIo::t_sim7080_s3())),
+        "lilygo-t-camera-s3" => Some(Box::new(lilygo_io::LilygoIo::t_camera_s3())),
+        "lilygo-t-simcam" => Some(Box::new(lilygo_io::LilygoIo::t_simcam())),
         name if name.starts_with("seeed-xiao-epaper-ee") => seeed_ee::make_board(name),
         "seeed-trmnl-75-diy" => Some(Box::new(esp_soc::board::seeed_xiao_epaper::SeeedXiaoEpaper::new(esp_soc::board::seeed_xiao_epaper::Variant::TrmnlS3,crate::periph::CPU_HZ/1000))),
         "seeed-sensecap-watcher" => Some(Box::new(seeed_sensecap::SeeedWatcher::new())),
@@ -89,6 +111,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "seeed-xiao-ips-147" => Some(Box::new(seeed_xiao_ips::SeeedXiaoIps::new(seeed_xiao_ips::IpsSize::Touch147))),
         "seeed-xiao-ips-114" => Some(Box::new(seeed_xiao_ips::SeeedXiaoIps::new(seeed_xiao_ips::IpsSize::Lcd114))),
         "seeed-xiao-ips-096" => Some(Box::new(seeed_xiao_ips::SeeedXiaoIps::new(seeed_xiao_ips::IpsSize::Lcd096))),
+
         "tembed-cc1101" | "lilygo-t-embed-cc1101" => Some(Box::new(tembed_cc1101::TEmbedCc1101::new())),
         "airquality" | "m5stack-k131" => Some(Box::new(airquality::AirQuality::new())),
         "airquality-v11" | "m5stack-k131-v11" => Some(Box::new(airquality::AirQuality::v11())),
@@ -119,13 +142,15 @@ pub fn make_board(name: &str) -> Option<Board> {
         "papers3" | "m5stack-c139" => Some(Box::new(papers3::PaperS3::new())),
         "metalio-ink4" => Some(Box::new(MetalioInk4::new())),
         "tdeck" | "lilygo-t-deck" => Some(Box::new(tdeck::TDeck::new())),
+        "lilygo-t-deck-pro" => Some(Box::new(lilygo_epaper::LilygoEpaper::t_deck_pro())),
+        "lilygo-mini-epaper-s3" => Some(Box::new(lilygo_epaper::LilygoEpaper::mini_epaper_s3())),
         "cardputer" | "m5stack-cardputer" => Some(Box::new(Cardputer::new())),
         "cardputer-adv" | "m5stack-cardputer-adv" => Some(Box::new(CardputerAdv::new())),
         "stopwatch" | "m5stack-stopwatch" => Some(Box::new(StopWatch::new())),
         "waveshare-cam" | "waveshare" => Some(Box::new(WaveshareCam::new())),
         "waveshare-lcd4b" | "lcd4b" => Some(Box::new(WaveshareLcd4b::new())),
         "waveshare-amoled18-v2" | "amoled18-v2" => Some(Box::new(WaveshareAmoled18V2::new())),
-        _ => None,
+        _ => lilygo_display::make_board(name).or_else(|| lilygo_additional::make_board(name)),
     }
 }
 

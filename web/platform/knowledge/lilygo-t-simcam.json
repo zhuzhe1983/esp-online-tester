@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-simcam",
   "title": "LILYGO T-SIMCAM",
-  "summary": "Spark 将此商品归入T-SIM / T-PCIE 系列，标注 MCU 为 ESP32-S3；具体硬件版次及配置待核对。",
+  "summary": "已实现 T-SIMCAM V1.3 的 BOOT0 与 GPIO1 供电门控的 SPI SD 卡；按官方 16MB/8MB 配置运行，保留原理图 Flash 符号冲突，摄像头/蜂窝/音频未实现。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T-SIMCAM V1.3 selected by exact factory config; original V1.0/V1.2 camera reset variants not mixed",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-SIMCAM",
@@ -52,6 +52,121 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-10-25",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-simcam",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 16,
+        "simulatedFlashMb": 16,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 8,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 0,
+          "peripheralPower": {
+            "pin": 1,
+            "activeHigh": true,
+            "implementedFor": "SPI SD supply only"
+          },
+          "pcieModem": {
+            "powerOrReset": 48,
+            "tx": 45,
+            "rx": 46,
+            "ledInput": 21,
+            "implemented": false
+          },
+          "camera": {
+            "xclk": 14,
+            "sda": 4,
+            "scl": 5,
+            "irCutV13": 18,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-Camera-Series-README.MD",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+        "LilyGo-Camera-Series-platformio.ini",
+        "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+        "LilyGo-Camera-Series-firmware-README.MD",
+        "LilyGo-Camera-Series-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-simcam"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flashMB": 16,
+          "psramMB": 8,
+          "sourceIds": [
+            "LilyGo-Camera-Series-README.MD",
+            "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+            "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+            "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+            "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+            "LilyGo-Camera-Series-platformio.ini",
+            "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+            "LilyGo-Camera-Series-firmware-README.MD",
+            "LilyGo-Camera-Series-tree",
+            "official-store-shopify-1",
+            "official-wiki-t-simcam"
+          ],
+          "notes": "Store/wiki say 16MB flash/8MB PSRAM, ESP32-S3R8 identifies PSRAM, and env:t-camera-sim selects default_16MB.csv. V1.3 schematic Flash symbol W25Q32 contradicts the 16MB target; selection is explicit and not BOM validation."
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-Camera-Series-README.MD",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+        "LilyGo-Camera-Series-platformio.ini",
+        "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+        "LilyGo-Camera-Series-firmware-README.MD",
+        "LilyGo-Camera-Series-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-simcam"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +195,276 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-simcam-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H574-LILYGO_2.jpg?v=1676533790",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H574-LILYGO_2.jpg?v=1676533790",
+      "fetchedAt": "2026-11-22T06:59:55Z",
+      "bytes": 68878,
+      "sha256": "36eadc80b3e5d81ea7fd1579d5c7405bc01ad33c35c506a144e0fcf1920f0d50",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t simcam official photo 0",
+      "archiveName": "lilygo-t-simcam-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-simcam-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H601-LILYGO.jpg?v=1676533790",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H601-LILYGO.jpg?v=1676533790",
+      "fetchedAt": "2026-11-22T06:59:56Z",
+      "bytes": 66384,
+      "sha256": "254326db95e03b56f531b839e94428f7827ed0abfd940bd6c1fafe54d017cbe3",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t simcam official photo 1",
+      "archiveName": "lilygo-t-simcam-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-simcam-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H574-LILYGO_1.jpg?v=1676533790",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H574-LILYGO_1.jpg?v=1676533790",
+      "fetchedAt": "2026-11-22T06:59:56Z",
+      "bytes": 33393,
+      "sha256": "572379e766da103f25989c6f37ab4b4800ec028b271c429475360fd97b7b9e18",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t simcam official photo 2",
+      "archiveName": "lilygo-t-simcam-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-simcam",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-sim-series/t-simcam/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-sim-series/t-simcam/index.md",
+      "fetchedAt": "2026-11-22T06:43:43Z",
+      "mediaType": "text/plain",
+      "bytes": 5520,
+      "sha256": "40dc1be435156badde3fb09ba0642711f189584ef4cc5f12655e3a955450fd5f",
+      "gitBlobSha": "807a1d9bb442491e0a1f58779c3aa1ca725a47e3",
+      "path": "en/products/t-sim-series/t-simcam/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "archiveName": "en__products__t-sim-series__t-simcam__index.md",
+      "title": "LILYGO official wiki t simcam",
+      "kind": "manufacturer-documentation",
+      "sourceCachePath": "target/lilygo-audit/wiki/en__products__t-sim-series__t-simcam__index.md"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "README.MD",
+      "id": "LilyGo-Camera-Series-README.MD",
+      "gitBlobSha": "447e886ce100e909547fc334b93713bb8a8b713a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "201b938cea10db7d40e7aee330f63e903501ea77c40c1d6d10f4deb73ea7dcb6",
+      "bytes": 4169,
+      "archiveName": "LilyGo-Camera-Series-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-README.MD.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "examples/t_sim_cam_factory/config.h",
+      "id": "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+      "gitBlobSha": "8ab1e9a981d6799431d5934d2116a7755e34aef6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/examples/t_sim_cam_factory/config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/examples/t_sim_cam_factory/config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:41Z",
+      "sha256": "745e307701b219f657107a2d2c676d7b11261ee1cd60b71ad7b2744400270068",
+      "bytes": 1430,
+      "archiveName": "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / examples/t_sim_cam_factory/config.h",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "examples/t_sim_cam_factory/t_sim_cam_factory.ino",
+      "id": "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+      "gitBlobSha": "deef26d723f72ad0b1d2894534c2ce303e2ecc12",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/examples/t_sim_cam_factory/t_sim_cam_factory.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/examples/t_sim_cam_factory/t_sim_cam_factory.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:41Z",
+      "sha256": "eede5f1ca7605974d8c662bc0ee920a403746bb50e1a1df5fc84d6a2b78d8844",
+      "bytes": 10167,
+      "archiveName": "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / examples/t_sim_cam_factory/t_sim_cam_factory.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "schematic/T_SIMCAM-V1.0_Schematic.pdf",
+      "id": "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+      "gitBlobSha": "a7d0f9d5175db271b698fae487c5a9a77cb58774",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/schematic/T_SIMCAM-V1.0_Schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/schematic/T_SIMCAM-V1.0_Schematic.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "af26bc739832dda9282d619e65d3b415d142a1c032cfb2585381db0179ead515",
+      "bytes": 770401,
+      "archiveName": "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / schematic/T_SIMCAM-V1.0_Schematic.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "schematic/T_SIMCAM-V1.3_Schematic.pdf",
+      "id": "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+      "gitBlobSha": "9e8a4f22ded7c8a8d37d652344ca6461fb37f96a",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/schematic/T_SIMCAM-V1.3_Schematic.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/schematic/T_SIMCAM-V1.3_Schematic.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "d114bed9134b76a036a4bf67916a6d920035657d6c777056a849838f5919bb0f",
+      "bytes": 988161,
+      "archiveName": "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / schematic/T_SIMCAM-V1.3_Schematic.pdf",
+      "kind": "manufacturer-source",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "platformio.ini",
+      "id": "LilyGo-Camera-Series-platformio.ini",
+      "gitBlobSha": "0356fb1e23ff5185dadfe9c803aef998f6ae5015",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/platformio.ini",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:14:30Z",
+      "sha256": "417e8ffc88950cf7833b78e8aacd55e5b3a2e8be86122dc9c6e5a13ff299dd8f",
+      "bytes": 3776,
+      "archiveName": "LilyGo-Camera-Series-platformio.ini.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / platformio.ini",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-platformio.ini.raw"
+    },
+    {
+      "id": "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "docs/T_SIMCAM.md",
+      "gitBlobSha": "0ff4b2a9b4ada010e3d21f23bd1cf4938a0b0bf0",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/docs/T_SIMCAM.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/docs/T_SIMCAM.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:43Z",
+      "sha256": "0a9d56c6f2ee37225f790c5b4edc3a6153511ae40b42939c16470d333485eab1",
+      "bytes": 1038,
+      "archiveName": "LilyGo-Camera-Series-docs-T_SIMCAM.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / docs/T_SIMCAM.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-docs-T_SIMCAM.md.raw"
+    },
+    {
+      "id": "LilyGo-Camera-Series-firmware-README.MD",
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "path": "firmware/README.MD",
+      "gitBlobSha": "e33ba8ce5ed377c9b7ed91f2c83720ff0c6c05ad",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/README.MD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T08:28:43Z",
+      "sha256": "27096746a8f7d3b7db4bdf2ffc532e427ac91069b7ac01ffe0af8e90ac012d90",
+      "bytes": 1696,
+      "archiveName": "LilyGo-Camera-Series-firmware-README.MD.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-Camera-Series / firmware/README.MD",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-firmware-README.MD.raw"
+    },
+    {
+      "id": "LilyGo-Camera-Series-tree",
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-Camera-Series/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:46:25Z",
+      "mediaType": "application/json",
+      "sha256": "f22802f6f6676ac3c94bfdcaf011e4f9781f419ff6508c5479b5b0e0485545aa",
+      "bytes": 400400,
+      "archiveName": "LilyGo-Camera-Series-tree.raw",
+      "title": "Official repository tree snapshot: Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "kind": "manufacturer-repository-tree",
+      "repository": "Xinyuan-LilyGO/LilyGo-Camera-Series",
+      "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+      "gitObjectType": "not-independently-checked",
+      "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash.",
+      "sourceCachePath": "target/lilygo-s3-io-sources/LilyGo-Camera-Series-tree.raw"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-simcam-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H574-LILYGO_2.jpg?v=1676533790",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-simcam/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-simcam-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H601-LILYGO.jpg?v=1676533790",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-simcam/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-simcam-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/H574-LILYGO_1.jpg?v=1676533790",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-simcam/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +477,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +484,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +494,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +504,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +514,284 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-diagnostic-and-factory-candidate-linked",
+    "sourceIds": [
+      "LilyGo-Camera-Series-tree",
+      "LilyGo-Camera-Series-firmware-README.MD"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Camera-Series/blob/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/SIM-CAM-V1.3-FW.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/SIM-CAM-V1.3-FW.bin",
+        "path": "firmware/SIM-CAM-V1.3-FW.bin",
+        "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+        "gitBlobSha": "9f248d2f4f4838612e3da7c9005810b0ac106a7a",
+        "bytes": 3238928,
+        "status": "linked",
+        "sourceId": "LilyGo-Camera-Series-tree",
+        "role": "official-example",
+        "identityEvidence": "Manufacturer firmware README explicitly maps T-SIMCAM product page to this V1.3 diagnostic image.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Camera-Series/blob/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/t_sim_cam_factory_240921.bin",
+        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/t_sim_cam_factory_240921.bin",
+        "path": "firmware/t_sim_cam_factory_240921.bin",
+        "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+        "gitBlobSha": "7e3ada48a39eb67f5cc3b54b89ba010d4860868a",
+        "bytes": 3001856,
+        "status": "linked",
+        "sourceId": "LilyGo-Camera-Series-tree",
+        "role": "factory-candidate",
+        "identityEvidence": "Exact product factory filename plus factory source directory; binary hardware revision not independently documented.",
+        "binaryFetched": false,
+        "simulationVerified": false
+      }
+    ],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Exact V1.3 diagnostic image and a newer factory-named candidate are retained separately. Older SIM-CAM-V1.0 and sibling camera firmware are excluded; no binary layout/boot verified.",
+    "watchlist": {
+      "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+      "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+    }
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-simcam/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-simcam",
+      "lilygo-t-simcam-official-photo-0",
+      "lilygo-t-simcam-official-photo-1",
+      "lilygo-t-simcam-official-photo-2",
+      "LilyGo-Camera-Series-README.MD",
+      "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+      "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+      "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+      "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+      "LilyGo-Camera-Series-platformio.ini",
+      "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+      "LilyGo-Camera-Series-firmware-README.MD",
+      "LilyGo-Camera-Series-tree"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-simcam",
+    "status": "diagnostic",
+    "scope": "已实现 T-SIMCAM V1.3 的 BOOT0 与 GPIO1 供电门控的 SPI SD 卡；按官方 16MB/8MB 配置运行，保留原理图 Flash 符号冲突，摄像头/蜂窝/音频未实现。",
+    "unsupported": [
+      "PCIe modem, AT/cellular network, camera OV2640/OV5640 variants, IR-cut driver, microphone and analog power/charging are unmodeled; no fabricated image or modem handshake.",
+      "GPIO1 controls the switched V3V peripheral supply through Q3/Q5 in V1.3 schematic; the SoC VDD3V3 stays distinct. V1.3 uses GPIO18 IR-cut, whereas older V1.2 uses camera reset; neither is falsely attached here.",
+      "Flash capacity follows official 16MB store/wiki/partition target. V1.3 drawing still labels the flash W25Q32 (4MB); this mismatch is unresolved and not claimed as an exact verified production BOM.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-simcam",
+    "boardId": "lilygo-t-simcam",
+    "name": "LILYGO T-SIMCAM",
+    "chip": "esp32s3",
+    "flashMB": 16,
+    "psramMB": 8,
+    "hardwareRevision": "T-SIMCAM V1.3 selected by exact factory config; original V1.0/V1.2 camera reset variants not mixed",
+    "display": null,
+    "physicalDisplay": false,
+    "sdCard": {
+      "slot": true,
+      "implemented": true,
+      "transport": "spi",
+      "pins": {
+        "sclk": 39,
+        "mosi": 38,
+        "miso": 40,
+        "cs": 47
+      },
+      "power": "Switched V3V controlled by GPIO1 high, not SoC VDD3V3. GPIO/mux/output disable power-cycles the SPI card while preserving backing data.",
+      "defaultPreparedCardMiB": 64,
+      "sourceIds": [
+        "LilyGo-Camera-Series-README.MD",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+        "LilyGo-Camera-Series-platformio.ini",
+        "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+        "LilyGo-Camera-Series-firmware-README.MD",
+        "LilyGo-Camera-Series-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-simcam"
+      ],
+      "scope": "Existing digital SPI SD card protocol, startup clocks, GPIO/peripheral CS, block storage and card insertion. No calibrated wire/analog timing."
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "已实现 T-SIMCAM V1.3 的 BOOT0 与 GPIO1 供电门控的 SPI SD 卡；按官方 16MB/8MB 配置运行，保留原理图 Flash 符号冲突，摄像头/蜂窝/音频未实现。",
+    "scopeEn": "Selected V1.3 BOOT0 and GPIO1-gated peripheral-supply SPI SD path. 16MB/8MB official product/build configuration, with the schematic W25Q32 conflict explicit.",
+    "chronology": {
+      "date": "2022-10-25",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-simcam",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "sourceIds": [
+      "LilyGo-Camera-Series-README.MD",
+      "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+      "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+      "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+      "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+      "LilyGo-Camera-Series-platformio.ini",
+      "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+      "LilyGo-Camera-Series-firmware-README.MD",
+      "LilyGo-Camera-Series-tree",
+      "official-store-shopify-1",
+      "official-wiki-t-simcam"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "PCIe modem, AT/cellular network, camera OV2640/OV5640 variants, IR-cut driver, microphone and analog power/charging are unmodeled; no fabricated image or modem handshake.",
+      "GPIO1 controls the switched V3V peripheral supply through Q3/Q5 in V1.3 schematic; the SoC VDD3V3 stays distinct. V1.3 uses GPIO18 IR-cut, whereas older V1.2 uses camera reset; neither is falsely attached here.",
+      "Flash capacity follows official 16MB store/wiki/partition target. V1.3 drawing still labels the flash W25Q32 (4MB); this mismatch is unresolved and not claimed as an exact verified production BOM.",
+      "Factory firmware boot and full application behavior are unverified; no physical hardware validation."
+    ],
+    "pins": {
+      "boot": 0,
+      "peripheralPower": {
+        "pin": 1,
+        "activeHigh": true,
+        "implementedFor": "SPI SD supply only"
+      },
+      "pcieModem": {
+        "powerOrReset": 48,
+        "tx": 45,
+        "rx": 46,
+        "ledInput": 21,
+        "implemented": false
+      },
+      "camera": {
+        "xclk": 14,
+        "sda": 4,
+        "scl": 5,
+        "irCutV13": 18,
+        "implemented": false
+      }
+    },
+    "memoryEvidence": {
+      "flashMB": 16,
+      "psramMB": 8,
+      "sourceIds": [
+        "LilyGo-Camera-Series-README.MD",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h",
+        "LilyGo-Camera-Series-examples-t_sim_cam_factory-t_sim_cam_factory.ino",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.0_Schematic.pdf",
+        "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf",
+        "LilyGo-Camera-Series-platformio.ini",
+        "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+        "LilyGo-Camera-Series-firmware-README.MD",
+        "LilyGo-Camera-Series-tree",
+        "official-store-shopify-1",
+        "official-wiki-t-simcam"
+      ],
+      "notes": "Store/wiki say 16MB flash/8MB PSRAM, ESP32-S3R8 identifies PSRAM, and env:t-camera-sim selects default_16MB.csv. V1.3 schematic Flash symbol W25Q32 contradicts the 16MB target; selection is explicit and not BOM validation."
+    },
+    "conflicts": [
+      {
+        "fact": "flash",
+        "resolution": "Store/wiki say 16MB flash/8MB PSRAM, ESP32-S3R8 identifies PSRAM, and env:t-camera-sim selects default_16MB.csv. V1.3 schematic Flash symbol W25Q32 contradicts the 16MB target; selection is explicit and not BOM validation.",
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t-simcam",
+          "LilyGo-Camera-Series-platformio.ini",
+          "LilyGo-Camera-Series-schematic-T_SIMCAM-V1.3_Schematic.pdf"
+        ]
+      },
+      {
+        "fact": "GPIO18 camera function",
+        "resolution": "docs/T_SIMCAM.md describes older reset18 and mislabels its table T-Camera Plus. Actual t_sim_cam_factory/config.h selects USE_SIM_CAM_V1_3 and CAM_IR_PIN18, RESET=-1. The runtime only implements common BOOT/SD/power routes.",
+        "sourceIds": [
+          "LilyGo-Camera-Series-docs-T_SIMCAM.md",
+          "LilyGo-Camera-Series-examples-t_sim_cam_factory-config.h"
+        ]
+      }
+    ],
+    "factoryFirmwareInvestigation": {
+      "status": "official-diagnostic-and-factory-candidate-linked",
+      "sourceIds": [
+        "LilyGo-Camera-Series-tree",
+        "LilyGo-Camera-Series-firmware-README.MD"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Camera-Series/blob/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/SIM-CAM-V1.3-FW.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/SIM-CAM-V1.3-FW.bin",
+          "path": "firmware/SIM-CAM-V1.3-FW.bin",
+          "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+          "gitBlobSha": "9f248d2f4f4838612e3da7c9005810b0ac106a7a",
+          "bytes": 3238928,
+          "status": "linked",
+          "sourceId": "LilyGo-Camera-Series-tree",
+          "role": "official-example",
+          "identityEvidence": "Manufacturer firmware README explicitly maps T-SIMCAM product page to this V1.3 diagnostic image.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-Camera-Series/blob/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/t_sim_cam_factory_240921.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-Camera-Series/11b68cb2c743023c813d63bc5638f9887fa23f26/firmware/t_sim_cam_factory_240921.bin",
+          "path": "firmware/t_sim_cam_factory_240921.bin",
+          "pinnedGitRevision": "11b68cb2c743023c813d63bc5638f9887fa23f26",
+          "gitBlobSha": "7e3ada48a39eb67f5cc3b54b89ba010d4860868a",
+          "bytes": 3001856,
+          "status": "linked",
+          "sourceId": "LilyGo-Camera-Series-tree",
+          "role": "factory-candidate",
+          "identityEvidence": "Exact product factory filename plus factory source directory; binary hardware revision not independently documented.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Exact V1.3 diagnostic image and a newer factory-named candidate are retained separately. Older SIM-CAM-V1.0 and sibling camera firmware are excluded; no binary layout/boot verified.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
+      }
+    }
+  }
 }

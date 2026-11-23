@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 1,
+  "review": "P4 native code-generation comparison before the isolated I2C0 Box candidate",
+  "createdAt": "2026-11-22T11:04:43Z",
+  "method": "Read-only static examination of the already compiled baseline and candidate ELF files; no builds, executable runs, performance samples, or Rust edits were performed for this review.",
+  "baseline": {
+    "sourceCommit": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+    "artifactPlaceholder": "{baseline}",
+    "buildIdSha1": "4ad5d7bdcf6d953845f6d9362f9559a84b463034",
+    "sha256": "fc78b69e754d68bf220f85c6f781b43697774c1c13b2978e2c3f9dc7a20c19ef",
+    "bytes": 34395752
+  },
+  "candidate": {
+    "sourceCommit": "91d79752519b329c76912370d900d14a3bba0ad4",
+    "sourceCommitFormat": "full Git commit resolved from the frozen candidate revision 91d7975",
+    "artifactPlaceholder": "{candidate}",
+    "buildIdSha1": "7936529a898a0b6ce3d5576d8630fbb56d7e1111",
+    "sha256": "93fa35675f31b430c436a57f43ea1e044fdb6b8e64f2fe1de30e297c369c2bf9",
+    "bytes": 36223496
+  },
+  "architecture": "ELF 64-bit LSB PIE, x86-64, with debug information, not stripped",
+  "tools": [
+    "GNU nm",
+    "GNU objdump",
+    "Python 3 standard library (subprocess, re, difflib, collections, hashlib, json)"
+  ],
+  "normalization": {
+    "symbolSelection": "Match full demangled function names using nm -S --demangle; obtain address and size from the matching symbol.",
+    "disassembly": "Disassemble from the exact symbol start to start+size with objdump -d --demangle --no-show-raw-insn.",
+    "instructionCounts": "Count instruction lines with a hexadecimal address followed by a colon; counts include alignment instructions and cold panic paths and are static function counts, not dynamic executed instruction counts.",
+    "addresses": "Remove each instruction address; replace branch/call absolute target addresses with their displayed demangled symbol and relative offset. Normalize RIP-relative displacement values while retaining the referenced symbol annotation.",
+    "whitespace": "Collapse runs of whitespace to a single space.",
+    "fieldComparison": "For the five equal-length functions below, compare corresponding normalized instruction lines. Classify a line as a displacement-only change only when all non-displacement instruction text matches; retain and subtract old/new hexadecimal memory displacements explicitly.",
+    "additionalDifferenceHandling": "Report address-arithmetic immediates and relocated diagnostic/data constant annotations separately. Do not remove arbitrary constants or register-allocation differences to claim equivalence.",
+    "scope": "Function-level native code shapes and explicit memory operands; this is not a complete binary-equivalence proof."
+  },
+  "functions": [
+    {
+      "symbol": "<esp32p4::bus::SocBus as esp_soc::soc::SocBus>::refresh_irq",
+      "baselineBytes": 766,
+      "candidateBytes": 766,
+      "baselineInstructions": 209,
+      "candidateInstructions": 209,
+      "memoryDisplacementsPlus184": 23,
+      "otherDifferences": [],
+      "calls": "Both versions call the independent Peripherals::source_status function; no newly outlined call."
+    },
+    {
+      "symbol": "<esp32p4::periph::Peripherals>::tick",
+      "baselineBytes": 1308,
+      "candidateBytes": 1308,
+      "baselineInstructions": 287,
+      "candidateInstructions": 287,
+      "memoryDisplacementsPlus184": 65,
+      "otherDifferences": [
+        "One relocated panic diagnostic constant annotation."
+      ],
+      "calls": "Same call sequence in both versions: tick_optional, TimerGroup::tick, I2c::tick, TimerGroup::tick, Ledc::tick, panic_bounds_check."
+    },
+    {
+      "symbol": "<esp32p4::bus::SocBus as emu_core::bus::Bus>::tick",
+      "baselineBytes": 4544,
+      "candidateBytes": 4544,
+      "baselineInstructions": 985,
+      "candidateInstructions": 985,
+      "memoryDisplacementsPlus184": 96,
+      "otherDifferences": [
+        "One address-arithmetic instruction changes add $0x1ba0,%rdx to add $0x1c58,%rdx (+184).",
+        "Six relocated diagnostic/data constant annotations; RIP-relative library entry addresses were normalized."
+      ],
+      "calls": "Same direct and indirect call sequence in both versions, including the independent Peripherals::tick calls."
+    },
+    {
+      "symbol": "<esp32p4::bus::SocBus as esp_soc::soc::SocBus>::next_deadline",
+      "baselineBytes": 1170,
+      "candidateBytes": 1170,
+      "baselineInstructions": 295,
+      "candidateInstructions": 295,
+      "memoryDisplacementsPlus184": 14,
+      "otherDifferences": []
+    },
+    {
+      "symbol": "<esp32p4::bus::SocBus>::periph_read",
+      "baselineBytes": 462,
+      "candidateBytes": 462,
+      "baselineInstructions": 120,
+      "candidateInstructions": 120,
+      "memoryDisplacementsPlus184": 13,
+      "otherDifferences": []
+    }
+  ],
+  "fieldExamples": [
+    {
+      "function": "refresh_irq",
+      "baseline": "mov 0x12b0(%rbx,%rcx,4),%ecx",
+      "candidate": "mov 0x1368(%rbx,%rcx,4),%ecx",
+      "differenceBytes": 184
+    },
+    {
+      "function": "Bus::tick",
+      "baseline": "add %rbx,0x2270(%rdi)",
+      "candidate": "add %rbx,0x2328(%rdi)",
+      "differenceBytes": 184
+    },
+    {
+      "function": "Peripherals::tick",
+      "baseline": "add 0x2120(%rdi),%rsi",
+      "candidate": "add 0x21d8(%rdi),%rsi",
+      "differenceBytes": 184
+    }
+  ],
+  "sourceStatus": {
+    "symbol": "<esp32p4::periph::Peripherals>::source_status",
+    "baselineBytes": 1293,
+    "candidateBytes": 1219,
+    "baselineInstructions": 327,
+    "candidateInstructions": 304,
+    "inlining": "Independent symbol and an explicit call from refresh_irq exist in both binaries; no newly introduced loss of inlining was observed.",
+    "sourceChange": "The new optional I2C0 source 44 adds bit 12 to optional source word 1; the previous optional USB_OTG source 93 occupies word 2.",
+    "baselineTail": [
+      "mov $0x20000000,%eax",
+      "and 0x1e98(%rsi),%eax",
+      "or %r8d,%eax",
+      "mov %eax,0x8(%rdi)"
+    ],
+    "candidateTail": [
+      "movq 0x1f4c(%rsi),%xmm0",
+      "pand [RIP-relative mask],%xmm0",
+      "movd %edx,%xmm1",
+      "movd %eax,%xmm2",
+      "punpckldq %xmm1,%xmm2",
+      "por %xmm0,%xmm2",
+      "movq %xmm2,0x4(%rdi)"
+    ],
+    "finding": "The candidate merges cached words 1 and 2 together using SIMD. The rest of the source aggregation also changes register allocation and branch/arithmetic shape; the whole function is smaller despite adding an IRQ source.",
+    "frequencyContext": "The unchanged P4 Bus::tick returns 1, so Machine::after_round invokes refresh_irq each scheduling round, independently of whether I2C0 is active.",
+    "warning": "Do not equate the extra tail logic with a fixed net dynamic instruction increase for the complete function."
+  },
+  "preAccess": {
+    "symbol": "<esp32p4::periph::Peripherals as esp_periph::mmio::DeviceSet>::pre_access",
+    "baselineBytes": 793,
+    "candidateBytes": 1119,
+    "baselineInstructions": 211,
+    "candidateInstructions": 286,
+    "inlining": "Independent function symbols exist in both binaries.",
+    "baselinePrologue": [
+      "push %r15",
+      "push %r14",
+      "push %rbx",
+      "sub $0x10,%rsp"
+    ],
+    "candidatePrologue": [
+      "push %rbp",
+      "push %r15",
+      "push %r14",
+      "push %rbx",
+      "sub $0x18,%rsp",
+      "mov %rdi,%rbx"
+    ],
+    "finding": "The candidate saves/restores one additional register and copies the self pointer at function entry. New GPIO-routing calls remain inside the I2C0 address/configuration branch; no per-tick GPIO route parsing was added."
+  },
+  "recommendation": {
+    "firstCandidate": "Change only the P4 i2c0 field from I2c to Box<I2c>, and wrap its constructor in Box::new.",
+    "reason": "The already compiled binaries demonstrate a widespread +184-byte shift in old hot fields while retaining the relevant hot call structures. A local allocation change directly addresses this observed difference.",
+    "doNotCombine": [
+      "inline always",
+      "IRQ semantics changes",
+      "scheduler changes",
+      "pre_access helper extraction"
+    ],
+    "inliningAssessment": "The existing inline always option would introduce a new code-generation policy; no regression from newly outlined source_status/tick calls was observed to justify trying it first.",
+    "preservation": "Keep independent I2C0/I2C1 clocks, MMIO routing, optional activation, deadline delivery and pending IRQ behavior unchanged."
+  },
+  "priorMechanisms": [
+    {
+      "id": "EX220",
+      "reference": "docs/evidence/c3-c6-sha-dma-wifi-cal/README.md",
+      "relevance": "Prior native codegen evidence distinguishes newly cached optional IRQ words from layout changes; adding even a Box pointer can shift pre-existing fields."
+    },
+    {
+      "id": "EX212",
+      "reference": "docs/experiments.md",
+      "relevance": "Idle-layout/code-shape effects require measured validation; source-level coldness alone does not establish zero cost."
+    },
+    {
+      "id": "EX216",
+      "reference": "docs/evidence/i2c-addressing-timing/README.md",
+      "relevance": "Optional I2C deadlines and stopped-controller pending IRQs must retain their existing semantics."
+    }
+  ],
+  "commandTemplates": [
+    "file {baseline} {candidate}",
+    "nm -S --size-sort --demangle {baseline}",
+    "nm -S --size-sort --demangle {candidate}",
+    "objdump -d --demangle --no-show-raw-insn --start-address={symbol_start} --stop-address={symbol_start_plus_size} {baseline}",
+    "objdump -d --demangle --no-show-raw-insn --start-address={symbol_start} --stop-address={symbol_start_plus_size} {candidate}",
+    "sha256sum {baseline} {candidate}"
+  ],
+  "limits": [
+    "The completed original performance receipt is separate and was not modified or resampled by this review.",
+    "No static codegen observation proves that field movement or IRQ aggregation caused all or any specific fraction of the measured CPU regression.",
+    "Static instruction counts are not dynamic work, elapsed time, host instructions retired, cache misses, or branch mispredictions.",
+    "Box<I2c> can still change enclosing layouts by a pointer-sized amount; it is not claimed to restore all baseline offsets or performance before measurement.",
+    "Only the listed functions and relevant source paths were examined; this is not a complete native, WASM, firmware, or hardware correctness review.",
+    "Do not skip optional IRQ cache aggregation solely because active_optional is empty: a completed I2C controller can be idle while its completion interrupt remains asserted.",
+    "The proposed two-line candidate had not been built or measured when these findings were recorded."
+  ],
+  "candidates": [
+    {
+      "id": "inherent-source-status-inline-only",
+      "observedAt": "2026-11-22T11:20:18Z",
+      "sourceCommit": "75005c275d6f86004e5157f7d8aa61f1f8a3dd8e",
+      "artifact": {
+        "sha256": "f288c97de439c55b96ee8012c00450400fbfcf7a616c8e31f8fdc4bd4a02f489",
+        "bytes": 36224000
+      },
+      "change": "Add only #[inline(always)] to the P4 inherent Peripherals::source_status wrapper; the I2C0 Box experiment had been reverted.",
+      "goalAchieved": false,
+      "sourceStatusSymbols": {
+        "inherentPresent": false,
+        "dispatchPresent": true,
+        "dispatchBytes": 1359,
+        "dispatchInstructions": 331
+      },
+      "refreshIrq": {
+        "bytes": 766,
+        "instructions": 209,
+        "sourceStatusCallTarget": "<esp32p4::periph::Peripherals as esp_periph::mmio::Dispatch>::source_status",
+        "returnSlotBytes": 16,
+        "returnSlotReads": 5,
+        "finding": "Inlining the wrapper moved the remaining external call to the Dispatch method; the intended call boundary and stack return slot remained."
+      },
+      "preAccess": {
+        "bytes": 1119,
+        "instructions": 286,
+        "sourceStatusCallRemains": true
+      },
+      "otherFunctions": [
+        {
+          "symbol": "Peripherals::tick",
+          "bytes": 1308,
+          "instructions": 287
+        },
+        {
+          "symbol": "Bus::tick",
+          "bytes": 4544,
+          "instructions": 985
+        },
+        {
+          "symbol": "SocBus::next_deadline",
+          "bytes": 1170,
+          "instructions": 295
+        },
+        {
+          "symbol": "SocBus::periph_read",
+          "bytes": 462,
+          "instructions": 120
+        }
+      ],
+      "sourceSemantics": "The reviewed commit contains one attribute insertion only, without changes to IRQ aggregation, time advancement, or scheduling.",
+      "recommendationAtReview": "Do not start a timing campaign under the premise that this candidate eliminated the call: it did not.",
+      "limits": [
+        "No executable or firmware was run during this codegen review.",
+        "The newly external Dispatch body changes code shape; static function sizes do not predict performance."
+      ]
+    },
+    {
+      "id": "p4-dispatch-and-inherent-source-status-inline",
+      "observedAt": "2026-11-22T11:20:18Z",
+      "sourceCommit": "a03f2e5e8713156918bfa8f3031d5f8769782a91",
+      "boxRevertedAt": "ac02d1b18b9bc37a787ca2b40e0fdc4d2224d87d",
+      "artifact": {
+        "sha256": "e739dd748d62451d5ccf0e9f6b1836611ecd17c160e52bae893e837a35c9f659",
+        "bytes": 36226496
+      },
+      "changes": [
+        "Retain #[inline(always)] on the P4 inherent Peripherals::source_status wrapper.",
+        "Use the existing inline always option in the P4 device_set invocation.",
+        "Keep the original unboxed I2C0 field; do not alter shared macro implementation, IRQ conditions, clocks, deadlines, or scheduling."
+      ],
+      "goalAchieved": true,
+      "sourceStatusSymbols": {
+        "inherentPresent": false,
+        "dispatchPresent": false
+      },
+      "refreshIrq": {
+        "bytes": 1799,
+        "instructions": 453,
+        "sourceStatusCallRemains": false,
+        "sourceStatusReturnSlotPresent": false,
+        "rspAddressedDataOperands": 0,
+        "remainingCalls": [
+          "core::panicking::panic_bounds_check"
+        ],
+        "finding": "The complete source aggregation is inside refresh_irq. There is no external inherent or Dispatch source_status call and no stack data operand through %rsp; callee-saved register pushes/pops remain.",
+        "originalCandidateSeparatedFunctions": {
+          "refreshIrqBytes": 766,
+          "sourceStatusBytes": 1219,
+          "combinedBytes": 1985,
+          "refreshIrqInstructions": 209,
+          "sourceStatusInstructions": 304,
+          "combinedStaticInstructions": 513
+        },
+        "comparisonLimit": "Adding static sizes of separate functions is descriptive only; it is not a dynamic instruction count or a speed measurement."
+      },
+      "preAccess": {
+        "bytes": 2311,
+        "instructions": 563,
+        "sourceStatusCallRemains": false,
+        "finding": "The second production source-status call is also inlined. This MMIO function grows from the original candidate 1119 bytes / 286 instructions."
+      },
+      "otherFunctions": [
+        {
+          "symbol": "Peripherals::tick",
+          "bytes": 1308,
+          "instructions": 287,
+          "finding": "Same static size/count as the original candidate; its tick_optional call remains."
+        },
+        {
+          "symbol": "Bus::tick",
+          "bytes": 4544,
+          "instructions": 985,
+          "finding": "Same static size/count as the original candidate; the existing calls to the inherent Peripherals::tick wrapper remain."
+        },
+        {
+          "symbol": "SocBus::next_deadline",
+          "bytes": 1170,
+          "instructions": 295,
+          "finding": "Same static size/count as the original candidate."
+        },
+        {
+          "symbol": "SocBus::periph_read",
+          "bytes": 462,
+          "instructions": 120,
+          "finding": "Same static size/count as the original candidate."
+        }
+      ],
+      "sourceSemantics": "The cumulative candidate changes only the existing P4 inlining policies. This review found no source-level IRQ, timing, routing or scheduling behavior change; it did not execute a correctness test.",
+      "recommendationAtReview": "The intended code-generation change is now present, so a separately recorded exact-work performance comparison can test this candidate.",
+      "limits": [
+        "No build, executable run, firmware test, or benchmark was performed by this review.",
+        "No performance improvement is claimed before measurement.",
+        "Matching static sizes/counts for tick and deadline functions do not establish byte identity or full behavioral equivalence.",
+        "Inlining can change register pressure and instruction layout, and expands the MMIO pre_access body."
+      ]
+    }
+  ]
+}

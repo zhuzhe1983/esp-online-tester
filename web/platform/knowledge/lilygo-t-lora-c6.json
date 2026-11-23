@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-lora-c6",
   "title": "LILYGO T-Lora C6",
-  "summary": "Spark 将此商品归入T-Lora 系列，标注 MCU 为 ESP32-C6-MINI-1；具体硬件版次及配置待核对。",
+  "summary": "已实现 GPIO9 BOOT、GPIO7 低有效绿灯和真实 SPI 路由的 SX1262 数字命令／数据包；RX15/TX14、复位、BUSY 与 DIO1 独立验证，未模拟真实射频传播。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "T3-C6 / T-LoRa-C6 V1.0, SX1262/S62F module",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Lora C6",
@@ -52,6 +52,111 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2024-03-15",
+        "basis": "hardware-release",
+        "sourceUrl": "https://wiki.lilygo.cc/products/t-lora-series/t-lora-c6/",
+        "sourceId": "official-wiki-t-lora-c6",
+        "confidence": "medium",
+        "hardwareRevision": "T-LoRa-C6 V1.0",
+        "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-wiki-t-lora-c6"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": 0,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "boot": 9,
+          "leds": [
+            {
+              "id": "LED1",
+              "pin": 7,
+              "activeLow": true,
+              "color": "green"
+            }
+          ],
+          "radio": {
+            "controller": "SX1262",
+            "module": "S62F",
+            "interface": "SPI",
+            "sclk": 6,
+            "miso": 1,
+            "mosi": 0,
+            "cs": 18,
+            "reset": 21,
+            "busy": 22,
+            "dio1": 23,
+            "dio2": 20,
+            "txEnable": 14,
+            "rxEnable": 15,
+            "implemented": true,
+            "scope": "LoRa digital subset only; DIO2 output and RF analog circuit are not modeled"
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+        "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+        "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+        "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp",
+        "LilyGo-LoRa-Series-tree",
+        "official-wiki-t-lora-c6",
+        "official-store-shopify-1",
+        "espressif-c6-psram"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "adapter-source-conflicts",
+      "label": "版本冲突与容量依据",
+      "value": {
+        "sourceConflicts": [],
+        "memoryEvidence": {
+          "flash": "Official T3-C6 hardware table: ESP32-C6-MINI-1U,4MB Quad-SPI",
+          "psram": "C6 external PSRAM unsupported",
+          "sourceIds": [
+            "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+            "espressif-c6-psram"
+          ]
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+        "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+        "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+        "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp",
+        "LilyGo-LoRa-Series-tree",
+        "official-wiki-t-lora-c6",
+        "official-store-shopify-1",
+        "espressif-c6-psram"
+      ],
+      "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
     }
   ],
   "revisions": [],
@@ -80,9 +185,220 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-lora-c6-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_4.jpg?v=1722930955",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_4.jpg?v=1722930955",
+      "fetchedAt": "2026-11-22T06:57:41Z",
+      "bytes": 62423,
+      "sha256": "c3dacb4468ab19625de6a4ea8c2b3e9458651e1e49b9d6429aa52d661556ee20",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lora c6 official photo 0",
+      "archiveName": "lilygo-t-lora-c6-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-lora-c6-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_1.jpg?v=1722930955",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_1.jpg?v=1722930955",
+      "fetchedAt": "2026-11-22T06:57:42Z",
+      "bytes": 58917,
+      "sha256": "802536b20143b6a7542696236e93f1de7e754fc2d6eada3e339ca59238e25f16",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lora c6 official photo 1",
+      "archiveName": "lilygo-t-lora-c6-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-lora-c6-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_2.jpg?v=1722930955",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_2.jpg?v=1722930955",
+      "fetchedAt": "2026-11-22T06:57:42Z",
+      "bytes": 43273,
+      "sha256": "55f2ad34a884f1b3bb5b80f5fb1916e011c2d2194aa2dc2799ee60828e6992e5",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t lora c6 official photo 2",
+      "archiveName": "lilygo-t-lora-c6-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t-lora-c6",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-lora-series/t-lora-c6/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t-lora-series/t-lora-c6/index.md",
+      "fetchedAt": "2026-11-22T06:43:28Z",
+      "mediaType": "text/plain",
+      "bytes": 6150,
+      "sha256": "04c4cd95a175a1cf1c743b9724311eaeeba2cd417e7385995ac011fdf5abe95c",
+      "gitBlobSha": "1a8678b27b6013427e0606bcdd2c2ae27c0cbdc3",
+      "path": "en/products/t-lora-series/t-lora-c6/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "official wiki t lora c6",
+      "kind": "official-product-document",
+      "archiveName": "en__products__t-lora-series__t-lora-c6__index.md"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "docs/en/t3_c6_sx1262/t3_c6_sx1262_hw.md",
+      "id": "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+      "gitBlobSha": "a0d28a339daebe1c7094993628156d69a25463b1",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_c6_sx1262/t3_c6_sx1262_hw.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/docs/en/t3_c6_sx1262/t3_c6_sx1262_hw.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "d1ffe5fd809734e422a23f154eb8823e55a4d97e1d8b1903fcdcfd3a1d8b04ea",
+      "bytes": 6235,
+      "archiveName": "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series / docs/en/t3_c6_sx1262/t3_c6_sx1262_hw.md",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "schematic/T3-C6_V1.0.pdf",
+      "id": "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+      "gitBlobSha": "fde161872163f0a282e9a1bbfbc44b01fff43fa6",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/schematic/T3-C6_V1.0.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/schematic/T3-C6_V1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "feca2692a010696b75c4347f48fff44f28a03d43f1d257ebf6b0da13230c6aa6",
+      "bytes": 360606,
+      "archiveName": "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series / schematic/T3-C6_V1.0.pdf",
+      "kind": "manufacturer-schematic",
+      "mediaType": "application/pdf",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "examples/LoRa/T3C6/SX1262_PingPong/SX1262_PingPong.ino",
+      "id": "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+      "gitBlobSha": "2237fa8efc3444b91b769a3f194a4f2192a074a7",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/SX1262_PingPong.ino",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/SX1262_PingPong.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:53:06Z",
+      "sha256": "27896858ea964ea0a82cb587479e0280e942e211b354d2072310570ed08dd8a6",
+      "bytes": 4923,
+      "archiveName": "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series / examples/LoRa/T3C6/SX1262_PingPong/SX1262_PingPong.ino",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino.raw"
+    },
+    {
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "path": "lib/RadioLib/src/Module.cpp",
+      "id": "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp",
+      "gitBlobSha": "5adb48c6a416a185405a8f1ca137ee908876d10f",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/RadioLib/src/Module.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/lib/RadioLib/src/Module.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T07:57:54Z",
+      "sha256": "6899ee39319d95fe48289b3756ed00455501456d504425ab5ca7b561272ddc05",
+      "bytes": 19351,
+      "archiveName": "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp.raw",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series / lib/RadioLib/src/Module.cpp",
+      "kind": "manufacturer-source",
+      "mediaType": "text/plain",
+      "sourceCachePath": "target/lilygo-riscv-additional-sources/LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp.raw"
+    },
+    {
+      "url": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-LoRa-Series/git/trees/HEAD?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:45:14Z",
+      "mediaType": "application/json",
+      "transport": "GitHub connector; exact UTF-8 content snapshot",
+      "id": "LilyGo-LoRa-Series-tree",
+      "title": "Official LilyGo-LoRa-Series complete tree snapshot",
+      "kind": "manufacturer-repository-tree",
+      "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/LilyGo-LoRa-Series/git/trees/HEAD?recursive=1",
+      "sha256": "0656e4ddddf254b8d992f74bc8e5eb78161f2a1e29f043e756d4c5578fbd9134",
+      "bytes": 1491001,
+      "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "truncated": false,
+      "entryCount": 5348,
+      "archiveName": "Xinyuan-LilyGO__LilyGo-LoRa-Series.tree.json",
+      "archiveOwner": "model source audit cache",
+      "notes": "GitHub connector normalized snapshot. The top-level sha is a pinned revision; its object type is not inferred from the trees endpoint.",
+      "sourceCachePath": "target/lilygo-model-audit/Xinyuan-LilyGO__LilyGo-LoRa-Series.tree.json"
+    },
+    {
+      "url": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "resolvedUrl": "https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/storage/psram.html",
+      "fetchedAt": "2026-11-22T07:07:06Z",
+      "bytes": 38300,
+      "sha256": "9f01971adeba15437d287ef9ad696fcd6d6dbcfd11b29d51734eb6803d474fd8",
+      "mediaType": "text/html",
+      "id": "espressif-c6-psram",
+      "status": "fetched",
+      "title": "Espressif FAQ: ESP32-C6 does not support external PSRAM",
+      "kind": "manufacturer-documentation",
+      "archiveName": "espressif-psram-faq.html",
+      "sourceCachePath": "target/lilygo-c6-sources/espressif-psram-faq.html"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-lora-c6-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_4.jpg?v=1722930955",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lora-c6/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-lora-c6-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_1.jpg?v=1722930955",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lora-c6/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-lora-c6-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/files/LILYGO-LORA_2.jpg?v=1722930955",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-lora-c6/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +411,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +418,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +428,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +438,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +448,271 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "official-example-binaries-linked-factory-identity-unconfirmed",
+    "sourceIds": [
+      "LilyGo-LoRa-Series-tree",
+      "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino"
+    ],
+    "candidates": [
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Ping.bin",
+        "path": "examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Ping.bin",
+        "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+        "gitBlobSha": "c09e590fb90b7511b082c673e56719c12a2596b7",
+        "bytes": 4194304,
+        "status": "linked",
+        "sourceId": "LilyGo-LoRa-Series-tree"
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Pong.bin",
+        "path": "examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Pong.bin",
+        "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+        "gitBlobSha": "dd1dc58e804ae8354640f70500e67d4ed1bc359c",
+        "bytes": 4194304,
+        "status": "linked",
+        "sourceId": "LilyGo-LoRa-Series-tree"
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3c6-v1.0-850mhz-reciver-20260715_0x0.bin",
+        "path": "firmware/t3c6-v1.0-850mhz-reciver-20260715_0x0.bin",
+        "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+        "gitBlobSha": "b773a0b0ca33edb36708406e4d459972b16ee73a",
+        "bytes": 956336,
+        "status": "linked",
+        "sourceId": "LilyGo-LoRa-Series-tree"
+      },
+      {
+        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3c6-v1.0-850mhz-sender-20260715_0x0.bin",
+        "path": "firmware/t3c6-v1.0-850mhz-sender-20260715_0x0.bin",
+        "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+        "gitBlobSha": "d8c36bbabb797c27098d4fa5548d458058cb746f",
+        "bytes": 956144,
+        "status": "linked",
+        "sourceId": "LilyGo-LoRa-Series-tree"
+      }
+    ],
+    "simulationVerified": false,
+    "binaryFetched": false,
+    "notes": "Official sender/receiver and Ping/Pong binaries are discovered. Their presence does not prove factory identity or successful boot; no binaries mirrored."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-lora-c6/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "official-wiki-t-lora-c6",
+      "lilygo-t-lora-c6-official-photo-0",
+      "lilygo-t-lora-c6-official-photo-1",
+      "lilygo-t-lora-c6-official-photo-2",
+      "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+      "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+      "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+      "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp",
+      "LilyGo-LoRa-Series-tree",
+      "espressif-c6-psram"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-lora-c6",
+    "status": "diagnostic",
+    "scope": "已实现 GPIO9 BOOT、GPIO7 低有效绿灯和真实 SPI 路由的 SX1262 数字命令／数据包；RX15/TX14、复位、BUSY 与 DIO1 独立验证，未模拟真实射频传播。",
+    "unsupported": [
+      "No RF propagation, link budget, antenna gain, modulation waveform, FSK, CAD or regulatory model; host packet input is explicit digital stimulus.",
+      "No Wi-Fi/BLE/802.15.4 network or analog power/battery behavior.",
+      "External I2C devices are not fabricated. Firmware must explicitly drive NRST high in this profile; high-impedance module reset bias is not characterized.",
+      "LED uses routed software GPIO, not a PWM brightness model. Factory firmware startup remains unverified."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-lora-c6",
+    "boardId": "lilygo-t-lora-c6",
+    "name": "LILYGO T-Lora C6",
+    "chip": "esp32c6",
+    "flashMB": 4,
+    "psramMB": 0,
+    "hardwareRevision": "T3-C6 / T-LoRa-C6 V1.0, SX1262/S62F module",
+    "display": null,
+    "sdCard": {
+      "slot": false,
+      "implemented": false
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 9,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "scope": "已实现 GPIO9 BOOT、GPIO7 低有效绿灯和真实 SPI 路由的 SX1262 数字命令／数据包；RX15/TX14、复位、BUSY 与 DIO1 独立验证，未模拟真实射频传播。",
+    "scopeEn": "Exact T3-C6 V1.0 GPIO and existing SX1262 digital command/packet subset through SPI2, GPIO NSS, reset, BUSY, DIO1 and mode-specific RX/TX switch gating. No physical RF propagation.",
+    "chronology": {
+      "date": "2024-03-15",
+      "basis": "hardware-release",
+      "sourceUrl": "https://wiki.lilygo.cc/products/t-lora-series/t-lora-c6/",
+      "sourceId": "official-wiki-t-lora-c6",
+      "confidence": "medium",
+      "hardwareRevision": "T-LoRa-C6 V1.0",
+      "notes": "Earliest dated hardware version explicitly listed in the official Version History. This is the manufacturer documentation date, not independently verified retail launch; undated and preview variants remain separate."
+    },
+    "sourceIds": [
+      "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+      "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+      "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+      "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp",
+      "LilyGo-LoRa-Series-tree",
+      "official-wiki-t-lora-c6",
+      "official-store-shopify-1",
+      "espressif-c6-psram"
+    ],
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "trialAvailable": false,
+      "hardwareValidated": false
+    },
+    "unsupported": [
+      "No RF propagation, link budget, antenna gain, modulation waveform, FSK, CAD or regulatory model; host packet input is explicit digital stimulus.",
+      "No Wi-Fi/BLE/802.15.4 network or analog power/battery behavior.",
+      "External I2C devices are not fabricated. Firmware must explicitly drive NRST high in this profile; high-impedance module reset bias is not characterized.",
+      "LED uses routed software GPIO, not a PWM brightness model. Factory firmware startup remains unverified."
+    ],
+    "conflicts": [
+      {
+        "fact": "LED polarity",
+        "sources": [
+          "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+          "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino"
+        ],
+        "resolution": "Example defines LED_ON HIGH but only toggles in operation. Schematic VDD3V3→R47→LED1→GPIO7 proves active-low; electrical schematic is used."
+      },
+      {
+        "fact": "SX1262 interrupt signal name",
+        "sources": [
+          "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+          "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+          "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino"
+        ],
+        "resolution": "Hardware Markdown table calls GPIO23 DIO0; exact example and S62F schematic label it DIO1. DIO1 is implemented."
+      }
+    ],
+    "pins": {
+      "boot": 9,
+      "leds": [
+        {
+          "id": "LED1",
+          "pin": 7,
+          "activeLow": true,
+          "color": "green"
+        }
+      ],
+      "radio": {
+        "controller": "SX1262",
+        "module": "S62F",
+        "interface": "SPI",
+        "sclk": 6,
+        "miso": 1,
+        "mosi": 0,
+        "cs": 18,
+        "reset": 21,
+        "busy": 22,
+        "dio1": 23,
+        "dio2": 20,
+        "txEnable": 14,
+        "rxEnable": 15,
+        "implemented": true,
+        "scope": "LoRa digital subset only; DIO2 output and RF analog circuit are not modeled"
+      }
+    },
+    "radio": {
+      "controller": "SX1262",
+      "implemented": true,
+      "physicalRf": false,
+      "transport": "spi",
+      "txRxGated": true,
+      "sourceIds": [
+        "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+        "LilyGo-LoRa-Series-schematic-T3-C6_V1.0.pdf",
+        "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino",
+        "LilyGo-LoRa-Series-lib-RadioLib-src-Module.cpp"
+      ]
+    },
+    "memoryEvidence": {
+      "flash": "Official T3-C6 hardware table: ESP32-C6-MINI-1U,4MB Quad-SPI",
+      "psram": "C6 external PSRAM unsupported",
+      "sourceIds": [
+        "LilyGo-LoRa-Series-docs-en-t3_c6_sx1262-t3_c6_sx1262_hw.md",
+        "espressif-c6-psram"
+      ]
+    },
+    "factoryFirmwareInvestigation": {
+      "status": "official-example-binaries-linked-factory-identity-unconfirmed",
+      "sourceIds": [
+        "LilyGo-LoRa-Series-tree",
+        "LilyGo-LoRa-Series-examples-LoRa-T3C6-SX1262_PingPong-SX1262_PingPong.ino"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Ping.bin",
+          "path": "examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Ping.bin",
+          "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+          "gitBlobSha": "c09e590fb90b7511b082c673e56719c12a2596b7",
+          "bytes": 4194304,
+          "status": "linked",
+          "sourceId": "LilyGo-LoRa-Series-tree"
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Pong.bin",
+          "path": "examples/LoRa/T3C6/SX1262_PingPong/firmware/T3C6_SX126x_Pong.bin",
+          "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+          "gitBlobSha": "dd1dc58e804ae8354640f70500e67d4ed1bc359c",
+          "bytes": 4194304,
+          "status": "linked",
+          "sourceId": "LilyGo-LoRa-Series-tree"
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3c6-v1.0-850mhz-reciver-20260715_0x0.bin",
+          "path": "firmware/t3c6-v1.0-850mhz-reciver-20260715_0x0.bin",
+          "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+          "gitBlobSha": "b773a0b0ca33edb36708406e4d459972b16ee73a",
+          "bytes": 956336,
+          "status": "linked",
+          "sourceId": "LilyGo-LoRa-Series-tree"
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/blob/5f537f1783933eae79723478c80b69d8c1530b99/firmware/t3c6-v1.0-850mhz-sender-20260715_0x0.bin",
+          "path": "firmware/t3c6-v1.0-850mhz-sender-20260715_0x0.bin",
+          "pinnedGitRevision": "5f537f1783933eae79723478c80b69d8c1530b99",
+          "gitBlobSha": "d8c36bbabb797c27098d4fa5548d458058cb746f",
+          "bytes": 956144,
+          "status": "linked",
+          "sourceId": "LilyGo-LoRa-Series-tree"
+        }
+      ],
+      "simulationVerified": false,
+      "binaryFetched": false,
+      "notes": "Official sender/receiver and Ping/Pong binaries are discovered. Their presence does not prove factory identity or successful boot; no binaries mirrored."
+    }
+  }
 }

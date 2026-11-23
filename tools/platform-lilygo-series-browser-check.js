@@ -19,8 +19,10 @@ async (page) => {
     check(await page.locator('#product-family-field').isVisible(), 'LILYGO exposes the family selector.');
     check((await state()).family === '', 'Switching manufacturer starts with every family visible.');
     check((await state()).options.length === lilygo.length, 'All families lists concrete products exactly once.');
-    const familyCount = await page.locator('#product-select optgroup').count();
-    check(familyCount > 1, 'All-family models are grouped by family, without family pseudo-products.');
+    const familyCount = await page.locator('#product-family-select option').count()-1;
+    check(await page.locator('#product-select optgroup').count()===0, 'All-family products preserve newest-first chronology across families.');
+    const dates=(await state()).options.map(id=>lilygo.find(p=>p.id===id).chronology?.date||'');
+    check(dates.every((date,i)=>i===0||date<=dates[i-1]),'Known dates descend and unknown dates come last.');
     await page.locator('#product-family-select').selectOption('t-deck-series'); await settle();
     const deckState = await state();
     check(JSON.stringify([...deckState.options].sort()) === JSON.stringify(deck.map(p=>p.id).sort()), 'T-Deck filter contains every exact T-Deck variant only.');
@@ -30,7 +32,7 @@ async (page) => {
     check(selected.family === 't-deck-series' && selected.runHidden && selected.loadHidden, 'New Plus remains selectable but unavailable for execution.');
     check(selected.specs.includes('屏幕资料待核对'), 'Unknown display metadata is not presented as a screenless device.');
     await page.locator('#view-2d').click();
-    check((await state()).screenHidden, 'Unknown display without model does not fabricate a 2D screen.');
+    check((await state()).screenHidden, 'A model preview does not fabricate an unverified 2D framebuffer.');
     await page.screenshot({path:'output/lilygo-series-unavailable.png'});
     const shared = await page.evaluate(() => window.espTester.share({mode:'studio',autostart:false}));
     await page.goto(shared); await settle();

@@ -4,12 +4,12 @@
   "kind": "product",
   "catalogId": "lilygo-t-higrow",
   "title": "LILYGO T-Higrow",
-  "summary": "Spark 将此商品归入其他 T 系列产品，标注 MCU 为 ESP32；具体硬件版次及配置待核对。",
+  "summary": "已接入 HiGrow 的 GPIO0 BOOT 与 GPIO35 用户按键；土壤、光照、温湿度等传感器和浇水附件尚未模拟。",
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-10-28T05:20:04Z",
-  "hardwareRevision": "unknown; Spark product listing",
+  "updatedAt": "2026-11-22T09:33:51Z",
+  "hardwareRevision": "LilyGo-HiGrow manufacturer src/configuration.h target",
   "identity": {
     "manufacturer": "LILYGO",
     "sku": "T-Higrow",
@@ -52,6 +52,70 @@
         "spark-product-catalog"
       ],
       "notes": "商品标识不是硬件兼容性证明。"
+    },
+    {
+      "id": "adaptation-chronology",
+      "label": "排序日期及依据",
+      "value": {
+        "date": "2022-09-19",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-higrow",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "notes": "官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。"
+    },
+    {
+      "id": "adapter-hardware",
+      "label": "本次适配核对的硬件",
+      "value": {
+        "display": null,
+        "flashMb": 4,
+        "simulatedFlashMb": 4,
+        "flashMbBasis": "verified-profile",
+        "physicalPsramMb": null,
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true
+          },
+          {
+            "id": "user",
+            "name": "用户键",
+            "type": "button",
+            "pin": 35,
+            "activeLow": true
+          }
+        ],
+        "pins": {
+          "sensorI2c": {
+            "sda": 25,
+            "scl": 26,
+            "implemented": false
+          },
+          "sensorPower": {
+            "pin": 4,
+            "implemented": false
+          }
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "classic-lilygo-higrow-01e6d9ffed05",
+        "classic-lilygo-higrow-1e3f6cf83615",
+        "classic-lilygo-higrow-4446afd728a4",
+        "official-store-shopify-1"
+      ],
+      "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
     }
   ],
   "revisions": [],
@@ -80,9 +144,141 @@
         "commit": "0fd728e800d9ebaa5a15515b49aa6244f3453340",
         "committedAt": "2026-09-05T15:03:40Z"
       }
+    },
+    {
+      "id": "lilygo-t-higrow-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/G301-T-Higrow_4.jpg?v=1661495906",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/G301-T-Higrow_4.jpg?v=1661495906",
+      "fetchedAt": "2026-11-22T07:00:22Z",
+      "bytes": 50947,
+      "sha256": "dea176546d606a19ee76b320f11d048c855426141051ae0bf7f5461ccb3300b9",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-0.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t higrow official photo 0",
+      "archiveName": "lilygo-t-higrow-official-photo-0.jpg"
+    },
+    {
+      "id": "lilygo-t-higrow-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/G301-T-Higrow_10.jpg?v=1661495905",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/G301-T-Higrow_10.jpg?v=1661495905",
+      "fetchedAt": "2026-11-22T07:00:22Z",
+      "bytes": 44356,
+      "sha256": "5cef7b60bf1786fd6e1188aefd4c8c79da0552d5f605d9cc9af4cbe6c221ebf1",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-1.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t higrow official photo 1",
+      "archiveName": "lilygo-t-higrow-official-photo-1.jpg"
+    },
+    {
+      "id": "lilygo-t-higrow-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Higrow_5.jpg?v=1661495907",
+      "resolvedUrl": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Higrow_5.jpg?v=1661495907",
+      "fetchedAt": "2026-11-22T07:00:22Z",
+      "bytes": 361313,
+      "sha256": "dfef8e14830dfbc200b31f5dd49b6b61a1ab533741bc11a49b487d13b249687b",
+      "mediaType": "image/jpeg",
+      "status": "fetched",
+      "file": "reference-2.jpg",
+      "kind": "manufacturer-photo",
+      "title": "lilygo t higrow official photo 2",
+      "archiveName": "lilygo-t-higrow-official-photo-2.jpg"
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "classic-lilygo-higrow-01e6d9ffed05",
+      "repository": "Xinyuan-LilyGO/LilyGo-HiGrow",
+      "path": "README.MD",
+      "revision": "f5732ce6012e6ece349c9d1788bad4cf392c9aca",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "8079826aa80a8bb844fe0556efeddb402d88f7bd",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/README.MD",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/README.MD",
+      "fetchedAt": "2026-11-22T08:15:32Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 1891,
+      "sha256": "30088d085aee249e7468a90a8e66c8d5cdbea1a4e4637e73eed5444ca18c0264",
+      "archiveName": "classic-lilygo-higrow-01e6d9ffed05.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-higrow-01e6d9ffed05.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-HiGrow/README.MD"
+    },
+    {
+      "id": "classic-lilygo-higrow-1e3f6cf83615",
+      "repository": "Xinyuan-LilyGO/LilyGo-HiGrow",
+      "path": "src/configuration.h",
+      "revision": "f5732ce6012e6ece349c9d1788bad4cf392c9aca",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "6fd00bab97096b09bf674190ecfe9ce901f58dfa",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/src/configuration.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/src/configuration.h",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 3341,
+      "sha256": "c477d6b8cd4d37edbd49c86a5e5d86d273e3612e329d568bfba4aabf82f67855",
+      "archiveName": "classic-lilygo-higrow-1e3f6cf83615.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-higrow-1e3f6cf83615.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-HiGrow/src/configuration.h"
+    },
+    {
+      "id": "classic-lilygo-higrow-4446afd728a4",
+      "repository": "Xinyuan-LilyGO/LilyGo-HiGrow",
+      "path": "platformio.ini",
+      "revision": "f5732ce6012e6ece349c9d1788bad4cf392c9aca",
+      "revisionType": "pinned-git-revision",
+      "gitBlobSha": "9f50541ff136e84b54e4710cece2b5d9ad8916ff",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/platformio.ini",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-HiGrow/f5732ce6012e6ece349c9d1788bad4cf392c9aca/platformio.ini",
+      "fetchedAt": "2026-11-22T08:15:39Z",
+      "status": "fetched",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 550,
+      "sha256": "2cefa98330df1c5fbbf4148e36bc4acb7e855f3733d372f04e9109c5c2f90164",
+      "archiveName": "classic-lilygo-higrow-4446afd728a4.raw",
+      "sourceCachePath": "target/lilygo-classic-sources/classic-lilygo-higrow-4446afd728a4.raw",
+      "kind": "manufacturer-source",
+      "title": "LilyGo-HiGrow/platformio.ini"
     }
   ],
-  "assets": [],
+  "assets": [
+    {
+      "sourceId": "lilygo-t-higrow-official-photo-0",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/G301-T-Higrow_4.jpg?v=1661495906",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-higrow/reference-0.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-higrow-official-photo-1",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/G301-T-Higrow_10.jpg?v=1661495905",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-higrow/reference-1.jpg"
+    },
+    {
+      "sourceId": "lilygo-t-higrow-official-photo-2",
+      "url": "https://cdn.shopify.com/s/files/1/0617/7190/7253/products/T-Higrow_5.jpg?v=1661495907",
+      "kind": "manufacturer-photo",
+      "localAsset": "./assets/lilygo-t-higrow/reference-2.jpg"
+    }
+  ],
   "unknowns": [
     {
       "id": "hardware-variant",
@@ -95,26 +291,6 @@
       "notes": "商品页可能覆盖多个硬件、射频或屏幕选项；需要逐个核对。"
     },
     {
-      "id": "memory",
-      "label": "Flash / PSRAM",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "未从 Spark 摘要推导容量；目录 null 表示未知。"
-    },
-    {
-      "id": "display",
-      "label": "屏幕、触摸、总线与控制器",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "display:null 配 displayStatus:unknown 表示待核对，不代表无屏幕。"
-    },
-    {
       "id": "inputs-interfaces",
       "label": "按键、引脚、接口与电气参数",
       "value": null,
@@ -122,7 +298,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "空 controls/interfaces 仅表示尚未建立配置。"
+      "notes": "已核实的按键与接线见 adapter-hardware；其余接口与电气细节仍需按具体硬件确认。"
     },
     {
       "id": "mechanical",
@@ -132,7 +308,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "本轮只补商品列表，未完成该产品的模型检索与验证。"
+      "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
       "id": "factory-firmware",
@@ -142,7 +318,7 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "已检查 Spark 商品目录及其商品页/源码链接（如有）；本轮未逐个抓取、核验硬件版次和出厂镜像，不设置默认固件。"
+      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
     },
     {
       "id": "runtime",
@@ -152,12 +328,158 @@
       "sourceIds": [
         "spark-product-catalog"
       ],
-      "notes": "尚未完成板级适配，无执行或实机验证。"
+      "notes": "板级协议和调试程序的实现范围见 runtimeSupport；完整出厂固件、未实现外设与实机结果仍未验证。"
+    },
+    {
+      "id": "memory",
+      "label": "实体存储容量仍需核对",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "classic-lilygo-higrow-01e6d9ffed05",
+        "classic-lilygo-higrow-1e3f6cf83615",
+        "classic-lilygo-higrow-4446afd728a4",
+        "official-store-shopify-1"
+      ],
+      "notes": "部分实体 Flash / PSRAM 容量未确认；运行时字段是所选调试或编译配置，PSRAM 为 0 不表示实板没有该器件。冲突、已知候选值和容量依据见本型号适配来源记录。"
     }
   ],
   "collectionNotes": [
     "目录来源的 generated_at 为 2026-06-26；抓取时间不代表商品发布日期或桌面端最新目录。",
-    "本轮按用户要求先补齐商品列表；原先六款继续作为硬件、模型与固件适配的优先队列。",
-    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。"
-  ]
+    "商品图片未热链；未把预装软件名称、系列关系或 Spark 固件标签当作运行兼容证据。",
+    "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
+  ],
+  "factoryFirmwareInvestigation": {
+    "status": "not-found-in-inspected-pages",
+    "sourceIds": [
+      "official-store-shopify-1"
+    ],
+    "links": [],
+    "evidenceNotes": [],
+    "binaryFetched": false,
+    "simulationVerified": false,
+    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+  },
+  "modelReview": {
+    "model": {
+      "type": "source-derived",
+      "url": "./assets/lilygo-t-higrow/model.json",
+      "status": "partial",
+      "basis": "photo-derived",
+      "mode": "photo-derived",
+      "notes": "官方多视图照片轮廓粗模；厚度、绝对尺度及实体屏幕位置未标定。"
+    },
+    "mode": "photo-derived",
+    "sourceIds": [
+      "official-store-shopify-1",
+      "lilygo-t-higrow-official-photo-0",
+      "lilygo-t-higrow-official-photo-1",
+      "lilygo-t-higrow-official-photo-2",
+      "classic-lilygo-higrow-01e6d9ffed05",
+      "classic-lilygo-higrow-1e3f6cf83615",
+      "classic-lilygo-higrow-4446afd728a4"
+    ]
+  },
+  "runtimeSupport": {
+    "board": "lilygo-t-higrow",
+    "status": "diagnostic",
+    "scope": "已接入 HiGrow 的 GPIO0 BOOT 与 GPIO35 用户按键；土壤、光照、温湿度等传感器和浇水附件尚未模拟。",
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "DHT11, BH1750, BME280/SHT3X variants, soil/salt/battery ADC and power domain are unmodeled. No fabricated environmental data is returned.",
+      "RGB18 and motor19 references may belong to optional watering hardware; no onboard RGB or pump is asserted from those header constants alone.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "firmwareCompatibility": "No factory image is claimed working by a board protocol test."
+  },
+  "adapterProfile": {
+    "productId": "lilygo-t-higrow",
+    "boardId": "lilygo-t-higrow",
+    "name": "LILYGO T-Higrow",
+    "chip": "esp32",
+    "flashMB": 4,
+    "physicalPsramMB": null,
+    "psramMB": 0,
+    "psramMbBasis": "unknown-physical-capacity",
+    "hardwareRevision": "LilyGo-HiGrow manufacturer src/configuration.h target",
+    "display": null,
+    "physicalDisplay": false,
+    "pins": {
+      "sensorI2c": {
+        "sda": 25,
+        "scl": 26,
+        "implemented": false
+      },
+      "sensorPower": {
+        "pin": 4,
+        "implemented": false
+      }
+    },
+    "controls": [
+      {
+        "id": "boot",
+        "name": "BOOT",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true
+      },
+      {
+        "id": "user",
+        "name": "用户键",
+        "type": "button",
+        "pin": 35,
+        "activeLow": true
+      }
+    ],
+    "runtimeLevel": "partial",
+    "verification": {
+      "sourcePinsVerified": true,
+      "nativeProtocolTests": true,
+      "nativeGuestProbeVerified": false,
+      "factoryBootVerified": false,
+      "wasmFirmwareVerified": false,
+      "factoryTrialAvailable": false,
+      "hardwareValidated": false,
+      "tests": [
+        "independent_classic_revisions_keep_their_button_and_led_polarities"
+      ]
+    },
+    "scope": "已接入 HiGrow 的 GPIO0 BOOT 与 GPIO35 用户按键；土壤、光照、温湿度等传感器和浇水附件尚未模拟。",
+    "scopeEn": "HiGrow exact configuration BOOT0/user35; environmental sensors, analog soil/salt/battery and optional watering/LoRa modules unmodeled.",
+    "sourceIds": [
+      "classic-lilygo-higrow-01e6d9ffed05",
+      "classic-lilygo-higrow-1e3f6cf83615",
+      "classic-lilygo-higrow-4446afd728a4",
+      "official-store-shopify-1"
+    ],
+    "unsupported": [
+      "No complete official factory, Meshtastic or SoftRF firmware has been executed; native MMIO tests establish only the stated board protocol subset.",
+      "No physical hardware validation, radio propagation, analog supply/battery model or USB electrical emulation is claimed.",
+      "DHT11, BH1750, BME280/SHT3X variants, soil/salt/battery ADC and power domain are unmodeled. No fabricated environmental data is returned.",
+      "RGB18 and motor19 references may belong to optional watering hardware; no onboard RGB or pump is asserted from those header constants alone.",
+      "Physical PSRAM capacity is not verified for this exact SKU; the runtime explicitly allocates 0 MiB. This is not a claim that the physical board has no PSRAM."
+    ],
+    "chronology": {
+      "date": "2022-09-19",
+      "basis": "storefront-publication",
+      "sourceUrl": "https://lilygo.cc/products/t-higrow",
+      "sourceId": "official-store-shopify-1",
+      "confidence": "low",
+      "hardwareRevision": "unknown; Spark product listing",
+      "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+    },
+    "priorityRank": 110,
+    "factoryFirmwareInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    }
+  }
 }

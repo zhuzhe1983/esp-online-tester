@@ -14,11 +14,36 @@ const compareManufacturers = (a,b) => {
   const left=manufacturerLabel(a),right=manufacturerLabel(b);
   return Number(!/^[A-Za-z0-9]/.test(left))-Number(!/^[A-Za-z0-9]/.test(right)) || manufacturerCollator.compare(left,right);
 };
-export const productOptionLabel = product => product.runtime?.board ? product.name : `${product.name} × 尚未适配`;
+export const productOptionLabel = product => product.runtime?.board ? product.runtime.status==='diagnostic' ? `${product.name} · 调试适配` : product.name : product.model ? `${product.name} · 模型预览` : `${product.name} × 尚未适配`;
+// Manufacturer revision/announcement dates take precedence when available.
+// Storefront publication is an explicitly labelled proxy, never a claim of a
+// retail launch. Missing or malformed dates sort after the dated LilyGO queue.
+const chronologyTime = product => {
+  const value=product.chronology?.date;
+  if(typeof value!=='string'||!/^\d{4}-\d\d-\d\d$/.test(value))return -Infinity;
+  const time=Date.parse(value+'T00:00:00Z');
+  return Number.isFinite(time)&&new Date(time).toISOString().slice(0,10)===value?time:-Infinity;
+};
+const compareProductNames = (a,b) => collator.compare(a.name.replace(/^M5Stack /,''),b.name.replace(/^M5Stack /,'')) || collator.compare(a.id,b.id);
+export function compareProductChronology(a,b) {
+  const left=chronologyTime(a),right=chronologyTime(b);
+  return (left===right?0:left<right?1:-1)||compareProductNames(a,b);
+}
+export function productChronologyLabel(product) {
+  if(chronologyTime(product)===-Infinity)return '';
+  const basis={'hardware-release':'官方硬件版次日期','official-announcement':'官方公告日期','storefront-publication':'官方上架日期（代用）','repository-first-seen':'官方仓库最早记录（代用）'}[product.chronology.basis]||'资料日期';
+  return `${product.chronology.date} · ${basis}`;
+}
+const orderProducts = products => {
+  const sorted=[...products].sort(compareProductNames);
+  const lilygo=sorted.filter(p=>p.manufacturer==='LILYGO').sort(compareProductChronology);
+  let next=0;
+  return sorted.map(p=>p.manufacturer==='LILYGO'?lilygo[next++]:p);
+};
 // Picker visibility never changes the full catalog or scene identity.
 export const isPickerProduct = product => product.pickerVisible !== false;
 export const manufacturerNames = products => [...new Set(products.filter(isPickerProduct).map(item => item.manufacturer))].sort(compareManufacturers);
-export const productsForManufacturer = (products, manufacturer, familyId = '') => products.filter(item => isPickerProduct(item) && item.manufacturer === manufacturer && (!familyId || item.family?.id === familyId)).sort((a,b) => collator.compare(a.name.replace(/^M5Stack /,''),b.name.replace(/^M5Stack /,'')) || collator.compare(a.id,b.id));
+export const productsForManufacturer = (products, manufacturer, familyId = '') => orderProducts(products.filter(item => isPickerProduct(item) && item.manufacturer === manufacturer && (!familyId || item.family?.id === familyId)));
 export const visualVariantsForProduct = (products, parentId) => products.filter(item => parentId && item.visualVariantOf === parentId && item.id !== parentId && item.model).sort((a,b) => collator.compare(a.name,b.name));
 export function productFamilies(products, manufacturer) {
   const families = new Map();
@@ -45,7 +70,7 @@ export function productIdentityLabel(product) {
 }
 export function searchProducts(products, query) {
   const words = String(query).normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
-  return products.filter(isPickerProduct).filter(item => { const text = [item.name,item.manufacturer,item.family?.name,item.family?.id,item.sku,item.id,item.module,item.chip,item.hardwareRevision,item.providers?.['lilygo-spark']?.productId,...(Array.isArray(item.aliases)?item.aliases:[])].filter(Boolean).join(' ').normalize('NFKC').toLowerCase(); return words.every(word => text.includes(word)); }).sort((a,b) => collator.compare(a.name,b.name));
+  return orderProducts(products.filter(isPickerProduct).filter(item => { const text = [item.name,item.manufacturer,item.family?.name,item.family?.id,item.sku,item.id,item.module,item.chip,item.hardwareRevision,item.providers?.['lilygo-spark']?.productId,...(Array.isArray(item.aliases)?item.aliases:[])].filter(Boolean).join(' ').normalize('NFKC').toLowerCase(); return words.every(word => text.includes(word)); }));
 }
 export const accessoryBrand = item => item.manufacturer || 'DIY';
 export const accessoryInterface = item => item.connector?.type || '未标注';

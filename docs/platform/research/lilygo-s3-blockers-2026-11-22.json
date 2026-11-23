@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-22T08:25:35Z",
+  "items": [
+    {
+      "productId": "lilygo-t-radar",
+      "correctedChip": "A121",
+      "controllerRole": "radar sensor / host expansion module",
+      "standaloneCpu": null,
+      "status": "source-conflict-blocker",
+      "runtimeBoard": null,
+      "scope": "官方资料把 T-Radar 定义为 A121 60 GHz 雷达扩展模块，未给出独立 ESP32-S3 主控电路；不能挂到虚构 S3 板执行固件。保留精确商品的模型调试与资料页。",
+      "scopeEn": "A121 radar extension requires an external host. No independently documented S3 CPU or standalone firmware target was found, so no S3 BoardModel is registered.",
+      "displayEvidence": {
+        "present": false,
+        "sourceIds": [
+          "official-wiki-t-radar"
+        ],
+        "note": "Official description identifies a radar expansion and compatible external hosts, not a built-in screen."
+      },
+      "sourceIds": [
+        "official-wiki-t-radar",
+        "official-store-shopify-1"
+      ],
+      "chronology": {
+        "date": "2025-06-24",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t-radar",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 12
+    },
+    {
+      "productId": "lilygo-t3-tcxo",
+      "correctedChip": "esp32",
+      "controllerRole": "ESP32-PICO-D4 main CPU; separate SX1276 radio",
+      "status": "corrected-chip-delegated-to-classic-esp32",
+      "runtimeBoard": null,
+      "scope": "官方商品页和 wiki 主控为经典 ESP32 / ESP32-PICO-D4，不是 ESP32-S3。移交经典 ESP32 适配；S3 工厂不注册此 ID，避免错误指令/外设地址映射。",
+      "scopeEn": "Exact product is classic ESP32, not S3. Board runtime is handled by the classic ESP32 lane; this record only corrects chip routing.",
+      "displayEvidence": {
+        "present": true,
+        "controller": "SSD1306",
+        "width": 128,
+        "height": 64,
+        "sda": 21,
+        "scl": 22,
+        "sourceIds": [
+          "official-store-shopify-1",
+          "official-wiki-t3-txco",
+          "lora-utilities"
+        ]
+      },
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t3-txco",
+        "lora-utilities"
+      ],
+      "sourceConflicts": [
+        {
+          "issue": "Wiki radio CS7 conflicts with the exact T3_V3_0_SX1276_TCXO header CS18.",
+          "resolution": "Classic runtime must use exact target header and independently review schematic; no S3 sibling alias."
+        }
+      ],
+      "chronology": {
+        "date": "2024-11-27",
+        "basis": "storefront-publication",
+        "sourceUrl": "https://lilygo.cc/products/t3-tcxo",
+        "sourceId": "official-store-shopify-1",
+        "confidence": "low",
+        "hardwareRevision": "unknown; Spark product listing",
+        "notes": "Official Shopify published_at is a provisional listing-order proxy, not a confirmed hardware release. It can reflect republishing and software-preloaded editions; created_at is retained separately."
+      },
+      "priorityRank": 24
+    }
+  ],
+  "sources": [
+    {
+      "id": "official-wiki-t-radar",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-radar/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/other/t-radar/index.md",
+      "fetchedAt": "2026-11-22T06:42:34.156554Z",
+      "mediaType": "text/plain",
+      "bytes": 3618,
+      "sha256": "dd3b6831230321c7868d1c66cef6a65b6aa1588d3e8578a60abdf332e6779ccc",
+      "gitBlobSha": "93ba13d53d37c11fc6a0f679b84738adde4ef682",
+      "path": "en/products/other/t-radar/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/other/t-radar/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__other__t-radar__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-store-shopify-1",
+      "status": "fetched",
+      "url": "https://lilygo.cc/products.json?limit=250&page=1",
+      "resolvedUrl": "https://lilygo.cc/products.json?limit=250&page=1",
+      "fetchedAt": "2026-11-22T06:40:59Z",
+      "mediaType": "application/json",
+      "bytes": 2507924,
+      "sha256": "104c2d8fd1db5a4292c535622aba59f69185931038e6934e1a32df2e31799ba1",
+      "title": "official-store-shopify-1",
+      "kind": "official-documentation",
+      "archiveName": "official-store-shopify-1.source",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-wiki-t3-txco",
+      "status": "fetched",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-txco/index.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/documentation/4cee08b29a7fd174915da3dfbed5caac17328b61/en/products/t3-series/t3-txco/index.md",
+      "fetchedAt": "2026-11-22T06:43:58.471508Z",
+      "mediaType": "text/plain",
+      "bytes": 6892,
+      "sha256": "fc530a152cf498d7204bb85ad0d201004727d90d8f6957d71e08bb94a6353df3",
+      "gitBlobSha": "8a13e91ba99b57bafb3bfd7042f5b7ddc85c00ac",
+      "path": "en/products/t3-series/t3-txco/index.md",
+      "gitTreeSha": "87ffff2a3c69d63edd2188d683692bc6b6395e52",
+      "revision": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "revisionKind": "git-commit",
+      "commit": "4cee08b29a7fd174915da3dfbed5caac17328b61",
+      "gitRevisionEvidence": {
+        "url": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "resolvedUrl": "https://api.github.com/repos/Xinyuan-LilyGO/documentation/git/commits/4cee08b29a7fd174915da3dfbed5caac17328b61",
+        "status": "fetched",
+        "fetchedAt": "2026-11-22T07:38:51Z",
+        "mediaType": "application/json",
+        "bytes": 1156,
+        "sha256": "3a7599230d379c76ee1d0565cdd6bbe91130854a7e9da6e9672bd7dc53bf5615",
+        "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
+        "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__documentation.raw"
+      },
+      "title": "en/products/t3-series/t3-txco/index.md",
+      "kind": "official-documentation",
+      "archiveName": "en__products__t3-series__t3-txco__index.md",
+      "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "lora-utilities",
+      "repository": "Xinyuan-LilyGO/LilyGo-LoRa-Series",
+      "path": "examples/Factory/utilities.h",
+      "revision": "5f537f1783933eae79723478c80b69d8c1530b99",
+      "gitBlobSha": "bf37221526ccc6143995d1e495d65cdec0dc407c",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/examples/Factory/utilities.h",
+      "status": "fetched",
+      "title": "Xinyuan-LilyGO/LilyGo-LoRa-Series/examples/Factory/utilities.h",
+      "kind": "official-source",
+      "fetchedAt": "2026-11-22T08:08:57Z",
+      "sha256": "1f234017d45099f90e3a5cb7fb6ed16b78dfe11fa57f2b82a58f9d1b9411f733",
+      "bytes": 28783,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "lora-utilities.source",
+      "archiveStorage": "Ignored source cache; pinned public URL and hash permit re-fetch."
+    }
+  ],
+  "notes": [
+    "These are evidence corrections, not supported runtime profiles. A later exact classic ESP32 profile takes precedence for T3 TCXO."
+  ]
+}
