@@ -64,8 +64,17 @@ test('T4-S3 and T5 S3 Pro place their live display on the assembled cover', asyn
     assert.ok(bottom < y - height / 2 && top > y + height / 2, id);
     assert.ok(z > front && z - front < 0.05, id);
 
-    const displayGroup = model.presentation.inspectionGroups.find(group => group.parts.includes('live-display'));
-    assert.ok(displayGroup?.parts.includes(coverName), id);
-    assert.ok(displayGroup.offsetMm[2] > 0, id);
+    const offsetOf = partName => model.presentation.inspectionGroups
+      .find(group => group.parts.includes(partName))?.offsetMm ?? [0, 0, 0];
+    assert.deepEqual(offsetOf('live-display'), offsetOf(coverName), id);
+    assert.deepEqual(offsetOf('main-pcb'), offsetOf(id === 'lilygo-t4-s3' ? 'expansion-header' : 'usb-c'), id);
+    if (id === 'lilygo-t4-s3') {
+      assert.deepEqual(offsetOf('live-display'), offsetOf('main-pcb'), id);
+      assert.ok(offsetOf('printed-front-housing')[2] > offsetOf('main-pcb')[2], id);
+      assert.ok(offsetOf('printed-rear-housing')[2] < offsetOf('main-pcb')[2], id);
+    } else {
+      assert.ok(offsetOf('live-display')[2] > offsetOf('main-pcb')[2], id);
+      assert.ok(offsetOf('enclosure')[2] < offsetOf('main-pcb')[2], id);
+    }
   }
 });
