@@ -1,20 +1,8 @@
 // Run with the Playwright CLI wrapper in a task-owned headless session.
 async page => {
   await page.waitForFunction(() => !!window.espTester);
-  const started = await page.evaluate(async () => {
-    const {loadCatalog, createDefaultScene} = await import('./catalog.js');
-    const catalog = await loadCatalog();
-    const product = catalog.products.find(item => item.id === 'm5stack-k016-p');
-    const factory = catalog.firmwares.find(item => item.id === product.defaultFirmwareId);
-    const scene = createDefaultScene(catalog, product.id);
-    scene.firmware = factory.source;
-    await espTester.configure(scene);
-    const capabilities = await espTester.capabilities();
-    if (capabilities.audio.input.available) throw Error('Unexpected public PCM input');
-    const loaded = await espTester.loadFirmware();
-    await espTester.start();
-    return {factory: factory.source, loaded};
-  });
+  const workers = [];
+  page.on('worker', worker => workers.push(new URL(worker.url()).pathname));
   const observe = () => page.evaluate(() => espTester.observe());
 
   async function until(target) {
@@ -59,7 +47,29 @@ async page => {
   }
 
   try {
+    const started = await page.evaluate(async () => {
+      const {loadCatalog, createDefaultScene} = await import('./catalog.js');
+      const catalog = await loadCatalog();
+      const product = catalog.products.find(item => item.id === 'm5stack-k016-p');
+      const factory = catalog.firmwares.find(item => item.id === product.defaultFirmwareId);
+      const scene = createDefaultScene(catalog, product.id);
+      scene.firmware = factory.source;
+      await espTester.configure(scene);
+      const capabilities = await espTester.capabilities();
+      if (capabilities.audio.input.available) throw Error('Unexpected public PCM input');
+      const {firmware} = await espTester.loadFirmware();
+      const flash = firmware.artifacts.find(artifact => artifact.kind === 'flash');
+      const rom = firmware.artifacts.find(artifact => artifact.kind === 'rom');
+      if (flash?.sha256 !== factory.source.sha256 || !rom || firmware.appDirect || firmware.stubs.length) {
+        throw Error('Expected the pinned full-ROM factory image');
+      }
+      await espTester.start();
+      return {firmwareSha256: flash.sha256, romSha256: rom.sha256, mode: firmware.executionMode};
+    });
     await until(11);
+    if (!workers.some(path => path.endsWith('/wasm/worker.js'))) {
+      throw Error('Expected the normal Wasm Worker');
+    }
     const boot = await frame('no-input IMU');
     if (boot.nonblack === 0) throw Error('Expected the factory IMU screen');
     const tilts = [];
@@ -90,7 +100,7 @@ async page => {
     if (microphone.nonblack || refresh.nonblack || refresh.frame <= microphone.frame) {
       throw Error('Expected the guest to keep drawing its silent FFT');
     }
-    return {started, frames: [boot, ...tilts, rtc, next, microphone, refresh]};
+    return {started, workers, frames: [boot, ...tilts, rtc, next, microphone, refresh]};
   } finally {
     await page.evaluate(() => espTester.dispose());
   }
