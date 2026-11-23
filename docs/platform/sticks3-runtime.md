@@ -42,3 +42,5 @@ node --test tools/platform-sticks3-test.mjs
 Rust 测试覆盖屏幕窗口四角、错误 SPI/I²C 路由、PM1 掉电、背光和重启、BMI270 配置及寄存器采样。SoC 按键测试运行 Xtensa 指令验证单键、组合、保持和释放。目录测试覆盖 8 MiB 芯片布局、按键语义、模型几何摘要和 M5Burner 错误映射。
 
 Headless Chromium 从真实 S3 ROM 启动合并诊断镜像。固件串口报告了 8 MiB PSRAM、PM1 `50`、BMI270 `24`、ES8311 `83/11`，并完成 BMI270 配置。默认 3D 视角中，正面 A 和右侧 B 点按均在固件里改变画面。2D 画面随键盘 A、A+B、B、全部释放依次呈现红、蓝、绿、白的中心方块。虚拟 X 轴 1 g 姿态使固件读数从 0 变为 4096。嵌入页恢复 K150 场景及 3D 模型，分享链接不携带本地固件。帧和镜像摘要见 [浏览器诊断记录](evidence/sticks3-runtime-20261122/verification.json)。
+
+2026-11-23 在四款 Stick 的合并构建 `cd49997f` 上复跑了相同的诊断。串口、键盘与 3D 按键画面、IMU 读数及嵌入页结果均与单独构建一致。[合并构建复验](evidence/sticks3-runtime-20261122/combined-20261123.json)
