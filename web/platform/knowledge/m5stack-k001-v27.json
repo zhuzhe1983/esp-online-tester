@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:33:36Z",
+  "updatedAt": "2026-11-23T05:00:17Z",
   "hardwareRevision": "2.7",
   "identity": {
     "manufacturer": "M5Stack",
@@ -607,6 +607,94 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "lcd-spi-wiring",
+      "label": "ILI9342C 数字接口",
+      "value": {
+        "clock": 18,
+        "data": 23,
+        "chipSelect": 14,
+        "dataCommand": 27,
+        "reset": 33,
+        "backlight": 32
+      },
+      "basis": "official",
+      "sourceIds": [
+        "basic-v27-docs-live",
+        "basic-schematic",
+        "m5gfx-driver"
+      ],
+      "group": "display",
+      "notes": "320 × 240 IPS 非触摸屏。当前产品资料将 GPIO23 标为双向 SDA；旧 Arduino 通用 SPI 声明另列 GPIO19，GPIO19 是 TF 卡的返回线。"
+    },
+    {
+      "id": "front-key-wiring",
+      "label": "实体按键与有效电平",
+      "value": {
+        "a": 39,
+        "b": 38,
+        "c": 37,
+        "activeLow": true,
+        "externalPullUpOhms": 100000
+      },
+      "basis": "official",
+      "sourceIds": [
+        "basic-v27-docs-live",
+        "basic-schematic",
+        "m5stack-board-header"
+      ],
+      "group": "input",
+      "notes": "原理图第 4 页 S3/S2/S1 分别接 Btn A/B/C，按下接地。侧面供电键单独接电源控制器。"
+    },
+    {
+      "id": "tf-spi-wiring",
+      "label": "TF 插槽信号",
+      "value": {
+        "clock": 18,
+        "mosi": 23,
+        "miso": 19,
+        "chipSelect": 4
+      },
+      "basis": "official",
+      "sourceIds": [
+        "basic-v27-docs-live",
+        "basic-schematic",
+        "m5stack-board-header"
+      ],
+      "group": "storage"
+    },
+    {
+      "id": "ip5306-wiring",
+      "label": "IP5306 与 Port A 共用 I²C",
+      "value": {
+        "address": 117,
+        "sda": 21,
+        "scl": 22
+      },
+      "basis": "official",
+      "sourceIds": [
+        "basic-v27-docs-live",
+        "ip5306-register-doc"
+      ],
+      "group": "power",
+      "notes": "I²C 寄存器适用于产品页说明的定制版本。"
+    },
+    {
+      "id": "factory-v04",
+      "label": "官方 Basic Factory Test v0.4",
+      "value": {
+        "version": "v0.4",
+        "image": "merged",
+        "sha256": "fe8fb0305384e6b4b5c4b8ff497bf12323a7f8ed68ef218966886e5ab85a1d05"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "basic-v27-docs-live",
+        "basic-factory-restore",
+        "basic-factory-v04"
+      ],
+      "group": "firmware"
     }
   ],
   "revisions": [],
@@ -947,6 +1035,104 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "basic-v27-docs-live",
+      "title": "M5Stack Basic K001-V27 product page",
+      "url": "https://docs.m5stack.com/en/core/Basic_v2.7",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Basic_v2.7",
+      "fetchedAt": "2026-11-23T04:58:17Z",
+      "mediaType": "text/html",
+      "bytes": 152576,
+      "sha256": "e2575066c004168d37bcb26fce3231d4b770b2af974a5200cef4071f07c5e4c2"
+    },
+    {
+      "id": "basic-schematic",
+      "title": "M5 Core schematic 2017-12-06, linked from both Basic product pages",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/480/M5-Core-Schematic_20171206.pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/480/M5-Core-Schematic_20171206.pdf",
+      "fetchedAt": "2026-11-23T04:58:17Z",
+      "mediaType": "application/pdf",
+      "bytes": 891864,
+      "sha256": "eee2755593110b6e7ce508b02a5af48b64e236b34ad0e150214cb6eee588271b",
+      "notes": "The current product pages both link this 2017 core schematic. Sheets 3–5 confirm the shared digital nets and switch pull-ups; later board revisions and power/USB components are described separately on the product pages."
+    },
+    {
+      "id": "ili9342c-datasheet",
+      "title": "ILI9342C controller datasheet (ILI Technology)",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/ILI9342C-ILITEK.pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/ILI9342C-ILITEK.pdf",
+      "fetchedAt": "2026-11-23T04:58:17Z",
+      "mediaType": "application/pdf",
+      "bytes": 5086747,
+      "sha256": "604a35c003672cd693cb673ae2da336ab9120629bca3e824e032b76cd9381789"
+    },
+    {
+      "id": "m5gfx-driver",
+      "title": "M5GFX display board detection at 28d47949bdc84f30881623476f555398e2194313",
+      "url": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/src/M5GFX.cpp",
+      "kind": "software-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/src/M5GFX.cpp",
+      "fetchedAt": "2026-11-23T05:00:14Z",
+      "mediaType": "text/plain",
+      "bytes": 39818,
+      "sha256": "7673c1829201d205974f04442aca367854b52abc207d6611e91e9da2dadb891e"
+    },
+    {
+      "id": "m5stack-board-header",
+      "title": "M5Stack Arduino K001 board pin definitions at e4e05109297c193559562b62ee4b5f276bc19b01",
+      "url": "https://raw.githubusercontent.com/m5stack/M5Stack/e4e05109297c193559562b62ee4b5f276bc19b01/src/utility/Config.h",
+      "kind": "software-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5Stack/e4e05109297c193559562b62ee4b5f276bc19b01/src/utility/Config.h",
+      "fetchedAt": "2026-11-23T05:00:15Z",
+      "mediaType": "text/plain",
+      "bytes": 683,
+      "sha256": "67583349cd1e4655a405f40e6ad57ac6090c4ee5e60792e9f05d3a90409ba8a4"
+    },
+    {
+      "id": "ip5306-register-doc",
+      "title": "IP5306 I2C register manual v1.4 as linked by Basic product pages",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-Schematic/master/Core/IIC_IP5306_REG_V1.4.pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-Schematic/master/Core/IIC_IP5306_REG_V1.4.pdf",
+      "fetchedAt": "2026-11-23T05:00:17Z",
+      "mediaType": "application/octet-stream",
+      "bytes": 659220,
+      "sha256": "38f0f94adb2af36ea33242337ffe4e1bb0f51035fb201396a0d60f367b5bb06b"
+    },
+    {
+      "id": "basic-factory-restore",
+      "title": "M5Stack Basic factory firmware restoration instructions",
+      "url": "https://docs.m5stack.com/en/guide/m5core/restore_factory",
+      "kind": "software-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.m5stack.com/en/guide/m5core/restore_factory",
+      "fetchedAt": "2026-11-23T04:58:17Z",
+      "mediaType": "text/html",
+      "bytes": 177109,
+      "sha256": "24a714bb8282780a2fd9e7c799143038a942da613eabad5dc5b0f6a8b921bf4d"
+    },
+    {
+      "id": "basic-factory-v04",
+      "title": "Official Basic Factory Test v0.4 merged image",
+      "url": "https://m5burner-cdn.m5stack.com/firmware/151beb97001ecb71090320eb514d43c6.bin",
+      "kind": "software-source",
+      "status": "fetched",
+      "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/151beb97001ecb71090320eb514d43c6.bin",
+      "fetchedAt": "2026-11-23T04:58:17Z",
+      "mediaType": "application/octet-stream",
+      "bytes": 1302544,
+      "sha256": "fe8fb0305384e6b4b5c4b8ff497bf12323a7f8ed68ef218966886e5ab85a1d05",
+      "notes": "Official M5Burner Basic Factory Test v0.4 (firmware ID 55b2ee0f3f573f8f4a0b6043d22ffe4e). Digest matches both separately cataloged Basic factory entries."
     }
   ],
   "assets": [
@@ -1103,6 +1289,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "两条 16 MiB IPS 目录记录的屏幕、实体键和 TF 卡接线依据各自官方 PinMap；K001 的早期 4 MiB / TN 批次和 v2.7 的电源、玻璃及 USB 变更另有适用范围。"
   ]
 }
