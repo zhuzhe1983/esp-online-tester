@@ -163,6 +163,36 @@
           "product-photo-487100c766"
         ]
       }
+    ],
+    "inspectionGroups": [
+      {
+        "id": "rear-cover",
+        "parts": [
+          "shell-back",
+          "rear-label-carrier",
+          "rear-magnet",
+          "paper-labels",
+          "rear-left-threaded-insert",
+          "rear-right-threaded-insert",
+          "rear-left-screw",
+          "rear-left-screw-recess",
+          "rear-right-screw",
+          "rear-right-screw-recess",
+          "cover-key:button-b"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -22
+        ],
+        "sourceIds": [
+          "manufacturer-cad-24b2b99e5e",
+          "dimension-drawing-cbbd976ba3",
+          "product-photo-2457b7c87f",
+          "product-photo-a0f727753a"
+        ],
+        "notes": "The originally separate back shell and its photograph-confirmed rear decal, carrier, magnet and mounting faces move together along model -Z. The 22 mm viewing offset exposes the board for inspection. The B hit region follows the mapped rear shell. The fitted HAT, USB-C and Grove sockets remain with the internal assembly."
+      }
     ]
   },
   "derivedParts": [
@@ -180,11 +210,46 @@
           0,
           0,
           -1
+        ],
+        "shape": "polygon",
+        "outlineMm": [
+          [
+            -10,
+            -21.5
+          ],
+          [
+            -6.25,
+            -21.5
+          ],
+          [
+            -6.25,
+            -18.78
+          ],
+          [
+            6.25,
+            -18.78
+          ],
+          [
+            6.25,
+            -21.5
+          ],
+          [
+            10,
+            -21.5
+          ],
+          [
+            10,
+            21.5
+          ],
+          [
+            -10,
+            21.5
+          ]
         ]
       },
       "basis": "estimated",
       "sourceIds": [],
-      "notes": "Estimated blank board envelope from available enclosure space. Outline, thickness, location and copper/component placement are not verified; UNKNOWN on both sides."
+      "notes": "Estimated blank board envelope with an end relief behind the visible Grove cavity. Board thickness, location and copper or component placement are unknown."
     },
     {
       "id": "usb-c",
@@ -193,20 +258,24 @@
       "geometry": {
         "centerMm": [
           0,
-          -23.8,
-          0.5
+          -23.85,
+          4.05
         ],
         "rotation": [
           1.5707963267948966,
           0,
           0
-        ]
+        ],
+        "depthMm": 3.2
       },
       "basis": "image-measurement",
       "sourceIds": [
-        "product-photo-2457b7c87f"
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-a0f727753a"
       ],
-      "notes": "Photo-informed exterior port insert at enclosure opening. Approximate body/contact detail; not manufacturer connector CAD or electrical simulation."
+      "notes": "Centered in the native front-side end cutout. Rim, sleeve and set-back tongue represent a USB-C receptacle. Hidden depth is estimated from the drawing and exposed rim.",
+      "housingVariant": "recessed"
     },
     {
       "id": "grove",
@@ -215,8 +284,8 @@
       "geometry": {
         "centerMm": [
           0,
-          -23.8,
-          -3.8
+          -24,
+          -0.8
         ],
         "rotation": [
           1.5707963267948966,
@@ -226,16 +295,21 @@
       },
       "basis": "image-measurement",
       "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-a0f727753a",
         "product-photo-2457b7c87f"
       ],
-      "notes": "Photo-informed exterior port insert at enclosure opening. Approximate body/contact detail; not manufacturer connector CAD or electrical simulation.",
+      "notes": "White HY2.0-4P on the rear side of USB-C in the shared end opening. Center derived from the dimension drawing and native cutout. Local latch faces the back and individual contacts are visible.",
       "allowConnections": false,
       "matingEvidence": {
         "status": "unverified",
         "sourceIds": [
-          "product-photo-2457b7c87f"
+          "dimension-drawing-cbbd976ba3",
+          "product-photo-a0f727753a",
+          "schematic-7ba41e6435"
         ],
-        "notes": "Visual opening location only; no cable is drawn until contact order and mating orientation are explicitly checked."
+        "notes": "Key and mouth axes are modeled. Photo projection does not establish the connector-to-cable contact indexing and insertion fit. Cable creation remains disabled."
       },
       "housingColor": "#e4e5dc",
       "housingColorEvidence": {
@@ -247,18 +321,1097 @@
       }
     },
     {
+      "id": "grove-left-mounting-ear",
+      "kind": "box",
+      "color": "#e4e5dc",
+      "geometry": {
+        "sizeMm": [
+          1.07,
+          4.24,
+          4.24
+        ],
+        "centerMm": [
+          -5.54,
+          -21.87,
+          -0.89
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-a0f727753a"
+      ],
+      "notes": "White side flange follows the exact assembled end drawing. The inner portion sits within the measured enclosure notch. Hidden attachment depth is estimated."
+    },
+    {
+      "id": "grove-right-mounting-ear",
+      "kind": "box",
+      "color": "#e4e5dc",
+      "geometry": {
+        "sizeMm": [
+          1.07,
+          4.24,
+          4.24
+        ],
+        "centerMm": [
+          5.54,
+          -21.87,
+          -0.89
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-a0f727753a"
+      ],
+      "notes": "White side flange follows the exact assembled end drawing. The inner portion sits within the measured enclosure notch. Hidden attachment depth is estimated."
+    },
+    {
+      "id": "port-well-back",
+      "kind": "box",
+      "color": "#673422",
+      "geometry": {
+        "sizeMm": [
+          12.26,
+          0.2,
+          9.78
+        ],
+        "centerMm": [
+          0,
+          -19.04,
+          0.86
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-a0f727753a"
+      ],
+      "notes": "Internal opaque wall behind the connector cluster. Masks the shell-only drawing cutout through the case, while sitting deeper than both connector cavities."
+    },
+    {
+      "id": "hat-socket",
+      "kind": "plate",
+      "color": "#282825",
+      "geometry": {
+        "centerMm": [
+          0,
+          23.77,
+          -4.94
+        ],
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          0
+        ],
+        "depthMm": 0.46,
+        "outlineMm": [
+          [
+            -10.87,
+            -1.19
+          ],
+          [
+            10.87,
+            -1.19
+          ],
+          [
+            10.87,
+            1.19
+          ],
+          [
+            -10.87,
+            1.19
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              -9.63,
+              -0.74
+            ],
+            [
+              -8.15,
+              -0.74
+            ],
+            [
+              -8.15,
+              0.74
+            ],
+            [
+              -9.63,
+              0.74
+            ]
+          ],
+          [
+            [
+              -7.09,
+              -0.74
+            ],
+            [
+              -5.61,
+              -0.74
+            ],
+            [
+              -5.61,
+              0.74
+            ],
+            [
+              -7.09,
+              0.74
+            ]
+          ],
+          [
+            [
+              -4.55,
+              -0.74
+            ],
+            [
+              -3.07,
+              -0.74
+            ],
+            [
+              -3.07,
+              0.74
+            ],
+            [
+              -4.55,
+              0.74
+            ]
+          ],
+          [
+            [
+              -2.01,
+              -0.74
+            ],
+            [
+              -0.53,
+              -0.74
+            ],
+            [
+              -0.53,
+              0.74
+            ],
+            [
+              -2.01,
+              0.74
+            ]
+          ],
+          [
+            [
+              0.53,
+              -0.74
+            ],
+            [
+              2.01,
+              -0.74
+            ],
+            [
+              2.01,
+              0.74
+            ],
+            [
+              0.53,
+              0.74
+            ]
+          ],
+          [
+            [
+              3.07,
+              -0.74
+            ],
+            [
+              4.55,
+              -0.74
+            ],
+            [
+              4.55,
+              0.74
+            ],
+            [
+              3.07,
+              0.74
+            ]
+          ],
+          [
+            [
+              5.61,
+              -0.74
+            ],
+            [
+              7.09,
+              -0.74
+            ],
+            [
+              7.09,
+              0.74
+            ],
+            [
+              5.61,
+              0.74
+            ]
+          ],
+          [
+            [
+              8.15,
+              -0.74
+            ],
+            [
+              9.63,
+              -0.74
+            ],
+            [
+              9.63,
+              0.74
+            ],
+            [
+              8.15,
+              0.74
+            ]
+          ]
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-716eea8da9",
+        "product-photo-a0f727753a"
+      ],
+      "notes": "The manufacturer upper end drawing and oblique product photo show an eight-way 2.54 mm pitch female socket. The mouth is level with the end of the case, on the rear side.",
+      "material": {
+        "roughness": 0.72
+      }
+    },
+    {
+      "id": "hat-socket-cavity",
+      "kind": "plate",
+      "color": "#30302d",
+      "geometry": {
+        "centerMm": [
+          0,
+          22.95,
+          -5.15
+        ],
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          0
+        ],
+        "depthMm": 1.22,
+        "outlineMm": [
+          [
+            -10.51,
+            -0.915
+          ],
+          [
+            10.51,
+            -0.915
+          ],
+          [
+            10.51,
+            0.915
+          ],
+          [
+            -10.51,
+            0.915
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              -9.32,
+              -0.64
+            ],
+            [
+              -8.46,
+              -0.64
+            ],
+            [
+              -8.46,
+              0.22
+            ],
+            [
+              -9.32,
+              0.22
+            ]
+          ],
+          [
+            [
+              -6.78,
+              -0.64
+            ],
+            [
+              -5.92,
+              -0.64
+            ],
+            [
+              -5.92,
+              0.22
+            ],
+            [
+              -6.78,
+              0.22
+            ]
+          ],
+          [
+            [
+              -4.24,
+              -0.64
+            ],
+            [
+              -3.38,
+              -0.64
+            ],
+            [
+              -3.38,
+              0.22
+            ],
+            [
+              -4.24,
+              0.22
+            ]
+          ],
+          [
+            [
+              -1.7,
+              -0.64
+            ],
+            [
+              -0.84,
+              -0.64
+            ],
+            [
+              -0.84,
+              0.22
+            ],
+            [
+              -1.7,
+              0.22
+            ]
+          ],
+          [
+            [
+              0.84,
+              -0.64
+            ],
+            [
+              1.7,
+              -0.64
+            ],
+            [
+              1.7,
+              0.22
+            ],
+            [
+              0.84,
+              0.22
+            ]
+          ],
+          [
+            [
+              3.38,
+              -0.64
+            ],
+            [
+              4.24,
+              -0.64
+            ],
+            [
+              4.24,
+              0.22
+            ],
+            [
+              3.38,
+              0.22
+            ]
+          ],
+          [
+            [
+              5.92,
+              -0.64
+            ],
+            [
+              6.78,
+              -0.64
+            ],
+            [
+              6.78,
+              0.22
+            ],
+            [
+              5.92,
+              0.22
+            ]
+          ],
+          [
+            [
+              8.46,
+              -0.64
+            ],
+            [
+              9.32,
+              -0.64
+            ],
+            [
+              9.32,
+              0.22
+            ],
+            [
+              8.46,
+              0.22
+            ]
+          ]
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-716eea8da9",
+        "product-photo-a0f727753a"
+      ],
+      "notes": "Narrower eight square passages give the visible mouths physical depth. The position and depth behind the bezel are inferred from the open tops, not assigned an electrical function.",
+      "material": {
+        "roughness": 0.72
+      }
+    },
+    {
+      "id": "hat-socket-floor",
+      "kind": "box",
+      "color": "#47433c",
+      "geometry": {
+        "sizeMm": [
+          21.02,
+          0.2,
+          3.2
+        ],
+        "centerMm": [
+          0,
+          22.24,
+          -4.54
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-716eea8da9",
+        "product-photo-a0f727753a"
+      ],
+      "notes": "Recessed termination for the eight visible female cavities. Unseen contacts are represented by a neutral floor."
+    },
+    {
+      "id": "hat-socket-mount",
+      "kind": "box",
+      "color": "#34332f",
+      "geometry": {
+        "sizeMm": [
+          20.2,
+          1.03,
+          3.05
+        ],
+        "centerMm": [
+          0,
+          21.76,
+          -2.725
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-716eea8da9",
+        "product-photo-a0f727753a"
+      ],
+      "notes": "Estimated carrier below the observed upper socket seat. It supports the socket in the inspection view; the hidden solder joints and printed board layout are unknown."
+    },
+    {
+      "id": "top-recess-backing",
+      "kind": "box",
+      "color": "#963920",
+      "geometry": {
+        "sizeMm": [
+          4.8,
+          0.22,
+          3.42
+        ],
+        "centerMm": [
+          -5.23,
+          22.42,
+          1.39
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-716eea8da9",
+        "product-photo-a0f727753a"
+      ],
+      "notes": "Opaque backing behind the two native top case recesses visible in the dimension drawing. Exterior geometry and the distinction between opening and housing are preserved."
+    },
+    {
+      "id": "rear-label-carrier",
+      "kind": "plate",
+      "color": "#ed4a24",
+      "geometry": {
+        "centerMm": [
+          0,
+          0,
+          -6.392
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ],
+        "depthMm": 0.316,
+        "outlineMm": [
+          [
+            -10.92,
+            14.46
+          ],
+          [
+            10.92,
+            14.46
+          ],
+          [
+            10.92,
+            22.91
+          ],
+          [
+            10.58,
+            23.62
+          ],
+          [
+            9.9,
+            24
+          ],
+          [
+            -9.9,
+            24
+          ],
+          [
+            -10.58,
+            23.62
+          ],
+          [
+            -10.92,
+            22.91
+          ]
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-2457b7c87f"
+      ],
+      "notes": "Thin upper rear backing occupies the open band beneath the photograph-confirmed paper. Its rear face sits flush with the CAD paper deck. The edge follows the adjacent case and visible label contour. The concealed fastening and construction are estimated.",
+      "material": {
+        "roughness": 0.7
+      },
+      "role": "shell"
+    },
+    {
+      "id": "rear-magnet",
+      "kind": "cylinder",
+      "color": "#8f9190",
+      "material": {
+        "metalness": 0.62,
+        "roughness": 0.44
+      },
+      "geometry": {
+        "radiusMm": 5.15,
+        "depthMm": 0.25,
+        "centerMm": [
+          0,
+          6.85,
+          -6.425
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-2457b7c87f"
+      ],
+      "notes": "Circular mounting magnet indicated by the manufacturer rear drawing and marked on the annotated product photograph. Hidden depth under the paper is estimated."
+    },
+    {
+      "id": "rear-left-threaded-insert",
+      "kind": "torus",
+      "color": "#ae813f",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "geometry": {
+        "radiusMm": 0.82,
+        "tubeMm": 0.22,
+        "centerMm": [
+          -8.1,
+          -14.7,
+          -6.47
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-2457b7c87f"
+      ],
+      "notes": "Visible brass ring at the manufacturer mounting hole. The modeled ring preserves the opening without assuming hidden thread geometry."
+    },
+    {
+      "id": "rear-left-screw",
+      "kind": "plate",
+      "color": "#d3cdc2",
+      "geometry": {
+        "centerMm": [
+          -8.1,
+          -19.66,
+          -4.39
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ],
+        "depthMm": 0.23,
+        "outlineMm": [
+          [
+            0.98,
+            0.0
+          ],
+          [
+            0.9466,
+            0.2536
+          ],
+          [
+            0.8487,
+            0.49
+          ],
+          [
+            0.693,
+            0.693
+          ],
+          [
+            0.49,
+            0.8487
+          ],
+          [
+            0.2536,
+            0.9466
+          ],
+          [
+            0.0,
+            0.98
+          ],
+          [
+            -0.2536,
+            0.9466
+          ],
+          [
+            -0.49,
+            0.8487
+          ],
+          [
+            -0.693,
+            0.693
+          ],
+          [
+            -0.8487,
+            0.49
+          ],
+          [
+            -0.9466,
+            0.2536
+          ],
+          [
+            -0.98,
+            0.0
+          ],
+          [
+            -0.9466,
+            -0.2536
+          ],
+          [
+            -0.8487,
+            -0.49
+          ],
+          [
+            -0.693,
+            -0.693
+          ],
+          [
+            -0.49,
+            -0.8487
+          ],
+          [
+            -0.2536,
+            -0.9466
+          ],
+          [
+            -0.0,
+            -0.98
+          ],
+          [
+            0.2536,
+            -0.9466
+          ],
+          [
+            0.49,
+            -0.8487
+          ],
+          [
+            0.693,
+            -0.693
+          ],
+          [
+            0.8487,
+            -0.49
+          ],
+          [
+            0.9466,
+            -0.2536
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              -0.16,
+              -0.59
+            ],
+            [
+              0.16,
+              -0.59
+            ],
+            [
+              0.16,
+              -0.16
+            ],
+            [
+              0.59,
+              -0.16
+            ],
+            [
+              0.59,
+              0.16
+            ],
+            [
+              0.16,
+              0.16
+            ],
+            [
+              0.16,
+              0.59
+            ],
+            [
+              -0.16,
+              0.59
+            ],
+            [
+              -0.16,
+              0.16
+            ],
+            [
+              -0.59,
+              0.16
+            ],
+            [
+              -0.59,
+              -0.16
+            ],
+            [
+              -0.16,
+              -0.16
+            ]
+          ]
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-2457b7c87f"
+      ],
+      "notes": "Visible silver screw head and Phillips recess from the rear product photograph. The face sits in the CAD mounting recess. Shaft and thread depth are unknown.",
+      "material": {
+        "metalness": 0.44,
+        "roughness": 0.48
+      }
+    },
+    {
+      "id": "rear-left-screw-recess",
+      "kind": "cylinder",
+      "color": "#77736b",
+      "material": {
+        "metalness": 0.36,
+        "roughness": 0.64
+      },
+      "geometry": {
+        "radiusMm": 0.86,
+        "depthMm": 0.23,
+        "centerMm": [
+          -8.1,
+          -19.66,
+          -4.21
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-2457b7c87f"
+      ],
+      "notes": "Recess behind the head cut-out, seated within the existing mounting bore."
+    },
+    {
+      "id": "rear-right-threaded-insert",
+      "kind": "torus",
+      "color": "#ae813f",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "geometry": {
+        "radiusMm": 0.82,
+        "tubeMm": 0.22,
+        "centerMm": [
+          8.1,
+          -14.7,
+          -6.47
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-2457b7c87f"
+      ],
+      "notes": "Visible brass ring at the manufacturer mounting hole. The modeled ring preserves the opening without assuming hidden thread geometry."
+    },
+    {
+      "id": "rear-right-screw",
+      "kind": "plate",
+      "color": "#d3cdc2",
+      "geometry": {
+        "centerMm": [
+          8.1,
+          -19.66,
+          -4.39
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ],
+        "depthMm": 0.23,
+        "outlineMm": [
+          [
+            0.98,
+            0.0
+          ],
+          [
+            0.9466,
+            0.2536
+          ],
+          [
+            0.8487,
+            0.49
+          ],
+          [
+            0.693,
+            0.693
+          ],
+          [
+            0.49,
+            0.8487
+          ],
+          [
+            0.2536,
+            0.9466
+          ],
+          [
+            0.0,
+            0.98
+          ],
+          [
+            -0.2536,
+            0.9466
+          ],
+          [
+            -0.49,
+            0.8487
+          ],
+          [
+            -0.693,
+            0.693
+          ],
+          [
+            -0.8487,
+            0.49
+          ],
+          [
+            -0.9466,
+            0.2536
+          ],
+          [
+            -0.98,
+            0.0
+          ],
+          [
+            -0.9466,
+            -0.2536
+          ],
+          [
+            -0.8487,
+            -0.49
+          ],
+          [
+            -0.693,
+            -0.693
+          ],
+          [
+            -0.49,
+            -0.8487
+          ],
+          [
+            -0.2536,
+            -0.9466
+          ],
+          [
+            -0.0,
+            -0.98
+          ],
+          [
+            0.2536,
+            -0.9466
+          ],
+          [
+            0.49,
+            -0.8487
+          ],
+          [
+            0.693,
+            -0.693
+          ],
+          [
+            0.8487,
+            -0.49
+          ],
+          [
+            0.9466,
+            -0.2536
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              -0.16,
+              -0.59
+            ],
+            [
+              0.16,
+              -0.59
+            ],
+            [
+              0.16,
+              -0.16
+            ],
+            [
+              0.59,
+              -0.16
+            ],
+            [
+              0.59,
+              0.16
+            ],
+            [
+              0.16,
+              0.16
+            ],
+            [
+              0.16,
+              0.59
+            ],
+            [
+              -0.16,
+              0.59
+            ],
+            [
+              -0.16,
+              0.16
+            ],
+            [
+              -0.59,
+              0.16
+            ],
+            [
+              -0.59,
+              -0.16
+            ],
+            [
+              -0.16,
+              -0.16
+            ]
+          ]
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-2457b7c87f"
+      ],
+      "notes": "Visible silver screw head and Phillips recess from the rear product photograph. The face sits in the CAD mounting recess. Shaft and thread depth are unknown.",
+      "material": {
+        "metalness": 0.44,
+        "roughness": 0.48
+      }
+    },
+    {
+      "id": "rear-right-screw-recess",
+      "kind": "cylinder",
+      "color": "#77736b",
+      "material": {
+        "metalness": 0.36,
+        "roughness": 0.64
+      },
+      "geometry": {
+        "radiusMm": 0.86,
+        "depthMm": 0.23,
+        "centerMm": [
+          8.1,
+          -19.66,
+          -4.21
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-24b2b99e5e",
+        "dimension-drawing-cbbd976ba3",
+        "product-photo-2457b7c87f"
+      ],
+      "notes": "Recess behind the head cut-out, seated within the existing mounting bore."
+    },
+    {
       "id": "paper-labels",
       "kind": "label",
       "texture": "paper-labels.png",
       "geometry": {
         "sizeMm": [
-          24,
-          48
+          22,
+          38.6
         ],
         "centerMm": [
-          0.0,
-          0.0,
-          -6.775
+          0,
+          4.7,
+          -6.575
         ],
         "rotation": [
           0,
@@ -268,9 +1421,11 @@
       },
       "basis": "image-measurement",
       "sourceIds": [
-        "product-photo-2457b7c87f"
+        "product-photo-2457b7c87f",
+        "product-photo-716eea8da9",
+        "manufacturer-cad-24b2b99e5e"
       ],
-      "notes": "Independent transparent decal over the outer paper-bearing face; does not recolor the shell or cover visible mechanical holes. Planar placement is photograph-informed, not a manufacturing label CAD."
+      "notes": "Rear label uses its actual opaque printed shape, independent of the carrier and shell. The calibrated mapping covers about 21.3 by 38.4 mm of the rear face and leaves the four metal fasteners, white socket and unprinted orange case free of paper. The 0.025 mm separation from the supporting rear face controls z-fighting."
     }
   ],
   "derivedSurfaces": [],
@@ -292,6 +1447,18 @@
       "view": "side",
       "file": "reference-product-photo-487100c766.webp",
       "sourceSha256": "066869eb20995bdb860d2932b8a1318be128ee9afb62cd7a5d3af416453d8735"
+    },
+    {
+      "sourceId": "product-photo-a0f727753a",
+      "view": "connector-reference",
+      "file": "reference-product-photo-a0f727753a.webp",
+      "sourceSha256": "78d8ce75256f8ef977a223ea95929aa2587eb65d93a5535bba82ebed68bfceda"
+    },
+    {
+      "sourceId": "product-photo-716eea8da9",
+      "view": "hat-reference",
+      "file": "reference-product-photo-716eea8da9.webp",
+      "sourceSha256": "7c0efd6c393b07c8135da9a90c2df622f7542286ec8e535b92412cca5bf70482"
     }
   ],
   "textures": [
@@ -299,31 +1466,88 @@
       "file": "paper-labels.png",
       "sourceId": "product-photo-2457b7c87f",
       "cropXYXY": [
-        276,
-        154,
-        525,
-        644
+        291,
+        156,
+        511,
+        543
       ],
-      "notes": "Explicit paper-label alpha ROI in original photograph pixels. Case material, surrounding connector bodies and mechanical holes are excluded. Source lighting/perspective remain uncalibrated.",
       "alphaMask": {
-        "includeRoundedRects": [
-          {
-            "xyxy": [
-              295,
-              157,
+        "includePolygons": [
+          [
+            [
+              306,
+              156
+            ],
+            [
+              495,
+              156
+            ],
+            [
+              501,
+              157
+            ],
+            [
+              506,
+              161
+            ],
+            [
               508,
+              170
+            ],
+            [
+              508,
+              532
+            ],
+            [
+              507,
+              538
+            ],
+            [
+              503,
+              541
+            ],
+            [
+              302,
+              541
+            ],
+            [
+              297,
               540
             ],
-            "radiusPx": 2
-          }
+            [
+              294,
+              536
+            ],
+            [
+              294,
+              165
+            ],
+            [
+              298,
+              158
+            ]
+          ]
         ],
-        "includePolygons": [],
-        "excludeEllipses": []
+        "excludeEllipses": [
+          [
+            309,
+            532,
+            332,
+            555
+          ],
+          [
+            470,
+            532,
+            493,
+            555
+          ]
+        ]
       },
+      "notes": "Native-resolution decal crop from the official perpendicular back image. XY landmarks use the surrounding 24 × 48 mm housing and the visible paper boundary. Side slopes, brass rings, gray shadows, and white connector are outside this mask.",
       "sourceSha256": "3fe8760607917e2d0ae241d0aca9d0bd8353e19942de212fef1d1ca1602a1dda",
       "outputPixels": [
-        249,
-        490
+        220,
+        387
       ],
       "method": "Fixed axis-aligned crop; original-coordinate explicit alpha ROI at4x supersampling when alphaMask supplied; exclusions remove fasteners/holes/shell. No generated pixels or perspective warp."
     }
@@ -333,7 +1557,17 @@
       "span": 82
     },
     "back": {
-      "span": 75
+      "span": 54,
+      "position": [
+        0,
+        0,
+        -240
+      ],
+      "up": [
+        0,
+        1,
+        0
+      ]
     },
     "side": {
       "span": 75,
@@ -346,6 +1580,42 @@
         -0.7,
         0.7,
         0
+      ]
+    },
+    "hat-reference": {
+      "span": 29,
+      "position": [
+        0,
+        240,
+        -4
+      ],
+      "target": [
+        0,
+        24,
+        -4
+      ],
+      "up": [
+        0,
+        0,
+        -1
+      ]
+    },
+    "connector-reference": {
+      "span": 29,
+      "position": [
+        0,
+        -240,
+        0
+      ],
+      "target": [
+        0,
+        -24,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        1
       ]
     }
   },
@@ -653,21 +1923,29 @@
     ]
   },
   "limitations": [
-    "Manufacturer exterior geometry only; exact product board/CPU/peripheral execution is unavailable.",
-    "Photograph-informed material colors are uncalibrated display approximations.",
-    "PCB UNKNOWN is an estimated blank placeholder, not a populated or manufacturing-ready board.",
-    "External connector/body inserts are photo-derived estimates where manufacturer CAD omits them.",
-    "No physical hardware measurements or flashing performed.",
-    "Front reference has an independent coin and off-center placement; qualitative comparison only until a fixed device crop is documented.",
-    "Paper markings use explicit transparent source-photo masks; unlabelled shell remains a recolorable material. Photo lighting and minor paper placement are not calibrated."
+    "The manufacturer shells retain their original assembly transform and millimetre scale.",
+    "The installed connector, backing and visible hardware geometry follows the exact K016-P drawing and exterior photographs. Insertion depth and concealed mounting remain estimated.",
+    "The PCB remains an estimated blank UNKNOWN part. The partial firmware runtime is documented separately.",
+    "The rear decal records the manufacturer photograph of a K016-P labelled CPlus 1.1.",
+    "Photograph-informed colors are display approximations. Local paper and connector material are independent of shell color."
   ],
   "artifacts": {
     "reference-product-photo-2457b7c87f.webp": "3fe8760607917e2d0ae241d0aca9d0bd8353e19942de212fef1d1ca1602a1dda",
     "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+    "reference-product-photo-716eea8da9.webp": "7c0efd6c393b07c8135da9a90c2df622f7542286ec8e535b92412cca5bf70482",
     "reference-product-photo-bc8190a43b.webp": "0735bb9f5d46eef03cb2fbdc4fedc77b0bfb95e25e534346f50d3d6b9d3d8f1c",
     "geometry.bin": "532d3fd1614fc9b7059f5b2ac5f15894dd71da1f65d09690027032abcb50d220",
-    "paper-labels.png": "77aaeea675af292f9850ad01a33cae525015903a9651d53e3162901778e1529a",
+    "paper-labels.png": "82b624ed58942e763ba69a06d8c5205b4770967538f5965fd7c3305dbfe2259b",
     "reference-product-photo-487100c766.webp": "066869eb20995bdb860d2932b8a1318be128ee9afb62cd7a5d3af416453d8735",
-    "source.stl": "56dcfd382032d177ea049f890f59db965a56c161a8db588e80dd45e66576685a"
-  }
+    "reference-product-photo-a0f727753a.webp": "78d8ce75256f8ef977a223ea95929aa2587eb65d93a5535bba82ebed68bfceda",
+    "source.stl": "56dcfd382032d177ea049f890f59db965a56c161a8db588e80dd45e66576685a",
+    "dimension-drawing.jpg": "7eb4cb986c051267dee781ed17ccad21ff6d523891875ad89a1e377331f6f07f"
+  },
+  "supportingAssets": [
+    {
+      "sourceId": "dimension-drawing-cbbd976ba3",
+      "file": "dimension-drawing.jpg",
+      "sha256": "7eb4cb986c051267dee781ed17ccad21ff6d523891875ad89a1e377331f6f07f"
+    }
+  ]
 }
