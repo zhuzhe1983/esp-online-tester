@@ -10834,16 +10834,17 @@
       "name": "M5Stack FIRE v2.7",
       "manufacturer": "M5Stack",
       "sku": "K007-V27",
-      "hardwareRevision": "unspecified",
+      "hardwareRevision": "2.7",
       "chip": "esp32",
       "module": "ESP32-D0WDQ6",
       "summary": "ESP32-D0WDQ6 主机，16MB Flash、8MB PSRAM、三按键、2英寸屏幕和十颗RGB灯。保留厂家v2.7组件，图库文件名仍沿用v2.6。",
       "knowledgeUrl": "./knowledge/m5stack-k007-v27.json",
       "runtime": {
-        "board": null,
+        "board": "m5stack-basic",
         "flashMb": 16,
-        "psramMb": 8,
-        "status": "unavailable"
+        "psramMb": 4,
+        "status": "partial",
+        "touch": false
       },
       "display": {
         "width": 320,
@@ -10852,7 +10853,32 @@
         "driver": "ILI9342C",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "Button A",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "button-b",
+          "name": "Button B",
+          "type": "button",
+          "pin": 38,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "button-c",
+          "name": "Button C",
+          "type": "button",
+          "pin": 37,
+          "activeLow": true,
+          "defaultKeyCode": "KeyC"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-a",
@@ -10963,7 +10989,24 @@
         },
         {
           "external": true,
-          "pins": [],
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 18
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
           "id": "micro-sd",
           "type": "microSD",
           "name": "microSD 卡槽",
@@ -10973,7 +11016,45 @@
           "sourceIds": [
             "official-docs"
           ],
-          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+          "notes": "官方 PinMap 的 SPI 接线。板型提供 64 MiB 虚拟 FAT32 卡。"
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "ILI9342C SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 23
+            },
+            {
+              "name": "SCK",
+              "gpio": 18
+            },
+            {
+              "name": "CS",
+              "gpio": 14
+            },
+            {
+              "name": "D/C",
+              "gpio": 27
+            },
+            {
+              "name": "RST",
+              "gpio": 33
+            },
+            {
+              "name": "BL",
+              "gpio": 32
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "knowledgeFactIds": [
+            "table-1"
+          ]
         }
       ],
       "model": {
@@ -10990,9 +11071,9 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
-        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
+        "FIRE v2.7 复用与 Basic 接线相同的 ILI9342C 屏幕写入、三枚实体键和 SPI TF 卡。真机 8 MiB PSRAM，模拟器映射 4 MiB。",
+        "UIFlow2 v2.5.5 已启动并写入 LCD。官方 EasyLoader 内的出厂镜像在进入应用后因整数除零重启。",
+        "MPU6886、十颗 SK6812 灯、麦克风、扬声器、IP5306 和外部端口未建模。未实机验证。",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "Official current v2.7 page embeds filenames fire_v2.6_*. Exact cosmetic revision correspondence is not independently proven. Rear magnets/POGO contacts and some external connectors are incomplete."
