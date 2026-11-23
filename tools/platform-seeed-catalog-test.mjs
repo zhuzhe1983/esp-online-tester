@@ -122,6 +122,34 @@ for (const product of products) {
   }
 }
 
+for (const product of products.filter(p => p.id.startsWith('seeed-sensecap-watcher'))) {
+  const model = await json(product.model.url);
+  const layers = model.presentation.inspectionGroups;
+  const layerOf = part => layers.find(layer => layer.parts.includes(part));
+  const pcb = layerOf('pcb-main');
+  assert.ok(pcb, product.id);
+  assert.equal(layerOf('board-ports-and-encoder'), pcb, product.id);
+  assert.equal(layerOf('wheel'), pcb, product.id);
+
+  const movingLayers = ['shell-rear','battery','pcb-main','display-bezel','shell-front'].map(layerOf);
+  assert.equal(new Set(movingLayers).size, movingLayers.length, product.id);
+  const byName = new Map(model.parts.map(part => [part.name, part]));
+  const depthRanges = movingLayers.map(layer => {
+    const meshes = layer.parts.map(name => byName.get(name)).filter(Boolean);
+    const z = layer.offsetMm[2];
+    return [z + Math.min(...meshes.map(part => part.boundsMm[0][2])),
+      z + Math.max(...meshes.map(part => part.boundsMm[1][2]))];
+  });
+  for (let index = 1; index < depthRanges.length; index++) {
+    assert.ok(depthRanges[index][0] > depthRanges[index - 1][1], product.id + ' has overlapping assembly layers');
+  }
+}
+for (const product of bareBoards) {
+  const model = await json(product.model.url);
+  assert.equal(model.presentation.inspectionGroups?.length ?? 0, 0,
+    product.id + ' keeps the soldered XIAO and connector in the populated board');
+}
+
 assert.equal(selections.filter(p => firmwares.find(f => f.id === p.defaultFirmwareId)?.source?.manifestUrl).length, 17);
 for (const p of selections.filter(p => p.configuration.boardId === 'EE05')) {
   const knowledge = await json(p.knowledgeUrl);
