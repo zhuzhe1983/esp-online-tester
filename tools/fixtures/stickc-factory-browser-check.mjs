@@ -22,8 +22,8 @@ assert.equal(hash(await readFile(resolve(web, 'wasm/fw/esp32_rev300_rom.elf'))),
 await mkdir(outputPath, { recursive: true });
 
 const mime = {
-  '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json',
-  '.css': 'text/css', '.wasm': 'application/wasm',
+  '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript',
+  '.json': 'application/json', '.css': 'text/css', '.wasm': 'application/wasm',
 };
 const server = createServer(async (request, response) => {
   try {
@@ -47,12 +47,18 @@ server.listen(0, '127.0.0.1');
 await once(server, 'listening');
 
 async function advance(page, seconds) {
-  const start = await page.evaluate(async () => (await espTester.observe()).stats.time || 0);
-  await page.waitForFunction(async target => {
-    const state = await espTester.observe();
-    if (state.status === 'error') throw Error(JSON.stringify(state.lastError));
-    return state.stats.time >= target;
-  }, start + seconds, { timeout: 180_000, polling: 100 });
+  await page.evaluate(async seconds => {
+    const { espTester } = window;
+    const start = (await espTester.observe()).stats.time || 0;
+    const deadline = performance.now() + 180_000;
+    while (performance.now() < deadline) {
+      const state = await espTester.observe();
+      if (state.status === 'error') throw Error(JSON.stringify(state.lastError));
+      if (state.stats.time >= start + seconds) return;
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    throw Error('Guest time did not advance');
+  }, seconds);
 }
 
 async function capture(page, name) {
@@ -84,12 +90,16 @@ try {
   const workers = [];
   page.on('worker', worker => workers.push(new URL(worker.url()).pathname));
   await page.goto(origin + '/platform/index.html');
-  await page.waitForFunction(async () => (await window.espTester?.observe())?.status === 'configured');
+  await page.waitForFunction(() => !!window.espTester);
   const receipt = await page.evaluate(async ({ pin }) => {
+    const { espTester } = window;
     const { loadCatalog, createDefaultScene } = await import('./catalog.js');
     const catalog = await loadCatalog();
     const scene = createDefaultScene(catalog, 'm5stack-k016-c');
-    if (scene.firmware.sha256 !== pin) throw Error('Unexpected default firmware pin');
+    const product = catalog.products.find(item => item.id === scene.productId);
+    const selected = catalog.firmwares.find(item => item.id === product.defaultFirmwareId);
+    if (selected?.source?.sha256 !== pin) throw Error('Unexpected default firmware pin');
+    scene.firmware = selected.source;
     let transport = 'official-cdn';
     await espTester.configure(scene);
     try {

@@ -1,5 +1,4 @@
 //! Exercise the unchanged K016-C factory image through the ESP32 ROM and LCD.
-use emu_core::Bus;
 use esp_soc::SocBus;
 use std::path::Path;
 
@@ -34,13 +33,16 @@ fn main() {
             assert_eq!((machine.bus.gpio_input() >> pin) & 1, u64::from(high));
         }
         machine.max_cycles = elapsed_ms * (SECOND / 1000);
-        for _ in 0..1000 {
+        let max_steps = (machine.max_cycles - machine.bus.cycles).div_ceil(2_000_000);
+        for _ in 0..max_steps {
             let stop = machine.run(2_000_000);
             assert!(matches!(stop, esp32::Stop::MaxInsns | esp32::Stop::Halted), "{name}: {stop:?}");
             if machine.bus.cycles >= machine.max_cycles { break; }
         }
-        assert!(machine.bus.cycles >= machine.max_cycles, "{name}: guest time stopped");
         machine.drain_console();
+        assert!(machine.bus.cycles >= machine.max_cycles,
+            "{name}: stopped at {} of {} cycles\n{}",
+            machine.bus.cycles, machine.max_cycles, String::from_utf8_lossy(&machine.console.all));
         let (width, height, pixels, _) = machine.bus.board.display().unwrap();
         assert_eq!((width, height), (80, 160));
         let nonzero = pixels.iter().filter(|&&pixel| pixel != 0).count();

@@ -33,6 +33,17 @@ node tools/fixtures/stickc-factory-browser-check.mjs factory.bin target/stickc-b
 
 The browser check uses the official URL when accessible and records the transport. It falls back to a loopback copy of the matching official bytes if the URL fails. The check records ROM and WASM hashes, guest boot UART messages, visual framebuffer fingerprints and press/release events. `ESP_TEST_PLAYWRIGHT` and `ESP_TEST_CHROME` select an existing Playwright module and Chromium binary if needed.
 
+## Recovered native board
+
+The first combined classic core and K016-C snapshot `44fcf723` completed 14.7 guest seconds from the pinned ROM and unchanged factory image. UART reported `SPI_FAST_FLASH_BOOT` and `M5StickC initializing...OK`. The observed 80×160 captures were the MPU6886 idle view, RTC opened with A, the RTC changing from `00:00:12` to `00:00:13`, and the factory microphone view opened with B.
+
+| Capture | Guest seconds | Lit pixels | RGB565 FNV-1a |
+| --- | ---: | ---: | --- |
+| MPU6886 idle | 12.0 | 1,129 | `87a0b45da40b5155` |
+| RTC after GPIO37 | 12.7 | 3,834 | `3cb042004227daad` |
+| RTC after a second elapsed | 14.0 | 3,825 | `674c156ff0ef4507` |
+| Microphone after GPIO39 | 14.7 | 1,260 | `8414897c067ac40d` |
+
 ## November 22 standalone K016-C evidence
 
 The earlier K016-C-only build used a 5,928,264-byte WASM with SHA-256 `4069c28e9df5622e9eba4ffff0fa903be9ff525c49237e15b80631f471820954`. The 125,156-byte browser receipt had SHA-256 `708c940d6f3656417848e816ae17ef0d268b54be8f5d75de00bdc5d3621c7d61`. These are the inputs and outcomes of that build. The summary omits full event streams, session identifiers and local capture paths.
