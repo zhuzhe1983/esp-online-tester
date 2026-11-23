@@ -186,19 +186,51 @@
     {
       "file": "source.stp",
       "components": [
-        23,
+        23
+      ],
+      "name": "front-insert",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
         26,
-        27,
+        27
+      ],
+      "name": "rear-inserts",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
         31,
         32,
         33,
         34,
         35,
-        36,
-        40,
+        36
+      ],
+      "name": "board-ports-and-encoder",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
+        40
+      ],
+      "name": "camera-carrier",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
         41
       ],
-      "name": "components-848b87",
+      "name": "speaker",
       "color": "#848b87",
       "role": "component"
     },
@@ -386,39 +418,93 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-housing",
         "parts": [
-          "display-bezel",
-          "lcd-panel",
-          "live-display"
+          "shell-front",
+          "camera-lens",
+          "front-insert",
+          "microphone-window",
+          "card-slot-door",
+          "speaker"
         ],
         "offsetMm": [
           0,
           0,
-          31.0290714
+          62
         ],
         "sourceIds": [
           "source-stp"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The 1-UP shell carries the camera window, front inserts and card-slot door. The speaker follows the front inner wall where it seats."
       },
       {
-        "id": "enclosure",
+        "id": "display-and-camera",
         "parts": [
-          "shell-front",
+          "display-bezel",
+          "lcd-panel",
+          "live-display",
+          "camera-module",
+          "camera-carrier"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          30
+        ],
+        "sourceIds": [
+          "source-stp"
+        ],
+        "notes": "The native display and camera modules share a viewing layer behind the front housing. The live display follows the LCD."
+      },
+      {
+        "id": "main-board",
+        "parts": [
+          "pcb-main",
+          "board-ports-and-encoder",
+          "wheel"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          10
+        ],
+        "sourceIds": [
+          "source-stp"
+        ],
+        "notes": "The 01-PCBA-ASM source keeps both USB-C ports, microSD socket, Grove, expansion header and encoder with the board. The wheel stays on the encoder."
+      },
+      {
+        "id": "battery",
+        "parts": [
+          "battery"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -10
+        ],
+        "sourceIds": [
+          "source-stp"
+        ],
+        "notes": "The native 5-BATTERY-1 pack occupies its own viewing layer behind the board."
+      },
+      {
+        "id": "rear-housing",
+        "parts": [
           "shell-rear",
+          "rear-inserts",
           "stand-arm",
           "stand-base"
         ],
         "offsetMm": [
           0,
           0,
-          -31.0290714
+          -32
         ],
         "sourceIds": [
           "source-stp"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "The 1-DOWN cover and its inserts travel with the assembled mounting stand."
       }
     ]
   },
