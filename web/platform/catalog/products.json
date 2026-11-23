@@ -20977,6 +20977,187 @@
         "id": "mosaico",
         "name": "ESP-Mosaico"
       }
+    },
+    {
+      "id": "m5stack-c147",
+      "name": "M5Stack Chain DualKey · C147",
+      "manufacturer": "M5Stack",
+      "sku": "C147",
+      "summary": "Chain 系列双键控制器，配有 ESP32-S3FN8、两只热插拔机械键、两颗 WS2812B、350 mAh 电池，以及两路 Chain 接口。",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s3",
+      "module": "ESP32-S3FN8",
+      "runtime": {
+        "board": "chain-dualkey",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "display": null,
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "key1",
+          "name": "KEY1 · G0",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "key2",
+          "name": "KEY2 · G17",
+          "type": "button",
+          "pin": 17,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "VBUS",
+              "role": "5V in"
+            },
+            {
+              "name": "GND",
+              "role": "ground"
+            },
+            {
+              "name": "G20",
+              "role": "USB D+",
+              "gpio": 20
+            },
+            {
+              "name": "G19",
+              "role": "USB D−",
+              "gpio": 19
+            }
+          ],
+          "notes": "5 V 电源输入及 USB 数据。KEY1 与下载模式的关系见官方说明。"
+        },
+        {
+          "id": "chain-uart1",
+          "type": "HY2.0-4P",
+          "name": "Chain · UART1",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND",
+              "role": "ground",
+              "color": "黑"
+            },
+            {
+              "name": "VOUT",
+              "role": "5V out",
+              "color": "红"
+            },
+            {
+              "name": "G48",
+              "role": "UART1_TX",
+              "gpio": 48,
+              "color": "黄"
+            },
+            {
+              "name": "G47",
+              "role": "UART1_RX",
+              "gpio": 47,
+              "color": "白"
+            }
+          ],
+          "notes": "看底面，图例从下到上为黑/红/黄/白。官网 PinMap 和原厂程序均确认 TX48/RX47。"
+        },
+        {
+          "id": "chain-uart2",
+          "type": "HY2.0-4P",
+          "name": "Chain · UART2",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND",
+              "role": "ground",
+              "color": "黑"
+            },
+            {
+              "name": "VOUT",
+              "role": "5V out",
+              "color": "红"
+            },
+            {
+              "name": "G6",
+              "role": "UART2_TX",
+              "gpio": 6,
+              "color": "黄"
+            },
+            {
+              "name": "G5",
+              "role": "UART2_RX",
+              "gpio": 5,
+              "color": "白"
+            }
+          ],
+          "notes": "看底面，图例从上到下为黑/红/黄/白。官网 PinMap 按列列出 G5、G6，底面背贴的实际顺序是 G6（黄）再 G5（白）。源码确认 TX6/RX5。"
+        }
+      ],
+      "sources": [
+        {
+          "title": "M5Stack Chain DualKey C147",
+          "url": "https://docs.m5stack.com/en/chain/Chain_DualKey",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Chain DualKey V1.5 schematic (2025-07-25)",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1176/Chain_DualKey_SCH_V1.5_20250725_2025_07_25_16_06_51.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "Chain DualKey mechanical drawing",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1176/C147-chain-dualkey-model-size.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "M5Stack Chain DualKey Factory Firmware User Guide",
+          "url": "https://docs.m5stack.com/en/guide/chain_dualkey/usage",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "M5DualKey-UserDemo V0.8 merged image",
+          "url": "https://github.com/m5stack/M5DualKey-UserDemo/releases/download/V0.8/C147-Chain_DualKey-esp32s3-UserDemo-82d7fa60-V0.8-LHY-20260924_0x00.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "运行模型含 G0/G17 低有效按键与 G40 门控的 G21 WS2812B 两颗 RGB。板级控制通过 ESP-IDF 定向固件验收。",
+        "官方 V0.8 已到达 guest 开机灯光自检；该镜像的按键回调、USB/BLE HID 和网页配置流程尚未验收。",
+        "三档滑动开关、真实电池/USB/充电 ADC 电压、外部 Chain UART 通信、低功耗和物理拔插未建模。",
+        "3D 是源于官网尺寸图和照片的近似，接口保留插口外观，内部 PCB 标为 UNKNOWN。",
+        "未做实体设备对照或刷机。"
+      ],
+      "knowledgeUrl": "./knowledge/m5stack-c147.json",
+      "dimensions": {
+        "width": 47.9,
+        "height": 23.9,
+        "depth": 34.35,
+        "unit": "mm",
+        "basis": "official",
+        "sourceId": "dimensions"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-c147/model.json",
+        "status": "partial"
+      },
+      "family": {
+        "id": "m5-chain",
+        "name": "Chain 系列"
+      },
+      "defaultFirmwareId": "m5stack-c147-userdemo-v0-8"
     }
   ]
 }
