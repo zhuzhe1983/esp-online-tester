@@ -259,6 +259,12 @@ pub trait BoardModel {
     fn default_analog_inputs(&self) -> Vec<(u8, esp_periph::AnalogSource)> { Vec::new() }
     /// Cold route snapshot before RGB START and each completed frame.
     fn lcd_rgb_pins(&mut self, _pins: LcdRgbPins) {}
+    // Cold Stick environment inputs follow existing hot vtable slots.
+    /// Virtual PMIC stimulus. Only the modeled PMIC and guest ADC control affect conversions.
+    fn power_environment_at(&mut self, _cycle: VirtualCycle, _input: esp_periph::i2c::axp192::Axp192PowerInput) -> bool { false }
+
+    /// Synthetic thermal source counts: background, hotspot, center X/Y and radius.
+    fn thermal_environment_at(&mut self, _cycle: VirtualCycle, _sample: [u16; 5]) -> bool { false }
 }
 
 pub type Board = Box<dyn BoardModel>;

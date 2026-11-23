@@ -16309,10 +16309,10 @@
       "summary": "ESP32-S3-PICO 棒状终端，集成彩屏、BMI270、音频、红外收发与 250 mAh 电池。",
       "knowledgeUrl": "./knowledge/m5stack-k150.json",
       "runtime": {
-        "board": null,
+        "board": "sticks3",
         "flashMb": 8,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial"
       },
       "display": {
         "width": 135,
@@ -16321,7 +16321,24 @@
         "technology": "lcd",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "btnA",
+          "name": "KEY1 · A",
+          "type": "button",
+          "pin": 11,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "btnB",
+          "name": "KEY2 · B",
+          "type": "button",
+          "pin": 12,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-custom",
@@ -16368,6 +16385,77 @@
             "official-docs"
           ],
           "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "id": "hat2-bus",
+          "name": "Hat2-Bus",
+          "type": "2.54mm-16P",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "G5",
+              "gpio": 5
+            },
+            {
+              "name": "EXT_5V"
+            },
+            {
+              "name": "G4",
+              "gpio": 4
+            },
+            {
+              "name": "Boot",
+              "gpio": 0
+            },
+            {
+              "name": "G6",
+              "gpio": 6
+            },
+            {
+              "name": "G1",
+              "gpio": 1
+            },
+            {
+              "name": "G7",
+              "gpio": 7
+            },
+            {
+              "name": "G8",
+              "gpio": 8
+            },
+            {
+              "name": "G43",
+              "gpio": 43
+            },
+            {
+              "name": "BAT"
+            },
+            {
+              "name": "G44",
+              "gpio": 44
+            },
+            {
+              "name": "3V3_L2"
+            },
+            {
+              "name": "G2",
+              "gpio": 2
+            },
+            {
+              "name": "5V_IN"
+            },
+            {
+              "name": "G3",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ],
+          "notes": "Official pins 1..16, alternating left/right. Electrical knowledge only: mating geometry, accessory routing and power switching are not validated."
         }
       ],
       "model": {
@@ -16384,11 +16472,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "StickS3 板级 partial：SPI ST7789P3、PM1 GPIO2 屏幕电源门、GPIO11/12 按键、BMI270 轮询寄存器子集；尚未验证官方固件完整启动。",
+        "ES8311 仅初始化寄存器；麦克风/扬声器实际 I2S 引脚与 AW8737 脉冲控制、IR、PM1 电源键/主控断电及传感器中断未实现。",
+        "Grove G9/G10 与 Hat2 为资料引脚，不代表附件电气路由或 3D 线缆接插已适配。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Three named buttons and audio/IR hardware are documented but not mapped to unsupported simulator behavior.",
         "Labels, connector inserts and populated PCB are not part of the imported shell CAD.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
@@ -16427,10 +16515,12 @@
       "summary": "ESP32-PICO-D4 热成像手持设备，含 FLIR Lepton 3.0、135×240 屏幕和旋钮。厂家壳体包含安装耳，不能缩放到不含耳的标称宽度。",
       "knowledgeUrl": "./knowledge/m5stack-k016-t2.json",
       "runtime": {
-        "board": null,
+        "board": "stickt2",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false,
+        "encoder": false
       },
       "display": {
         "width": 135,
@@ -16439,7 +16529,31 @@
         "driver": "ST7789",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "btnA",
+          "name": "Button A · 调色板",
+          "type": "button",
+          "pin": 37,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "btnB",
+          "name": "Button B · 测温模式",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "power",
+          "name": "Power · PMIC 短按",
+          "type": "button",
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-custom",
@@ -16501,12 +16615,16 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "StickT2 板型支持 ST7789 SPI 屏幕、G37/G39 按键和 MPU6886 轮询寄存器。",
+        "AXP192 支持 I²C 0x34、LDO2/3 显示供电门控和 PEK 短按。初始配置为已供电状态；电池、电源循环和长按关机仍待实现。",
+        "Lepton CCI 和 VoSPI 向固件传输合成 Raw14 计数。工作台与 mini 可设置、分享和回放热像场；现场温度标定、完整时序、FFC、旋钮、麦克风与 RTC 仍待实现。",
+        "官方出厂 v1.0 原文件的启动段附加摘要与镜像头不一致。整镜像保持原字节与固定 SHA-256，固件兼容性仍为试用。",
+        "A 键的正面 3D 热区采用照片估算。B 键和电源键可通过 2D 界面、键盘与 API 操作，侧面 CAD 键的对应尚未核实。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-        "Manufacturer shell width includes mounting flanges (~30.4mm) while official product width is24mm; source not scaled. Thermal optics and encoder seating are not complete CAD."
+        "Manufacturer shell width includes mounting flanges (~30.4mm) while official product width is24mm; source not scaled. Thermal optics and encoder seating are not complete CAD.",
+        "虚拟运行配置 PSRAM=0；官方规格未明确外部 PSRAM，知识库仍保留未知，不以此断言实物不存在。"
       ],
       "sources": [
         {
@@ -16523,6 +16641,118 @@
           "archiveName": "official-docs.html",
           "notes": "Reused actual corpus receipt 2026-10-26T15:19:20.897314Z; no new fetch timestamp invented.",
           "checkedAt": "2026-10-26"
+        },
+        {
+          "id": "official-runtime-pinmap",
+          "title": "official-runtime-pinmap",
+          "url": "https://docs.m5stack.com/en/core/StickT2",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/StickT2",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:45Z",
+          "sha256": "f283978f41e0ebe4db14ad41b4bf993175919eaa1a07ec5ba96e29a2e6076086",
+          "bytes": 142320,
+          "mediaType": "text/html; charset=UTF-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "official.html"
+        },
+        {
+          "id": "stickt-example",
+          "title": "stickt-example",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/M5StickT_Lepton_opensource_v1.ino",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/M5StickT_Lepton_opensource_v1.ino",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:45Z",
+          "sha256": "a6fb7a0bdcc10bf223d4d7c86c8c9f00f00ac54b2eda0a6e26b6dda8713cea56",
+          "bytes": 16381,
+          "mediaType": "text/plain; charset=utf-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "example.ino"
+        },
+        {
+          "id": "stickt-rotation",
+          "title": "stickt-rotation",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Rotation.h",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Rotation.h",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:46Z",
+          "sha256": "979ccef71c815f538f4cda8b3d1e077c580e3242dd429345f927a449943dfe7c",
+          "bytes": 1578,
+          "mediaType": "text/plain; charset=utf-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "rotation.h"
+        },
+        {
+          "id": "stickt-config",
+          "title": "stickt-config",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/Config.h",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/Config.h",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:46Z",
+          "sha256": "2311f2615564da5d0efe220f9ffa96f542647ebae441b19a53f6b029ee781305",
+          "bytes": 243,
+          "mediaType": "text/plain; charset=utf-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "config.h"
+        },
+        {
+          "id": "stickt-lepton",
+          "title": "stickt-lepton",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/lepton.cpp",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/examples/M5StickT_Lepton_opensource_v1/lepton.cpp",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:47Z",
+          "sha256": "23349a61253807182ea5a2a31ef0667d0ff33165ed628806ff1694520a75d6c0",
+          "bytes": 10492,
+          "mediaType": "text/plain; charset=utf-8",
+          "checkedAt": "2026-11-22",
+          "kind": "official-runtime-reference",
+          "archiveName": "lepton.cpp"
+        },
+        {
+          "id": "stickt-side-photo",
+          "title": "stickt-side-photo",
+          "url": "https://static-cdn.m5stack.com/resource/docs/products/core/m5stickt/m5stickt_04.webp",
+          "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/m5stickt/m5stickt_04.webp",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:14:47Z",
+          "sha256": "978c85a3b243fcc01edbfefc3807476b3839150ea4650294c606dd16831e7d9c",
+          "bytes": 173052,
+          "mediaType": "image/webp",
+          "checkedAt": "2026-11-22",
+          "kind": "official-product-photo",
+          "archiveName": "side.webp"
+        },
+        {
+          "id": "stickt-display-setup",
+          "title": "StickT2 In_eSPI_Setup.h",
+          "kind": "official-runtime-reference",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/In_eSPI_Setup.h",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/In_eSPI_Setup.h",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:22:28Z",
+          "checkedAt": "2026-11-22",
+          "sha256": "ac8ca1d25fc684277672c04ebabbef5e17186b934e9ffbef0979e121a509f514",
+          "bytes": 13310,
+          "mediaType": "text/plain; charset=utf-8",
+          "archiveName": "display-setup.h"
+        },
+        {
+          "id": "stickt-display-defines",
+          "title": "StickT2 ST7789_Defines.h",
+          "kind": "official-runtime-reference",
+          "url": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Defines.h",
+          "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-StickT/a502cb40e0837bccd55a3e09389f3cbfc155cea8/src/utility/ST7789_Defines.h",
+          "status": "fetched",
+          "fetchedAt": "2026-11-22T06:22:29Z",
+          "checkedAt": "2026-11-22",
+          "sha256": "489b3634370ad3f7a6abf506ee18e12f2ef02b3810a720133d710f9f53c6fffd",
+          "bytes": 4879,
+          "mediaType": "text/plain; charset=utf-8",
+          "archiveName": "display-defines.h"
         }
       ],
       "defaultFirmwareId": "m5stack-k016-t2-official-factory",
@@ -16541,10 +16771,10 @@
       "chip": "esp32",
       "module": "ESP32-PICO-D4",
       "runtime": {
-        "board": null,
+        "board": "stickc-plus",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial"
       },
       "display": {
         "width": 135,
@@ -16564,6 +16794,12 @@
           "name": "Button B",
           "type": "button",
           "pin": 39
+        },
+        {
+          "id": "power",
+          "name": "Power (AXP192 PEK)",
+          "type": "button",
+          "transport": "board"
         }
       ],
       "interfaces": [
@@ -16605,8 +16841,9 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "官方 v1.0 出厂固件的试运行覆盖 IMU 倾角、RTC 秒进及 A/B 页面切换。3D 按键区域按照片估算。",
+        "AXP192 电池与 USB 电压是虚拟环境。固件的麦克风频谱已用原生模拟器的虚拟 PCM 验证，浏览器不开放麦克风输入。",
+        "IR Send 和 BLE disconnect 仅验证页面切换。未验收红外光学、BLE 无线连接、GATT 或实机。部分页面切换需要持续按键。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k016-p.json",
       "model": {
@@ -21847,10 +22084,11 @@
       "summary": "ESP32-PICO-D4 棒状终端，含 0.96 英寸屏幕、MPU6886、AXP192 与 95 mAh 电池；资料与 Plus、StickS3 分开维护。",
       "knowledgeUrl": "./knowledge/m5stack-k016-c.json",
       "runtime": {
-        "board": null,
+        "board": "stickc",
         "flashMb": 4,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
       },
       "display": {
         "width": 80,
@@ -21859,7 +22097,32 @@
         "technology": "lcd",
         "touch": false
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "button-a",
+          "name": "A · GPIO37",
+          "type": "button",
+          "pin": 37,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "button-b",
+          "name": "B · GPIO39",
+          "type": "button",
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "power",
+          "name": "AXP192 PEK · 短按事件（非GPIO）",
+          "type": "button",
+          "controller": "AXP192",
+          "transport": "board",
+          "defaultKeyCode": "KeyP"
+        }
+      ],
       "interfaces": [
         {
           "id": "port-custom",
@@ -21905,6 +22168,56 @@
             "official-docs"
           ],
           "notes": "只补物理接口；不据此推断 USB Host、OTG、PD、供电方向或模拟器 USB 数据能力。"
+        },
+        {
+          "id": "lcd-spi",
+          "name": "内部 ST7735SV SPI",
+          "type": "SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "SCK",
+              "gpio": 13
+            },
+            {
+              "name": "MOSI",
+              "gpio": 15
+            },
+            {
+              "name": "CS",
+              "gpio": 5
+            },
+            {
+              "name": "DC",
+              "gpio": 23
+            },
+            {
+              "name": "RST",
+              "gpio": 18
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
+        },
+        {
+          "id": "internal-i2c",
+          "name": "AXP192 / MPU6886 / BM8563 内部总线",
+          "type": "I2C",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            }
+          ],
+          "sourceIds": [
+            "official-docs"
+          ]
         }
       ],
       "model": {
@@ -21921,11 +22234,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "部分板级模拟覆盖 ST7735SV 屏幕、A/B、红色 LED、AXP192 短按与供电寄存器、MPU6886 轮询和 BM8563 日历。默认温度 25 °C、电池 4.1 V 为模拟输入。",
+        "仅覆盖 MPU6886 版本。早期 SH200Q、物理麦克风、红外输出、无线通信和长按关机尚未验收。运行范围见 docs/platform/stick-k016-c-runtime.md。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Assembled shell estimate is 24×48×13 mm, smaller than current document 25.5×48.2×13.7 mm; all dimensional failures remain visible. The directory may represent another housing revision.",
         "Source assembly transform is estimated. Do not treat this model as a confirmed 1:1 match to current K016-C housing.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",

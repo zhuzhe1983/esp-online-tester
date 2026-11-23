@@ -2607,7 +2607,7 @@
       "id": "factory-a02a71fc4c86f8dfa0bf73f928b3f44b",
       "name": "M5StickC Factory Test",
       "category": "factory",
-      "description": "M5Stack 出厂/恢复分发条目；完整镜像已核对来源与布局，未执行验证。",
+      "description": "M5Stack StickC K016-C 官方出厂镜像。固定 V0.0.1，部分板级模拟开放试运行。",
       "upstreamRepo": "m5stack/M5StickC",
       "metadataProvider": "m5burner",
       "firmwareId": "a02a71fc4c86f8dfa0bf73f928b3f44b",
@@ -2642,7 +2642,7 @@
         ],
         "simulationVerified": false,
         "hardwareValidated": false,
-        "note": "镜像布局校验通过；仅开放有板级模型的产品尝试，不表示运行兼容性。"
+        "note": "本条目固定官方镜像及其 SHA-256。板级验收范围见 docs/platform/stick-k016-c-runtime.md。未完成完整兼容性或实机验收。"
       },
       "storage": "remote-links-only",
       "releaseChannel": "stable",
@@ -12109,6 +12109,64 @@
       "storage": "remote-links-only",
       "catalogTargets": [],
       "monitoringNote": "Only exact seeed-sensecap-indicator targets are relevant. The selected 2.5.11.8e2a3e5 recovery is independently hash/layout pinned; no automatic target is declared and current release metadata must not replace its three-part manifest."
+    },
+    {
+      "id": "stickt2-uiflow-investigation",
+      "name": "StickT2 UIFlow 型号调查",
+      "category": "development",
+      "upstreamRepo": "m5stack/uiflow-micropython",
+      "metadataProvider": "github",
+      "metadataUrl": "https://api.github.com/repos/m5stack/uiflow-micropython/releases/latest",
+      "releaseUrl": "https://github.com/m5stack/uiflow-micropython/releases",
+      "checkedAt": "2026-11-22T06:17:11.891350Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "m5stack-k016-t2"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "UIFlow2 v2.5.5 板列表含 StickC/Plus/Plus2/StickS3，无 StickT2；本次查询 M5Burner 的 StickT2 专区返回 0 个 UIFlow 候选，UIFlow1/2 均未找到适用于本型号的镜像。保持仅供参考。"
+      },
+      "catalogTargets": [],
+      "storage": "remote-links-only",
+      "investigation": {
+        "status": "not-located",
+        "productId": "m5stack-k016-t2",
+        "sku": "K016-T2",
+        "evidence": "docs/platform/evidence/stickt2-20261122/sources.json",
+        "reason": "UIFlow2 v2.5.5 板列表含 StickC/Plus/Plus2/StickS3，无 StickT2；本次查询 M5Burner 的 StickT2 专区返回 0 个 UIFlow 候选，UIFlow1/2 均未找到适用于本型号的镜像。保持仅供参考。"
+      }
+    },
+    {
+      "id": "stickt2-xiaozhi-investigation",
+      "name": "StickT2 小智型号调查",
+      "category": "voice",
+      "upstreamRepo": "78/xiaozhi-esp32",
+      "metadataProvider": "github",
+      "metadataUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+      "releaseUrl": "https://github.com/78/xiaozhi-esp32/releases",
+      "checkedAt": "2026-11-22T06:17:11.891350Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "m5stack-k016-t2"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "本轮 main/boards/m5stack 仅发现 StickS3 而非 StickT2；官方产品页未提供小智入口。无精确镜像和板型映射，不建立自动镜像匹配。"
+      },
+      "catalogTargets": [],
+      "storage": "remote-links-only",
+      "investigation": {
+        "status": "not-located",
+        "productId": "m5stack-k016-t2",
+        "sku": "K016-T2",
+        "evidence": "docs/platform/evidence/stickt2-20261122/sources.json",
+        "reason": "本轮 main/boards/m5stack 仅发现 StickS3 而非 StickT2；官方产品页未提供小智入口。无精确镜像和板型映射，不建立自动镜像匹配。"
+      }
     }
   ]
 }

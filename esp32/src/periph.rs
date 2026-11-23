@@ -61,6 +61,11 @@ impl Dport {
     fn new() -> Self {
         let mut ram = RegRam::new();
         ram.write(0xcc, 0xfffc_e030); // IDF v5.5.4 dport_reg.h:1031-1037.
+        // IDF 85c43024c (factory SDK v3.3.5-1), dport_reg.h:1095-1145;
+        // ESP32 TRM v5.9, DPORT_BT_LPCK_DIV_FRAC: RC_FAST, A=1, B=1.
+        // Register reset defaults only: this does not model BT native-clock sampling.
+        ram.write(0xd4, 255);
+        ram.write(0xd8, (1<<25)|(1<<12)|1);
         ram.write(0x2c, 1); // APP CPU held in reset
         Self {
             ram,
@@ -810,6 +815,11 @@ impl Device for ClassicSlc {
 
 pub struct Peripherals {
     pub dport: Dport,
+    pub bt_clock: crate::bt_clock::BtNativeClock,
+    pub phy_noise: crate::phy_noise::PhyNoise,
+    pub bt_init: crate::bt_init::BtInit,
+    pub ble_clock: crate::ble_clock::BleClock,
+    pub bt_sleep: crate::bt_sleep::BtSleep,
     pub uart: [ClassicUart; 3],
     pub spi0: ClassicSpi,
     pub spi1: ClassicSpi,
@@ -904,6 +914,11 @@ impl Peripherals {
         gpio.gpio.strap = 0x13; // normal SPI-fast-flash boot, with ROM messages enabled
         let mut p = Self {
             dport: Dport::new(),
+            bt_clock: crate::bt_clock::BtNativeClock::default(),
+            phy_noise: crate::phy_noise::PhyNoise::default(),
+            bt_init: crate::bt_init::BtInit::default(),
+            ble_clock: crate::ble_clock::BleClock::default(),
+            bt_sleep: crate::bt_sleep::BtSleep::default(),
             uart: [
                 ClassicUart::new(uart),
                 ClassicUart::new(uart),
@@ -987,6 +1002,11 @@ impl Peripherals {
         self.gpio.refresh_level_status();
     }
     pub fn read32(&mut self, addr: u32) -> u32 {
+        if matches!(addr,0x3ff7_100c|0x3ff7_1010|0x3ff7_1014|0x3ff7_1018|0x3ff7_1030|0x3ff7_1034|0x3ff7_1038|0x3ff7_1040|0x3ff7_1044) {return self.bt_sleep.read(addr&0xfff);}
+        if matches!(addr,0x3ff7_121c|0x3ff7_1220) {return self.ble_clock.read(addr&0xfff);}
+        if matches!(addr,0x3ff7_1000|0x3ff7_1004|0x3ff7_1200|0x3ff7_1204) {return self.bt_init.read(addr&0xfff);}
+        if matches!(addr, 0x3ff5_c018 | 0x3ff5_c038 | 0x3ff5_c050 | 0x3ff5_c080) {return self.phy_noise.read(addr&0xfff);}
+        if matches!(addr, 0x3ff7_101c | 0x3ff7_1020) { return self.bt_clock.read(addr & 0xfff); }
         if (0x3ff0_00ec..=0x3ff0_0100).contains(&addr) {
             let (core, word) = if addr < 0x3ff0_00f8 {
                 (0, ((addr - 0x3ff0_00ec) / 4) as usize)
@@ -998,6 +1018,11 @@ impl Peripherals {
         mmio::read32(self, addr)
     }
     pub fn write32(&mut self, addr: u32, mut v: u32) {
+        if matches!(addr,0x3ff7_100c|0x3ff7_1010|0x3ff7_1014|0x3ff7_1018|0x3ff7_1030|0x3ff7_1034|0x3ff7_1038|0x3ff7_1040|0x3ff7_1044) {self.bt_sleep.write(addr&0xfff,v);return;}
+        if matches!(addr,0x3ff7_121c|0x3ff7_1220) {self.ble_clock.write(addr&0xfff,v);return;}
+        if matches!(addr,0x3ff7_1000|0x3ff7_1004|0x3ff7_1200|0x3ff7_1204) {self.bt_init.write(addr&0xfff,v);return;}
+        if matches!(addr, 0x3ff5_c018 | 0x3ff5_c038 | 0x3ff5_c050 | 0x3ff5_c080) {self.phy_noise.write(addr&0xfff,v);return;}
+        if matches!(addr, 0x3ff7_101c | 0x3ff7_1020) { self.bt_clock.write(addr & 0xfff, v); return; }
         let crypto = match addr {
             0x3ff0_1000 => Some(0),
             0x3ff0_3080..=0x3ff0_30b8 => Some(1),
@@ -1073,9 +1098,25 @@ impl Peripherals {
         }
         if matches!(addr >> 12, 0x3ff00 | 0x3ff59) { self.sync_ledc_outputs(); }
         if matches!(addr, 0x3ff0_00cc | 0x3ff0_00d0) {
+            // Functional RX measurement domain: BT BB or WiFi clocks. Reset union
+            // includes BB reset0; exact analog domain topology is not modeled.
+            let clk=self.dport.ram.read(0xcc);let rst=self.dport.ram.read(0xd0);
+            self.phy_noise.set_control(clk&(1<<11)!=0 || clk&0x406==0x406,rst&0x619!=0);
+            // IDF85c43024c dport_reg.h:1060-1090, dedicated BB/LC enables,
+            // BT/BTMAC/RW_BTMAC/BTLP reset bits. Conservative functional reset
+            // union, not a claim about each physical subdomain's reset wiring.
+            let mask=(1<<11)|(1<<16)|(1<<17);
+            self.ble_clock.set_control(clk&mask==mask,rst&0x618!=0);
+            self.bt_init.set_control(clk&mask==mask,rst&0x618!=0);
+            self.bt_sleep.set_control(clk&(1<<11)!=0,rst&0x618!=0);
+            self.bt_clock.set_control(self.dport.ram.read(0xcc)&mask==mask,
+                self.dport.ram.read(0xd0)&((1<<3)|(1<<4)|(1<<9)|(1<<10))!=0);
             // IDF v5.5.4 dport_reg.h:1040-1043,1064,1069.
             self.wifi.clock_enabled = self.dport.ram.read(0xcc) & 0x406 == 0x406
                 && self.dport.ram.read(0xd0) & (1 << 2) == 0;
+        }
+        if matches!(addr,0x3ff0_00cc|0x3ff0_00d0|0x3ff0_00d4|0x3ff0_00d8) {
+            self.bt_sleep.configure_lp_clock(self.dport.ram.read(0xd4),self.dport.ram.read(0xd8));
         }
         if matches!(addr >> 12, 0x3ff00 | 0x3ff56) { self.sync_rmt_outputs(); }
     }
@@ -1092,9 +1133,33 @@ impl Peripherals {
     pub(crate) fn sleep_timer_cycles(&self, ticks: u64) -> u64 {
         ticks.saturating_mul(1600).saturating_sub(self.clock.cycles() % 1600).max(1)
     }
+    #[cold]
+    #[inline(never)]
+    fn tick_native_bt(&mut self, mut remaining: u64) -> bool {
+        let irq_before = self.bt_sleep.irq();
+        while remaining > 0 {
+            let step = self.bt_sleep.next_event_ticks().map_or(remaining, |deadline| deadline.min(remaining));
+            let entries = self.bt_sleep.entries;
+            self.bt_clock.advance(step);
+            if self.bt_sleep.active() { self.bt_sleep.advance(step); }
+            if self.bt_clock.take_slot_event() { self.bt_sleep.native_clock_event(); }
+            if self.bt_sleep.entries != entries { self.bt_clock.enter_lp_sleep(); }
+            if let Some(delta) = self.bt_sleep.take_native_correction() {
+                self.bt_clock.apply_lp_correction(delta);
+            }
+            remaining -= step;
+        }
+        irq_before != self.bt_sleep.irq()
+    }
     pub fn tick(&mut self, cycles: u64) -> bool {
+        if self.ble_clock.clock_enabled() {self.ble_clock.advance(cycles);}
+        if self.bt_init.active() {self.bt_init.advance(cycles);}
+        let bt_irq_changed = cycles != 0
+            && (self.bt_clock.needs_service() || self.bt_sleep.needs_service())
+            && self.tick_native_bt(cycles);
+        if self.phy_noise.advancing() {self.phy_noise.advance(cycles);}
         let gpio_before = self.gpio.raw_status();
-        let mut irq_changed = Dispatch::tick(self, cycles);
+        let mut irq_changed = Dispatch::tick(self, cycles) || bt_irq_changed;
         let phase = self.apb_phase + cycles * (6 / self.apb_divider());
         self.apb_phase = phase % 6;
         let ticks = phase / 6;
@@ -1149,6 +1214,8 @@ impl Peripherals {
     }
     fn with_gpio_sources(&self, core: usize, all: &[u32; 4]) -> [u32; 3] {
         let mut status = [all[0], all[1], all[2]];
+        // Factory SDK soc.h: ETS_RWBT_INTR_SOURCE=6 (native slot and wake status).
+        if self.bt_sleep.irq() { status[0] |= 1 << 6; }
         if self.gpio.irq(core, false) {
             status[SRC_GPIO / 32] |= 1 << (SRC_GPIO % 32);
         }
@@ -1223,6 +1290,21 @@ impl Peripherals {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn bt_low_power_clock_reset_defaults_and_source_rmw() {
+        let mut d=Dport::new();
+        assert_eq!(d.read(0xd4),255);assert_eq!(d.read(0xd8),0x02001001);
+        // A source-mux-only RMW retains A/B reset fields. This is a register
+        // storage test, not a claim that the guest never reprograms dividers.
+        let sources=15<<24;let value=(d.read(0xd8)&!sources)|(1<<26);
+        d.write(0xd8,value);d.write(0xd4,0x33);
+        assert_eq!(d.read(0xd8),0x04001001);assert_eq!(d.read(0xd4),0x33);
+        let mut reset=Dport::new();assert_eq!(reset.read(0xd4),255);assert_eq!(reset.read(0xd8),0x02001001);
+        // Do not claim that these storage defaults implement the unmodeled
+        // 0x3ff7101c sample-completion handshake or BT MAC reset behavior.
+    }
+
 
     #[test]
     fn classic_reports_eco3_silicon_revision_v3_0() {

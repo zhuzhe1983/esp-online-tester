@@ -271,10 +271,12 @@ impl<S: Soc> Machine<S> {
             }
             if dbg { eprintln!("[emu] rom: back-filled {} initialiser blocks into ROM from table {:#x}..{:#x}", n, ds, de); }
         }
-        // C3 rev3 btdm_controller_rom_data_init (0x40002d20) copies this
-        // initializer through a ROM pointer, outside the reset-handler table.
-        // The ELF contains .data_btdm at its RAM address but omits that ROM copy.
-        if S::NAME == "esp32c3" {
+        // C3 rev3 btdm_controller_rom_data_init (0x40002d20), and classic
+        // ESP32 IDF 85c43024c bt.c:btdm_controller_mem_init, copy this initializer
+        // through a ROM pointer, outside the reset-handler table. The ELF
+        // contains .data_btdm at its RAM address but omits that ROM copy.
+        // Without it the guest overwrites valid RAM with zero ROM bytes.
+        if matches!(S::NAME, "esp32c3" | "esp32") {
             if let (Some(pointer), Some(section)) = (find("_data_start_btdm_rom"), e.sections.iter().find(|s| s.name == ".data_btdm")) {
                 let source = self.bus.read32_unpriced(pointer).map_err(|e| format!("BT initializer pointer: {e:?}"))?;
                 self.bus.load_bytes(source, &section.data)?;

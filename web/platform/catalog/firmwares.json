@@ -1327,8 +1327,8 @@
         }
       ],
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "已使用该官方完整镜像和经典 ESP32 ROM 试运行 IMU、RTC 和 A/B 菜单，并观察到低电压警告。部分页面切换需要持续按键。",
+        "浏览器验证麦克风静音页持续刷新，虚拟 PCM 频谱仅在原生模拟器核验。红外光学、无线连接、GATT 和实机尚未验收。"
       ],
       "publisherGroup": "官方",
       "revision": "v1.0",
@@ -2235,9 +2235,9 @@
       "compatibility": "unverified",
       "publicationUrl": "https://docs.m5stack.com/en/core/StickT2",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
-        "官方 StickT2 V1.0 原文件的 bootloader 附加摘要与 SPI mode=3 的头部不一致；仅将该字节改为 2 时与已存摘要匹配。保留原始下载和固定文件 hash，不自动改写；运行/实机兼容性未验证。"
+        "已核对厂家出厂镜像的 SHA-256、芯片和分区布局。固件保持试用。",
+        "原始启动段的附加摘要与 SPI mode=3 的头部不一致。诊断副本改用 mode=2 才能重算出附加摘要；实际加载保留原文件和整文件哈希。",
+        "原生探针已观察到固件经 CCI、VoSPI 采集并绘制两个合成 Raw14 场。温度标定、完整功能和实机兼容仍待验证。见 docs/platform/stickt2-runtime.md。"
       ],
       "sources": [
         {
@@ -2504,7 +2504,8 @@
       "status": "trial",
       "source": {
         "url": "https://m5burner-cdn.m5stack.com/firmware/691fd90c716a33efe43b85d61c8e89a4.bin",
-        "sha256": "8bd01902abdc0f0f6bfbf36a563de027d01cc9640e59c30756cc7315b06ccb03"
+        "sha256": "8bd01902abdc0f0f6bfbf36a563de027d01cc9640e59c30756cc7315b06ccb03",
+        "bootMode": "rom"
       },
       "role": "factory",
       "publisher": "M5Stack",
@@ -2518,8 +2519,8 @@
       "compatibility": "unverified",
       "publicationUrl": "https://docs.m5stack.com/en/core/StickC",
       "limitations": [
-        "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "M5Stack 官方出厂镜像 V0.0.1。固定校验值和完整启动布局，使用 ESP32 ROM 与原版引导程序。",
+        "供试运行。屏幕和按键的验收范围见 docs/platform/stick-k016-c-runtime.md。厂测其余项目未获整体验收。"
       ],
       "sources": [
         {
@@ -10048,7 +10049,8 @@
       "hardwareValidated": false,
       "limitations": [
         "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256。浏览器加载时计算实际摘要，尚未核验镜像布局或运行兼容性。",
-        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。"
+        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。",
+        "StickS3 的板级模拟支持屏幕、A/B 按键和 BMI270 轮询。此固件需要在 M5Burner 完成验证后下载，尚未通过镜像布局和模拟启动检查。"
       ],
       "sources": [
         {
@@ -13902,7 +13904,8 @@
       "hardwareValidated": false,
       "limitations": [
         "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256，尚未核验镜像布局或执行兼容性。",
-        "浏览器加载时计算实际摘要并检查芯片、容量、启动布局；不完整镜像会要求补齐启动文件。网络、麦克风、音频及云服务尚未保证可用。"
+        "浏览器加载时计算实际摘要并检查芯片、容量、启动布局；不完整镜像会要求补齐启动文件。网络、麦克风、音频及云服务尚未保证可用。",
+        "StickS3 的板级模拟支持屏幕、A/B 按键和 BMI270 轮询。此固件需要在 M5Burner 完成验证后下载，尚未通过镜像布局和模拟启动检查。"
       ],
       "sources": [
         {

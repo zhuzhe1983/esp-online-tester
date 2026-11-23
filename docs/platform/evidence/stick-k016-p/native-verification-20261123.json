@@ -1,0 +1,215 @@
+{
+  "checkedAt": "2026-11-23T06:49:03Z",
+  "productId": "m5stack-k016-p",
+  "baseRevision": "f61aae75fe4733fde6368d0ea9f9b8f4ef48019a",
+  "sourceSha256": {
+    "esp32/examples/stickc_plus_pages_probe.rs": "71e2f89045dfbf06c6289c9d5a2966e564553ba11b7e0336fceca71ca3d7ca90",
+    "esp32/src/board/stickc_plus.rs": "2cbb9140f49655e563261e60332e113040eb7579a4bbbd67e373d9f743845a2a",
+    "esp32/src/bus.rs": "88d366a6ba4a97910b31a5cdce0da12f6d0639a3483263e714b21b7407e38572",
+    "esp32/src/i2s.rs": "46e8352a48c00efcce0950945ca43266e5ef0e189fa81df033507028b054db3d",
+    "esp-soc/src/devices/bm8563.rs": "cb8c7f0a8fbf40adbee3b07a95d98adae3a8515079151f050f728452823eb24b",
+    "esp-periph/src/i2c/axp192.rs": "7bd156c703c1b1f1754d1640ff2321ec6d7b863aeaaf57fbcbd9814c4386e176"
+  },
+  "firmwareSha256": "fcbf94c10c4dc93a2cdb395db185a63628869c9bba981c5b930f3899d3e0c9f5",
+  "romSha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+  "environment": {
+    "target": "aarch64-apple-darwin",
+    "rustc": "1.100.0",
+    "cargo": "1.100.0"
+  },
+  "build": "cargo build --release -p esp32 --example stickc_plus_pages_probe",
+  "invoke": "target/release/examples/stickc_plus_pages_probe \"$PLUS_FACTORY_BIN\" \"$CLASSIC_ROM_ELF\" \"$OUTPUT_DIR\" \"$CASE\"",
+  "checks": {
+    "board": 9,
+    "hostPower": 6,
+    "temperature": 3,
+    "strictClassicClippy": "pass",
+    "visual": {
+      "tone1k/after-a.png": "BMP8563 RTC Time, 00:00:11",
+      "low-battery/low-battery.png": "WARNING 22, Low Battery"
+    }
+  },
+  "cases": {
+    "silence": {
+      "before-a": {
+        "guestCycles": 2640000000,
+        "instructionCount": 241063905,
+        "frameNumber": 387,
+        "nonBlackPixels": 292,
+        "rgb565Fnv64": "8975b7f63e900365",
+        "rxHz": 44118,
+        "source": null,
+        "pngSha256": "a173d7b51ddbf2be8613a46d52ea1b22890ec4dd4de9c358147dc2463f44e675"
+      },
+      "after-a": {
+        "guestCycles": 2880000000,
+        "instructionCount": 247825332,
+        "frameNumber": 396,
+        "nonBlackPixels": 7600,
+        "rgb565Fnv64": "8431737c0f44e935",
+        "rxHz": 44118,
+        "source": null,
+        "pngSha256": "1a0ae3901e2fddc29b017a13fd99fc1c47c82004b9c157003b747298c5607ba2"
+      },
+      "after-b": {
+        "guestCycles": 3480000000,
+        "instructionCount": 827100587,
+        "frameNumber": 630,
+        "nonBlackPixels": 0,
+        "rgb565Fnv64": "26993a53c3c439a5",
+        "rxHz": 44118,
+        "source": null,
+        "pngSha256": "a216ed0c326f7383d655d4e0792836271a19deef53f80a2e538595c52b6eaab8"
+      },
+      "fft": {
+        "guestCycles": 3600000000,
+        "instructionCount": 956467828,
+        "frameNumber": 683,
+        "nonBlackPixels": 0,
+        "rgb565Fnv64": "26993a53c3c439a5",
+        "rxHz": 44118,
+        "source": null,
+        "pngSha256": "a216ed0c326f7383d655d4e0792836271a19deef53f80a2e538595c52b6eaab8"
+      }
+    },
+    "tone1k": {
+      "before-a": {
+        "guestCycles": 2640000000,
+        "instructionCount": 241063905,
+        "frameNumber": 387,
+        "nonBlackPixels": 292,
+        "rgb565Fnv64": "8975b7f63e900365",
+        "rxHz": 44118,
+        "source": 0,
+        "pngSha256": "a173d7b51ddbf2be8613a46d52ea1b22890ec4dd4de9c358147dc2463f44e675"
+      },
+      "after-a": {
+        "guestCycles": 2880000000,
+        "instructionCount": 247825332,
+        "frameNumber": 396,
+        "nonBlackPixels": 7600,
+        "rgb565Fnv64": "8431737c0f44e935",
+        "rxHz": 44118,
+        "source": 0,
+        "pngSha256": "1a0ae3901e2fddc29b017a13fd99fc1c47c82004b9c157003b747298c5607ba2"
+      },
+      "after-b": {
+        "guestCycles": 3480000000,
+        "instructionCount": 841147505,
+        "frameNumber": 630,
+        "nonBlackPixels": 12160,
+        "rgb565Fnv64": "2fa58682fadaf435",
+        "rxHz": 44118,
+        "source": 0,
+        "pngSha256": "8a5a57a604758ae2b60eb37f68662932aae2d82bc92522afe2c590bff03b2790"
+      },
+      "fft": {
+        "guestCycles": 3600000000,
+        "instructionCount": 973321732,
+        "frameNumber": 682,
+        "nonBlackPixels": 14848,
+        "rgb565Fnv64": "4e19e2b15e12d973",
+        "rxHz": 44118,
+        "source": 0,
+        "pngSha256": "b9f64ce8e98eac221339c48245da183fc7454ca7c27ed0739238f65797dafbcd"
+      }
+    },
+    "tone2k": {
+      "before-a": {
+        "guestCycles": 2640000000,
+        "instructionCount": 241063905,
+        "frameNumber": 387,
+        "nonBlackPixels": 292,
+        "rgb565Fnv64": "8975b7f63e900365",
+        "rxHz": 44118,
+        "source": 0,
+        "pngSha256": "a173d7b51ddbf2be8613a46d52ea1b22890ec4dd4de9c358147dc2463f44e675"
+      },
+      "after-a": {
+        "guestCycles": 2880000000,
+        "instructionCount": 247825332,
+        "frameNumber": 396,
+        "nonBlackPixels": 7600,
+        "rgb565Fnv64": "8431737c0f44e935",
+        "rxHz": 44118,
+        "source": 0,
+        "pngSha256": "1a0ae3901e2fddc29b017a13fd99fc1c47c82004b9c157003b747298c5607ba2"
+      },
+      "after-b": {
+        "guestCycles": 3480000000,
+        "instructionCount": 841339412,
+        "frameNumber": 630,
+        "nonBlackPixels": 12160,
+        "rgb565Fnv64": "cccdc39053961d59",
+        "rxHz": 44118,
+        "source": 0,
+        "pngSha256": "7c79be46de1b8370f6ff8abde7ca123ab8e967c3ff161a08b3dd17e8e5e8d647"
+      },
+      "fft": {
+        "guestCycles": 3600000000,
+        "instructionCount": 973331022,
+        "frameNumber": 682,
+        "nonBlackPixels": 14848,
+        "rgb565Fnv64": "4b528fa165cbff56",
+        "rxHz": 44118,
+        "source": 0,
+        "pngSha256": "60326cc8ed0cd541e84b9f93f5a126ff694ce4eddb2d689aa514c9a48c479667"
+      }
+    },
+    "wrong-pin": {
+      "before-a": {
+        "guestCycles": 2640000000,
+        "instructionCount": 241063905,
+        "frameNumber": 387,
+        "nonBlackPixels": 292,
+        "rgb565Fnv64": "8975b7f63e900365",
+        "rxHz": 44118,
+        "source": null,
+        "pngSha256": "a173d7b51ddbf2be8613a46d52ea1b22890ec4dd4de9c358147dc2463f44e675"
+      },
+      "after-a": {
+        "guestCycles": 2880000000,
+        "instructionCount": 247825332,
+        "frameNumber": 396,
+        "nonBlackPixels": 7600,
+        "rgb565Fnv64": "8431737c0f44e935",
+        "rxHz": 44118,
+        "source": null,
+        "pngSha256": "1a0ae3901e2fddc29b017a13fd99fc1c47c82004b9c157003b747298c5607ba2"
+      },
+      "after-b": {
+        "guestCycles": 3480000000,
+        "instructionCount": 827100587,
+        "frameNumber": 630,
+        "nonBlackPixels": 0,
+        "rgb565Fnv64": "26993a53c3c439a5",
+        "rxHz": 44118,
+        "source": null,
+        "pngSha256": "a216ed0c326f7383d655d4e0792836271a19deef53f80a2e538595c52b6eaab8"
+      },
+      "fft": {
+        "guestCycles": 3600000000,
+        "instructionCount": 956467828,
+        "frameNumber": 683,
+        "nonBlackPixels": 0,
+        "rgb565Fnv64": "26993a53c3c439a5",
+        "rxHz": 44118,
+        "source": null,
+        "pngSha256": "a216ed0c326f7383d655d4e0792836271a19deef53f80a2e538595c52b6eaab8"
+      }
+    },
+    "low-battery": {
+      "low-battery": {
+        "guestCycles": 1440000000,
+        "instructionCount": 81721460,
+        "frameNumber": 160,
+        "nonBlackPixels": 16867,
+        "rgb565Fnv64": "a34e2b73d6081758",
+        "rxHz": null,
+        "source": null,
+        "pngSha256": "e20e811e39e43786a5429f63f80874c7b37c407dfa859c93258ab9e8e23664af"
+      }
+    }
+  },
+  "scope": "Native full-ROM execution, virtual electrical stimuli and real guest framebuffer output. PNGs and raw output stay in an ignored capture directory. Browser and physical microphone are outside this run."
+}

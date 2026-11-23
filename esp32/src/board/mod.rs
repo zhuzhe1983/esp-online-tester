@@ -11,6 +11,7 @@ pub mod atom_lite;
 pub mod atom_matrix;
 pub mod atom_voice;
 pub mod atom_matrix_v11;
+pub mod stickt2;
 pub mod stamppico;
 pub mod ulanzi;
 pub mod cyd;
@@ -18,16 +19,20 @@ pub mod lilygo_additional;
 mod m5stack_basic;
 pub mod core2;
 pub mod m5_tough;
+pub mod stickc;
+pub mod stickc_plus;
 
 pub use tdisplay::*;
 
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "stickc-plus" | "m5stack-k016-p" => Some(Box::new(stickc_plus::StickCPlus::new())),
         "core2" => Some(Box::new(core2::Core2::new())),
         "core2-v11" => Some(Box::new(core2::Core2::with_revision(core2::Revision::V11))),
         "core2-v13" => Some(Box::new(core2::Core2::with_revision(core2::Revision::V13))),
         "core2-aws" => Some(Box::new(core2::Core2::with_revision(core2::Revision::Aws))),
         "core2-aws-v13" => Some(Box::new(core2::Core2::with_revision(core2::Revision::AwsV13))),
+        "stickt2" | "m5stack-k016-t2" => Some(Box::new(stickt2::StickT2::new())),
         "stamppico" => Some(Box::new(stamppico::StampPico::new())),
         "lilygo-t-beam-v1-2" => Some(Box::new(tbeam::TBeam::new())),
         "atom-matrix-v11" | "m5stack-c008-b-v11" => Some(Box::new(atom_matrix_v11::AtomMatrixV11::new())),
@@ -39,6 +44,7 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
         "ai-thinker-cam" | "esp32cam" => Some(Box::new(aithinker::AiThinkerCam::default())),
         "m5-tough" => Some(Box::new(m5_tough::M5Tough::new())),
         "cyd" | "esp32-2432s028" => Some(Box::new(cyd::Cyd::new())),
+        "stickc" => Some(Box::new(stickc::StickC::new())),
         "m5stack-basic" => Some(Box::new(m5stack_basic::M5StackBasic::new())),
         "ulanzi-tc001" | "tc001" => Some(Box::new(ulanzi::UlanziTc001::new())),
         _ => lilygo_additional::make_board(name).or_else(|| crate::spi::make_board(name)),

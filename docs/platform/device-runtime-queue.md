@@ -107,10 +107,10 @@ Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已�
 | 65 | [M5Stack StamPLC · K141](https://docs.m5stack.com/en/core/StamPLC) · `m5stack-k141` | esp32s3 / ST7789v2 | 待实现 | ST7789v2 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 66 | [M5Stack Station-485 · K123](https://docs.m5stack.com/en/core/Station-485) · `m5stack-k123` | esp32 / ST7789V2 | 待实现 | ST7789V2 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 67 | [M5Stack Station-Bat](https://docs.m5stack.com/en/core/Station-Bat) · `m5stack-k124-b` | esp32 / ST7789V2 | 待实现 | ST7789V2 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 68 | [M5Stack StickC · K016-C](https://docs.m5stack.com/en/core/StickC) · `m5stack-k016-c` | esp32 / ST7735SV | 待实现 | ST7735SV 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 69 | [M5Stack StickC-Plus](https://docs.m5stack.com/en/core/StickC-Plus) · `m5stack-k016-p` | esp32 / ST7789V2 | 待实现 | ST7789V2 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 70 | [M5Stack StickS3 · K150](https://docs.m5stack.com/en/core/StickS3) · `m5stack-k150` | esp32s3 / ST7789P3 | 待实现 | ST7789P3 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 71 | [M5Stack StickT2](https://docs.m5stack.com/en/core/StickT2) · `m5stack-k016-t2` | esp32 / ST7789 | 待实现 | ST7789 引脚/窗口/批次，按键/触摸，供电及板载外设 |
+| 68 | [M5Stack StickC · K016-C](https://docs.m5stack.com/en/core/StickC) · `m5stack-k016-c` | esp32 / ST7735SV | 部分支持，官方原厂 V0.0.1 启动到 IMU、RTC 和麦克风页面 | [StickC 验收](stick-k016-c-runtime.md)，含逻辑 PCM、按键和虚拟 AXP192，物理音频与射频留待验证 |
+| 69 | [M5Stack StickC-Plus](https://docs.m5stack.com/en/core/StickC-Plus) · `m5stack-k016-p` | esp32 / ST7789V2 | 部分支持，官方原厂 v1.0 显示、按键、RTC 和 GPIO2 扬声器 | [StickC Plus 验收](stickc-plus-runtime.md)，含虚拟 AXP192，浏览器不提供麦克风输入 |
+| 70 | [M5Stack StickS3 · K150](https://docs.m5stack.com/en/core/StickS3) · `m5stack-k150` | esp32s3 / ST7789P3 | 部分适配 | 独立板型支持 LCD、A/B、PM1 屏幕电源门及 BMI270 轮询。官方 UIFlow2 与小智需要 M5Burner 验证下载。[运行报告](sticks3-runtime.md) |
+| 71 | [M5Stack StickT2](https://docs.m5stack.com/en/core/StickT2) · `m5stack-k016-t2` | esp32 / ST7789 | 部分支持，官方原厂 v1.0 读取合成 Lepton Raw14 并输出热像 | [StickT2 验收](stickt2-runtime.md)，热源可变更和回放，温度未校准，旋钮和 RTC 未接入 |
 | 72 | [M5Stack Tab5 · C145](https://docs.m5stack.com/en/core/Tab5) · `m5stack-c145` | esp32p4 / ILI9881C / ST7123 / ST7121（按批次核对） | 待实现 | ILI9881C / ST7123 / ST7121（按批次核对） 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 73 | [M5Stack Tough](https://docs.m5stack.com/en/core/Tough) · `m5stack-k034` | esp32 / ILI9342C | 部分支持，Tough Tools v1.0.2，屏幕、触摸、RTC 页 | [Tough 验收](tough-runtime.md)，TF 通过本地设置准备，访客传输尚未实现 |
 | 74 | [M5Stack VAMeter](https://docs.m5stack.com/en/core/VAMeter) · `m5stack-k136` | esp32s3 / ST7789 | 待实现 | ST7789 引脚/窗口/批次，按键/触摸，供电及板载外设 |

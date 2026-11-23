@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:34:48Z",
+  "updatedAt": "2026-11-22T06:19:24Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -503,6 +503,25 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "lcd-gram-window",
+      "label": "ST7789 physical glass / GRAM window",
+      "value": {
+        "panelWidth": 135,
+        "panelHeight": 240,
+        "gramWidth": 240,
+        "gramHeight": 320,
+        "offsetX": 52,
+        "offsetY": 40,
+        "rotation": 0
+      },
+      "unit": "px",
+      "basis": "official",
+      "sourceIds": [
+        "m5gfx-sticks3-65c816a3"
+      ],
+      "notes": "M5GFX setup lines 2995..3063. SPI39/40, DC45, CS41, reset21, backlight38; L3B uses PM1 GPIO2 push-pull high."
     }
   ],
   "revisions": [],
@@ -859,6 +878,34 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-20261122",
+      "url": "https://docs.m5stack.com/en/core/StickS3",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/StickS3",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:14:56Z",
+      "mediaType": "text/html",
+      "bytes": 155054,
+      "sha256": "f2f5615a41760f10a02c4214d0cf39f644203fc84da35df7e2b1b914d0f48545",
+      "title": "StickS3 official pinmap refresh",
+      "kind": "official-product-document",
+      "archiveName": "official-product.html",
+      "notes": "Research archive in docs/platform/evidence/sticks3-runtime-20261122; raw inputs are local-only, source URL/hash retained for independent re-fetch."
+    },
+    {
+      "id": "m5gfx-sticks3-65c816a3",
+      "url": "https://raw.githubusercontent.com/m5stack/M5GFX/65c816a38386062d2c3dc47d41237a9083acbc75/src/M5GFX.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/65c816a38386062d2c3dc47d41237a9083acbc75/src/M5GFX.cpp",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:14:56Z",
+      "mediaType": "text/plain",
+      "bytes": 167215,
+      "sha256": "314251ee69846afa754e11738bb44eaf00509c2b8b5b9de679f34e10411af6bc",
+      "title": "M5GFX fixed StickS3 display and PM1 gate implementation",
+      "kind": "official-driver",
+      "archiveName": "M5GFX.cpp",
+      "notes": "Research archive in docs/platform/evidence/sticks3-runtime-20261122; raw inputs are local-only, source URL/hash retained for independent re-fetch."
     }
   ],
   "assets": [
@@ -1015,6 +1062,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-22: refreshed official pinmap and fixed M5GFX source; original source receipts and manufacturer CAD preserved. Runtime partial details and unverified behavior: docs/platform/sticks3-runtime.md."
   ]
 }

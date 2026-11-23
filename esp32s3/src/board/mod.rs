@@ -43,6 +43,7 @@ mod stamps3bat_power;
 mod stamplc;
 mod stamplc_io;
 mod stampfly;
+mod sticks3;
 pub mod stopwatch;
 pub mod papermono;
 pub mod paperdiy;
@@ -155,6 +156,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "lilygo-mini-epaper-s3" => Some(Box::new(lilygo_epaper::LilygoEpaper::mini_epaper_s3())),
         "cardputer" | "m5stack-cardputer" => Some(Box::new(Cardputer::new())),
         "cardputer-adv" | "m5stack-cardputer-adv" => Some(Box::new(CardputerAdv::new())),
+        "sticks3" | "m5stack-k150" => Some(Box::new(sticks3::StickS3::new())),
         "stopwatch" | "m5stack-stopwatch" => Some(Box::new(StopWatch::new())),
         "waveshare-cam" | "waveshare" => Some(Box::new(WaveshareCam::new())),
         "waveshare-lcd4b" | "lcd4b" => Some(Box::new(WaveshareLcd4b::new())),
@@ -167,5 +169,5 @@ pub fn make_board(name: &str) -> Option<Board> {
 /// offset 0x50, PKG_VERSION bits 23:21; M5GFX 65c816a3 identifies PICO as 1.
 /// v4.4.8 defines the same offset/field. No changes for other products.
 pub fn configure_chip_identity(board:&str,efuse:&mut esp_periph::efuse::Efuse) {
-    if matches!(board,"atoms3r"|"atom-voices3r"|"atoms3r-chatbot"|"stamps3bat"|"atoms3r-cam-chatbot") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
+    if matches!(board,"atoms3r"|"atom-voices3r"|"atoms3r-chatbot"|"stamps3bat"|"atoms3r-cam-chatbot"|"sticks3"|"m5stack-k150") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
 }

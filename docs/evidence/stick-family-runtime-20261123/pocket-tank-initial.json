@@ -1,0 +1,113 @@
+{
+  "method": "RUSAGE_CHILDREN user CPU delta around one subprocess; alternating AB/BA rounds",
+  "guestSeconds": 30,
+  "rounds": 3,
+  "workloads": {
+    "pocket-tank": {
+      "inputs": {
+        "rom": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+        "bootloader": "9556d59f3a10f6b04fa6d75f3142a66034339afafffbd4bbc3d9a127eaa73859",
+        "ptable": "7af5b28608c91167e00778b7f20622f3b47849efebeb3e64117162d73f3e0508",
+        "app": "443dd24aed14a509e6df597eb3a02635cc07e0fbee6f04db85a62f4d4dadb113",
+        "0x290000": "b200bf87c78dc85c4d727f68941ac0b83cced9827037cc169cd2122d71002c2a"
+      },
+      "binarySha256": {
+        "baseline": "332af4c45622d4ed133ece9bda480799249b5bd1a3f957e03ad207501ab91352",
+        "candidate": "224af504da9f4dd8f89b353e814618c2bb3039bb6ad12ba187965e70350359c6"
+      },
+      "samples": [
+        {
+          "round": 1,
+          "label": "baseline",
+          "userSeconds": 51.653639,
+          "systemSeconds": 0.549819,
+          "wallSeconds": 53.32486333302222,
+          "stop": "Halted",
+          "instructions": "core0 4595734479 + core1 6171560740",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+        },
+        {
+          "round": 1,
+          "label": "candidate",
+          "userSeconds": 50.263024,
+          "systemSeconds": 0.424111,
+          "wallSeconds": 51.428749084006995,
+          "stop": "Halted",
+          "instructions": "core0 4595734479 + core1 6171560740",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+        },
+        {
+          "round": 2,
+          "label": "candidate",
+          "userSeconds": 46.29323299999999,
+          "systemSeconds": 0.242491,
+          "wallSeconds": 46.92261916596908,
+          "stop": "Halted",
+          "instructions": "core0 4595734479 + core1 6171560740",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+        },
+        {
+          "round": 2,
+          "label": "baseline",
+          "userSeconds": 51.99002300000001,
+          "systemSeconds": 0.35532600000000003,
+          "wallSeconds": 56.023503167089075,
+          "stop": "Halted",
+          "instructions": "core0 4595734479 + core1 6171560740",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+        },
+        {
+          "round": 3,
+          "label": "baseline",
+          "userSeconds": 45.98806300000001,
+          "systemSeconds": 0.19521199999999994,
+          "wallSeconds": 46.464309000060894,
+          "stop": "Halted",
+          "instructions": "core0 4595734479 + core1 6171560740",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+        },
+        {
+          "round": 3,
+          "label": "candidate",
+          "userSeconds": 42.191505999999976,
+          "systemSeconds": 0.13197799999999993,
+          "wallSeconds": 42.79284370795358,
+          "stop": "Halted",
+          "instructions": "core0 4595734479 + core1 6171560740",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+        }
+      ],
+      "identicalWorkAndOutput": true,
+      "medianUserSeconds": {
+        "baseline": 51.653639,
+        "candidate": 46.29323299999999
+      },
+      "candidateToBaselineRatio": 0.8962240395105558
+    }
+  },
+  "measurementProvenance": "Candidate CLI was rebuilt during the measured window. The binary hash reflects the file before the first pair. Discard this run for timing conclusions. Samples are retained for audit."
+}

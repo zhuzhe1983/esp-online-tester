@@ -290,6 +290,89 @@
           "const": "stampfly-rigid-body-v1"
         }
       }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "power"
+      ],
+      "properties": {
+        "power": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "batteryVoltageUv",
+            "batteryPresent",
+            "vbusVoltageUv",
+            "vbusPresent",
+            "vbusValid",
+            "charging"
+          ],
+          "properties": {
+            "batteryVoltageUv": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5000000
+            },
+            "vbusVoltageUv": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7000000
+            },
+            "batteryPresent": {
+              "type": "boolean"
+            },
+            "vbusPresent": {
+              "type": "boolean"
+            },
+            "vbusValid": {
+              "type": "boolean"
+            },
+            "charging": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "thermalEnvironment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "background",
+        "hotspot",
+        "centerX",
+        "centerY",
+        "radius"
+      ],
+      "properties": {
+        "background": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16383
+        },
+        "hotspot": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16383
+        },
+        "centerX": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 159
+        },
+        "centerY": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 119
+        },
+        "radius": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 160
+        }
+      }
     }
   },
   "$defs": {
@@ -417,5 +500,35 @@
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "environment"
+        ]
+      },
+      "then": {
+        "properties": {
+          "productId": {
+            "const": "m5stack-k016-p"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "thermalEnvironment"
+        ]
+      },
+      "then": {
+        "properties": {
+          "productId": {
+            "const": "m5stack-k016-t2"
+          }
+        }
+      }
+    }
+  ]
 }
