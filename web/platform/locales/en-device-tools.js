@@ -92,6 +92,8 @@ export default {
  '电池接口': 'Battery connector',
  '电源': 'Power',
  '电源按键': 'Power button',
+ '电源键（AXP192）': 'Power button (AXP192)',
+ '电源键（AXP2101）': 'Power button (AXP2101)',
  '电源按键 · M5PM1 时序': 'Power button · M5PM1 sequencing',
  'USB-C（5V 输入/刷机）': 'USB-C (5 V input / flashing)',
  'CHAIN（Chain Bus 出入）': 'CHAIN (Chain Bus in/out)',
