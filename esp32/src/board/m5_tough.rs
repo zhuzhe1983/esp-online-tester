@@ -251,6 +251,9 @@ impl BoardModel for M5Tough {
         touch.screen = down.then_some((x.min(WIDTH - 1), y.min(HEIGHT - 1)));
         self.touch_active = touch.contact().is_some();
         drop(touch);
+        // The classic SoC applies touch_irq() immediately after native touch.
+        // A queued semantic-key edge from the same input batch is superseded.
+        self.edges.clear();
         self.irq_high = self.touch_irq_high();
     }
 
@@ -400,5 +403,12 @@ mod tests {
         assert_eq!(board.take_edges(), [BoardEdge { cycle: 102, pin: 39, level: true }]);
         assert_eq!(read(touch, 2, 5), [0; 5]);
         assert!(!board.button_at(103, "power", true));
+        assert!(board.button_at(104, "btn-a", true));
+        assert!(!board.take_edges()[0].level);
+        assert!(board.button_at(105, "btn-a", false));
+        board.touch(2, 3, true);
+        assert!(board.take_edges().is_empty());
+        assert_eq!(board.touch_irq(), Some((39, false)));
+        assert_eq!(read(touch, 2, 5), [1, 0, 2, 0, 3]);
     }
 }
