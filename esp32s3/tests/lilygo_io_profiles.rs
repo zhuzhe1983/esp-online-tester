@@ -221,7 +221,8 @@ fn panel_routes(b:&mut SocBus) {for (pin,signal) in [(41,154),(39,151),(40,152)]
 fn panel_dma(b:&mut SocBus,wide:bool) {
     const DESC:u32=0x3fc88000;const DATA:u32=0x3fc8a000;let total=480*480*2;for i in 0..total/2 {let value=if i==0 {0xf800u16}else if i==1 {0x07e0}else if i==480*479 {0x001f}else{0};b.write16(DATA+2*i,value).unwrap();}
     let mut pos=0;let mut index=0;while pos<total {let len=(total-pos).min(4092);let last=pos+len==total;for (i,value) in [1<<31|u32::from(last)<<30|len<<12|len,DATA+pos,if last {0}else{DESC+12*(index+1)}].into_iter().enumerate() {b.write32(DESC+12*index+4*i as u32,value).unwrap();}pos+=len;index+=1;}
-    for (address,value) in [(0x60041014,0),(0x600c001c,1<<8),(0x6003f0a8,5),(0x6003f080,(DESC&0xfffff)|(1<<21)),(0x60041000,(3<<29)|(20<<9)|(1<<6)),(0x60041020,(479<<8)|(501<<20)),(0x6004101c,(1<<31)|(479<<11)|(518<<21)),(0x60041014,(1<<27)|(1<<24)|if wide {1<<23}else{0})] {b.write32(address,value).unwrap();}
+    // IDF v4.4.7 lcd_ll.h: RGB output needs LCD_CLK_EN (bit31) as well as CLK_SEL.
+    for (address,value) in [(0x60041014,0),(0x600c001c,1<<8),(0x6003f0a8,5),(0x6003f080,(DESC&0xfffff)|(1<<21)),(0x60041000,(1<<31)|(3<<29)|(20<<9)|(1<<6)),(0x60041020,(479<<8)|(501<<20)),(0x6004101c,(1<<31)|(479<<11)|(518<<21)),(0x60041014,(1<<27)|(1<<24)|if wide {1<<23}else{0})] {b.write32(address,value).unwrap();}
     b.tick(8_000_000);
 }
 #[test]
