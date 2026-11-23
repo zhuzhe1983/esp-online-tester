@@ -188,7 +188,6 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
 }
 
 const romFor = board => ({esp32:'esp32_rev300_rom.elf',esp32c3:'esp32c3_rev3_rom.elf',esp32s3:'esp32s3_rev0_rom.elf',esp32c6:'esp32c6_rev0_rom.elf',esp32p4:'esp32p4_rev0_rom.elf',esp32c61:'esp32c61_rev100_rom.elf',esp32s31:'esp32s31_rev0_rom.elf',esp32c5:null,esp32s2:null})[chipForBoard(board)];
-const browserAudioUnavailable = board => isSramOnlyBoard(board) || board === 'stickt2' || board === 'sticks3';
 
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
@@ -660,10 +659,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     current.onerror = event => { const e = error('WORKER_ERROR', event.message || 'WebAssembly worker failed.'); rejectPending(e); report(e); setStatus('error'); };
     const wasmBuffer = wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength);
     await ask('ready', { op: 'init', wasm: wasmBuffer, frameAck: true }, [wasmBuffer]);
-    const audioStreaming = !browserAudioUnavailable(bundle.cfg.board);
-    const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming, ...(flightEnabled()?{flight:scene.flight,flightEpoch:++flightEpoch}:{}) });
+    const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming:true, ...(flightEnabled()?{flight:scene.flight,flightEpoch:++flightEpoch}:{}) });
     requireValue(result.created, 'CREATE_FAILED', 'Cannot create the selected emulator board.');
-    audio.reset(audioStreaming && result.audioAvailable===true);
+    audio.reset(!isSramOnlyBoard(bundle.cfg.board)&&result.audioAvailable===true);
     for (const file of bundle.files) {
       const data = file.data.slice().buffer;
       const result = await ask(`loaded:${file.at === undefined ? KINDS[file.kind] : `at${file.at}`}`, { op: 'load', ...(file.at === undefined ? { kind: KINDS[file.kind] } : { at: file.at }), data }, [data]);
@@ -957,7 +955,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
           input:{available:false,ports:[],reason:'Browser PCM is output-only for StickC-Plus.'},
           output:{available:true,channels:1,format:'s16le',source:'guest-routed-ledc-g2',sampleRate:16000},
           methods:['readAudio'],
-        } : browserAudioUnavailable(product?.runtime?.board)?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||s31||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
+        } : sramOnly?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||s31||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
         environment:{power:{available:powerAvailable,virtual:true,measured:false,inputType:'power-environment',unit:'microvolt',fields:powerAvailable?[...POWER_KEYS]:[],defaultInput:powerAvailable?powerParameters():null,boundsUv:powerAvailable?clone(POWER_BOUNDS_UV):null,recording:powerAvailable,shares:'initial-scene-and-recorded-inputs',adcSource:'guest-time-AXP192-registers'}},
         ...(thermalAvailable?{thermal:{model:'lepton3-cci-raw14-subset',sceneUnits:'raw14-counts',defaultScene:'deterministic-synthetic-hotspot',environmentInput:'input:thermal-environment',calibrated:false,hardwareValidated:false,recordable:true,shareable:true}}:{}),
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
