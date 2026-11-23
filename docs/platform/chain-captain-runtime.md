@@ -22,4 +22,9 @@
 - 镜像头声明 `SPI Flash Size : 8MB`，而 `spi_flash` 报“实际 16 384 k 大于头声明的 8 192 k，按头声明使用”。产品规格仍按厂家记 16 MB。
 - Grove 口数量（原理图出现 GROVEA/GROVEB）、USB-C 数据脚归属、UART0 是否引出到 Ext.Port、JD9853A 的 GRAM 行数仍属未知，记录在 `web/platform/knowledge/m5stack-c160.json` 的 unknowns。
 - 固件分发：GitHub release 资产没有 `Access-Control-Allow-Origin`，浏览器直载被 CORS 拒绝，只能本地导入。M5Burner 已登记 CHAIN_CAPTAIN 与 UserDemo V0.2、UIFlow2.0 Chain Captain，但下载端点返回 400（早前 401），按 `binFileName` 猜测的 CDN 路径 404，本轮未取得可直载的 Burner 文件。
-- 3D 模型：厂家 CAD 已定位并复算校验（`M5_Hardware` master `8231e759…` 的 `Products/C160_Chain_Captain/Structures/Chain_Captain.stl`，1 640 084 B），尚无经 1:1 照片叠合验收的模型条目；目录里 C160 暂不带 `model` 字段。
+
+## 3D 外观
+
+厂家 [CAD](https://github.com/m5stack/M5_Hardware/blob/8231e759560ce63d864c8987b8ca12f9c09c825b/Products/C160_Chain_Captain/Structures/Chain_Captain.stl) 中选取原位的一对壳体和四枚键帽，移到场景中心。模型尺寸为 56 × 40 × 17 mm，正面和背面与厂家照片的轮廓交并比均约 0.99。屏幕单独显示固件的 240 × 240 像素输出。四枚键帽正面命中各自的输入区域，背面射线无法触发。外壳可分开查看，内部 PCB 以 `UNKNOWN` 占位。
+
+玻璃边界、紧固件外观、插座深度、背面标签底板和内部尺寸来自照片或壳体空间估算。端口只有展示用途，Port A 保留收发方向冲突。六个视角的比较和尺寸记录见 [外观验收](evidence/m5stack-c160/verification.json)，离线复现使用 `python tools/rebuild-product-model.py build m5stack-c160 --scratch <目录>`。

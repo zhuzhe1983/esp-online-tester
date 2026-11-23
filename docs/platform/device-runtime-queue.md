@@ -124,7 +124,7 @@ Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已�
 
 | 产品 | 芯片 / 控制器 | 当前状态 | 缺项/入口 |
 | --- | --- | --- | --- |
-| [M5Stack Chain Captain · C160](https://docs.m5stack.com/en/chain/Chain_Captain) · `m5stack-c160` | esp32s3 / JD9853A 240×240 | 已交付 partial 板型 + 官方 V0.2 真实 ROM 启动与按键验收 | 见 [运行记录](chain-captain-runtime.md) 与 [证据](evidence/chain-captain/README.md)；RTC/IR/Chain UART/Ext.Port/I2S 未建模，Chain Port A 收发方向与官网冲突保留，3D 模型未验收 |
+| [M5Stack Chain Captain · C160](https://docs.m5stack.com/en/chain/Chain_Captain) · `m5stack-c160` | esp32s3 / JD9853A 240×240 | 已交付 partial 板型 + 官方 V0.2 真实 ROM 启动与按键验收 | 见 [运行记录](chain-captain-runtime.md) 与 [证据](evidence/chain-captain/README.md)；RTC/IR/Chain UART/Ext.Port/I2S 未建模，Chain Port A 收发方向与官网冲突保留，3D 壳体与按键完成 [外观验收](evidence/m5stack-c160/verification.json) |
 | [M5Stack Chain DualKey · C147](https://docs.m5stack.com/en/chain/Chain_DualKey) · `m5stack-c147` | esp32s3 / 无屏幕 | 资料核对中，目录与板型未落盘 | 官方 PinMap 已抓（KEY_1 G0、KEY_2 G17、WS2812 G21 与供电 G40、ADC G8/G7/G10/G2/G9、USB G19/G20、两路 HY2.0-4P 为 G48/G47 与 G5/G6）；出厂镜像候选的哈希与来源仍未复核 |
 | [M5Stack Tough · K034](https://docs.m5stack.com/en/core/Tough) · `m5stack-k034` | esp32 / ILI9342C | 证据已并入，板级未实现 | 见 [证据](evidence/tough/sources.json)；仍缺显示/按键/触摸/供电实现与出厂固件验收 |
 | Core2 家族 `k010` / `k010-v11` / `k010-v13` / `k010-aws` / `k010-aws-v13` | esp32 / ILI9342C | 知识记录已按原理图与数据手册重核（5 条 K010 记录 + 6 份来源清单），板级未实现 | 工作树 `2d6e81fc`；目录条目与 AXP192/RTC/蜂鸣器等实现待落地，出厂固件验收未做 |
