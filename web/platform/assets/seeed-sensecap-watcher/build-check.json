@@ -1,6 +1,6 @@
 {
   "productId": "seeed-sensecap-watcher",
-  "modelSha256": "f61cc2fe4335f42abcd5dbf7954e6022d9432b8d91a4b570fc852781c667244c",
+  "modelSha256": "12cac88bcabfcf791cb3827ca07df88a4393676eb46e33734f41a11246697420",
   "geometrySha256": "3bdbeebd19fc6597b8935b2b507f36825a912a9137076c9fa2fa3f3c13a1eeea",
   "geometryBytes": 8281440,
   "exportChecks": [
@@ -17,10 +17,39 @@
       "pass": true
     },
     {
-      "part": "components-848b87",
+      "part": "front-insert",
       "maxFloat32ExportErrorMm": 1.891168430745438e-06,
       "toleranceMm": 0.05,
-      "pass": true
+      "pass": true,
+      "basis": "Conservative upper bound from the same triangle data before partitioning."
+    },
+    {
+      "part": "rear-inserts",
+      "maxFloat32ExportErrorMm": 1.891168430745438e-06,
+      "toleranceMm": 0.05,
+      "pass": true,
+      "basis": "Conservative upper bound from the same triangle data before partitioning."
+    },
+    {
+      "part": "board-ports-and-encoder",
+      "maxFloat32ExportErrorMm": 1.891168430745438e-06,
+      "toleranceMm": 0.05,
+      "pass": true,
+      "basis": "Conservative upper bound from the same triangle data before partitioning."
+    },
+    {
+      "part": "camera-carrier",
+      "maxFloat32ExportErrorMm": 1.891168430745438e-06,
+      "toleranceMm": 0.05,
+      "pass": true,
+      "basis": "Conservative upper bound from the same triangle data before partitioning."
+    },
+    {
+      "part": "speaker",
+      "maxFloat32ExportErrorMm": 1.891168430745438e-06,
+      "toleranceMm": 0.05,
+      "pass": true,
+      "basis": "Conservative upper bound from the same triangle data before partitioning."
     },
     {
       "part": "microphone-window",
@@ -106,67 +135,67 @@
       "sourceFile": "source.stp",
       "component": 23,
       "triangles": 280,
-      "part": "components-848b87"
+      "part": "front-insert"
     },
     {
       "sourceFile": "source.stp",
       "component": 26,
       "triangles": 320,
-      "part": "components-848b87"
+      "part": "rear-inserts"
     },
     {
       "sourceFile": "source.stp",
       "component": 27,
       "triangles": 320,
-      "part": "components-848b87"
+      "part": "rear-inserts"
     },
     {
       "sourceFile": "source.stp",
       "component": 31,
       "triangles": 5292,
-      "part": "components-848b87"
+      "part": "board-ports-and-encoder"
     },
     {
       "sourceFile": "source.stp",
       "component": 32,
       "triangles": 42524,
-      "part": "components-848b87"
+      "part": "board-ports-and-encoder"
     },
     {
       "sourceFile": "source.stp",
       "component": 33,
       "triangles": 464,
-      "part": "components-848b87"
+      "part": "board-ports-and-encoder"
     },
     {
       "sourceFile": "source.stp",
       "component": 34,
       "triangles": 300,
-      "part": "components-848b87"
+      "part": "board-ports-and-encoder"
     },
     {
       "sourceFile": "source.stp",
       "component": 35,
       "triangles": 5004,
-      "part": "components-848b87"
+      "part": "board-ports-and-encoder"
     },
     {
       "sourceFile": "source.stp",
       "component": 36,
       "triangles": 10846,
-      "part": "components-848b87"
+      "part": "board-ports-and-encoder"
     },
     {
       "sourceFile": "source.stp",
       "component": 40,
       "triangles": 150,
-      "part": "components-848b87"
+      "part": "camera-carrier"
     },
     {
       "sourceFile": "source.stp",
       "component": 41,
       "triangles": 300,
-      "part": "components-848b87"
+      "part": "speaker"
     },
     {
       "sourceFile": "source.stp",
@@ -290,5 +319,55 @@
     "No encoder GPIO identity or connector mating certification is inferred from CAD geometry.",
     "Source open face 92 had been called a protective film without independent physical-layer evidence. It substantially overlaps the real front shell and is now omitted to avoid duplicate-depth rendering; original source CAD and selected solid positions are preserved. Lens, LCD and screen bezel remain separate.",
     "The material-only W1-B correction makes shell/stand/door white and opaque. The separately documented removal of overlapping open face 92 changes only preview surface selection, not source solids or their positions."
-  ]
+  ],
+  "retainedGeometryPartition": {
+    "originalModelSha256": "f61cc2fe4335f42abcd5dbf7954e6022d9432b8d91a4b570fc852781c667244c",
+    "originalPart": "components-848b87",
+    "nativeSolidBoundsToleranceMm": 0.0005,
+    "verifiedSourceOrder": true,
+    "byteIdenticalGeometry": true,
+    "groups": [
+      {
+        "newPart": "front-insert",
+        "components": [
+          23
+        ],
+        "triangles": 280
+      },
+      {
+        "newPart": "rear-inserts",
+        "components": [
+          26,
+          27
+        ],
+        "triangles": 640
+      },
+      {
+        "newPart": "board-ports-and-encoder",
+        "components": [
+          31,
+          32,
+          33,
+          34,
+          35,
+          36
+        ],
+        "triangles": 64430
+      },
+      {
+        "newPart": "camera-carrier",
+        "components": [
+          40
+        ],
+        "triangles": 150
+      },
+      {
+        "newPart": "speaker",
+        "components": [
+          41
+        ],
+        "triangles": 300
+      }
+    ]
+  }
 }

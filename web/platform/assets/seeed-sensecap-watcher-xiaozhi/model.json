@@ -58,36 +58,128 @@
       ]
     },
     {
-      "name": "components-848b87",
+      "name": "front-insert",
       "color": "#848b87",
       "role": "component",
       "sharedAssetProductId": "seeed-sensecap-watcher",
       "sourceFile": "source.stp",
       "sourceComponents": [
-        23,
+        23
+      ],
+      "byteOffset": 1455408,
+      "vertexCount": 840,
+      "boundsMm": [
+        [
+          -16.5,
+          23.475000381469727,
+          4.800000190734863
+        ],
+        [
+          -12.5,
+          30.475000381469727,
+          8.399999618530273
+        ]
+      ]
+    },
+    {
+      "name": "rear-inserts",
+      "color": "#848b87",
+      "role": "component",
+      "sharedAssetProductId": "seeed-sensecap-watcher",
+      "sourceFile": "source.stp",
+      "sourceComponents": [
         26,
-        27,
+        27
+      ],
+      "byteOffset": 1475568,
+      "vertexCount": 1920,
+      "boundsMm": [
+        [
+          -11.800000190734863,
+          -29.325000762939453,
+          -10.100000381469727
+        ],
+        [
+          1.7999999523162842,
+          30.274999618530273,
+          -5.599999904632568
+        ]
+      ]
+    },
+    {
+      "name": "board-ports-and-encoder",
+      "color": "#848b87",
+      "role": "component",
+      "sharedAssetProductId": "seeed-sensecap-watcher",
+      "sourceFile": "source.stp",
+      "sourceComponents": [
         31,
         32,
         33,
         34,
         35,
-        36,
-        40,
-        41
+        36
       ],
-      "byteOffset": 1455408,
-      "vertexCount": 197400,
+      "byteOffset": 1521648,
+      "vertexCount": 193290,
       "boundsMm": [
         [
-          -30.799999237060547,
+          -29.54585838317871,
           -32.525001525878906,
-          -10.100000381469727
+          -8.399999618530273
         ],
         [
           26.5,
-          30.475000381469727,
-          8.399999618530273
+          26.889150619506836,
+          4.67000150680542
+        ]
+      ]
+    },
+    {
+      "name": "camera-carrier",
+      "color": "#848b87",
+      "role": "component",
+      "sharedAssetProductId": "seeed-sensecap-watcher",
+      "sourceFile": "source.stp",
+      "sourceComponents": [
+        40
+      ],
+      "byteOffset": 6160608,
+      "vertexCount": 450,
+      "boundsMm": [
+        [
+          -19.685718536376953,
+          20.48967933654785,
+          1.0
+        ],
+        [
+          -0.5674542784690857,
+          30.147075653076172,
+          3.369999885559082
+        ]
+      ]
+    },
+    {
+      "name": "speaker",
+      "color": "#848b87",
+      "role": "component",
+      "sharedAssetProductId": "seeed-sensecap-watcher",
+      "sourceFile": "source.stp",
+      "sourceComponents": [
+        41
+      ],
+      "byteOffset": 6171408,
+      "vertexCount": 900,
+      "boundsMm": [
+        [
+          -30.799999237060547,
+          2.9749999046325684,
+          -4.400000095367432
+        ],
+        [
+          -27.5,
+          18.975000381469727,
+          4.599999904632568
         ]
       ]
     },
@@ -392,39 +484,93 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-housing",
         "parts": [
-          "display-bezel",
-          "lcd-panel",
-          "live-display"
+          "shell-front",
+          "camera-lens",
+          "front-insert",
+          "microphone-window",
+          "card-slot-door",
+          "speaker"
         ],
         "offsetMm": [
           0,
           0,
-          31.0290714
+          62
         ],
         "sourceIds": [
           "source-stp"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The 1-UP shell carries the camera window, front inserts and card-slot door. The speaker follows the front inner wall where it seats."
       },
       {
-        "id": "enclosure",
+        "id": "display-and-camera",
         "parts": [
-          "shell-front",
+          "display-bezel",
+          "lcd-panel",
+          "live-display",
+          "camera-module",
+          "camera-carrier"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          30
+        ],
+        "sourceIds": [
+          "source-stp"
+        ],
+        "notes": "The native display and camera modules share a viewing layer behind the front housing. The live display follows the LCD."
+      },
+      {
+        "id": "main-board",
+        "parts": [
+          "pcb-main",
+          "board-ports-and-encoder",
+          "wheel"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          10
+        ],
+        "sourceIds": [
+          "source-stp"
+        ],
+        "notes": "The 01-PCBA-ASM source keeps both USB-C ports, microSD socket, Grove, expansion header and encoder with the board. The wheel stays on the encoder."
+      },
+      {
+        "id": "battery",
+        "parts": [
+          "battery"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -10
+        ],
+        "sourceIds": [
+          "source-stp"
+        ],
+        "notes": "The native 5-BATTERY-1 pack occupies its own viewing layer behind the board."
+      },
+      {
+        "id": "rear-housing",
+        "parts": [
           "shell-rear",
+          "rear-inserts",
           "stand-arm",
           "stand-base"
         ],
         "offsetMm": [
           0,
           0,
-          -31.0290714
+          -32
         ],
         "sourceIds": [
           "source-stp"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "The 1-DOWN cover and its inserts travel with the assembled mounting stand."
       }
     ]
   },
@@ -789,7 +935,7 @@
     "sku-reference.jpeg": "1df8d0a7f6a178666325e6dad895e3793e8bc92595ff6cd3a934886b6143a35d",
     "geometry.bin": "3bdbeebd19fc6597b8935b2b507f36825a912a9137076c9fa2fa3f3c13a1eeea",
     "SOURCE-RIGHTS.txt": "9b6034c700dfcc5bd0ddc880f69b93f923dc668ceb1c14a649f82ce927e1d9a1",
-    "model-plan.json": "ff56fdcfd766a520100027ea55493b6523b65fd0a2b863e8cb51dfc2ee808622",
+    "model-plan.json": "7429e96de8d99bd70cf8dc2d02694eedd3600b1d1778ea0288ef383018ae6257",
     "source-manifest.json": "93ead6ae6c2b3914d67c48e3a574dd4cf045f2e2bd8438e40b9a3452c7c658e8"
   },
   "sharedArtifacts": {
