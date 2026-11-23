@@ -131,6 +131,9 @@ impl BtSleep {
                 || self.correction.is_some()
                 || self.counting && self.lp_clock_valid())
     }
+    pub(crate) fn needs_service(&self) -> bool {
+        self.correction_ready.is_some() || self.active()
+    }
     /// Level latch from the *live* native CLKN full-slot boundary. Native ROM
     /// IRQ0 dispatches r_ld_fm_clk_isr and wakeup_end, distinct from bit9 EA timer.
     pub fn native_clock_event(&mut self) {
