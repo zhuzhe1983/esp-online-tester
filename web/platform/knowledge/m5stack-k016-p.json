@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:07:47Z",
+  "updatedAt": "2026-11-22T09:07:39Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -530,6 +530,114 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "board-wiring-20261122",
+      "label": "Exact K016-P board wiring",
+      "value": {
+        "lcd": {
+          "mosi": 15,
+          "sclk": 13,
+          "dc": 23,
+          "reset": 18,
+          "cs": 5,
+          "backlight": "AXP192 LDO2",
+          "icSupply": "AXP192 LDO3"
+        },
+        "buttons": {
+          "a": 37,
+          "b": 39,
+          "power": "AXP192 PWRON (not GPIO)"
+        },
+        "i2c": {
+          "sda": 21,
+          "scl": 22
+        },
+        "buzzer": 2,
+        "ledActiveLow": 10,
+        "infrared": 9,
+        "pdm": {
+          "clock": 0,
+          "data": 34
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261122",
+        "plus-config-20261122"
+      ]
+    },
+    {
+      "id": "display-window-20261122",
+      "label": "Official driver panel crop",
+      "value": {
+        "ramWidth": 240,
+        "ramHeight": 320,
+        "visibleWidth": 135,
+        "visibleHeight": 240,
+        "rotation0Offset": [
+          52,
+          40
+        ],
+        "rotation1Offset": [
+          40,
+          53
+        ],
+        "rotation2Offset": [
+          53,
+          40
+        ],
+        "rotation3Offset": [
+          40,
+          52
+        ],
+        "portraitMadctl": 8
+      },
+      "unit": "pixel",
+      "basis": "official",
+      "sourceIds": [
+        "plus-rotation-20261122",
+        "plus-panel-defs-20261122"
+      ]
+    },
+    {
+      "id": "axp192-battery-adc-lsb",
+      "label": "AXP192 battery ADC LSB (0x78/79 H8/L4)",
+      "value": 1.1,
+      "unit": "mV/LSB",
+      "basis": "official",
+      "sourceIds": [
+        "axp-battery-register-en-draft",
+        "axp-battery-register-cn",
+        "axp-battery-plus-driver"
+      ]
+    },
+    {
+      "id": "axp192-vbus-adc-lsb",
+      "label": "AXP192 VBUS ADC LSB (0x5a/5b H8/L4)",
+      "value": 1.7,
+      "unit": "mV/LSB",
+      "basis": "official",
+      "sourceIds": [
+        "axp-battery-register-en-draft",
+        "axp-battery-plus-driver"
+      ]
+    },
+    {
+      "id": "axp192-adc-sample-rate",
+      "label": "AXP192 selectable ADC sample rates (0x84[7:6])",
+      "value": [
+        25,
+        50,
+        100,
+        200
+      ],
+      "unit": "Hz",
+      "basis": "official",
+      "sourceIds": [
+        "axp-battery-register-en-draft",
+        "axp-battery-register-cn"
+      ]
     }
   ],
   "revisions": [],
@@ -822,6 +930,132 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-20261122",
+      "url": "https://docs.m5stack.com/en/core/StickC-Plus",
+      "finalUrl": "https://docs.m5stack.com/en/core/StickC-Plus",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:12:15Z",
+      "mediaType": "text/html",
+      "bytes": 146901,
+      "sha256": "b7e207518a431462eda26786bba23e0f4689b8ba2506ac38baeca8d809661cee",
+      "title": "official-docs-20261122",
+      "kind": "official-product-document",
+      "archiveName": "k016-p-official-docs-20261122.html",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
+    },
+    {
+      "id": "plus-factory-20261122",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/examples/FactoryTest/FactoryTest.ino",
+      "finalUrl": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/examples/FactoryTest/FactoryTest.ino",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:12:16Z",
+      "mediaType": "text/plain",
+      "bytes": 35405,
+      "sha256": "2eece586f53c76ea41354a15275118c982006ee3bfe0b1ca546b3c9dfc4f6133",
+      "title": "plus-factory-20261122",
+      "kind": "official-software-source",
+      "archiveName": "k016-p-plus-factory-20261122.ino",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
+    },
+    {
+      "id": "plus-config-20261122",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/src/utility/Config.h",
+      "finalUrl": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/src/utility/Config.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:17:07Z",
+      "mediaType": "text/plain",
+      "bytes": 306,
+      "sha256": "288a825b16a607a50c297cda3bc88d4c2a80c3a767cf8a6e3e9cc02c9d8f4c29",
+      "title": "plus-config-20261122",
+      "kind": "official-software-source",
+      "archiveName": "k016-p-plus-config-20261122.h",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
+    },
+    {
+      "id": "plus-rotation-20261122",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/src/utility/ST7789_Rotation.h",
+      "finalUrl": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/src/utility/ST7789_Rotation.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:17:07Z",
+      "mediaType": "text/plain",
+      "bytes": 1617,
+      "sha256": "e0a87b001fe8f9181173caa10d367f9732450528f7a60b6e042f13a73e42d569",
+      "title": "plus-rotation-20261122",
+      "kind": "official-software-source",
+      "archiveName": "k016-p-plus-rotation-20261122.h",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
+    },
+    {
+      "id": "plus-panel-defs-20261122",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/src/utility/ST7789_Defines.h",
+      "finalUrl": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/src/utility/ST7789_Defines.h",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:17:08Z",
+      "mediaType": "text/plain",
+      "bytes": 4703,
+      "sha256": "9175452a38079610c89a1cbd6d1b5455283ad8f849c375ce42612e2acb218067",
+      "title": "plus-panel-defs-20261122",
+      "kind": "official-software-source",
+      "archiveName": "k016-p-plus-panel-defs-20261122.h",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
+    },
+    {
+      "id": "axp-battery-datasheet",
+      "title": "AXP192 English brief (4 pages; no register table)",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/AXP192_datasheet_en.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/AXP192_datasheet_en.pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:43:19Z",
+      "mediaType": "application/pdf",
+      "bytes": 464584,
+      "sha256": "5271a6721b797581a85cb72363ac95aa835310d015441b704f621981c9fd22c2",
+      "archiveName": "k016-p-axp192-datasheet.pdf",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
+    },
+    {
+      "id": "axp-battery-plus-driver",
+      "title": "M5StickC-Plus published AXP192 driver",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/src/AXP192.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC-Plus/master/src/AXP192.cpp",
+      "kind": "official-software-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:43:20Z",
+      "mediaType": "text/plain",
+      "bytes": 10490,
+      "sha256": "4550e004d3f53395e2475bacbcce76c806f69df9a683473c93e17f367d2c0f92",
+      "archiveName": "k016-p-axp192-plus-driver.cpp",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
+    },
+    {
+      "id": "axp-battery-register-cn",
+      "title": "X-Powers AXP192 v1.2 Chinese register datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/AXP192_datasheet_cn.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/AXP192_datasheet_cn.pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:43:59Z",
+      "mediaType": "application/pdf",
+      "bytes": 1724661,
+      "sha256": "791d72fb840186421fa1c5f14733dc859c201813c5f28adfcf772b3752e2ef92",
+      "archiveName": "k016-p-axp192-register-cn.pdf",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
+    },
+    {
+      "id": "axp-battery-register-en-draft",
+      "title": "X-Powers AXP192 v1.1 English draft register datasheet",
+      "url": "https://raw.githubusercontent.com/m5stack/M5-Schematic/master/Core/AXP192%20Datasheet_v1.1_en_draft_2211.pdf",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5-Schematic/master/Core/AXP192%20Datasheet_v1.1_en_draft_2211.pdf",
+      "kind": "datasheet",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:44:00Z",
+      "mediaType": "application/octet-stream",
+      "bytes": 1874094,
+      "sha256": "b15b800222b91480ab3ab9a73dacdea1ef2643598d11358913532cf02e0183f0",
+      "archiveName": "k016-p-axp192-register-en-draft.pdf",
+      "notes": "Fetch provenance and original byte hash are recorded in docs/platform/evidence/stick-k016-p/sources-20261122.json. Source bytes are not bundled."
     }
   ],
   "assets": [
@@ -954,6 +1188,10 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "The 2026-11-22 factory v1.0 trial used the original merged image and classic ESP32 ROM. The firmware rendered tilt and RTC pages, and A/B drove the ordinary menu sequence in a headless Worker. Keyboard and photo-estimated 3D A/B surface input reached the guest.",
+    "The virtual AXP192 environment is not a measurement of a real battery. The recorder preserves initial and queued values without promising bit-exact replay. The power key exposes the PMIC short-event latch and has no GPIO.",
+    "Native converted-PCM stimuli distinguished 1 kHz, 2 kHz, silence and the wrong DATA pin in the firmware FFT. Browser microphone input, IR optical output, BLE connections and real hardware remain outside that verification.",
+    "Factory inputs, reproducible checks and scope are documented in docs/platform/stickc-plus-runtime.md."
   ]
 }
