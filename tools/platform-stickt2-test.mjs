@@ -10,6 +10,32 @@ for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.pars
 const product=catalog.products.find(p=>p.id==='m5stack-k016-t2');
 assert.equal(product.runtime.board,'stickt2');assert.equal(product.runtime.flashMb,4);assert.equal(product.display.touch,false);
 assert.deepEqual(product.controls.map(c=>[c.id,c.pin]),[['btnA',37],['btnB',39],['power',undefined]]);
+const model=JSON.parse(await readFile(new URL('web/platform/assets/m5stack-k016-t2/model.json',root),'utf8'));
+const derived=new Map(model.derivedParts.map(part=>[part.id,part]));
+const usb=derived.get('usb-c'),grove=derived.get('grove');
+assert.equal(usb.housingVariant,'recessed');
+assert.equal(usb.geometry.centerMm[0],grove.geometry.centerMm[0]);
+assert.ok(usb.geometry.centerMm[1]>grove.geometry.centerMm[1]);
+assert.ok(usb.geometry.centerMm[2]>grove.geometry.centerMm[2]);
+for(const socket of [usb,grove]){
+  assert.deepEqual(socket.geometry.rotation,[Math.PI/2,0,0]);
+  assert.equal(socket.allowConnections,false);
+}
+assert.equal(derived.get('rotary-encoder-insert').kind,'plate');
+assert.ok(derived.has('thermal-lens-window') && derived.has('rear-screw-left') && derived.has('rear-screw-right'));
+const rear=model.parts.filter(part=>part.sourceComponent===1);
+const sourceFaces=rear.flatMap(part=>part.sourceFaceRanges.flatMap(([first,last])=>Array.from({length:last-first},(_,offset)=>first+offset)));
+assert.equal(sourceFaces.length,3130);
+assert.equal(new Set(sourceFaces).size,3130);
+assert.ok(sourceFaces.every(index=>index>=0 && index<3130));
+assert.equal(rear.find(part=>part.name==='rear-m5-engraving').role,'shell');
+assert.deepEqual(model.presentation.buttons.map(button=>button.id),['btnA']);
+const [rearCover]=model.presentation.inspectionGroups;
+assert.deepEqual(rearCover.offsetMm,[0,0,-16]);
+assert.deepEqual(rearCover.parts,[
+  'shell-back','rear-m5-engraving',
+  'rear-screw-left','rear-screw-left-socket-floor','rear-screw-right','rear-screw-right-socket-floor'
+]);
 assert.equal(chipIdForBoard('stickt2'),0);
 const candidates=catalog.firmwares.filter(f=>f.productIds.includes(product.id));
 assert.equal(candidates[0].id,product.defaultFirmwareId);assert.equal(candidates[0].role,'factory');assert.equal(candidates[0].simulationVerified,false);
@@ -18,6 +44,7 @@ const runtime=createPlatformRuntime({catalog,baseUrl:'https://platform.example/p
 try {
   await runtime.configure(createDefaultScene(catalog,product.id));const caps=await runtime.capabilities();
   assert.equal(caps.executable,true);assert.equal(caps.imu.model,'mpu6886-register-subset');assert.equal(caps.input.touch,false);
+  assert.equal(caps.sdCard.slot,false);
   assert.deepEqual(caps.input.buttons,['btnA','btnB','power']);assert.deepEqual(caps.input.encoders,[]);
   assert.equal(caps.thermal.model,'lepton3-cci-raw14-subset');assert.equal(caps.thermal.calibrated,false);assert.equal(caps.thermal.environmentInput,'input:thermal-environment');
   assert.ok(caps.unsupported.includes('lepton3-calibrated-thermal-imaging'));assert.ok(caps.unsupported.includes('encoder-i2c-0x30'));

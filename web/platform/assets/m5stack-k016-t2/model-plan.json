@@ -7,7 +7,125 @@
       "sourceComponent": 1,
       "name": "shell-back",
       "color": "#272b29",
-      "role": "shell"
+      "role": "shell",
+      "sourceFaceRanges": [
+        [
+          0,
+          781
+        ],
+        [
+          782,
+          1028
+        ],
+        [
+          1039,
+          1040
+        ],
+        [
+          1047,
+          1048
+        ],
+        [
+          1052,
+          1055
+        ],
+        [
+          1073,
+          2570
+        ],
+        [
+          2589,
+          2592
+        ],
+        [
+          2593,
+          2642
+        ],
+        [
+          2648,
+          2649
+        ],
+        [
+          2650,
+          2652
+        ],
+        [
+          2657,
+          2658
+        ],
+        [
+          2659,
+          2660
+        ],
+        [
+          2661,
+          2662
+        ],
+        [
+          2664,
+          2666
+        ],
+        [
+          2668,
+          2669
+        ],
+        [
+          2673,
+          2676
+        ],
+        [
+          2689,
+          2690
+        ],
+        [
+          2692,
+          2694
+        ],
+        [
+          2695,
+          2696
+        ],
+        [
+          2698,
+          2699
+        ],
+        [
+          2701,
+          2703
+        ],
+        [
+          2704,
+          2705
+        ],
+        [
+          2713,
+          2714
+        ],
+        [
+          2715,
+          2716
+        ],
+        [
+          2719,
+          2720
+        ],
+        [
+          2732,
+          2733
+        ],
+        [
+          2734,
+          2735
+        ],
+        [
+          2736,
+          2738
+        ],
+        [
+          2739,
+          3130
+        ]
+      ]
     },
     {
       "sourceComponent": 5,
@@ -26,6 +144,135 @@
       "name": "side-key-b",
       "color": "#353a35",
       "role": "button"
+    },
+    {
+      "sourceComponent": 1,
+      "name": "rear-m5-engraving",
+      "role": "shell",
+      "color": "#1d211e",
+      "material": {
+        "roughness": 0.95
+      },
+      "sourceFaceRanges": [
+        [
+          781,
+          782
+        ],
+        [
+          1028,
+          1039
+        ],
+        [
+          1040,
+          1047
+        ],
+        [
+          1048,
+          1052
+        ],
+        [
+          1055,
+          1073
+        ],
+        [
+          2570,
+          2589
+        ],
+        [
+          2592,
+          2593
+        ],
+        [
+          2642,
+          2648
+        ],
+        [
+          2649,
+          2650
+        ],
+        [
+          2652,
+          2657
+        ],
+        [
+          2658,
+          2659
+        ],
+        [
+          2660,
+          2661
+        ],
+        [
+          2662,
+          2664
+        ],
+        [
+          2666,
+          2668
+        ],
+        [
+          2669,
+          2673
+        ],
+        [
+          2676,
+          2689
+        ],
+        [
+          2690,
+          2692
+        ],
+        [
+          2694,
+          2695
+        ],
+        [
+          2696,
+          2698
+        ],
+        [
+          2699,
+          2701
+        ],
+        [
+          2703,
+          2704
+        ],
+        [
+          2705,
+          2713
+        ],
+        [
+          2714,
+          2715
+        ],
+        [
+          2716,
+          2719
+        ],
+        [
+          2720,
+          2732
+        ],
+        [
+          2733,
+          2734
+        ],
+        [
+          2735,
+          2736
+        ],
+        [
+          2738,
+          2739
+        ]
+      ],
+      "basis": "manufacturer-cad",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-c8e0bafa53"
+      ],
+      "notes": "A slightly darker original nylon finish makes the source 0.5 mm recessed engraving visible. These original cavity triangles follow shell appearance presets."
     }
   ],
   "matrixRows": [
@@ -89,13 +336,18 @@
     {
       "sourceId": "product-photo-ca3aee2480",
       "view": "side"
+    },
+    {
+      "sourceId": "product-photo-a02f8ecc2c",
+      "view": "ports"
     }
   ],
   "limitations": [
-    "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
-    "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
-    "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-    "Manufacturer shell width includes mounting flanges (~30.4mm) while official product width is24mm; source not scaled. Thermal optics and encoder seating are not complete CAD."
+    "The source CAD covers the housing. See the runtime report for the display and peripheral behavior.",
+    "The K016-T2 catalog, official photographs and source STL document two external sockets, rotary and mounting hardware. The card interface is undocumented.",
+    "No physical measurements. Receptacle fit, fastener finish, lens seating and visible encoder shape are product-photo estimates.",
+    "The source case including flanges spans 30.4 mm while the official body width is 24 mm. The shell retains its native dimensions.",
+    "The board shape remains an internal UNKNOWN envelope. Front A retains its estimated control region. The rotary insert is visual only."
   ],
   "assemblyNotes": "Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling. Global180-degree Y turn places actual LCD aperture on+Z and mounting ears on photo-left; no independent shell relocation.",
   "omittedComponents": [
@@ -139,7 +391,50 @@
         7.65,
         11.98
       ]
-    }
+    },
+    "buttons": [
+      {
+        "id": "btnA",
+        "shape": "rectangle",
+        "sizeMm": [
+          10.2,
+          9.0
+        ],
+        "positionMm": [
+          3.2,
+          -15.4,
+          11.99
+        ],
+        "basis": "image-measurement",
+        "sourceIds": [
+          "product-photo-5094fb4b8d"
+        ],
+        "notes": "Front palette button center estimated from official frontal photo against preserved 48mm shell height; approx +/-1mm, not calibrated. Side B/power identities left unassigned."
+      }
+    ],
+    "inspectionGroups": [
+      {
+        "id": "rear-cover",
+        "parts": [
+          "shell-back",
+          "rear-m5-engraving",
+          "rear-screw-left",
+          "rear-screw-left-socket-floor",
+          "rear-screw-right",
+          "rear-screw-right-socket-floor"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -16
+        ],
+        "sourceIds": [
+          "manufacturer-cad-cfa964c8a1",
+          "product-photo-c8e0bafa53"
+        ],
+        "notes": "The native rear case and engraving move as one viewing layer with the visible fastener heads in their counterbores. The optics and UNKNOWN board stay in the main assembly."
+      }
+    ]
   },
   "derivedParts": [
     {
@@ -148,17 +443,20 @@
       "label": "UNKNOWN",
       "basis": "estimated",
       "dimensionsMm": [
-        18,
-        40,
-        1
+        16.0,
+        34.0,
+        1.0
       ],
       "centerMm": [
+        3.2,
         0,
-        0,
-        0
+        6.3
       ],
-      "sourceIds": [],
-      "notes": "Neutral UNKNOWN placeholder; no verified PCB placement/layout geometry. Exterior shape is not an assertion of PCB detail."
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1"
+      ],
+      "notes": "Estimated blank PCB envelope behind the front screen, centered within the main housing and set back from the rear optics, rotary aperture and lower sockets. Internal layout is UNKNOWN.",
+      "color": "#667069"
     },
     {
       "id": "usb-c",
@@ -167,22 +465,25 @@
       "geometry": {
         "centerMm": [
           3.2,
-          -24.03,
-          1.8
+          -23.62,
+          1.98
         ],
         "rotation": [
           1.5707963267948966,
           0,
           0
-        ]
+        ],
+        "depthMm": 3.2
       },
       "basis": "image-measurement",
       "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
         "product-photo-a02f8ecc2c"
       ],
       "allowConnections": false,
       "connectionStatus": "visual-only-unverified",
-      "notes": "Official USB-side photo gives two visible connector mouths; estimate z +/-0.7mm, exact pin order and internal seat unverified."
+      "notes": "The USB CAD cutout spans approximately 9.2 mm at Z=2.2 mm. Recessed metal mouth, axis -Y, 0.38 mm inboard of the case-end plane. Hidden depth is an estimate.",
+      "housingVariant": "recessed"
     },
     {
       "id": "grove",
@@ -191,8 +492,8 @@
       "geometry": {
         "centerMm": [
           3.2,
-          -24.03,
-          -3.7
+          -23.92,
+          -3.22
         ],
         "rotation": [
           1.5707963267948966,
@@ -202,11 +503,606 @@
       },
       "basis": "image-measurement",
       "sourceIds": [
-        "product-photo-a02f8ecc2c"
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-a02f8ecc2c",
+        "official-docs"
       ],
       "allowConnections": false,
       "connectionStatus": "visual-only-unverified",
-      "notes": "Official USB-side photo gives two visible connector mouths; estimate z +/-0.7mm, exact pin order and internal seat unverified."
+      "notes": "The photo-backed keyed white opening sits below USB-C. Outer notch is about 10.2 mm at the bottom and 12.2 mm at the retention shoulders. Axis -Y. Visual contacts represent the documented HY2.0 pitch."
+    },
+    {
+      "id": "grove-left-retainer",
+      "kind": "box",
+      "color": "#a2a6a2",
+      "geometry": {
+        "centerMm": [
+          -2.36,
+          -23.69,
+          -2.63
+        ],
+        "sizeMm": [
+          0.54,
+          0.43,
+          1.69
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-a02f8ecc2c"
+      ],
+      "notes": "The vendor end photograph shows a small light retainer beside each white socket shoulder. Hidden seat is estimated.",
+      "material": {
+        "roughness": 0.62,
+        "metalness": 0.2
+      }
+    },
+    {
+      "id": "grove-right-retainer",
+      "kind": "box",
+      "color": "#a2a6a2",
+      "geometry": {
+        "centerMm": [
+          8.76,
+          -23.69,
+          -2.63
+        ],
+        "sizeMm": [
+          0.54,
+          0.43,
+          1.69
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-a02f8ecc2c"
+      ],
+      "notes": "The vendor end photograph shows a small light retainer beside each white socket shoulder. Hidden seat is estimated.",
+      "material": {
+        "roughness": 0.62,
+        "metalness": 0.2
+      }
+    },
+    {
+      "id": "thermal-lens-bezel",
+      "kind": "torus",
+      "color": "#151918",
+      "geometry": {
+        "centerMm": [
+          3.2,
+          7.77,
+          -11.1
+        ],
+        "radiusMm": 1.79,
+        "tubeMm": 0.54
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-c8e0bafa53"
+      ],
+      "notes": "The photographed dark annulus seats within the original rear circular lens bore. Outer diameter 4.66 mm. Internal Lepton assembly is outside this geometry.",
+      "material": {
+        "roughness": 0.54,
+        "metalness": 0.16
+      }
+    },
+    {
+      "id": "thermal-lens-window",
+      "kind": "cylinder",
+      "color": "#426269",
+      "geometry": {
+        "centerMm": [
+          3.2,
+          7.77,
+          -10.73
+        ],
+        "radiusMm": 1.44,
+        "depthMm": 0.44
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-c8e0bafa53"
+      ],
+      "notes": "Tinted lens sits behind the bezel. A photo-based visual estimate of the exposed optical surface.",
+      "material": {
+        "roughness": 0.2,
+        "metalness": 0.38
+      }
+    },
+    {
+      "id": "rear-screw-left",
+      "kind": "plate",
+      "color": "#969b96",
+      "geometry": {
+        "centerMm": [
+          11.2,
+          -19.52,
+          -11.41
+        ],
+        "depthMm": 0.5,
+        "outlineMm": [
+          [
+            1.44,
+            0.0
+          ],
+          [
+            1.36952,
+            0.44498
+          ],
+          [
+            1.16498,
+            0.84641
+          ],
+          [
+            0.84641,
+            1.16498
+          ],
+          [
+            0.44498,
+            1.36952
+          ],
+          [
+            0.0,
+            1.44
+          ],
+          [
+            -0.44498,
+            1.36952
+          ],
+          [
+            -0.84641,
+            1.16498
+          ],
+          [
+            -1.16498,
+            0.84641
+          ],
+          [
+            -1.36952,
+            0.44498
+          ],
+          [
+            -1.44,
+            0.0
+          ],
+          [
+            -1.36952,
+            -0.44498
+          ],
+          [
+            -1.16498,
+            -0.84641
+          ],
+          [
+            -0.84641,
+            -1.16498
+          ],
+          [
+            -0.44498,
+            -1.36952
+          ],
+          [
+            -0.0,
+            -1.44
+          ],
+          [
+            0.44498,
+            -1.36952
+          ],
+          [
+            0.84641,
+            -1.16498
+          ],
+          [
+            1.16498,
+            -0.84641
+          ],
+          [
+            1.36952,
+            -0.44498
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              0.64952,
+              0.375
+            ],
+            [
+              0.0,
+              0.75
+            ],
+            [
+              -0.64952,
+              0.375
+            ],
+            [
+              -0.64952,
+              -0.375
+            ],
+            [
+              -0.0,
+              -0.75
+            ],
+            [
+              0.64952,
+              -0.375
+            ]
+          ]
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-c8e0bafa53"
+      ],
+      "notes": "Photographed silver hex socket cap lies inside the original shoulder. Exposed diameter about 2.9 mm. Thread length is unknown.",
+      "material": {
+        "roughness": 0.34,
+        "metalness": 0.62
+      }
+    },
+    {
+      "id": "rear-screw-left-socket-floor",
+      "kind": "cylinder",
+      "color": "#414743",
+      "geometry": {
+        "centerMm": [
+          11.2,
+          -19.52,
+          -10.98
+        ],
+        "depthMm": 0.36,
+        "radiusMm": 0.8,
+        "radialSegments": 24
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-c8e0bafa53"
+      ],
+      "notes": "Dark recessed hex drive floor behind the source-photo head. The mounting seat stays part of the source case.",
+      "material": {
+        "roughness": 0.66,
+        "metalness": 0.24
+      }
+    },
+    {
+      "id": "rear-screw-right",
+      "kind": "plate",
+      "color": "#969b96",
+      "geometry": {
+        "centerMm": [
+          -4.8,
+          -19.52,
+          -11.41
+        ],
+        "depthMm": 0.5,
+        "outlineMm": [
+          [
+            1.44,
+            0.0
+          ],
+          [
+            1.36952,
+            0.44498
+          ],
+          [
+            1.16498,
+            0.84641
+          ],
+          [
+            0.84641,
+            1.16498
+          ],
+          [
+            0.44498,
+            1.36952
+          ],
+          [
+            0.0,
+            1.44
+          ],
+          [
+            -0.44498,
+            1.36952
+          ],
+          [
+            -0.84641,
+            1.16498
+          ],
+          [
+            -1.16498,
+            0.84641
+          ],
+          [
+            -1.36952,
+            0.44498
+          ],
+          [
+            -1.44,
+            0.0
+          ],
+          [
+            -1.36952,
+            -0.44498
+          ],
+          [
+            -1.16498,
+            -0.84641
+          ],
+          [
+            -0.84641,
+            -1.16498
+          ],
+          [
+            -0.44498,
+            -1.36952
+          ],
+          [
+            -0.0,
+            -1.44
+          ],
+          [
+            0.44498,
+            -1.36952
+          ],
+          [
+            0.84641,
+            -1.16498
+          ],
+          [
+            1.16498,
+            -0.84641
+          ],
+          [
+            1.36952,
+            -0.44498
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              0.64952,
+              0.375
+            ],
+            [
+              0.0,
+              0.75
+            ],
+            [
+              -0.64952,
+              0.375
+            ],
+            [
+              -0.64952,
+              -0.375
+            ],
+            [
+              -0.0,
+              -0.75
+            ],
+            [
+              0.64952,
+              -0.375
+            ]
+          ]
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-c8e0bafa53"
+      ],
+      "notes": "Photographed silver hex socket cap lies inside the original shoulder. Exposed diameter about 2.9 mm. Thread length is unknown.",
+      "material": {
+        "roughness": 0.34,
+        "metalness": 0.62
+      }
+    },
+    {
+      "id": "rear-screw-right-socket-floor",
+      "kind": "cylinder",
+      "color": "#414743",
+      "geometry": {
+        "centerMm": [
+          -4.8,
+          -19.52,
+          -10.98
+        ],
+        "depthMm": 0.36,
+        "radiusMm": 0.8,
+        "radialSegments": 24
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-c8e0bafa53"
+      ],
+      "notes": "Dark recessed hex drive floor behind the source-photo head. The mounting seat stays part of the source case.",
+      "material": {
+        "roughness": 0.66,
+        "metalness": 0.24
+      }
+    },
+    {
+      "id": "rotary-encoder-insert",
+      "kind": "plate",
+      "color": "#171a19",
+      "geometry": {
+        "centerMm": [
+          -8.65,
+          -14.08,
+          0.63
+        ],
+        "depthMm": 0.46,
+        "rotation": [
+          0,
+          -1.5707963267948966,
+          0
+        ],
+        "outlineMm": [
+          [
+            -3.95,
+            -1.9
+          ],
+          [
+            -3.55,
+            -2.47
+          ],
+          [
+            3.35,
+            -2.47
+          ],
+          [
+            3.89,
+            -1.96
+          ],
+          [
+            3.89,
+            1.96
+          ],
+          [
+            3.35,
+            2.47
+          ],
+          [
+            -3.55,
+            2.47
+          ],
+          [
+            -3.95,
+            1.9
+          ]
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-ca3aee2480"
+      ],
+      "notes": "Exposed dark rotary encoder silhouette fitted to the manufacturer side opening. Hidden shaft, fine ridges and mechanical actuation are unmodeled.",
+      "material": {
+        "roughness": 0.87
+      }
+    },
+    {
+      "id": "rotary-recess-back",
+      "kind": "box",
+      "color": "#171918",
+      "geometry": {
+        "centerMm": [
+          -6.7,
+          -14.15,
+          0.44
+        ],
+        "sizeMm": [
+          0.42,
+          6.7,
+          9.82
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-ca3aee2480"
+      ],
+      "notes": "Dark rotary seat behind the wheel, matching the photographed cavity surround. Hidden thickness is estimated.",
+      "material": {
+        "roughness": 0.94
+      }
+    },
+    {
+      "id": "rotary-grip-1",
+      "kind": "box",
+      "color": "#222623",
+      "geometry": {
+        "centerMm": [
+          -8.91,
+          -14.08,
+          0.09
+        ],
+        "sizeMm": [
+          0.1,
+          4.49,
+          0.12
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-ca3aee2480"
+      ],
+      "notes": "Texture-scale relief on the exposed rotary thumb grip from the official photo. Spacing is approximate.",
+      "material": {
+        "roughness": 0.88
+      }
+    },
+    {
+      "id": "rotary-grip-2",
+      "kind": "box",
+      "color": "#222623",
+      "geometry": {
+        "centerMm": [
+          -8.91,
+          -14.08,
+          0.51
+        ],
+        "sizeMm": [
+          0.1,
+          4.49,
+          0.12
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-ca3aee2480"
+      ],
+      "notes": "Texture-scale relief on the exposed rotary thumb grip from the official photo. Spacing is approximate.",
+      "material": {
+        "roughness": 0.88
+      }
+    },
+    {
+      "id": "rotary-grip-3",
+      "kind": "box",
+      "color": "#222623",
+      "geometry": {
+        "centerMm": [
+          -8.91,
+          -14.08,
+          0.93
+        ],
+        "sizeMm": [
+          0.1,
+          4.49,
+          0.12
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-cfa964c8a1",
+        "product-photo-ca3aee2480"
+      ],
+      "notes": "Texture-scale relief on the exposed rotary thumb grip from the official photo. Spacing is approximate.",
+      "material": {
+        "roughness": 0.88
+      }
     }
   ],
   "revisions": [],
@@ -312,6 +1208,44 @@
         ]
       },
       "basis": "Independent official silhouette sets camera scale/center only; source geometry unchanged."
+    },
+    "ports": {
+      "span": 65.8,
+      "position": [
+        0.0,
+        -250,
+        0.0
+      ],
+      "target": [
+        0.0,
+        0,
+        0.0
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "basis": "Lower end orthographic alignment for socket centers. Official photo shows slight elevation and a visible front lip."
+    },
+    "side": {
+      "span": 68.2,
+      "position": [
+        -250,
+        0,
+        0
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "basis": "Left side with length horizontal and LCD/front at the top. Mounting holes and rotary aperture align to the official side photograph."
     }
   },
   "catalog": {
