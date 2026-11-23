@@ -13230,35 +13230,44 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "m5stack-basic",
         "flashMb": 16,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
       },
       "display": {
         "width": 320,
         "height": 240,
         "type": "LCD",
-        "controller": "ILI9342C"
+        "controller": "ILI9342C",
+        "bus": "SPI",
+        "touch": false
       },
       "controls": [
         {
           "id": "button-a",
           "name": "Button A",
           "type": "button",
-          "pin": 39
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         },
         {
           "id": "button-b",
           "name": "Button B",
           "type": "button",
-          "pin": 38
+          "pin": 38,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
         },
         {
           "id": "button-c",
           "name": "Button C",
           "type": "button",
-          "pin": 37
+          "pin": 37,
+          "activeLow": true,
+          "defaultKeyCode": "KeyC"
         }
       ],
       "interfaces": [
@@ -13293,17 +13302,211 @@
         },
         {
           "external": true,
-          "pins": [],
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 18
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
           "id": "micro-sd",
           "type": "microSD",
-          "name": "microSD 卡槽",
+          "name": "microSD",
           "knowledgeFactIds": [
             "table-1"
           ],
           "sourceIds": [
             "official-docs"
-          ],
-          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+          ]
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "ILI9342C SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 23
+            },
+            {
+              "name": "CLK",
+              "gpio": 18
+            },
+            {
+              "name": "CS",
+              "gpio": 14
+            },
+            {
+              "name": "D/C",
+              "gpio": 27
+            },
+            {
+              "name": "RST",
+              "gpio": 33
+            },
+            {
+              "name": "BL",
+              "gpio": 32
+            }
+          ]
+        },
+        {
+          "id": "m5-bus",
+          "type": "2x15-2.54mm",
+          "name": "M5-Bus",
+          "external": true,
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "ADC",
+              "gpio": 35
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "ADC",
+              "gpio": 36
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "EN"
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "DAC/SPK",
+              "gpio": 25
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "DAC",
+              "gpio": 26
+            },
+            {
+              "name": "SCK",
+              "gpio": 18
+            },
+            {
+              "name": "3V3"
+            },
+            {
+              "name": "RXD0",
+              "gpio": 3
+            },
+            {
+              "name": "TXD0",
+              "gpio": 1
+            },
+            {
+              "name": "RXD2",
+              "gpio": 16
+            },
+            {
+              "name": "TXD2",
+              "gpio": 17
+            },
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            },
+            {
+              "name": "G2",
+              "gpio": 2
+            },
+            {
+              "name": "G5",
+              "gpio": 5
+            },
+            {
+              "name": "I2S/SCK",
+              "gpio": 12
+            },
+            {
+              "name": "I2S/WS",
+              "gpio": 13
+            },
+            {
+              "name": "I2S/OUT",
+              "gpio": 15
+            },
+            {
+              "name": "I2S/MCLK",
+              "gpio": 0
+            },
+            {
+              "name": "HPWR"
+            },
+            {
+              "name": "I2S/IN",
+              "gpio": 34
+            },
+            {
+              "name": "HPWR"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "HPWR"
+            },
+            {
+              "name": "BAT"
+            }
+          ]
+        },
+        {
+          "id": "pmic-i2c",
+          "type": "I2C",
+          "name": "IP5306 (0x75)",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            }
+          ]
+        },
+        {
+          "id": "speaker",
+          "type": "DAC",
+          "name": "Speaker output",
+          "external": false,
+          "pins": [
+            {
+              "name": "DAC1",
+              "gpio": 25
+            }
+          ]
         }
       ],
       "sources": [
@@ -13314,8 +13517,10 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "板级模型面向官方资料所示的 16 MiB Flash 与 ILI9342C IPS 配置。早期 4 MiB 或 TN 批次未验证。",
+        "支持三枚实体键、RGB565 屏幕写入和背光开启/关闭。LCD 寄存器读回、亮度和颜色校准未实现。",
+        "TF 卡实现 SPI SDHC 数字读写。IP5306、电池、侧面电源键、扬声器和外部端口未建模。",
+        "未实机验证。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k001-v27.json",
       "model": {
@@ -13347,35 +13552,44 @@
       "chip": "esp32",
       "module": "ESP32-D0WDQ6-V3",
       "runtime": {
-        "board": null,
+        "board": "m5stack-basic",
         "flashMb": 16,
-        "psramMb": null,
-        "status": "unavailable"
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
       },
       "display": {
         "width": 320,
         "height": 240,
         "type": "IPS LCD",
-        "controller": "ILI9342C"
+        "controller": "ILI9342C",
+        "bus": "SPI",
+        "touch": false
       },
       "controls": [
         {
           "id": "button-a",
           "name": "Button A",
           "type": "button",
-          "pin": 39
+          "pin": 39,
+          "activeLow": true,
+          "defaultKeyCode": "KeyA"
         },
         {
           "id": "button-b",
           "name": "Button B",
           "type": "button",
-          "pin": 38
+          "pin": 38,
+          "activeLow": true,
+          "defaultKeyCode": "KeyB"
         },
         {
           "id": "button-c",
           "name": "Button C",
           "type": "button",
-          "pin": 37
+          "pin": 37,
+          "activeLow": true,
+          "defaultKeyCode": "KeyC"
         },
         {
           "id": "power",
@@ -13404,11 +13618,11 @@
               "name": "5V"
             },
             {
-              "name": "G21",
+              "name": "SDA",
               "gpio": 21
             },
             {
-              "name": "G22",
+              "name": "SCL",
               "gpio": 22
             }
           ]
@@ -13418,7 +13632,24 @@
           "type": "microSD",
           "name": "microSD",
           "external": true,
-          "pins": []
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 18
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ]
         },
         {
           "id": "lcd-spi",
@@ -13427,27 +13658,27 @@
           "external": false,
           "pins": [
             {
-              "name": "G23",
+              "name": "SDA",
               "gpio": 23
             },
             {
-              "name": "G18",
+              "name": "CLK",
               "gpio": 18
             },
             {
-              "name": "G14",
+              "name": "CS",
               "gpio": 14
             },
             {
-              "name": "G27",
+              "name": "D/C",
               "gpio": 27
             },
             {
-              "name": "G33",
+              "name": "RST",
               "gpio": 33
             },
             {
-              "name": "G32",
+              "name": "BL",
               "gpio": 32
             }
           ]
@@ -13457,7 +13688,146 @@
           "type": "2x15-2.54mm",
           "name": "M5-Bus",
           "external": true,
-          "pins": []
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "ADC",
+              "gpio": 35
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "ADC",
+              "gpio": 36
+            },
+            {
+              "name": "GND"
+            },
+            {
+              "name": "EN"
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "DAC/SPK",
+              "gpio": 25
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "DAC",
+              "gpio": 26
+            },
+            {
+              "name": "SCK",
+              "gpio": 18
+            },
+            {
+              "name": "3V3"
+            },
+            {
+              "name": "RXD0",
+              "gpio": 3
+            },
+            {
+              "name": "TXD0",
+              "gpio": 1
+            },
+            {
+              "name": "RXD2",
+              "gpio": 16
+            },
+            {
+              "name": "TXD2",
+              "gpio": 17
+            },
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            },
+            {
+              "name": "G2",
+              "gpio": 2
+            },
+            {
+              "name": "G5",
+              "gpio": 5
+            },
+            {
+              "name": "I2S/SCK",
+              "gpio": 12
+            },
+            {
+              "name": "I2S/WS",
+              "gpio": 13
+            },
+            {
+              "name": "I2S/OUT",
+              "gpio": 15
+            },
+            {
+              "name": "I2S/MCLK",
+              "gpio": 0
+            },
+            {
+              "name": "HPWR"
+            },
+            {
+              "name": "I2S/IN",
+              "gpio": 34
+            },
+            {
+              "name": "HPWR"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "HPWR"
+            },
+            {
+              "name": "BAT"
+            }
+          ]
+        },
+        {
+          "id": "pmic-i2c",
+          "type": "I2C",
+          "name": "IP5306 (0x75)",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            }
+          ]
+        },
+        {
+          "id": "speaker",
+          "type": "DAC",
+          "name": "Speaker output",
+          "external": false,
+          "pins": [
+            {
+              "name": "DAC1",
+              "gpio": 25
+            }
+          ]
         }
       ],
       "sources": [
@@ -13468,8 +13838,10 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
-        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+        "板级模型面向官方资料所示的 16 MiB Flash 与 ILI9342C IPS 配置。早期 4 MiB 或 TN 批次未验证。",
+        "支持三枚实体键、RGB565 屏幕写入和背光开启/关闭。LCD 寄存器读回、亮度和颜色校准未实现。",
+        "TF 卡实现 SPI SDHC 数字读写。IP5306、电池、侧面电源键、扬声器和外部端口未建模。",
+        "未实机验证。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k001.json",
       "model": {

@@ -14,6 +14,7 @@ pub mod atom_matrix_v11;
 pub mod stamppico;
 pub mod ulanzi;
 pub mod cyd;
+mod m5stack_basic;
 
 pub use tdisplay::*;
 
@@ -29,6 +30,7 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
         "ttgo-tdisplay" | "tdisplay" => Some(Box::new(TtgoTDisplay::new())),
         "ai-thinker-cam" | "esp32cam" => Some(Box::new(aithinker::AiThinkerCam::default())),
         "cyd" | "esp32-2432s028" => Some(Box::new(cyd::Cyd::new())),
+        "m5stack-basic" => Some(Box::new(m5stack_basic::M5StackBasic::new())),
         "ulanzi-tc001" | "tc001" => Some(Box::new(ulanzi::UlanziTc001::new())),
         _ => crate::spi::make_board(name),
     }
