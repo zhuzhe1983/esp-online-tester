@@ -42,7 +42,16 @@ def derive(config):
     plan['dimensions']={'width':combined[0],'height':combined[1],'depth':combined[2],'unit':'mm','basis':'explicit-separated-debug-layout','scope':'Combined preview layout only. Manufacturer board and glass XY dimensions remain separate and unscaled.'}
     plan['presentation']['bodySizeMm']=combined
     plan['presentation']['screen']={'sizeMm':active,'positionMm':[panelx,0,thickness/2+.05],'basis':'manufacturer-datasheet-active-area','sourceIds':[sku+'-mechanical'],'notes':'Actual framebuffer target. Window is centered for debugging; panel edge registration is not calibrated. No static photograph covers the running display.'}
-    plan['presentation']['inspectionGroups'].insert(0,{'id':'external-display','parts':['panel-glass-backing','panel-debug-rim','live-display'],'offsetMm':[0,0,max(combined)*.3],'sourceIds':[sku+'-mechanical'],'notes':'Independent external panel inspection group; offset is a viewer convention.'})
+    # The outward diagonal keeps the carrier and panel visible at oblique angles.
+    layout_width=combined[0]
+    offset=[-round(max(32,layout_width*.34),2),0,round(max(21,layout_width*.15),2)]
+    plan['presentation']['inspectionGroups']=[{
+        'id':'external-display',
+        'parts':['panel-glass-backing','panel-debug-rim','live-display'],
+        'offsetMm':offset,
+        'sourceIds':[sku+'-mechanical'],
+        'notes':'The external panel moves outward and forward for inspection. The surface-mounted driver assembly retains all its connections.',
+    }]
     for photo in plan['referencePhotos']:photo['sharedAssetProductId']=baseid
     photo_source=next(s for s in panel_sources if s['id']==sku+'-photo')
     plan['referencePhotos'].append({'file':photo_source['file'],'sharedAssetProductId':OWNER,'sourceId':photo_source['id'],'sourceSha256':photo_source['sha256'],'view':'official-exact-panel-SKU-reference'})
