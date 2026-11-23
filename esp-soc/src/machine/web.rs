@@ -237,10 +237,11 @@ impl<S: Soc> Machine<S> {
                 }
                 "knobpress" => { let v = field("v").unwrap_or_default() == "1"; if let Some(sw) = self.bus.board_ref().named_pin("sw") { self.bus.gpio_set_input(sw, !v); *self.bus.irq_dirty() = true; } }
                 "knob" => {
-                    // Bound each browser message to about one second of encoder motion.
+                    // Bound each browser message to 256 GPIO edges. Phase duration
+                    // is a board input policy, shared with native knob scripts.
                     let d = field("d").and_then(|x| x.parse::<i32>().ok()).unwrap_or(1).clamp(-64, 64);
                     let Some((clk, dt)) = self.bus.board_ref().encoder() else { continue };
-                    let step = S::CPU_HZ / 500;   // 2 ms per phase
+                    let step = S::CPU_HZ * u64::from(self.bus.board_ref().encoder_phase_ms().max(1)) / 1000;
                     let mut tc = (self.bus.cycles() + step).max(self.script.knob_next);   // queue detents back to back, never overlapping
                     for _ in 0..d.unsigned_abs() { for (pn, l) in Self::quadrature(clk, dt, d > 0) { self.script.events.push((tc, ScriptAction::Gpio(pn, l))); tc += step; } tc += step * 4; }
                     self.script.knob_next = tc;

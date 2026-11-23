@@ -46,6 +46,11 @@ export function validateWatchlist(document) {
     }
     if(entry.releaseChannel!==undefined&&!['stable','rc','prerelease'].includes(entry.releaseChannel))throw new Error('Invalid release channel.');
     if(entry.releaseHistoryLimit!==undefined&&(!Number.isInteger(entry.releaseHistoryLimit)||entry.releaseHistoryLimit<1||entry.releaseHistoryLimit>30))throw new Error('Invalid release history limit.');
+    if(entry.metadataAssetNamePattern!==undefined){
+      const pattern=entry.metadataAssetNamePattern;
+      if(typeof pattern!=='string'||pattern.length>240||!pattern.startsWith('^')||!pattern.endsWith('$')||entry.catalogTargets?.length||entry.compatibility.status!=='reference-only')throw new Error('Metadata asset selectors require a bounded, anchored reference-only pattern without automatic targets.');
+      new RegExp(pattern);
+    }
     if(entry.assetMetadata!==undefined&&(entry.assetMetadata!=='meshtastic-targets'||entry.upstreamRepo!=='meshtastic/firmware'))throw new Error('Invalid supplementary asset metadata source.');
     if(entry.catalogTargets!==undefined){
       if(!Array.isArray(entry.catalogTargets)||entry.catalogTargets.length>40)throw new Error('Invalid catalog targets.');

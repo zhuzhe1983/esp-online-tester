@@ -1,0 +1,113 @@
+{
+  "checkedAt": "2026-11-22T11:06:24.496776Z",
+  "baselineCommit": "972577650202ffa5e062ac02ee50b0ccdced5433",
+  "candidateCodeSha256": {
+    "esp32s3/src/periph.rs": "457e7d5397bd42dc6591eae9881c9c6367d82ce08828255786b99e33c469a8d6",
+    "esp32s3/src/bus/dma.rs": "702eb41e073e792da00f2b4991d686d190b9b53076f33c587b1bfc5b6180debb",
+    "esp32s3/src/bus/dma_tests.rs": "3f2a2a3413609eb5e04e7acf99edccec174cc3b5eaddf1c0d5e3cf255e2d4b64"
+  },
+  "baselineImplementationSha256": {
+    "esp32s3/src/periph.rs": "e6f4576f0a8c64a74d80d9a2d42d0bfd31bf970fb0ccb637ead4cde65ecbc7bf",
+    "esp32s3/src/bus/dma.rs": "1617f2edfae802c5a02f6f8d37802a0709ff909b57f2f731290c1efb679e2433"
+  },
+  "baselineTestNote": "The new 513-byte test function was added without changing the baseline engine. It is unchanged in the passing candidate. The failing log is retained.",
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "shared integration target"
+  },
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32s3",
+        "--lib",
+        "rgb565_513_byte_batch"
+      ],
+      "exitCode": 101,
+      "result": {
+        "passed": 0,
+        "failed": 1,
+        "expectedBaselineFailure": "VSYNC must not consume a byte from the next frame"
+      },
+      "originalLogBytes": 1046,
+      "originalLogSha256": "08b99ca8125b0e0e67745248632eb59e386f2ea7aab0dc7eaa2e89c912db17de",
+      "retainedLog": "boundary-checks.txt",
+      "normalization": "Repository/build paths and panic test-process number normalized; assertion, diagnostics and result values retained."
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32s3",
+        "--lib",
+        "rgb"
+      ],
+      "exitCode": 0,
+      "result": {
+        "passed": 26,
+        "failed": 0
+      },
+      "originalLogBytes": 2986,
+      "originalLogSha256": "66891d59dda6942a9d589ed5540d3425b962bfddcd7ff30398a441b560572f70",
+      "retainedLog": "boundary-checks.txt",
+      "normalization": "Repository/build paths and panic test-process number normalized; assertion, diagnostics and result values retained."
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32s3",
+        "--lib",
+        "bus::"
+      ],
+      "exitCode": 0,
+      "result": {
+        "passed": 142,
+        "failed": 0
+      },
+      "originalLogBytes": 13046,
+      "originalLogSha256": "65deb49a8bd5ef953509ce60aa86ba624077c7b00f89b665f73804553619e8c7",
+      "retainedLog": "boundary-checks.txt",
+      "normalization": "Repository/build paths and panic test-process number normalized; assertion, diagnostics and result values retained."
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32s3",
+        "--lib",
+        "--tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "result": {
+        "warningsDenied": true
+      },
+      "originalLogBytes": 154,
+      "originalLogSha256": "29f8c5f6aacbf4d1259d2234d6c54e221d3836425b50f2d633fe88d4a878e761",
+      "retainedLog": "boundary-checks.txt",
+      "normalization": "Repository/build paths and panic test-process number normalized; assertion, diagnostics and result values retained."
+    }
+  ],
+  "independentReview": "Read-only review of u128 bounding, pixel/frame cap, prefetch/consume equality, common ISR/no-ISR path and retained phase completed. No extra firmware execution or build by reviewer.",
+  "changesToPreviousContract": [
+    "Ordinary RGB IRQ cadence can change because fractional batch credit is retained and service stops at frame boundaries.",
+    "lcd_acc is now u128 byte-cycle credit; S3 layout must be included in integration/performance review.",
+    "No new scheduler quantum, wait-for-ACK, invented porch, board-name or INT_ENA special case."
+  ],
+  "notClaimed": [
+    "Product display acceptance after the correction.",
+    "Exact per-PCLK/porch timing.",
+    "Physical hardware calibration.",
+    "Full workspace/WASM/golden or performance pass."
+  ],
+  "goldensRegenerated": false,
+  "reviewedLogSha256": "da737fec6c97681acd1f68e744d5ced7d4aff8a8d227f14ec3ed5b5df9ac07e1"
+}

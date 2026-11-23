@@ -123,7 +123,7 @@ impl BoardModel for M5StackBasic {
 mod tests {
     use super::*;
 
-    const ROUTE: SpiPins = SpiPins { sclk: 1 << LCD_CLK, mosi: 1 << LCD_DATA, miso: None, cs: 1 << LCD_CS };
+    const ROUTE: SpiPins = SpiPins { sclk: 1 << LCD_CLK, mosi: 1 << LCD_DATA, miso: None, cs: 1 << LCD_CS, keep_cs: false };
 
     fn command(board: &mut M5StackBasic, cmd: u8, data: &[u8]) {
         board.gpio_changes(&[(LCD_DC, false)]);

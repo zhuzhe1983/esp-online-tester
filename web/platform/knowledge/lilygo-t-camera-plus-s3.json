@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:32Z",
   "hardwareRevision": "T-CameraPlus-S3 V1.2; selected default pin_config branch",
   "identity": {
     "manufacturer": "LILYGO",
@@ -209,6 +209,19 @@
         "official-store-shopify-1"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-camera-plus-s3-official-factory",
+        "version": "2025-04-08"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家固件表明确将这个文件列为 V1.2 摄像头主板的 LVGL 出厂界面，提供文件管理、音乐播放、录音和相机功能。"
     }
   ],
   "revisions": [],
@@ -688,6 +701,17 @@
       "archiveName": "T-CameraPlus-S3-tree.raw",
       "notes": "Exact original GitHub connector UTF-8 snapshot copied from the model lane; original fetch timestamp retained. A normalized sha field is a pinned revision, not proof of Git commit/tree object type. Firmware metadata is discovery evidence only, not a fetched firmware checksum.",
       "sourceCachePath": "target/lilygo-s3-io2-sources/T-CameraPlus-S3-tree.raw"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "[T-CameraPlus-S3_V1.2][Lvgl_UI]_firmware_202504081446.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:32Z",
+      "sha256": "25b77114190ffef9b1c71532eb919fbea4e113076e9f837c0803835ad52acb0a",
+      "bytes": 4988224,
+      "archiveName": "25b77114190ffef9b1c71532eb919fbea4e113076e9f837c0803835ad52acb0a.bin"
     }
   ],
   "assets": [
@@ -742,16 +766,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -768,49 +782,56 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-entries-linked",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-camera-plus-s3-official-factory",
     "sourceIds": [
-      "T-CameraPlus-S3-tree",
-      "T-CameraPlus-S3-README.md"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3/blob/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
-        "path": "firmware/[T-CameraPlus-S3][Lvgl_UI]/[T-CameraPlus-S3_V1.2][Lvgl_UI]_firmware_202504081446.bin",
-        "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
-        "gitBlobSha": "a853148b5a536185cc5d218dd699d0964f4f46e0",
-        "bytes": 4988224,
-        "status": "linked",
-        "sourceId": "T-CameraPlus-S3-tree",
-        "role": "factory",
-        "chip": "esp32s3",
-        "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
-        "binaryFetched": false,
-        "simulationVerified": false
-      },
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3/blob/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5Bxiaozhi%5D/%5BT-CameraPlus-S3_V1.2%5D%5Bxiaozhi_V2.1.0%5D_firmware_202606261623.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5Bxiaozhi%5D/%5BT-CameraPlus-S3_V1.2%5D%5Bxiaozhi_V2.1.0%5D_firmware_202606261623.bin",
-        "path": "firmware/[T-CameraPlus-S3][xiaozhi]/[T-CameraPlus-S3_V1.2][xiaozhi_V2.1.0]_firmware_202606261623.bin",
-        "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
-        "gitBlobSha": "726091d2a3dacb6c3d9608c83da73416e5415a1e",
-        "bytes": 9981139,
-        "status": "linked",
-        "sourceId": "T-CameraPlus-S3-tree",
-        "role": "alternative",
-        "chip": "esp32s3",
-        "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
-        "binaryFetched": false,
-        "simulationVerified": false
+    "previousInvestigation": {
+      "status": "official-entries-linked",
+      "sourceIds": [
+        "T-CameraPlus-S3-tree",
+        "T-CameraPlus-S3-README.md"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3/blob/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5BLvgl_UI%5D/%5BT-CameraPlus-S3_V1.2%5D%5BLvgl_UI%5D_firmware_202504081446.bin",
+          "path": "firmware/[T-CameraPlus-S3][Lvgl_UI]/[T-CameraPlus-S3_V1.2][Lvgl_UI]_firmware_202504081446.bin",
+          "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+          "gitBlobSha": "a853148b5a536185cc5d218dd699d0964f4f46e0",
+          "bytes": 4988224,
+          "status": "linked",
+          "sourceId": "T-CameraPlus-S3-tree",
+          "role": "factory",
+          "chip": "esp32s3",
+          "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3/blob/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5Bxiaozhi%5D/%5BT-CameraPlus-S3_V1.2%5D%5Bxiaozhi_V2.1.0%5D_firmware_202606261623.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/d2d6d36194569706c4a48b54d5af7b7d81f6592c/firmware/%5BT-CameraPlus-S3%5D%5Bxiaozhi%5D/%5BT-CameraPlus-S3_V1.2%5D%5Bxiaozhi_V2.1.0%5D_firmware_202606261623.bin",
+          "path": "firmware/[T-CameraPlus-S3][xiaozhi]/[T-CameraPlus-S3_V1.2][xiaozhi_V2.1.0]_firmware_202606261623.bin",
+          "pinnedGitRevision": "d2d6d36194569706c4a48b54d5af7b7d81f6592c",
+          "gitBlobSha": "726091d2a3dacb6c3d9608c83da73416e5415a1e",
+          "bytes": 9981139,
+          "status": "linked",
+          "sourceId": "T-CameraPlus-S3-tree",
+          "role": "alternative",
+          "chip": "esp32s3",
+          "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "README explicitly identifies V1.2 Lvgl_UI as factory firmware. The V1.0/V1.1 and V1.2 binaries are distinct; only the latter is mapped. Binary bytes, flash layout and full factory application are not verified.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+        "xiaozhi": "Exact official V1.2 Xiaozhi V2.1.0 image dated202606261623 is present and linked as alternative, not factory or simulation-verified."
       }
-    ],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "README explicitly identifies V1.2 Lvgl_UI as factory firmware. The V1.0/V1.1 and V1.2 binaries are distinct; only the latter is mapped. Binary bytes, flash layout and full factory application are not verified.",
-    "watchlist": {
-      "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
-      "xiaozhi": "Exact official V1.2 Xiaozhi V2.1.0 image dated202606261623 is present and linked as alternative, not factory or simulation-verified."
     }
   },
   "modelReview": {

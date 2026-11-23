@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:34Z",
   "hardwareRevision": "Exact T-Dongle-ESP32S2 repository revision 86471ffc844bc619515af97d3a61d7e9daf7f327, active Setup203",
   "identity": {
     "manufacturer": "LILYGO",
@@ -256,6 +256,19 @@
         "s2-dongle-ST7789_Init.h"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board-official-factory",
+        "version": "86471ffc844b"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家固件目录将此 ESP32-S2 镜像用于硬件检测。其 I²C 扫描、SD 卡初始化及 RTC 校时提示均与官方 factory 程序一致。"
     }
   ],
   "revisions": [],
@@ -772,6 +785,17 @@
       "kind": "manufacturer-source",
       "title": "Pinned S2 Dongle ST7789_Init.h",
       "sourceCachePath": "target/lilygo-s3-io2-sources/s2-dongle-ST7789_Init.h.raw"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "firmware.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-ESP32S2/86471ffc844bc619515af97d3a61d7e9daf7f327/firmware/firmware.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:34Z",
+      "sha256": "31ce7d313a53abde4aba63166a16141b992ae7f2245b9706d9247734071597f3",
+      "bytes": 977840,
+      "archiveName": "31ce7d313a53abde4aba63166a16141b992ae7f2245b9706d9247734071597f3.bin"
     }
   ],
   "assets": [
@@ -826,16 +850,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -887,39 +901,46 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-image-candidate-inspected",
-    "repository": "Xinyuan-LilyGO/T-Dongle-ESP32S2",
-    "revision": "86471ffc844bc619515af97d3a61d7e9daf7f327",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board-official-factory",
     "sourceIds": [
-      "s2-T-Dongle-ESP32S2-firmware_firmware.bin"
+      "official-factory-bin"
     ],
-    "binaryFetched": true,
-    "binaryRetainedInRepository": false,
-    "simulationVerified": false,
-    "physicalVerified": false,
-    "artifact": {
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-ESP32S2/86471ffc844bc619515af97d3a61d7e9daf7f327/firmware/firmware.bin",
-      "sha256": "31ce7d313a53abde4aba63166a16141b992ae7f2245b9706d9247734071597f3",
-      "bytes": 977840,
-      "format": "merged-flash-image",
-      "headers": [
-        {
-          "offset": "0x1000",
-          "chipId": 2,
-          "segments": 3,
-          "flashSizeMb": 4,
-          "entryAddress": "0x4004c198"
-        },
-        {
-          "offset": "0x10000",
-          "chipId": 2,
-          "segments": 6,
-          "flashSizeMb": 4,
-          "entryAddress": "0x40026338"
-        }
-      ]
-    },
-    "notes": "仅读取镜像并检查两个 ESP image header；未执行，不设为默认固件。"
+    "previousInvestigation": {
+      "status": "official-image-candidate-inspected",
+      "repository": "Xinyuan-LilyGO/T-Dongle-ESP32S2",
+      "revision": "86471ffc844bc619515af97d3a61d7e9daf7f327",
+      "sourceIds": [
+        "s2-T-Dongle-ESP32S2-firmware_firmware.bin"
+      ],
+      "binaryFetched": true,
+      "binaryRetainedInRepository": false,
+      "simulationVerified": false,
+      "physicalVerified": false,
+      "artifact": {
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-ESP32S2/86471ffc844bc619515af97d3a61d7e9daf7f327/firmware/firmware.bin",
+        "sha256": "31ce7d313a53abde4aba63166a16141b992ae7f2245b9706d9247734071597f3",
+        "bytes": 977840,
+        "format": "merged-flash-image",
+        "headers": [
+          {
+            "offset": "0x1000",
+            "chipId": 2,
+            "segments": 3,
+            "flashSizeMb": 4,
+            "entryAddress": "0x4004c198"
+          },
+          {
+            "offset": "0x10000",
+            "chipId": 2,
+            "segments": 6,
+            "flashSizeMb": 4,
+            "entryAddress": "0x40026338"
+          }
+        ]
+      },
+      "notes": "仅读取镜像并检查两个 ESP image header；未执行，不设为默认固件。"
+    }
   },
   "modelReview": {
     "model": {

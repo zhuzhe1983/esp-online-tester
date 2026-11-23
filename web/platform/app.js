@@ -21,7 +21,7 @@ import {installAutomation} from './automation.js';
 import {createSceneView, createHumanButtonController} from './scene-view.js';
 import {mountViewerLayout} from './viewer-layout.js';
 import {installEmbedBridge} from './embed.js';
-import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates} from './transport-ui.js';
+import {createTransportUi, createKnowledgePanel, mountFirmwareUpdates, showFirmwareReferences} from './transport-ui.js';
 import {firmwareRunPolicy} from './firmware-policy.js';
 import {confirmFirmwareRun, buildRunIssueUrl} from './firmware-run-ui.js';
 import {recoverFirmwareDownload,firmwareRecoverySource} from './firmware-download-recovery.js';
@@ -318,7 +318,7 @@ function renderTransport() {
   const sessionBusy = ['preparing', 'recording', 'playing'].includes(recordingState.status);
   const configurationBusy = busy || status === 'loading';
   visualVariantMenu?.update({product:product(),status,mode:scene?.view?.deviceView,busy});
-  for (const id of ['manufacturer-select','product-family-select','product-select','search-devices','firmware-select','firmware-kind','firmware-url','firmware-sha','firmware-history-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
+  for (const id of ['manufacturer-select','product-family-select','product-select','search-devices','firmware-select','browse-spark','firmware-kind','firmware-url','firmware-sha','firmware-history-select','accessory-brand','accessory-interface','accessory-select','search-accessories']) if ($(id)) $(id).disabled = configurationBusy;
   for (const id of ['accessory-brand','accessory-select']) if ($(id)&&!$(id).value) $(id).disabled=true;
   burnerUi?.setDisabled(configurationBusy);sparkUi?.setDisabled(configurationBusy);
   if ($('add-accessory')) $('add-accessory').disabled = configurationBusy || !$('accessory-select')?.value;
@@ -425,6 +425,7 @@ function renderProduct() {
   if(!localFiles.length){text('local-file-name',sramProduct()?'SRAM 应用 .bin':'merged .bin、应用 .bin 或 flasher_args.json');text('local-build-status',localFileHint());}
   if(kind){const option=kind.querySelector('[value="m5burner"]');if(isM5Stack(selected)){if(!option)kind.append(new Option('burner.m5stack.com','m5burner'));}else{if(kind.value==='m5burner')kind.value='merged';option?.remove();}}
   if(kind){const option=kind.querySelector('[value="lilygo-spark"]');if(isLilygo(selected)){if(!option)kind.append(new Option('LILYGO Spark','lilygo-spark'));}else{if(kind.value==='lilygo-spark')kind.value='merged';option?.remove();}}
+  if ($('browse-spark')) $('browse-spark').hidden = !isLilygo(selected);
   burnerUi?.setProduct(selected,{firmwareProduct:firmwareTargetProduct(selected,catalog.products)});sparkUi?.setProduct(selected);updateRemoteMode();
   if ($('manufacturer-select')) {
     const manufacturers = manufacturerNames(catalog.products);
@@ -610,7 +611,11 @@ function renderScene() {
   sceneView?.setMode(scene.view.deviceView);
   sceneView?.setAppearance(scene.view.appearance);
   renderAppearance();
-  if ($('edit-scene')) $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false});
+  if (embedded) {
+    showFirmwareReferences($('firmware-references'), scene.firmware ? [] : scopedFirmwares());
+    text('edit-scene', scene.firmware ? '编辑 ↗' : '在工作台选择固件 ↗');
+    $('edit-scene').href = shareUrl('studio', {strictRecording: false, autostart: false});
+  }
 }
 function showVisualProduct(selected, {previewOnly=false} = {}) {
   renderImuLink({reset:true});
@@ -683,7 +688,7 @@ function reflectMode(mode, unavailable = false) {
   renderImuLink();
   for (const candidate of ['2d', '3d']) { const button = $(`view-${candidate}`); if (button) { button.classList.toggle('active', mode === candidate); button.setAttribute('aria-pressed', String(mode === candidate)); } }
   if ($('view-3d')) $('view-3d').disabled = unavailable;
-  const touch = product()?.runtime?.board && (product()?.runtime?.touch || product()?.display?.touch);
+  const touch = product()?.runtime?.board && (product()?.runtime?.touch ?? product()?.display?.touch);
   text('stage-gesture', mode === '3d' ? `拖动模型旋转 · 滚轮缩放${touch ? ' · 点击或滑动触摸屏' : ''}` : touch ? '点击或滑动触摸屏 · 按键支持键盘映射' : '实际固件画面 · 按键支持键盘映射');
 }
 async function configure(next, {reflectSource = false} = {}) {
@@ -995,7 +1000,7 @@ async function releaseHumanInputs() {
 
 function setupEvents() {
   burnerUi=mountM5Burner({mount:$('firmware-burner'),onChange:renderTransport});burnerUi?.setProduct(product(),{firmwareProduct:firmwareTargetProduct(product(),catalog.products)});
-  sparkUi=mountLilygoSpark({mount:$('firmware-spark'),onChange:renderTransport});sparkUi?.setProduct(product());
+  sparkUi=mountLilygoSpark({mount:$('firmware-spark'),catalog,onChange:renderTransport});sparkUi?.setProduct(product());
   firmwareHistory = mountFirmwareHistory({input:$('firmware-url'),kindInput:$('firmware-kind'),shaInput:$('firmware-sha'),mount:$('firmware-history-mount'),productId:()=>scene.productId,onSelect:entry=>{
     remoteModeSelection=entry.bootMode||entry.archive?{url:entry.url,sha256:entry.sha256,bootMode:entry.bootMode,...(entry.archive?{archive:clone(entry.archive)}:{})}:null;
     if(isM5Stack(product())&&burnerUi?.restore(entry))$('firmware-kind').value='m5burner';
@@ -1003,6 +1008,7 @@ function setupEvents() {
     else if(sramProduct()&&entry.bootMode==='app-direct')$('firmware-kind').value='sram-app';
     updateRemoteMode();renderTransport();text('load-status','已选取历史地址，点击“下载并运行”加载。');
   }});
+  bind('browse-spark','click',()=>{ $('firmware-kind').value='lilygo-spark'; setFirmwareTab('remote'); $('firmware-kind').focus(); });
   bind('firmware-kind','change',()=>{updateRemoteMode();renderTransport();});
   for (const id of ['firmware-url', 'firmware-sha']) bind(id, 'input', renderTransport);
   const chooseProduct = async (id, keepFamily = false) => { visualVariantMenu?.reset(); clearLocalFiles(); const next = defaultFirmware(createDefaultScene(catalog, id)); productChoiceTarget = keepFamily ? id : ''; try { await configure(next, {reflectSource: true}); } finally { productChoiceTarget = ''; } };
@@ -1174,7 +1180,7 @@ async function init() {
   firmwareUpdates = await mountFirmwareUpdates($('firmware-updates'), {getProductId: () => scene.productId, onError: report});
   firmwareUpdates.show(scopedFirmwares().find(item => item.id === $('firmware-select')?.value));
   if (embedded) {
-    if (product().runtime.status !== 'unavailable') text('empty-description', scene.firmware ? '点击启动，执行此场景中的固件。' : '此场景未指定固件，可点击“编辑”进行配置。');
+    if (product().runtime.status !== 'unavailable') text('empty-description', scene.firmware ? '点击启动，执行此场景中的固件。' : '可在工作台为此设备选择固件。');
   }
   const startup = sharedStartup(params, {restored, product: product(), recording: recordingDocument, invalidRecording});
   const describeStartup = message => { text('empty-description', message); text('load-status', message); };

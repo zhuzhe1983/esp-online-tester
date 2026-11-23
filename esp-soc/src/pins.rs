@@ -83,6 +83,9 @@ impl PinRoutes<'_> {
         let user = spi.read(0x10);
         let mut pins = SpiPins {
             sclk: outputs(signals[0], 0),
+            // ESP-IDF v5.2.1 S3 spi_reg.h MISC+20h bit30 and
+            // spi_ll_master_keep_cs; same bit in v5.5.4 C3/C6.
+            keep_cs: spi.read(0x20) & (1 << 30) != 0,
             ..Default::default()
         };
         if user & (1 << 31 | 1 << 30 | 1 << 27) != 0 {

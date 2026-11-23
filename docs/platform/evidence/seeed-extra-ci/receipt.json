@@ -1,0 +1,171 @@
+{
+  "schema": 1,
+  "startedAt": "2026-11-22T10:50:51.956511+00:00",
+  "scope": "Remaining x86 CI receipt, network and benchmark harness checks. Runtime source fixes and final WASM are validated in separate final gates.",
+  "checks": [
+    {
+      "name": "x5-contract-tests",
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "06ae126d168876bbd1fa91e7a7e0902ad76bd7ab292038775ffe0af5c5fe3616",
+      "retainedLogSha256": "06ae126d168876bbd1fa91e7a7e0902ad76bd7ab292038775ffe0af5c5fe3616",
+      "archiveSha256": "8a5dda8cfd6a09dc5b1bdc3e2036b1dd56196fbc53c8ba08c49e803faf6ed5c6",
+      "archive": "x5-contract-tests.log.gz"
+    },
+    {
+      "name": "x5-contracts",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/verify-results.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b",
+      "retainedLogSha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b",
+      "archiveSha256": "abec2557a6105a36b1fa57eaa774ef39a49100c269413db09f722e4dac7d0708",
+      "archive": "x5-contracts.log.gz"
+    },
+    {
+      "name": "m1-contract-tests",
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "7eac9e803bb6e551b3f8f56ec112d914fd23624c20e5df444ca3a57f58330531",
+      "retainedLogSha256": "7eac9e803bb6e551b3f8f56ec112d914fd23624c20e5df444ca3a57f58330531",
+      "archiveSha256": "21af9ada1679e08ef314cf27a0591451fd8c74cf69cf173ced27028318d963c6",
+      "archive": "m1-contract-tests.log.gz"
+    },
+    {
+      "name": "m1-contracts",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a",
+      "retainedLogSha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a",
+      "archiveSha256": "7a2eb96013b7ba097d93e1dad74d1699370bf34518d62ac88e7a30375a361547",
+      "archive": "m1-contracts.log.gz"
+    },
+    {
+      "name": "historical-contract-tests",
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "a27cc0069db903764d2dba23055f018b1de35d6e714dca8745d2920eb94684e7",
+      "retainedLogSha256": "a27cc0069db903764d2dba23055f018b1de35d6e714dca8745d2920eb94684e7",
+      "archiveSha256": "a64716681eb3f21b2618ea5ff9823a3f701b4aaf5f4b5ae338687c9afd463b6b",
+      "archive": "historical-contract-tests.log.gz"
+    },
+    {
+      "name": "historical-contracts",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4",
+      "retainedLogSha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4",
+      "archiveSha256": "b09d50dbfd9cae3f63d47ba20e1461d04dd99c355b76eb80a4849c5f4afd296d",
+      "archive": "historical-contracts.log.gz"
+    },
+    {
+      "name": "network-helper",
+      "command": [
+        "node",
+        "tools/network-helper-test.mjs"
+      ],
+      "exitCode": 1,
+      "timeout": false,
+      "rawLogSha256": "f4451b3fbe4daa151371b49d93c665d3f508122d72e89001e3ffb95da614e7ab",
+      "retainedLogSha256": "0d15ce1a47660f545d0d4e3445d86ea111be4da095cb0be12c243b88157c2ede",
+      "archiveSha256": "d721b8950af4c7dc9cf8b88ab0eeb604bbf932c567094d4bd95c77fa6cdf97dd",
+      "archive": "network-helper.log.gz",
+      "diagnosis": "BACKEND_MISSING: the esp-network-backend release binary was not built by earlier CLI-only builds. Retest after the final cargo build --release --workspace; this precondition failure is retained."
+    },
+    {
+      "name": "network-relay",
+      "command": [
+        "node",
+        "--test",
+        "tools/network-relay-test.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "2abfca405c66368d14f1071b4529969e2c2cb5eec8a86c24075a0b94423c6cd8",
+      "retainedLogSha256": "2abfca405c66368d14f1071b4529969e2c2cb5eec8a86c24075a0b94423c6cd8",
+      "archiveSha256": "cf20fa98763554e5120e7a640918fd92183847464d66a6e5e8a532390a1494b7",
+      "archive": "network-relay.log.gz"
+    },
+    {
+      "name": "wasm-build-policy",
+      "command": [
+        "node",
+        "--test",
+        "tools/wasm-build-policy.test.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "136ba82ef5c137dc949fbd623aacc108216ef57916fbdb342db865220c3e9e04",
+      "retainedLogSha256": "136ba82ef5c137dc949fbd623aacc108216ef57916fbdb342db865220c3e9e04",
+      "archiveSha256": "e733ef7892c423b78350e6c8b6d17bffa348cdb7069b3d5f96df5964866410fc",
+      "archive": "wasm-build-policy.log.gz"
+    },
+    {
+      "name": "browser-benchmark-node",
+      "command": [
+        "node",
+        "--test",
+        "tools/browser-benchmark/battery-failure.test.mjs",
+        "tools/browser-benchmark/battery-workload.test.mjs",
+        "tools/browser-benchmark/experiments.test.mjs",
+        "tools/browser-benchmark/verdict.test.mjs"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "4107a446321cf8885a27c1b8e08774e47624eba7d2fcde963e4e8bb7949dda5c",
+      "retainedLogSha256": "4107a446321cf8885a27c1b8e08774e47624eba7d2fcde963e4e8bb7949dda5c",
+      "archiveSha256": "aa4a31e76034f6c38abacea2e9049452a46171a32681c2f3290916ac7cfa66a6",
+      "archive": "browser-benchmark-node.log.gz"
+    },
+    {
+      "name": "browser-benchmark-python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/browser-benchmark",
+        "-p",
+        "test_*.py"
+      ],
+      "exitCode": 0,
+      "timeout": false,
+      "rawLogSha256": "dc93e1ad8c71598c3eb66567fa8d82decd8763a2bb977499ab18ee5efdb2ed29",
+      "retainedLogSha256": "dc93e1ad8c71598c3eb66567fa8d82decd8763a2bb977499ab18ee5efdb2ed29",
+      "archiveSha256": "c21d80db622587ec163c1de650e9990a4aa920153fdb3548d0558932fe48cac6",
+      "archive": "browser-benchmark-python.log.gz"
+    }
+  ],
+  "finishedAt": "2026-11-22T10:50:54.290299+00:00",
+  "allPassed": false,
+  "redactions": [
+    "Repository/workspace absolute prefixes and MAC-shaped fields removed; original and retained log hashes preserved."
+  ]
+}

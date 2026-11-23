@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:32:48Z",
   "hardwareRevision": "T-Energy-S3_V1.0, ESP32-S3-WROOM-1-N16R8",
   "identity": {
     "manufacturer": "LILYGO",
@@ -140,6 +140,19 @@
         "official-store-shopify-1"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-energy-s3-official-factory",
+        "version": "V1.0 · 2026-04-23"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家的示例表将 Original_Test 标为出厂测试，此编译文件适用于 T-Energy-S3 V1.0，包含 Wi-Fi 连通性测试。"
     }
   ],
   "revisions": [],
@@ -331,6 +344,17 @@
       "gitObjectType": "not-independently-checked",
       "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash.",
       "sourceCachePath": "target/lilygo-s3-io-sources/T-Energy-S3-tree.raw"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "[T-Energy-S3_V1.0][Original_Test(wifi LilyGo-AABB)]_firmware_202604231130.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/firmware/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%28wifi%20LilyGo-AABB%29%5D_firmware_202604231130.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:32:48Z",
+      "sha256": "62bc08b9d506c70a2364630883523271136a14dd35702aea580ab67051c5a43a",
+      "bytes": 773968,
+      "archiveName": "62bc08b9d506c70a2364630883523271136a14dd35702aea580ab67051c5a43a.bin"
     }
   ],
   "assets": [
@@ -385,16 +409,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -411,47 +425,54 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-entries-linked",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-energy-s3-official-factory",
     "sourceIds": [
-      "T-Energy-S3-tree",
-      "T-Energy-S3-README.md"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/T-Energy-S3/blob/68a74854ce0443377d186786bf3478484a0813e0/firmware/deprecated/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.0.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/firmware/deprecated/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.0.bin",
-        "path": "firmware/deprecated/[T-Energy-S3_V1.0][Original_Test]_firmware_V1.0.0.bin",
-        "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
-        "gitBlobSha": "2d6b819cb4a4c8eaa11056cdc28ea0d71fd14bda",
-        "bytes": 776800,
-        "status": "linked",
-        "sourceId": "T-Energy-S3-tree",
-        "role": "factory",
-        "identityEvidence": "README labels Original_Test as Product factory original testing and links this version.",
-        "binaryFetched": false,
-        "simulationVerified": false
-      },
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/T-Energy-S3/blob/68a74854ce0443377d186786bf3478484a0813e0/firmware/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%28wifi%20LilyGo-AABB%29%5D_firmware_202604231130.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/firmware/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%28wifi%20LilyGo-AABB%29%5D_firmware_202604231130.bin",
-        "path": "firmware/[T-Energy-S3_V1.0][Original_Test(wifi LilyGo-AABB)]_firmware_202604231130.bin",
-        "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
-        "gitBlobSha": "041b6c247e2275ed053680475b2e5acb5c711183",
-        "bytes": 773968,
-        "status": "linked",
-        "sourceId": "T-Energy-S3-tree",
-        "role": "factory-candidate",
-        "identityEvidence": "Newer exact board Original_Test name exists in the pinned tree; revision-specific factory link is not independently restated in README.",
-        "binaryFetched": false,
-        "simulationVerified": false
+    "previousInvestigation": {
+      "status": "official-entries-linked",
+      "sourceIds": [
+        "T-Energy-S3-tree",
+        "T-Energy-S3-README.md"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Energy-S3/blob/68a74854ce0443377d186786bf3478484a0813e0/firmware/deprecated/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.0.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/firmware/deprecated/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%5D_firmware_V1.0.0.bin",
+          "path": "firmware/deprecated/[T-Energy-S3_V1.0][Original_Test]_firmware_V1.0.0.bin",
+          "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+          "gitBlobSha": "2d6b819cb4a4c8eaa11056cdc28ea0d71fd14bda",
+          "bytes": 776800,
+          "status": "linked",
+          "sourceId": "T-Energy-S3-tree",
+          "role": "factory",
+          "identityEvidence": "README labels Original_Test as Product factory original testing and links this version.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Energy-S3/blob/68a74854ce0443377d186786bf3478484a0813e0/firmware/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%28wifi%20LilyGo-AABB%29%5D_firmware_202604231130.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Energy-S3/68a74854ce0443377d186786bf3478484a0813e0/firmware/%5BT-Energy-S3_V1.0%5D%5BOriginal_Test%28wifi%20LilyGo-AABB%29%5D_firmware_202604231130.bin",
+          "path": "firmware/[T-Energy-S3_V1.0][Original_Test(wifi LilyGo-AABB)]_firmware_202604231130.bin",
+          "pinnedGitRevision": "68a74854ce0443377d186786bf3478484a0813e0",
+          "gitBlobSha": "041b6c247e2275ed053680475b2e5acb5c711183",
+          "bytes": 773968,
+          "status": "linked",
+          "sourceId": "T-Energy-S3-tree",
+          "role": "factory-candidate",
+          "identityEvidence": "Newer exact board Original_Test name exists in the pinned tree; revision-specific factory link is not independently restated in README.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "README factory entry is retained before the newer source-tree candidate. Neither binary/layout nor its network-dependent application has been run.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
       }
-    ],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "README factory entry is retained before the newer source-tree candidate. Neither binary/layout nor its network-dependent application has been run.",
-    "watchlist": {
-      "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
-      "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
     }
   },
   "modelReview": {

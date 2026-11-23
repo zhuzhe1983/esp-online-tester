@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:40Z",
   "hardwareRevision": "T-Pico2350 V1.2, RP2350 + ESP32-C6-MINI-1U-N4",
   "identity": {
     "manufacturer": "LILYGO",
@@ -158,6 +158,19 @@
         "espressif-c6-psram"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-pico-official-factory",
+        "version": "6096d0b3829e"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "4 MiB ESP32-C6 的出厂镜像，适用于 T-Pico2350 V1.2 的 ESP 子板。"
     }
   ],
   "revisions": [],
@@ -378,6 +391,17 @@
       "kind": "manufacturer-documentation",
       "archiveName": "espressif-psram-faq.html",
       "sourceCachePath": "target/lilygo-c6-sources/espressif-psram-faq.html"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "factory_ESP32C6-4MB.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/Lilygo-T-Pico2/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/factory_ESP32C6-4MB.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:40Z",
+      "sha256": "7e2865b98bd6df087e407e47539e1e6d3b9a1022899ed06571f2c47291b170b7",
+      "bytes": 4194304,
+      "archiveName": "7e2865b98bd6df087e407e47539e1e6d3b9a1022899ed06571f2c47291b170b7.bin"
     }
   ],
   "assets": [
@@ -432,16 +456,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -458,34 +472,41 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "exact-official-c6-factory-image-linked",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-pico-official-factory",
     "sourceIds": [
-      "Lilygo-T-Pico2-README.md",
-      "Lilygo-T-Pico2-tree"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
-        "path": "firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
-        "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
-        "gitBlobSha": "c73bf9c98499caef35f93c0370f65305e18b9bb5",
-        "bytes": 1468416,
-        "status": "linked",
-        "sourceId": "Lilygo-T-Pico2-tree"
-      },
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/factory_ESP32C6-4MB.bin",
-        "path": "firmware/factory_ESP32C6-4MB.bin",
-        "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
-        "gitBlobSha": "de238841d88500cde6dd20a7a90d69382a113333",
-        "bytes": 4194304,
-        "status": "linked",
-        "sourceId": "Lilygo-T-Pico2-tree"
-      }
-    ],
-    "simulationVerified": false,
-    "binaryFetched": false,
-    "notes": "C6 .bin is explicitly named factory and fits the N4 module. UF2 is for the separate RP2350 and is not accepted as C6 firmware."
+    "previousInvestigation": {
+      "status": "exact-official-c6-factory-image-linked",
+      "sourceIds": [
+        "Lilygo-T-Pico2-README.md",
+        "Lilygo-T-Pico2-tree"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
+          "path": "firmware/T-Lilygo-rp2350_ESP32C6_V1.2.uf2",
+          "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+          "gitBlobSha": "c73bf9c98499caef35f93c0370f65305e18b9bb5",
+          "bytes": 1468416,
+          "status": "linked",
+          "sourceId": "Lilygo-T-Pico2-tree"
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/Lilygo-T-Pico2/blob/6096d0b3829e49168ddd0b9fea6e4f233f1b9718/firmware/factory_ESP32C6-4MB.bin",
+          "path": "firmware/factory_ESP32C6-4MB.bin",
+          "pinnedGitRevision": "6096d0b3829e49168ddd0b9fea6e4f233f1b9718",
+          "gitBlobSha": "de238841d88500cde6dd20a7a90d69382a113333",
+          "bytes": 4194304,
+          "status": "linked",
+          "sourceId": "Lilygo-T-Pico2-tree"
+        }
+      ],
+      "simulationVerified": false,
+      "binaryFetched": false,
+      "notes": "C6 .bin is explicitly named factory and fits the N4 module. UF2 is for the separate RP2350 and is not accepted as C6 firmware."
+    }
   },
   "modelReview": {
     "model": {

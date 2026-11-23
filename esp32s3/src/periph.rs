@@ -148,17 +148,32 @@ impl Pcnt {
 pub struct LcdCam { pub ram: RegRam, cam_ctrl: u32, pub cam_ctrl1: u32, pub int_raw: u32, int_ena: u32, running: bool,
                     pub frame_cycles: u64, pub acc: u64, pub frames: u64, pub dropped: u64,
                     // LCD side (RGB / DPI mode): the panel is refreshed from a GDMA out-channel on trigger 5
-                    pub lcd_clock: u32, pub lcd_user: u32, pub lcd_ctrl: u32, pub lcd_ctrl1: u32, pub lcd_acc: u64, pub lcd_frames: u64, pub lcd_line: Vec<u8>, pub lcd_fifo: std::collections::VecDeque<u8>, pub lcd_log: bool,
+                    pub lcd_clock: u32, pub lcd_user: u32, pub lcd_ctrl: u32, pub lcd_ctrl1: u32,
+                    // Byte-cycle credit: add elapsed CPU cycles * frame bytes; spend bytes * frame cycles.
+                    pub lcd_acc: u128, pub lcd_frames: u64, pub lcd_line: Vec<u8>, pub lcd_fifo: std::collections::VecDeque<u8>, pub lcd_log: bool,
                     cam_frame: Option<std::sync::Arc<Vec<u8>>>, cam_active: bool, cam_clock_active: bool,
-                    clock_enabled: bool, pub frame_dropped: bool, pub frame_start: u64 }
+                    clock_enabled: bool, pub frame_dropped: bool, pub frame_start: u64,
+                    // RGB timing must continue when GDMA cannot supply a complete scan.
+                    pub lcd_sync_acc: u64, pub lcd_underflow: bool }
 impl Default for LcdCam { fn default() -> Self { Self::new() } }
 
 impl LcdCam {
     pub fn new() -> Self { LcdCam { ram: RegRam::new(), cam_ctrl: 0, cam_ctrl1: 0, int_raw: 0, int_ena: 0, running: false, cam_active: false, cam_clock_active: false, cam_frame: None, clock_enabled: false, frame_dropped: false, frame_start: 0, frame_cycles: CPU_HZ / 10, acc: 0, frames: 0, dropped: 0,
-                                    lcd_clock: 0, lcd_user: 0, lcd_ctrl: 0, lcd_ctrl1: 0, lcd_acc: 0, lcd_frames: 0, lcd_line: Vec::new(), lcd_fifo: std::collections::VecDeque::new(), lcd_log: false } }
+                                    lcd_clock: 0, lcd_user: 0, lcd_ctrl: 0, lcd_ctrl1: 0, lcd_acc: 0, lcd_frames: 0, lcd_line: Vec::new(), lcd_fifo: std::collections::VecDeque::new(), lcd_log: false, lcd_sync_acc: 0, lcd_underflow: false } }
     pub fn irq(&self) -> bool { self.int_raw & self.int_ena != 0 }
     /// LCD RGB mode running: LCD_START (USER bit 27) with LCD_RGB_MODE_EN (CTRL bit 31).
     pub fn lcd_running(&self) -> bool { self.lcd_user & (1 << 27) != 0 && self.lcd_ctrl & (1 << 31) != 0 }
+    /// IDF v4.4.7 lcd_ll.h: CLK_EN bit31 and nonzero CLK_SEL supply LCD's clock.
+    /// Its CLK_SEL implementation is authoritative; that version's register comment is stale.
+    pub fn lcd_clock_active(&self) -> bool { self.clock_enabled && self.lcd_clock & (1 << 31) != 0 && self.lcd_clock & (3 << 29) != 0 }
+    /// A timing edge is independent of GDMA bytes. Called only for running, clocked RGB.
+    pub fn lcd_sync_step(&mut self, cycles: u64, period: u64) -> bool {
+        let total = u128::from(self.lcd_sync_acc) + u128::from(cycles);
+        let period = u128::from(period.max(1));
+        let due = total >= period;
+        self.lcd_sync_acc = if due { (total % period) as u64 } else { total as u64 };
+        due
+    }
     /// IDF v5.5.1 lcd_cam_reg.h: LCD_START bit27, RGB_MODE bit31, CLK_SEL bits29..30.
     pub fn i80_started(&self) -> bool { self.clock_enabled && self.lcd_clock & (3 << 29) != 0 && self.lcd_user & (1 << 27) != 0 && self.lcd_ctrl & (1 << 31) == 0 }
     /// (active width, active height, bytes per pixel, CPU cycles per frame) from the timing registers.
@@ -184,8 +199,9 @@ impl LcdCam {
         match off {
             0x00 => self.lcd_clock = v,
             0x14 => { let was = self.lcd_running(); self.lcd_user = v;
-                      if v & (1 << 28) != 0 { self.lcd_line.clear(); self.lcd_fifo.clear(); self.lcd_acc = 0; }                       // LCD_RESET
+                      if v & (1 << 28) != 0 { self.lcd_line.clear(); self.lcd_fifo.clear(); self.lcd_acc = 0; self.lcd_sync_acc = 0; self.lcd_underflow = false; }                       // LCD_RESET
                       if !was && self.lcd_running() { self.lcd_line.clear(); self.lcd_acc = 0; }
+                      if was != self.lcd_running() { self.lcd_sync_acc = 0; self.lcd_underflow = false; }
                       if self.lcd_log { eprintln!("[lcd] USER <- {:#010x} (start {} reset {} update {})", v, v >> 27 & 1, v >> 28 & 1, v >> 20 & 1); } }
             0x18 => { if v & (1 << 27) != 0 { self.lcd_fifo.clear(); if self.lcd_log { eprintln!("[lcd] AFIFO reset"); } } self.ram.write(off, v); }   // LCD_MISC.AFIFO_RESET
             0x1c => self.lcd_ctrl = v, 0x20 => self.lcd_ctrl1 = v,

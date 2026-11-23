@@ -1,0 +1,1773 @@
+{
+  "schema": 1,
+  "curatedAt": "2026-11-22T12:19:52.692890Z",
+  "status": "complete",
+  "baselineCommit": "573f5a6c1bcc6dbf0388383d178a3935ec8ddcce",
+  "candidateRevisionStatus": "Unpublished integration checkpoint; executable/input hashes identify the exact measured artifacts independently of final publication history.",
+  "harness": {
+    "path": "docs/platform/evidence/seeed-performance-20261122/compare.py",
+    "bytes": 10551,
+    "sha256": "706854adfaec8cb58c48f4b39ce9cc81a919ea200a54b7b3a3a174b81566f83b",
+    "modifiedForFinalRuns": false
+  },
+  "method": {
+    "timedRuns": 30,
+    "pairsPerCase": 3,
+    "cases": 5,
+    "order": "S3 hello 30 s, C3 hello 30 s, C6 hello 30 s, Pocket Tank 30 s, then a separate S3 hello 300 s batch. Each case is main,candidate,main,candidate,main,candidate.",
+    "warmups": 0,
+    "discardedSamples": 0,
+    "interruptedTimedRuns": 0,
+    "failedFinalTimedRuns": 0,
+    "metric": "POSIX time -p user seconds; ratio of candidate median to baseline median minus one. Positive means more user CPU time.",
+    "timer": "Bash builtin time -p, invoked symmetrically for both arms because /usr/bin/time is unavailable.",
+    "reportedResolutionSeconds": 0.01,
+    "quietWindow": "Builds, tests, other emulator probes, compression, packaging and large unrelated hashes were stopped during timing. Concurrent task activity was limited to small document/JSON operations.",
+    "normalInputHashChecks": "Each executable checked before and after every one of its runs; all firmware/ROM inputs checked at each batch end. Both executable hashes and every input were checked again after run 30.",
+    "exactness": "Every sample compared with the first baseline in its case: full stdout SHA/bytes, stop reason, per-core/total instructions, exact guest seconds/cycles, exceptions and total IRQs. Curation additionally compared every source-IRQ report line across all six samples."
+  },
+  "build": {
+    "profileDefinitionsIdenticalToBaseline": true,
+    "profileDefinitions": "[profile.release]\nopt-level = 3\ndebug = 1\nlto = \"fat\"\ncodegen-units = 1\n",
+    "profileDefinitionsSha256": "80631c1ff99076b232a92ce98b0496ea49eb968d82bbe9c328281cd7567179ea",
+    "recordedBaselineBuildCommand": "CARGO_BUILD_JOBS=1 cargo build --release --bins",
+    "recordedCandidateBuildCommand": "cargo build --release -p esp32sim",
+    "commandsReexecutedDuringCuration": false,
+    "noProfileChangesForMeasurement": true,
+    "metadataOnlyRemoteUpdate": {
+      "revision": "43de45a",
+      "filesDifferentFromOriginalBaseline": [
+        "web/platform/catalog/firmware-catalog-sync-report.json",
+        "web/platform/catalog/firmware-release-snapshot.json",
+        "web/platform/catalog/firmwares.json"
+      ],
+      "rustOrCargoChanges": false
+    }
+  },
+  "environment": {
+    "system": "Linux",
+    "kernelRelease": "6.18.57",
+    "architecture": "x86_64",
+    "cpuModel": "AMD EPYC 9V74 80-Core Processor",
+    "availableAffinityCpuCount": 9,
+    "pythonVersion": "3.12.14",
+    "bashVersion": "GNU bash, version 5.2.37(1)-release (x86_64-pc-linux-gnu)",
+    "rustcVersion": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "externalTimeAvailable": false,
+    "measurementConditions": "Caller declared exclusive quiet window. No affinity pinning, governor/frequency/thermal control, or hidden warmup. Three sequential main/candidate pairs per case. No new model/runtime source changes during measurement."
+  },
+  "binaries": {
+    "main": {
+      "bytes": 34395672,
+      "sha256": "22954f6f7ef68a1d12e76a07ed3494c25e9cc2c231781ea912d479af8f3a87be",
+      "unchangedAfterAllRuns": true
+    },
+    "candidate": {
+      "bytes": 35153728,
+      "sha256": "4dd4d549dabb2e11282e692119558bb3a4907baa02be345aac9c5ff71176c9a4",
+      "unchangedAfterAllRuns": true
+    }
+  },
+  "batches": [
+    {
+      "preparedAt": "2026-11-22T11:54:20Z",
+      "startedAt": "2026-11-22T11:54:20Z",
+      "completedAt": "2026-11-22T12:15:16Z",
+      "pairs": 3,
+      "guestSeconds": 30,
+      "candidateRevision": "3665649677d59c5e2f797b352d279e375e8a38e7",
+      "name": "final-standard-30s",
+      "rawResultIdentity": {
+        "bytes": 23083,
+        "sha256": "db224e12da377a6373f5dd0bd1c2663025781e90ab8b3d3ea292d8f93674b55f"
+      },
+      "rawPreparedIdentity": {
+        "bytes": 8575,
+        "sha256": "513747059a228e06db25ba3ea00ffbd8c0b2610ff6dfdefd8e06a9b4c0e8d206"
+      }
+    },
+    {
+      "preparedAt": "2026-11-22T12:15:31Z",
+      "startedAt": "2026-11-22T12:15:31Z",
+      "completedAt": "2026-11-22T12:16:06Z",
+      "pairs": 3,
+      "guestSeconds": 300,
+      "candidateRevision": "3665649677d59c5e2f797b352d279e375e8a38e7",
+      "name": "final-s3-stability-300s",
+      "rawResultIdentity": {
+        "bytes": 6738,
+        "sha256": "96de5cba95fa3cbec1d4b0833f4e9b10312cbfe2f62981d241e0376ceabc01bc"
+      },
+      "rawPreparedIdentity": {
+        "bytes": 2964,
+        "sha256": "215d3facd1de5238bf623374f626131a85446a8b0d9258f5d78aed7c2dbbe509"
+      }
+    }
+  ],
+  "cases": [
+    {
+      "id": "hello-30s",
+      "workload": "hello",
+      "displayName": "S3 hello",
+      "guestSeconds": 30,
+      "arguments": [
+        "--chip",
+        "s3",
+        "--board",
+        "none",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--flash-mb",
+        "8",
+        "--psram-mb",
+        "2",
+        "--rom",
+        "<rom-dir>/esp32s3_rev0_rom.elf",
+        "--bootloader",
+        "<repo>/web/wasm/fw/public/hello-bootloader.bin",
+        "--ptable",
+        "<repo>/web/wasm/fw/public/hello-ptable.bin",
+        "--app",
+        "<repo>/web/wasm/fw/public/hello_world.bin"
+      ],
+      "inputs": {
+        "rom": {
+          "path": "<rom-dir>/esp32s3_rev0_rom.elf",
+          "bytes": 949552,
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+          "unchangedAfterAllRuns": true
+        },
+        "bootloader": {
+          "path": "<repo>/web/wasm/fw/public/hello-bootloader.bin",
+          "bytes": 20832,
+          "sha256": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579",
+          "unchangedAfterAllRuns": true
+        },
+        "ptable": {
+          "path": "<repo>/web/wasm/fw/public/hello-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "unchangedAfterAllRuns": true
+        },
+        "app": {
+          "path": "<repo>/web/wasm/fw/public/hello_world.bin",
+          "bytes": 161712,
+          "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9",
+          "unchangedAfterAllRuns": true
+        }
+      },
+      "runs": [
+        {
+          "pair": 1,
+          "arm": "main",
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stdoutBytes": 20364,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            11934783,
+            6775776
+          ],
+          "totalInstructions": 18710559,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "realSeconds": 0.61,
+          "userSeconds": 0.6,
+          "sysSeconds": 0.01,
+          "sequence": 1,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "39e865820c1a49ebccc7332525c5aa807d1d6a28fe7126f867ad0ba23eed6da5",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 20364,
+              "sha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+            },
+            "stderr": {
+              "bytes": 852,
+              "sha256": "22d52eddcf7a415b099ab60fc871382e8662cfee2cba98aeb5b6bdd6747701b2"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "d7b0211728da03c1be3b2b52fa24c7f43d3a930e3b6867734b1f20d18278e0ed"
+            }
+          }
+        },
+        {
+          "pair": 1,
+          "arm": "candidate",
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stdoutBytes": 20364,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            11934783,
+            6775776
+          ],
+          "totalInstructions": 18710559,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "realSeconds": 0.72,
+          "userSeconds": 0.69,
+          "sysSeconds": 0.02,
+          "sequence": 2,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "39e865820c1a49ebccc7332525c5aa807d1d6a28fe7126f867ad0ba23eed6da5",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 20364,
+              "sha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+            },
+            "stderr": {
+              "bytes": 852,
+              "sha256": "3e285ba15066a629e069cca7512845187bc69a9e92d7ac539d529f5082ad8924"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "864bfc20ecae4d243a9ad1eacbaba1ad17df48d5d8ddc0304ff601ee15cb832a"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "main",
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stdoutBytes": 20364,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            11934783,
+            6775776
+          ],
+          "totalInstructions": 18710559,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "realSeconds": 0.56,
+          "userSeconds": 0.54,
+          "sysSeconds": 0.01,
+          "sequence": 3,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "39e865820c1a49ebccc7332525c5aa807d1d6a28fe7126f867ad0ba23eed6da5",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 20364,
+              "sha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+            },
+            "stderr": {
+              "bytes": 852,
+              "sha256": "caa3b5c9b456004b902293ad323257e6f3f6d035d9187099d7b3627b85866b52"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "6456915aaea56bea1a7212bfa3cdb18c4a91e71c8b1f9c894400847476698ded"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "candidate",
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stdoutBytes": 20364,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            11934783,
+            6775776
+          ],
+          "totalInstructions": 18710559,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "realSeconds": 0.57,
+          "userSeconds": 0.56,
+          "sysSeconds": 0.0,
+          "sequence": 4,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "39e865820c1a49ebccc7332525c5aa807d1d6a28fe7126f867ad0ba23eed6da5",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 20364,
+              "sha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+            },
+            "stderr": {
+              "bytes": 852,
+              "sha256": "09d75e397a7626e6ad2992216dbf4147eab092461447c98c471ce34a5f4320a6"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "25ab71f76dd34fe6399cd6d568e71da40c6326f149dcbbaf773b31637e0d0ccd"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "main",
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stdoutBytes": 20364,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            11934783,
+            6775776
+          ],
+          "totalInstructions": 18710559,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "realSeconds": 0.67,
+          "userSeconds": 0.63,
+          "sysSeconds": 0.0,
+          "sequence": 5,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "39e865820c1a49ebccc7332525c5aa807d1d6a28fe7126f867ad0ba23eed6da5",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 20364,
+              "sha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+            },
+            "stderr": {
+              "bytes": 852,
+              "sha256": "6a5c35f0ac37eebcd09b534266d28f0314f2e5885fb33eafb620dde07e0b9640"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "00a536c817c729e71ae01c21fb054cbb1c3e0b722140290cba00e5dff2514b8f"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "candidate",
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stdoutBytes": 20364,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            11934783,
+            6775776
+          ],
+          "totalInstructions": 18710559,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032,
+          "realSeconds": 0.61,
+          "userSeconds": 0.6,
+          "sysSeconds": 0.0,
+          "sequence": 6,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "39e865820c1a49ebccc7332525c5aa807d1d6a28fe7126f867ad0ba23eed6da5",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 20364,
+              "sha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef"
+            },
+            "stderr": {
+              "bytes": 852,
+              "sha256": "0e0efc57170b5fe922dffde71702b82b6be7a3abd8ff2d9a754924cf91948560"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "85656f4472901828da3efe0340914dbe4553a3ec9dd370180b940c30eaadbbf9"
+            }
+          }
+        }
+      ],
+      "summary": {
+        "userSecondsByArmInPairOrder": {
+          "main": [
+            0.6,
+            0.54,
+            0.63
+          ],
+          "candidate": [
+            0.69,
+            0.56,
+            0.6
+          ]
+        },
+        "medianUserSeconds": {
+          "main": 0.6,
+          "candidate": 0.6
+        },
+        "rangeUserSeconds": {
+          "main": [
+            0.54,
+            0.63
+          ],
+          "candidate": [
+            0.56,
+            0.69
+          ]
+        },
+        "candidateDeltaPercent": 0.0,
+        "candidateSlowerPairs": 2,
+        "tiedPairs": 0,
+        "exactExecutionMatch": true,
+        "sourceIrqReportsIdentical": true,
+        "rangesOverlap": true
+      },
+      "expectedExecution": {
+        "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+        "stdoutBytes": 20364,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          11934783,
+          6775776
+        ],
+        "totalInstructions": 18710559,
+        "guestSeconds": 30.0,
+        "cycles": 7200000000,
+        "exceptions": 27229,
+        "interrupts": 6032
+      },
+      "sourceIrqReport": [
+        "  core0 int1         33  sources [79]",
+        "  core0 int2       2999  sources [57]",
+        "  core1 int1          3  sources [80]",
+        "  core1 int2       2997  sources [58]"
+      ],
+      "sourceIrqReportSha256": "39e865820c1a49ebccc7332525c5aa807d1d6a28fe7126f867ad0ba23eed6da5"
+    },
+    {
+      "id": "c3-hello-30s",
+      "workload": "c3-hello",
+      "displayName": "C3 hello",
+      "guestSeconds": 30,
+      "arguments": [
+        "--chip",
+        "c3",
+        "--board",
+        "none",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--flash-mb",
+        "4",
+        "--rom",
+        "<rom-dir>/esp32c3_rev3_rom.elf",
+        "--bootloader",
+        "<repo>/web/wasm/fw/public/c3-hello-bootloader.bin",
+        "--ptable",
+        "<repo>/web/wasm/fw/public/c3-hello-ptable.bin",
+        "--app",
+        "<repo>/web/wasm/fw/public/c3-hello_world.bin"
+      ],
+      "inputs": {
+        "rom": {
+          "path": "<rom-dir>/esp32c3_rev3_rom.elf",
+          "bytes": 556332,
+          "sha256": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c",
+          "unchangedAfterAllRuns": true
+        },
+        "bootloader": {
+          "path": "<repo>/web/wasm/fw/public/c3-hello-bootloader.bin",
+          "bytes": 20960,
+          "sha256": "3eaeaa5fb91d462a6ce6dbd8f8d488c8dc059216bc5841e50b784aea8348eb7b",
+          "unchangedAfterAllRuns": true
+        },
+        "ptable": {
+          "path": "<repo>/web/wasm/fw/public/c3-hello-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "unchangedAfterAllRuns": true
+        },
+        "app": {
+          "path": "<repo>/web/wasm/fw/public/c3-hello_world.bin",
+          "bytes": 137104,
+          "sha256": "3fd8606fd2fb10d2387ed4d238e16e7f80cd4832f380da02f0128f7bf4e0e8be",
+          "unchangedAfterAllRuns": true
+        }
+      },
+      "runs": [
+        {
+          "pair": 1,
+          "arm": "main",
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stdoutBytes": 10095,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028,
+          "realSeconds": 5.53,
+          "userSeconds": 5.5,
+          "sysSeconds": 0.0,
+          "sequence": 7,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "dcf9d69a73581c4d69236b371c327906fabeabc2057e579492082fd0f2a1299f",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 10095,
+              "sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd"
+            },
+            "stderr": {
+              "bytes": 531,
+              "sha256": "f0d1f14bf7a71b4579736ddd13a2eddff746844b5e9fb7d0ced5c9e115c7f72d"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "7c151345132ef2945edcc054f1bc7bafee3fc99d5c042af9bd0eb1f2978b6c59"
+            }
+          }
+        },
+        {
+          "pair": 1,
+          "arm": "candidate",
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stdoutBytes": 10095,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028,
+          "realSeconds": 5.64,
+          "userSeconds": 5.56,
+          "sysSeconds": 0.02,
+          "sequence": 8,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "dcf9d69a73581c4d69236b371c327906fabeabc2057e579492082fd0f2a1299f",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 10095,
+              "sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd"
+            },
+            "stderr": {
+              "bytes": 531,
+              "sha256": "47bc58dabbcf0bbe5516fb1576012dd43f250bbbf6631092fd595b08013b8845"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "cf731c0bceb590801cd59e73c0a278557e946462a99c4adad6ab544d20a1a9eb"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "main",
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stdoutBytes": 10095,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028,
+          "realSeconds": 5.59,
+          "userSeconds": 5.51,
+          "sysSeconds": 0.02,
+          "sequence": 9,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "dcf9d69a73581c4d69236b371c327906fabeabc2057e579492082fd0f2a1299f",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 10095,
+              "sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd"
+            },
+            "stderr": {
+              "bytes": 531,
+              "sha256": "dac02b8de8083a35cc98f0424b2b63bb2ffb06bb4d6bb8c5cc2992336282747d"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "ec7cb795f5d623e451b3153c7294944ded0000f602c086119e6fb427945dda54"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "candidate",
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stdoutBytes": 10095,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028,
+          "realSeconds": 5.67,
+          "userSeconds": 5.6,
+          "sysSeconds": 0.02,
+          "sequence": 10,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "dcf9d69a73581c4d69236b371c327906fabeabc2057e579492082fd0f2a1299f",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 10095,
+              "sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd"
+            },
+            "stderr": {
+              "bytes": 531,
+              "sha256": "f1e781e83637e2ad642bd410a1ae1b1ed94d0e3df604ab1c6567a19f483fa485"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "0b396136182c26f8f53c813bfc5ed48addc45f4bc52d8689b2cbda0d92d47b51"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "main",
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stdoutBytes": 10095,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028,
+          "realSeconds": 5.63,
+          "userSeconds": 5.61,
+          "sysSeconds": 0.01,
+          "sequence": 11,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "dcf9d69a73581c4d69236b371c327906fabeabc2057e579492082fd0f2a1299f",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 10095,
+              "sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd"
+            },
+            "stderr": {
+              "bytes": 531,
+              "sha256": "d5015ac952d6b0a121dbb4f6681052757152c70d97197e61dceab06b58b1f33c"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "178d2313fe8f7f6c7fd7e0735e49d663e5d1effa30eae350445391b65d9d957f"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "candidate",
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stdoutBytes": 10095,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028,
+          "realSeconds": 5.52,
+          "userSeconds": 5.46,
+          "sysSeconds": 0.02,
+          "sequence": 12,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "dcf9d69a73581c4d69236b371c327906fabeabc2057e579492082fd0f2a1299f",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 10095,
+              "sha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd"
+            },
+            "stderr": {
+              "bytes": 531,
+              "sha256": "d52d3d0812e2402bf4779f9adb414128c764cb5ee10436c518b5a6d73399c9af"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "5d360e49fddfd532b36c6c7ce876824a593354b55abd26856eed1f5431218118"
+            }
+          }
+        }
+      ],
+      "summary": {
+        "userSecondsByArmInPairOrder": {
+          "main": [
+            5.5,
+            5.51,
+            5.61
+          ],
+          "candidate": [
+            5.56,
+            5.6,
+            5.46
+          ]
+        },
+        "medianUserSeconds": {
+          "main": 5.51,
+          "candidate": 5.56
+        },
+        "rangeUserSeconds": {
+          "main": [
+            5.5,
+            5.61
+          ],
+          "candidate": [
+            5.46,
+            5.6
+          ]
+        },
+        "candidateDeltaPercent": 0.9074410163339319,
+        "candidateSlowerPairs": 2,
+        "tiedPairs": 0,
+        "exactExecutionMatch": true,
+        "sourceIrqReportsIdentical": true,
+        "rangesOverlap": true
+      },
+      "expectedExecution": {
+        "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+        "stdoutBytes": 10095,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          4800000000
+        ],
+        "totalInstructions": 4800000000,
+        "guestSeconds": 30.0,
+        "cycles": 4800000000,
+        "exceptions": 0,
+        "interrupts": 3028
+      },
+      "sourceIrqReport": [
+        "  core0 int3         33  sources [50]",
+        "  core0 int4       2995  sources [37]"
+      ],
+      "sourceIrqReportSha256": "dcf9d69a73581c4d69236b371c327906fabeabc2057e579492082fd0f2a1299f"
+    },
+    {
+      "id": "c6-hello-30s",
+      "workload": "c6-hello",
+      "displayName": "C6 hello",
+      "guestSeconds": 30,
+      "arguments": [
+        "--chip",
+        "c6",
+        "--board",
+        "none",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--flash-mb",
+        "4",
+        "--rom",
+        "<rom-dir>/esp32c6_rev0_rom.elf",
+        "--bootloader",
+        "<repo>/web/wasm/fw/public/c6-hello-bootloader.bin",
+        "--ptable",
+        "<repo>/web/wasm/fw/public/c6-hello-ptable.bin",
+        "--app",
+        "<repo>/web/wasm/fw/public/c6-hello_world.bin"
+      ],
+      "inputs": {
+        "rom": {
+          "path": "<rom-dir>/esp32c6_rev0_rom.elf",
+          "bytes": 489768,
+          "sha256": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551",
+          "unchangedAfterAllRuns": true
+        },
+        "bootloader": {
+          "path": "<repo>/web/wasm/fw/public/c6-hello-bootloader.bin",
+          "bytes": 22464,
+          "sha256": "88fd358b406ebc874cda1f4d14c1fd50d37cd064a1826192ee275ce67741ff75",
+          "unchangedAfterAllRuns": true
+        },
+        "ptable": {
+          "path": "<repo>/web/wasm/fw/public/c6-hello-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "unchangedAfterAllRuns": true
+        },
+        "app": {
+          "path": "<repo>/web/wasm/fw/public/c6-hello_world.bin",
+          "bytes": 120848,
+          "sha256": "e302a3769d3122759ea85ed6caff857da36f558f83f9bf0eb652276657de0131",
+          "unchangedAfterAllRuns": true
+        }
+      },
+      "runs": [
+        {
+          "pair": 1,
+          "arm": "main",
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stdoutBytes": 9735,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029,
+          "realSeconds": 3.33,
+          "userSeconds": 3.29,
+          "sysSeconds": 0.01,
+          "sequence": 13,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "5cfc754c16f25c061432976f895a5193eca03fa639a6e2df29c1bfcf7d2d5318",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 9735,
+              "sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad"
+            },
+            "stderr": {
+              "bytes": 532,
+              "sha256": "8afa22b918da290e3ea04b51412d5bcba43fb0da75357af7119fe96cce21cccb"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "73efe616fe6f3d0b472d2c28e27453dda3b7bd48adc26ee31e51d435aed1a6eb"
+            }
+          }
+        },
+        {
+          "pair": 1,
+          "arm": "candidate",
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stdoutBytes": 9735,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029,
+          "realSeconds": 3.25,
+          "userSeconds": 3.22,
+          "sysSeconds": 0.01,
+          "sequence": 14,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "5cfc754c16f25c061432976f895a5193eca03fa639a6e2df29c1bfcf7d2d5318",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 9735,
+              "sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad"
+            },
+            "stderr": {
+              "bytes": 532,
+              "sha256": "362f02912ff6cd0b253416cd44ba038876ceaa8029e8534dc68ff39daf796b55"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "35a384ab12ee45ffebc5302ffe86abd9f66f801ce471885ff6d8985296d9217a"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "main",
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stdoutBytes": 9735,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029,
+          "realSeconds": 3.33,
+          "userSeconds": 3.28,
+          "sysSeconds": 0.03,
+          "sequence": 15,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "5cfc754c16f25c061432976f895a5193eca03fa639a6e2df29c1bfcf7d2d5318",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 9735,
+              "sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad"
+            },
+            "stderr": {
+              "bytes": 532,
+              "sha256": "2bc320c90eefa66bf5f9ede3beb6f5de3ed9662ae32f6efe5be41d6bc2c59685"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "41c81bc32af0329e6a43e306500253ce468545f4806fe15cd225685670ee03cc"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "candidate",
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stdoutBytes": 9735,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029,
+          "realSeconds": 3.25,
+          "userSeconds": 3.22,
+          "sysSeconds": 0.02,
+          "sequence": 16,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "5cfc754c16f25c061432976f895a5193eca03fa639a6e2df29c1bfcf7d2d5318",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 9735,
+              "sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad"
+            },
+            "stderr": {
+              "bytes": 532,
+              "sha256": "1c24c5f5de61b2cc691442749e64d5b8a714a8afa1aacab46901cc11ad497327"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "f4951211a8c2f46dc58760d7bbbd4053c9c6d9240f963c3a849105b353c58b1f"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "main",
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stdoutBytes": 9735,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029,
+          "realSeconds": 3.35,
+          "userSeconds": 3.31,
+          "sysSeconds": 0.01,
+          "sequence": 17,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "5cfc754c16f25c061432976f895a5193eca03fa639a6e2df29c1bfcf7d2d5318",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 9735,
+              "sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad"
+            },
+            "stderr": {
+              "bytes": 532,
+              "sha256": "9bdc817268d5a913f60f2be57f43e0bb828f582726e2dea99c4ec1d5e095196c"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "dd18ba83655c2f0f533b292f4327e1d895a5e78d5c369a77b967e8451941164b"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "candidate",
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stdoutBytes": 9735,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4800000000
+          ],
+          "totalInstructions": 4800000000,
+          "guestSeconds": 30.0,
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029,
+          "realSeconds": 3.41,
+          "userSeconds": 3.39,
+          "sysSeconds": 0.01,
+          "sequence": 18,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "5cfc754c16f25c061432976f895a5193eca03fa639a6e2df29c1bfcf7d2d5318",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 9735,
+              "sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad"
+            },
+            "stderr": {
+              "bytes": 532,
+              "sha256": "99cf20a811a6c70fb93aec4a5ec35a24ccb1d3a83f3ebe5813cd7514c5442288"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "0e6a04e1e40e159bfe4fa88c48937fae412ce24cb4e5aa46064afacc75eee711"
+            }
+          }
+        }
+      ],
+      "summary": {
+        "userSecondsByArmInPairOrder": {
+          "main": [
+            3.29,
+            3.28,
+            3.31
+          ],
+          "candidate": [
+            3.22,
+            3.22,
+            3.39
+          ]
+        },
+        "medianUserSeconds": {
+          "main": 3.29,
+          "candidate": 3.22
+        },
+        "rangeUserSeconds": {
+          "main": [
+            3.28,
+            3.31
+          ],
+          "candidate": [
+            3.22,
+            3.39
+          ]
+        },
+        "candidateDeltaPercent": -2.127659574468077,
+        "candidateSlowerPairs": 1,
+        "tiedPairs": 0,
+        "exactExecutionMatch": true,
+        "sourceIrqReportsIdentical": true,
+        "rangesOverlap": true
+      },
+      "expectedExecution": {
+        "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+        "stdoutBytes": 9735,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          4800000000
+        ],
+        "totalInstructions": 4800000000,
+        "guestSeconds": 30.0,
+        "cycles": 4800000000,
+        "exceptions": 0,
+        "interrupts": 3029
+      },
+      "sourceIrqReport": [
+        "  core0 int5         33  sources [22]",
+        "  core0 int8       2996  sources [57]"
+      ],
+      "sourceIrqReportSha256": "5cfc754c16f25c061432976f895a5193eca03fa639a6e2df29c1bfcf7d2d5318"
+    },
+    {
+      "id": "pocket-tank-30s",
+      "workload": "pocket-tank",
+      "displayName": "Pocket Tank",
+      "guestSeconds": 30,
+      "arguments": [
+        "--chip",
+        "s3",
+        "--board",
+        "waveshare-amoled18-v2",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "30",
+        "--no-dump",
+        "--flash-mb",
+        "16",
+        "--psram-mb",
+        "8",
+        "--rom",
+        "<rom-dir>/esp32s3_rev0_rom.elf",
+        "--bootloader",
+        "<repo>/web/wasm/fw/public/pocket-tank-bootloader.bin",
+        "--ptable",
+        "<repo>/web/wasm/fw/public/pocket-tank-ptable.bin",
+        "--app",
+        "<repo>/web/wasm/fw/public/pocket-tank.bin",
+        "--flash-at",
+        "0x290000=<repo>/web/wasm/fw/local/model_q4.bin"
+      ],
+      "inputs": {
+        "rom": {
+          "path": "<rom-dir>/esp32s3_rev0_rom.elf",
+          "bytes": 949552,
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+          "unchangedAfterAllRuns": true
+        },
+        "bootloader": {
+          "path": "<repo>/web/wasm/fw/public/pocket-tank-bootloader.bin",
+          "bytes": 22464,
+          "sha256": "9556d59f3a10f6b04fa6d75f3142a66034339afafffbd4bbc3d9a127eaa73859",
+          "unchangedAfterAllRuns": true
+        },
+        "ptable": {
+          "path": "<repo>/web/wasm/fw/public/pocket-tank-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7af5b28608c91167e00778b7f20622f3b47849efebeb3e64117162d73f3e0508",
+          "unchangedAfterAllRuns": true
+        },
+        "app": {
+          "path": "<repo>/web/wasm/fw/public/pocket-tank.bin",
+          "bytes": 470096,
+          "sha256": "443dd24aed14a509e6df597eb3a02635cc07e0fbee6f04db85a62f4d4dadb113",
+          "unchangedAfterAllRuns": true
+        },
+        "flash_at_0x290000": {
+          "path": "<repo>/web/wasm/fw/local/model_q4.bin",
+          "bytes": 7557640,
+          "sha256": "b200bf87c78dc85c4d727f68941ac0b83cced9827037cc169cd2122d71002c2a",
+          "unchangedAfterAllRuns": true
+        }
+      },
+      "runs": [
+        {
+          "pair": 1,
+          "arm": "main",
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "stdoutBytes": 22192,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4595734479,
+            6171560740
+          ],
+          "totalInstructions": 10767295219,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "realSeconds": 227.27,
+          "userSeconds": 205.67,
+          "sysSeconds": 0.44,
+          "sequence": 19,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "93ea84ed645bc1e00758cfc9a7b15c9cdcc13783ad064e14b5549213f224ad47",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 22192,
+              "sha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+            },
+            "stderr": {
+              "bytes": 974,
+              "sha256": "464647bfbc4405d69dd3fcd5b204bc9de7728c69d4e8e83322fd24a6e3ece408"
+            },
+            "time": {
+              "bytes": 33,
+              "sha256": "b24e4bad89bd2e2fc72ae08f253f36d6d0a905408daa472da4341a20ffa071a0"
+            }
+          }
+        },
+        {
+          "pair": 1,
+          "arm": "candidate",
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "stdoutBytes": 22192,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4595734479,
+            6171560740
+          ],
+          "totalInstructions": 10767295219,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "realSeconds": 209.54,
+          "userSeconds": 198.55,
+          "sysSeconds": 0.24,
+          "sequence": 20,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "93ea84ed645bc1e00758cfc9a7b15c9cdcc13783ad064e14b5549213f224ad47",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 22192,
+              "sha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+            },
+            "stderr": {
+              "bytes": 974,
+              "sha256": "8b88d214cac769b9add58c86be09ff4c23ee3259c83047ef85afc1ce0fe106b4"
+            },
+            "time": {
+              "bytes": 33,
+              "sha256": "548aad436281b0e4b4f4c583bb29222c89c7ac2ed28dabb8127f121c802a5b09"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "main",
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "stdoutBytes": 22192,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4595734479,
+            6171560740
+          ],
+          "totalInstructions": 10767295219,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "realSeconds": 194.95,
+          "userSeconds": 194.14,
+          "sysSeconds": 0.24,
+          "sequence": 21,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "93ea84ed645bc1e00758cfc9a7b15c9cdcc13783ad064e14b5549213f224ad47",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 22192,
+              "sha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+            },
+            "stderr": {
+              "bytes": 974,
+              "sha256": "7ae28fa65aee0b37107a0e24cfcdc0e6a12ac06c21e6bd467317deee96220484"
+            },
+            "time": {
+              "bytes": 33,
+              "sha256": "bd25272deecd948233cf795e55203e5e55e43f579314c490152583d952964e3d"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "candidate",
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "stdoutBytes": 22192,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4595734479,
+            6171560740
+          ],
+          "totalInstructions": 10767295219,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "realSeconds": 193.0,
+          "userSeconds": 192.48,
+          "sysSeconds": 0.12,
+          "sequence": 22,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "93ea84ed645bc1e00758cfc9a7b15c9cdcc13783ad064e14b5549213f224ad47",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 22192,
+              "sha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+            },
+            "stderr": {
+              "bytes": 974,
+              "sha256": "c2ff881528ca434aa20c73e0564d92a2bf41f659871f708ca15d1743ed109669"
+            },
+            "time": {
+              "bytes": 33,
+              "sha256": "ca3151faccd86ae854eaba7d79bed85634d62f3e7dad80a1f7e559cfa4541507"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "main",
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "stdoutBytes": 22192,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4595734479,
+            6171560740
+          ],
+          "totalInstructions": 10767295219,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "realSeconds": 189.33,
+          "userSeconds": 188.91,
+          "sysSeconds": 0.2,
+          "sequence": 23,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "93ea84ed645bc1e00758cfc9a7b15c9cdcc13783ad064e14b5549213f224ad47",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 22192,
+              "sha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+            },
+            "stderr": {
+              "bytes": 974,
+              "sha256": "e0d562b3a6591a5203a6d61b712ee8b31cd68291647f4f35ebd7b43008a77794"
+            },
+            "time": {
+              "bytes": 33,
+              "sha256": "8c237684d994ec5eaaf743e0a83e69d633a73e5265a719b5cd20a05c3e8a224c"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "candidate",
+          "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+          "stdoutBytes": 22192,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            4595734479,
+            6171560740
+          ],
+          "totalInstructions": 10767295219,
+          "guestSeconds": 30.0,
+          "cycles": 7200000000,
+          "exceptions": 1048080,
+          "interrupts": 100430,
+          "realSeconds": 181.94,
+          "userSeconds": 180.58,
+          "sysSeconds": 0.23,
+          "sequence": 24,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "93ea84ed645bc1e00758cfc9a7b15c9cdcc13783ad064e14b5549213f224ad47",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 22192,
+              "sha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2"
+            },
+            "stderr": {
+              "bytes": 974,
+              "sha256": "dcc9b8ce6cdb999828230ffe219dcfd5d03fd1dd11eb1531a764ce8b878ff8de"
+            },
+            "time": {
+              "bytes": 33,
+              "sha256": "d36adcb8c3600abface38a6bc1671de7fd5a488b00a3661aaedd60ae39922094"
+            }
+          }
+        }
+      ],
+      "summary": {
+        "userSecondsByArmInPairOrder": {
+          "main": [
+            205.67,
+            194.14,
+            188.91
+          ],
+          "candidate": [
+            198.55,
+            192.48,
+            180.58
+          ]
+        },
+        "medianUserSeconds": {
+          "main": 194.14,
+          "candidate": 192.48
+        },
+        "rangeUserSeconds": {
+          "main": [
+            188.91,
+            205.67
+          ],
+          "candidate": [
+            180.58,
+            198.55
+          ]
+        },
+        "candidateDeltaPercent": -0.8550530544967572,
+        "candidateSlowerPairs": 0,
+        "tiedPairs": 0,
+        "exactExecutionMatch": true,
+        "sourceIrqReportsIdentical": true,
+        "rangesOverlap": true
+      },
+      "expectedExecution": {
+        "stdoutSha256": "dc0b80c430acc8bf6c968954f6f78858a19bf7a07ca539832a7025c833bb96e2",
+        "stdoutBytes": 22192,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          4595734479,
+          6171560740
+        ],
+        "totalInstructions": 10767295219,
+        "guestSeconds": 30.0,
+        "cycles": 7200000000,
+        "exceptions": 1048080,
+        "interrupts": 100430
+      },
+      "sourceIrqReport": [
+        "  core0 int2       7524  sources [79]",
+        "  core0 int3      29539  sources [57]",
+        "  core0 int8       5598  sources [42]",
+        "  core0 int9      25791  sources []",
+        "  core0 int13      1843  sources [67]",
+        "  core1 int0        152  sources [80]",
+        "  core1 int1      29983  sources [58]"
+      ],
+      "sourceIrqReportSha256": "93ea84ed645bc1e00758cfc9a7b15c9cdcc13783ad064e14b5549213f224ad47"
+    },
+    {
+      "id": "hello-300s",
+      "workload": "hello",
+      "displayName": "S3 hello",
+      "guestSeconds": 300,
+      "arguments": [
+        "--chip",
+        "s3",
+        "--board",
+        "none",
+        "--boot",
+        "rom",
+        "--max-seconds",
+        "300",
+        "--no-dump",
+        "--flash-mb",
+        "8",
+        "--psram-mb",
+        "2",
+        "--rom",
+        "<rom-dir>/esp32s3_rev0_rom.elf",
+        "--bootloader",
+        "<repo>/web/wasm/fw/public/hello-bootloader.bin",
+        "--ptable",
+        "<repo>/web/wasm/fw/public/hello-ptable.bin",
+        "--app",
+        "<repo>/web/wasm/fw/public/hello_world.bin"
+      ],
+      "inputs": {
+        "rom": {
+          "path": "<rom-dir>/esp32s3_rev0_rom.elf",
+          "bytes": 949552,
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+          "unchangedAfterAllRuns": true
+        },
+        "bootloader": {
+          "path": "<repo>/web/wasm/fw/public/hello-bootloader.bin",
+          "bytes": 20832,
+          "sha256": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579",
+          "unchangedAfterAllRuns": true
+        },
+        "ptable": {
+          "path": "<repo>/web/wasm/fw/public/hello-ptable.bin",
+          "bytes": 3072,
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "unchangedAfterAllRuns": true
+        },
+        "app": {
+          "path": "<repo>/web/wasm/fw/public/hello_world.bin",
+          "bytes": 161712,
+          "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9",
+          "unchangedAfterAllRuns": true
+        }
+      },
+      "runs": [
+        {
+          "pair": 1,
+          "arm": "main",
+          "stdoutSha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6",
+          "stdoutBytes": 191584,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            114416277,
+            65857999
+          ],
+          "totalInstructions": 180274276,
+          "guestSeconds": 300.0,
+          "cycles": 72000000000,
+          "exceptions": 271280,
+          "interrupts": 60326,
+          "realSeconds": 5.57,
+          "userSeconds": 5.44,
+          "sysSeconds": 0.11,
+          "sequence": 25,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "2bc1527a35e509933bc196bb6d3b89e377439ef5949c6ecc8df9332056e9516e",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 191584,
+              "sha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6"
+            },
+            "stderr": {
+              "bytes": 2378,
+              "sha256": "e24b36fdb5234303c454ba37303233888cebc364ad7c4f553846d5160760ce86"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "06c15237e7bbcf4005f6e68c764bd21a6afdeba558492e960997311cef881ebd"
+            }
+          }
+        },
+        {
+          "pair": 1,
+          "arm": "candidate",
+          "stdoutSha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6",
+          "stdoutBytes": 191584,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            114416277,
+            65857999
+          ],
+          "totalInstructions": 180274276,
+          "guestSeconds": 300.0,
+          "cycles": 72000000000,
+          "exceptions": 271280,
+          "interrupts": 60326,
+          "realSeconds": 5.57,
+          "userSeconds": 5.44,
+          "sysSeconds": 0.1,
+          "sequence": 26,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "2bc1527a35e509933bc196bb6d3b89e377439ef5949c6ecc8df9332056e9516e",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 191584,
+              "sha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6"
+            },
+            "stderr": {
+              "bytes": 2378,
+              "sha256": "6469867fcf246f68bcceaa3fc01fc4d98a672aa099ebd19dd991cbfe0f7ebcc3"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "b8acfcd4e13b0623265e35dd451c36474d10ed3e803a4bead597b1016b65ebf9"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "main",
+          "stdoutSha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6",
+          "stdoutBytes": 191584,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            114416277,
+            65857999
+          ],
+          "totalInstructions": 180274276,
+          "guestSeconds": 300.0,
+          "cycles": 72000000000,
+          "exceptions": 271280,
+          "interrupts": 60326,
+          "realSeconds": 5.83,
+          "userSeconds": 5.7,
+          "sysSeconds": 0.1,
+          "sequence": 27,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "2bc1527a35e509933bc196bb6d3b89e377439ef5949c6ecc8df9332056e9516e",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 191584,
+              "sha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6"
+            },
+            "stderr": {
+              "bytes": 2378,
+              "sha256": "50e24b6e67e76366e3e5e7881121c3d685e799b18ebc9bad3fce62f3303713a9"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "57a05f21ad465d91531e324c336326173c23d9756b10abd0ca967c9f92cfebb5"
+            }
+          }
+        },
+        {
+          "pair": 2,
+          "arm": "candidate",
+          "stdoutSha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6",
+          "stdoutBytes": 191584,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            114416277,
+            65857999
+          ],
+          "totalInstructions": 180274276,
+          "guestSeconds": 300.0,
+          "cycles": 72000000000,
+          "exceptions": 271280,
+          "interrupts": 60326,
+          "realSeconds": 5.66,
+          "userSeconds": 5.53,
+          "sysSeconds": 0.11,
+          "sequence": 28,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "2bc1527a35e509933bc196bb6d3b89e377439ef5949c6ecc8df9332056e9516e",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 191584,
+              "sha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6"
+            },
+            "stderr": {
+              "bytes": 2378,
+              "sha256": "3721f1a44c4e41c126625da9952430a882411f30a94dde38162b677f53197968"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "5b5dfcb3d7082f723563e74ebbcfb465c8fb3e67cec61156872817d5d2da3435"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "main",
+          "stdoutSha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6",
+          "stdoutBytes": 191584,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            114416277,
+            65857999
+          ],
+          "totalInstructions": 180274276,
+          "guestSeconds": 300.0,
+          "cycles": 72000000000,
+          "exceptions": 271280,
+          "interrupts": 60326,
+          "realSeconds": 5.63,
+          "userSeconds": 5.54,
+          "sysSeconds": 0.08,
+          "sequence": 29,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "2bc1527a35e509933bc196bb6d3b89e377439ef5949c6ecc8df9332056e9516e",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 191584,
+              "sha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6"
+            },
+            "stderr": {
+              "bytes": 2378,
+              "sha256": "3721f1a44c4e41c126625da9952430a882411f30a94dde38162b677f53197968"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "873df7ac571434f68fe407301a5131ea681d7bfe5558b0c918b7a8702d783da2"
+            }
+          }
+        },
+        {
+          "pair": 3,
+          "arm": "candidate",
+          "stdoutSha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6",
+          "stdoutBytes": 191584,
+          "stopReason": "Halted",
+          "perCoreInstructions": [
+            114416277,
+            65857999
+          ],
+          "totalInstructions": 180274276,
+          "guestSeconds": 300.0,
+          "cycles": 72000000000,
+          "exceptions": 271280,
+          "interrupts": 60326,
+          "realSeconds": 5.91,
+          "userSeconds": 5.72,
+          "sysSeconds": 0.17,
+          "sequence": 30,
+          "exactExecutionMatch": true,
+          "sourceIrqReportSha256": "2bc1527a35e509933bc196bb6d3b89e377439ef5949c6ecc8df9332056e9516e",
+          "rawLogs": {
+            "stdout": {
+              "bytes": 191584,
+              "sha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6"
+            },
+            "stderr": {
+              "bytes": 2378,
+              "sha256": "f50e09b0fd835c776cae4ac7e39cf8e3b8f65d07ec7cf9407a5401123e01afa2"
+            },
+            "time": {
+              "bytes": 29,
+              "sha256": "251df6fdbaa93955e3854737b272214396eeecccf34fc591611f9ca59c725e58"
+            }
+          }
+        }
+      ],
+      "summary": {
+        "userSecondsByArmInPairOrder": {
+          "main": [
+            5.44,
+            5.7,
+            5.54
+          ],
+          "candidate": [
+            5.44,
+            5.53,
+            5.72
+          ]
+        },
+        "medianUserSeconds": {
+          "main": 5.54,
+          "candidate": 5.53
+        },
+        "rangeUserSeconds": {
+          "main": [
+            5.44,
+            5.7
+          ],
+          "candidate": [
+            5.44,
+            5.72
+          ]
+        },
+        "candidateDeltaPercent": -0.18050541516244634,
+        "candidateSlowerPairs": 1,
+        "tiedPairs": 1,
+        "exactExecutionMatch": true,
+        "sourceIrqReportsIdentical": true,
+        "rangesOverlap": true
+      },
+      "expectedExecution": {
+        "stdoutSha256": "9024c7b869b40579c19be2cd33967d2f9b479025af3de76873608a49305076b6",
+        "stdoutBytes": 191584,
+        "stopReason": "Halted",
+        "perCoreInstructions": [
+          114416277,
+          65857999
+        ],
+        "totalInstructions": 180274276,
+        "guestSeconds": 300.0,
+        "cycles": 72000000000,
+        "exceptions": 271280,
+        "interrupts": 60326
+      },
+      "sourceIrqReport": [
+        "  core0 int1        328  sources [79]",
+        "  core0 int2      29986  sources [57]",
+        "  core1 int1         28  sources [80]",
+        "  core1 int2      29984  sources [58]"
+      ],
+      "sourceIrqReportSha256": "2bc1527a35e509933bc196bb6d3b89e377439ef5949c6ecc8df9332056e9516e"
+    }
+  ],
+  "limitations": [
+    "Only three pairs per case; no statistical confidence interval or zero-overhead claim.",
+    "Ranges overlap in every case. The C3 +0.9074 percent median increase is retained, not dismissed as proven noise.",
+    "Thirty-second S3 samples are below one host CPU second and use a timer reporting hundredths; the separate 300-second workload does not replace them.",
+    "Fixed main-then-candidate order, no hidden warmup, no CPU affinity pinning, and no frequency/thermal control. Quiet task activity does not isolate host scheduling or neighboring workloads.",
+    "Pocket Tank times decrease across rounds in both arms; all first samples remain included. No isolated improvement is attributed to a particular adaptation.",
+    "Native release CPU results on these fixtures are not browser/WASM speed, hardware timing, or exhaustive performance coverage of newly supported products.",
+    "Historical candidate 84e13293 and its incomplete +18.64 percent short S3 result are different artifacts/windows; the final data do not prove the earlier increase was noise."
+  ],
+  "historicalEvidence": {
+    "path": "../seeed-performance-20261122/README.md",
+    "checkpoint": "../seeed-performance-20261122/checkpoint-84e13293.json",
+    "retainedUnchanged": true
+  },
+  "redactions": [
+    "Raw console/stderr bodies and local executable/cache paths are omitted.",
+    "Full measured numbers, source-IRQ report values, input/output hashes, normalized arguments and original raw-receipt/log hashes are preserved.",
+    "No process inventory, login name, hostname, device identifier or session identifier is included."
+  ],
+  "samplesCsv": {
+    "path": "samples.csv",
+    "rows": 30,
+    "bytes": 7466,
+    "sha256": "1ae0b559fc8d7c57d2ca7dbd53b2824d59c522ca6177f6e8eb3253ce6c7b91fd"
+  },
+  "validation": {
+    "completeTimedRuns": 30,
+    "exactExecutionMatches": 30,
+    "sourceIrqReportMatches": 30,
+    "rawTimeAndStdoutHashesRechecked": true,
+    "bothBinaryAndAllInputHashesRecheckedAfterFinalRun": true,
+    "releaseProfileDefinitionsIdentical": true,
+    "earlierIncompleteCheckpointOverwritten": false,
+    "additionalRunsAfterCompletion": 0
+  }
+}

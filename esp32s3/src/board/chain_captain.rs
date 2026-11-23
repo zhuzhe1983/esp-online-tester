@@ -228,7 +228,7 @@ mod tests {
     fn power(ds:&mut Devices,pwr_cfg:u8) {write(ds,0x6e,&[6,pwr_cfg]);}
     /// PWMn_DUTY_L/H (0x1B..0x22): enable bit7, inverted-output bit6, 12-bit duty.
     fn pwm(ds:&mut Devices,ch:usize,duty:u16,inverted:bool) {let lo=0x1b+(ch as u8)*2;write(ds,0x4f,&[lo,(duty&0xff) as u8,0x80|(u8::from(inverted)<<6)|((duty>>8) as u8&0xf)]);}
-    fn spi()->SpiPins {SpiPins{sclk:1<<TFT_SCK,mosi:1<<TFT_MOSI,miso:None,cs:1<<TFT_CS}}
+    fn spi()->SpiPins {SpiPins{sclk:1<<TFT_SCK,mosi:1<<TFT_MOSI,miso:None,cs:1<<TFT_CS,keep_cs:false}}
     /// D/C46 low for the command byte then high for parameters, exactly as GPSPI2 drives it.
     fn cmd(b:&mut ChainCaptain,c:u8,params:&[u8]) {b.gpio_changes(&[(TFT_DC,false)]);b.spi_transfer_pins(2,spi(),&[c],0);if !params.is_empty() {b.gpio_changes(&[(TFT_DC,true)]);b.spi_transfer_pins(2,spi(),params,0);}}
     /// LV_COLOR_FORMAT_RGB565_SWAPPED: the high byte leaves first, so pixels are big-endian.

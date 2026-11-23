@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:27Z",
   "hardwareRevision": "T-2Can V1.0 (2025-07-07), MCP2515 version; excludes T-2Can-FD",
   "identity": {
     "manufacturer": "LILYGO",
@@ -102,6 +102,19 @@
         "2can-factory"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-2can-official-factory",
+        "version": "V1.0 · 2026-07-17"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家固件表列出 T-2Can V1.0 的 original_test 出厂测试目录。此镜像对应 MCP2515 版本，CAN FD 主板使用另一份。"
     }
   ],
   "revisions": [],
@@ -312,6 +325,17 @@
       "mediaType": "text/plain; charset=utf-8",
       "archiveName": "2can-factory.source",
       "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "[T-2Can_V1.0][original_test]_firmware_202607170959.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-2Can/4e9eddd5f39f27d43360de9fb8904734cce9f0cb/firmware/%5BT-2Can_V1.0%5D%5Boriginal_test%5D_firmware/%5BT-2Can_V1.0%5D%5Boriginal_test%5D_firmware_202607170959.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:27Z",
+      "sha256": "f1b46efff9620de7e858bbdc58f6dd34537acfe270a4772f46b397a3f32522a7",
+      "bytes": 837136,
+      "archiveName": "f1b46efff9620de7e858bbdc58f6dd34537acfe270a4772f46b397a3f32522a7.bin"
     }
   ],
   "assets": [
@@ -366,16 +390,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -392,24 +406,31 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-2can-official-factory",
     "sourceIds": [
-      "2can-readme"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "path": "firmware/[T-2Can_V1.0][original_test]_firmware/[T-2Can_V1.0][original_test]_firmware_202607170959.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-2Can/4e9eddd5f39f27d43360de9fb8904734cce9f0cb/firmware/[T-2Can_V1.0][original_test]_firmware/[T-2Can_V1.0][original_test]_firmware_202607170959.bin",
-        "status": "linked",
-        "gitBlobSha": "9a8bc60a4a4b176463616b6582879a4a19e036fd",
-        "bytesFromTree": 837136,
-        "binaryFetched": false,
-        "layoutVerified": false,
-        "sha256": null
-      }
-    ],
-    "simulationVerified": false,
-    "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "2can-readme"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/[T-2Can_V1.0][original_test]_firmware/[T-2Can_V1.0][original_test]_firmware_202607170959.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-2Can/4e9eddd5f39f27d43360de9fb8904734cce9f0cb/firmware/[T-2Can_V1.0][original_test]_firmware/[T-2Can_V1.0][original_test]_firmware_202607170959.bin",
+          "status": "linked",
+          "gitBlobSha": "9a8bc60a4a4b176463616b6582879a4a19e036fd",
+          "bytesFromTree": 837136,
+          "binaryFetched": false,
+          "layoutVerified": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    }
   },
   "modelReview": {
     "model": {

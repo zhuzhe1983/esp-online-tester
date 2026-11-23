@@ -65,24 +65,24 @@ Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已�
 | 23 | [M5Stack AtomS3R-M12](https://docs.m5stack.com/en/core/AtomS3R-M12) · `m5stack-c126-m12` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 24 | [M5Stack AtomS3R-M12 Volcengine Kit · D062-M12](https://docs.m5stack.com/en/core/AtomS3R-M12_Volcengine_Kit) · `m5stack-d062-m12` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 25 | [M5Stack AtomS3U · K125](https://docs.m5stack.com/en/core/AtomS3U) · `m5stack-k125` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
-| 26 | [M5Stack Basic](https://docs.m5stack.com/en/core/Basic) · `m5stack-k001` | esp32 / ILI9342C | 部分支持：原厂 v0.4，屏幕、A/B/C、FAT32 | [Basic 验收](m5-basic-runtime.md)，侧面电源和 IP5306 等仍待适配 |
-| 27 | [M5Stack Basic v2.7](https://docs.m5stack.com/en/core/Basic_v2.7) · `m5stack-k001-v27` | esp32 / ILI9342C | 部分支持：原厂 v0.4，屏幕、按键、FAT32 | [Basic 验收](m5-basic-runtime.md)，嵌入页读回卡内文件 |
+| 26 | [M5Stack Basic](https://docs.m5stack.com/en/core/Basic) · `m5stack-k001` | esp32 / ILI9342C | 部分支持，原厂 v0.4，屏幕、A/B/C、FAT32 | [Basic 验收](m5-basic-runtime.md)，侧面电源和 IP5306 等仍待适配 |
+| 27 | [M5Stack Basic v2.7](https://docs.m5stack.com/en/core/Basic_v2.7) · `m5stack-k001-v27` | esp32 / ILI9342C | 部分支持，原厂 v0.4，屏幕、按键、FAT32 | [Basic 验收](m5-basic-runtime.md)，嵌入页读回卡内文件 |
 | 28 | [M5Stack Capsule](https://docs.m5stack.com/en/core/Capsule) · `m5stack-k129` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 29 | [M5Stack Capsule v1.1 · K129-V11](https://docs.m5stack.com/en/core/Capsule_v1.1) · `m5stack-k129-v11` | esp32s3 / 无屏幕 | 待实现 | 按键 / LED / 供电 / 专用传感器与音频等 BOM 核对 |
 | 30 | [M5Stack Cardputer Mesh Kit](https://docs.m5stack.com/en/core/Cardputer_Mesh_Kit) · `m5stack-k152` | esp32s3 / ST7789V2 | 待实现 | ST7789V2 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 31 | [M5Stack Core2](https://docs.m5stack.com/en/core/Core2) · `m5stack-k010` | esp32 / ILI9342C / ILI9342E | 部分支持：原厂 V2.2，屏幕、触摸、FAT32 | [Core2 验收](core2-runtime.md)，适用原版 AXP192 |
-| 32 | [M5Stack Core2 For AWS](https://docs.m5stack.com/en/core/Core2_For_AWS) · `m5stack-k010-aws` | esp32 / ILI9342C / ILI9342E | 部分支持：原厂 v0.0.1 运行到滑动启动页 | [Core2 验收](core2-runtime.md)，安全芯片和云端流程未覆盖 |
-| 33 | [M5Stack Core2 for AWS v1.3 · K010-AWS-V13](https://docs.m5stack.com/en/core/Core2_For_AWS_v1.3) · `m5stack-k010-aws-v13` | esp32 / ILI9342C / ILI9342E | 部分支持：独立版次板型 | [Core2 验收](core2-runtime.md)，原厂 v1.3 在 ATECC608 初始化处重启 |
-| 34 | [M5Stack Core2 v1.1](https://docs.m5stack.com/en/core/Core2_v1.1) · `m5stack-k010-v11` | esp32 / ILI9342C / ILI9342E | 部分支持：独立 AXP2101 板型 | [Core2 验收](core2-runtime.md)，官方恢复镜像未点亮显示屏 |
-| 35 | [M5Stack Core2 v1.3](https://docs.m5stack.com/en/core/Core2_v1.3) · `m5stack-k010-v13` | esp32 / ILI9342C / ILI9342E | 部分支持：官方 EasyLoader 镜像运行到仪表盘 | [Core2 验收](core2-runtime.md)，触摸可跳过 IMU 自测失败 |
+| 31 | [M5Stack Core2](https://docs.m5stack.com/en/core/Core2) · `m5stack-k010` | esp32 / ILI9342C / ILI9342E | 部分支持，原厂 V2.2，屏幕、触摸、FAT32 | [Core2 验收](core2-runtime.md)，适用原版 AXP192 |
+| 32 | [M5Stack Core2 For AWS](https://docs.m5stack.com/en/core/Core2_For_AWS) · `m5stack-k010-aws` | esp32 / ILI9342C / ILI9342E | 部分支持，原厂 v0.0.1 运行到滑动启动页 | [Core2 验收](core2-runtime.md)，安全芯片和云端流程未覆盖 |
+| 33 | [M5Stack Core2 for AWS v1.3 · K010-AWS-V13](https://docs.m5stack.com/en/core/Core2_For_AWS_v1.3) · `m5stack-k010-aws-v13` | esp32 / ILI9342C / ILI9342E | 部分支持，独立版次板型 | [Core2 验收](core2-runtime.md)，原厂 v1.3 在 ATECC608 初始化处重启 |
+| 34 | [M5Stack Core2 v1.1](https://docs.m5stack.com/en/core/Core2_v1.1) · `m5stack-k010-v11` | esp32 / ILI9342C / ILI9342E | 部分支持，独立 AXP2101 板型 | [Core2 验收](core2-runtime.md)，官方恢复镜像未点亮显示屏 |
+| 35 | [M5Stack Core2 v1.3](https://docs.m5stack.com/en/core/Core2_v1.3) · `m5stack-k010-v13` | esp32 / ILI9342C / ILI9342E | 部分支持，官方 EasyLoader 镜像运行到仪表盘 | [Core2 验收](core2-runtime.md)，触摸可跳过 IMU 自测失败 |
 | 36 | [M5Stack CoreInk](https://docs.m5stack.com/en/core/CoreInk) · `m5stack-k048` | esp32 / GDEW0154M09 | 待实现 | GDEW0154M09 刷新通道、存储、触摸/按键、电源 |
-| 37 | [M5Stack CoreS3](https://docs.m5stack.com/en/core/CoreS3) · `m5stack-k128` | esp32s3 / ILI9342C / ILI9342E | 部分支持：原厂启动、触摸菜单、FAT32 | [CoreS3 验收](cores3-runtime.md)，从客体读取样例文件 |
-| 38 | [M5Stack CoreS3 Thread BR](https://docs.m5stack.com/en/core/CoreS3_Thread_BR) · `m5stack-k149` | esp32s3 / ILI9342C / ILI9342E | 部分支持：原厂启动并绘制 Espressif 标志 | [CoreS3 验收](cores3-runtime.md)，ESP32-H2 Thread RCP 未实现 |
-| 39 | [M5Stack CoreS3-Lite](https://docs.m5stack.com/en/core/CoreS3-Lite) · `m5stack-k128-lite` | esp32s3 / ILI9342C / ILI9342E | 部分支持：原厂启动、触摸菜单 | [CoreS3 验收](cores3-runtime.md)，外设范围按 Lite 单独记录 |
-| 40 | [M5Stack CoreS3-SE · K128-SE](https://docs.m5stack.com/en/core/CoreS3-SE) · `m5stack-k128-se` | esp32s3 / ILI9342C | 部分支持：原厂启动、触摸菜单和录制回放 | [CoreS3 验收](cores3-runtime.md)，该版无板载 BMI270 |
-| 41 | [M5Stack Faces Kit](https://docs.m5stack.com/en/core/Faces_Kit) · `m5stack-k005` | esp32 / ILI9342C | 部分支持：16 MiB Gray 主机的 2D 屏幕和 A/B/C | [FACES 验收](models/m5stack-k005.md)，官方 UIFlow2 可用，旧主机与 I²C 键盘不在此范围 |
-| 42 | [M5Stack FIRE v2.7](https://docs.m5stack.com/en/core/Fire_v2.7) · `m5stack-k007-v27` | esp32 / ILI9342C | 部分支持：UIFlow2，屏幕、按键、FAT32 | [FIRE 验收](models/m5stack-k007-v27.md)，原厂恢复镜像启动后重启 |
-| 43 | [M5Stack M5GO IoT Kit v2.7](https://docs.m5stack.com/en/core/M5GO_IoT_Kit_v2.7) · `m5stack-k006-v27` | esp32 / ILI9342C | 部分支持：UIFlow2，屏幕、A/B/C、FAT32 | [M5GO 验收](m5go-v27-runtime.md)，出厂程序在 MCPWM 启动段重启 |
+| 37 | [M5Stack CoreS3](https://docs.m5stack.com/en/core/CoreS3) · `m5stack-k128` | esp32s3 / ILI9342C / ILI9342E | 部分支持，原厂启动、触摸菜单、FAT32 | [CoreS3 验收](cores3-runtime.md)，从客体读取样例文件 |
+| 38 | [M5Stack CoreS3 Thread BR](https://docs.m5stack.com/en/core/CoreS3_Thread_BR) · `m5stack-k149` | esp32s3 / ILI9342C / ILI9342E | 部分支持，原厂启动并绘制 Espressif 标志 | [CoreS3 验收](cores3-runtime.md)，ESP32-H2 Thread RCP 未实现 |
+| 39 | [M5Stack CoreS3-Lite](https://docs.m5stack.com/en/core/CoreS3-Lite) · `m5stack-k128-lite` | esp32s3 / ILI9342C / ILI9342E | 部分支持，原厂启动、触摸菜单 | [CoreS3 验收](cores3-runtime.md)，外设范围按 Lite 单独记录 |
+| 40 | [M5Stack CoreS3-SE · K128-SE](https://docs.m5stack.com/en/core/CoreS3-SE) · `m5stack-k128-se` | esp32s3 / ILI9342C | 部分支持，原厂启动、触摸菜单和录制回放 | [CoreS3 验收](cores3-runtime.md)，该版无板载 BMI270 |
+| 41 | [M5Stack Faces Kit](https://docs.m5stack.com/en/core/Faces_Kit) · `m5stack-k005` | esp32 / ILI9342C | 部分支持，16 MiB Gray 主机的 2D 屏幕和 A/B/C | [FACES 验收](models/m5stack-k005.md)，官方 UIFlow2 可用，旧主机与 I²C 键盘不在此范围 |
+| 42 | [M5Stack FIRE v2.7](https://docs.m5stack.com/en/core/Fire_v2.7) · `m5stack-k007-v27` | esp32 / ILI9342C | 部分支持，UIFlow2，屏幕、按键、FAT32 | [FIRE 验收](models/m5stack-k007-v27.md)，原厂恢复镜像启动后重启 |
+| 43 | [M5Stack M5GO IoT Kit v2.7](https://docs.m5stack.com/en/core/M5GO_IoT_Kit_v2.7) · `m5stack-k006-v27` | esp32 / ILI9342C | 部分支持，UIFlow2，屏幕、A/B/C、FAT32 | [M5GO 验收](m5go-v27-runtime.md)，出厂程序在 MCPWM 启动段重启 |
 | 44 | [M5Stack Paper v1.1](https://docs.m5stack.com/en/core/Paper_v1.1) · `m5stack-k049-b` | esp32 / IT8951E | 待实现 | IT8951E 刷新通道、存储、触摸/按键、电源 |
 | 45 | [M5Stack PaperColor · C151](https://docs.m5stack.com/en/core/PaperColor) · `m5stack-c151` | esp32s3 / ED2208-DOA / EL040EF1 | 待实现 | ED2208-DOA / EL040EF1 刷新通道、存储、触摸/按键、电源 |
 | 46 | [M5Stack PaperDIY Complete Kit · K159-B](https://docs.m5stack.com/en/core/PaperDIY_Complete_Kit) · `m5stack-k159-b` | esp32s3 / ET047TC1 | partial：官方 v1.0、并行黑白纸屏、NVS 与 A/B | 16 灰阶、SPI TF、FPC、电源睡眠与无线；本机无触摸 |
@@ -112,7 +112,7 @@ Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已�
 | 70 | [M5Stack StickS3 · K150](https://docs.m5stack.com/en/core/StickS3) · `m5stack-k150` | esp32s3 / ST7789P3 | 待实现 | ST7789P3 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 71 | [M5Stack StickT2](https://docs.m5stack.com/en/core/StickT2) · `m5stack-k016-t2` | esp32 / ST7789 | 待实现 | ST7789 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 72 | [M5Stack Tab5 · C145](https://docs.m5stack.com/en/core/Tab5) · `m5stack-c145` | esp32p4 / ILI9881C / ST7123 / ST7121（按批次核对） | 待实现 | ILI9881C / ST7123 / ST7121（按批次核对） 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 73 | [M5Stack Tough](https://docs.m5stack.com/en/core/Tough) · `m5stack-k034` | esp32 / ILI9342C | 部分支持：Tough Tools v1.0.2，屏幕、触摸、RTC 页 | [Tough 验收](tough-runtime.md)，TF 通过本地设置准备，访客传输尚未实现 |
+| 73 | [M5Stack Tough](https://docs.m5stack.com/en/core/Tough) · `m5stack-k034` | esp32 / ILI9342C | 部分支持，Tough Tools v1.0.2，屏幕、触摸、RTC 页 | [Tough 验收](tough-runtime.md)，TF 通过本地设置准备，访客传输尚未实现 |
 | 74 | [M5Stack VAMeter](https://docs.m5stack.com/en/core/VAMeter) · `m5stack-k136` | esp32s3 / ST7789 | 待实现 | ST7789 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 75 | [M5Stack Xiaozhi Card Kit · K146](https://docs.m5stack.com/en/core/Xiaozhi_Card_Kit) · `m5stack-k146` | esp32s3 / GDEY027T91 | 待实现 | GDEY027T91 刷新通道、存储、触摸/按键、电源 |
 | 76 | [M5Stack NanoH2](https://docs.m5stack.com/en/core/NanoH2) · `m5stack-c149` | esp32h2 / 无屏幕 | 待实现 | 先实现对应芯片平台，再核对产品外设 |

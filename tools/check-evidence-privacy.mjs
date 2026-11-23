@@ -4,7 +4,9 @@ import {execFileSync} from 'node:child_process';
 import {readFileSync} from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 
-const files = execFileSync('git', ['ls-files', '-z', 'docs/evidence'], {encoding: 'utf8'}).split('\0').filter(Boolean);
+const roots=process.argv.slice(2);
+const files = execFileSync('git', ['ls-files', '-z', '--', ...(roots.length?roots:['docs/evidence'])], {encoding: 'utf8'}).split('\0').filter(Boolean);
+if(!files.length)throw new Error('No tracked evidence matched the requested paths.');
 const rules = [
   ['personal home-directory label', /\/(?:Users|home)\/(?!alice(?:[/\s"'`\\<>]|$))[^/\s"'`\\<>]+/],
   ['email or personal SSH target', /\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b/i],

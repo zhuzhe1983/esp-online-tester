@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:40Z",
   "hardwareRevision": "T-RSS3 S3 branch, 8MB/no-PSRAM official build target; schematic module marking N4 conflicts",
   "identity": {
     "manufacturer": "LILYGO",
@@ -165,6 +165,19 @@
         "official-store-shopify-1"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-rs-s3-official-factory",
+        "version": "a931260b4f88"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家为 T-RSS3 的 ESP32-S3 分支发布的出厂程序。"
     }
   ],
   "revisions": [],
@@ -417,6 +430,17 @@
       "gitObjectType": "not-independently-checked",
       "notes": "SHA-256 covers the archived GitHub connector UTF-8 tree snapshot; connector normalization does not establish the Git object type of its sha field. Blob SHA-1s were independently matched when source bodies were downloaded. Tree size/hash metadata for firmware is discovery evidence, not a fetched binary hash.",
       "sourceCachePath": "target/lilygo-s3-io-sources/T-RSC3-tree.raw"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "T_RSS3_Factory.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:40Z",
+      "sha256": "3303e204ed036b5cef8c2d864510a5bafbb556d7309573a9fca8b34e0551a437",
+      "bytes": 346336,
+      "archiveName": "3303e204ed036b5cef8c2d864510a5bafbb556d7309573a9fca8b34e0551a437.bin"
     }
   ],
   "assets": [
@@ -471,16 +495,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -497,32 +511,39 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-factory-candidate-linked",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-rs-s3-official-factory",
     "sourceIds": [
-      "T-RSC3-tree"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/T-RSC3/blob/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
-        "path": "frimware/T_RSS3_Factory.bin",
-        "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
-        "gitBlobSha": "5bc4f40ecef71da09def5f828f9fe6bf896e727a",
-        "bytes": 346336,
-        "status": "linked",
-        "sourceId": "T-RSC3-tree",
-        "role": "factory-candidate",
-        "identityEvidence": "Exact S3 product factory filename in official repository; binary revision/layout not separately documented.",
-        "binaryFetched": false,
-        "simulationVerified": false
+    "previousInvestigation": {
+      "status": "official-factory-candidate-linked",
+      "sourceIds": [
+        "T-RSC3-tree"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-RSC3/blob/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-RSC3/a931260b4f8804e528604bde43d6d7a7657617fa/frimware/T_RSS3_Factory.bin",
+          "path": "frimware/T_RSS3_Factory.bin",
+          "pinnedGitRevision": "a931260b4f8804e528604bde43d6d7a7657617fa",
+          "gitBlobSha": "5bc4f40ecef71da09def5f828f9fe6bf896e727a",
+          "bytes": 346336,
+          "status": "linked",
+          "sourceId": "T-RSC3-tree",
+          "role": "factory-candidate",
+          "identityEvidence": "Exact S3 product factory filename in official repository; binary revision/layout not separately documented.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Official factory-named S3 file is present; C3 binary is excluded. Filename establishes a candidate, not verified memory revision/layout or successful boot.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
       }
-    ],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "Official factory-named S3 file is present; C3 binary is excluded. Filename establishes a candidate, not verified memory revision/layout or successful boot.",
-    "watchlist": {
-      "uiFlow": "No exact official UIFlow image mapping was found in these manufacturer pages/repositories.",
-      "xiaozhi": "No exact official Xiaozhi image mapping was found in these manufacturer pages/repositories."
     }
   },
   "modelReview": {

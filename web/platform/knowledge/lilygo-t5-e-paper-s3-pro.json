@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:35:31Z",
   "hardwareRevision": "T5S3-4.7-e-paper-PRO H752-01; ED047TC1 raw panel and exact epd_board_v7 driver",
   "identity": {
     "manufacturer": "LILYGO",
@@ -183,6 +183,19 @@
         "official-wiki-t5-e-paper-s3-pro"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t5-e-paper-s3-pro-official-factory",
+        "version": "V1.0 · 2026-05-06"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家在 H752-01 说明书的出厂固件表列出这一版 T5 E-Paper S3 Pro 程序。"
     }
   ],
   "revisions": [],
@@ -444,6 +457,17 @@
       "mediaType": "application/pdf",
       "archiveName": "s3add-t5pro-raw-panel.pdf",
       "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "T5_E_PAPER_S3_PRO_V1.0_20260506.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T5S3-4.7-e-paper-PRO/87436b5c9d0d4fc09f44ef43a4fb5d41a757494a/firmware/T5_E_PAPER_S3_PRO_V1.0_20260506.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:35:31Z",
+      "sha256": "9a624865e68cc18cc0b859d18b8f6fdec159f26dd9e3cdc643e85541134731e3",
+      "bytes": 3880688,
+      "archiveName": "9a624865e68cc18cc0b859d18b8f6fdec159f26dd9e3cdc643e85541134731e3.bin"
     }
   ],
   "assets": [
@@ -498,16 +522,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -524,21 +538,28 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t5-e-paper-s3-pro-official-factory",
     "sourceIds": [
-      "s3add-t5pro-readme",
-      "s3add-t5pro-pinmap",
-      "s3add-t5pro-board",
-      "s3add-t5pro-lcd",
-      "s3add-t5pro-render",
-      "s3add-t5pro-tps",
-      "s3add-t5pro-raw-panel",
-      "official-store-shopify-1",
-      "official-wiki-t5-e-paper-s3-pro"
+      "official-factory-bin"
     ],
-    "candidates": [],
-    "simulationVerified": false,
-    "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "s3add-t5pro-readme",
+        "s3add-t5pro-pinmap",
+        "s3add-t5pro-board",
+        "s3add-t5pro-lcd",
+        "s3add-t5pro-render",
+        "s3add-t5pro-tps",
+        "s3add-t5pro-raw-panel",
+        "official-store-shopify-1",
+        "official-wiki-t5-e-paper-s3-pro"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    }
   },
   "modelReview": {
     "model": {

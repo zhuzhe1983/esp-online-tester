@@ -334,7 +334,7 @@ impl Core2 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn pins()->SpiPins {SpiPins{sclk:1<<18,mosi:1<<23,miso:Some(38),cs:1<<5}}
+    fn pins()->SpiPins {SpiPins{sclk:1<<18,mosi:1<<23,miso:Some(38),cs:1<<5,keep_cs:false}}
     fn write(d:&mut dyn I2cDevice,reg:u8,values:&[u8]) {
         assert!(d.start(false));assert!(d.write(reg));for &value in values {assert!(d.write(value));}d.stop();
     }

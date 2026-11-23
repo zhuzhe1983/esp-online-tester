@@ -1,0 +1,112 @@
+diff --git a/esp32s3/src/bus/dma.rs b/esp32s3/src/bus/dma.rs
+index 3c65791..5e5ab9d 100644
+--- a/esp32s3/src/bus/dma.rs
++++ b/esp32s3/src/bus/dma.rs
+@@ -712,2 +712,3 @@ impl SocBus {
+-    /// retains the existing 34-byte lookahead. Complete frames keep their existing publication
+-    /// and interrupt timing. A starved scan still has a VSYNC edge, but no fabricated pixels.
++    /// retains the existing 34-byte lookahead. Each service ends at a frame boundary so a
++    /// VSYNC ISR can restart DMA without already-consumed next-frame bytes. Unspent clock
++    /// credit remains for the next service, equally with interrupts enabled or disabled.
+@@ -722,3 +723,8 @@ impl SocBus {
+-        self.periph.lcd_cam.lcd_acc = self.periph.lcd_cam.lcd_acc.saturating_add(cycles);
+-        let due = (self.periph.lcd_cam.lcd_acc as u128 * frame_bytes as u128 / frame_cycles as u128) as usize;
+-        if due < 512 {
++        // Even u64::MAX elapsed cycles fit this wide product. Repeated out-of-domain
++        // host steps saturate credit rather than wrap; service/allocation stays bounded.
++        self.periph.lcd_cam.lcd_acc = self.periph.lcd_cam.lcd_acc.saturating_add(u128::from(cycles) * frame_bytes as u128);
++        let remaining = frame_bytes.saturating_sub(self.periph.lcd_cam.lcd_line.len());
++        // LCD_2BYTE_EN transfers a whole RGB565 pixel, never half a pixel clock.
++        // Bound in u128 before narrowing, and prefetch only beyond this frame's end.
++        let due = ((self.periph.lcd_cam.lcd_acc / u128::from(frame_cycles)).min(remaining as u128) as usize / bpp as usize) * bpp as usize;
++        if due < 512.min(remaining) {
+@@ -728 +734 @@ impl SocBus {
+-        self.periph.lcd_cam.lcd_acc = 0;
++        self.periph.lcd_cam.lcd_acc -= due as u128 * u128::from(frame_cycles);
+@@ -767 +773 @@ impl SocBus {
+-        while self.periph.lcd_cam.lcd_line.len() >= frame_bytes {
++        if self.periph.lcd_cam.lcd_line.len() >= frame_bytes {
+@@ -770 +775,0 @@ impl SocBus {
+-            if frame.len() > frame_bytes { self.periph.lcd_cam.lcd_line.extend_from_slice(&frame[frame_bytes..]); }
+@@ -773 +778,3 @@ impl SocBus {
+-            self.periph.lcd_cam.lcd_sync_acc = 0;
++            // A late service may retain time beyond VSYNC. Preserve that phase instead
++            // of charging the same elapsed cycles again when a later scan is starved.
++            self.periph.lcd_cam.lcd_sync_acc = (self.periph.lcd_cam.lcd_acc / frame_bytes as u128 % u128::from(frame_cycles)) as u64;
+diff --git a/esp32s3/src/bus/dma_tests.rs b/esp32s3/src/bus/dma_tests.rs
+index 9f138cd..dd6d0c6 100644
+--- a/esp32s3/src/bus/dma_tests.rs
++++ b/esp32s3/src/bus/dma_tests.rs
+@@ -823,0 +824,63 @@ fn rgb_sync_remainder_handles_large_elapsed_cycles_without_overflow() {
++
++#[test]
++fn rgb565_513_byte_batch_cannot_consume_past_the_vsync_boundary() {
++    let (mut bus, frames, bytes) = rgb_dma_capture(1024, DESC);
++    let period = rgb_timing(&mut bus, 32, 16);
++    let user = bus.periph.lcd_cam.read(0x14); bus.periph.lcd_cam.write(0x14, user | (1 << 23));
++    bus.dma_lcd_step(period / 2 + period / 1024); // Credit for 513 bytes.
++    bus.dma_lcd_step(period / 2); // Crosses the frame by one byte in the old engine.
++    assert_eq!(frames.lock().unwrap().as_slice(), std::slice::from_ref(&bytes));
++    assert!(bus.periph.lcd_cam.lcd_line.is_empty(), "VSYNC must not consume a byte from the next frame");
++    assert_eq!(bus.periph.lcd_cam.lcd_fifo.iter().copied().collect::<Vec<_>>(), bytes[..34]);
++}
++
++#[test]
++fn rgb565_irregular_ticks_preserve_byte_phase_with_and_without_isr_restart() {
++    for restart in [false, true] {
++        let (mut bus, frames, bytes) = rgb_dma_capture(1024, DESC);
++        let period = rgb_timing(&mut bus, 32, 16);
++        let user = bus.periph.lcd_cam.read(0x14); bus.periph.lcd_cam.write(0x14, user | (1 << 23));
++        bus.periph.lcd_cam.write(0x64, u32::from(restart));
++        const RESTART: u32 = DRAM_LOW + 0x80;
++        bus.write32(RESTART, (1 << 31) | (990 << 12) | 990).unwrap();
++        bus.write32(RESTART + 4, INPUT + 34).unwrap(); bus.write32(RESTART + 8, DESC).unwrap();
++        let mut elapsed = 0u64; let mut seen = 0;
++        for tick in 0..1800 {
++            let cycles = [31, 253, 64, 127, 251][tick % 5]; elapsed += cycles;
++            bus.dma_lcd_step(cycles);
++            let count = frames.lock().unwrap().len();
++            if count != seen {
++                assert_eq!(count, seen + 1);
++                assert_eq!(frames.lock().unwrap()[seen], bytes, "frame {seen}, restart={restart}");
++                assert!(bus.periph.lcd_cam.lcd_line.is_empty());
++                assert_eq!(bus.periph.lcd_cam.lcd_fifo.iter().copied().collect::<Vec<_>>(), bytes[..34]);
++                seen = count;
++                if restart {
++                    // ISR execution costs time; there is no special wait-for-ACK path.
++                    bus.dma_lcd_step(20); elapsed += 20; bus.periph.lcd_cam.write(0x70, 1);
++                    bus.periph.gdma.write(0x60, 1); bus.dma_lcd_step(32); elapsed += 32;
++                    bus.periph.gdma.write(0x60, 0); bus.dma_lcd_step(16); elapsed += 16;
++                    bus.periph.gdma.write(0x80, (RESTART & 0xfffff) | (1 << 21));
++                }
++            }
++        }
++        assert!(seen > 20); assert_eq!(seen as u64, elapsed / period, "fractional service credit must not lose guest time");
++    }
++}
++
++#[test]
++fn rgb565_large_elapsed_credit_is_exact_and_services_at_most_one_frame() {
++    let (mut bus, frames, bytes) = rgb_dma_capture(512, DESC);
++    let period = rgb_timing(&mut bus, 16, 16);
++    let user = bus.periph.lcd_cam.read(0x14); bus.periph.lcd_cam.write(0x14, user | (1 << 23));
++    bus.dma_lcd_step(u64::MAX);
++    assert_eq!(frames.lock().unwrap().as_slice(), std::slice::from_ref(&bytes));
++    assert!(bus.periph.lcd_cam.lcd_line.is_empty()); assert_eq!(bus.periph.lcd_cam.lcd_fifo.len(), 34);
++    let credit = u128::from(u64::MAX) * 512 - u128::from(period) * 512;
++    assert_eq!(bus.periph.lcd_cam.lcd_acc, credit);
++    assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, u64::MAX % period);
++    bus.dma_lcd_step(0);
++    assert_eq!(frames.lock().unwrap().as_slice(), [bytes.clone(), bytes]);
++    assert_eq!(bus.periph.lcd_cam.lcd_acc, credit - u128::from(period) * 512);
++    assert_eq!(bus.periph.lcd_cam.lcd_sync_acc, u64::MAX % period);
++}
+diff --git a/esp32s3/src/periph.rs b/esp32s3/src/periph.rs
+index a3cf1fb..1aff93d 100644
+--- a/esp32s3/src/periph.rs
++++ b/esp32s3/src/periph.rs
+@@ -151 +151,3 @@ pub struct LcdCam { pub ram: RegRam, cam_ctrl: u32, pub cam_ctrl1: u32, pub int_
+-                    pub lcd_clock: u32, pub lcd_user: u32, pub lcd_ctrl: u32, pub lcd_ctrl1: u32, pub lcd_acc: u64, pub lcd_frames: u64, pub lcd_line: Vec<u8>, pub lcd_fifo: std::collections::VecDeque<u8>, pub lcd_log: bool,
++                    pub lcd_clock: u32, pub lcd_user: u32, pub lcd_ctrl: u32, pub lcd_ctrl1: u32,
++                    // Byte-cycle credit: add elapsed CPU cycles * frame bytes; spend bytes * frame cycles.
++                    pub lcd_acc: u128, pub lcd_frames: u64, pub lcd_line: Vec<u8>, pub lcd_fifo: std::collections::VecDeque<u8>, pub lcd_log: bool,

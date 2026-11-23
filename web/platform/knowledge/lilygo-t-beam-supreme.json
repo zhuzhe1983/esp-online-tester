@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:36Z",
   "hardwareRevision": "T-Beam Supreme V3.0 QMC6310U / SH1106 0x3c; SX1262 hardware",
   "identity": {
     "manufacturer": "LILYGO",
@@ -135,6 +135,19 @@
         "lora-axp-driver"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-beam-supreme-official-factory",
+        "version": "2026-07-15"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "T-Beam S3 Supreme V3.x 的 SX1262 选件。"
     }
   ],
   "revisions": [],
@@ -386,6 +399,17 @@
       "mediaType": "text/plain; charset=utf-8",
       "archiveName": "lora-axp-driver.source",
       "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:36Z",
+      "sha256": "7971c9293f4e3c5dea0b3920b1381be88a3f3ac2ee718a85dc69e02257ea6431",
+      "bytes": 987696,
+      "archiveName": "7971c9293f4e3c5dea0b3920b1381be88a3f3ac2ee718a85dc69e02257ea6431.bin"
     }
   ],
   "assets": [
@@ -440,16 +464,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -466,24 +480,31 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-beam-supreme-official-factory",
     "sourceIds": [
-      "lora-factory-readme"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "path": "firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
-        "status": "linked",
-        "gitBlobSha": "6e313ad14d1a4a05d8ec18cfe80a6399e5e06859",
-        "bytesFromTree": 987696,
-        "binaryFetched": false,
-        "layoutVerified": false,
-        "sha256": null
-      }
-    ],
-    "simulationVerified": false,
-    "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "lora-factory-readme"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam-s3-supreme-v3.x-all-band-sx1262-factory-20260715_0x0.bin",
+          "status": "linked",
+          "gitBlobSha": "6e313ad14d1a4a05d8ec18cfe80a6399e5e06859",
+          "bytesFromTree": 987696,
+          "binaryFetched": false,
+          "layoutVerified": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    }
   },
   "modelReview": {
     "model": {

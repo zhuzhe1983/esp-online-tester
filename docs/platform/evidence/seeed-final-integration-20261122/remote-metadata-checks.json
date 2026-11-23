@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "checkedAt": "2026-11-22T11:51:00.151610+00:00",
+  "scope": "Targeted schema, watchlist, history, synchronization, policy and Seeed contracts after the upstream timestamp-only merge. No repeated firmware or emulator run.",
+  "upstreamHead": "43de45a1244fd1a0a023beba778adaee169f86bc",
+  "checks": [
+    {
+      "name": "catalog-schema",
+      "command": [
+        "python3",
+        "tools/validate-platform-catalog.py"
+      ],
+      "exitCode": 0,
+      "originalLogSha256": "90487fa4d68fff549a013033bb6b4d8e99b65631fefb228e70faf0819b0432da",
+      "retainedLogSha256": "90487fa4d68fff549a013033bb6b4d8e99b65631fefb228e70faf0819b0432da",
+      "archive": "metadata-catalog-schema.log.gz",
+      "archiveSha256": "892001495ad54bc5a6dd5b049f2ac4c6369b8c1b6422517dd9966621268d3359"
+    },
+    {
+      "name": "metadata-contracts",
+      "command": [
+        "node",
+        "--test",
+        "tools/platform-watchlist-test.mjs",
+        "tools/platform-firmware-sync-test.mjs",
+        "tools/platform-firmware-history-test.mjs",
+        "tools/platform-seeed-catalog-test.mjs",
+        "tools/platform-firmware-policy-test.mjs"
+      ],
+      "exitCode": 0,
+      "originalLogSha256": "2e6e3c9d99df13ff2196d5b9bf432063816d8e6f1d955a480cd8f0f60785e558",
+      "retainedLogSha256": "2e6e3c9d99df13ff2196d5b9bf432063816d8e6f1d955a480cd8f0f60785e558",
+      "archive": "metadata-metadata-contracts.log.gz",
+      "archiveSha256": "e9b54e723dc772e8f17821b9d7f908a761c688159edc9af5518098d23decbe80"
+    }
+  ],
+  "allPassed": true
+}

@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:30Z",
   "hardwareRevision": "Official T-Dongle-C5 pin_config.h; PCB revision unspecified",
   "identity": {
     "manufacturer": "LILYGO",
@@ -120,6 +120,19 @@
         "t-dongle-c5-examples-factory-factory-ino"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-dongle-c5-official-factory",
+        "version": "V1.4"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "T-Dongle-C5 的厂商 Factory 自检。"
     }
   ],
   "revisions": [],
@@ -309,6 +322,17 @@
       "title": "official wiki t dongle c5",
       "kind": "official-product-document",
       "archiveName": "en__products__t-dongle-series__t-dongle-c5__index.md"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "T-Dongle-C5-Factory_V1.4_0616.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-C5/0fe7367959509af38b45bd1b81471018932df625/firmware/T-Dongle-C5-Factory_V1.4_0616.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:30Z",
+      "sha256": "b6b4a21b597d2d47042972ae83d36eb4328da196904cb8995f1238241f97eb9d",
+      "bytes": 1392960,
+      "archiveName": "b6b4a21b597d2d47042972ae83d36eb4328da196904cb8995f1238241f97eb9d.bin"
     }
   ],
   "assets": [
@@ -363,16 +387,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -389,30 +403,37 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-image-candidate-inspected",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-dongle-c5-official-factory",
     "sourceIds": [
-      "t-dongle-c5-readme-md",
-      "t-dongle-c5-include-pin_config-h",
-      "t-dongle-c5-lib-lcd_st7735-st7735-cpp",
-      "t-dongle-c5-lib-lcd_st7735-st7735-h",
-      "t-dongle-c5-examples-factory-factory-ino"
+      "official-factory-bin"
     ],
-    "artifact": {
-      "productId": "lilygo-t-dongle-c5",
-      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-C5/0fe7367959509af38b45bd1b81471018932df625/firmware/T-Dongle-C5-Factory_V1.4_0616.bin",
-      "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-C5/0fe7367959509af38b45bd1b81471018932df625/firmware/T-Dongle-C5-Factory_V1.4_0616.bin",
-      "fetchedAt": "2026-11-22T06:56:55Z",
-      "sha256": "b6b4a21b597d2d47042972ae83d36eb4328da196904cb8995f1238241f97eb9d",
-      "bytes": 1392960,
-      "flashMb": 16,
-      "firstBytes": "ffffffffffffffffffffffffffffffffffffffffffffffff",
-      "atPartitionTable": "aa50010200900000005000006e767300",
-      "scope": "Official repository firmware directory. Image reviewed in memory only. C5 ROM/IDF startup unsupported; not a runnable SRAM diagnostic."
-    },
-    "binaryFetched": true,
-    "binaryRetained": false,
-    "simulationVerified": false,
-    "notes": "已在内存读取官方仓库镜像并记录哈希；完整 C5 出厂镜像不属于 SRAM 调试加载范围，不宣称能够运行。"
+    "previousInvestigation": {
+      "status": "official-image-candidate-inspected",
+      "sourceIds": [
+        "t-dongle-c5-readme-md",
+        "t-dongle-c5-include-pin_config-h",
+        "t-dongle-c5-lib-lcd_st7735-st7735-cpp",
+        "t-dongle-c5-lib-lcd_st7735-st7735-h",
+        "t-dongle-c5-examples-factory-factory-ino"
+      ],
+      "artifact": {
+        "productId": "lilygo-t-dongle-c5",
+        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-C5/0fe7367959509af38b45bd1b81471018932df625/firmware/T-Dongle-C5-Factory_V1.4_0616.bin",
+        "resolvedUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-C5/0fe7367959509af38b45bd1b81471018932df625/firmware/T-Dongle-C5-Factory_V1.4_0616.bin",
+        "fetchedAt": "2026-11-22T06:56:55Z",
+        "sha256": "b6b4a21b597d2d47042972ae83d36eb4328da196904cb8995f1238241f97eb9d",
+        "bytes": 1392960,
+        "flashMb": 16,
+        "firstBytes": "ffffffffffffffffffffffffffffffffffffffffffffffff",
+        "atPartitionTable": "aa50010200900000005000006e767300",
+        "scope": "Official repository firmware directory. Image reviewed in memory only. C5 ROM/IDF startup unsupported; not a runnable SRAM diagnostic."
+      },
+      "binaryFetched": true,
+      "binaryRetained": false,
+      "simulationVerified": false,
+      "notes": "已在内存读取官方仓库镜像并记录哈希；完整 C5 出厂镜像不属于 SRAM 调试加载范围，不宣称能够运行。"
+    }
   },
   "runtimeSupport": {
     "board": "lilygo-t-dongle-c5",

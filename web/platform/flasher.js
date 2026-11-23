@@ -1,4 +1,5 @@
 import {firmwareBoardMatches} from './board-compatibility.js';
+import {validFirmwareZipEntry,extractFirmwareZipEntry,firmwareArchiveCacheKey,MAX_FIRMWARE_ZIP_BYTES} from './firmware-archive.js';
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 // Hardware writes are available only from a user's Web Serial chooser gesture.
 import { fetchBytes, resolveFirmwareUrl, sha256, validateMergedImage } from './runtime.js';
@@ -157,26 +158,30 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
   const read = async (entry, base, maxBytes = MAX_FILE) => {
     const value = typeof entry === 'string' ? { url: entry } : entry;
     check(value && typeof value.url === 'string', 'INVALID_MANIFEST', 'Firmware file requires a URL.');
+    check(!value.archive||validFirmwareZipEntry(value),'FLASH_LAYOUT','分段 ZIP 必须来自完整烧录清单，并固定压缩包和每个 BIN 的校验值。');
     const url = resolveFirmwareUrl(value.url, base);
     const watched = watchlist?.entries.find(entry => entry.assets.some(asset => asset.url === url || asset.upstreamUrl === url));
     const {asset: watchedAsset, firmware: catalogArtifact} = artifactTarget(url, product, catalog, watched);
     const pin = value.sha256 || watchedAsset?.sha256 || catalogArtifact?.source.sha256;
-    let cached = await firmwareCache.get(url, pin, maxBytes);
-    if (cached && await sha256(cached.data) !== pin.toLowerCase()) { await firmwareCache.remove(url, pin); cached = null; }
+    const cacheUrl=firmwareArchiveCacheKey(value,url);
+    if(value.archive)for(const expected of [watchedAsset?.sha256,catalogArtifact?.source.sha256].filter(Boolean))check(expected.toLowerCase()===value.archive.sha256.toLowerCase(),'HASH_MISMATCH','ZIP container differs from its catalog source.');
+    let cached = await firmwareCache.get(cacheUrl, pin, maxBytes);
+    if (cached && await sha256(cached.data) !== pin.toLowerCase()) { await firmwareCache.remove(cacheUrl, pin); cached = null; }
     if (signal?.aborted) throw cancelled();
-    const data = cached?.data || await fetchBytes(url, { fetchImpl, signal, maxBytes, sha256:pin });
+    let data = cached?.data || await fetchBytes(url, { fetchImpl, signal, maxBytes:value.archive?MAX_FIRMWARE_ZIP_BYTES:maxBytes, sha256:value.archive?.sha256||pin });
+    if(value.archive&&!cached)data=await extractFirmwareZipEntry(data,value,{maxBytes,signal});
     total += data.length; check(data.length > 0 && total <= MAX_TOTAL, 'FLASH_SIZE', 'Firmware bundle is empty or exceeds 256 MiB.');
     const actual = await sha256(data);
     // A reviewed catalog/watchlist URL remains pinned even when a caller omits
     // or substitutes its hash. Updating a remote release requires a new review.
-    for (const expected of [value.sha256, watchedAsset?.sha256, catalogArtifact?.source.sha256].filter(Boolean)) {
+    for (const expected of (value.archive?[value.sha256]:[value.sha256, watchedAsset?.sha256, catalogArtifact?.source.sha256]).filter(Boolean)) {
       check(/^[a-f0-9]{64}$/i.test(expected) && actual === expected.toLowerCase(), 'HASH_MISMATCH', 'Firmware SHA-256 does not match.', { url, actual, expected });
     }
-    if (!cached && pin && !signal?.aborted) await firmwareCache.putVerified(url, actual, data);
-    return { data, url, sha256: actual };
+    if (!cached && pin && !signal?.aborted) await firmwareCache.putVerified(cacheUrl, actual, data);
+    return { data, url, sha256: actual, ...(value.archive?{archive:clone(value.archive)}:{}) };
   };
   const files = [], receipt = [];
-  const add = (artifact, address, kind) => { files.push({ data: artifact.data, address }); receipt.push({ kind, address, bytes: artifact.data.length, url: artifact.url || null, sha256: artifact.sha256 }); };
+  const add = (artifact, address, kind) => { files.push({ data: artifact.data, address }); receipt.push({ kind, address, bytes: artifact.data.length, url: artifact.url || null, sha256: artifact.sha256, ...(artifact.archive?{archive:artifact.archive}:{}) }); };
   let manifestHash = null, partitionTableOffset = 0x8000, format = 'merged';
   if (source.manifestUrl) {
     const url = resolveFirmwareUrl(source.manifestUrl, baseUrl), artifact = await read({ url, sha256: source.sha256 }, baseUrl);
@@ -200,13 +205,20 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
       add(values.flash, 0, 'flash');
     } else {
       format = 'segments';
-      check(values.bootloader && values.ptable, 'FLASH_LAYOUT', 'Hardware flashing requires a bootloader and partition table.');
-      add(values.bootloader, normalizedChip(product.chip) === 'esp32' ? 0x1000 : 0, 'bootloader');
-      add(values.ptable, 0x8000, 'ptable');
-      if (values.app) {
-        const partition = appPartition(values.ptable.data, product.runtime.flashMb * MIB);
-        check(values.app.data.length <= partition.size, 'FLASH_LAYOUT', 'The app is larger than its declared partition.');
-        add(values.app, partition.offset, 'app');
+      if (values.bootloader || values.ptable || values.app) {
+        check(values.bootloader && values.ptable, 'FLASH_LAYOUT', 'Hardware flashing requires a bootloader and partition table.');
+        add(values.bootloader, normalizedChip(product.chip) === 'esp32' ? 0x1000 : 0, 'bootloader');
+        add(values.ptable, 0x8000, 'ptable');
+        if (values.app) {
+          const partition = appPartition(values.ptable.data, product.runtime.flashMb * MIB);
+          check(values.app.data.length <= partition.size, 'FLASH_LAYOUT', 'The app is larger than its declared partition.');
+          add(values.app, partition.offset, 'app');
+        }
+      } else {
+        // Manufacturer plans may express every segment by its exact address.
+        // The final validateFlashLayout still requires a valid bootloader,
+        // partition table and app at the chip/partition-derived offsets.
+        check(Object.keys(manifest.flash_at || {}).length, 'FLASH_LAYOUT', 'Hardware flashing requires a complete flash layout.');
       }
       for (const [offset, entry] of Object.entries(manifest.flash_at || {})) {
         check(/^0x[0-9a-f]+$/i.test(offset) && files.length < 32, 'FLASH_LAYOUT', 'Explicit flash offsets must be hexadecimal addresses; at most 32 images are accepted.');

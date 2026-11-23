@@ -75,7 +75,7 @@ mod tests {
     use super::*;
     #[test]
     fn tf_routes_detect_power_and_reinitialization() {
-        let mut b=PaperDiy::new();let pins=SpiPins{sclk:1<<39,mosi:1<<38,miso:Some(40),cs:1<<47};let cmd=[0x40,0,0,0,0,0x95];
+        let mut b=PaperDiy::new();let pins=SpiPins {sclk:1<<39,mosi:1<<38,miso:Some(40),cs:1<<47,keep_cs:false};let cmd=[0x40,0,0,0,0,0x95];
         assert_eq!(b.input_levels().last(),Some(&(48,true)));
         b.attach_spi_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0;1<<20])),Default::default()).unwrap();
         assert_eq!(b.input_levels().last(),Some(&(48,false)));assert!(b.take_edges().iter().any(|e|e.pin==48&&!e.level),"insertion reaches the already-attached GPIO input");assert!(b.sd_card_slot().is_none());

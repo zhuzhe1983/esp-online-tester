@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {updateFirmwareCatalog} from './sync-firmware-catalog.mjs';
-import {syncReleaseMetadata} from './sync-firmware-release-metadata.mjs';
+import {syncReleaseMetadata,compactReleaseHistory} from './sync-firmware-release-metadata.mjs';
 import {publicReleases,releaseMatchesChannel} from './firmware-release-source.mjs';
+import {validateWatchlist} from '../web/platform/watchlist.js';
 const H='a'.repeat(64),NEXT='b'.repeat(64),NOW='2026-10-27T02:00:00Z';
 const asset=(device,version,hash=NEXT)=>({name:`fw-${version}-${device}.bin`,browser_download_url:`https://example.com/${version}/${device}.bin`,size:100,digest:hash?`sha256:${hash}`:null});
 const release=(version,devices,day,{prerelease=false}={})=>({tag_name:version,html_url:`https://github.com/example/firmware/releases/tag/${version}`,published_at:`2026-10-${day}T00:00:00Z`,prerelease,assets:devices.map(device=>asset(device,version))});
@@ -58,6 +59,19 @@ test('M5Burner failure is cached and never receives a GitHub token',async()=>{
  const f=fixture(['one']);const entry=f.watchlist.entries[0];Object.assign(entry,{metadataProvider:'m5burner',firmwareId:'1234567890123456',metadataUrl:'https://m5burner-api.m5stack.com/api/firmware'});f.watchlist.entries.push({...entry,id:'second',catalogTargets:[]});let calls=0;
  const r=await syncReleaseMetadata(f.watchlist,{token:'test-token',now:NOW,fetchImpl:async(url,options)=>{calls++;assert.equal(options.headers.Authorization,undefined);return new Response(null,{status:403});}});assert.equal(calls,1);assert.equal(r.entries.length,2);assert.ok(r.entries.every(x=>x.error.status===403));
 });
+test('reference metadata filters keep exact board assets without creating an update target',async()=>{
+ const f=fixture(['one']),entry=f.watchlist.entries[0];entry.catalogTargets=[];entry.metadataAssetNamePattern='^fw-[0-9.]+-one\\.bin$';
+ const latest=release('2.0.0',['one','two'],'26'),saved={schemaVersion:'1',entries:[{id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:'2026-10-20T00:00:00Z',release:latest,releases:[latest],error:null}]};
+ const success=await syncReleaseMetadata(f.watchlist,{now:NOW,fetchImpl:async()=>Response.json([latest])});
+ assert.deepEqual(success.entries[0].release.assets,[latest.assets[0]]);assert.equal(success.entries[0].release.assetCountBeforeFilter,2);
+ assert.deepEqual(compactReleaseHistory(entry,success.entries[0].releases),success.entries[0].releases,'Compaction preserves original asset counts on repeated checks');
+ const failed=await syncReleaseMetadata(f.watchlist,{previous:saved,now:NOW,fetchImpl:async()=>new Response(null,{status:403})});
+ assert.equal(failed.entries[0].checkedAt,saved.entries[0].checkedAt,'A current HTTP failure does not renew the cached observation time');
+ assert.equal(failed.entries[0].error.status,403);assert.equal(failed.entries[0].error.attemptedAt,NOW);assert.deepEqual(failed.entries[0].release.assets,[latest.assets[0]]);
+ const updated=updateFirmwareCatalog({...f,snapshot:success});assert.deepEqual(updated.firmwares,f.firmwares);assert.equal(updated.report.summary.updated,0);assert.equal(updated.report.entries[0].reason,'no-explicit-device-targets');
+ entry.catalogTargets=[target('one')];assert.throws(()=>validateWatchlist(f.watchlist),/reference-only pattern/);
+ entry.catalogTargets=[];entry.metadataAssetNamePattern='one';assert.throws(()=>validateWatchlist(f.watchlist),/bounded/);
+});
 test('manufacturer history retains old versions and rejects unsafe files',()=>{
  const e={metadataProvider:'m5burner',firmwareId:'1234567890123456',releaseUrl:'https://example.com/source'};
  const versions=[{version:'1.0',published_at:'2026.10.01',published:true,file:'old.bin'},{version:'2.0',published_at:'2026-10-20',published:true,file:'new.bin',sha256:NEXT}];const releases=publicReleases(e,[{fid:e.firmwareId,author:'do not retain',versions}]);assert.equal(releases.length,2);assert.equal(releases[0].assets[0].digest,`sha256:${NEXT}`);assert.equal(releases[1].published_at,'2026-10-01');versions.push({version:'3.0',published_at:'2026-10-22',published:true,file:'../unsafe.bin'});assert.throws(()=>publicReleases(e,[{fid:e.firmwareId,versions}]));
@@ -71,5 +85,21 @@ test('a second same-day predeploy check does not produce a timestamp/report-only
   for(const[name,value]of Object.entries({'products.json':f.products,'firmwares.json':f.firmwares,'firmware-watchlist.json':f.watchlist,'firmware-release-snapshot.json':f.snapshot}))await writeFile(join(catalog,name),JSON.stringify(value,null,2)+'\n');
   const first=await runCatalogSync({base:pathToFileURL(directory+'/'),snapshotOnly:true,now:NOW});assert.equal(first.report.summary.updated,1);assert.ok(first.changed.length);
   const second=await runCatalogSync({base:pathToFileURL(directory+'/'),snapshotOnly:true,now:'2026-10-27T03:00:00Z'});assert.equal(second.report.summary.updated,0);assert.deepEqual(second.changed,[]);
+ }finally{await rm(directory,{recursive:true,force:true});}
+});
+
+test('metadata budget counts saved bytes and retains large reference asset inventories',async()=>{
+ const {mkdtemp,mkdir,writeFile,readFile,rm}=await import('node:fs/promises'),{tmpdir}=await import('node:os'),{join}=await import('node:path'),{pathToFileURL}=await import('node:url');
+ const {runCatalogSync}=await import('./sync-firmware-catalog.mjs');const directory=await mkdtemp(join(tmpdir(),'firmware-metadata-budget-'));
+ try{
+  const catalog=join(directory,'web/platform/catalog');await mkdir(catalog,{recursive:true});const f=fixture(['one']);f.watchlist.entries[0].catalogTargets=[];
+  const latest=release('2.0.0',['one'],'26');latest.assets=Array.from({length:4000},(_,i)=>({...latest.assets[0],name:`reference-${i}.bin`,browser_download_url:`https://cdn.example.com/fixed-release/reference-${i}.bin`}));
+  const snapshot={schemaVersion:'1',generatedAt:NOW,entries:[{id:'project',upstreamRepo:'example/firmware',checkedAt:NOW,release:latest,releases:[latest],error:null}]};
+  assert.ok(Buffer.byteLength(JSON.stringify(snapshot,null,2))>2*1024*1024);assert.ok(Buffer.byteLength(JSON.stringify(snapshot))<2*1024*1024);
+  for(const[name,value]of Object.entries({'products.json':f.products,'firmwares.json':f.firmwares,'firmware-watchlist.json':f.watchlist,'firmware-release-snapshot.json':snapshot}))await writeFile(join(catalog,name),JSON.stringify(value));
+  await runCatalogSync({base:pathToFileURL(directory+'/'),snapshotOnly:true,now:NOW});const bytes=await readFile(join(catalog,'firmware-release-snapshot.json'));
+  assert.ok(bytes.length<2*1024*1024);assert.deepEqual(JSON.parse(bytes).entries[0].release.assets,latest.assets);
+  latest.assets[0].name='x'.repeat(2*1024*1024);await writeFile(join(catalog,'firmware-release-snapshot.json'),JSON.stringify(snapshot));
+  await assert.rejects(runCatalogSync({base:pathToFileURL(directory+'/'),snapshotOnly:true,now:NOW}),/exceeds the browser metadata limit/);
  }finally{await rm(directory,{recursive:true,force:true});}
 });

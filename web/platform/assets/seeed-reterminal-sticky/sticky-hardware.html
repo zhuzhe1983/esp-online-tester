@@ -1,0 +1,329 @@
+<!DOCTYPE html><html lang="en" data-doc-theme="light"> <head><meta charset="utf-8"><script>
+      try {
+        if (localStorage.getItem('sticky-docs-theme') === 'dark') {
+          document.documentElement.dataset.docTheme = 'dark';
+        }
+      } catch (_) { /* Keep light mode when browser storage is unavailable. */ }
+    </script><style>
+      html[data-doc-theme="light"], html[data-doc-theme="light"] body { background-color: #fff; }
+      html[data-doc-theme="dark"], html[data-doc-theme="dark"] body { background-color: #1b1b1d; }
+      html[data-doc-theme="dark"] aside nav > a.text-secondary-700,
+      html[data-doc-theme="dark"] aside nav > a.text-secondary-700:hover { color: #fff; }
+    </style><link rel="icon" type="image/svg+xml" href="/sticky/favicon.svg"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Detailed introduction to the appearance, ports, and hardware specs of reTerminal Sticky."><meta name="generator" content="Astro v6.3.7"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><title>Hardware Overview — reTerminal Sticky Docs</title><script>(function(){const headingTargets = {"en":{"appearance--structure":"appearance--structure","structural-highlights":"structural-highlights","quick-specs":"quick-specs","core-hardware-modules":"core-hardware-modules","main-controller--storage":"main-controller--storage","display-module":"display-module","sensors--input":"sensors--input","connectivity--interface":"connectivity--interface","power-system":"power-system","hardware-diagram":"hardware-diagram","architecture-overview":"architecture-overview","resources":"resources","外观与结构":"appearance--structure","结构特点":"structural-highlights","简要规格":"quick-specs","核心硬件分组":"core-hardware-modules","主控与存储":"main-controller--storage","显示模块":"display-module","传感器与输入":"sensors--input","通信与接口":"connectivity--interface","电源系统":"power-system","硬件架构图":"hardware-diagram","架构说明":"architecture-overview","资源":"resources"},"zh":{"外观与结构":"外观与结构","结构特点":"结构特点","简要规格":"简要规格","核心硬件分组":"核心硬件分组","主控与存储":"主控与存储","显示模块":"显示模块","传感器与输入":"传感器与输入","通信与接口":"通信与接口","电源系统":"电源系统","硬件架构图":"硬件架构图","架构说明":"架构说明","资源":"资源","appearance--structure":"外观与结构","structural-highlights":"结构特点","quick-specs":"简要规格","core-hardware-modules":"核心硬件分组","main-controller--storage":"主控与存储","display-module":"显示模块","sensors--input":"传感器与输入","connectivity--interface":"通信与接口","power-system":"电源系统","hardware-diagram":"硬件架构图","architecture-overview":"架构说明","resources":"资源"}};
+
+      (function() {
+        var stored = localStorage.getItem('sticky-lang');
+        if (!stored) {
+          var bl = navigator.language || navigator.userLanguage || 'en';
+          stored = bl.startsWith('zh') ? 'zh' : 'en';
+          localStorage.setItem('sticky-lang', stored);
+        }
+        document.documentElement.lang = stored;
+        // If the URL language doesn't match preference, redirect
+        var path = window.location.pathname;
+        var urlLang = path.match(/\/docs\/(zh|en)\//);
+        if (urlLang && urlLang[1] !== stored) {
+          var hash = window.location.hash.slice(1);
+          if (hash) {
+            try { hash = decodeURIComponent(hash); } catch (_) {}
+            hash = headingTargets[stored]?.[hash] || hash;
+          }
+
+          var destination = new URL(
+            path.replace(/\/docs\/(zh|en)\//, '/docs/' + stored + '/'),
+            window.location.origin,
+          );
+          destination.search = window.location.search;
+          if (hash) destination.hash = hash;
+          window.location.replace(destination.href);
+        }
+      })();
+    })();</script><link rel="stylesheet" href="/sticky/_astro/Footer.DL0S2U4A.css">
+<link rel="stylesheet" href="/sticky/_astro/_..D0RwDgBi.css"></head> <body class="bg-white text-neutral-900 antialiased" data-doc-lang-switch data-zh-href="/sticky/docs/zh/device-guide/hardware-overview" data-en-href="/sticky/docs/en/device-guide/hardware-overview" data-doc-heading-targets="{&quot;en&quot;:{&quot;appearance--structure&quot;:&quot;appearance--structure&quot;,&quot;structural-highlights&quot;:&quot;structural-highlights&quot;,&quot;quick-specs&quot;:&quot;quick-specs&quot;,&quot;core-hardware-modules&quot;:&quot;core-hardware-modules&quot;,&quot;main-controller--storage&quot;:&quot;main-controller--storage&quot;,&quot;display-module&quot;:&quot;display-module&quot;,&quot;sensors--input&quot;:&quot;sensors--input&quot;,&quot;connectivity--interface&quot;:&quot;connectivity--interface&quot;,&quot;power-system&quot;:&quot;power-system&quot;,&quot;hardware-diagram&quot;:&quot;hardware-diagram&quot;,&quot;architecture-overview&quot;:&quot;architecture-overview&quot;,&quot;resources&quot;:&quot;resources&quot;,&quot;外观与结构&quot;:&quot;appearance--structure&quot;,&quot;结构特点&quot;:&quot;structural-highlights&quot;,&quot;简要规格&quot;:&quot;quick-specs&quot;,&quot;核心硬件分组&quot;:&quot;core-hardware-modules&quot;,&quot;主控与存储&quot;:&quot;main-controller--storage&quot;,&quot;显示模块&quot;:&quot;display-module&quot;,&quot;传感器与输入&quot;:&quot;sensors--input&quot;,&quot;通信与接口&quot;:&quot;connectivity--interface&quot;,&quot;电源系统&quot;:&quot;power-system&quot;,&quot;硬件架构图&quot;:&quot;hardware-diagram&quot;,&quot;架构说明&quot;:&quot;architecture-overview&quot;,&quot;资源&quot;:&quot;resources&quot;},&quot;zh&quot;:{&quot;外观与结构&quot;:&quot;外观与结构&quot;,&quot;结构特点&quot;:&quot;结构特点&quot;,&quot;简要规格&quot;:&quot;简要规格&quot;,&quot;核心硬件分组&quot;:&quot;核心硬件分组&quot;,&quot;主控与存储&quot;:&quot;主控与存储&quot;,&quot;显示模块&quot;:&quot;显示模块&quot;,&quot;传感器与输入&quot;:&quot;传感器与输入&quot;,&quot;通信与接口&quot;:&quot;通信与接口&quot;,&quot;电源系统&quot;:&quot;电源系统&quot;,&quot;硬件架构图&quot;:&quot;硬件架构图&quot;,&quot;架构说明&quot;:&quot;架构说明&quot;,&quot;资源&quot;:&quot;资源&quot;,&quot;appearance--structure&quot;:&quot;外观与结构&quot;,&quot;structural-highlights&quot;:&quot;结构特点&quot;,&quot;quick-specs&quot;:&quot;简要规格&quot;,&quot;core-hardware-modules&quot;:&quot;核心硬件分组&quot;,&quot;main-controller--storage&quot;:&quot;主控与存储&quot;,&quot;display-module&quot;:&quot;显示模块&quot;,&quot;sensors--input&quot;:&quot;传感器与输入&quot;,&quot;connectivity--interface&quot;:&quot;通信与接口&quot;,&quot;power-system&quot;:&quot;电源系统&quot;,&quot;hardware-diagram&quot;:&quot;硬件架构图&quot;,&quot;architecture-overview&quot;:&quot;架构说明&quot;,&quot;resources&quot;:&quot;资源&quot;}}"> <header class="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500" id="navbar" data-astro-cid-5blmo7yk> <div id="nav-inner" data-nav-mode="light" class="glass-nav transition-all duration-500" data-astro-cid-5blmo7yk> <nav class="max-w-[1500px] mx-auto px-6 sm:px-8 lg:px-12 flex items-center justify-between h-16 w-full" data-astro-cid-5blmo7yk> <a href="/sticky/" id="nav-brand" class="flex items-center transition-all duration-500" data-astro-cid-5blmo7yk> <img src="/sticky/logo.png" alt="reTerminal Sticky" class="h-9 w-auto block nav-logo-img transition-all duration-500" data-astro-cid-5blmo7yk> </a> <div id="nav-tabs" class="hidden md:flex items-center gap-6 lg:gap-8 transition-all duration-500" data-astro-cid-5blmo7yk> <a href="/sticky/" class="nav-tab-item py-2 text-sm font-medium transition-all duration-300 nav-tab" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>Home</span><span class="zh-text" data-astro-cid-5blmo7yk>首页</span> </a><a href="/sticky/docs" class="nav-tab-item py-2 text-sm font-medium transition-all duration-300 nav-tab" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>Support</span><span class="zh-text" data-astro-cid-5blmo7yk>产品支持</span> </a><a href="/sticky/app" class="nav-tab-item py-2 text-sm font-medium transition-all duration-300 nav-tab" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>App</span><span class="zh-text" data-astro-cid-5blmo7yk>应用下载</span> </a><a href="/sticky/playground/firmware/" class="nav-tab-item py-2 text-sm font-medium transition-all duration-300 nav-tab" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>Playground</span><span class="zh-text" data-astro-cid-5blmo7yk>玩法广场</span> </a> </div> <div class="hidden md:flex items-center gap-3" data-astro-cid-5blmo7yk> <a href="https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html?utm_source=landingpage&utm_medium=sticky&utm_campaign=navibar" target="_blank" rel="noopener noreferrer" data-ga="nav_shop" class="inline-flex items-center px-4 py-2 bg-[#111827] text-white text-sm font-semibold rounded-xl hover:bg-[#8FC31F] transition-colors shadow-sm" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>Shop NOW</span><span class="zh-text" data-astro-cid-5blmo7yk>立即购买</span> </a> <button type="button" data-doc-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode" class="doc-theme-toggle" data-astro-cid-5blmo7yk> <svg class="doc-theme-sun" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" data-astro-cid-5blmo7yk><circle cx="12" cy="12" r="4" data-astro-cid-5blmo7yk></circle><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" data-astro-cid-5blmo7yk></path></svg> <svg class="doc-theme-moon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" data-astro-cid-5blmo7yk><path d="M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10Z" data-astro-cid-5blmo7yk></path></svg> </button> <button id="lang-toggle" class="nav-lang flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer duration-500" aria-label="Switch language" data-astro-cid-5blmo7yk> <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-astro-cid-5blmo7yk><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" data-astro-cid-5blmo7yk></path></svg> <span class="en-text" data-astro-cid-5blmo7yk>中文</span><span class="zh-text" data-astro-cid-5blmo7yk>EN</span> </button> </div> <div class="flex md:hidden items-center gap-1" data-astro-cid-5blmo7yk> <button type="button" data-doc-theme-toggle aria-label="Switch to dark mode" title="Switch to dark mode" class="doc-theme-toggle" data-astro-cid-5blmo7yk> <svg class="doc-theme-sun" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" data-astro-cid-5blmo7yk><circle cx="12" cy="12" r="4" data-astro-cid-5blmo7yk></circle><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" data-astro-cid-5blmo7yk></path></svg> <svg class="doc-theme-moon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" data-astro-cid-5blmo7yk><path d="M21 13a9 9 0 0 1-10-10 9 9 0 1 0 10 10Z" data-astro-cid-5blmo7yk></path></svg> </button> <button id="lang-toggle-mobile" class="nav-lang-m p-2 text-xs font-semibold cursor-pointer" data-astro-cid-5blmo7yk><span class="en-text" data-astro-cid-5blmo7yk>中文</span><span class="zh-text" data-astro-cid-5blmo7yk>EN</span></button> <button class="nav-menu-icon p-2 cursor-pointer" id="mobile-menu-btn" aria-label="Menu" data-astro-cid-5blmo7yk><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" data-astro-cid-5blmo7yk><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" data-astro-cid-5blmo7yk></path></svg></button> </div> </nav> </div> <div class="hidden md:hidden shadow-lg p-6 space-y-3" id="mobile-menu" data-astro-cid-5blmo7yk> <a href="/sticky/" class="block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-neutral-600 hover:bg-neutral-50" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>Home</span><span class="zh-text" data-astro-cid-5blmo7yk>首页</span> </a><a href="/sticky/docs" class="block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-neutral-600 hover:bg-neutral-50" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>Support</span><span class="zh-text" data-astro-cid-5blmo7yk>产品支持</span> </a><a href="/sticky/app" class="block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-neutral-600 hover:bg-neutral-50" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>App</span><span class="zh-text" data-astro-cid-5blmo7yk>应用下载</span> </a><a href="/sticky/playground/firmware/" class="block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors text-neutral-600 hover:bg-neutral-50" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>Playground</span><span class="zh-text" data-astro-cid-5blmo7yk>玩法广场</span> </a> <a href="https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html?utm_source=landingpage&utm_medium=sticky&utm_campaign=navibar" target="_blank" rel="noopener noreferrer" data-ga="nav_shop" class="block w-full text-center px-4 py-2.5 bg-[#111827] text-white text-sm font-semibold rounded-xl hover:bg-[#8FC31F] transition-colors mt-2" data-astro-cid-5blmo7yk> <span class="en-text" data-astro-cid-5blmo7yk>Shop NOW</span><span class="zh-text" data-astro-cid-5blmo7yk>立即购买</span> </a> </div> </header>  <script type="module">function r(){const e=document.documentElement,t=e.lang==="en"?"zh":"en";e.lang=t,localStorage.setItem("sticky-lang",t),document.querySelectorAll('a[href*="/docs/"]').forEach(n=>{/\/docs\/(zh|en)\//.test(n.href)&&(n.href=n.href.replace(/\/docs\/(zh|en)\//,`/docs/${t}/`))})}document.getElementById("lang-toggle")?.addEventListener("click",r);document.getElementById("lang-toggle-mobile")?.addEventListener("click",r);document.getElementById("mobile-menu-btn")?.addEventListener("click",()=>{document.getElementById("mobile-menu")?.classList.toggle("hidden")});const d=document.getElementById("nav-inner"),l=new Set(["community"]);let c="";function o(e){d.setAttribute("data-nav-mode",e)}function i(){if(window.scrollY<window.innerHeight*.55){o("light");return}if(c&&l.has(c)){o("dark");return}o("light")}const s=new IntersectionObserver(e=>{e.forEach(t=>{t.isIntersecting&&(c=t.target.id)}),i()},{rootMargin:"-45% 0px -45% 0px",threshold:0});document.querySelectorAll("section[id]").forEach(e=>s.observe(e));window.addEventListener("scroll",()=>{requestAnimationFrame(i)},{passive:!0});i();</script> <script type="module">const a=document.documentElement,c=document.querySelectorAll("[data-doc-theme-toggle]");function d(){const e=a.dataset.docTheme==="dark"?"Dark mode":"Light mode";c.forEach(t=>{t.setAttribute("aria-label",e),t.title=e})}c.forEach(o=>o.addEventListener("click",()=>{const e=a.dataset.docTheme==="dark"?"light":"dark";a.dataset.docTheme=e;try{localStorage.setItem("sticky-docs-theme",e)}catch{}d()}));d();</script> <div class="flex min-h-screen pt-16"> <!-- Sidebar --> <aside class="sticky top-16 hidden h-[calc(100vh-4rem)] w-72 shrink-0 self-start overflow-y-auto border-r border-neutral-200 bg-neutral-50/50 lg:block"> <nav class="py-6 px-4"> <a href="/sticky/docs" class="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-secondary-700 hover:text-secondary-600 transition-colors mb-4"> <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg> Docs Home </a> <!-- Language switcher --> <div class="flex items-center gap-1 px-3 mb-4"> <a href="/sticky/docs/zh/device-guide/hardware-overview" data-doc-lang-link data-doc-lang="zh" class="px-2 py-1 text-xs rounded-md transition-colors text-neutral-500 hover:bg-neutral-100">中文</a> <span class="text-neutral-300">|</span> <a href="/sticky/docs/en/device-guide/hardware-overview" data-doc-lang-link data-doc-lang="en" class="px-2 py-1 text-xs rounded-md transition-colors bg-primary-50 text-primary-700 font-semibold">EN</a> </div> <div class="mb-4"> <div class="flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral-500">  <span>Quick Start</span> </div> <ul class="space-y-0.5"> <li> <a href="/sticky/docs/en/quick-start" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> Quick Start </a> </li><li> <a href="/sticky/docs/en/quick-start/release-notes" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> Release Notes </a> </li> </ul> </div><div class="mb-4"> <div class="flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wider text-secondary-700">  <span>Developer Docs</span> </div> <ul class="space-y-0.5"> <li> <a href="/sticky/docs/en/device-guide/hardware-overview" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate bg-primary-50 text-primary-700 font-semibold pl-6"> Hardware Overview </a> </li><li> <a href="/sticky/docs/en/device-guide/arduino-basics" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> Arduino Basics and Display </a> </li><li> <a href="/sticky/docs/en/device-guide/arduino-peripherals" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> Arduino Onboard Peripherals </a> </li><li> <a href="/sticky/docs/en/device-guide/arduino-interaction" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> Arduino Interaction and Low Power </a> </li><li> <a href="/sticky/docs/en/device-guide/esp-basics" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> ESP-IDF Development Basics </a> </li><li> <a href="/sticky/docs/en/device-guide/esp-pages" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> ESP-IDF Pages and Peripherals </a> </li><li> <a href="/sticky/docs/en/device-guide/esp-refresh" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> ESP-IDF Refresh and Low Power </a> </li> </ul> </div><div class="mb-4"> <div class="flex items-center gap-2 px-3 py-2 text-xs font-bold uppercase tracking-wider text-neutral-500">  <span>Playground Docs</span> </div> <ul class="space-y-0.5"> <li> <a href="/sticky/docs/en/playground-docs/crosspoint-reader" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> CrossPoint Reader </a> </li><li> <a href="/sticky/docs/en/playground-docs/opendisplay" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> OpenDisplay </a> </li><li> <a href="/sticky/docs/en/playground-docs/esphome" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> ESPHome </a> </li><li> <a href="/sticky/docs/en/playground-docs/trmnl" class="block px-3 py-1.5 text-sm rounded-lg transition-colors truncate text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 pl-6"> TRMNL </a> </li> </ul> </div> </nav> </aside> <!-- Main content --> <main class="min-w-0 flex-1"> <div class="mx-auto grid w-full max-w-4xl px-6 py-12 sm:px-8 lg:max-w-[1120px] lg:py-16 xl:max-w-[1440px] xl:grid-cols-[minmax(0,1fr)_14rem] xl:gap-8 2xl:max-w-[1520px] 2xl:grid-cols-[minmax(0,1120px)_18rem] 2xl:gap-12 2xl:px-10"> <div class="min-w-0"> <article class="prose-doc"><h1 id="hardware-overview">Hardware Overview</h1>
+<p>This section focuses on the appearance and structure of reTerminal Sticky, its core hardware modules, and the internal hardware architecture of the device.</p>
+<h2 id="appearance--structure">Appearance &#x26; Structure</h2>
+<p>Sticky uses a card-style form factor with a glass touch front panel. Internally, the layout is built around the main board, battery, and display module in a slim design.</p>
+<h3 id="structural-highlights">Structural Highlights</h3>
+<ul>
+<li>Multiple N52 magnets are built into the four corners for attachment to metal surfaces</li>
+<li>The front side uses a glass touch cover panel</li>
+<li>The bottom side includes a Reset hole, microphone opening, and lanyard hole</li>
+<li>The charging indicator is located on the left side of the USB-C port</li>
+<li>An adhesive magnetic ring is supported for installation on non-metal surfaces</li>
+</ul>
+<h3 id="quick-specs">Quick Specs</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Item</th><th>Details</th><th>Notes</th></tr></thead><tbody><tr><td>Dimensions</td><td>106mm x 65.5mm x 7.3mm</td><td>Compact card-style structure</td></tr><tr><td>Weight</td><td>70g</td><td>Easy to mount and use day to day</td></tr><tr><td>Protection</td><td>IP40</td><td>Not waterproof</td></tr></tbody></table>
+<h2 id="core-hardware-modules">Core Hardware Modules</h2>
+<h3 id="main-controller--storage">Main Controller &#x26; Storage</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Item</th><th>Details</th><th>Pins / Signals</th><th>Notes</th></tr></thead><tbody><tr><td>Main controller</td><td>ESP32-S3, 8 MB PSRAM</td><td>—</td><td>Core system control unit</td></tr><tr><td>External Flash</td><td>32 MB QSPI Flash</td><td>—</td><td>External SPI storage for firmware and data</td></tr><tr><td>Expandable storage</td><td>MicroSD</td><td>CS: GPIO8<br>MISO: GPIO12<br>SCK: GPIO13<br>MOSI: GPIO14</td><td>Connected to the main controller through the SPI interface</td></tr></tbody></table>
+<p>The main control system of Sticky is built around the ESP32-S3, which handles display control, touch interaction, sensor scheduling, wireless communication, and local storage management.</p>
+<h3 id="display-module">Display Module</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Item</th><th>Details</th><th>Pins / Signals</th><th>Notes</th></tr></thead><tbody><tr><td>Display type</td><td>Black-and-white E-Ink display</td><td>SCK: GPIO13<br>SDI: GPIO14<br>CS: GPIO15<br>DC: GPIO16<br>RST: GPIO17<br>BUSY: GPIO18<br>EN: GPIO47</td><td>SPI interface; suitable for long-duration display</td></tr><tr><td>Display size</td><td>3.97 inches</td><td>—</td><td>Card-style viewing area</td></tr><tr><td>Resolution</td><td>800 x 480</td><td>—</td><td>Suitable for text and lightweight graphics</td></tr><tr><td>Pixel density</td><td>235 ppi</td><td>—</td><td>Clearer text and image rendering</td></tr><tr><td>Grayscale</td><td>4-level grayscale</td><td>—</td><td>Supports basic grayscale content</td></tr><tr><td>Touch</td><td>Capacitive touch panel</td><td>SCL: GPIO2<br>SDA: GPIO3<br>INT: GPIO21<br>RST: GPIO41<br>EN: GPIO42</td><td>I²C interface; supports basic on-device interaction</td></tr></tbody></table>
+<p>The display module is one of Sticky’s core hardware capabilities. It combines an E-Ink display with capacitive touch to support long-term information display and basic interaction in low-power scenarios.</p>
+<h3 id="sensors--input">Sensors &#x26; Input</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Item</th><th>Details</th><th>Pins / Signals</th><th>Notes</th></tr></thead><tbody><tr><td>Temperature and humidity sensor</td><td>SHT40</td><td>SCL: GPIO0<br>SDA: GPIO1</td><td>I²C interface; ambient temperature and humidity detection</td></tr><tr><td>6-axis IMU</td><td>LSM6DS3TR-C</td><td>SCL: GPIO0<br>SDA: GPIO1<br>INT: GPIO7</td><td>I²C interface; motion and orientation detection</td></tr><tr><td>RTC</td><td>PCF8563</td><td>SCL: GPIO0<br>SDA: GPIO1</td><td>I²C interface; timekeeping</td></tr><tr><td>Microphone</td><td>PDM digital microphone</td><td>CLK: GPIO19<br>DATA: GPIO20</td><td>PDM interface; voice capture</td></tr><tr><td>Physical buttons</td><td>3</td><td>AI / Power button: GPIO4<br>Up button: GPIO5<br>Down button: GPIO6</td><td>Local input</td></tr><tr><td>Buzzer</td><td>1</td><td>PWM: GPIO48</td><td>Interaction prompt</td></tr><tr><td>Reset</td><td>Reset button hole</td><td>CHIP_PU</td><td>Device reset</td></tr></tbody></table>
+<p>The sensors and input section provides environmental sensing, motion detection, voice input, and basic interaction feedback, giving the system the key inputs and status signals it needs.</p>
+<h3 id="connectivity--interface">Connectivity &#x26; Interface</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Item</th><th>Details</th><th>Pins / Signals</th><th>Notes</th></tr></thead><tbody><tr><td>Wi-Fi</td><td>2.4 GHz</td><td>—</td><td>Device connectivity and OTA</td></tr><tr><td>Bluetooth</td><td>BLE 5.0</td><td>—</td><td>Provisioning and short-range connection</td></tr><tr><td>USB port</td><td>USB-C</td><td>TX: GPIO43<br>RX: GPIO44</td><td>Power, data communication, and firmware download</td></tr></tbody></table>
+<p>Sticky supports both wireless and wired connectivity for networking, short-range pairing, power input, and data transfer.</p>
+<h3 id="power-system">Power System</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<table><thead><tr><th>Item</th><th>Details</th><th>Pins / Signals</th><th>Notes</th></tr></thead><tbody><tr><td>Battery</td><td>750 mAh single-cell lithium battery</td><td>—</td><td>Device power supply</td></tr><tr><td>Battery fuel gauge</td><td>BQ27220</td><td>SCL: GPIO0<br>SDA: GPIO1</td><td>Battery level monitoring</td></tr><tr><td>Charging port</td><td>USB-C</td><td>—</td><td>Standard charging</td></tr><tr><td>Charging indicator</td><td>Dual-color indicator (red/green)</td><td>—</td><td>Charging status indication</td></tr></tbody></table>
+<p>Sticky supports both USB-C power input and battery power, making it better suited for low-frequency updates and always-on display scenarios.</p>
+<h2 id="hardware-diagram">Hardware Diagram</h2>
+<div style="{{textAlign:&#x27;center&#x27;}}"><img src="https://files.seeedstudio.com/wiki/reterminal_sticky/img/developer_docs/Hardware_Diagram.png" style="{{width:1000," height:&#x27;auto&#x27;}}=""></div>
+<h2 id="architecture-overview">Architecture Overview</h2>
+<p>The hardware system of reTerminal Sticky is centered on the <strong>ESP32-S3</strong>. With 8 MB of integrated PSRAM, this main controller coordinates the display, touch input, sensors, wireless connectivity, audio input, and local storage across the device.</p>
+<p>Around the main controller, the Sticky hardware system can be understood as the following subsystems:</p>
+<ol>
+<li>
+<p><strong>Display and touch</strong><br>
+The 3.97-inch E-Ink display connects to the main controller through the SPI interface and is used to present text, icons, and other lightweight visual content. The touch panel connects through I2C and provides local touch input. With an 800 x 480 resolution and 4-level grayscale, the display system is well suited to low-power always-on use cases such as information boards, to-do lists, and status displays.</p>
+</li>
+<li>
+<p><strong>Storage system</strong><br>
+The device includes 32 MB of QSPI Flash for firmware storage and local data caching. It also supports MicroSD expansion through the SPI interface, providing additional local storage capacity when needed.</p>
+</li>
+<li>
+<p><strong>Sensors and clock</strong><br>
+The 6-axis IMU, temperature and humidity sensor, and RTC are connected to the main controller through I2C. Together, they support orientation detection, environmental sensing, and time keeping. These devices provide the hardware foundation for automatic screen rotation, information refresh logic, and scheduled tasks.</p>
+</li>
+<li>
+<p><strong>Audio and local interaction</strong><br>
+Sticky includes a built-in PDM microphone for voice input and a buzzer for basic audio prompts. The AI button, Up button, Down button, and Reset button form the main local input path on the device.</p>
+</li>
+<li>
+<p><strong>Wireless communication system</strong><br>
+Sticky integrates both 2.4 GHz Wi-Fi and BLE 5.0. Wi-Fi is used mainly for device networking, content synchronization, and OTA updates, while BLE is used mainly for provisioning, pairing, and short-range connection. Both are managed by the wireless subsystem inside the ESP32-S3.</p>
+</li>
+<li>
+<p><strong>Power and debug path</strong><br>
+The USB-C interface is used for external power input, data transfer, and device debugging. The power management circuitry coordinates USB power and battery power, while the built-in 750 mAh battery supports long-duration operation in low-power E-Ink usage scenarios.</p>
+</li>
+</ol>
+<p>Overall, Sticky’s hardware architecture is built around low power consumption, long-duration operation, lightweight interaction, and wireless connectivity. With the ESP32-S3 as the central controller, the device brings together display, touch, sensing, audio input, storage, and connectivity through standard interfaces such as SPI, I2C, and GPIO, enabling stable operation across typical information display and light interaction use cases.</p>
+<h2 id="resources">Resources</h2>
+<ul>
+<li><a href="https://files.seeedstudio.com/wiki/reterminal_sticky/res/reTerminal_Sticky_Schematic_diagram_260609.pdf">reTerminal Sticky Schematic (PDF)</a></li>
+<li><a href="https://files.seeedstudio.com/wiki/reterminal_sticky/res/reTerminal_Sticky_3D.stp">reTerminal Sticky Official 3D Model (STP)</a></li>
+<li><a href="https://www.seeedstudio.com/sticky/playground/3d-printables/">3D-Printable Cases and Stands (Playground)</a></li>
+</ul></article><div class="mt-16 pt-8 border-t border-neutral-200"><a href="/sticky/docs" class="inline-flex items-center gap-2 text-sm text-secondary-600 hover:text-secondary-700 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>Back to Docs</a></div> </div> <aside class="hidden xl:block"> <nav class="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto border-l border-neutral-200 pl-5" aria-label="On this page"> <p class="text-xs font-extrabold uppercase tracking-[0.14em] text-neutral-400">On this page</p> <ol class="mt-3 space-y-1"> <li> <a href="#appearance--structure" data-doc-toc-link data-heading-id="appearance--structure" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-3 font-medium"> Appearance &amp; Structure </a> </li><li> <a href="#structural-highlights" data-doc-toc-link data-heading-id="structural-highlights" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-5"> Structural Highlights </a> </li><li> <a href="#quick-specs" data-doc-toc-link data-heading-id="quick-specs" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-5"> Quick Specs </a> </li><li> <a href="#core-hardware-modules" data-doc-toc-link data-heading-id="core-hardware-modules" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-3 font-medium"> Core Hardware Modules </a> </li><li> <a href="#main-controller--storage" data-doc-toc-link data-heading-id="main-controller--storage" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-5"> Main Controller &amp; Storage </a> </li><li> <a href="#display-module" data-doc-toc-link data-heading-id="display-module" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-5"> Display Module </a> </li><li> <a href="#sensors--input" data-doc-toc-link data-heading-id="sensors--input" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-5"> Sensors &amp; Input </a> </li><li> <a href="#connectivity--interface" data-doc-toc-link data-heading-id="connectivity--interface" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-5"> Connectivity &amp; Interface </a> </li><li> <a href="#power-system" data-doc-toc-link data-heading-id="power-system" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-5"> Power System </a> </li><li> <a href="#hardware-diagram" data-doc-toc-link data-heading-id="hardware-diagram" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-3 font-medium"> Hardware Diagram </a> </li><li> <a href="#architecture-overview" data-doc-toc-link data-heading-id="architecture-overview" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-3 font-medium"> Architecture Overview </a> </li><li> <a href="#resources" data-doc-toc-link data-heading-id="resources" class="doc-toc-link block border-l-2 border-transparent py-1.5 pr-2 text-sm leading-snug text-neutral-500 transition-colors hover:border-secondary-200 hover:text-secondary-700 pl-3 font-medium"> Resources </a> </li> </ol> </nav> </aside> </div> </main> </div> <section class="relative z-40 bg-[#111827] px-6 py-10 sm:px-8 md:py-14 lg:px-12"> <div class="mx-auto max-w-[1440px]"> <div class="text-center"> <p class="text-sm font-extrabold uppercase tracking-[0.12em] text-primary-400"> <span class="en-text">Community</span> <span class="zh-text">社区支持</span> </p> <h2 class="mt-3 text-2xl font-bold text-white sm:text-3xl"> <span class="en-text">Need more help?</span> <span class="zh-text">还需要帮助？</span> </h2> <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/60 sm:text-base"> <span class="en-text">Join our community, ask questions, or reach out to Seeed Studio technical support.</span> <span class="zh-text">加入社区提问交流，或直接联系 Seeed Studio 技术支持。</span> </p> </div> <div class="mx-auto mt-7 grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"> <a href="https://www.facebook.com/groups/reterminalsticky" target="_blank" rel="noreferrer" data-ga="docs_detail_facebook_group" class="group flex items-center gap-4 rounded-xl bg-white/[0.06] px-5 py-5 ring-1 ring-white/[0.08] transition hover:-translate-y-0.5 hover:bg-white/[0.1] sm:flex-col sm:text-center"> <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#1877F2]/20 text-[#1877F2]"> <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg> </span> <span class="min-w-0"> <span class="block text-base font-bold text-white">Facebook Group</span> <span class="mt-1 block text-sm leading-snug text-white/50"> <span class="en-text">Join the group</span> <span class="zh-text">加入 Facebook 群组</span> </span> </span> </a> <a href="https://discord.gg/TE6WCMtqvS" target="_blank" rel="noreferrer" data-ga="docs_detail_discord" class="group flex items-center gap-4 rounded-xl bg-white/[0.06] px-5 py-5 ring-1 ring-white/[0.08] transition hover:-translate-y-0.5 hover:bg-white/[0.1] sm:flex-col sm:text-center"> <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#5865F2]/20 text-[#5865F2]"> <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.249a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.036A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028 14.09 14.09 0 001.226-1.994.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.009c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"></path></svg> </span> <span class="min-w-0"> <span class="block text-base font-bold text-white">Discord</span> <span class="mt-1 block text-sm leading-snug text-white/50"> <span class="en-text">Chat with the community</span> <span class="zh-text">加入社区实时交流</span> </span> </span> </a> <a href="https://forum.seeedstudio.com/" target="_blank" rel="noreferrer" data-ga="docs_detail_forum" class="group flex items-center gap-4 rounded-xl bg-white/[0.06] px-5 py-5 ring-1 ring-white/[0.08] transition hover:-translate-y-0.5 hover:bg-white/[0.1] sm:flex-col sm:text-center"> <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400"> <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path></svg> </span> <span class="min-w-0"> <span class="block text-base font-bold text-white"> <span class="en-text">Forum</span> <span class="zh-text">论坛</span> </span> <span class="mt-1 block text-sm leading-snug text-white/50"> <span class="en-text">Browse topics & ask questions</span> <span class="zh-text">浏览话题、提问求助</span> </span> </span> </a> <a href="/cdn-cgi/l/email-protection#fe8a9b9d968d8b8e8e918c8abe8d9b9b9b9ad09791" data-ga="docs_detail_email_support" class="group flex items-center gap-4 rounded-xl bg-white/[0.06] px-5 py-5 ring-1 ring-white/[0.08] transition hover:-translate-y-0.5 hover:bg-white/[0.1] sm:flex-col sm:text-center"> <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-secondary-300/20 text-secondary-300"> <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path stroke-linecap="round" stroke-linejoin="round" d="M3.5 7l8.5 6 8.5-6"></path></svg> </span> <span class="min-w-0"> <span class="block text-base font-bold text-white"> <span class="en-text">Email Support</span> <span class="zh-text">邮件支持</span> </span> <span class="mt-1 block text-sm leading-snug text-white/50"> <span class="en-text">Reach the Seeed team directly</span> <span class="zh-text">直接联系 Seeed 技术团队</span> </span> </span> </a> </div> <div class="mx-auto mt-10 h-px max-w-5xl bg-white/[0.08]" aria-hidden="true"></div> </div> </section> <div class="relative z-40"> <footer class="bg-[#111827] text-white"> <div class="max-w-[1500px] mx-auto px-6 sm:px-8 lg:px-12 py-16"> <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12"> <!-- Logo & Tagline --> <div class="lg:col-span-1"> <a href="/sticky/" class="block mb-6"> <img src="/sticky/stickyiLOGO.png" alt="reTerminal Sticky" class="h-9 w-auto"> </a> <p class="text-gray-400 text-sm leading-relaxed max-w-xs whitespace-pre-line"> <span class="en-text">Speak. Stick. See.
+Calm information display for the whole family, at a glance.</span><span class="zh-text">一块安静的家庭信息屏。</span> </p> </div> <!-- Link Columns --> <div> <h4 class="text-white font-semibold text-sm mb-4"> <span class="en-text">Company</span><span class="zh-text">公司</span> </h4> <ul class="space-y-2.5"> <li> <a href="https://www.seeedstudio.com/about-us/" class="text-sm text-gray-400 hover:text-white transition-colors"> <span class="en-text">About Seeed</span><span class="zh-text">关于 Seeed</span> </a> </li><li> <a href="https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html?utm_source=seeed&amp;utm_medium=stickylandingpage&amp;utm_campaign=footer" class="text-sm text-gray-400 hover:text-white transition-colors"> <span class="en-text">Where to Buy</span><span class="zh-text">购买渠道</span> </a> </li> </ul> </div><div> <h4 class="text-white font-semibold text-sm mb-4"> <span class="en-text">Resources</span><span class="zh-text">资源</span> </h4> <ul class="space-y-2.5"> <li> <a href="https://www.seeedstudio.com/sticky/app" class="text-sm text-gray-400 hover:text-white transition-colors"> <span class="en-text">Download APP</span><span class="zh-text">下载 App</span> </a> </li><li> <a href="https://www.seeedstudio.com/sticky/docs" class="text-sm text-gray-400 hover:text-white transition-colors"> <span class="en-text">Documentation</span><span class="zh-text">文档</span> </a> </li><li> <a href="/sticky/playground/firmware/" class="text-sm text-gray-400 hover:text-white transition-colors"> <span class="en-text">Playground</span><span class="zh-text">固件玩法</span> </a> </li> </ul> </div><div> <h4 class="text-white font-semibold text-sm mb-4"> <span class="en-text">Support</span><span class="zh-text">支持</span> </h4> <ul class="space-y-2.5"> <li> <a href="https://www.seeedstudio.com/contacts" class="text-sm text-gray-400 hover:text-white transition-colors"> <span class="en-text">Contact Us</span><span class="zh-text">联系我们</span> </a> </li><li> <a href="https://www.seeedstudio.com/get_help/ReturnsRefund" class="text-sm text-gray-400 hover:text-white transition-colors"> <span class="en-text">Warranty &amp; Return</span><span class="zh-text">保修与退货</span> </a> </li> </ul> </div> <!-- EDM Subscription --> <div class="lg:col-span-1"> <h4 class="text-white font-semibold text-sm mb-4"> <span class="en-text">Stay Updated</span><span class="zh-text">获取最新资讯</span> </h4> <p class="text-gray-400 text-xs leading-relaxed mb-4"> <span class="en-text">Sign up for Exclusive Updates & Launch Discounts</span> <span class="zh-text">订阅获取独家更新与首发折扣</span> </p> <form action="https://seeedstudio.us11.list-manage.com/subscribe/post?u=0c272aa6642cc5d058579205f&id=eada5239e6&v_id=48&f_id=00fefde0f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate> <div class="flex flex-col gap-3"> <!-- Email input --> <div class="flex items-center px-3 py-2.5 bg-white/10 backdrop-blur-sm rounded-xl border border-white/10"> <svg class="w-4 h-4 text-white/40 mr-2 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <rect x="2" y="4" width="20" height="16" rx="2"></rect> <path d="M22 4l-10 8L2 4"></path> </svg> <input type="email" name="EMAIL" id="mce-EMAIL" required autocomplete="email" class="required email bg-transparent outline-none text-sm text-white w-full placeholder-white/40" placeholder="Email"> </div> <!-- Consent checkbox --> <label class="flex items-start gap-2 cursor-pointer"> <input type="checkbox" id="newsletter-consent" class="mt-0.5 accent-[#8FC31F]" required> <span class="text-gray-400 text-[11px] leading-relaxed"> <span class="en-text">I agree to receive newsletters on reTerminal Sticky from Seeed Studio.</span> <span class="zh-text">我同意接收 Seeed Studio 关于 reTerminal Sticky 的资讯邮件。</span> </span> </label> <!-- Mailchimp honeypot --> <div aria-hidden="true" style="position:absolute;left:-5000px;"> <input type="text" name="b_0c272aa6642cc5d058579205f_eada5239e6" tabindex="-1" value=""> </div> <div style="display:none;"> <input type="checkbox" id="gdpr_44507" name="gdpr[44507]" class="gdpr" value="Y" checked> </div> <div id="mce-responses"> <div id="mce-error-response" class="response text-xs text-red-400 hidden"></div> <div id="mce-success-response" class="response text-xs text-green-400 hidden"></div> </div> <input type="submit" name="subscribe" id="mc-embedded-subscribe" value="" class="hidden"> <button type="submit" form="mc-embedded-subscribe-form" data-ga="footer_subscribe" class="w-full px-4 py-2.5 bg-[#8FC31F] text-white text-sm font-semibold rounded-xl hover:bg-[#81b11f] transition-all duration-300 cursor-pointer"> <span class="en-text">Subscribe</span><span class="zh-text">订阅</span> </button> <a href="https://www.facebook.com/groups/reterminalsticky" target="_blank" rel="noopener noreferrer" data-ga="footer_fb_chat" class="inline-flex items-center justify-center gap-2 text-xs text-gray-400 hover:text-white transition-colors mt-1"> <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg> <span class="en-text">Chat on Facebook Group</span><span class="zh-text">在 Facebook 群组中交流</span> </a> </div> </form> </div> </div> <div class="border-t border-white/10 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4"> <p class="text-sm text-gray-500">© 2026 Seeed Studio. All rights reserved.</p> <div class="flex items-center gap-6"> <a href="https://www.facebook.com/groups/reterminalsticky" target="_blank" rel="noopener noreferrer" data-ga="footer_fb_icon" class="text-gray-400 hover:text-white transition-colors" aria-label="Facebook"> <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg> </a> </div> </div> </div> </footer> <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">const i=document.getElementById("mc-embedded-subscribe-form");i&&i.addEventListener("submit",p=>{p.preventDefault();const r=document.getElementById("mce-EMAIL");if(!r)return;const m=r.value.trim();if(!m)return;const u=document.getElementById("newsletter-consent");if(u&&!u.checked)return;const t=i.querySelector('button[type="submit"]'),e=document.getElementById("mce-error-response"),n=document.getElementById("mce-success-response");if(e&&(e.classList.add("hidden"),e.innerHTML=""),n&&(n.classList.add("hidden"),n.innerHTML=""),!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){if(e){const s=document.documentElement.lang==="zh";e.innerHTML=s?"请输入有效的邮箱地址":"Please enter a valid email address.",e.classList.remove("hidden")}return}const h=t?t.innerHTML:"";t&&(t.disabled=!0,t.innerHTML='<span class="inline-flex items-center justify-center gap-2"><svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Submitting...</span>');const c="mc_callback_"+Math.round(Math.random()*1e6);window[c]=s=>{delete window[c];const o=document.getElementById(c);if(o&&o.remove(),t&&(t.disabled=!1,t.innerHTML=h),s.result==="success")n&&(n.innerHTML="Subscribed! Thank you.",n.classList.remove("hidden")),r&&(r.value="");else if(e){let a=s.msg||"An error occurred.";a.startsWith("0 - ")&&(a=a.substring(4)),e.innerHTML=a,e.classList.remove("hidden")}};const g=new FormData(i),f=new URLSearchParams;for(const[s,o]of g.entries())f.append(s,o.toString());let l=i.getAttribute("action")||"";l=l.replace("/post?","/post-json?");const b=`${l}&c=${c}&${f.toString()}`,d=document.createElement("script");d.id=c,d.src=b,document.body.appendChild(d)});</script> </div> <!-- Override Navbar lang toggle for doc pages: navigate to the other language version --> <script type="module">(function(){const o=document.querySelector("[data-doc-lang-switch]");if(!o)return;const g=o.dataset.zhHref,h=o.dataset.enHref,r=document.documentElement.lang||"zh",f=JSON.parse(o.dataset.docHeadingTargets||'{"en":{},"zh":{}}');function i(t,a){const n=new URL(t,window.location.href);n.search=window.location.search;let e=window.location.hash.slice(1);if(e){try{e=decodeURIComponent(e)}catch{}n.hash=f[a]?.[e]||e}return n.href}document.addEventListener("click",function(t){const a=t.target,n=a.closest("[data-doc-lang-link]");if(n){t.preventDefault(),t.stopPropagation();const c=n.dataset.docLang,d=n.href;c&&localStorage.setItem("sticky-lang",c),d&&c&&(window.location.href=i(d,c));return}if(!a.closest("#lang-toggle, #lang-toggle-mobile"))return;t.preventDefault(),t.stopPropagation();const s=r==="zh"?h:g,l=r==="zh"?"en":"zh";localStorage.setItem("sticky-lang",l),s&&(window.location.href=i(s,l))},!0)})();</script> <script type="module">(function(){const c=Array.from(document.querySelectorAll("[data-doc-toc-link]"));if(!c.length)return;const n=c.map(e=>{const t=e.getAttribute("data-heading-id"),a=t?document.getElementById(t):null;return a?{id:t,link:e,target:a}:null}).filter(Boolean);if(!n.length)return;const r=function(e){n.forEach(t=>{t.link.classList.toggle("is-active",t.id===e)})},i=function(){let e=n[0].id;n.forEach(t=>{t.target.getBoundingClientRect().top<=128&&(e=t.id)}),r(e)};let o=!1;const d=function(){o||(o=!0,window.requestAnimationFrame(function(){i(),o=!1}))};i(),window.addEventListener("scroll",d,{passive:!0}),window.addEventListener("hashchange",i)})();</script> <script type="module">async function u({documentObject:o=globalThis.document,windowObject:s=globalThis.window,followingPosition:l=globalThis.Node?.DOCUMENT_POSITION_FOLLOWING??4}={}){let r=s.location.hash.slice(1);if(!r)return!1;try{r=decodeURIComponent(r)}catch{}const t=o.getElementById(r);if(!t)return!1;const a=()=>new Promise(e=>{s.requestAnimationFrame(()=>{s.requestAnimationFrame(()=>{t.scrollIntoView({block:"start"}),e()})})}),c=t.closest?.(".prose-doc")||o.querySelector(".prose-doc"),d=Array.from(c?.querySelectorAll("img")||[]).filter(e=>(e.compareDocumentPosition(t)&l)!==0).map(e=>(e.loading="eager",e.complete?Promise.resolve():new Promise(m=>{let n=!1;const i=()=>{n||(n=!0,a(),m())};e.addEventListener("load",i,{once:!0}),e.addEventListener("error",i,{once:!0})})));return await a(),await Promise.all([...d,o.fonts?.ready||Promise.resolve()]),await a(),!0}u();</script> <script type="module">(function(){const r=document.querySelector(".prose-doc");if(!r)return;const i=document.documentElement.lang==="zh",n=i?"复制代码":"Copy code",s=i?"代码已复制":"Code copied",d=i?"复制失败":"Copy failed",u=async function(o){if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(o);return}const t=document.createElement("textarea");t.value=o,t.setAttribute("readonly",""),t.style.position="fixed",t.style.opacity="0",document.body.appendChild(t),t.select();const c=document.execCommand("copy");if(t.remove(),!c)throw new Error("Copy command failed")};r.querySelectorAll("pre").forEach(function(o){if(o.parentElement?.classList.contains("doc-code-block"))return;const t=o.querySelector("code");if(!t)return;const c=document.createElement("div");c.className="doc-code-block";const e=document.createElement("button");e.className="doc-code-copy",e.type="button",e.setAttribute("aria-label",n),e.setAttribute("title",n);const a=document.createElement("span");a.className="doc-code-copy-icon",a.setAttribute("aria-hidden","true"),e.append(a);let l;e.addEventListener("click",async function(){window.clearTimeout(l);try{await u(t.textContent||""),e.classList.add("is-copied"),e.setAttribute("aria-label",s),e.setAttribute("title",s)}catch{e.classList.add("is-error"),e.setAttribute("aria-label",d),e.setAttribute("title",d)}l=window.setTimeout(function(){e.classList.remove("is-copied","is-error"),e.setAttribute("aria-label",n),e.setAttribute("title",n)},1500)}),o.parentNode?.insertBefore(c,o),c.append(o,e)})})();</script> <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"7a671e3d307940439436301400817864","spa":2}' crossorigin="anonymous"></script>
+</body> </html>

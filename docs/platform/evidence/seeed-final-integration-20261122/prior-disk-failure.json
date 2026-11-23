@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "startedAt": "2026-11-22T09:37:10.096165+00:00",
+  "wasmSha256": "1002b80d7336ee0e610eedad8b9688fc5389bb1bcaeadf48c02d279069181a24",
+  "checks": [
+    {
+      "name": "native-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "startedAt": "2026-11-22T09:37:10.175965+00:00",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:37:19.930990+00:00",
+      "wallSeconds": 9.755,
+      "logSha256": "aae346c866b6d9c872898302f0db22506b96bdb0538353cb2bae83bb63ad15b8",
+      "publishedLog": "prior-native-clippy.log.gz",
+      "publishedLogSha256": "b01dcf92166171072bd9d4c958d69d63b5f85751e8046e875f00f6d61977e976"
+    },
+    {
+      "name": "wasm-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "-p",
+        "esp32sim-wasm",
+        "--features",
+        "jit-tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "startedAt": "2026-11-22T09:37:19.932295+00:00",
+      "exitCode": 0,
+      "finishedAt": "2026-11-22T09:37:25.358743+00:00",
+      "wallSeconds": 5.426,
+      "logSha256": "ff9f7f899a2a212fd874809c7c473e341ea3059aecfcf0d89dbca51d40633e42",
+      "publishedLog": "prior-wasm-clippy.log.gz",
+      "publishedLogSha256": "303dd97db31fc6b17051d223fa6f650d22d70fd8d5de16da165dabde1ac2d955"
+    },
+    {
+      "name": "native-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--workspace",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "startedAt": "2026-11-22T09:37:25.359389+00:00",
+      "exitCode": 101,
+      "finishedAt": "2026-11-22T09:54:37.039970+00:00",
+      "wallSeconds": 1031.681,
+      "logSha256": "e9e96ddf8ed45de477502e20413dc898515b42261943710aa708ebc08a123201",
+      "publishedLog": "prior-native-tests.log.gz",
+      "publishedLogSha256": "78d1bfcb85170ffa86f8ea64bac7ce8f44fe07708a7873aa1382cdc12b8ca6e9"
+    }
+  ],
+  "status": "failed",
+  "nativeCliSha256": "87855d7786f5e9422b1ff2234f07e08e43e92a90fd1011e46d493f5497f1ea78",
+  "finishedAt": "2026-11-22T09:54:37.088851+00:00",
+  "wasmUnchanged": true,
+  "scope": "Earlier integration checkpoint, superseded by the final run. Native test compilation failed on disk capacity before tests completed; not a test assertion failure or a pass.",
+  "redactions": [
+    "Absolute repository and ROM path prefixes replaced; MAC-shaped values omitted if present. Original artifact and log SHA256 values retained."
+  ]
+}

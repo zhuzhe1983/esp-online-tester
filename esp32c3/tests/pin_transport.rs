@@ -165,6 +165,7 @@ fn spi_native_matrix_and_software_chip_select_routes() {
             mosi: 1 << 7,
             miso: Some(2),
             cs: 1 << 10,
+            keep_cs: false,
         }
     );
     bus.write32(0x6002_4020, 0x3e | 1 << 7).unwrap(); // active-high CS

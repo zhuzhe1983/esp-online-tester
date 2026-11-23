@@ -14,7 +14,15 @@ export function githubToken(args=process.argv) {
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 export function compactReleaseHistory(entry,releases){
   const targets=entry.catalogTargets||[];
-  if(!targets.length)return releases.filter(release=>releaseMatchesChannel(release,entry.releaseChannel)).slice(0,1);
+  if(!targets.length){
+    const latest=releases.filter(release=>releaseMatchesChannel(release,entry.releaseChannel)).slice(0,1);
+    if(!entry.metadataAssetNamePattern)return latest;
+    const pattern=new RegExp(entry.metadataAssetNamePattern);
+    // A reference-only selector limits the displayed metadata. It never creates
+    // a catalog update target or claims execution of another board's assets.
+    return latest.map(({assetNames,...release})=>({...release,assetCountBeforeFilter:release.assetCountBeforeFilter??release.assets?.length??0,
+      assets:(release.assets||[]).filter(asset=>asset.name.length<=240&&pattern.test(asset.name))}));
+  }
   const patterns=targets.map(target=>new RegExp(target.assetNamePattern));
   return releases.map(release=>({...release,assetNames:release.assetNames||(release.assets||[]).map(asset=>asset.name),assets:(release.assets||[]).filter(asset=>patterns.some(pattern=>pattern.test(asset.name)))}));
 }
@@ -46,7 +54,8 @@ export async function syncReleaseMetadata(list,{previous={entries:[]},token,fetc
       result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:now,sourceUrl:request.url,release,releases,...(versionInventory?{versionInventory}:{}),error:null};
       if(saved&&!saved.error&&same(saved.releases||[saved.release],releases)&&same(saved.release,release)&&same(saved.versionInventory,versionInventory)&&Date.parse(now)-Date.parse(saved.checkedAt)<DAY)result={...result,checkedAt:saved.checkedAt};
     }catch(error){
-      result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:saved?.checkedAt||null,sourceUrl:entry.metadataUrl,release:saved?.release||null,releases:saved?.releases||[],error:{status:error.status||null,message:error.status?error.message:'发布元信息同步失败；保留上次结果。',attemptedAt:now}};
+      const releases=compactReleaseHistory(entry,saved?.releases?.length?saved.releases:[saved?.release].filter(Boolean));
+      result={id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:saved?.checkedAt||null,sourceUrl:entry.metadataUrl,release:releases.find(value=>releaseMatchesChannel(value,entry.releaseChannel))||null,releases,error:{status:error.status||null,message:error.status?error.message:'发布元信息同步失败；保留上次结果。',attemptedAt:now}};
       if(saved?.error&&saved.error.status===result.error.status&&saved.error.message===result.error.message&&Date.parse(now)-Date.parse(saved.error.attemptedAt)<DAY)result.error=saved.error;
     }
     entries.push(result);

@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:32:36Z",
   "hardwareRevision": "original S3 16MB Flash / no PSRAM; not Dual/Plus",
   "identity": {
     "manufacturer": "LILYGO",
@@ -139,6 +139,19 @@
         "official-wiki-t-dongle-s3"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-dongle-s3-official-factory",
+        "version": "251218"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "Spark 出厂固件条目和厂家文件名都明确标为原版 T-Dongle-S3 的屏幕测试固件。Plus 版有单独的文件。"
     }
   ],
   "revisions": [],
@@ -397,6 +410,17 @@
       "sha256": "6ae8e81bda9f99908a4b3f60d96ef2a0483b1d28b9514c225e995cf4fe0c3136",
       "bytes": 8044,
       "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "T-Dongle-S3 Factory Screen",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Dongle-S3/03d51691e70271aeb988d0d1d930650595176736/firmware/T-Dongle-S3_factory_screen_251218.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:32:36Z",
+      "sha256": "65a9b51487ca721f618a0f22bb4d800f0dedfcb40c29286f55ad85eba81c68cd",
+      "bytes": 1378288,
+      "archiveName": "65a9b51487ca721f618a0f22bb4d800f0dedfcb40c29286f55ad85eba81c68cd.bin"
     }
   ],
   "assets": [
@@ -451,16 +475,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -477,16 +491,23 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "not-found-in-inspected-pages",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-dongle-s3-official-factory",
     "sourceIds": [
-      "official-store-shopify-1",
-      "official-wiki-t-dongle-s3"
+      "official-factory-bin"
     ],
-    "links": [],
-    "evidenceNotes": [],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    "previousInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-dongle-s3"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    }
   },
   "modelReview": {
     "model": {

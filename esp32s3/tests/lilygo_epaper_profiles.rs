@@ -108,7 +108,7 @@ fn crc7(bytes:&[u8])->u8 {let mut crc=0u8;for &value in bytes {let mut byte=valu
 fn sd_command(b:&mut LilygoEpaper,pins:SpiPins,cmd:u8,arg:u32)->Vec<u8> {let mut packet=vec![0x40|cmd];packet.extend(arg.to_be_bytes());packet.push(crc7(&packet)<<1|1);b.spi_transfer_pins(2,pins,&packet,0);b.spi_transfer_pins(2,pins,&[],2)}
 #[test]
 fn both_spi_sockets_route_real_card_storage_and_reject_wrong_read_pins() {
-    for (mut b,pins) in [(LilygoEpaper::t_deck_pro(),SpiPins{sclk:1<<36,mosi:1<<33,miso:Some(47),cs:1<<48}),(LilygoEpaper::mini_epaper_s3(),SpiPins{sclk:1<<41,mosi:1<<39,miso:Some(38),cs:1<<40})] {
+    for (mut b,pins) in [(LilygoEpaper::t_deck_pro(),SpiPins{sclk:1<<36,mosi:1<<33,miso:Some(47),cs:1<<48,keep_cs:false}),(LilygoEpaper::mini_epaper_s3(),SpiPins{sclk:1<<41,mosi:1<<39,miso:Some(38),cs:1<<40,keep_cs:false})] {
         b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();b.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);
         assert_eq!(sd_command(&mut b,pins,0,0),[255,1]);assert_eq!(sd_command(&mut b,pins,8,0x1aa),[255,1]);assert_eq!(b.spi_transfer_pins(2,pins,&[],4),[0,0,1,0xaa]);
         for _ in 0..2 {sd_command(&mut b,pins,55,0);sd_command(&mut b,pins,41,1<<30);}

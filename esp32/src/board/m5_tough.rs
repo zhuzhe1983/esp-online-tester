@@ -332,7 +332,7 @@ mod tests {
     }
 
     fn route() -> SpiPins {
-        SpiPins { sclk: 1 << LCD_CLK, mosi: 1 << LCD_MOSI, cs: 1 << LCD_CS, miso: Some(LCD_MISO) }
+        SpiPins { sclk: 1 << LCD_CLK, mosi: 1 << LCD_MOSI, cs: 1 << LCD_CS, miso: Some(LCD_MISO), keep_cs: false }
     }
 
     fn dcs(board: &mut M5Tough, pins: SpiPins, cmd: u8, params: &[u8], rx: usize) -> Vec<u8> {

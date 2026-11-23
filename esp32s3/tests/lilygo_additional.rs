@@ -87,7 +87,7 @@ fn sd_command(board:&mut Board,pins:SpiPins,cmd:u8,arg:u32)->Vec<u8> {let mut pa
 #[test]
 fn all_four_sd_sockets_read_written_blocks_with_exact_routes_and_selection() {
     for id in TFT.into_iter().chain([PRO]) {
-        let mut r=Rig::new(id);let pins=if id==PRO{SpiPins{sclk:1<<36,mosi:1<<33,miso:Some(47),cs:1<<48}}else{r.drive(10,true);SpiPins{sclk:1<<40,mosi:1<<41,miso:Some(38),cs:1<<39}};
+        let mut r=Rig::new(id);let pins=if id==PRO{SpiPins{sclk:1<<36,mosi:1<<33,miso:Some(47),cs:1<<48,keep_cs:false}}else{r.drive(10,true);SpiPins{sclk:1<<40,mosi:1<<41,miso:Some(38),cs:1<<39,keep_cs:false}};
         r.board.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();r.board.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);assert_eq!(sd_command(&mut r.board,pins,0,0),[255,1]);assert_eq!(sd_command(&mut r.board,pins,8,0x1aa),[255,1]);assert_eq!(r.board.spi_transfer_pins(2,pins,&[],4),[0,0,1,0xaa]);
         for _ in 0..2 {sd_command(&mut r.board,pins,55,0);sd_command(&mut r.board,pins,41,1<<30);}
         assert_eq!(sd_command(&mut r.board,pins,24,3),[255,0]);let mut block=vec![0xfe];block.extend([0x5a;512]);block.extend([255,255]);r.board.spi_transfer_pins(2,pins,&block,0);assert_eq!(r.board.spi_transfer_pins(2,pins,&[],1),[5]);assert_eq!(sd_command(&mut r.board,pins,17,3),[255,0]);assert_eq!(r.board.spi_transfer_pins(2,pins,&[],2),[255,0xfe]);assert_eq!(r.board.spi_transfer_pins(2,pins,&[],512),vec![0x5a;512]);r.board.spi_transfer_pins(2,pins,&[],2);
@@ -100,7 +100,7 @@ fn tft_deck_sx1262_packets_require_routed_power_reset_spi_and_matching_peer() {
     use esp_soc::devices::sx1262::{LoRaConfig,LoRaInput};
     let packet=LoRaInput{config:LoRaConfig{frequency:0x36400000,sf:12,bandwidth:3,coding_rate:4,sync_word:0x3444,implicit_header:false,crc:true,invert_iq:false},payload:b"peer".to_vec(),rssi_dbm:-70,snr_quarter_db:24,crc_error:false};
     for id in TFT {
-        let mut r=Rig::new(id);let pins=SpiPins{sclk:1<<40,mosi:1<<41,miso:Some(38),cs:1<<9};
+        let mut r=Rig::new(id);let pins=SpiPins{sclk:1<<40,mosi:1<<41,miso:Some(38),cs:1<<9,keep_cs:false};
         assert!(!r.board.lora_receive_at(0,&packet));r.drive(9,true);r.drive(10,true);r.drive(17,true);r.finish();
         let command=|r:&mut Rig,bytes:&[u8]| {r.drive(9,false);let rx=r.board.spi_transfer_pins(2,pins,bytes,bytes.len());r.drive(9,true);r.finish();rx};
         for bytes in [&[0x80,0][..],&[0x8a,1],&[0x86,0x36,0x40,0,0],&[0x8b,12,3,4,1],&[0x8c,0,10,0,5,1,0],&[0x0d,7,0x40,0x34,0x44],&[0x08,3,0xff,3,0xff,0,0,0,0]] {command(&mut r,bytes);}
@@ -152,7 +152,7 @@ fn power_register(board:&mut Board,register:u8,value:u8) {let mut devices=board.
 #[test]
 fn oled_board_sd_roundtrips_and_pmu_rails_reset_protocol_without_erasing_storage() {
     for &(id,_,_,_,supreme) in OLED {
-        let mut b=lilygo_additional::make_board(id).unwrap();let bpf=id=="lilygo-t-beam-bpf";let one=id=="lilygo-t-beam-1w";let (clk,mosi,miso,cs)=if supreme {(36,35,37,47)}else if bpf{(12,11,13,10)}else if one{(13,11,12,10)}else{(14,11,2,13)};let pins=SpiPins{sclk:1<<clk,mosi:1<<mosi,miso:Some(miso),cs:1<<cs};
+        let mut b=lilygo_additional::make_board(id).unwrap();let bpf=id=="lilygo-t-beam-bpf";let one=id=="lilygo-t-beam-1w";let (clk,mosi,miso,cs)=if supreme {(36,35,37,47)}else if bpf{(12,11,13,10)}else if one{(13,11,12,10)}else{(14,11,2,13)};let pins=SpiPins{sclk:1<<clk,mosi:1<<mosi,miso:Some(miso),cs:1<<cs,keep_cs:false};
         b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();if supreme||bpf {assert_eq!(sd_command(&mut b,pins,0,0),[255,255]);power_register(&mut b,0x90,0x13);}
         b.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);assert_eq!(sd_command(&mut b,pins,0,0),[255,1]);sd_command(&mut b,pins,8,0x1aa);b.spi_transfer_pins(2,pins,&[],4);for _ in 0..2 {sd_command(&mut b,pins,55,0);sd_command(&mut b,pins,41,1<<30);}
         assert_eq!(sd_command(&mut b,pins,24,7),[255,0]);let mut bytes=vec![0xfe];bytes.extend([0x69;512]);bytes.extend([255,255]);b.spi_transfer_pins(2,pins,&bytes,0);assert_eq!(b.spi_transfer_pins(2,pins,&[],1),[5]);
@@ -217,7 +217,7 @@ fn mvsr_kit_and_three_twr_revisions_execute_their_own_oled_encoder_and_gpio_maps
 #[test]
 fn mvsr_and_twr_plus_card_writes_obey_their_separate_spi_and_aldo2_supply() {
     for id in ["lilygo-t3-s3-mvsr","lilygo-t-twr-plus","lilygo-t-twr-rev2-1"] {
-        let mut b=lilygo_additional::make_board(id).unwrap();let twr=id!="lilygo-t3-s3-mvsr";let pins=if twr{SpiPins{sclk:1<<12,mosi:1<<11,miso:Some(13),cs:1<<10}}else{SpiPins{sclk:1<<14,mosi:1<<11,miso:Some(2),cs:1<<13}};
+        let mut b=lilygo_additional::make_board(id).unwrap();let twr=id!="lilygo-t3-s3-mvsr";let pins=if twr{SpiPins{sclk:1<<12,mosi:1<<11,miso:Some(13),cs:1<<10,keep_cs:false}}else{SpiPins{sclk:1<<14,mosi:1<<11,miso:Some(2),cs:1<<13,keep_cs:false}};
         b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();if twr {assert_eq!(sd_command(&mut b,pins,0,0),[255,255]);power_register(&mut b,0x90,2);}
         b.spi_transfer_pins(2,SpiPins{cs:0,..pins},&[255;10],0);assert_eq!(sd_command(&mut b,pins,0,0),[255,1]);sd_command(&mut b,pins,8,0x1aa);b.spi_transfer_pins(2,pins,&[],4);for _ in 0..2 {sd_command(&mut b,pins,55,0);sd_command(&mut b,pins,41,1<<30);}
         assert_eq!(sd_command(&mut b,pins,24,8),[255,0]);let mut bytes=vec![0xfe];bytes.extend([0x36;512]);bytes.extend([255,255]);b.spi_transfer_pins(2,pins,&bytes,0);assert_eq!(b.spi_transfer_pins(2,pins,&[],1),[5]);assert_eq!(sd_command(&mut b,pins,17,8),[255,0]);assert_eq!(b.spi_transfer_pins(2,pins,&[],2),[255,0xfe]);assert_eq!(b.spi_transfer_pins(2,pins,&[],512),vec![0x36;512]);b.spi_transfer_pins(2,pins,&[],2);
@@ -260,7 +260,7 @@ fn ts_ssd1680_native_spi_refreshes_real_crop_only_at_busy_deadline() {
 #[test]
 fn long_and_ts_sd_use_separate_exact_buses_and_persist_across_removal() {
     for (id,clk,mosi,miso,cs,conflict) in [("lilygo-t-display-s3-long",40,39,41,38,None),("lilygo-ts-s3-epaper",14,11,2,13,Some(15))] {
-        let mut b=lilygo_additional::make_board(id).unwrap();let p=SpiPins{sclk:1<<clk,mosi:1<<mosi,miso:Some(miso),cs:1<<cs};b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();b.spi_transfer_pins(2,SpiPins{cs:0,..p},&[255;10],0);assert_eq!(sd_command(&mut b,p,0,0),[255,1]);sd_command(&mut b,p,8,0x1aa);b.spi_transfer_pins(2,p,&[],4);for _ in 0..2 {sd_command(&mut b,p,55,0);sd_command(&mut b,p,41,1<<30);}
+        let mut b=lilygo_additional::make_board(id).unwrap();let p=SpiPins{sclk:1<<clk,mosi:1<<mosi,miso:Some(miso),cs:1<<cs,keep_cs:false};b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();b.spi_transfer_pins(2,SpiPins{cs:0,..p},&[255;10],0);assert_eq!(sd_command(&mut b,p,0,0),[255,1]);sd_command(&mut b,p,8,0x1aa);b.spi_transfer_pins(2,p,&[],4);for _ in 0..2 {sd_command(&mut b,p,55,0);sd_command(&mut b,p,41,1<<30);}
         assert_eq!(sd_command(&mut b,p,24,4),[255,0]);let mut payload=vec![0xfe];payload.extend([0x96;512]);payload.extend([255;2]);b.spi_transfer_pins(2,p,&payload,0);assert_eq!(b.spi_transfer_pins(2,p,&[],1),[5]);assert_eq!(sd_command(&mut b,p,17,4),[255,0]);assert_eq!(b.spi_transfer_pins(2,p,&[],2),[255,0xfe]);assert_eq!(b.spi_transfer_pins(2,p,&[],512),[0x96;512]);b.spi_transfer_pins(2,p,&[],2);assert_eq!(sd_command(&mut b,SpiPins{miso:Some(0),..p},58,0),[255;2]);if let Some(pin)=conflict {assert_eq!(sd_command(&mut b,SpiPins{cs:p.cs|1<<pin,..p},0,0),[255;2]);}b.set_sd_card_present(false);assert_eq!(sd_command(&mut b,p,0,0),[255;2]);
     }
 }
@@ -315,7 +315,7 @@ fn epd47_s3_raw_i80_latches_real_symbols_and_rejects_wrong_data_or_disabled_rail
 }
 #[test]
 fn both_raw_epaper_s3_cards_are_real_spi_sockets_with_distinct_wiring() {
-    for (id,clk,mosi,miso,cs,other) in [("lilygo-t5-e-paper-s3-pro",14,13,21,12,Some(46)),("lilygo-t5-4-7-inch-e-paper-v2-3",11,15,16,42,None)] {let mut b=lilygo_additional::make_board(id).unwrap();let p=SpiPins{sclk:1<<clk,mosi:1<<mosi,miso:Some(miso),cs:1<<cs};b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();b.spi_transfer_pins(2,SpiPins{cs:0,..p},&[255;10],0);assert_eq!(sd_command(&mut b,p,0,0),[255,1]);sd_command(&mut b,p,8,0x1aa);assert_eq!(b.spi_transfer_pins(2,p,&[],4),[0,0,1,0xaa]);if let Some(pin)=other {assert_eq!(sd_command(&mut b,SpiPins{cs:p.cs|1<<pin,..p},0,0),[255;2]);}assert_eq!(sd_command(&mut b,SpiPins{miso:Some(0),..p},0,0),[255;2]);}
+    for (id,clk,mosi,miso,cs,other) in [("lilygo-t5-e-paper-s3-pro",14,13,21,12,Some(46)),("lilygo-t5-4-7-inch-e-paper-v2-3",11,15,16,42,None)] {let mut b=lilygo_additional::make_board(id).unwrap();let p=SpiPins{sclk:1<<clk,mosi:1<<mosi,miso:Some(miso),cs:1<<cs,keep_cs:false};b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();b.spi_transfer_pins(2,SpiPins{cs:0,..p},&[255;10],0);assert_eq!(sd_command(&mut b,p,0,0),[255,1]);sd_command(&mut b,p,8,0x1aa);assert_eq!(b.spi_transfer_pins(2,p,&[],4),[0,0,1,0xaa]);if let Some(pin)=other {assert_eq!(sd_command(&mut b,SpiPins{cs:p.cs|1<<pin,..p},0,0),[255;2]);}assert_eq!(sd_command(&mut b,SpiPins{miso:Some(0),..p},0,0),[255;2]);}
 }
 fn rgb_routes(r:&mut Rig) {for(pin,signal)in[(42,154),(47,151),(41,152),(45,150)].into_iter().chain([7,6,5,3,2,14,13,12,11,10,9,21,18,17,16,15].into_iter().enumerate().map(|(i,p)|(p,133+i as u32))){r.gpio.func_out_sel[pin as usize]=signal;r.mux.write(4+4*pin,1<<12);}r.drive(46,true);}
 fn rgb_serial(board:&mut Board,word:u16) {expander_write(board,(8,48),0x21,2,&[0x4e]);for bit in(0..9).rev(){let byte=0x46|if word&(1<<bit)!=0{16}else{0};expander_write(board,(8,48),0x21,2,&[byte]);expander_write(board,(8,48),0x21,2,&[byte|32]);}expander_write(board,(8,48),0x21,2,&[0x4e]);}

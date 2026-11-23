@@ -150,8 +150,13 @@ fn spi_native_matrix_and_software_chip_select_routes() {
             mosi: 1 << 11,
             miso: Some(13),
             cs: 1 << 10,
+            keep_cs: false,
         }
     );
+    bus.write32(0x6002_4020, 0x3e | 1 << 30).unwrap(); // IDF v5.2.1 MISC.CS_KEEP_ACTIVE
+    assert_eq!(spi(bus), 0xa5);
+    assert!(state.lock().unwrap().routes.last().unwrap().keep_cs);
+    assert_eq!(std::mem::size_of::<SpiPins>(), 32, "keep_cs fits the existing SpiPins padding");
     bus.write32(0x6002_4020, 0x3e | 1 << 7).unwrap(); // active-high CS
     assert_eq!(spi(bus), 0xff);
     bus.write32(0x6002_4020, 0x3e).unwrap();

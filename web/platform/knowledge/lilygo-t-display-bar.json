@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:32:37Z",
   "hardwareRevision": "source-defined board; see selected scope",
   "identity": {
     "manufacturer": "LILYGO",
@@ -152,6 +152,19 @@
         "bar-factory-ino"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-display-bar-official-factory",
+        "version": "1.6"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家提供 T-Display-Bar 的 Factory V1.6 固件。"
     }
   ],
   "revisions": [],
@@ -392,6 +405,17 @@
       "mediaType": "text/plain; charset=utf-8",
       "type": "manufacturer-source",
       "checkedAt": "2026-11-22"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "T-Display-Bar Factory",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-Bar/ea3b8e354f8185fb2c41ffc1b4ea99849e773204/firmware/T-Display-Bar-Factory-V1.6.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:32:37Z",
+      "sha256": "eebe6cc1db68e4a4d2b72707632521d4291508b84e4c54ab94aa95847244af25",
+      "bytes": 2714416,
+      "archiveName": "eebe6cc1db68e4a4d2b72707632521d4291508b84e4c54ab94aa95847244af25.bin"
     }
   ],
   "assets": [
@@ -446,16 +470,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -472,16 +486,23 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "not-found-in-inspected-pages",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-display-bar-official-factory",
     "sourceIds": [
-      "official-store-shopify-1",
-      "official-wiki-t-display-bar"
+      "official-factory-bin"
     ],
-    "links": [],
-    "evidenceNotes": [],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    "previousInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1",
+        "official-wiki-t-display-bar"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    }
   },
   "modelReview": {
     "model": {

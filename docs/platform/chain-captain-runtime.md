@@ -14,7 +14,7 @@
 
 按键后果可观察：G4 打开 Chain IoT 并使 M5PM1 `Boost Enabled`；G5 触发 `HAL-CHAIN` 两路扫描，`Port A TX=7 RX=6`、`Port B TX=18 RX=17`，各 `received=0 bytes`；G1 只改变面板帧。未建模外设以 guest 自身错误暴露：`HAL-RTC: RX8130 flag/time read failed: ESP_ERR_INVALID_STATE`。
 
-复现命令和板级限制见[运行证据](evidence/chain-captain/README.md)。合并后的 Chromium 工作台复验了 3D A 键与键盘 B 键串接输入，客体输出 `Boost Enabled`，并可在 mini 播放器打开同一配置。结果见[浏览器回执](evidence/chain-captain/browser-v02.json)。
+复现命令和板级限制见[运行证据](evidence/chain-captain/README.md)。合并后的 Chromium 工作台复验了依次操作 3D A 键和键盘 B 键，客体输出 `Boost Enabled`，并可在 mini 播放器打开同一配置。结果见[浏览器回执](evidence/chain-captain/browser-v02.json)。
 
 ## 保留的冲突与未知
 
