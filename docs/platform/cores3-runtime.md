@@ -19,4 +19,10 @@ K128、Lite 和 K149 的官方资料指向同一份 CoreS3 V1.0 主机原理图�
 
 四款板型共用平台的 SPI SD 卡镜像通路。平台准备的 64 MiB FAT32 卡通过实际插卡状态和供电寄存器接入，断电时卡不回复 SPI 命令，重新供电需由固件初始化。定向 Rust 测试覆盖卡检测、错误针脚、掉电重置和 SE 不枚举缺少的 BMI270。
 
+实际浏览器的 WASM worker 用原厂镜像启动四款主机。K128、SE 和 Lite 的 UserDemo 可从开机图进入主菜单，再进入 SD 页面，客体串口输出 `HomeMenu -> AppSD`。K128 的原厂程序从导入的 FAT32 镜像读取并显示了 `PROOF.TXT`。K149 显示 Espressif 标识并启动 `esp_ot_br`，随后报告 Spinel 响应超时。
+
+SE 工作台通过 3D 屏幕点击打开主菜单，再从 2D 屏幕进入 SD 页面。mini 播放器在独立的空白存储环境中回放这四个触摸事件，客体再次进入 SD 页面，输出帧的 SHA-256 与原始录制一致。原录制的 Flash 数据保留。固件、ROM、WASM 与画面摘要见[浏览器回执](evidence/cores3/browser.json)。
+
+复现时使用新建的本地浏览器会话，因为检查会替换该会话里 K128 的虚拟卡。构建 WASM 并准备 ROM 后，打开本地工作台，用 Playwright 包装器执行 `run-code --filename tools/fixtures/cores3-browser-check.js`。测试完成后关闭本次会话。
+
 原厂镜像继续标为 `trial`。当前板型实现 ILI9342C 的数字命令，ILI9342E 批次、音频、相机、接近传感器、BMM150 辅助总线、真实温度与电量、RTC 唤醒、实体开关与 USB OTG 均未验收。未实机验证。
