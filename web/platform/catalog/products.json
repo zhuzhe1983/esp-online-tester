@@ -11000,10 +11000,11 @@
       "chip": "esp32s3",
       "module": "ESP32-S3",
       "runtime": {
-        "board": null,
+        "board": "cores3-thread-br",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
@@ -11020,13 +11021,15 @@
         },
         {
           "id": "power",
+          "type": "button",
           "name": "AXP2101 power",
-          "type": "button"
+          "simulationSupported": false
         },
         {
           "id": "reset",
+          "type": "button",
           "name": "Reset",
-          "type": "button"
+          "simulationSupported": false
         }
       ],
       "interfaces": [
@@ -11108,7 +11111,25 @@
           "type": "microSD",
           "name": "microSD",
           "external": true,
-          "pins": []
+          "pins": [
+            {
+              "name": "SCK",
+              "gpio": 36
+            },
+            {
+              "name": "MOSI",
+              "gpio": 37
+            },
+            {
+              "name": "MISO",
+              "gpio": 35
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
+          "notes": "SPI 模式。AW9523B P0_4 低电平检测插卡；AXP2101 ALDO4 为卡供电。"
         },
         {
           "id": "lcd-spi",
@@ -11150,7 +11171,10 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "数字实现覆盖 ILI9342C、FT6336U 单点触摸、AW9523B、AXP2101 电源寄存器子集、BM8563 日历和 SPI TF。ILI9342E 批次尚未核验。",
+        "BMI270 仅支持虚拟传感器轴寄存器采样。BMM150 AUX、摄像头和接近传感器未模拟。",
+        "音频、USB OTG、RTC 唤醒、充电和实体电源/复位操作未模拟；未实机验证。",
+        "仅模拟 K149 的 CoreS3 主机数字子集；ESP32-H2 RCP、Thread/Zigbee 网络与电池底座未实现。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k149.json",
@@ -11288,10 +11312,11 @@
       "chip": "esp32s3",
       "module": "ESP32-S3",
       "runtime": {
-        "board": null,
+        "board": "cores3",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
@@ -11299,7 +11324,26 @@
         "type": "LCD",
         "controller": "ILI9342C / ILI9342E"
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "touch",
+          "type": "touch",
+          "name": "Capacitive touch",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "power",
+          "type": "button",
+          "name": "AXP2101 power",
+          "simulationSupported": false
+        },
+        {
+          "id": "reset",
+          "type": "button",
+          "name": "Reset",
+          "simulationSupported": false
+        }
+      ],
       "interfaces": [
         {
           "id": "grove-port-a",
@@ -11369,7 +11413,24 @@
         },
         {
           "external": true,
-          "pins": [],
+          "pins": [
+            {
+              "name": "SCK",
+              "gpio": 36
+            },
+            {
+              "name": "MOSI",
+              "gpio": 37
+            },
+            {
+              "name": "MISO",
+              "gpio": 35
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
           "id": "micro-sd",
           "type": "microSD",
           "name": "microSD 卡槽",
@@ -11379,7 +11440,7 @@
           "sourceIds": [
             "official-docs"
           ],
-          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+          "notes": "SPI 模式。AW9523B P0_4 低电平检测插卡；AXP2101 ALDO4 为卡供电。"
         }
       ],
       "sources": [
@@ -11390,7 +11451,10 @@
         }
       ],
       "limitations": [
-        "本型号的板级运行模型尚未实现；导入外观不代表固件可运行。",
+        "数字实现覆盖 ILI9342C、FT6336U 单点触摸、AW9523B、AXP2101 电源寄存器子集、BM8563 日历和 SPI TF。ILI9342E 批次尚未核验。",
+        "BMI270 仅支持虚拟传感器轴寄存器采样。BMM150 AUX、摄像头和接近传感器未模拟。",
+        "音频、USB OTG、RTC 唤醒、充电和实体电源/复位操作未模拟；未实机验证。",
+        "保持 K128 标准版的 DinBase 身份；DIN 供电、M-Bus 与 Grove 外设暂不模拟。",
         "尺寸、材质、未知内部件和照片核验范围见模型报告。"
       ],
       "knowledgeUrl": "./knowledge/m5stack-k128.json",
@@ -11424,10 +11488,11 @@
       "summary": "ESP32-S3 触摸屏终端，含 AXP2101、RTC 与音频；按 SE 文档维护，不引入标准 CoreS3 的摄像头和 IMU。",
       "knowledgeUrl": "./knowledge/m5stack-k128-se.json",
       "runtime": {
-        "board": null,
+        "board": "cores3-se",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
@@ -11436,7 +11501,26 @@
         "technology": "lcd",
         "touch": true
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "touch",
+          "type": "touch",
+          "name": "Capacitive touch",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "power",
+          "type": "button",
+          "name": "AXP2101 power",
+          "simulationSupported": false
+        },
+        {
+          "id": "reset",
+          "type": "button",
+          "name": "Reset",
+          "simulationSupported": false
+        }
+      ],
       "interfaces": [
         {
           "id": "port-a",
@@ -11533,7 +11617,24 @@
         },
         {
           "external": true,
-          "pins": [],
+          "pins": [
+            {
+              "name": "SCK",
+              "gpio": 36
+            },
+            {
+              "name": "MOSI",
+              "gpio": 37
+            },
+            {
+              "name": "MISO",
+              "gpio": 35
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
           "id": "micro-sd",
           "type": "microSD",
           "name": "microSD 卡槽",
@@ -11545,7 +11646,7 @@
           "sourceIds": [
             "official-docs"
           ],
-          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+          "notes": "SPI 模式。AW9523B P0_4 低电平检测插卡；AXP2101 ALDO4 为卡供电。"
         }
       ],
       "model": {
@@ -11562,11 +11663,12 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "数字实现覆盖 ILI9342C、FT6336U 单点触摸、AW9523B、AXP2101 电源寄存器子集、BM8563 日历和 SPI TF。ILI9342E 批次尚未核验。",
+        "SE 硬件未安装相机、接近传感器、BMI270 或 BMM150，板型不会枚举它们。",
+        "音频、USB OTG、RTC 唤醒、充电和实体电源/复位操作未模拟；未实机验证。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
         "Source lower cover reaches overall 16.5 mm depth; table states 15.5 mm. No stretching or cover removal was used to force a pass.",
         "No camera, IMU or battery capacity has been copied from sibling CoreS3 configurations.",
-        "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
         "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
         "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
         "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
@@ -11610,10 +11712,11 @@
       "summary": "ESP32-S3 主机，16MB Flash、8MB PSRAM、2英寸触摸屏与GC0308摄像头。模型仅按Lite壳体源装配，未套用标准CoreS3的DIN底座。",
       "knowledgeUrl": "./knowledge/m5stack-k128-lite.json",
       "runtime": {
-        "board": null,
+        "board": "cores3-lite",
         "flashMb": 16,
         "psramMb": 8,
-        "status": "unavailable"
+        "status": "partial",
+        "touch": true
       },
       "display": {
         "width": 320,
@@ -11622,7 +11725,26 @@
         "driver": "ILI9342C / ILI9342E",
         "touch": true
       },
-      "controls": [],
+      "controls": [
+        {
+          "id": "touch",
+          "type": "touch",
+          "name": "Capacitive touch",
+          "controller": "FT6336U"
+        },
+        {
+          "id": "power",
+          "type": "button",
+          "name": "AXP2101 power",
+          "simulationSupported": false
+        },
+        {
+          "id": "reset",
+          "type": "button",
+          "name": "Reset",
+          "simulationSupported": false
+        }
+      ],
       "interfaces": [
         {
           "id": "port-a",
@@ -11657,7 +11779,24 @@
         },
         {
           "external": true,
-          "pins": [],
+          "pins": [
+            {
+              "name": "SCK",
+              "gpio": 36
+            },
+            {
+              "name": "MOSI",
+              "gpio": 37
+            },
+            {
+              "name": "MISO",
+              "gpio": 35
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
           "id": "micro-sd",
           "type": "microSD",
           "name": "microSD 卡槽",
@@ -11667,7 +11806,7 @@
           "sourceIds": [
             "official-docs"
           ],
-          "notes": "只补卡槽形态；总线模式、容量限制、检测线与模拟器存储支持维持原状。"
+          "notes": "SPI 模式。AW9523B P0_4 低电平检测插卡；AXP2101 ALDO4 为卡供电。"
         }
       ],
       "model": {
@@ -11684,9 +11823,11 @@
         "basis": "official"
       },
       "limitations": [
-        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "数字实现覆盖 ILI9342C、FT6336U 单点触摸、AW9523B、AXP2101 电源寄存器子集、BM8563 日历和 SPI TF。ILI9342E 批次尚未核验。",
+        "BMI270 仅支持虚拟传感器轴寄存器采样。BMM150 AUX、摄像头和接近传感器未模拟。",
+        "音频、USB OTG、RTC 唤醒、充电和实体电源/复位操作未模拟；未实机验证。",
+        "保留 Lite 独立壳体与固件运行身份；不包含标准版的 DIN 底座。",
         "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
-        "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
         "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
         "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
         "Official rear-photo SKU text reads CORE S3 SE; relation to Lite listing is retained as a source discrepancy. No hidden board inferred from this photo."

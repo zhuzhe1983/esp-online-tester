@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:42:25Z",
+  "updatedAt": "2026-11-23T04:58:24Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -750,6 +750,91 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "lcd-host-wiring",
+      "label": "LCD SPI and control wiring",
+      "value": {
+        "SCK": 36,
+        "MOSI": 37,
+        "CS": 3,
+        "DC": 35,
+        "reset": "AW9523B P1_1",
+        "backlight": "AXP2101 DLDO1"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "runtime-product-docs"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "touch-host-wiring",
+      "label": "FT6336U touch signals",
+      "value": {
+        "address": "0x38",
+        "SDA": 12,
+        "SCL": 11,
+        "reset": "AW9523B P0_0",
+        "interrupt": "AW9523B P1_2",
+        "expanderInterrupt": 21
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "runtime-product-docs"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "sd-host-wiring",
+      "label": "TF SPI and card detect",
+      "value": {
+        "SCK": 36,
+        "MOSI": 37,
+        "MISO": 35,
+        "CS": 4,
+        "cardDetect": "AW9523B P0_4 (active-low)",
+        "power": "AXP2101 ALDO4"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "axp2101-v1"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "host-rtc",
+      "label": "RTC controller",
+      "value": {
+        "controller": "BM8563",
+        "address": "0x51",
+        "SDA": 12,
+        "SCL": 11
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "runtime-product-docs"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "factory-image-recheck",
+      "label": "Pinned factory image",
+      "value": {
+        "firmwareId": "m5stack-k128-se-official-reference",
+        "revision": "v0.6",
+        "sha256": "c6990a38bd3c42ab85ad77d377ebf47118b43a126c7623022e102f9f4d60063a"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-product-docs",
+        "checked-factory-image"
+      ],
+      "group": "firmware"
     }
   ],
   "revisions": [],
@@ -1098,6 +1183,71 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-product-docs",
+      "title": "CoreS3-SE",
+      "url": "https://docs.m5stack.com/en/core/CoreS3-SE",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/CoreS3-SE",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:24Z",
+      "mediaType": "text/html",
+      "bytes": 154418,
+      "sha256": "afcc1bd72855bcb2d911319ef7621c358c272b7bfe4ebb08f8264a3f3dee5b9d",
+      "kind": "official-product-document",
+      "archiveName": "cores3-se.html"
+    },
+    {
+      "id": "core-runtime-schematic",
+      "title": "CoreS3-SE schematic V1.0",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/498/Sch_M5_CoreS3_SE_v1.0.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/498/Sch_M5_CoreS3_SE_v1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:24Z",
+      "mediaType": "application/pdf",
+      "bytes": 1353846,
+      "sha256": "ff105808b6073ab487c63e0af776418a58bcf386c2b63f97e3083f5698847e2f",
+      "kind": "official-schematic",
+      "archiveName": "se-sch.pdf"
+    },
+    {
+      "id": "axp2101-v1",
+      "title": "AXP2101 datasheet V1.0",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/K128%20CoreS3/AXP2101_Datasheet_V1.0_en.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/K128%20CoreS3/AXP2101_Datasheet_V1.0_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:24Z",
+      "mediaType": "application/pdf",
+      "bytes": 1586117,
+      "sha256": "421011983c56034e1074d28e22826e8414d55f8dc5344cd67967942e3bc8b8d9",
+      "kind": "manufacturer-datasheet",
+      "archiveName": "axp2101.pdf"
+    },
+    {
+      "id": "aw9523b-datasheet",
+      "title": "AW9523B datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/AW9523B-EN.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/AW9523B-EN.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:24Z",
+      "mediaType": "application/pdf",
+      "bytes": 1452734,
+      "sha256": "91c171524f683581f0840cefa57be9f579d93b9b83bb46a62f05a43bf2aff9e5",
+      "kind": "manufacturer-datasheet",
+      "archiveName": "aw9523b.pdf"
+    },
+    {
+      "id": "checked-factory-image",
+      "title": "CoreS3-SE · K128-SE 官方出厂固件 · v0.6",
+      "url": "https://m5burner-cdn.m5stack.com/firmware/fed93812db65b5347b706d1f237021b9.bin",
+      "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/fed93812db65b5347b706d1f237021b9.bin",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:28Z",
+      "mediaType": "application/octet-stream",
+      "bytes": 6072032,
+      "sha256": "c6990a38bd3c42ab85ad77d377ebf47118b43a126c7623022e102f9f4d60063a",
+      "kind": "manufacturer-firmware",
+      "archiveName": "m5stack-k128-se-official-reference.bin"
     }
   ],
   "assets": [
@@ -1254,6 +1404,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "运行模型、电气路径与固件试运行证据见 docs/platform/cores3-runtime.md。"
   ]
 }

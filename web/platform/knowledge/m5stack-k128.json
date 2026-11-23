@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-11-01T17:06:43Z",
+  "updatedAt": "2026-11-23T04:58:23Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -1000,6 +1000,106 @@
       "group": "model-geometry",
       "notes": "Coordinates are relative to the 54 mm front-panel center. These describe visible apertures, not internal package placement. Optical depth, materials and the active LCD plane remain presentation estimates; no camera/audio/proximity runtime validation is implied.",
       "method": "tools/rebuild-cores3-front.py --check: parse pinned DXF ENTITIES, origin from dimension witnesses 6D1/6D2; glass 71E/75B/724/75F, LCD 734/756/759, camera 10B8/10BA/10BB, microphones 109A/10BC, LTR 10BD/10BE. Retain native mm coordinates."
+    },
+    {
+      "id": "lcd-host-wiring",
+      "label": "LCD SPI and control wiring",
+      "value": {
+        "SCK": 36,
+        "MOSI": 37,
+        "CS": 3,
+        "DC": 35,
+        "reset": "AW9523B P1_1",
+        "backlight": "AXP2101 DLDO1"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "runtime-product-docs"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "touch-host-wiring",
+      "label": "FT6336U touch signals",
+      "value": {
+        "address": "0x38",
+        "SDA": 12,
+        "SCL": 11,
+        "reset": "AW9523B P0_0",
+        "interrupt": "AW9523B P1_2",
+        "expanderInterrupt": 21
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "runtime-product-docs"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "sd-host-wiring",
+      "label": "TF SPI and card detect",
+      "value": {
+        "SCK": 36,
+        "MOSI": 37,
+        "MISO": 35,
+        "CS": 4,
+        "cardDetect": "AW9523B P0_4 (active-low)",
+        "power": "AXP2101 ALDO4"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "axp2101-v1"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "host-rtc",
+      "label": "RTC controller",
+      "value": {
+        "controller": "BM8563",
+        "address": "0x51",
+        "SDA": 12,
+        "SCL": 11
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "runtime-product-docs"
+      ],
+      "group": "interfaces"
+    },
+    {
+      "id": "factory-image-recheck",
+      "label": "Pinned factory image",
+      "value": {
+        "firmwareId": "m5stack-k128-factory-reference",
+        "revision": "v0.12",
+        "sha256": "b85af8bd116897ee71e00b5111b8b5643754f18990fcf322bd15638f98a6c5ea"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-product-docs",
+        "checked-factory-image"
+      ],
+      "group": "firmware"
+    },
+    {
+      "id": "host-imu",
+      "label": "Inertial sensors",
+      "value": {
+        "controller": "BMI270",
+        "address": "0x69",
+        "magnetometer": "BMM150 on BMI270 AUX"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "core-runtime-schematic",
+        "runtime-product-docs"
+      ],
+      "group": "interfaces"
     }
   ],
   "revisions": [],
@@ -1555,6 +1655,71 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-product-docs",
+      "title": "CoreS3",
+      "url": "https://docs.m5stack.com/en/core/CoreS3",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/CoreS3",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:23Z",
+      "mediaType": "text/html",
+      "bytes": 166200,
+      "sha256": "954cd88691f85cd8247370bdbe571499c0986b83a84020db6b6a6d0a38d353ef",
+      "kind": "official-product-document",
+      "archiveName": "cores3.html"
+    },
+    {
+      "id": "core-runtime-schematic",
+      "title": "CoreS3 schematic V1.0",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/490/Sch_M5_CoreS3_v1.0.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/490/Sch_M5_CoreS3_v1.0.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:24Z",
+      "mediaType": "application/pdf",
+      "bytes": 1537792,
+      "sha256": "58a15454eccb11d2668e1a9a3ad85943b9a58b104c5f1ed137b790192ec27c04",
+      "kind": "official-schematic",
+      "archiveName": "core-sch.pdf"
+    },
+    {
+      "id": "axp2101-v1",
+      "title": "AXP2101 datasheet V1.0",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/K128%20CoreS3/AXP2101_Datasheet_V1.0_en.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/K128%20CoreS3/AXP2101_Datasheet_V1.0_en.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:24Z",
+      "mediaType": "application/pdf",
+      "bytes": 1586117,
+      "sha256": "421011983c56034e1074d28e22826e8414d55f8dc5344cd67967942e3bc8b8d9",
+      "kind": "manufacturer-datasheet",
+      "archiveName": "axp2101.pdf"
+    },
+    {
+      "id": "aw9523b-datasheet",
+      "title": "AW9523B datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/AW9523B-EN.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/products/core/CoreS3/AW9523B-EN.pdf",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:24Z",
+      "mediaType": "application/pdf",
+      "bytes": 1452734,
+      "sha256": "91c171524f683581f0840cefa57be9f579d93b9b83bb46a62f05a43bf2aff9e5",
+      "kind": "manufacturer-datasheet",
+      "archiveName": "aw9523b.pdf"
+    },
+    {
+      "id": "checked-factory-image",
+      "title": "CoreS3 官方出厂固件 · v0.12",
+      "url": "https://m5burner-cdn.m5stack.com/firmware/814dba58deaf2918cc19b8088e3f602f.bin",
+      "resolvedUrl": "https://m5burner-cdn.m5stack.com/firmware/814dba58deaf2918cc19b8088e3f602f.bin",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T04:58:28Z",
+      "mediaType": "application/octet-stream",
+      "bytes": 7138816,
+      "sha256": "b85af8bd116897ee71e00b5111b8b5643754f18990fcf322bd15638f98a6c5ea",
+      "kind": "manufacturer-firmware",
+      "archiveName": "m5stack-k128-factory-reference.bin"
     }
   ],
   "assets": [
@@ -1791,6 +1956,7 @@
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
     "Model import does not establish CPU/board/peripheral firmware support.",
-    "2026-11-02: source-backed camera, dual microphone and LTR front apertures added from the official DXF. Head-only reuse contract excludes DinBase and internal PCB assumptions. Current and historical geometry evidence: docs/platform/evidence/m5stack-k128/front-details-2026-11-02/receipt.json."
+    "2026-11-02: source-backed camera, dual microphone and LTR front apertures added from the official DXF. Head-only reuse contract excludes DinBase and internal PCB assumptions. Current and historical geometry evidence: docs/platform/evidence/m5stack-k128/front-details-2026-11-02/receipt.json.",
+    "运行模型、电气路径与固件试运行证据见 docs/platform/cores3-runtime.md。"
   ]
 }
