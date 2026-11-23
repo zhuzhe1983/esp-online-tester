@@ -82,7 +82,7 @@ Unit Button U027、Unit RGB U003、Unit Angle U005、无源并联 Hub U006 已�
 | 40 | [M5Stack CoreS3-SE · K128-SE](https://docs.m5stack.com/en/core/CoreS3-SE) · `m5stack-k128-se` | esp32s3 / ILI9342C | 待实现 | ILI9342C 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 41 | [M5Stack Faces Kit](https://docs.m5stack.com/en/core/Faces_Kit) · `m5stack-k005` | esp32 / ILI9342C | 待实现 | ILI9342C 引脚/窗口/批次，按键/触摸，供电及板载外设 |
 | 42 | [M5Stack FIRE v2.7](https://docs.m5stack.com/en/core/Fire_v2.7) · `m5stack-k007-v27` | esp32 / ILI9342C | 待实现 | ILI9342C 引脚/窗口/批次，按键/触摸，供电及板载外设 |
-| 43 | [M5Stack M5GO IoT Kit v2.7](https://docs.m5stack.com/en/core/M5GO_IoT_Kit_v2.7) · `m5stack-k006-v27` | esp32 / ILI9342C | 待实现 | ILI9342C 引脚/窗口/批次，按键/触摸，供电及板载外设 |
+| 43 | [M5Stack M5GO IoT Kit v2.7](https://docs.m5stack.com/en/core/M5GO_IoT_Kit_v2.7) · `m5stack-k006-v27` | esp32 / ILI9342C | 部分支持 | UIFlow2 实测 LCD、A/B/C 与 TF。原厂 EasyLoader 卡在 MCPWM0；供电、底座及外部接口待适配。[运行范围](m5go-v27-runtime.md) |
 | 44 | [M5Stack Paper v1.1](https://docs.m5stack.com/en/core/Paper_v1.1) · `m5stack-k049-b` | esp32 / IT8951E | 待实现 | IT8951E 刷新通道、存储、触摸/按键、电源 |
 | 45 | [M5Stack PaperColor · C151](https://docs.m5stack.com/en/core/PaperColor) · `m5stack-c151` | esp32s3 / ED2208-DOA / EL040EF1 | 待实现 | ED2208-DOA / EL040EF1 刷新通道、存储、触摸/按键、电源 |
 | 46 | [M5Stack PaperDIY Complete Kit · K159-B](https://docs.m5stack.com/en/core/PaperDIY_Complete_Kit) · `m5stack-k159-b` | esp32s3 / ET047TC1 | partial：官方 v1.0、并行黑白纸屏、NVS 与 A/B | 16 灰阶、SPI TF、FPC、电源睡眠与无线；本机无触摸 |
