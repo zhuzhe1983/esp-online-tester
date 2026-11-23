@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {createManufacturerModel} from '../web/platform/manufacturer-model.js';
 import {applyShellAppearance} from '../web/platform/shell-appearance.js';
+import {Raycaster, Vector3} from '../web/platform/vendor/three.module.min.js';
 const nativeFetch=globalThis.fetch;
 const nativeDocument=globalThis.document;
 const vertices=new Float32Array([-1,-1,0,0,0,1,1,-1,0,0,0,1,0,1,0,0,0,1]);
@@ -25,6 +26,26 @@ try {
  metadata={...fixture,derivedParts:[port]};const unknown=createManufacturerModel(product,null);await unknown.ready;assert.ok(unknown.parts.grove);assert.equal(unknown.connectors.grove,undefined,'Visible socket is not automatically connectable');unknown.dispose();
  metadata={...fixture,derivedParts:[{...port,allowConnections:true}]};const verified=createManufacturerModel(product,null);await verified.ready;assert.deepEqual(verified.connectors.grove.pinOrder,port.pinOrder);verified.dispose();
  metadata={...fixture,derivedParts:[{...port,housingColor:'#b5212d'}]};const red=createManufacturerModel(product,null);await red.ready;assert.equal(red.parts.grove.getObjectByName('socket-side').material.color.getHexString(),'b5212d');assert.equal(red.parts.grove.getObjectByName('socket-pin-0').material.color.getHexString(),'b8a572');assert.deepEqual(red.group.userData.shellMeshes,[]);red.dispose();
+ const usb={id:'usb-c',kind:'connector-visual',connectorType:'USB-C',housingVariant:'recessed',geometry:{centerMm:[1,-4,2],rotation:[Math.PI/2,0,0],depthMm:3}};
+ metadata={...fixture,derivedParts:[usb]};
+ const recessed=createManufacturerModel(product,null);await recessed.ready;
+ recessed.group.updateMatrixWorld(true);
+ const socket=recessed.parts['usb-c'],anchor=recessed.connectors['usb-c'].anchor;
+ assert.deepEqual(anchor.getWorldPosition(new Vector3()).toArray(),usb.geometry.centerMm);
+ const inward=new Vector3(0,0,-1).transformDirection(socket.matrixWorld);
+ const hitAt=offset=>new Raycaster(socket.localToWorld(new Vector3(...offset,2)),inward).intersectObject(socket,true)[0];
+ const rear=hitAt([0,.9]),tongue=hitAt([0,0]),mouthRim=hitAt([0,1.4]);
+ assert.equal(rear.object.name,'usb-c-rear');
+ assert.ok(Math.abs(socket.worldToLocal(rear.point).z+3)<.0001,'The ray can enter the socket beside the tongue');
+ assert.equal(tongue.object.name,'usb-c-tongue');
+ assert.ok(Math.abs(socket.worldToLocal(tongue.point).z+.65)<.0001,'The tongue sits inside the mouth plane');
+ assert.equal(mouthRim.object.name,'usb-c-sleeve');
+ assert.ok(Math.abs(socket.worldToLocal(mouthRim.point).z)<.0001);
+ recessed.dispose();
+ for(const depthMm of [0,11,null,'3']){
+  metadata={...fixture,derivedParts:[{...usb,geometry:{...usb.geometry,depthMm}}]};
+  const invalid=createManufacturerModel(product,null);await assert.rejects(invalid.ready,/Invalid USB-C cavity depth/);invalid.dispose();
+ }
  metadata={...fixture,derivedParts:[{kind:'label',id:'bad-label',texture:'anything.png',geometry:{sizeMm:[-1,1]}}]};const bad=createManufacturerModel(product,null);await assert.rejects(bad.ready,/Invalid label dimensions/);bad.dispose();
  const profile=[[0,0],[4.65,0],[4.65,103.35],[0,108]];
  metadata={...fixture,derivedParts:[{id:'antenna',kind:'lathe',geometry:{profileMm:profile,centerMm:[34,36,-17]}}]};const antenna=createManufacturerModel(product,null);await antenna.ready;
