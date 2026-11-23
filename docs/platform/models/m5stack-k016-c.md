@@ -27,7 +27,7 @@ Manufacturer source is separated along Z. Components 2/3/4 are rigidly translate
 
 正反视图只有照片确属近正投影且原始型号一致时才用0.95轮廓门槛。侧视/斜视保留为定性检查，不以轮廓掩盖标签、组件或装配差异。引用照片的纹理不是独立验证依据；未通过/缺失项不会改写成通过。
 
-厂家 CAD 保留 MIT；官方照片及其裁切纹理版权归厂家，未验证独立开放图片许可，不套用项目 MIT。屏幕照片中的固件像素不作为模拟输出。runtime 为 unavailable，官方固件入口仅参考，未验证版本/hash/镜像不填猜测值。
+厂家 CAD 使用 MIT。官方照片与背贴原稿保留厂家版权。屏幕使用实时固件画面。K016-C 的板级支持范围见 [运行记录](../stick-k016-c-runtime.md)。
 
 重生成：
 
@@ -47,9 +47,18 @@ python tools/onboard-lane-01-extra.py publish --ids m5stack-k016-c
 
 - Assembled shell estimate is 24×48×13 mm, smaller than current document 25.5×48.2×13.7 mm; all dimensional failures remain visible. The directory may represent another housing revision.
 - Source assembly transform is estimated. Do not treat this model as a confirmed 1:1 match to current K016-C housing.
-- Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.
 - Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.
 - Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.
 - Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.
 - 本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。
 - Source separated shells are only provisionally assembled by recorded translation; rear small pieces are fasteners, not user keys. No exact enclosure assembly certification.
+
+## 顶部排母、底部接口和背贴复验
+
+顶部原有开口宽约 21.05 mm。8 个内凹方形插孔按厂家给出的 2.54 mm 间距排在壳体开口内，口沿外法向为模型 +Y。底部 Type-C 与 Grove 分别贴合原有开口的前侧与后侧，朝模型 −Y。Type-C 金属口围绕内缩舌片，Grove 保留带锁扣缺口的塑料座及内部触点，制造商照片可见的橙色分隔条遮住原先露出的占位 PCB 边。插入深度、可见触点和分隔条按外观估算。两口及排母用于外观显示。[厂家顶部端子照片](https://m5stack.oss-cn-shenzhen.aliyuncs.com/image/m5-docs_content/core/m5stickc_04.png) · [厂家产品图](https://docs.m5stack.com/en/core/StickC)
+
+背贴取自同款设备的 3007 × 5314 像素原稿，使用原图透明边界生成 1495 × 2657 像素纹理。背贴面约 20.42 × 36.28 mm，按官方背照对齐顶部排母及下方紧固件。旧 CAD 缺失的两小段承载面按对应照片和现有外壳轮廓补齐。正面、顶部、底部、背面和斜侧面的 Chromium 检查确认了插孔和贴边，原色、金色和半透明紫色下背贴保持原色。[厂家背贴原稿](https://static-cdn.m5stack.com/resource/docs/products/core/m5stickc/m5stickc_04.webp)
+
+分开查看时，后壳、背贴、承载面、可见紧固件和底部装饰框沿模型 −Z 同步移动，PCB 占位和接口留在原装配坐标。12 mm 是查看偏移。原始 STL 与导出的原厂网格保持原有哈希，本次仅更新派生件和贴图，原有外壳尺寸差异仍按前表保留。[复验数据](../evidence/m5stack-k016-c/connector-decal-20261123.json) · [前后对照](../evidence/m5stack-k016-c/connector-decal-20261123.webp)
+
+当前模型可用 `python tools/rebuild-product-model.py build m5stack-k016-c --scratch <新目录>` 从仓库提供的文件离线重建。重建覆盖派生件、分开查看分组、贴图及每个已固定的素材。
