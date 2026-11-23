@@ -4,7 +4,7 @@
 //! The cached M5Stack AXP192 datasheet PDF (4 pages) carries no register table, so the library
 //! is the register authority for this lane and that is recorded in the evidence sources.
 //! Not modelled: ADC conversions, battery/charger analog loops, coulomb counting and the PMU IRQ
-//! pin. Voltage-measurement registers (0x26, 0x56..0x79, 0xB0..0xB8) read 0 so a guest can never
+//! pin. Voltage-measurement registers (0x56..0x7F, 0xB0..0xB8) read 0 so a guest can never
 //! infer a battery percentage from the simulation.
 use super::I2cDevice;
 use std::sync::{Arc,Mutex};
@@ -16,7 +16,7 @@ pub const AXP192_ADDRESS: u8 = 0x34;
 pub const REG_CTL: u8 = 0x12;
 /// 0x32 OFF_CTL bit7 = shutdown: "turn off all power channels, only VRTC" (XPowersAXP192.hpp L364).
 pub const REG_OFF: u8 = 0x32;
-/// 0x36 POK_SET: bits7:6 press-on time, bits5:4 long-press time, bit3 long-press power-off enable,
+/// 0x36 POK_SET: bits7:6 power-on time, bits5:4 long-press time, bit3 long-press power-off enable,
 /// bits1:0 press-off time (XPowersAXP192.hpp L1812/1854/1835).
 pub const REG_POK: u8 = 0x36;
 pub const REG_INTEN3: u8 = 0x42;
@@ -50,7 +50,7 @@ impl Axp192State {
     pub fn external_5v_on(&self)->bool {!self.power_off_requested && self.rails().exten}
     pub fn ldo2_mv(&self)->u16 {1800+u16::from((self.regs[0x28]>>4)&0xf)*100}
     pub fn ldo3_mv(&self)->u16 {1800+u16::from(self.regs[0x28]&0xf)*100}
-    pub fn dc3_mv(&self)->u16 {700+u16::from(self.regs[0x27])*25}
+    pub fn dc3_mv(&self)->u16 {700+u16::from(self.regs[0x27]&0x7f)*25}
     /// M5Core2 67099371 AXP192.cpp::SetLCDRSet and M5Unified AXP192_Class::_set_GPIO3_4:
     /// these outputs use 96h[1:0]; 95h selects open-drain mode.
     pub fn gpio34_high(&self,io:u8)->bool {
@@ -85,16 +85,17 @@ impl Axp192State {
         [(0x40u8,0x44u8),(0x41,0x45),(0x42,0x46),(0x43,0x47),(0x4a,0x4d)]
             .iter().any(|&(en,st)|self.regs[usize::from(en)]&self.regs[usize::from(st)]!=0)
     }
-    fn press_on_ticks(&self)->u64 {
-        // bits7:6 select 128 ms / 512 ms / 1 s / 2 s (xpowers_press_on_time_t).
-        let ms=[128u64,512,1000,2000][usize::from((self.regs[usize::from(REG_POK)]>>6)&3)];
+    fn long_press_ticks(&self)->u64 {
+        // XPowersAXP192.hpp xpowers_axp192_pekey_long_press_t and
+        // setPowerKeyLongPressOnTime: POK_SET [5:4], separate from power-on [7:6].
+        let ms=[1000u64,1500,2000,2500][usize::from((self.regs[usize::from(REG_POK)]>>4)&3)];
         (u128::from(ms)*u128::from(self.clock_hz)).div_ceil(1000) as u64
     }
-    pub fn next_deadline(&self)->Option<u64> {self.pressed.filter(|_|!self.long_sent).map(|t|t.saturating_add(self.press_on_ticks()))}
+    pub fn next_deadline(&self)->Option<u64> {self.pressed.filter(|_|!self.long_sent).map(|t|t.saturating_add(self.long_press_ticks()))}
     pub fn advance_to(&mut self,cycle:u64) {
         if self.next_deadline().is_some_and(|t|t<=cycle) {self.regs[usize::from(REG_INTSTS3)]|=PEKEY_LONG;self.long_sent=true;}
     }
-    /// PEKEY (PWRON/HPWR) press and release. A release before the press-on time reports a short
+    /// PEKEY (PWRON/HPWR) press and release. A release before the long-press threshold reports a short
     /// press; after it, only the long-press status bit is set.
     pub fn button(&mut self,cycle:u64,pressed:bool) {
         self.advance_to(cycle);
@@ -104,17 +105,17 @@ impl Axp192State {
     fn read_register(&mut self,reg:u8)->u8 {
         match reg {
             3=>3,
-            0x26|0x56..=0x5d|0x62..=0x6b|0x78|0x79|0xb0..=0xb8=>0,
+            0x56..=0x7f|0xb0..=0xb8=>0,
             _=>self.regs[usize::from(reg)],
         }
     }
     fn write_register(&mut self,reg:u8,value:u8) {
         let ready=self.panel_ready();
         match reg {
-            3|0x26|0x56..=0x5d|0x62..=0x6b|0x78|0x79|0xb0..=0xb8=>{},
+            3|0x56..=0x7f|0xb0..=0xb8=>{},
             0x44..=0x47|0x4d=>self.regs[usize::from(reg)]&=!value,
             REG_OFF=>{self.regs[usize::from(REG_OFF)]=value;self.power_off_requested|=value&128!=0;}
-            0..=0x02|0x06..=0x0a|0x12|0x23..=0x25|0x27..=0x29|0x30..=0x37|0x40..=0x43|0x4a
+            0..=0x02|0x06..=0x0a|0x12|0x23..=0x29|0x30..=0x37|0x40..=0x43|0x4a
             |0x80..=0x9e=>self.regs[usize::from(reg)]=value,
             _=>{},
         }
@@ -153,7 +154,8 @@ impl I2cDevice for Axp192 {
     }
     #[test] fn voltage_codes_match_xpowers_ranges() {
         let mut p=Axp192State::new(HZ);
-        p.write_register(0x28,0xff);p.write_register(0x27,0x50);
+        p.write_register(0x28,0xff);p.write_register(0x27,0xd0);
+        p.write_register(0x26,0x6a);assert_eq!(p.read_register(0x26),0x6a);
         assert_eq!((p.ldo2_mv(),p.ldo3_mv(),p.dc3_mv()),(3300,3300,2_700));
         p.write_register(0x28,0);assert_eq!(p.ldo2_mv(),1800);
     }
@@ -170,7 +172,7 @@ impl I2cDevice for Axp192 {
     #[test] fn pekey_short_and_long_press_are_masked_then_write_one_cleared() {
         let mut p=Axp192State::new(HZ);
         p.button(0,true);let at=p.next_deadline().unwrap();
-        assert_eq!(at,HZ*128/1000,"default press-on time is 128 ms");
+        assert_eq!(at,HZ,"default held-key threshold is 1 second");
         p.button(at-1,false);
         assert_eq!(p.regs[0x46]&3,PEKEY_SHORT);
         assert!(!p.irq(), "no INTEN3 bits yet");
@@ -180,17 +182,17 @@ impl I2cDevice for Axp192 {
         assert_eq!(p.regs[0x46]&3,PEKEY_LONG);
         p.button(HZ+at,false);assert_eq!(p.regs[0x46]&3,PEKEY_LONG,"a long press never reports short");
     }
-    #[test] fn press_on_time_follows_pok_set() {
+    #[test] fn long_key_threshold_uses_only_pok_set_bits_five_and_four() {
         let mut p=Axp192State::new(HZ);
-        for (code,ms) in [(0u8,128u64),(1,512),(2,1000),(3,2000)] {
-            p.write_register(0x36,code<<6);p.pressed=None;p.long_sent=false;
+        for (code,ms) in [(0u8,1000u64),(1,1500),(2,2000),(3,2500)] {
+            p.write_register(0x36,(code<<4)|0xc0);p.pressed=None;p.long_sent=false;
             p.button(0,true);
             assert_eq!(p.next_deadline().unwrap(),(u128::from(ms)*u128::from(HZ)).div_ceil(1000) as u64);
         }
     }
     #[test] fn adc_and_coulomb_registers_read_zero_and_are_not_writable() {
         let mut p=Axp192State::new(HZ);
-        for reg in [0x26u8,0x56,0x64,0x78,0xb0,0xb8] {p.write_register(reg,0xff);assert_eq!(p.read_register(reg),0,"register {reg:#04x} must not report a fake measurement");}
+        for reg in [0x56u8,0x64,0x78,0x7f,0xb0,0xb8] {p.write_register(reg,0xff);assert_eq!(p.read_register(reg),0,"register {reg:#04x} must not report a fake measurement");}
     }
     #[test] fn gpio_outputs_follow_the_board_driver_mode_and_signal_bits() {
         let mut p=Axp192State::new(HZ);
