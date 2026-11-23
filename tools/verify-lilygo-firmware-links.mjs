@@ -88,6 +88,17 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       else assert.equal(fw.source, null, productId);
     }));
   }
+  let variantFiles = 0;
+  for (const {productId, variantDownloads = []} of audit.items) {
+    if (!variantDownloads.length) continue;
+    const product = products.items.find(p => p.id === productId);
+    for (const file of variantDownloads) {
+      const bytes = await pinnedBytes(file, false);
+      assert.equal(file.chipId, chipIdForBoard(product.runtime.board), productId);
+      validateMergedImage(bytes, product.runtime.board, product.runtime.flashMb * 1048576);
+      variantFiles++;
+    }
+  }
   const packages = audit.items.filter(item => item.package);
   for (const {productId, package: file} of packages) {
     const bytes = await pinnedBytes(file, false);
@@ -97,5 +108,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     if (file.layout === 'merged-flash') validateMergedImage(bytes, product.runtime.board, product.runtime.flashMb * 1048576);
   }
   await checkSpark(audit.items, products.items, firmwares.items);
-  console.log('Verified upstream bytes for %d firmware entries and %d downloadable packages.', pinned.length, packages.length);
+  console.log('Verified upstream bytes for %d firmware entries, %d packages and %d hardware-specific downloads.', pinned.length, packages.length, variantFiles);
 }

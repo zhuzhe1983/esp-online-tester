@@ -117,6 +117,14 @@ test('firmware receipts cover the expansion and pin the exact public download fo
     const {productId, artifact} = row;
     const product = lilygo.find(p => p.id === productId);
     assert.ok(row.notes, productId);
+    for (const file of row.variantDownloads || []) {
+      const entry = catalog.firmwares.find(f => f.productIds.includes(productId) && f.sources.some(s => s.url === file.url && s.title.includes(file.label)));
+      assert.equal(entry?.status, 'reference', productId);
+      assert.equal(entry.source, null);
+      assert.notEqual(product.defaultFirmwareId, entry.id);
+      assert.match(file.sha256, /^[a-f0-9]{64}$/);
+      assert.ok(file.bytes > 0 && file.notes && file.sourceUrl, productId);
+    }
     if (row.package) {
       const file = row.package;
       const entry = catalog.firmwares.find(f => f.productIds.includes(productId) && f.sources.some(s => s.url === file.url));
