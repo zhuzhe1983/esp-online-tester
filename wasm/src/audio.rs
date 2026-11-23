@@ -86,9 +86,9 @@ pub unsafe extern "C" fn esp32sim_audio_state_ptr(e: *const Emu) -> *const u8 {
     unsafe { &*e }.audio_state.as_ptr()
 }
 
-/// Enable draining supported TX capture after each web publication; native capture is unchanged.
+/// Enable draining supported output capture after each web publication; native capture is unchanged.
 /// The existing type-2 mono PCM16 output remains unchanged. This does not mute output or alter
-/// guest clocks. Returns 1 for unsupported TX chips or an invalid boolean; mode changes clear
+/// guest clocks. Returns 1 for an unsupported audio output or an invalid boolean; mode changes clear
 /// prior capture, so enabling starts at the current stream rather than replaying old samples.
 /// # Safety
 /// `e` must be a live exclusively accessible emulator.
@@ -100,12 +100,15 @@ pub unsafe extern "C" fn esp32sim_audio_output_streaming(e: *mut Emu, enabled: u
         crate::machine::MachineKind::S3(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
         crate::machine::MachineKind::C61(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
         crate::machine::MachineKind::S31(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
+        crate::machine::MachineKind::Esp32(machine) if machine.bus.board_ref().name() == "stickc-plus" => {
+            machine.set_audio_streaming(enabled != 0);
+        }
         _ => return 1,
     }
     0
 }
 
-/// Flush pending TX samples to the existing binary outbox without advancing guest time.
+/// Flush pending output samples to the existing binary outbox without advancing guest time.
 /// # Safety
 /// `e` must be a live exclusively accessible emulator.
 #[no_mangle]
@@ -115,6 +118,9 @@ pub unsafe extern "C" fn esp32sim_audio_output_flush(e: *mut Emu) -> u32 {
         crate::machine::MachineKind::S3(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
         crate::machine::MachineKind::C61(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
         crate::machine::MachineKind::S31(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
+        crate::machine::MachineKind::Esp32(machine) if machine.bus.board_ref().name() == "stickc-plus" => {
+            machine.flush_audio_output();
+        }
         _ => return 1,
     }
     0
@@ -200,6 +206,52 @@ mod tests {
                 assert_eq!(esp32sim_audio_output_streaming(e, 2), 1);
                 esp32sim_delete(e);
             }
+        }
+    }
+
+    #[test]
+    fn stickc_plus_abi_streams_guest_ledc_pcm_once() {
+        use crate::machine::MachineKind;
+        use esp_soc::SocBus;
+        // SAFETY: This test owns the emulator handle until deletion.
+        unsafe {
+            let board = b"stickc-plus";
+            let e = esp32sim_new(board.as_ptr(), board.len(), 4, 0);
+            assert!(!e.is_null());
+            assert!(matches!(&(*e).m, MachineKind::Esp32(_)));
+            assert_eq!(esp32sim_audio_output_streaming(e, 1), 0);
+            let bus = (*e).m.bus();
+            // The board's native output fixture: IDF v5.5.4 LEDC_LSTIMER0 and
+            // LEDC_LSCH0 outputs routed through signal 71 to the G2 buzzer.
+            for (address, value) in [
+                (0x3ff48070, 1 << 27),
+                (0x3ff000c0, 1 << 11),
+                (0x3ff59140, 8 | (16000 << 5) | (1 << 25)),
+                (0x3ff59008, 64 << 4),
+                (0x3ff5900c, (1 << 31) | (1 << 30) | (1 << 20) | (1 << 10)),
+                (0x3ff59000, 4),
+                (0x3ff49040, (2 << 12) | (1 << 9)),
+                (0x3ff44538, 71),
+            ] {
+                bus.write32(address, value).unwrap();
+            }
+            bus.tick(48_000);
+            bus.clear_audio_capture();
+            bus.tick(240_000);
+            assert_eq!(esp32sim_audio_output_flush(e), 0);
+            let MachineKind::Esp32(machine) = &(*e).m else { unreachable!() };
+            let web = machine.web.as_ref().unwrap().clone();
+            let out = web.take_outbox();
+            let (_, pcm) = out.iter().find(|(kind, _)| *kind == 2).unwrap();
+            assert_eq!(pcm[..5], [2, 0x80, 0x3e, 0, 0]);
+            let (samples, rest) = pcm[5..].as_chunks::<2>();
+            assert!(rest.is_empty());
+            let samples: Vec<_> = samples.iter().copied().map(i16::from_le_bytes).collect();
+            assert!(samples.contains(&4096) && samples.contains(&-4096));
+            assert!(machine.bus.audio().0.is_empty());
+            assert_eq!(esp32sim_audio_output_flush(e), 0);
+            assert!(web.take_outbox().is_empty());
+            esp32sim_delete(e);
         }
     }
 
