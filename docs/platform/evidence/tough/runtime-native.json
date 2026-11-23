@@ -1,0 +1,76 @@
+{
+  "productId": "m5stack-k034",
+  "board": "m5-tough",
+  "revision": "485463c3",
+  "firmware": {
+    "name": "Tough Tools",
+    "version": "v1.0.2",
+    "role": "alternative",
+    "url": "https://m5burner-cdn.m5stack.com/firmware/262f950548b59a1186046d2bbd185d27.bin",
+    "bytes": 2801216,
+    "sha256": "42198bed525475d134f1b92d71c7cc9208cdb8ff1581459cc2b8ca457635b2fb",
+    "modified": false
+  },
+  "engine": "native ESP32 with ESP32 rev300 mask ROM",
+  "romSha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+  "memoryMiB": {
+    "flash": 16,
+    "psram": 4
+  },
+  "guestSerialMarkers": [
+    "[M5GFX] [Autodetect] M5Tough",
+    "[Autodetect] save to NVS : board:8"
+  ],
+  "framebuffer": {
+    "width": 320,
+    "height": 240,
+    "menu": {
+      "guestSeconds": 3,
+      "pngSha256": "1d5e4d33e2029b6c8e8b2cded9ace09a06c9bf96fe78a2aa2d77a5d4c6782f6b",
+      "ramWriteCommands": 25212,
+      "pixelsWritten": 2022088
+    },
+    "touch": {
+      "guestSeconds": 6,
+      "actions": [
+        "4.0 touch 60 221 1",
+        "4.25 touch 60 221 0",
+        "5.5 touch 147 108 1"
+      ],
+      "pngSha256": "2071ce941de4d23e4fab6752c5214c9343905794b54e874e9617fc23de1130b3",
+      "bluePointRgb": [
+        0,
+        0,
+        255
+      ],
+      "bluePointAt": [
+        147,
+        108
+      ],
+      "touchLabelRgb": [
+        255,
+        206,
+        0
+      ],
+      "touchLabelAt": [
+        58,
+        222
+      ]
+    },
+    "rtc": {
+      "guestSeconds": 6,
+      "actions": [
+        "4.0 touch 260 221 1",
+        "4.25 touch 260 221 0"
+      ],
+      "pngSha256": "c271a7170b93856b0212291d9ecda0912d6cfe80f010a9640d0bd651c2516b03",
+      "visible": "RTC page, initial date 2000-00-00"
+    }
+  },
+  "negativeChecks": [
+    "Before preserving the initial standalone RDDID dummy clock, the same image reported board:0 and produced zero panel RAM writes.",
+    "At 2.0 guest seconds a tap was too early to select a tool on a fresh boot. The 4.0 guest second replay selects it.",
+    "The vendor touch controller updater reports failure before the usable menu. The normal GPIO39 and I2C contact path remains functional."
+  ],
+  "privacy": "Only fixed firmware and ROM digests, numeric simulator output and publicly released diagnostic markers are retained."
+}

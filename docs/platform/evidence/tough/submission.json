@@ -1,0 +1,460 @@
+{
+  "lane": "tough",
+  "branch": "codex/m5-tough-runtime",
+  "commit": "06d5e23b992f4bf8466693cd39d7de3e2e2221be",
+  "productIds": [
+    "m5stack-k034"
+  ],
+  "runtime": {
+    "board": "m5-tough",
+    "chip": "esp32",
+    "status": "partial",
+    "implemented": [
+      "ILI9342C display with PMIC LCD power, reset and backlight gating",
+      "CHSC6540 single contact and touch keys A/B/C through GPIO39 and I2C",
+      "BM8563 calendar route"
+    ],
+    "missing": [
+      "RTC wake",
+      "TF SPI",
+      "RS485",
+      "I2S speaker",
+      "PDM microphone",
+      "physical power/reset",
+      "touch controller firmware updater"
+    ]
+  },
+  "products": [
+    {
+      "id": "m5stack-k034",
+      "name": "M5Stack Tough",
+      "manufacturer": "M5Stack",
+      "sku": "K034",
+      "summary": "ESP32工业触摸终端，2英寸320×240 IPS屏、RS485及四路Grove接口，面向防尘防溅水外壳应用。",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32",
+      "module": "ESP32-D0WDQ6-V3",
+      "runtime": {
+        "board": "m5-tough",
+        "flashMb": 16,
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
+      },
+      "display": {
+        "width": 320,
+        "height": 240,
+        "type": "IPS LCD",
+        "controller": "ILI9342C",
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "touch",
+          "type": "touch",
+          "name": "Capacitive touch",
+          "controller": "CHSC6540",
+          "address": 46,
+          "interruptPin": 39
+        },
+        {
+          "id": "btn-a",
+          "type": "button",
+          "name": "Touch key A",
+          "transport": "board",
+          "controller": "CHSC6540",
+          "defaultKeyCode": "KeyA"
+        },
+        {
+          "id": "btn-b",
+          "type": "button",
+          "name": "Touch key B",
+          "transport": "board",
+          "controller": "CHSC6540",
+          "defaultKeyCode": "KeyB"
+        },
+        {
+          "id": "btn-c",
+          "type": "button",
+          "name": "Touch key C",
+          "transport": "board",
+          "controller": "CHSC6540",
+          "defaultKeyCode": "KeyC"
+        },
+        {
+          "id": "power",
+          "type": "button",
+          "name": "AXP192 power button (PWRKEY)",
+          "simulationSupported": false
+        },
+        {
+          "id": "reset",
+          "type": "button",
+          "name": "Reset button (ESP32 EN)",
+          "simulationSupported": false
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "type": "USB-C",
+          "name": "USB-C via cable",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "rs485-power",
+          "type": "M12",
+          "name": "RS485 and 6-24 V power cable",
+          "external": true,
+          "pins": [
+            {
+              "name": "RX",
+              "gpio": 27
+            },
+            {
+              "name": "TX",
+              "gpio": 19
+            },
+            {
+              "name": "6-24V"
+            },
+            {
+              "name": "GND"
+            }
+          ]
+        },
+        {
+          "id": "grove-a",
+          "type": "HY2.0-4P",
+          "name": "Port A (I2C)",
+          "external": false,
+          "function": "I2C",
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "SDA",
+              "gpio": 32
+            },
+            {
+              "name": "SCL",
+              "gpio": 33
+            }
+          ]
+        },
+        {
+          "id": "grove-b",
+          "type": "HY2.0-4P",
+          "name": "Port B (GPIO)",
+          "external": false,
+          "function": "GPIO",
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "G26",
+              "gpio": 26
+            },
+            {
+              "name": "G36",
+              "gpio": 36
+            }
+          ]
+        },
+        {
+          "id": "grove-c",
+          "type": "HY2.0-4P",
+          "name": "Port C (UART)",
+          "external": false,
+          "function": "UART",
+          "pins": [
+            {
+              "name": "GND"
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "TX",
+              "gpio": 14
+            },
+            {
+              "name": "RX",
+              "gpio": 13
+            }
+          ]
+        },
+        {
+          "id": "grove-reset",
+          "type": "HY2.0-4P",
+          "name": "RESET port (EN / G25)",
+          "external": false,
+          "function": "GPIO",
+          "pins": [
+            {
+              "name": "EN"
+            },
+            {
+              "name": "G25",
+              "gpio": 25
+            },
+            {
+              "name": "5V"
+            },
+            {
+              "name": "GND"
+            }
+          ]
+        },
+        {
+          "id": "m5-bus",
+          "type": "2x15-2.54mm",
+          "name": "M5-Bus (30 pins, HPWR positions NC)",
+          "external": true,
+          "pins": []
+        },
+        {
+          "id": "lcd-spi",
+          "type": "SPI",
+          "name": "ILI9342C SPI",
+          "external": false,
+          "pins": [
+            {
+              "name": "MISO",
+              "gpio": 38
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "SCK",
+              "gpio": 18
+            },
+            {
+              "name": "CS",
+              "gpio": 5
+            },
+            {
+              "name": "DC",
+              "gpio": 15
+            }
+          ]
+        },
+        {
+          "id": "internal-i2c",
+          "type": "I2C",
+          "name": "Internal I2C",
+          "external": false,
+          "pins": [
+            {
+              "name": "SDA",
+              "gpio": 21
+            },
+            {
+              "name": "SCL",
+              "gpio": 22
+            }
+          ],
+          "devices": [
+            {
+              "name": "CHSC6540",
+              "address": 46
+            },
+            {
+              "name": "AXP192",
+              "address": 52
+            },
+            {
+              "name": "BM8563",
+              "address": 81
+            }
+          ]
+        },
+        {
+          "id": "micro-sd",
+          "type": "microSD",
+          "name": "microSD (CS G4)",
+          "external": true,
+          "pins": [
+            {
+              "name": "MISO",
+              "gpio": 38
+            },
+            {
+              "name": "MOSI",
+              "gpio": 23
+            },
+            {
+              "name": "SCK",
+              "gpio": 18
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "title": "Tough",
+          "url": "https://docs.m5stack.com/en/core/Tough",
+          "checkedAt": "2026-10-26"
+        },
+        {
+          "title": "Tough",
+          "url": "https://docs.m5stack.com/en/core/Tough",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Tough Schematics PDF",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/647/Tough-Schematics-PDF.pdf",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "Tough Ext Board Schematics PDF",
+          "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/647/Tough-Ext-Board-Schematics-PDF.pdf",
+          "checkedAt": "2026-11-22"
+        },
+        {
+          "title": "M5GFX board_spec m5tough.json",
+          "url": "https://github.com/m5stack/M5GFX/blob/28d47949bdc84f30881623476f555398e2194313/extras/board_spec/boards/m5tough.json",
+          "checkedAt": "2026-11-22"
+        }
+      ],
+      "limitations": [
+        "支持 ILI9342C 的 320×240 SPI 画面、CHSC6540 单点触摸、A/B/C 触摸区和 AXP192 的屏幕供电、复位和背光开关。",
+        "A/B/C 通过同一颗 CHSC6540 触摸控制器上报，按旧版 M5Tough 库的按区中心映射，单点输入。按区和玻璃坐标未做实物校准。",
+        "实物规格为 8 MiB PSRAM，此经典 ESP32 后端提供 4 MiB。ILI9342E 等其他屏幕批次未验证。",
+        "BM8563 支持客体设定的日历，闹钟唤醒未实现。实物电源键、复位键、模拟电压和整机断电未模拟。",
+        "TF 卡镜像可配置，虚拟卡未接到客体 SPI。RS485、6–24V 转换、扬声器和 PDM 麦克风不在板级适配范围。",
+        "外壳尺寸、照片对比及未知件见模型报告。USB 串口桥存在资料版本差异，未做实机验证。"
+      ],
+      "knowledgeUrl": "./knowledge/m5stack-k034.json",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k034/model.json",
+        "status": "partial"
+      },
+      "dimensions": {
+        "width": 76,
+        "height": 58,
+        "depth": 41.6,
+        "sourceId": "dimension-drawing-c0f2ccbc8a",
+        "unit": "mm",
+        "basis": "official"
+      },
+      "family": {
+        "id": "m5-core",
+        "name": "Core / Basic / FIRE / M5GO"
+      },
+      "defaultFirmwareId": "m5stack-k034-tough-tools-v102"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "m5stack-k034-tough-tools-v102",
+      "name": "Tough Tools · v1.0.2",
+      "publisher": "M5Stack",
+      "role": "alternative",
+      "productIds": [
+        "m5stack-k034"
+      ],
+      "status": "available",
+      "source": {
+        "url": "https://m5burner-cdn.m5stack.com/firmware/262f950548b59a1186046d2bbd185d27.bin",
+        "sha256": "42198bed525475d134f1b92d71c7cc9208cdb8ff1581459cc2b8ca457635b2fb"
+      },
+      "sources": [
+        {
+          "title": "M5Burner Tough Tools official project",
+          "url": "https://burner.m5stack.com/firmware/1897200000000002585",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "M5Burner legacy catalog, Tough Tools project and exact BIN path",
+          "url": "https://m5burner-api.m5stack.com/api/firmware",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "M5Stack Tough product page and software links",
+          "url": "https://docs.m5stack.com/en/core/Tough",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "M5Stack 为 Tough 发布的设备测试程序。出厂预装镜像尚未定位。",
+        "已验证原样 ESP32 镜像通过 ROM 启动。真实 WASM 复验了菜单、A 键选择 TOUCH 及触摸坐标显示。原生运行也打开了 RTC 界面。",
+        "触摸控制器升级报错。RTC 唤醒、音频、网络、TF 访问和实机行为仍待验证。固件从发布方加载。"
+      ],
+      "revision": "v1.0.2",
+      "simulationVerified": true,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "version": "v1.0.2",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000002585",
+      "compatibility": "partial"
+    }
+  ],
+  "watchlist": [],
+  "knowledgeIndexes": [
+    "m5stack-k034"
+  ],
+  "sharedFileRequests": [
+    {
+      "file": "web/platform/app-image.js",
+      "why": "Classic ESP32 chip ID and ROM image layout",
+      "exactChange": "Include m5-tough in the classic board test in chipIdForBoard."
+    },
+    {
+      "file": "web/platform/local-firmware.js",
+      "why": "User-supplied split build and merged image checks",
+      "exactChange": "Include m5-tough in the classic board test in chipForBoard."
+    },
+    {
+      "file": "web/platform/runtime.js",
+      "why": "Classic boot offset, ROM asset and the three capacitive keys",
+      "exactChange": "Include m5-tough in both classic tests for the flash boot offset and romFor. Register 'm5-tough':['btn-a','btn-b','btn-c'] in boardButton."
+    }
+  ],
+  "checks": [
+    {
+      "cmd": "cargo test --release -p esp32 --lib board::m5_tough",
+      "result": "2 passed"
+    },
+    {
+      "cmd": "cargo clippy -p esp32 --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "cmd": "python tools/validate-platform-catalog.py",
+      "result": "pass"
+    },
+    {
+      "cmd": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs",
+      "result": "4 passed"
+    },
+    {
+      "cmd": "playwright_cli.sh run-code --filename tools/probe-m5-tough-browser.js",
+      "result": "guest boot, semantic A, native touch pixel, 2D/3D views passed"
+    }
+  ],
+  "evidenceHashes": {
+    "docs/platform/evidence/tough/sources.json": "sha256:e123b4759d3fcd5ae20ad7e2d9fe5addab4e403c1a0b4f69c08a82935bb61fc2",
+    "docs/platform/evidence/tough/runtime-native.json": "sha256:d63b78465b6bc8f8a889eecc04918b880ed86a7b679a409f8e722fa0f174c349",
+    "docs/platform/evidence/tough/runtime-browser.json": "sha256:63529969ca46ab82474fbec89bb4003c799033cec83a94786ece3862075b7d18"
+  },
+  "notesForPrimary": "The AXP192 prerequisite source commits are 04d764eb and 7fe0470d. Integrate the common AXP192 code once. Tough Tools is an official diagnostic alternative. The manufacturer CAD comparison remains partial.",
+  "notImplemented": "8 MiB physical PSRAM capacity, SD transport, full RTC, board audio and reset power. Browser runtime supplies 4 MiB modeled PSRAM."
+}

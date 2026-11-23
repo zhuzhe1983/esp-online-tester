@@ -9,7 +9,7 @@
     "official-docs",
     "official-docs-20261122"
   ],
-  "updatedAt": "2026-11-23T05:00:43Z",
+  "updatedAt": "2026-11-23T05:08:08Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -886,10 +886,11 @@
         "official-docs",
         "m5gfx-board-m5tough-28d47949",
         "m5tough-m5touch-cpp-2dc8ad31",
-        "schematic-tough-main-20261122"
+        "schematic-tough-main-20261122",
+        "m5gfx-tough-detection-b9639027"
       ],
       "group": "touch",
-      "notes": "M5Touch::begin() does Wire1.begin(21,22), pinMode(39, INPUT), writes register 0x5A=0x5A to select interrupt mode and reads the INT level with digitalRead(39)==LOW. The main schematic has a single LCD_RST net, so the panel reset is shared with the LCD rather than on a separate AXP output."
+      "notes": "The deprecated M5Tough library uses Wire1 on GPIO21/22, sets GPIO39 input, writes 0x5A=0x5A and interprets GPIO39 low as a touch. The main schematic export names LCD_RST at AXP192 GPIO4. M5GFX b9639027 explicitly toggles GPIO1 for touch reset as well as GPIO4 for LCD reset. The modeled digital reset gate couples the touch and LCD. Separate GPIO1 reset wiring has not been confirmed on hardware."
     },
     {
       "id": "touch-coordinate-grid",
@@ -2261,6 +2262,18 @@
       "fetchedAt": "2026-11-23T05:00:43Z",
       "bytes": 2801216,
       "sha256": "42198bed525475d134f1b92d71c7cc9208cdb8ff1581459cc2b8ca457635b2fb"
+    },
+    {
+      "id": "m5gfx-tough-detection-b9639027",
+      "title": "M5GFX 2023 ESP32 board detection and LCD read",
+      "url": "https://raw.githubusercontent.com/m5stack/M5GFX/b9639027dca4a4f97bb9d637056bf95b1d8d7c80/src/M5GFX.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/b9639027dca4a4f97bb9d637056bf95b1d8d7c80/src/M5GFX.cpp",
+      "mediaType": "text/plain; charset=utf-8",
+      "httpStatus": 200,
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T05:08:08Z",
+      "bytes": 39003,
+      "sha256": "d290a0312dcc51c0a1e36e86719f4644b192f335754f0329773466113e686cb5"
     }
   ],
   "assets": [
