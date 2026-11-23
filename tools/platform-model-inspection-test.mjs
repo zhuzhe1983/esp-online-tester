@@ -27,6 +27,18 @@ test('declared inspection offsets use model axes, preserve transforms/materials 
     for(const {p,position} of base)assert.deepEqual(p.position.toArray(),position.toArray());
   }
   assert.throws(()=>inspection.setExpanded('yes'),/boolean/);assert.equal(inspection.expanded,false);
+  for(const progress of [.4,.9,.25,0]) {
+    assert.equal(inspection.setProgress(progress),progress);
+    assert.equal(inspection.progress,progress);
+    assert.equal(inspection.expanded,progress>0);
+    for(const {p,position} of base) {
+      const expected=position.clone();
+      if(p.name!=='pcb')expected.addScaledVector(new THREE.Vector3(...definition.offsetMm),progress);
+      assert.deepEqual(p.position.toArray(),expected.toArray());
+    }
+  }
+  for(const invalid of [-.01,1.01,NaN,'0.5'])assert.throws(()=>inspection.setProgress(invalid),/progress/);
+  assert.equal(inspection.progress,0);
 });
 
 test('invalid inspection definitions reject atomically, including duplicate or nested ownership',()=>{
@@ -57,7 +69,7 @@ test('inspection hides only declared fixed harnesses and photo companions, resto
   const position=harness.position.clone(),geometry=harness.geometry.attributes.position.array.slice();
   const inspection=createModelInspection(group,[{...definition,hideParts:['pcb']}],sources);
   for(let i=0;i<3;i++){
-    inspection.setExpanded(true);assert.equal(harness.visible,false);assert.equal(photo.visible,false);assert.deepEqual(harness.position.toArray(),position.toArray());
+    inspection.setProgress(.25);assert.equal(harness.visible,false);assert.equal(photo.visible,false);assert.deepEqual(harness.position.toArray(),position.toArray());
     inspection.setExpanded(false);assert.equal(harness.visible,true);assert.equal(photo.visible,false);assert.deepEqual(harness.geometry.attributes.position.array,geometry);
   }
   const invalid=[{...definition,hideParts:['cover']},{...definition,hideParts:['pcb','pcb']},{...definition,hideParts:['harness-photo']},{...definition,hideParts:['missing']},{...definition,hideParts:'pcb'}];

@@ -40,14 +40,22 @@ export function createModelInspection(group, definitions, sources = []) {
       }
     }
   }
-  let expanded = false;
+  let progress = 0;
+  function setProgress(value) {
+    if (!Number.isFinite(value) || value < 0 || value > 1) throw Error('Model inspection progress must be between 0 and 1');
+    for (const {object, position, offset} of moves) object.position.copy(position).addScaledVector(offset, value);
+    for (const {object, visible} of hides) object.visible = value > 0 ? false : visible;
+    progress = value;
+    group.updateMatrixWorld(true);
+    return progress;
+  }
   return {
-    get expanded() { return expanded; },
+    get expanded() { return progress > 0; },
+    get progress() { return progress; },
+    setProgress,
     setExpanded(value) {
       if (typeof value !== 'boolean') throw Error('Model inspection state must be boolean');
-      for (const {object, position, offset} of moves) object.position.copy(position).addScaledVector(offset, value ? 1 : 0);
-      for (const {object, visible} of hides) object.visible=value?false:visible;
-      expanded = value; group.updateMatrixWorld(true); return expanded;
+      return setProgress(value ? 1 : 0) > 0;
     },
   };
 }

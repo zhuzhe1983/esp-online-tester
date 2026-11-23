@@ -103,11 +103,11 @@ async page => {
       }, id);
       await page.waitForFunction(productId => document.querySelector('#scene-mount').dataset.modelStatus === 'ready' &&
         Boolean(window.dinMeterInspection?.assembly.getObjectByName(productId)?.userData.inspection), id);
-      const button = page.locator('#inspect-model');
-      await button.waitFor({state: 'visible'});
-      check(await button.getAttribute('aria-pressed') === 'false', `${id} default assembly`);
-      await button.click();
-      check(await button.getAttribute('aria-pressed') === 'true', `${id} inspection control`);
+      const slider = page.locator('#inspect-model');
+      await slider.waitFor({state: 'visible'});
+      check(await slider.inputValue() === '0', `${id} default assembly`);
+      await slider.press('End');
+      await page.waitForFunction(() => document.getElementById('inspection-percent').textContent === '100%');
       const expanded = await page.evaluate(({id, shell, rear}) => {
         const group = dinMeterInspection.assembly.getObjectByName(id);
         return [shell, rear, 'pcb-main'].map(name => group.getObjectByName(name).position.toArray());
@@ -120,7 +120,7 @@ async page => {
       });
       await screenshot(page.locator('#scene-mount canvas').first(), id, 'workbench-expanded');
       await page.locator('#reset-view').click();
-      check(await button.getAttribute('aria-pressed') === 'false', `${id} reset`);
+      check(await slider.inputValue() === '0', `${id} reset`);
       const restored = await page.evaluate(({id, shell, rear}) => {
         const group = dinMeterInspection.assembly.getObjectByName(id);
         return [shell, rear, 'pcb-main'].map(name => group.getObjectByName(name).position.toArray());

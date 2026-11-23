@@ -645,13 +645,16 @@ function renderAppearance() {
   text('shell-opacity-value', `${Math.round(shell.opacity * 100)}%`);
 }
 function renderInspection() {
-  const button = $('inspect-model'); if (!button) return;
+  const control = $('inspection-control'), slider = $('inspect-model');
+  if (!control || !slider) return;
   const state = sceneView?.getInspection();
-  button.hidden = !state?.available || sceneView.mode !== '3d';
-  button.disabled = !!state?.blockedByAccessories;
-  button.title = state?.blockedByAccessories ? '移除外接配件后，可分开查看模型。' : '分开零件查看内部；仅用于模型观察，不代表真实拆解顺序。';
-  button.setAttribute('aria-pressed', String(!!state?.expanded));
-  button.textContent = state?.expanded ? '恢复装配' : '分开查看';
+  const value = Math.round((state?.progress ?? 0) * 100);
+  control.hidden = !state?.available || sceneView.mode !== '3d';
+  slider.disabled = !!state?.blockedByAccessories;
+  control.title = t(slider.disabled ? '移除外接配件后，可调节爆炸图。' : '拖动滑块分开零件，移到 0% 恢复装配。');
+  slider.value = value;
+  slider.setAttribute('aria-valuetext', `${value}%`);
+  text('inspection-percent', `${value}%`);
 }
 function appearanceFromInputs() {
   return {shell: {color: $('shell-color').value, opacity: Number($('shell-opacity').value) / 100, finish: $('shell-finish').value}};
@@ -662,7 +665,7 @@ function updateAppearance(appearance) {
   return runtime.updateSceneMetadata({view});
 }
 function mountAppearance() {
-  const controls = document.querySelector('.view-controls'); if (!controls) return;
+  const controls = $('model-appearance-controls'); if (!controls) return;
   const stylesheet=document.createElement('link');stylesheet.rel='stylesheet';stylesheet.href=new URL('./shell-design.css',import.meta.url).href;document.head.append(stylesheet);
   const details = element('details', 'shell-settings'); details.id = 'shell-settings';
   details.innerHTML = `<summary>外壳</summary><div class="shell-settings-body">
@@ -672,7 +675,7 @@ function mountAppearance() {
     <label for="shell-finish">表面效果</label><select id="shell-finish"></select>
     <p class="helper">自定义展示配色。未知内部结构以 UNKNOWN 占位。</p><button id="reset-shell" class="button quiet tiny" type="button">恢复原色</button>
   </div>`;
-  controls.prepend(details);
+  controls.append(details);
   $('shell-finish').replaceChildren(...SHELL_FINISHES.map(({id, label}) => new Option(label, id)));
   bind('shell-preset', 'change', () => action(() => {
     const key = $('shell-preset').value;
@@ -1061,7 +1064,14 @@ function setupEvents() {
   }));
   bind('reset-view', 'click', () => action(async () => { await transportUi?.settleForConfiguration(); sceneView.resetView(); }));
   bind('imu-scene-link', 'click', () => { if (imuLink.toggle()) { renderImuLink(); void sendOrientation({quaternion:sceneView.getOrientation(),rotating:false}); } else renderImuLink(); });
-  bind('inspect-model', 'click', () => action(async () => { await releaseHumanInputs(); sceneView.setInspection(!sceneView.getInspection().expanded); }));
+  let releasingForInspection = false;
+  bind('inspect-model', 'input', ({currentTarget: slider}) => {
+    if (releasingForInspection) return;
+    releasingForInspection = true;
+    void releaseHumanInputs().then(() => {
+      if (!slider.disabled && !$('inspection-control').hidden) sceneView.setInspectionProgress(slider.valueAsNumber / 100);
+    }).catch(report).finally(() => { releasingForInspection = false; });
+  });
   bind('fullscreen', 'click', () => action(() => viewerLayout?.toggle()));
   bind('capture-frame', 'click', () => action(async () => { const frame = await runtime.capture({format: 'png'}); const link = element('a'); link.href = frame.dataUrl; link.download = `${scene.productId}-frame-${frame.frameNumber}.png`; link.click(); }));
   bind('clear-console', 'click', () => { for (const port of Object.keys(consoleBuffers)) consoleBuffers[port] = ''; text('serial-output', ''); });

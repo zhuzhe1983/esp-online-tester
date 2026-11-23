@@ -179,7 +179,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function clearGroup() {
     void stickers.setModel(null);
     updateFlight(null);
-    inspection = null; onInspectionChange({available: false, expanded: false});
+    inspection = null; onInspectionChange(getInspection());
     accessoryGeneration++; for (const cleanup of accessoryCleanups) cleanup(); accessoryCleanups = [];
     clearOrientationTimers();
     productGeneration++; modelCleanup?.(); modelCleanup = null;
@@ -294,10 +294,24 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   function applyAppearance() { if(!appearanceReady)return; for(const mesh of shellMeshes)applyShellAppearance(mesh, customizedAppearance?appearance:mesh.userData.originalAppearance || appearance, {occluder: parts.occluder}); draw(); }
   function setAppearance(value) { const normalized = normalizeShellAppearance(value, appearanceDefaults); appearanceValue = value == null ? null : {shell: {...value.shell}}; customizedAppearance = value != null; appearance = normalized; applyAppearance(); return getAppearance(); }
   function getAppearance() { return {shell: {...appearance.shell}}; }
-  function getInspection() { return {available: !!inspection && !flightActive, expanded: inspection?.expanded || false, blockedByAccessories: accessoryCount > 0}; }
+  function getInspection() {
+    return {available: !!inspection && !flightActive, expanded: inspection?.expanded || false,
+      progress: inspection?.progress ?? 0, blockedByAccessories: accessoryCount > 0};
+  }
+  function setInspectionProgress(value) {
+    if (!Number.isFinite(value) || value < 0 || value > 1) throw Error('Model inspection progress must be between 0 and 1');
+    const progress = mode === '3d' && !accessoryCount && !flightActive ? value : 0;
+    if (!inspection || inspection.progress === progress) return getInspection();
+    releaseInputs();
+    inspection.setProgress(progress);
+    const state = getInspection();
+    onInspectionChange(state);
+    frameCamera(); draw();
+    return state;
+  }
   function setInspection(expanded) {
     if (typeof expanded !== 'boolean') throw Error('Model inspection state must be boolean');
-    releaseInputs(); inspection?.setExpanded(expanded && !accessoryCount && !flightActive); onInspectionChange(getInspection()); resize(); return getInspection();
+    return setInspectionProgress(expanded ? 1 : 0);
   }
   function resetView() { releaseInputs(); inspection?.setExpanded(false); onInspectionChange(getInspection()); orbitGroup.rotation.set(...(flightActive?[-1,-.2,0]:[-.13,-.25,.025])); zoom = 1; publishOrientation(false); resize(); }
   function setMode(next) {
@@ -421,7 +435,7 @@ export function createSceneView(mount, {onInput = () => {}, onModeChange = () =>
   window.addEventListener('blur', releaseInputs);
   function wheel(event) { if (mode !== '3d') return; event.preventDefault(); clearHover(); zoom = Math.max(.4, Math.min(3,zoom + event.deltaY * .001)); resize(); }
   mount.addEventListener('wheel', wheel, {passive: false});
-  return {stickers,setProduct, setAccessories, setMode, resetView, resize, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setOrientationEnabled, setInspection, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
+  return {stickers,setProduct, setAccessories, setMode, resetView, resize, updateFrame, updateLeds, updateServos, updateMotors, setMotorsRunning, updateFlight, updateAccessoryOutputs, updateAccessoryPositions, clearDisplay, releaseInputs, setAppearance, getAppearance, setOrientation, getOrientation, setOrientationEnabled, setInspection, setInspectionProgress, getInspection, get previewOnly() { return previewOnly; }, get mode() { return mode; }, get hasShell() { return shellMeshes.length > 0 || !!parts.shell; },
     dispose() { disposed = true; stickers.dispose(); releaseInputs(); resizeObserver.disconnect(); window.removeEventListener('blur', releaseInputs); mount.removeEventListener('wheel', wheel); clearGroup();flightGround.traverse(object=>{object.geometry?.dispose();for(const material of [].concat(object.material||[]))material.dispose();}); texture.dispose(); renderer?.dispose(); mount.replaceChildren(); },
   };
 }
