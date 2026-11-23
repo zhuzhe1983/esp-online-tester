@@ -115,11 +115,16 @@ const metadata = {
       color:'#859188',geometry:{sizeMm:[32.6,19,1.2],centerMm:[0,0,-9.0]}},
   ],
   presentation:{
-    inspectionGroups:[{id:'top-assembly',parts:['shell-upper','switch-slider','usb-c',
-      'key1-switch','key1-red-cap','key1-light-window','key1-clear-cap',
-      'key2-switch','key2-red-cap','key2-light-window','key2-clear-cap'],
-      offsetMm:[0,0,19],sourceIds:['dimensions','annotated-photo'],
-      notes:'Preview separates the shell and switches so the UNKNOWN board placeholder can be seen.'}],
+    inspectionGroups:[
+      {id:'top-assembly',parts:['shell-upper','switch-slider',
+        'key1-switch','key1-red-cap','key1-light-window','key1-clear-cap',
+        'key2-switch','key2-red-cap','key2-light-window','key2-clear-cap'],
+        offsetMm:[0,0,21],sourceIds:['dimensions','annotated-photo'],
+        notes:'The upper shell, visible slider and removable switch assemblies move together along the thickness axis.'},
+      {id:'rear-assembly',parts:['shell-lower','shell-bottom'],
+        offsetMm:[0,0,-25],sourceIds:['dimensions','rear-photo','schematic'],
+        notes:'The lower housing clears the stationary electronics layer. The USB-C and two lateral Chain port visuals share the assembled transform of the UNKNOWN board proxy.'},
+    ],
   },
   provenance:{
     kind:'photo-derived', sources:sources.filter(entry=>origin.includes(entry.id)),
