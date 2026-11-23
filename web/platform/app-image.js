@@ -13,7 +13,7 @@ export const isSramOnlyBoard=board=>isC5Board(board)||isS2Board(board);
 export const isS31Board=board=>['esp32s31','mosaico','esp-mosaico','metalio-ink4-plus'].includes(board);
 export const isC61Board=board=>['esp32c61','corematrix'].includes(board);
 // ESP-IDF v6.1 esp_app_format.h: S31 = 0x0020; v5.5.4: C61 = 20, distinct from C6 (13).
-export const chipForBoard=board=>isS31Board(board)?'esp32s31':isC61Board(board)?'esp32c61':isC5Board(board)?'esp32c5':isS2Board(board)?'esp32s2':LILYGO_BOARD_CHIPS[board]||(isCore2Board(board)||/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2|m5stack-basic)$/.test(board)?'esp32':['esp32c3','stampc3','stampc3u'].includes(board)?'esp32c3':(board==='nesso-n1'||String(board).includes('c6'))?'esp32c6':['esp32p4','stamp-p4'].includes(board)?'esp32p4':'esp32s3');
+export const chipForBoard=board=>isS31Board(board)?'esp32s31':isC61Board(board)?'esp32c61':isC5Board(board)?'esp32c5':isS2Board(board)?'esp32s2':LILYGO_BOARD_CHIPS[board]||(isCore2Board(board)||/^(esp32|ttgo-tdisplay|atom-lite|atom-matrix|atom-voice|atom-matrix-v11|stamppico|lilygo-t-beam-v1-2|m5stack-basic|m5-tough)$/.test(board)?'esp32':['esp32c3','stampc3','stampc3u'].includes(board)?'esp32c3':(board==='nesso-n1'||String(board).includes('c6'))?'esp32c6':['esp32p4','stamp-p4'].includes(board)?'esp32p4':'esp32s3');
 export const chipIdForBoard=board=>({esp32:0,esp32s2:2,esp32c3:5,esp32s3:9,esp32c6:13,esp32p4:18,esp32c61:20,esp32c5:23,esp32s31:32})[chipForBoard(board)];
 export const isC6Board=board=>chipForBoard(board)==='esp32c6';
 export const C5_SRAM_RANGES=Object.freeze([Object.freeze({start:0x40800000,end:0x40860000}),Object.freeze({start:0x50000000,end:0x50004000})]);
