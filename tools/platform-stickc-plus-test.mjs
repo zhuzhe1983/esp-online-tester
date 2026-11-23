@@ -99,3 +99,31 @@ test('K016-P 3D A/B regions retain their photo provenance', async () => {
   assert.ok(model.presentation.buttons[0].positionMm[2] > 6.75);
   assert.ok(model.presentation.buttons[1].positionMm[0] > 12);
 });
+
+test('K016-P displays the measured end terminals and rear paper locally', async () => {
+  const model = await readJson('../web/platform/assets/m5stack-k016-p/model.json');
+  const plan = await readJson('../web/platform/assets/m5stack-k016-p/model-plan.json');
+  assert.deepEqual(model.derivedParts, plan.derivedParts);
+  const parts = Object.fromEntries(model.derivedParts.map(part => [part.id,part]));
+  const usb = parts['usb-c'];
+  assert.deepEqual(usb.geometry.centerMm, [0,-23.85,4.05]);
+  assert.deepEqual(usb.geometry.rotation, [Math.PI/2,0,0]);
+  assert.equal(usb.housingVariant, 'recessed');
+  assert.equal(usb.geometry.depthMm, 3.2);
+  assert.deepEqual(parts.grove.geometry.centerMm, [0,-24,-0.8]);
+  assert.equal(parts.grove.allowConnections, false);
+  assert.deepEqual(parts['hat-socket'].geometry.rotation, [-Math.PI/2,0,0]);
+  assert.deepEqual(parts['hat-socket'].geometry.holesMm.map(hole =>
+    Number(((hole[0][0] + hole[2][0])/2).toFixed(2))),
+  [-8.89,-6.35,-3.81,-1.27,1.27,3.81,6.35,8.89]);
+  assert.equal(parts['rear-label-carrier'].role, 'shell');
+  assert.equal(parts['paper-labels'].kind, 'label');
+  assert.equal(parts['paper-labels'].geometry.centerMm[2], -6.575);
+  assert.deepEqual(model.textures[0].outputPixels, [220,387]);
+  assert.equal(model.textures[0].alphaMask.excludeEllipses.length, 2);
+  const [rear] = model.presentation.inspectionGroups;
+  assert.deepEqual(model.presentation.inspectionGroups, plan.presentation.inspectionGroups);
+  assert.deepEqual(rear.offsetMm, [0,0,-22]);
+  for (const id of ['shell-back','rear-label-carrier','paper-labels','rear-magnet','cover-key:button-b']) assert.ok(rear.parts.includes(id));
+  for (const id of ['hat-socket','usb-c','grove','pcb-main']) assert.ok(!rear.parts.includes(id));
+});
