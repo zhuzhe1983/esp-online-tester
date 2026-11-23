@@ -191,7 +191,94 @@
         0,
         0
       ]
-    }
+    },
+    "buttons": [
+      {
+        "id": "button-a",
+        "shape": "rectangle",
+        "sizeMm": [
+          14,
+          9
+        ],
+        "positionMm": [
+          0,
+          -12.4,
+          6.52
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "basis": "image-measurement",
+        "notes": "Estimated from the manufacturer photograph and front CAD."
+      },
+      {
+        "id": "button-b",
+        "shape": "rectangle",
+        "sizeMm": [
+          4.5,
+          2.5
+        ],
+        "positionMm": [
+          12.04,
+          0,
+          1.5
+        ],
+        "rotation": [
+          0,
+          1.5707963267948966,
+          0
+        ],
+        "basis": "image-measurement",
+        "notes": "Longitudinal placement estimated from the photo within ±4 mm. The original CAD groups the keycap with the housing."
+      },
+      {
+        "id": "power",
+        "shape": "rectangle",
+        "sizeMm": [
+          4.5,
+          2.5
+        ],
+        "positionMm": [
+          -12.04,
+          -15.5,
+          1.5
+        ],
+        "rotation": [
+          0,
+          -1.5707963267948966,
+          0
+        ],
+        "basis": "image-measurement",
+        "notes": "Rear manufacturer photo shows the power key near the USB end. Placement is estimated within ±2 mm. The hotspot sends an AXP192 PEK event."
+      }
+    ],
+    "inspectionGroups": [
+      {
+        "id": "rear-housing",
+        "parts": [
+          "cad-component-2",
+          "rear-sticker-support-header",
+          "rear-sticker-support-bridge",
+          "back-paper",
+          "rear-fastener-3",
+          "rear-fastener-4",
+          "bottom-port-divider"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -12
+        ],
+        "sourceIds": [
+          "manufacturer-cad-81317db63a",
+          "product-photo-b49d244d0a",
+          "manufacturer-k016-c-upper-connectors"
+        ],
+        "notes": "Rear cover, visible fasteners, port trim and paper travel together along the legacy enclosure separation axis. The 12 mm clearance is for inspection. The PCB and terminal assembly keep their anchors."
+      }
+    ]
   },
   "derivedParts": [
     {
@@ -220,22 +307,25 @@
       "geometry": {
         "centerMm": [
           0,
-          -24.03,
-          1.5
+          -23.68,
+          3.0
         ],
         "rotation": [
           1.5707963267948966,
           0,
           0
-        ]
+        ],
+        "depthMm": 3.2
       },
       "basis": "image-measurement",
       "sourceIds": [
-        "product-photo-b49d244d0a"
+        "manufacturer-cad-81317db63a",
+        "product-photo-3f48e0f996"
       ],
       "allowConnections": false,
       "connectionStatus": "visual-only-unverified",
-      "notes": "Actual SKU photographed mouth, native CAD aperture used for placement; depth/center +/-0.7mm, not connector CAD certification."
+      "notes": "Metal mouth centered in the native upper-depth part of the combined bottom opening. Local +Z points out of the modeled socket along world −Y. Hidden depth is an estimate.",
+      "housingVariant": "recessed"
     },
     {
       "id": "grove",
@@ -244,8 +334,8 @@
       "geometry": {
         "centerMm": [
           0,
-          -24.03,
-          -3.5999999999999996
+          -23.59,
+          -3.62
         ],
         "rotation": [
           1.5707963267948966,
@@ -255,11 +345,14 @@
       },
       "basis": "image-measurement",
       "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "product-photo-3f48e0f996",
         "product-photo-b49d244d0a"
       ],
       "allowConnections": false,
       "connectionStatus": "visual-only-unverified",
-      "notes": "Actual SKU photographed mouth, native CAD aperture used for placement; depth/center +/-0.7mm, not connector CAD certification."
+      "notes": "Ivory 2 mm-pitch socket seated inside the native rear-side recess. The latch relief faces the sticker side. Local +Z points out along world −Y. Connector depth is estimated.",
+      "housingColor": "#e1d7b7"
     },
     {
       "id": "back-paper",
@@ -267,13 +360,13 @@
       "texture": "back-paper.png",
       "geometry": {
         "sizeMm": [
-          24,
-          48
+          20.42,
+          36.28
         ],
         "centerMm": [
           0,
-          0,
-          -6.521
+          5.34,
+          -6.322
         ],
         "rotation": [
           0,
@@ -283,9 +376,562 @@
       },
       "basis": "image-measurement",
       "sourceIds": [
+        "manufacturer-k016-c-rear-print",
         "product-photo-b49d244d0a"
       ],
-      "notes": "Independent printed-paper plane estimated from this SKU photo and native CAD bounds, +/-0.5mm placement uncertainty; shell/hardware pixels excluded. Not a populated PCB substitute."
+      "notes": "Official print matched to the physical rear photo footprint. The lower edge stops above the fasteners and the top edge meets the HAT end. The manufacturer also photographs this label with a red 5 V input column."
+    },
+    {
+      "id": "rear-sticker-support-header",
+      "kind": "plate",
+      "role": "shell",
+      "color": "#ff6b16",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "product-photo-b49d244d0a",
+        "manufacturer-k016-c-upper-connectors"
+      ],
+      "geometry": {
+        "outlineMm": [
+          [
+            -10.48,
+            -4.34
+          ],
+          [
+            10.48,
+            -4.34
+          ],
+          [
+            10.48,
+            4.34
+          ],
+          [
+            -10.48,
+            4.34
+          ]
+        ],
+        "depthMm": 0.07,
+        "centerMm": [
+          0,
+          19.17,
+          -6.266
+        ]
+      },
+      "notes": "Thin planar approximation of the rear case face, inferred from the level paper in the factory photographs and bounded by the absent legacy CAD patch."
+    },
+    {
+      "id": "rear-sticker-support-bridge",
+      "kind": "plate",
+      "role": "shell",
+      "color": "#ff6b16",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "product-photo-b49d244d0a",
+        "manufacturer-k016-c-upper-connectors"
+      ],
+      "geometry": {
+        "outlineMm": [
+          [
+            -9.94,
+            -1.27
+          ],
+          [
+            9.94,
+            -1.27
+          ],
+          [
+            9.94,
+            1.27
+          ],
+          [
+            -9.94,
+            1.27
+          ]
+        ],
+        "depthMm": 0.07,
+        "centerMm": [
+          0,
+          10.52,
+          -6.266
+        ]
+      },
+      "notes": "Thin planar approximation of the rear case face, inferred from the level paper in the factory photographs and bounded by the absent legacy CAD patch."
+    },
+    {
+      "id": "hat-socket",
+      "kind": "plate",
+      "role": "hardware",
+      "color": "#26282a",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "allowConnections": false,
+      "connectionStatus": "visual-only-unverified",
+      "geometry": {
+        "outlineMm": [
+          [
+            -10.21,
+            -1.15
+          ],
+          [
+            10.21,
+            -1.15
+          ],
+          [
+            10.21,
+            1.15
+          ],
+          [
+            -10.21,
+            1.15
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              -9.59,
+              -0.7
+            ],
+            [
+              -8.19,
+              -0.7
+            ],
+            [
+              -8.19,
+              0.7
+            ],
+            [
+              -9.59,
+              0.7
+            ]
+          ],
+          [
+            [
+              -7.05,
+              -0.7
+            ],
+            [
+              -5.65,
+              -0.7
+            ],
+            [
+              -5.65,
+              0.7
+            ],
+            [
+              -7.05,
+              0.7
+            ]
+          ],
+          [
+            [
+              -4.51,
+              -0.7
+            ],
+            [
+              -3.11,
+              -0.7
+            ],
+            [
+              -3.11,
+              0.7
+            ],
+            [
+              -4.51,
+              0.7
+            ]
+          ],
+          [
+            [
+              -1.97,
+              -0.7
+            ],
+            [
+              -0.57,
+              -0.7
+            ],
+            [
+              -0.57,
+              0.7
+            ],
+            [
+              -1.97,
+              0.7
+            ]
+          ],
+          [
+            [
+              0.57,
+              -0.7
+            ],
+            [
+              1.97,
+              -0.7
+            ],
+            [
+              1.97,
+              0.7
+            ],
+            [
+              0.57,
+              0.7
+            ]
+          ],
+          [
+            [
+              3.11,
+              -0.7
+            ],
+            [
+              4.51,
+              -0.7
+            ],
+            [
+              4.51,
+              0.7
+            ],
+            [
+              3.11,
+              0.7
+            ]
+          ],
+          [
+            [
+              5.65,
+              -0.7
+            ],
+            [
+              7.05,
+              -0.7
+            ],
+            [
+              7.05,
+              0.7
+            ],
+            [
+              5.65,
+              0.7
+            ]
+          ],
+          [
+            [
+              8.19,
+              -0.7
+            ],
+            [
+              9.59,
+              -0.7
+            ],
+            [
+              9.59,
+              0.7
+            ],
+            [
+              8.19,
+              0.7
+            ]
+          ]
+        ],
+        "depthMm": 3.38,
+        "centerMm": [
+          0,
+          21.93,
+          -5.08
+        ],
+        "rotation": [
+          -1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "notes": "Eight female openings on 2.54 mm pitch in the existing case cutout. Local +Z points outward along world +Y. Contact depth and exposed finish are photo estimates."
+    },
+    {
+      "id": "hat-socket-floor",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#171818",
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          20.36,
+          0.16,
+          2.26
+        ],
+        "centerMm": [
+          0,
+          20.16,
+          -5.08
+        ]
+      },
+      "notes": "Inboard rear wall of the eight open wells, with more than 3 mm of modeled clearance from the rim."
+    },
+    {
+      "id": "hat-contact-1",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#a39460",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.39,
+          0.2,
+          0.35
+        ],
+        "centerMm": [
+          -8.89,
+          20.34,
+          -5.36
+        ]
+      },
+      "notes": "Slightly visible inner female contact in the open bore. Position inside the well is an exterior approximation."
+    },
+    {
+      "id": "hat-contact-2",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#a39460",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.39,
+          0.2,
+          0.35
+        ],
+        "centerMm": [
+          -6.35,
+          20.34,
+          -5.36
+        ]
+      },
+      "notes": "Slightly visible inner female contact in the open bore. Position inside the well is an exterior approximation."
+    },
+    {
+      "id": "hat-contact-3",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#a39460",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.39,
+          0.2,
+          0.35
+        ],
+        "centerMm": [
+          -3.81,
+          20.34,
+          -5.36
+        ]
+      },
+      "notes": "Slightly visible inner female contact in the open bore. Position inside the well is an exterior approximation."
+    },
+    {
+      "id": "hat-contact-4",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#a39460",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.39,
+          0.2,
+          0.35
+        ],
+        "centerMm": [
+          -1.27,
+          20.34,
+          -5.36
+        ]
+      },
+      "notes": "Slightly visible inner female contact in the open bore. Position inside the well is an exterior approximation."
+    },
+    {
+      "id": "hat-contact-5",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#a39460",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.39,
+          0.2,
+          0.35
+        ],
+        "centerMm": [
+          1.27,
+          20.34,
+          -5.36
+        ]
+      },
+      "notes": "Slightly visible inner female contact in the open bore. Position inside the well is an exterior approximation."
+    },
+    {
+      "id": "hat-contact-6",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#a39460",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.39,
+          0.2,
+          0.35
+        ],
+        "centerMm": [
+          3.81,
+          20.34,
+          -5.36
+        ]
+      },
+      "notes": "Slightly visible inner female contact in the open bore. Position inside the well is an exterior approximation."
+    },
+    {
+      "id": "hat-contact-7",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#a39460",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.39,
+          0.2,
+          0.35
+        ],
+        "centerMm": [
+          6.35,
+          20.34,
+          -5.36
+        ]
+      },
+      "notes": "Slightly visible inner female contact in the open bore. Position inside the well is an exterior approximation."
+    },
+    {
+      "id": "hat-contact-8",
+      "kind": "box",
+      "role": "hardware",
+      "color": "#a39460",
+      "material": {
+        "metalness": 0.68,
+        "roughness": 0.46
+      },
+      "basis": "estimated",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "manufacturer-k016-c-upper-connectors",
+        "product-photo-3f48e0f996"
+      ],
+      "geometry": {
+        "sizeMm": [
+          0.39,
+          0.2,
+          0.35
+        ],
+        "centerMm": [
+          8.89,
+          20.34,
+          -5.36
+        ]
+      },
+      "notes": "Slightly visible inner female contact in the open bore. Position inside the well is an exterior approximation."
+    },
+    {
+      "id": "bottom-port-divider",
+      "kind": "box",
+      "role": "shell",
+      "color": "#ff6b16",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-81317db63a",
+        "product-photo-3f48e0f996",
+        "product-photo-b49d244d0a"
+      ],
+      "geometry": {
+        "sizeMm": [
+          12.9,
+          0.52,
+          1.64
+        ],
+        "centerMm": [
+          0,
+          -23.44,
+          -0.01
+        ]
+      },
+      "notes": "Planar orange surround in the photographed gap between sockets. It meets the native aperture shoulders and covers the exposed end of the placeholder PCB. Hidden thickness is an estimate."
     }
   ],
   "photos": [
@@ -302,17 +948,23 @@
     {
       "sourceId": "product-photo-64a82e52f9",
       "view": "front-package"
+    },
+    {
+      "sourceId": "manufacturer-k016-c-upper-connectors",
+      "view": "hat-end",
+      "silhouetteComparable": false,
+      "silhouetteNotes": "Oblique housing and HAT reference from the official Arduino library. Earlier case artwork is used only for the molded connector location."
     }
   ],
   "limitations": [
     "Assembled shell estimate is 24×48×13 mm, smaller than current document 25.5×48.2×13.7 mm; all dimensional failures remain visible. The directory may represent another housing revision.",
     "Source assembly transform is estimated. Do not treat this model as a confirmed 1:1 match to current K016-C housing.",
-    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
     "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
     "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
     "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
-    "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
-    "Source separated shells are only provisionally assembled by recorded translation; rear small pieces are fasteners, not user keys. No exact enclosure assembly certification."
+    "Source separated shells are only provisionally assembled by recorded translation; rear small pieces are fasteners, not user keys. No exact enclosure assembly certification.",
+    "Only the existing K016-C board runtime is available. These exterior adjustments carry no new electrical routing or hardware validation.",
+    "Top HAT contact depth, the two rear backing skins and port placement are exterior estimates bounded by this housing and official images."
   ],
   "display": {
     "width": 80,
@@ -368,28 +1020,101 @@
   },
   "textureSources": [
     {
-      "sourceId": "product-photo-b49d244d0a",
+      "sourceId": "manufacturer-k016-c-rear-print",
       "file": "back-paper.png",
-      "cropXYXY": [
-        254,
-        113,
-        550,
-        687
+      "perspectiveQuad": [
+        [
+          9,
+          0
+        ],
+        [
+          2997,
+          0
+        ],
+        [
+          2997,
+          5313
+        ],
+        [
+          9,
+          5313
+        ]
+      ],
+      "rectifiedPixels": [
+        1495,
+        2657
       ],
       "alphaMask": {
-        "includeRoundedRects": [
-          {
-            "xyxy": [
-              270,
-              114,
-              527,
-              565
+        "includePolygons": [
+          [
+            [
+              10,
+              0
             ],
-            "radiusPx": 11
-          }
+            [
+              9,
+              5191
+            ],
+            [
+              13,
+              5220
+            ],
+            [
+              23,
+              5246
+            ],
+            [
+              42,
+              5273
+            ],
+            [
+              69,
+              5295
+            ],
+            [
+              101,
+              5309
+            ],
+            [
+              125,
+              5313
+            ],
+            [
+              2882,
+              5313
+            ],
+            [
+              2905,
+              5309
+            ],
+            [
+              2934,
+              5297
+            ],
+            [
+              2955,
+              5282
+            ],
+            [
+              2978,
+              5255
+            ],
+            [
+              2992,
+              5224
+            ],
+            [
+              2997,
+              5196
+            ],
+            [
+              2997,
+              1
+            ]
+          ]
         ]
       },
-      "notes": "Only actual printed film/paper ROI; shell, fasteners, holes and display excluded. Original photograph pixels retained; no generated or recolored content."
+      "notes": "Official M5Stack device-label artwork. Inner pixel envelope and alpha edge follow the source. Output sampled to about half native size for the viewer, with no re-typesetting or sharpening."
     }
   ],
   "reviewViews": {
@@ -462,6 +1187,50 @@
         0
       ],
       "basis": "Qualitative camera orientation chosen from official photograph; perspective/crop not metrically calibrated."
+    },
+    "hat-end": {
+      "span": 29,
+      "position": [
+        0,
+        240,
+        0
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        1
+      ],
+      "basis": "Axial inspection of the HAT socket in the legacy shell. Photo is oblique and used qualitatively."
+    },
+    "connector-end": {
+      "span": 29,
+      "position": [
+        0,
+        -240,
+        0
+      ],
+      "target": [
+        0,
+        0,
+        0
+      ],
+      "up": [
+        0,
+        0,
+        -1
+      ],
+      "basis": "Axial view of the two lower port mouths in the source opening. The independent product photograph is oblique."
     }
-  }
+  },
+  "supportingAssets": [
+    {
+      "sourceId": "manufacturer-k016-c-rear-print",
+      "file": "back-print-source.webp"
+    }
+  ]
 }
