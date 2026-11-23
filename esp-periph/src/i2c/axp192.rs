@@ -119,6 +119,7 @@ impl Axp192State {
         Self::with_power_input(Axp192PowerInput::default())
     }
 
+    /// The StickC/Plus powered fixture with an explicit initial power stimulus.
     pub fn with_power_input(power_input: Axp192PowerInput) -> Self {
         let mut state = Self::new(1);
         state.profile = Profile::StickC;
@@ -562,11 +563,12 @@ mod stick_tests {
             s.advance_to_us(39_999);
             assert_eq!(raw(&s, 0x78), 0);
             s.advance_to_us(40_000);
-            assert_eq!(raw(&s, 0x78), expected, "{uv}");
+            let measured = raw(&s, 0x78);
+            assert_eq!(measured, expected, "{uv}");
             assert_eq!(s.register(0x79) & 0xf0, 0);
+            // Use the same units and comparison as the factory firmware.
+            assert_eq!(f32::from(measured) * 0.0011 < 3.2, uv < 3_201_000, "{uv}");
         }
-        assert!((2727.0_f32 * 0.0011) < 3.2); // exact product driver, low fixture
-        assert!((3727.0_f32 * 0.0011) > 3.2); // high fixture, not a forced result
     }
     #[test]
     fn disabled_adc_holds_latch_reenable_waits_for_virtual_sample_and_reset_clears_it() {

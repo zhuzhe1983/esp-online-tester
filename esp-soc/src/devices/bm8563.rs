@@ -24,14 +24,19 @@ impl Bm8563State {
     }
     fn add_seconds(&mut self,seconds:u64) {
         let bcd=|b:u8,max:u8|->Option<u8>{let n=(b>>4)*10+(b&15);((b&15)<10&&(b>>4)<10&&n<=max).then_some(n)};
-        let (Some(sec),Some(min),Some(hour),Some(mut day),Some(mut month),Some(mut year))=(bcd(self.regs[2]&0x7f,59),bcd(self.regs[3],59),bcd(self.regs[4],23),bcd(self.regs[5],31),bcd(self.regs[7]&0x1f,12),bcd(self.regs[8],99)) else {return;};
-        // Undefined guest BCD/calendar values are retained, never normalized or
-        // used as an index. This is a model boundary, not a silicon prediction.
-        if month==0 || day==0 || day>month_days(month,year) || self.regs[6]>6 {return;}
+        // BM8563 V1.1: independent seconds/minutes/hours/calendar counters;
+        // STOP (not VL or an unset date) controls the divider. A fresh reset has
+        // valid 00:00:00 but invalid day/month=00; it must still count seconds.
+        let (Some(sec),Some(min),Some(hour))=(bcd(self.regs[2]&0x7f,59),bcd(self.regs[3],59),bcd(self.regs[4],23)) else {return;};
         let time=u64::from(hour)*3600+u64::from(min)*60+u64::from(sec)+seconds%86400;
         let days=seconds/86400+time/86400;let time=time%86400;
         self.regs[2]=(self.regs[2]&0x80)|encode((time%60) as u8);self.regs[3]=encode((time/60%60) as u8);self.regs[4]=encode((time/3600) as u8);
-        self.regs[6]=((u64::from(self.regs[6])+days%7)%7) as u8;
+        if self.regs[6]<=6 {self.regs[6]=((u64::from(self.regs[6])+days%7)%7) as u8;}
+        // Invalid calendar/weekday encodings have unspecified carry behavior.
+        // Retain invalid fields as an explicit functional boundary, without
+        // halting the valid time-of-day counters or fabricating a host date.
+        let (Some(mut day),Some(mut month),Some(mut year))=(bcd(self.regs[5],31),bcd(self.regs[7]&0x1f,12),bcd(self.regs[8],99)) else {return;};
+        if month==0 || day==0 || day>month_days(month,year) {return;}
         // The hardware's two-digit year treats 00 as leap, regardless of C.
         // Two 100-year cycles restore calendar and C; weekday was handled above.
         let mut left=days%73050;let mut century=self.regs[7]&0x80;
@@ -70,7 +75,7 @@ mod tests {
     #[test]
     fn guest_sets_time_and_only_guest_cycles_advance_it() {
         let(s,mut d)=setup();assert_eq!(read(&mut d,0,9),[8,4,0x80,0,0,0,0,0,0]);
-        s.lock().unwrap().advance_to(10000);assert_eq!(read(&mut d,2,7),[0x80,0,0,0,0,0,0]);
+        s.lock().unwrap().advance_to(10000);assert_eq!(read(&mut d,2,7),[0x90,0,0,0,0,0,0]);
         write(&mut d,0,&[0]);write(&mut d,2,&[0,0,0x12,1,1,1,0x77]);
         s.lock().unwrap().advance_to(10999);assert_eq!(read(&mut d,2,7),[0,0,0x12,1,1,1,0x77]);
         s.lock().unwrap().advance_to(11000);assert_eq!(read(&mut d,2,7),[1,0,0x12,1,1,1,0x77]);
@@ -109,4 +114,33 @@ mod tests {
         let(_,mut d)=setup();write(&mut d,1,&[0xff]);assert_eq!(read(&mut d,1,1),[0x17]);write(&mut d,1,&[0]);write(&mut d,1,&[0x0c]);assert_eq!(read(&mut d,1,1),[0]);
         write(&mut d,0xff,&[0x5a,0xff]);assert_eq!(read(&mut d,0x0f,2),[0x5a,0xa8]);write(&mut d,3,&[0xff,0xff]);assert_eq!(read(&mut d,3,2),[0x7f,0x3f]);
     }
+    #[test]
+    fn reset_time_counts_with_vl_and_uninitialized_date_without_host_fixture() {
+        let(s,mut d)=setup();
+        for _ in 0..200 {assert_eq!(read(&mut d,2,7),[0x80,0,0,0,0,0,0]);}
+        s.lock().unwrap().advance_to(999);assert_eq!(read(&mut d,2,3),[0x80,0,0]);
+        s.lock().unwrap().advance_to(1000);assert_eq!(read(&mut d,2,7),[0x81,0,0,0,0,0,0]);
+        s.lock().unwrap().advance_to(60000);assert_eq!(read(&mut d,2,7),[0x80,1,0,0,0,0,0]);
+        write(&mut d,2,&[0x09]);s.lock().unwrap().advance_to(61000);assert_eq!(read(&mut d,2,7),[0x10,1,0,0,0,0,0]);
+    }
+    #[test]
+    fn time_only_write_carries_midnight_without_normalizing_invalid_calendar() {
+        let(s,mut d)=setup();write(&mut d,2,&[0x59,0x59,0x23]);s.lock().unwrap().advance_to(1000);
+        assert_eq!(read(&mut d,2,7),[0,0,0,0,1,0,0]);
+    }
+    #[test]
+    fn invalid_calendar_and_weekday_do_not_gate_independent_time_counters() {
+        let(s,mut d)=setup();write(&mut d,2,&[0xd9,0x59,0x23,0x31,7,0x04,0x26]);s.lock().unwrap().advance_to(1000);
+        assert_eq!(read(&mut d,2,7),[0x80,0,0,0x31,7,0x04,0x26]);
+        write(&mut d,2,&[0x59,0x59,0x23,0x28,7,2,0x24]);s.lock().unwrap().advance_to(2000);
+        assert_eq!(read(&mut d,2,7),[0,0,0,0x29,7,2,0x24]);
+    }
+    #[test]
+    fn fresh_calendar_stop_and_burst_lock_still_control_tick_without_clearing_vl() {
+        let(s,mut d)=setup();write(&mut d,0,&[0x20]);s.lock().unwrap().advance_to(9000);assert_eq!(read(&mut d,2,1),[0x80]);
+        write(&mut d,0,&[0]);d.start(false);d.write(2);d.start(true);s.lock().unwrap().advance_to(12000);
+        assert_eq!(d.read(),0x80);d.stop();assert_eq!(read(&mut d,2,7),[0x81,0,0,0,0,0,0]);
+        s.lock().unwrap().advance_to(13000);assert_eq!(read(&mut d,2,1),[0x82]);
+    }
+
 }
