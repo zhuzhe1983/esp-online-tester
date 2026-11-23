@@ -1,0 +1,913 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-11-23T05:44:25+00:00",
+  "method": "Sequential RUSAGE_CHILDREN user/system CPU deltas; 30 emulated seconds; one excluded warmup per arm; alternating AB/BA measurement pairs",
+  "rounds": 3,
+  "selectedWorkloads": [
+    "hello",
+    "c3-hello",
+    "c6-hello",
+    "classic-hello"
+  ],
+  "environment": {
+    "os": "Darwin",
+    "architecture": "arm64",
+    "logicalCpus": 18,
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "python": "3.15.2",
+    "measurementConditions": "Native release builds on Darwin arm64 using Rust 1.100.0. Candidate verification and task-owned browser finished before sampling. Other host activity was not isolated. Three interleaved samples plus one warmup per arm."
+  },
+  "buildCommand": "cargo +stable build --release --bins (baseline CARGO_BUILD_JOBS=3, candidate CARGO_BUILD_JOBS=6)",
+  "source": {
+    "baseline": {
+      "head": "91061daaedbf8234b76f26c96bc417b73c3356ae",
+      "rustSourceManifestSha256": "e3a52b9a23c657d7bbd9d04837a6c640f8e40aace20d1b45f6b5e6c7d1dfd4b2",
+      "rustSourceFiles": 663,
+      "rustSourceScope": "All tracked/unignored Rust files, Cargo.toml and Cargo.lock; paths and content SHA-256 sorted as compact JSON",
+      "uncommittedRustFiles": {}
+    },
+    "candidate": {
+      "head": "5d71701941e67d6c713d6e7eb1dbfab47d6cc079",
+      "rustSourceManifestSha256": "17b156b8944f8c1963ab2ac9c571a3b0392eb75cb9e434293ac6f80d4e7361e5",
+      "rustSourceFiles": 671,
+      "rustSourceScope": "All tracked/unignored Rust files, Cargo.toml and Cargo.lock; paths and content SHA-256 sorted as compact JSON",
+      "uncommittedRustFiles": {}
+    }
+  },
+  "harnessSha256": "551e015df7edf2e68bfcd46d409e4002a917b40086e78cfaf487948b7ba6d04c",
+  "workloads": {
+    "hello": {
+      "command": "{arm}/target/release/esp32sim --boot rom --flash-mb 8 --max-seconds 30 --no-dump --board none --psram-mb 2 --rom {assets}/esp32s3_rev0_rom.elf --bootloader {assets}/public/hello-bootloader.bin --ptable {assets}/public/hello-ptable.bin --app {assets}/public/hello_world.bin",
+      "inputs": {
+        "rom": {
+          "path": "esp32s3_rev0_rom.elf",
+          "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+          "bytes": 949552
+        },
+        "bootloader": {
+          "path": "public/hello-bootloader.bin",
+          "sha256": "7efecb4df4463ece11ab286068a505ecd174f66fd4aacc53d887fcb9c18f0579",
+          "bytes": 20832
+        },
+        "ptable": {
+          "path": "public/hello-ptable.bin",
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "bytes": 3072
+        },
+        "app": {
+          "path": "public/hello_world.bin",
+          "sha256": "d9142e72453e8b71f6903f4dd869a4ee09c34d94cfafcb4f4309f8d2bf9040c9",
+          "bytes": 161712
+        }
+      },
+      "binarySha256": {
+        "baseline": "a84a8cec4e30c1bb4ae4d5534fb7e900170bae8a554b2b13a225ed80890ed766",
+        "candidate": "6a995d6e54f3bfd0bbd34319f88dd2bc64f9e7b6d9ce9378dc614327ba0f9644"
+      },
+      "warmups": [
+        {
+          "round": 0,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 0.236192,
+          "systemSeconds": 0.006253999999999982,
+          "wallSeconds": 0.24575783300679177,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stderrSha256": "9afa9ac908482a47a0c504a02cd6bfee12fca8875a049b5fa44faf342db17ea2",
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032
+        },
+        {
+          "round": 0,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 0.262462,
+          "systemSeconds": 0.013907000000000003,
+          "wallSeconds": 0.5948592079803348,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stderrSha256": "85259c44b266f3f83310952c691fe20b6d536ff39ab514f98fb4774e06db2f81",
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032
+        }
+      ],
+      "samples": [
+        {
+          "round": 1,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 0.24219400000000002,
+          "systemSeconds": 0.007182000000000022,
+          "wallSeconds": 0.2530962500022724,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stderrSha256": "b9f1f16aa25c80ec04b8d3fbecb7701fb8fbbe5c052dcde3905de7a444dc947b",
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032
+        },
+        {
+          "round": 1,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 0.2410580000000001,
+          "systemSeconds": 0.006305999999999978,
+          "wallSeconds": 0.2504299170104787,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stderrSha256": "0047960aa658d003d510d3ccc263d3a9b11eea2780bc6f12b686059415cf4879",
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032
+        },
+        {
+          "round": 2,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 0.24553199999999986,
+          "systemSeconds": 0.0071390000000000065,
+          "wallSeconds": 0.25692645902745426,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stderrSha256": "6d2dc2646d38e4e07df2dbecc154b397ea015a30655f9833ebba1602278dfff9",
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032
+        },
+        {
+          "round": 2,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 0.23673300000000008,
+          "systemSeconds": 0.006630000000000025,
+          "wallSeconds": 0.24687974993139505,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stderrSha256": "7e39356196e5ab5f479b2548f8ac3ddab9c0ec27e223c99a72a948d24ebfa4fc",
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032
+        },
+        {
+          "round": 3,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 0.2378039999999999,
+          "systemSeconds": 0.007415999999999978,
+          "wallSeconds": 0.2478531670058146,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stderrSha256": "731ef8d0852e550fa0f26916a4fe3bce877b2ab3626eee0957b481553b54d9ac",
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032
+        },
+        {
+          "round": 3,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 0.240707,
+          "systemSeconds": 0.006194000000000033,
+          "wallSeconds": 0.2503310419851914,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+          "stderrSha256": "b3e9a8d9f463ddaec77901ecef04509f145b600f56907550343a3b494f172f8b",
+          "stop": "Halted",
+          "instructions": "core0 11934783 + core1 6775776",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27229,
+          "interrupts": 6032
+        }
+      ],
+      "identicalWorkAndOutput": true,
+      "medianUserSeconds": {
+        "baseline": 0.2378039999999999,
+        "candidate": 0.2410580000000001
+      },
+      "userSecondsRange": {
+        "baseline": [
+          0.23673300000000008,
+          0.24219400000000002
+        ],
+        "candidate": [
+          0.240707,
+          0.24553199999999986
+        ]
+      },
+      "candidatePercentChange": 1.3683537703319537,
+      "slowerCandidatePairs": 2
+    },
+    "c3-hello": {
+      "command": "{arm}/target/release/esp32sim-c3 --boot rom --flash-mb 4 --max-seconds 30 --no-dump --rom {assets}/esp32c3_rev3_rom.elf --bootloader {assets}/public/c3-hello-bootloader.bin --ptable {assets}/public/c3-hello-ptable.bin --app {assets}/public/c3-hello_world.bin",
+      "inputs": {
+        "rom": {
+          "path": "esp32c3_rev3_rom.elf",
+          "sha256": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c",
+          "bytes": 556332
+        },
+        "bootloader": {
+          "path": "public/c3-hello-bootloader.bin",
+          "sha256": "3eaeaa5fb91d462a6ce6dbd8f8d488c8dc059216bc5841e50b784aea8348eb7b",
+          "bytes": 20960
+        },
+        "ptable": {
+          "path": "public/c3-hello-ptable.bin",
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "bytes": 3072
+        },
+        "app": {
+          "path": "public/c3-hello_world.bin",
+          "sha256": "3fd8606fd2fb10d2387ed4d238e16e7f80cd4832f380da02f0128f7bf4e0e8be",
+          "bytes": 137104
+        }
+      },
+      "binarySha256": {
+        "baseline": "0ace08219eb185945944ecb95cd31e0572e8ac1e685f0afb72d0cd124c219488",
+        "candidate": "d13aca46e2a1c4bc0e1e4f8125221cc79b75934b74aadd53c0f404a84da09a86"
+      },
+      "warmups": [
+        {
+          "round": 0,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 2.5182830000000003,
+          "systemSeconds": 0.01051599999999997,
+          "wallSeconds": 2.541041958029382,
+          "aggregateLoadBefore": [
+            9.283203125,
+            13.42138671875,
+            13.95068359375
+          ],
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stderrSha256": "74726853dd1cdc91435da50ca3e5769e23fbbcf50e6999bf473ba5d05d420619",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028
+        },
+        {
+          "round": 0,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 2.617629,
+          "systemSeconds": 0.014580999999999955,
+          "wallSeconds": 2.9569000410847366,
+          "aggregateLoadBefore": [
+            9.18017578125,
+            13.3310546875,
+            13.91552734375
+          ],
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stderrSha256": "2ae0535d49edc87b878cd237afe538cb4791f8e34d614421ba2c22fb47451362",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028
+        }
+      ],
+      "samples": [
+        {
+          "round": 1,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 2.5839159999999994,
+          "systemSeconds": 0.010095999999999994,
+          "wallSeconds": 2.602994416025467,
+          "aggregateLoadBefore": [
+            9.18017578125,
+            13.3310546875,
+            13.91552734375
+          ],
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stderrSha256": "cdf33c37f18e96accd7abe419c28be27ba9a318913732d8252269523a6ec699b",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028
+        },
+        {
+          "round": 1,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 2.5667670000000005,
+          "systemSeconds": 0.007701000000000069,
+          "wallSeconds": 2.584761125035584,
+          "aggregateLoadBefore": [
+            8.84521484375,
+            13.1923828125,
+            13.86328125
+          ],
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stderrSha256": "69da42d4a53deca462b0189bf24cf1c8bf61344c79108ba4545cb3b0c1a9cc3b",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028
+        },
+        {
+          "round": 2,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 2.5789240000000007,
+          "systemSeconds": 0.007079999999999975,
+          "wallSeconds": 2.592913708067499,
+          "aggregateLoadBefore": [
+            8.84521484375,
+            13.1923828125,
+            13.86328125
+          ],
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stderrSha256": "b445e314add0a9f117419ce628b58318e3477a5534d05f8a8f957e2ff4709008",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028
+        },
+        {
+          "round": 2,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 2.4974989999999977,
+          "systemSeconds": 0.007512999999999992,
+          "wallSeconds": 2.5135582080110908,
+          "aggregateLoadBefore": [
+            8.857421875,
+            13.12255859375,
+            13.83447265625
+          ],
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stderrSha256": "8d1a4a3eb0e8efcc5a13c4a59536548122817e04c6aee98eab68a7be8c3923df",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028
+        },
+        {
+          "round": 3,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 2.735329,
+          "systemSeconds": 0.00935700000000006,
+          "wallSeconds": 2.7550677499966696,
+          "aggregateLoadBefore": [
+            8.857421875,
+            13.12255859375,
+            13.83447265625
+          ],
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stderrSha256": "0893539acedeb2b4b0b92cd9e19adeb7c597b4cc13de712b303a28441753c9e7",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028
+        },
+        {
+          "round": 3,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 2.5318150000000017,
+          "systemSeconds": 0.008536999999999906,
+          "wallSeconds": 2.549525208072737,
+          "aggregateLoadBefore": [
+            8.62841796875,
+            13.00390625,
+            13.7880859375
+          ],
+          "stdoutSha256": "3b9d8d3eb053a97670f11896674e70ffc968fd7a803cb2cdc5c051414af94efd",
+          "stderrSha256": "c8b0fd241cd8298d00172f38b8de5c8f7b64ce92d461a54a6400cc36dfed5352",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3028
+        }
+      ],
+      "identicalWorkAndOutput": true,
+      "medianUserSeconds": {
+        "baseline": 2.5839159999999994,
+        "candidate": 2.5667670000000005
+      },
+      "userSecondsRange": {
+        "baseline": [
+          2.4974989999999977,
+          2.735329
+        ],
+        "candidate": [
+          2.5318150000000017,
+          2.5789240000000007
+        ]
+      },
+      "candidatePercentChange": -0.6636825655322753,
+      "slowerCandidatePairs": 1
+    },
+    "c6-hello": {
+      "command": "{arm}/target/release/esp32sim-c6 --boot rom --flash-mb 4 --max-seconds 30 --no-dump --rom {assets}/esp32c6_rev0_rom.elf --bootloader {assets}/public/c6-hello-bootloader.bin --ptable {assets}/public/c6-hello-ptable.bin --app {assets}/public/c6-hello_world.bin",
+      "inputs": {
+        "rom": {
+          "path": "esp32c6_rev0_rom.elf",
+          "sha256": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551",
+          "bytes": 489768
+        },
+        "bootloader": {
+          "path": "public/c6-hello-bootloader.bin",
+          "sha256": "88fd358b406ebc874cda1f4d14c1fd50d37cd064a1826192ee275ce67741ff75",
+          "bytes": 22464
+        },
+        "ptable": {
+          "path": "public/c6-hello-ptable.bin",
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "bytes": 3072
+        },
+        "app": {
+          "path": "public/c6-hello_world.bin",
+          "sha256": "e302a3769d3122759ea85ed6caff857da36f558f83f9bf0eb652276657de0131",
+          "bytes": 120848
+        }
+      },
+      "binarySha256": {
+        "baseline": "a834d8b717e938ca7a7d0947ea05907a103816a870b572cfcc77e6e5a1e1efe4",
+        "candidate": "0724ddeed4cb3db8edbf71665197e0295fbea053370ae69a2587f3403d4d45ae"
+      },
+      "warmups": [
+        {
+          "round": 0,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 1.578996,
+          "systemSeconds": 0.007942000000000005,
+          "wallSeconds": 1.5942252919776365,
+          "aggregateLoadBefore": [
+            8.62841796875,
+            13.00390625,
+            13.7880859375
+          ],
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stderrSha256": "e70609b05280cd1742944f5acfb5a6cfc5e2cdcdf1568bfe33e4f45077c26001",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029
+        },
+        {
+          "round": 0,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 1.6276720000000005,
+          "systemSeconds": 0.01356500000000005,
+          "wallSeconds": 1.9742490409407765,
+          "aggregateLoadBefore": [
+            8.33740234375,
+            12.87060546875,
+            13.736328125
+          ],
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stderrSha256": "821e46a3551a57484ecc3e781b8d3be4da16dbe90c0ded90c44eded77a3dbaf1",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029
+        }
+      ],
+      "samples": [
+        {
+          "round": 1,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 1.5687010000000008,
+          "systemSeconds": 0.009441000000000033,
+          "wallSeconds": 1.5919990829424933,
+          "aggregateLoadBefore": [
+            8.33740234375,
+            12.87060546875,
+            13.736328125
+          ],
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stderrSha256": "546016238fdcc469388289845cffe89585523bff56e6cecc61d20c8dbedcbcb1",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029
+        },
+        {
+          "round": 1,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 1.5710719999999974,
+          "systemSeconds": 0.007097999999999938,
+          "wallSeconds": 1.5864708330482244,
+          "aggregateLoadBefore": [
+            8.33740234375,
+            12.87060546875,
+            13.736328125
+          ],
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stderrSha256": "67330c6aa27d9b15829ba70cbcae7c38abf3452f90bf525ff221c4621b5f986b",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029
+        },
+        {
+          "round": 2,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 1.5999310000000015,
+          "systemSeconds": 0.007709999999999995,
+          "wallSeconds": 1.6170993339037523,
+          "aggregateLoadBefore": [
+            8.39013671875,
+            12.80615234375,
+            13.70849609375
+          ],
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stderrSha256": "48ca39d7c8a847bd595929046be2311e80acbc59763be8088d7cc09f4d14ed6a",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029
+        },
+        {
+          "round": 2,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 1.5975740000000016,
+          "systemSeconds": 0.006948000000000065,
+          "wallSeconds": 1.6122168329311535,
+          "aggregateLoadBefore": [
+            8.39013671875,
+            12.80615234375,
+            13.70849609375
+          ],
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stderrSha256": "736216c8389830076820ac234cc580693b72183e8c77b3ee6a919541eb75ee72",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029
+        },
+        {
+          "round": 3,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 1.5724619999999945,
+          "systemSeconds": 0.007252999999999954,
+          "wallSeconds": 1.5880126249976456,
+          "aggregateLoadBefore": [
+            8.39013671875,
+            12.80615234375,
+            13.70849609375
+          ],
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stderrSha256": "32c974c8ae8220c0b7858ae7d4abd689b4b50099983cdd580a5b8e6bad777db3",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029
+        },
+        {
+          "round": 3,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 1.6154880000000063,
+          "systemSeconds": 0.007364000000000037,
+          "wallSeconds": 1.631432041991502,
+          "aggregateLoadBefore": [
+            8.11865234375,
+            12.67626953125,
+            13.6572265625
+          ],
+          "stdoutSha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+          "stderrSha256": "a5c92d4276fd69b0dad5aa9e664fbccb0fbefeff6d5f1c54534bc6c5f34107fe",
+          "stop": "Halted",
+          "instructions": "4800000000",
+          "guestSeconds": "30.000",
+          "cycles": 4800000000,
+          "exceptions": 0,
+          "interrupts": 3029
+        }
+      ],
+      "identicalWorkAndOutput": true,
+      "medianUserSeconds": {
+        "baseline": 1.5724619999999945,
+        "candidate": 1.5999310000000015
+      },
+      "userSecondsRange": {
+        "baseline": [
+          1.5687010000000008,
+          1.5975740000000016
+        ],
+        "candidate": [
+          1.5710719999999974,
+          1.6154880000000063
+        ]
+      },
+      "candidatePercentChange": 1.746878461928314,
+      "slowerCandidatePairs": 3
+    },
+    "classic-hello": {
+      "command": "{arm}/target/release/esp32sim --boot rom --flash-mb 4 --max-seconds 30 --no-dump --chip esp32 --board esp32dev --psram-mb 0 --console uart0 --rom {assets}/esp32_rev300_rom.elf --bootloader {assets}/public/classic-hello-bootloader.bin --ptable {assets}/public/classic-hello-ptable.bin --app {assets}/public/classic-hello_world.bin",
+      "inputs": {
+        "rom": {
+          "path": "esp32_rev300_rom.elf",
+          "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+          "bytes": 857500
+        },
+        "bootloader": {
+          "path": "public/classic-hello-bootloader.bin",
+          "sha256": "faa4ac0961a9ec6c02d865c874c82bfe0a01225491b89d54fe4b7393f712be2a",
+          "bytes": 26096
+        },
+        "ptable": {
+          "path": "public/classic-hello-ptable.bin",
+          "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820",
+          "bytes": 3072
+        },
+        "app": {
+          "path": "public/classic-hello_world.bin",
+          "sha256": "fa4307fe9545e6599155ac38ad61205946b3f56e92890ad10a69c1592e120cdd",
+          "bytes": 162832
+        }
+      },
+      "binarySha256": {
+        "baseline": "a84a8cec4e30c1bb4ae4d5534fb7e900170bae8a554b2b13a225ed80890ed766",
+        "candidate": "6a995d6e54f3bfd0bbd34319f88dd2bc64f9e7b6d9ce9378dc614327ba0f9644"
+      },
+      "warmups": [
+        {
+          "round": 0,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 0.386813999999994,
+          "systemSeconds": 0.006373999999999991,
+          "wallSeconds": 0.39724995801225305,
+          "aggregateLoadBefore": [
+            8.11865234375,
+            12.67626953125,
+            13.6572265625
+          ],
+          "stdoutSha256": "79376f4b33320fd343dc090d71ca1c694c8e033196b9079195d24b68d98c27ee",
+          "stderrSha256": "dfc59ecb467869021007554f83c03f9d0da75d0e6018aeca28b2824f206038ea",
+          "stop": "Halted",
+          "instructions": "core0 16634667 + core1 4500635",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27408,
+          "interrupts": 6016
+        },
+        {
+          "round": 0,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 0.38618200000000513,
+          "systemSeconds": 0.006089000000000011,
+          "wallSeconds": 0.3966335419099778,
+          "aggregateLoadBefore": [
+            8.11865234375,
+            12.67626953125,
+            13.6572265625
+          ],
+          "stdoutSha256": "79376f4b33320fd343dc090d71ca1c694c8e033196b9079195d24b68d98c27ee",
+          "stderrSha256": "4fd23be6cd972773d5cf55fbb1bd27f3909ed83c3c70c6d5f89bab7d3e63666b",
+          "stop": "Halted",
+          "instructions": "core0 16634667 + core1 4500635",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27408,
+          "interrupts": 6016
+        }
+      ],
+      "samples": [
+        {
+          "round": 1,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 0.40671199999999885,
+          "systemSeconds": 0.007263999999999937,
+          "wallSeconds": 0.4219352920772508,
+          "aggregateLoadBefore": [
+            8.11865234375,
+            12.67626953125,
+            13.6572265625
+          ],
+          "stdoutSha256": "79376f4b33320fd343dc090d71ca1c694c8e033196b9079195d24b68d98c27ee",
+          "stderrSha256": "f46d188c283450770d066b773af9daa688f85e5b3ea491f7a7ea996591367f86",
+          "stop": "Halted",
+          "instructions": "core0 16634667 + core1 4500635",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27408,
+          "interrupts": 6016
+        },
+        {
+          "round": 1,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 0.3885059999999996,
+          "systemSeconds": 0.00601700000000005,
+          "wallSeconds": 0.3989504589699209,
+          "aggregateLoadBefore": [
+            8.11865234375,
+            12.67626953125,
+            13.6572265625
+          ],
+          "stdoutSha256": "79376f4b33320fd343dc090d71ca1c694c8e033196b9079195d24b68d98c27ee",
+          "stderrSha256": "6e61a53a40d2726e7e134cad8b691b5e97fca4921cff07eba41563027f4484bf",
+          "stop": "Halted",
+          "instructions": "core0 16634667 + core1 4500635",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27408,
+          "interrupts": 6016
+        },
+        {
+          "round": 2,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 0.38803399999999755,
+          "systemSeconds": 0.005686999999999998,
+          "wallSeconds": 0.3989588749827817,
+          "aggregateLoadBefore": [
+            8.11865234375,
+            12.67626953125,
+            13.6572265625
+          ],
+          "stdoutSha256": "79376f4b33320fd343dc090d71ca1c694c8e033196b9079195d24b68d98c27ee",
+          "stderrSha256": "d0da649e0852ed396d97dd485f185a5166d59babf2f05736e1dc272a30f3f8f3",
+          "stop": "Halted",
+          "instructions": "core0 16634667 + core1 4500635",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27408,
+          "interrupts": 6016
+        },
+        {
+          "round": 2,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 0.39499100000000453,
+          "systemSeconds": 0.005773999999999946,
+          "wallSeconds": 0.4052028749138117,
+          "aggregateLoadBefore": [
+            8.11865234375,
+            12.67626953125,
+            13.6572265625
+          ],
+          "stdoutSha256": "79376f4b33320fd343dc090d71ca1c694c8e033196b9079195d24b68d98c27ee",
+          "stderrSha256": "d2e5091700f919384f91f86a179bfaf7a0f127ada5106fb28f3d3ba6ea9a567f",
+          "stop": "Halted",
+          "instructions": "core0 16634667 + core1 4500635",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27408,
+          "interrupts": 6016
+        },
+        {
+          "round": 3,
+          "label": "baseline",
+          "exitCode": 0,
+          "userSeconds": 0.38991699999999696,
+          "systemSeconds": 0.006512999999999991,
+          "wallSeconds": 0.3987221251009032,
+          "aggregateLoadBefore": [
+            8.18896484375,
+            12.615234375,
+            13.6298828125
+          ],
+          "stdoutSha256": "79376f4b33320fd343dc090d71ca1c694c8e033196b9079195d24b68d98c27ee",
+          "stderrSha256": "d0da649e0852ed396d97dd485f185a5166d59babf2f05736e1dc272a30f3f8f3",
+          "stop": "Halted",
+          "instructions": "core0 16634667 + core1 4500635",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27408,
+          "interrupts": 6016
+        },
+        {
+          "round": 3,
+          "label": "candidate",
+          "exitCode": 0,
+          "userSeconds": 0.38633000000000095,
+          "systemSeconds": 0.005555000000000088,
+          "wallSeconds": 0.395724083064124,
+          "aggregateLoadBefore": [
+            8.18896484375,
+            12.615234375,
+            13.6298828125
+          ],
+          "stdoutSha256": "79376f4b33320fd343dc090d71ca1c694c8e033196b9079195d24b68d98c27ee",
+          "stderrSha256": "dfc59ecb467869021007554f83c03f9d0da75d0e6018aeca28b2824f206038ea",
+          "stop": "Halted",
+          "instructions": "core0 16634667 + core1 4500635",
+          "guestSeconds": "30.000",
+          "cycles": 7200000000,
+          "exceptions": 27408,
+          "interrupts": 6016
+        }
+      ],
+      "identicalWorkAndOutput": true,
+      "medianUserSeconds": {
+        "baseline": 0.39499100000000453,
+        "candidate": 0.38803399999999755
+      },
+      "userSecondsRange": {
+        "baseline": [
+          0.38991699999999696,
+          0.40671199999999885
+        ],
+        "candidate": [
+          0.38633000000000095,
+          0.3885059999999996
+        ]
+      },
+      "candidatePercentChange": -1.7613059538082898,
+      "slowerCandidatePairs": 0
+    }
+  },
+  "finishedAt": "2026-11-23T05:45:06+00:00"
+}

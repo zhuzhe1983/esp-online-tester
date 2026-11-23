@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-23T05:45:50Z",
+  "sourceRevision": "5d71701941e67d6c713d6e7eb1dbfab47d6cc079",
+  "mergedMain": "91061daaedbf8234b76f26c96bc417b73c3356ae",
+  "rustToolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "nodeVersion": "v24.11.1",
+  "wasm": {
+    "sha256": "ab4e5e2b460b5b0325e767b163454937eaf8f037d050065f91592c722affd7bb",
+    "bytes": 6844678
+  },
+  "checks": [
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=web/wasm/fw cargo test --release --workspace -- --include-ignored --skip external_",
+      "passed": 2479,
+      "failed": 0
+    },
+    {
+      "command": "node --test tools/platform-*-test.mjs",
+      "passed": 458,
+      "failed": 0
+    },
+    {
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "status": "pass"
+    },
+    {
+      "command": "node tools/stage-platform-pages.mjs web <fresh-directory>",
+      "publishedBytes": 756656918
+    }
+  ],
+  "firmwareObservations": {
+    "m5stack-c160": {
+      "browser": "Chromium",
+      "factory": "m5stack-c160-userdemo-v0-2",
+      "frame": {
+        "width": 240,
+        "height": 240,
+        "channels": 88,
+        "sha256": "386c040648632f49547bad400527a39a00101b0c0025d05a7b8bbeb0f3216329"
+      },
+      "input": {
+        "id": "button-b",
+        "gpio": 4,
+        "frameSha": "ad3573f62a1b0d65c232ce16fe0630f66a009d1c4e99ef930e3ad497efe0d1a4",
+        "marker": "Boost Enabled",
+        "guestSeconds": 6.4
+      },
+      "reopenedMini": "m5stack-c160"
+    },
+    "m5stack-c147": {
+      "factoryBoot": {
+        "markers": [
+          "ESP-ROM:esp32s3-20210327",
+          "SPI_FAST_FLASH_BOOT",
+          "Project name:     M5DualKey-UserDemo",
+          "App version:      V0.7-2-g82d7fa6",
+          "ESP-IDF:          v5.5.1-dirty",
+          "UART1 initialized successfully (TX:48, RX:47, Baud:115200)",
+          "UART2 initialized successfully (TX:6, RX:5, Baud:115200)",
+          "Battery: 0.00V [0%] (LOW!)",
+          "BLE_INIT: BT controller compile version"
+        ],
+        "guestSeconds": 2.8,
+        "leds": [
+          [
+            255,
+            0,
+            0
+          ],
+          [
+            255,
+            0,
+            0
+          ]
+        ],
+        "frame": null,
+        "gpio": [
+          1,
+          1
+        ]
+      },
+      "fixtureReplay": {
+        "result": "completed",
+        "eventCount": 4,
+        "guestMarkers": [
+          "C147 KEYS 0 0",
+          "C147 KEYS 1 0",
+          "C147 KEYS 1 1",
+          "C147 KEYS 0 1",
+          "C147 KEYS 0 0"
+        ],
+        "leds": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "m5stack-k010": {
+      "browser": "Chromium",
+      "factory": "m5stack-k010-official-factory",
+      "boot": {
+        "elapsed": 6,
+        "serial": [
+          "touch: FT6336 ready (fw id 0x00 rel 0, lib 0x0000)",
+          "Addr:0x34 - Name:Axp",
+          "Addr:0x38 - Name:CST Touch",
+          "Addr:0x68 - Name:IMU6886",
+          "Addr:0x51 - Name:BM8563",
+          "SDCard Type = 3 ",
+          "SDCard Size = 64 ",
+          "SDCard Type = 3 ",
+          "SDCard Size = 64 "
+        ],
+        "sdCard": {
+          "mounted": true,
+          "format": "fat32",
+          "bytes": 67108864
+        }
+      },
+      "touch": {
+        "x": 160,
+        "y": 120,
+        "before": {
+          "sha256": "4c6219b6063a45bd9076f5f0c84879c3f2abdfc00fffdd40f4ffb3efda74612a",
+          "touch": "abbc08810ee5e785595a2ce7911d52495727273bd56fd15932a9c98d7e82f4ba",
+          "width": 320,
+          "height": 240,
+          "channels": 88
+        },
+        "after": {
+          "sha256": "bfd0473e1da32f74276589fb16592c6c12ec14ec7965b95694a2fc21828afd2c",
+          "touch": "279557c2d2dce8c222c7fd888c1d25fb8375df37323c092efff8961849bd03c7",
+          "width": 320,
+          "height": 240,
+          "channels": 88
+        },
+        "elapsed": 6.78
+      }
+    },
+    "m5stack-k034": {
+      "browser": "Chromium",
+      "acceptance": {
+        "board": "m5-tough",
+        "romDetected": true,
+        "time": 4.96,
+        "width": 320,
+        "height": 240,
+        "firmware": [
+          {
+            "kind": "flash",
+            "sha256": "42198bed525475d134f1b92d71c7cc9208cdb8ff1581459cc2b8ca457635b2fb",
+            "bytes": 2801216
+          },
+          {
+            "kind": "rom",
+            "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+            "bytes": 857500
+          }
+        ],
+        "framebuffer": {
+          "menu": "7c02c258220654616aea206e15d4fcdfbe1c0ebb8f4babb0f28dddadb618d2e6",
+          "touchTab": "7f98158bb52cb3165a782d080a0e07648e6b4d1d6a69e028f2bc545a2351fb64",
+          "touchPoint": "7acada71e63ea6b9e421eafd4294756db5cd3055f6b6364bd375441a628e0163",
+          "menuColors": 84,
+          "selectedIndicator": [
+            255,
+            206,
+            0,
+            255
+          ],
+          "point": [
+            0,
+            0,
+            255,
+            255
+          ]
+        },
+        "sdCard": {
+          "slot": true,
+          "supported": false
+        },
+        "touchUpdateFailed": true
+      },
+      "viewChecks": [
+        "2d",
+        "3d"
+      ]
+    },
+    "cores3Variants": [
+      {
+        "id": "m5stack-k128",
+        "board": "cores3",
+        "firmwareSha256": "b85af8bd116897ee71e00b5111b8b5643754f18990fcf322bd15638f98a6c5ea",
+        "startupFrameSha256": "049482efc966f69bfaacf6344fac3d97b73dec6cabfc9cfc89eb13a454ee1a3c",
+        "menuFrameSha256": "acdbc0c744247e0195b70b7d2e0850ad7cbd98b7a91facb3232d8fa4a0be3fd9",
+        "sdFrameSha256": "b48fbd13e7d76796af845ee7d6cce32bb7d801faa7dfb0143c6bdc81aa3f97b7",
+        "guestEvidence": "HomeMenu -> AppSD"
+      },
+      {
+        "id": "m5stack-k128-se",
+        "board": "cores3-se",
+        "firmwareSha256": "c6990a38bd3c42ab85ad77d377ebf47118b43a126c7623022e102f9f4d60063a",
+        "startupFrameSha256": "1de0fa9b7a7e98676217ac42f9081f4e166f91372299cbaacd264ac502c3feca",
+        "menuFrameSha256": "a1bc92cdb244329f37bcbc75ad19479fbbb03d6b39ef98de6bff47036818ab14",
+        "sdFrameSha256": "5641197dac6c127274a3e763abf20071ae7735250f1dc1a1f601ae23d062368d",
+        "guestEvidence": "HomeMenu -> AppSD"
+      },
+      {
+        "id": "m5stack-k128-lite",
+        "board": "cores3-lite",
+        "firmwareSha256": "b85af8bd116897ee71e00b5111b8b5643754f18990fcf322bd15638f98a6c5ea",
+        "startupFrameSha256": "049482efc966f69bfaacf6344fac3d97b73dec6cabfc9cfc89eb13a454ee1a3c",
+        "menuFrameSha256": "acdbc0c744247e0195b70b7d2e0850ad7cbd98b7a91facb3232d8fa4a0be3fd9",
+        "sdFrameSha256": "5641197dac6c127274a3e763abf20071ae7735250f1dc1a1f601ae23d062368d",
+        "guestEvidence": "HomeMenu -> AppSD"
+      },
+      {
+        "id": "m5stack-k149",
+        "board": "cores3-thread-br",
+        "firmwareSha256": "1abb39eec2381bc6685fe352a12b39816d21b2b9b4f43eaf182ab0d3b4224c2f",
+        "startupFrameSha256": "ca0c7a2a8ef4d69a72898f19ea1e4daa545c94947560492944b24f4799b55ab5",
+        "guestEvidence": "esp_ot_br starts; Spinel Wait for response timeout"
+      }
+    ]
+  }
+}
