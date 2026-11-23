@@ -29,7 +29,32 @@
       ]
     },
     {
-      "name": "components-848b87",
+      "name": "front-panel-hardware",
+      "color": "#848b87",
+      "role": "component",
+      "sourceFile": "source.stp",
+      "sourceComponents": [
+        30,
+        48,
+        57
+      ],
+      "byteOffset": 50976,
+      "vertexCount": 1962,
+      "boundsMm": [
+        [
+          -30.0,
+          2.9999942779541016,
+          -5.6421732902526855
+        ],
+        [
+          46.56937026977539,
+          41.5,
+          8.207819938659668
+        ]
+      ]
+    },
+    {
+      "name": "pcba-hardware",
       "color": "#848b87",
       "role": "component",
       "sourceFile": "source.stp",
@@ -46,7 +71,6 @@
         27,
         28,
         29,
-        30,
         31,
         32,
         33,
@@ -62,12 +86,6 @@
         43,
         44,
         45,
-        48,
-        49,
-        50,
-        51,
-        52,
-        57,
         58,
         59,
         60,
@@ -79,18 +97,44 @@
         66,
         67
       ],
-      "byteOffset": 50976,
-      "vertexCount": 259788,
+      "byteOffset": 98064,
+      "vertexCount": 254754,
       "boundsMm": [
         [
           -44.72117233276367,
           -47.80350112915039,
+          -6.492164611816406
+        ],
+        [
+          44.20523452758789,
+          46.15103530883789,
+          6.907843589782715
+        ]
+      ]
+    },
+    {
+      "name": "rear-support-hardware",
+      "color": "#848b87",
+      "role": "component",
+      "sourceFile": "source.stp",
+      "sourceComponents": [
+        49,
+        50,
+        51,
+        52
+      ],
+      "byteOffset": 6212160,
+      "vertexCount": 3072,
+      "boundsMm": [
+        [
+          -14.149996757507324,
+          6.600078105926514,
           -8.357836723327637
         ],
         [
-          46.56937026977539,
-          46.15103530883789,
-          8.207819938659668
+          14.150004386901855,
+          36.60008239746094,
+          -3.357816457748413
         ]
       ]
     },
@@ -287,39 +331,58 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-display",
         "parts": [
+          "shell-front",
+          "top-button",
           "display-frame",
           "display-glass",
           "lcd-active-surface",
-          "live-display"
+          "live-display",
+          "front-panel-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          43.23419595
+          46
         ],
         "sourceIds": [
           "source-stp"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The front bezel, screen and retained top button cap travel together."
       },
       {
-        "id": "enclosure",
+        "id": "pcba",
         "parts": [
-          "shell-front",
-          "shell-rear",
-          "stand"
+          "pcb-main",
+          "pcba-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          -43.23419595
+          4
         ],
         "sourceIds": [
           "source-stp"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "The original populated CAD carries its USB and extension connector geometry as a rigid layer."
+      },
+      {
+        "id": "rear-housing",
+        "parts": [
+          "shell-rear",
+          "stand",
+          "rear-support-hardware"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -49
+        ],
+        "sourceIds": [
+          "source-stp"
+        ],
+        "notes": "The rear enclosure and its deployed stand travel together."
       }
     ]
   },
@@ -487,9 +550,9 @@
     "source.stp": "541b98caac9b29c13bc67503b27b3ef198089ec69a329db2aed611c547aaf3d3",
     "reference-1.png": "41f29a789a8a038e0c0832d3d40a11c2e743d95bd72e547a1b073e4c4ad2b25d",
     "reference-2.png": "4dd95df8cb40b0ca177e7a8beb7e6e194ae6c35bb38b3d1e2d030b714b6468ee",
-    "geometry.bin": "39f06870de0f59f58a6552c49a5e44f73f6c2709e6cfc9f341c0a85a672bfe54",
+    "geometry.bin": "6fd6b34c1364242390238d6277875174c1d8212e330313097501660cf3c7c914",
     "SOURCE-RIGHTS.txt": "9b6034c700dfcc5bd0ddc880f69b93f923dc668ceb1c14a649f82ce927e1d9a1",
-    "model-plan.json": "e5b5a35d0991015bb57cdc4d96d108926381d45f26a9b74b979e5a5e4edabb7d",
+    "model-plan.json": "c9b521b6a798f027797839f99e99a01c549880a1b4c6375fc947af6356a5a6e8",
     "source-manifest.json": "9e833059c8897223743bc608ee89f8efb11749fa6c5336f289d7618bfc272d46"
   }
 }

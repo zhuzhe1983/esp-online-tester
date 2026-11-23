@@ -127,18 +127,26 @@
     {
       "file": "source.stp",
       "components": [
-        0,
-        1,
-        7,
-        8,
-        9,
         245,
         323,
         336,
         357,
         994
       ],
-      "name": "components-848b87",
+      "name": "pcba-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
+        0,
+        1,
+        7,
+        8,
+        9
+      ],
+      "name": "rear-magnetic-hardware",
       "color": "#848b87",
       "role": "component"
     },
@@ -263,36 +271,72 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-display",
         "parts": [
+          "shell-frame",
           "front-glass",
-          "live-display"
+          "live-display",
+          "button-ai",
+          "upper-button-unverified",
+          "lower-button-unverified"
         ],
         "offsetMm": [
           0,
           0,
-          47.619
+          43
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The perimeter frame retains its front glass, attached live display surface and the three physical edge caps."
       },
       {
-        "id": "enclosure",
+        "id": "pcba",
         "parts": [
-          "rear-cover",
-          "shell-frame"
+          "pcb-main",
+          "pcb-native-detail",
+          "pcba-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          -47.619
+          4
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "The native PCBA retains its card and display sockets and other modeled mounted packages."
+      },
+      {
+        "id": "battery",
+        "parts": [
+          "battery"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -24
+        ],
+        "sourceIds": [
+          "official-cad"
+        ],
+        "notes": "The independent native battery occupies its own viewing layer."
+      },
+      {
+        "id": "rear-cover",
+        "parts": [
+          "rear-cover",
+          "rear-magnetic-hardware"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -54
+        ],
+        "sourceIds": [
+          "official-cad"
+        ],
+        "notes": "The four magnets and centered ring travel with the rear glass that backs them."
       }
     ]
   },

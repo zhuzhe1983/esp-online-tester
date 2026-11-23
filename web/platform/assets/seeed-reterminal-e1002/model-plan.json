@@ -95,18 +95,20 @@
     {
       "file": "source.stp",
       "components": [
-        1,
-        2,
         4,
         5,
         6,
         7,
-        8,
-        9,
-        10,
-        11,
+        24
+      ],
+      "name": "front-panel-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
         23,
-        24,
         28,
         29,
         30,
@@ -118,7 +120,6 @@
         36,
         37,
         38,
-        39,
         40,
         41,
         43,
@@ -128,16 +129,31 @@
         47,
         48,
         49,
-        50,
-        51,
-        52,
         53,
         54,
         55,
         57,
         59
       ],
-      "name": "components-848b87",
+      "name": "pcba-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
+        1,
+        2,
+        8,
+        9,
+        10,
+        11,
+        39,
+        50,
+        51,
+        52
+      ],
+      "name": "rear-mounting-hardware",
       "color": "#848b87",
       "role": "component"
     },
@@ -280,41 +296,66 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-display",
         "parts": [
+          "shell-front",
           "panel-cover-14",
           "panel-cover-15",
           "panel-cover-16",
           "panel-cover-17",
           "display-backing",
+          "front-panel-hardware",
           "live-display"
         ],
         "offsetMm": [
           0,
           0,
-          78.75
+          85
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The front shell, corresponding kit panel, display backing and its seating pads retain their native relative fit."
       },
       {
-        "id": "enclosure",
+        "id": "pcba",
         "parts": [
-          "shell-rear",
-          "shell-front",
-          "stand"
+          "pcb-main",
+          "pcba-hardware",
+          "components-ffffff",
+          "battery"
         ],
         "offsetMm": [
           0,
           0,
-          -78.75
+          7
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "USB, card and expansion connector bodies stay with the populated main PCB. The native adjacent battery and its pad share this inspection layer."
+      },
+      {
+        "id": "rear-housing",
+        "parts": [
+          "shell-rear",
+          "white-double-key",
+          "green-key",
+          "cover-key:key0",
+          "cover-key:key1",
+          "cover-key:key2",
+          "stand",
+          "rear-mounting-hardware"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -85
+        ],
+        "sourceIds": [
+          "official-cad"
+        ],
+        "notes": "The top-edge cap guides, visible caps, their hit surfaces and the stand travel with the rear housing. The board-mounted switches stay on the PCB."
       }
     ],
     "buttons": [

@@ -97,20 +97,44 @@
     {
       "file": "source.stp",
       "components": [
-        2,
         7,
         8,
         11,
+        20,
+        21,
+        22,
+        23,
+        37,
+        39,
+        40,
+        41,
+        42,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        55,
+        59,
+        60,
+        61
+      ],
+      "name": "front-panel-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
         14,
         15,
         16,
         17,
         18,
         19,
-        20,
-        21,
-        22,
-        23,
         24,
         25,
         26,
@@ -124,31 +148,23 @@
         34,
         35,
         36,
-        37,
-        39,
-        40,
-        41,
-        42,
         43,
-        44,
-        45,
-        46,
-        47,
-        48,
-        49,
-        50,
-        51,
-        52,
+        52
+      ],
+      "name": "pcba-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
+        2,
         54,
-        55,
         56,
         57,
-        58,
-        59,
-        60,
-        61
+        58
       ],
-      "name": "components-848b87",
+      "name": "rear-mounting-hardware",
       "color": "#848b87",
       "role": "component"
     },
@@ -278,41 +294,62 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-display",
         "parts": [
+          "shell-front",
+          "display-support",
+          "camera-trim",
           "display-panel",
           "display-frame",
           "front-cover",
           "front-cover-film",
-          "live-display"
+          "live-display",
+          "front-panel-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          90.63000000000001
+          92
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The front housing, display support, panel films and upper camera and sensor assembly follow their native seating surfaces. The retained folded display tails travel with the panel."
       },
       {
-        "id": "enclosure",
+        "id": "pcba",
         "parts": [
-          "shell-rear",
-          "shell-front",
-          "antenna-cover",
-          "stand"
+          "pcb-main",
+          "pcba-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          -90.63000000000001
+          8
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "The populated main PCB, its sockets and their retained mating bodies travel as one layer. The original PCB and connector coordinates are preserved."
+      },
+      {
+        "id": "rear-housing",
+        "parts": [
+          "shell-rear",
+          "antenna-cover",
+          "green-key",
+          "stand",
+          "rear-mounting-hardware"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -95
+        ],
+        "sourceIds": [
+          "official-cad"
+        ],
+        "notes": "The rear housing retains its antenna cover, stand, mounting pieces and the green cap seated in its top opening."
       }
     ]
   },
