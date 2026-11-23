@@ -100,16 +100,47 @@
         2,
         3,
         4,
+        21,
+        22,
+        23,
+        24,
+        40,
+        42,
+        43,
+        44,
+        45
+      ],
+      "name": "front-panel-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
         14,
         16,
         17,
         18,
         19,
         20,
-        21,
-        22,
-        23,
-        24,
+        58,
+        67,
+        76,
+        83,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111
+      ],
+      "name": "pcba-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
         26,
         27,
         28,
@@ -122,24 +153,9 @@
         36,
         37,
         38,
-        40,
-        42,
-        43,
-        44,
-        45,
-        46,
-        58,
-        67,
-        76,
-        83,
-        106,
-        107,
-        108,
-        109,
-        110,
-        111
+        46
       ],
-      "name": "components-848b87",
+      "name": "rear-mounting-hardware",
       "color": "#848b87",
       "role": "component"
     },
@@ -237,39 +253,58 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-display",
         "parts": [
+          "shell-front",
           "touch-cover",
           "epaper-panel",
           "front-film",
-          "live-display"
+          "live-display",
+          "front-panel-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          100.66499999999999
+          107
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The native front housing and touch display follow together with their adhered pads, stiffeners and folded GT911 panel tail."
       },
       {
-        "id": "enclosure",
+        "id": "pcba",
         "parts": [
-          "shell-front",
-          "shell-rear",
-          "stand"
+          "pcb-main",
+          "battery",
+          "pcba-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          -100.66499999999999
+          8
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "The native PCB-TOTAL assembly carries its TYPE-C, TF and other soldered parts. Its retained battery has the same inspection transform."
+      },
+      {
+        "id": "rear-housing",
+        "parts": [
+          "shell-rear",
+          "stand",
+          "rear-mounting-hardware"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -105
+        ],
+        "sourceIds": [
+          "official-cad"
+        ],
+        "notes": "The native rear shell retains its fitted side controls, fasteners and stand hardware."
       }
     ]
   },

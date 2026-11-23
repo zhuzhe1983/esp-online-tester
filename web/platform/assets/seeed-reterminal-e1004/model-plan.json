@@ -60,6 +60,25 @@
       "url": "https://wiki.seeedstudio.com/getting_started_with_reterminal_e1004/",
       "kind": "manufacturer-specification",
       "notes": "Specification was consulted during product research; this model source list does not assert a separate raw-download receipt."
+    },
+    {
+      "id": "official-rtc-teardown",
+      "status": "fetched",
+      "url": "https://files.seeedstudio.com/wiki/reterminal_e10xx/res/rtc_1004.mp4",
+      "resolvedUrl": "https://files.seeedstudio.com/wiki/reterminal_e10xx/res/rtc_1004.mp4",
+      "fetchedAt": "2026-11-23T12:47:02.589424Z",
+      "mediaType": "video/mp4",
+      "bytes": 48404612,
+      "sha256": "0b76129a40e269b4cbcbce328d277b33df02f1bb11ea63630d038a081bab83e1",
+      "kind": "manufacturer-assembly-video",
+      "notes": "At 12.90 seconds the lifted access cover shows the USB opening and the underlying board assembly. The fetched original identifies the observation. The video is hosted by Seeed."
+    },
+    {
+      "id": "official-e1004-schematic",
+      "status": "linked",
+      "url": "https://files.seeedstudio.com/wiki/reterminal_e10xx/res/202004523_reTerminal%20E1004_V1.0_SCH_260105.pdf",
+      "kind": "manufacturer-schematic",
+      "notes": "USB1 is listed as the U263-16XN-4BQC65 surface-mount receptacle."
     }
   ],
   "parts": [
@@ -191,21 +210,22 @@
       "geometry": {
         "sizeMm": [
           70,
-          140,
+          150,
           1.6
         ],
         "centerMm": [
           77,
           0,
-          -10
+          -12.9
         ],
         "labelSide": "both"
       },
       "basis": "estimated-UNKNOWN",
-      "notes": "PCB shape, size, mounting holes, component locations and stack height are unavailable; explicitly estimated UNKNOWN board within photo-visible electronics cover.",
+      "notes": "The teardown locates the board under the removable electronics cover. Width, height, thickness and seating depth are explicitly estimated. The substrate reaches the vertical USB-C seating plane.",
       "sourceIds": [
         "reference-front-jpeg",
-        "reference-overview-png"
+        "reference-overview-png",
+        "official-rtc-teardown"
       ]
     },
     {
@@ -303,14 +323,18 @@
           0,
           3.141592653589793,
           0
-        ]
+        ],
+        "depthMm": 6.5
       },
       "basis": "photo-estimate",
-      "notes": "USB-C presence is visible in official overview. Its placement is a visual estimate; no electrical or mating contract.",
+      "notes": "The exterior mating plane retains its existing photo-estimated location. The schematic and access-cover video support a vertical board receptacle. The simplified visual sleeve uses an estimated 6.5 mm seating depth.",
       "sourceIds": [
         "reference-front-jpeg",
-        "reference-overview-png"
-      ]
+        "reference-overview-png",
+        "official-rtc-teardown",
+        "official-e1004-schematic"
+      ],
+      "housingVariant": "recessed"
     }
   ],
   "dimensions": {
@@ -342,7 +366,7 @@
     },
     "inspectionGroups": [
       {
-        "id": "front",
+        "id": "front-display",
         "parts": [
           "outer-frame",
           "white-mat",
@@ -352,21 +376,37 @@
         "offsetMm": [
           0,
           0,
-          80
+          150
         ],
-        "notes": "Estimated front shell, mat and live display separated for inspection.",
         "sourceIds": [
           "reference-front-jpeg",
           "reference-overview-png",
           "official-specification"
-        ]
+        ],
+        "notes": "The photo-informed outer frame, mat and display remain one modeled front assembly. A larger viewing offset gives the board clearance past the projected portrait frame."
       },
       {
-        "id": "back",
+        "id": "pcba",
+        "parts": [
+          "pcb-unknown",
+          "rear-usb-c-visual"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          7
+        ],
+        "sourceIds": [
+          "official-rtc-teardown",
+          "official-e1004-schematic"
+        ],
+        "notes": "The estimated PCB and its upright USB-C receptacle retain their common seating geometry. The manufacturer video shows the access cover opening over the board."
+      },
+      {
+        "id": "rear-housing",
         "parts": [
           "rear-panel",
           "electronics-cover",
-          "rear-usb-c-visual",
           "rear-fastener-34-84",
           "rear-fastener-120-84",
           "rear-fastener-34--84",
@@ -375,14 +415,15 @@
         "offsetMm": [
           0,
           0,
-          -80
+          -125
         ],
-        "notes": "Estimated back cover and visible details; no measured assembly stack.",
         "sourceIds": [
           "reference-front-jpeg",
           "reference-overview-png",
-          "official-specification"
-        ]
+          "official-specification",
+          "official-rtc-teardown"
+        ],
+        "notes": "The modeled rear panel travels with its electronics access cover and visible fastener heads."
       }
     ]
   },

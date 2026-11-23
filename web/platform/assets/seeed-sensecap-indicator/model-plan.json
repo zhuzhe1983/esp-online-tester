@@ -87,6 +87,17 @@
     {
       "file": "source.stp",
       "components": [
+        30,
+        48,
+        57
+      ],
+      "name": "front-panel-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
         2,
         3,
         4,
@@ -99,7 +110,6 @@
         27,
         28,
         29,
-        30,
         31,
         32,
         33,
@@ -115,12 +125,6 @@
         43,
         44,
         45,
-        48,
-        49,
-        50,
-        51,
-        52,
-        57,
         58,
         59,
         60,
@@ -132,7 +136,19 @@
         66,
         67
       ],
-      "name": "components-848b87",
+      "name": "pcba-hardware",
+      "color": "#848b87",
+      "role": "component"
+    },
+    {
+      "file": "source.stp",
+      "components": [
+        49,
+        50,
+        51,
+        52
+      ],
+      "name": "rear-support-hardware",
       "color": "#848b87",
       "role": "component"
     },
@@ -231,39 +247,58 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-display",
         "parts": [
+          "shell-front",
+          "top-button",
           "display-frame",
           "display-glass",
           "lcd-active-surface",
-          "live-display"
+          "live-display",
+          "front-panel-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          43.23419595
+          46
         ],
         "sourceIds": [
           "source-stp"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The front bezel, screen and retained top button cap travel together."
       },
       {
-        "id": "enclosure",
+        "id": "pcba",
         "parts": [
-          "shell-front",
-          "shell-rear",
-          "stand"
+          "pcb-main",
+          "pcba-hardware"
         ],
         "offsetMm": [
           0,
           0,
-          -43.23419595
+          4
         ],
         "sourceIds": [
           "source-stp"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "The original populated CAD carries its USB and extension connector geometry as a rigid layer."
+      },
+      {
+        "id": "rear-housing",
+        "parts": [
+          "shell-rear",
+          "stand",
+          "rear-support-hardware"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -49
+        ],
+        "sourceIds": [
+          "source-stp"
+        ],
+        "notes": "The rear enclosure and its deployed stand travel together."
       }
     ]
   },

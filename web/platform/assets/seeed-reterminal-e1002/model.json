@@ -29,23 +29,39 @@
       ]
     },
     {
-      "name": "components-848b87",
+      "name": "front-panel-hardware",
       "color": "#848b87",
       "role": "component",
       "sourceFile": "source.stp",
       "sourceComponents": [
-        1,
-        2,
         4,
         5,
         6,
         7,
-        8,
-        9,
-        10,
-        11,
+        24
+      ],
+      "byteOffset": 513648,
+      "vertexCount": 3780,
+      "boundsMm": [
+        [
+          -75.0999984741211,
+          -53.0,
+          2.5
+        ],
+        [
+          36.74241256713867,
+          57.0,
+          6.0
+        ]
+      ]
+    },
+    {
+      "name": "pcba-hardware",
+      "color": "#848b87",
+      "role": "component",
+      "sourceFile": "source.stp",
+      "sourceComponents": [
         23,
-        24,
         28,
         29,
         30,
@@ -57,7 +73,6 @@
         36,
         37,
         38,
-        39,
         40,
         41,
         43,
@@ -67,27 +82,56 @@
         47,
         48,
         49,
-        50,
-        51,
-        52,
         53,
         54,
         55,
         57,
         59
       ],
-      "byteOffset": 513648,
-      "vertexCount": 71946,
+      "byteOffset": 604368,
+      "vertexCount": 58302,
       "boundsMm": [
         [
-          -75.0999984741211,
+          -41.70000076293945,
           -58.304779052734375,
-          -8.5
+          -7.099999904632568
         ],
         [
           44.20000076293945,
           58.5,
           6.800000190734863
+        ]
+      ]
+    },
+    {
+      "name": "rear-mounting-hardware",
+      "color": "#848b87",
+      "role": "component",
+      "sourceFile": "source.stp",
+      "sourceComponents": [
+        1,
+        2,
+        8,
+        9,
+        10,
+        11,
+        39,
+        50,
+        51,
+        52
+      ],
+      "byteOffset": 2003616,
+      "vertexCount": 9864,
+      "boundsMm": [
+        [
+          -40.24241256713867,
+          -54.70000076293945,
+          -8.5
+        ],
+        [
+          40.24241256713867,
+          56.70000076293945,
+          5.5
         ]
       ]
     },
@@ -398,41 +442,66 @@
     },
     "inspectionGroups": [
       {
-        "id": "display",
+        "id": "front-display",
         "parts": [
+          "shell-front",
           "panel-cover-14",
           "panel-cover-15",
           "panel-cover-16",
           "panel-cover-17",
           "display-backing",
+          "front-panel-hardware",
           "live-display"
         ],
         "offsetMm": [
           0,
           0,
-          78.75
+          85
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Display group lifted for inspection; separation distance is a viewer convention."
+        "notes": "The front shell, corresponding kit panel, display backing and its seating pads retain their native relative fit."
       },
       {
-        "id": "enclosure",
+        "id": "pcba",
         "parts": [
-          "shell-rear",
-          "shell-front",
-          "stand"
+          "pcb-main",
+          "pcba-hardware",
+          "components-ffffff",
+          "battery"
         ],
         "offsetMm": [
           0,
           0,
-          -78.75
+          7
         ],
         "sourceIds": [
           "official-cad"
         ],
-        "notes": "Original shell component coordinates remain unchanged within this inspection group."
+        "notes": "USB, card and expansion connector bodies stay with the populated main PCB. The native adjacent battery and its pad share this inspection layer."
+      },
+      {
+        "id": "rear-housing",
+        "parts": [
+          "shell-rear",
+          "white-double-key",
+          "green-key",
+          "cover-key:key0",
+          "cover-key:key1",
+          "cover-key:key2",
+          "stand",
+          "rear-mounting-hardware"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -85
+        ],
+        "sourceIds": [
+          "official-cad"
+        ],
+        "notes": "The top-edge cap guides, visible caps, their hit surfaces and the stand travel with the rear housing. The board-mounted switches stay on the PCB."
       }
     ],
     "buttons": [
@@ -673,9 +742,9 @@
     "source.stp": "d007d0db5ecd78f2109ee9115aa562b31d058fc054172b7237a4692c6e30a6b1",
     "reference-1.jpg": "250fb5e7001c4fe61e45cc65e344c0b778f20597956f28965ed14da666430a9d",
     "reference-2.png": "19f1e0373d7b2c75293af2b219c3534895650c2f86619fbaca2d9cf8c37ddc96",
-    "geometry.bin": "8234a2380be08bd5da6de7d292de94b905f5d4085ae6d2806c855f996d23a7a0",
+    "geometry.bin": "126821f8dbfd69b525268183ec03cfd2af1db9642ea9b921aaa317016dd7fa5f",
     "SOURCE-RIGHTS.txt": "9b6034c700dfcc5bd0ddc880f69b93f923dc668ceb1c14a649f82ce927e1d9a1",
-    "model-plan.json": "e4e8e70313a4e739e1acbf0e3cec89ed53b6fad760d75c6ad51dcd6b72278f1b",
+    "model-plan.json": "a66699c68b0aa45d2de2b4b6bce6d5e426a927b4780b044353445cebb18a3d33",
     "source-manifest.json": "73af7b2b3f08d473c6eae015481bb4bdf2d7ee8d105a635fadf9149397511bce"
   }
 }
