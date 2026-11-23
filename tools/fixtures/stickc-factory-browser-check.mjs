@@ -7,8 +7,9 @@ import { createRequire } from 'node:module';
 import { extname, resolve, sep } from 'node:path';
 import { once } from 'node:events';
 
-const [factoryPath, outputPath] = process.argv.slice(2);
-assert.ok(factoryPath && outputPath, 'Usage: node tools/fixtures/stickc-factory-browser-check.mjs <factory.bin> <evidence-dir>');
+const [factoryPath, outputPath, mode] = process.argv.slice(2);
+assert.ok(factoryPath && outputPath && (!mode || mode === '--extended'),
+  'Usage: node tools/fixtures/stickc-factory-browser-check.mjs <factory.bin> <evidence-dir> [--extended]');
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.ESP_TEST_PLAYWRIGHT ?? 'playwright');
 const pin = '8bd01902abdc0f0f6bfbf36a563de027d01cc9640e59c30756cc7315b06ccb03';
@@ -79,6 +80,68 @@ async function capture(page, name) {
     nonblack: frame.nonblack, sha256: hash(bytes) };
 }
 
+async function verifyImu(page, idle) {
+  const poses = [
+    { name: 'tilt-one', quaternion: [-0.408248290463863, 0, 0.2886751345948129, 0.8660254037844386] },
+    { name: 'tilt-two', quaternion: [-0.5244044240850758, 0, -0.31622776601683794, 0.7905694150420949] },
+    { name: 'neutral', quaternion: [-Math.SQRT1_2, 0, 0, Math.SQRT1_2] },
+  ];
+  const frames = {};
+  for (const { name, quaternion } of poses) {
+    await page.evaluate(quaternion => espTester.setImu({
+      enabled: true, source: 'agent', quaternion, angularVelocityDps: [0, 0, 0],
+    }), quaternion);
+    await advance(page, name === 'neutral' ? 2 : 1);
+    frames[name] = await capture(page, name);
+  }
+  assert.notEqual(frames['tilt-one'].sha256, idle.sha256);
+  assert.equal(new Set(Object.values(frames).map(frame => frame.sha256)).size, 3);
+  return frames;
+}
+
+async function verifyMic(page) {
+  const capability = await page.evaluate(async () => (await espTester.capabilities()).audio.input);
+  assert.equal(capability.mode, 'logical-i2s-port');
+  assert.ok(capability.available);
+  const cases = [
+    { name: 'tone-1khz', frequency: 1000, port: 0 },
+    { name: 'tone-2khz', frequency: 2000, port: 0 },
+    { name: 'silence', frequency: 0, port: 0 },
+    { name: 'wrong-port', frequency: 1000, port: 1 },
+  ];
+  const spectra = {};
+  for (const { name, frequency, port } of cases) {
+    await page.evaluate(port => espTester.audioConfigure({
+      input: { enabled: true, port, sampleRate: 44100, channels: 1 },
+    }), port);
+    const packets = port === 1 ? 1 : 14;
+    for (let packet = 0; packet < packets; packet++) {
+      await page.evaluate(({ frequency, port, packet }) => {
+        const rate = 44100;
+        const samples = Array.from({ length: packet ? 11025 : 16384 }, (_, i) =>
+          Math.round(25000 * Math.sin(2 * Math.PI * frequency * (i + packet * 11025) / rate)));
+        return espTester.pushAudio({ samples, sampleRate: rate, channels: 1, port });
+      }, { frequency, port, packet });
+      await advance(page, port === 1 ? 3.5 : 0.25);
+    }
+    const input = await page.evaluate(async () => (await espTester.readAudio({ includeChunks: false })).input);
+    spectra[name] = { ...await capture(page, name), consumedFrames: input.consumedFrames,
+      underrunFrames: input.underrunFrames };
+    await page.evaluate(port => espTester.audioConfigure({
+      input: { enabled: false, port, sampleRate: 44100, channels: 1 },
+    }), port);
+  }
+  for (const name of ['tone-1khz', 'tone-2khz']) {
+    assert.ok(spectra[name].nonblack > 5000, name + ' did not yield a spectrum');
+    assert.ok(spectra[name].consumedFrames > 0, name + ' was never consumed');
+  }
+  assert.notEqual(spectra['tone-1khz'].sha256, spectra['tone-2khz'].sha256);
+  assert.ok(spectra.silence.nonblack < 2000);
+  assert.ok(spectra['wrong-port'].nonblack < 2000);
+  assert.equal(spectra['wrong-port'].consumedFrames, 0);
+  return spectra;
+}
+
 let browser;
 try {
   const origin = 'http://127.0.0.1:' + server.address().port;
@@ -128,6 +191,7 @@ try {
   assert.match(uart, /SPI_FAST_FLASH_BOOT/);
   assert.match(uart, /M5StickC initializing\.\.\.OK/);
   assert.doesNotMatch(uart, /Guru Meditation|StoreProhibited|Brownout detector/);
+  const imu = mode === '--extended' ? await verifyImu(page, idle) : undefined;
   await page.locator('#view-2d').click();
   await page.evaluate(() => {
     window.stickcEdges = [];
@@ -151,6 +215,7 @@ try {
   await page.keyboard.up('b');
   await advance(page, 0.5);
   const mic = await capture(page, 'mic');
+  const pcm = mode === '--extended' ? await verifyMic(page) : undefined;
   const edges = await page.evaluate(() => window.stickcEdges);
   assert.deepEqual(edges, [
     { id: 'button-a', pressed: true }, { id: 'button-a', pressed: false },
@@ -161,7 +226,7 @@ try {
   const report = {
     transport: receipt.transport, executionMode: firmware.executionMode, appDirect: firmware.appDirect,
     stubs: firmware.stubs, flashSha256: pin, romSha256: romPin,
-    wasm: { sha256: hash(wasm), bytes: wasm.length }, idle, rtc, rtcTick, mic, edges,
+    wasm: { sha256: hash(wasm), bytes: wasm.length }, idle, rtc, rtcTick, mic, edges, imu, pcm,
     uart: ['SPI_FAST_FLASH_BOOT', 'M5StickC initializing...OK'], workers,
   };
   await writeFile(resolve(outputPath, 'receipt.json'), JSON.stringify(report, null, 2) + '\n');
