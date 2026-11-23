@@ -18,6 +18,7 @@ pub mod lilygo_additional;
 mod m5stack_basic;
 pub mod core2;
 pub mod m5_tough;
+pub mod stickc;
 
 pub use tdisplay::*;
 
@@ -39,6 +40,7 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
         "ai-thinker-cam" | "esp32cam" => Some(Box::new(aithinker::AiThinkerCam::default())),
         "m5-tough" => Some(Box::new(m5_tough::M5Tough::new())),
         "cyd" | "esp32-2432s028" => Some(Box::new(cyd::Cyd::new())),
+        "stickc" => Some(Box::new(stickc::StickC::new())),
         "m5stack-basic" => Some(Box::new(m5stack_basic::M5StackBasic::new())),
         "ulanzi-tc001" | "tc001" => Some(Box::new(ulanzi::UlanziTc001::new())),
         _ => lilygo_additional::make_board(name).or_else(|| crate::spi::make_board(name)),

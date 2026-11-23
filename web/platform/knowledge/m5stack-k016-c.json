@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:34:55Z",
+  "updatedAt": "2026-11-22T06:21:11Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -518,6 +518,90 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "runtime-pinmap",
+      "label": "StickC GPIO mapping",
+      "value": {
+        "lcd": {
+          "mosi": 15,
+          "sclk": 13,
+          "cs": 5,
+          "dc": 23,
+          "reset": 18
+        },
+        "buttonA": 37,
+        "buttonB": 39,
+        "redLed": 10,
+        "irTx": 9,
+        "internalI2c": {
+          "sda": 21,
+          "scl": 22
+        },
+        "microphone": {
+          "clock": 0,
+          "data": 34
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-official-stickc"
+      ],
+      "group": "runtime-hardware"
+    },
+    {
+      "id": "runtime-panel-window",
+      "label": "Manufacturer driver ST7735 RAM crop",
+      "value": {
+        "ram": [
+          132,
+          162
+        ],
+        "visible": [
+          80,
+          160
+        ],
+        "columnOffset": 26,
+        "rowOffset": 1,
+        "rotation0Madctl": "0xcc"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-st7735-rotation",
+        "runtime-spi-setup"
+      ],
+      "group": "runtime-hardware"
+    },
+    {
+      "id": "runtime-pmic-routing",
+      "label": "PMIC supply routing",
+      "value": {
+        "axp192Address": "0x34",
+        "ldo2": "TFT backlight",
+        "ldo3": "TFT IC",
+        "powerKey": "AXP192 PEK; no GPIO mapping"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-official-stickc",
+        "runtime-axp192-driver-cpp"
+      ],
+      "group": "runtime-hardware"
+    },
+    {
+      "id": "runtime-imu-variant",
+      "label": "IMU variant boundary",
+      "value": {
+        "implemented": "MPU6886 0x68 WHO_AM_I 0x19",
+        "olderDocumentedVariant": "SH200Q; not implemented",
+        "hardwareRevision": "unspecified"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "runtime-official-stickc",
+        "runtime-mpu6886-driver"
+      ],
+      "group": "runtime-hardware"
     }
   ],
   "revisions": [],
@@ -534,7 +618,7 @@
       "bytes": 138821,
       "mediaType": "text/html",
       "archiveName": "official-docs.html",
-      "notes": "Reused actual corpus receipt 2026-10-26T15:19:21.871879Z; no new fetch timestamp invented."
+      "notes": "Reused source receipt 2026-10-26T15:19:21.871879Z."
     },
     {
       "id": "manufacturer-source-c65e5bce29",
@@ -732,6 +816,174 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "runtime-official-stickc",
+      "url": "https://docs.m5stack.com/en/core/StickC",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/StickC",
+      "fetchedAt": "2026-11-22T06:19:15Z",
+      "bytes": 143253,
+      "sha256": "90b638ec798037fe5833ab72fec6085dead972d0855411b41d8dca7b6892012d",
+      "mediaType": "text/html; charset=UTF-8",
+      "status": "fetched",
+      "title": "StickC runtime evidence: official-stickc",
+      "kind": "official-product-document",
+      "archiveName": "official-stickc.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-axp192-datasheet",
+      "url": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/AXP192_datasheet_en.pdf",
+      "resolvedUrl": "https://m5stack.oss-cn-shenzhen.aliyuncs.com/resource/docs/datasheet/core/AXP192_datasheet_en.pdf",
+      "fetchedAt": "2026-11-22T06:19:15Z",
+      "bytes": 464584,
+      "sha256": "5271a6721b797581a85cb72363ac95aa835310d015441b704f621981c9fd22c2",
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "title": "StickC runtime evidence: axp192-datasheet",
+      "kind": "datasheet",
+      "archiveName": "axp192-datasheet.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-axp192-driver-cpp",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/AXP192.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/AXP192.cpp",
+      "fetchedAt": "2026-11-22T06:19:17Z",
+      "bytes": 16115,
+      "sha256": "5a9f48f38c47da3073077c703ee3203bcaa2847c45d39c3f76cff98e5e1137bb",
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "title": "StickC runtime evidence: axp192-driver-cpp",
+      "kind": "software-source",
+      "archiveName": "axp192-driver-cpp.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-axp192-driver-h",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/AXP192.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/AXP192.h",
+      "fetchedAt": "2026-11-22T06:19:17Z",
+      "bytes": 4623,
+      "sha256": "be503c1cb66fbb633ba0883bbe6277eeab1245ab47a5c851d383bbe2e77458bb",
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "title": "StickC runtime evidence: axp192-driver-h",
+      "kind": "software-source",
+      "archiveName": "axp192-driver-h.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-m5stickc-driver",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/M5StickC.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/M5StickC.cpp",
+      "fetchedAt": "2026-11-22T06:19:17Z",
+      "bytes": 845,
+      "sha256": "c70df1e286a0f770b5fbd9ee90cf260da82543d9c78e39e25de44665316ceda0",
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "title": "StickC runtime evidence: m5stickc-driver",
+      "kind": "software-source",
+      "archiveName": "m5stickc-driver.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-st7735-defines",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/utility/ST7735_Defines.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/utility/ST7735_Defines.h",
+      "fetchedAt": "2026-11-22T06:19:18Z",
+      "bytes": 6049,
+      "sha256": "35688bea246b312ac2e11a2bece6ddc0e300df581ccc99703d6736e96b423152",
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "title": "StickC runtime evidence: st7735-defines",
+      "kind": "software-source",
+      "archiveName": "st7735-defines.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-st7735-rotation",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/utility/ST7735_Rotation.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/utility/ST7735_Rotation.h",
+      "fetchedAt": "2026-11-22T06:19:19Z",
+      "bytes": 5645,
+      "sha256": "3d904c99f505851ab03e547e525deac1a3ed61df501ce2970417ba5d3b244f98",
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "title": "StickC runtime evidence: st7735-rotation",
+      "kind": "software-source",
+      "archiveName": "st7735-rotation.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-spi-setup",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/utility/In_eSPI_Setup.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/utility/In_eSPI_Setup.h",
+      "fetchedAt": "2026-11-22T06:19:19Z",
+      "bytes": 13797,
+      "sha256": "97d921345b31a720bc61cb589688722a556ad5189dba522c8261b5baa5805566",
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "title": "StickC runtime evidence: spi-setup",
+      "kind": "software-source",
+      "archiveName": "spi-setup.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-uiflow1-stickc",
+      "url": "https://docs.m5stack.com/en/uiflow/m5stickc/program",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow/m5stickc/program",
+      "fetchedAt": "2026-11-22T06:19:19Z",
+      "mediaType": "text/html; charset=UTF-8",
+      "bytes": 263723,
+      "sha256": "3a9a2d97e975e1338054a94339b049d7a248a1480bfe583dde22c6680e11e446",
+      "status": "fetched",
+      "title": "StickC runtime evidence: uiflow1-stickc",
+      "kind": "official-tutorial",
+      "archiveName": "uiflow1-stickc.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-uiflow2-stickc",
+      "url": "https://docs.m5stack.com/en/uiflow2/m5stickc/program",
+      "resolvedUrl": "https://docs.m5stack.com/en/uiflow2/m5stickc/program",
+      "fetchedAt": "2026-11-22T06:19:19Z",
+      "mediaType": "text/html; charset=UTF-8",
+      "bytes": 268736,
+      "sha256": "2ff3ac9f5489668fdc94c58731758434bbba31c8f762fe0f6e432ff8e09b6b1d",
+      "status": "fetched",
+      "title": "StickC runtime evidence: uiflow2-stickc",
+      "kind": "official-tutorial",
+      "archiveName": "uiflow2-stickc.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-mpu6886-driver",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/utility/MPU6886.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/utility/MPU6886.cpp",
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:19:47Z",
+      "sha256": "2de2ef3cc8feddbda536c67a2137f55ea2d24cdb76e03a2100e6ebf7d797c3a8",
+      "bytes": 11144,
+      "title": "StickC runtime evidence: mpu6886-driver",
+      "kind": "software-source",
+      "archiveName": "mpu6886-driver.source",
+      "notes": "Recorded manufacturer source receipt."
+    },
+    {
+      "id": "runtime-imu-driver",
+      "url": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/IMU.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5StickC/990489188ec40c2bd4611cc3f3f2ac7c3817024a/src/IMU.cpp",
+      "mediaType": "text/plain; charset=utf-8",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T06:19:47Z",
+      "sha256": "55a31621e63b3b3271bf7954f0e8f2722bd19eded5265a3a18834bfa1a4a2a04",
+      "bytes": 2489,
+      "title": "StickC runtime evidence: imu-driver",
+      "kind": "software-source",
+      "archiveName": "imu-driver.source",
+      "notes": "Recorded manufacturer source receipt."
     }
   ],
   "assets": [
@@ -834,6 +1086,8 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "StickC runtime is now partial; native factory ROM boot and real SPI framebuffer observed, not a complete factory compatibility pass. See docs/platform/stick-k016-c-runtime.md.",
+    "MPU6886-based K016-C runtime supports the digital panel, controls, I2C and polled sensor subset. Simulated temperature and voltage are inputs to the AXP192 fixture. The official factory firmware remains a trial. See docs/platform/stick-k016-c-runtime.md for hashes, measured behavior and limits."
   ]
 }
