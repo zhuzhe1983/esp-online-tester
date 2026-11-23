@@ -1,4 +1,7 @@
 import {createSceneImuLink, imuModelForBoard} from './imu.js';
+import {hasPowerEnvironment} from './power-environment.js';
+import {appendPowerEnvironmentControls} from './power-environment-controls.js';
+import {mountThermalEnvironment} from './thermal-ui.js';
 import {currentLocale,t} from './i18n.js';
 import {firmwaresForProduct,firmwareTargetProduct} from './firmware-target.js';
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
@@ -250,6 +253,8 @@ async function selectLocalFiles(incoming, {replace=false}={}) {
 
 function onRuntimeEvent(event) {
   if(event.type==='accessory-outputs'){accessoryOutputState=event.accessoryOutputs;sceneView?.updateAccessoryOutputs(accessoryOutputState);updateAccessoryOutputsPanel(accessoryOutputState);}
+  if(event.type==='power-environment'){lastRuntimeState={...lastRuntimeState,powerEnvironment:event.powerEnvironment};renderAccessories();}
+  if(event.type==='thermal-environment')lastRuntimeState={...lastRuntimeState,thermalEnvironment:event.thermalEnvironment};
   if(event.type==='accessories'){accessoryInputState=event.accessoryInputs;renderAccessories();}
   if(event.type==='accessory-positions'){accessoryInputState=event.accessoryInputs;updateAccessoryPositionsPanel();}
 
@@ -279,6 +284,7 @@ function onRuntimeEvent(event) {
       frameCount = 0; sceneView?.clearDisplay(); text('frame-count', '0 帧');
     }
     if (['configured', 'loading', 'error', 'disposed'].includes(status)) text('runtime-speed', '');
+    if(previousStatus!==status&&hasPowerEnvironment(product()))renderAccessories();
     renderTransport(); renderEmpty(); renderDownloadProgress();
     if (status === 'ready') text('load-status', event.state.firmware?.sramApp?'SRAM 应用已校验，可直接启动；重启将重新加载同一镜像。':event.state.firmware?.appDirect?'应用镜像已校验，将跳过 bootloader 直接启动。':'固件已加载并校验，可以启动。');
     else if (status === 'running') text('load-status', event.state.firmware?.sramApp?'SRAM 应用正在本地 WebAssembly 解释执行。':event.state.firmware?.appDirect?'应用直启运行中；未提供 bootloader 和分区表，存储初始化与重启可能失败。':'固件正在本地 WebAssembly 中执行。');
@@ -781,9 +787,26 @@ function renderAccessories() {
     const details = element('details', 'embed-accessories'); details.id = 'embed-accessories';
     const summary = element('summary', '', '配件与 GPS 数据'), content = element('div'); content.id = 'accessory-list'; details.append(summary, content); $('session-tools-mount').after(details);
   }
-  if ($('embed-accessories')) $('embed-accessories').hidden = !scene.accessories.length;
+  const powerAvailable = hasPowerEnvironment(product()), embedAccessories = $('embed-accessories');
+  if (embedAccessories) {
+    embedAccessories.hidden = !scene.accessories.length && !powerAvailable;
+    embedAccessories.querySelector('summary').textContent = powerAvailable ? '虚拟电源与配件' : '配件与 GPS 数据';
+  }
   for (const [id, pending] of gpsLookups) if (!scene.accessories.some(item => item.id === id) || pending.productId !== scene.productId) { pending.aborter.abort(); gpsLookups.delete(id); }
   const list = $('accessory-list'); if (!list) return; list.replaceChildren();
+  appendPowerEnvironmentControls(list, {
+    product: product(),
+    scene,
+    state: lastRuntimeState?.powerEnvironment,
+    status,
+    onInput: event => sendInput(event, 'stickc-plus-power-panel'),
+    onInitial: power => action(async () => {
+      const next = clone(scene);
+      next.environment = {power};
+      await configure(next);
+      toast('初始虚拟电源已保存，启动固件后生效。');
+    }),
+  });
   if (!scene.accessories.length) list.append(element('p', 'empty-list', '连接 GPS、传感器，或设计自己的配件。'));
   for (const instance of scene.accessories) {
     const item = definition(instance.catalogId); if (!item) continue;
@@ -961,6 +984,9 @@ function portableScene({forSharing=false}={}) {
     else next.firmware = sourceFromInputs();
   }
   if(forSharing)next.firmware=shareFirmwareSource({scene,status,firmware:loadedFirmware,selectedSource:next.firmware});
+  if (lastRuntimeState?.thermalEnvironment && !recordingForScene(next, {strict:false})) {
+    next.thermalEnvironment = clone(lastRuntimeState.thermalEnvironment);
+  }
   return next;
 }
 function recordingForScene(candidate, {strict = true} = {}) {
@@ -1137,6 +1163,12 @@ async function init() {
   const demoMount=document.createElement('div');motorMount.before(demoMount);
   const stampflyDemo=mountStampflyDemoControls({container:demoMount,runtime:api});
   window.addEventListener('pagehide',()=>stampflyDemo.dispose(),{once:true});
+  const thermalMount = document.createElement('section');
+  document.querySelector('.console-panel, .embed-console')?.before(thermalMount);
+  const thermalPanel = mountThermalEnvironment({
+    container:thermalMount,runtime:api,beforeInput:()=>transportUi?.beforeHumanInput(),onError:report,
+  });
+  window.addEventListener('pagehide',()=>thermalPanel.dispose(),{once:true});
   const checksMount=document.createElement('section');
   document.querySelector('.console-panel, .embed-console')?.before(checksMount);
   const hardwareChecks=mountHardwareDiagnostics({container:checksMount,runtime:api});

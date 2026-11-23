@@ -7,7 +7,9 @@ import {validFirmwareArchive,validFirmwareZipEntry,extractFirmwareZip,extractFir
 import {createNetworkSession} from './network-session.js';
 import {createAudioStream} from './audio-stream.js';
 import {motionParameter} from './motion-input.js';
-import {hasSdCard,isCore2Board,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
+import {hasSdCard,isCore2Board,isClassicStickBoard,isStickPlusBoard,persistentBoard,firmwareBoardMatches} from './board-compatibility.js';
+import {hasPowerEnvironment,validPowerEnvironment,powerParameters,powerMessage,POWER_KEYS,POWER_BOUNDS_UV} from './power-environment.js';
+import {hasThermalEnvironment,validThermal,thermalParameters} from './thermal-input.js';
 import {LILYGO_BOARD_CAPABILITIES} from './lilygo-board-families.js';
 import {validIlluminance,illuminanceParameter} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
@@ -186,6 +188,7 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
 }
 
 const romFor = board => ({esp32:'esp32_rev300_rom.elf',esp32c3:'esp32c3_rev3_rom.elf',esp32s3:'esp32s3_rev0_rom.elf',esp32c6:'esp32c6_rev0_rom.elf',esp32p4:'esp32p4_rev0_rom.elf',esp32c61:'esp32c61_rev100_rom.elf',esp32s31:'esp32s31_rev0_rom.elf',esp32c5:null,esp32s2:null})[chipForBoard(board)];
+const browserAudioUnavailable = board => isSramOnlyBoard(board) || board === 'stickt2' || board === 'sticks3';
 
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
@@ -195,6 +198,11 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let sdCard=emptySd(),sdSession=null,sdPrepared=null,leds=[],servos=[],servoSupply=null,motors=[],motorOutput=null,hardwareDiagnostics=null;
   let flight=null,flightEpoch=0;
   let bleNearby=[];
+  let powerEnvironment=null,thermalEnvironment=null;
+  const resetEnvironmentInputs = () => {
+    powerEnvironment = hasPowerEnvironment(product) ? {...powerParameters(scene.environment?.power),virtual:true,delivery:'configured',guestTime:null} : null;
+    thermalEnvironment = hasThermalEnvironment(product) ? thermalParameters(scene.thermalEnvironment) : null;
+  };
   const flightEnabled=()=>scene?.flight?.enabled===true;
   let accessoryInputs = [], accessoryOutputs = [];
   const resetAccessoryInputs=()=>{accessoryInputs=routedAccessories(scene,product,catalog).map(route=>({...route,connected:true,...(route.viaAccessoryId?{effectiveConnected:true}:{}),...(route.control==='button'?{pressed:false}:route.control==='knob'?{value:scene.accessories.find(item=>item.id===route.accessoryId)?.parameters?.position??0.5}:route.control==='motion'?{motion:motionParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:route.control==='environment'?environmentParameters(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters):route.control==='illuminance'?{lux:illuminanceParameter(scene.accessories.find(item=>item.id===route.accessoryId)?.parameters)}:{})}));accessoryOutputs=accessoryInputs.filter(route=>route.output).map(({accessoryId,model,port})=>({accessoryId,model,port,leds:[[0,0,0],[0,0,0],[0,0,0]]}));};
@@ -209,7 +217,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const observedImu=()=>!imuModel()?null:!flightEnabled()?clone(imu):{enabled:true,source:'flight',quaternion:null,accelG:flight?clone(flight.sensors.rawAccelG):null,gyroDps:flight?clone(flight.sensors.rawGyroDps):null,delivery:flight?'register-state':'configured',guestTime:flight?.guestTime??null};
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), firmwareConfiguration:configurationReceipt(), sdCard:clone(sdCard),leds:clone(leds),servos:clone(servos),servoSupply,motors:clone(motors),motorOutput:clone(motorOutput),flight:clone(flight),hardwareDiagnostics:clone(hardwareDiagnostics), imu: observedImu(), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), powerEnvironment:clone(powerEnvironment), thermalEnvironment:clone(thermalEnvironment), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), firmwareConfiguration:configurationReceipt(), sdCard:clone(sdCard),leds:clone(leds),servos:clone(servos),servoSupply,motors:clone(motors),motorOutput:clone(motorOutput),flight:clone(flight),hardwareDiagnostics:clone(hardwareDiagnostics), imu: observedImu(), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(['hardware-diagnostics','motors','flight'].includes(event.type)?clone(event):event); } catch (e) { console.error('ESP tester event handler:', e); } } };
   const loadReporter = (loadId, signal) => {
     let fileIndex = 0;
@@ -246,6 +254,15 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     pending.set(key, { resolve: resolveRequest, reject, timeout });
     worker.postMessage(message, transfer);
   });
+  const queueInput = async message => {
+    const inputId = ++inputSequence;
+    const request = Array.isArray(message)
+      ? {op:'text-batch',inputId,data:message.map(item=>JSON.stringify(item))}
+      : {op:'text',inputId,data:JSON.stringify(message)};
+    const receipt = await ask(`input:${inputId}`, request);
+    requireValue(Number.isFinite(receipt.time) && receipt.time >= 0, 'INVALID_INPUT_RECEIPT', 'Worker did not return a valid guest input clock.');
+    return receipt;
+  };
   const audio=createAudioStream({emit,isRunning:()=>status==='running',request:async(action,options,transfer=[])=>{
     const requestId=++inputSequence,reply=await ask(`audio:${requestId}`,{op:`audio-${action}`,requestId,...options},transfer);
     requireValue(reply.ok,'AUDIO_COMMAND_FAILED',reply.error||'The emulator rejected this audio operation.');return reply;
@@ -643,9 +660,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     current.onerror = event => { const e = error('WORKER_ERROR', event.message || 'WebAssembly worker failed.'); rejectPending(e); report(e); setStatus('error'); };
     const wasmBuffer = wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength);
     await ask('ready', { op: 'init', wasm: wasmBuffer, frameAck: true }, [wasmBuffer]);
-    const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming:true, ...(flightEnabled()?{flight:scene.flight,flightEpoch:++flightEpoch}:{}) });
+    const audioStreaming = !browserAudioUnavailable(bundle.cfg.board);
+    const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming, ...(flightEnabled()?{flight:scene.flight,flightEpoch:++flightEpoch}:{}) });
     requireValue(result.created, 'CREATE_FAILED', 'Cannot create the selected emulator board.');
-    audio.reset(!isSramOnlyBoard(bundle.cfg.board)&&result.audioAvailable===true);
+    audio.reset(audioStreaming && result.audioAvailable===true);
     for (const file of bundle.files) {
       const data = file.data.slice().buffer;
       const result = await ask(`loaded:${file.at === undefined ? KINDS[file.kind] : `at${file.at}`}`, { op: 'load', ...(file.at === undefined ? { kind: KINDS[file.kind] } : { at: file.at }), data }, [data]);
@@ -671,6 +689,12 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
     if (imuModel()&&!flightEnabled()) await applyImu();
     if (isC61Board(bundle.cfg.board)&&bleNearby.length) await applyBleNearby(bleNearby);
+    resetEnvironmentInputs();
+    if (powerEnvironment) {
+      const receipt = await queueInput(powerMessage(powerEnvironment));
+      powerEnvironment = {...powerEnvironment,delivery:'queued',guestTime:receipt.time};
+    }
+    if (thermalEnvironment) await queueInput({t:'thermal-environment',...thermalEnvironment});
     resetAccessoryInputs();
     for(const route of accessoryInputs.filter(route=>!route.hub)) await sendAccessory(route);
     emit({type:'accessories',accessoryInputs:clone(accessoryInputs)});
@@ -697,13 +721,30 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const controls = () => Array.isArray(product?.controls) ? product.controls : product?.controls?.buttons || [];
   const supportsTouch = () => product?.runtime?.touch ?? (product?.display?.touch === true || product?.display?.touch?.supported === true || product?.hardware?.display?.touch === true);
-  const boardButton = control => control?.transport==='board' && (isCore2Board(product?.runtime?.board) ? ['button-a','button-b','button-c','power'] : LILYGO_BOARD_CAPABILITIES[product?.runtime?.board]?.boardButtons || {'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'chain-captain':['power'],'m5-tough':['btn-a','btn-b','btn-c'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back'],'seeed-sensecap-watcher':['knob']}[product?.runtime?.board] || []).includes(control.id);
+  const boardButton = control => {
+    if (control?.transport !== 'board') return false;
+    const board = product?.runtime?.board;
+    if (isClassicStickBoard(board)) return control.id === 'power';
+    return (isCore2Board(board) ? ['button-a','button-b','button-c','power'] : LILYGO_BOARD_CAPABILITIES[board]?.boardButtons || {'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'chain-captain':['power'],'m5-tough':['btn-a','btn-b','btn-c'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back'],'seeed-sensecap-watcher':['knob']}[board] || []).includes(control.id);
+  };
   const input = async event => {
     const releaseWhilePaused = status === 'paused' && ((['button','matrix-key','accessory-button'].includes(event?.type) && event.pressed === false) || (event?.type==='accessory-connection' && event.connected===false) || (event?.type === 'touch' && event.down === false));
     requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');
     requireValue(event && typeof event === 'object', 'INVALID_INPUT', 'Input must be an object.');
-    let message, accessoryUpdate, accessoryBatch;
-    if (event.type === 'button') {
+    let message, accessoryUpdate, accessoryBatch, powerUpdate, thermalUpdate;
+    if (event.type === 'power-environment') {
+      requireValue(hasPowerEnvironment(product), 'POWER_UNSUPPORTED', 'Virtual power input requires StickC-Plus K016-P.');
+      const {type,...values} = event;
+      requireValue(validPowerEnvironment(values), 'INVALID_INPUT', 'Supply both bounded integer voltages in microvolts and the four boolean power flags.');
+      powerUpdate = values;
+      message = powerMessage(powerUpdate);
+    } else if (event.type === 'thermal-environment') {
+      requireValue(hasThermalEnvironment(product), 'UNSUPPORTED_CONTROL', 'Raw14 input requires StickT2 K016-T2.');
+      const {type,...values} = event;
+      requireValue(validThermal(values), 'INVALID_INPUT', 'Supply bounded integer Raw14 counts, coordinates and radius.');
+      thermalUpdate = values;
+      message = {t:'thermal-environment',...thermalUpdate};
+    } else if (event.type === 'button') {
       const control = controls().find(c => c.id === event.id);
       const pin = control?.pin ?? control?.gpio;
       const semanticButton=boardButton(control);
@@ -766,10 +807,16 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(typeof event.data === 'string' && new TextEncoder().encode(event.data).length <= maxBytes, 'INVALID_INPUT', `Serial input must be a string of at most ${maxBytes} UTF-8 bytes; UART RX has a 128-byte FIFO.`);
       message = { t: 'key', src: event.port, data: event.data };
     } else throw error('UNSUPPORTED_INPUT', 'Unsupported input type.');
-    const inputId = ++inputSequence;
-    const receipt = await ask(`input:${inputId}`, Array.isArray(message)?{op:'text-batch',inputId,data:message.map(item=>JSON.stringify(item))}:{op:'text',inputId,data:JSON.stringify(message)});
-    requireValue(Number.isFinite(receipt.time) && receipt.time >= 0, 'INVALID_INPUT_RECEIPT', 'Worker did not return a valid guest input clock.');
+    const receipt = await queueInput(message);
     if(accessoryUpdate){accessoryInputs=accessoryInputs.map(route=>(accessoryBatch||[accessoryUpdate]).find(item=>item.accessoryId===route.accessoryId)||route);if(['accessory-connection','accessory-motion','accessory-environment','accessory-illuminance'].includes(event.type))emit({type:'accessories',accessoryInputs:clone(accessoryInputs)});else if(event.type==='accessory-angle')emit({type:'accessory-positions',accessoryInputs:clone(accessoryInputs)});}
+    if (powerUpdate) {
+      powerEnvironment = {...powerUpdate,virtual:true,delivery:'queued',guestTime:receipt.time};
+      emit({type:'power-environment',powerEnvironment:clone(powerEnvironment)});
+    }
+    if (thermalUpdate) {
+      thermalEnvironment = thermalUpdate;
+      emit({type:'thermal-environment',thermalEnvironment:clone(thermalEnvironment)});
+    }
     emit({ type: 'input', event: clone(event), receipt: { delivery: 'queued', guestTime: receipt.time, frame: { width: frame?.width, height: frame?.height } } });
     return { accepted: true, delivery: 'queued', message, guestTime: receipt.time };
   };
@@ -889,17 +936,30 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     async requestNetworkHttp(options){alive();return network.http(options);},
     async provisionNetwork(){alive();return network.provision();},
     async addNetworkService(options){alive();return network.addService(options);},
-    audioConfigure(options){return exclusive(()=>audio.configure(options));},
-    pushAudio(options){return exclusive(()=>audio.push(options));},
+    audioConfigure(options){return exclusive(()=>{
+      requireValue(!isStickPlusBoard(product?.runtime?.board)||options?.input===undefined,'AUDIO_UNSUPPORTED','StickC-Plus browser PCM is output-only.');
+      return audio.configure(options);
+    });},
+    pushAudio(options){return exclusive(()=>{
+      requireValue(!isStickPlusBoard(product?.runtime?.board),'AUDIO_UNSUPPORTED','StickC-Plus browser PCM is output-only.');
+      return audio.push(options);
+    });},
     readAudio(options){return exclusive(async()=>{await audio.refresh();return audio.read(options);});},
     async capabilities() {
+      const powerAvailable = hasPowerEnvironment(product), thermalAvailable = hasThermalEnvironment(product);
       const sramOnly=isSramOnlyBoard(product?.runtime?.board),s2=isS2Board(product?.runtime?.board),c61=isC61Board(product?.runtime?.board),s31=isS31Board(product?.runtime?.board);
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
         execution: {mode: product?.runtime?.board === 'stopwatch'||sramOnly||c61||s31 ? 'wasm-interpreter' : 'wasm-jit', reason: s31?'S31 uses the dual-hart RV32 interpreter.':sramOnly?`${s2?'S2':'C5'} SRAM app-direct only; no ROM/IDF startup or JIT.`:c61?'C61 uses the RV32 interpreter.':product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null,...(sramOnly?{bootModes:['app-direct'],romBoot:false,resetMode:'reload-same-sram-image',counterSemantics:s2?'interpreter-instructions':'interpreter-slots-including-wfi-idle',sramRanges:clone(s2?S2_SRAM_RANGES:C5_SRAM_RANGES),...(s2?{sramPhysicalBytes:320*1024,sramAliased:true}:{})}:{})},
         sdCard:{available:hasSdCard(product?.runtime?.board),slot:hasTfSlot(product),configurable:hasTfSlot(product),defaultInserted:hasTfSlot(product),defaultBytes:DEFAULT_SD_BYTES,maxBytes:MAX_SD_BYTES,formats:[...SD_FORMATS,'raw-image'],blankCapacitiesMiB:[...SD_CAPACITIES],scope:'product-board-canonical-flash-sha256',preparedScope:'product',autoSaveIntervalMs:1500,crashSafe:false},
         ble:{available:c61,model:c61?'c61-legacy-digital-radio':null,physicalRf:false,connections:false,recording:false,shares:false,maxNearby:32,maxQueuedPackets:256,methods:c61?['configureBle','readBle']:[]},
         network:sramOnly?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',transport:s31?'ethernet-websocket':'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&(c61||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),automaticProvisioning:c61||s31?[]:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
-        audio:sramOnly?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||s31||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
+        audio:isStickPlusBoard(product?.runtime?.board) ? {
+          input:{available:false,ports:[],reason:'Browser PCM is output-only for StickC-Plus.'},
+          output:{available:true,channels:1,format:'s16le',source:'guest-routed-ledc-g2',sampleRate:16000},
+          methods:['readAudio'],
+        } : browserAudioUnavailable(product?.runtime?.board)?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&romFor(product.runtime.board)!=='esp32p4_rev0_rom.elf',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||s31||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
+        environment:{power:{available:powerAvailable,virtual:true,measured:false,inputType:'power-environment',unit:'microvolt',fields:powerAvailable?[...POWER_KEYS]:[],defaultInput:powerAvailable?powerParameters():null,boundsUv:powerAvailable?clone(POWER_BOUNDS_UV):null,recording:powerAvailable,shares:'initial-scene-and-recorded-inputs',adcSource:'guest-time-AXP192-registers'}},
+        ...(thermalAvailable?{thermal:{model:'lepton3-cci-raw14-subset',sceneUnits:'raw14-counts',defaultScene:'deterministic-synthetic-hotspot',environmentInput:'input:thermal-environment',calibrated:false,hardwareValidated:false,recordable:true,shareable:true}}:{}),
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: !sramOnly, localFile: true, localSegments: !sramOnly, localBuild: !sramOnly, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true,...(sramOnly?{sramAppDirect:true,ota:false,targetRevision:s2?0:100}:{}) },
@@ -912,7 +972,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         gps: { available:gpsSupported(),mode: gpsSupported()?'logical-uart1-nmea':null, physicalRouting: false, baudTiming: false, hardwareValidated: false },
         lora:{available:!!loraForBoard(product?.runtime?.board),model:loraForBoard(product?.runtime?.board)?.model||'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: !!imuModel(), sceneMapping: 'virtual-model-xyz', sceneLinkDefault: false, orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: flightEnabled()?'guest-cycles':'host-input', inputOwner:flightEnabled()?'flight':'host', physicalMountingVerified: false },
-        unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input'] };
+        unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input', ...(thermalAvailable?['lepton3-calibrated-thermal-imaging','lepton3-full-timing-telemetry-ffc','encoder-i2c-0x30','axp192-long-press-shutdown','physical-pdm-microphone','rtc']:[])] };
     },
     configure(nextScene) { progressGeneration++; imuGeneration++; return exclusive(async () => {
       catalog ||= await loadCatalog();
@@ -923,7 +983,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       await preserveStorage(); alive(); aborter?.abort(); stopWorker(); detachStorage(); loaded = null; firmware = null; frame = null; frameNumber = 0; serial = ''; serialByPort = {}; stats = {}; hostPace = {}; lastError = null;
       if(sdSession)sdSession.closed=true;sdSession=null;sdCard=emptySd();leds=[];servos=[];servoSupply=null;
       scene = clone(nextScene); product = catalog.products.find(item => item.id === scene.productId);await prepareSd();emit({type:'leds',leds:[]});emit({type:'servos',servos:[],supply:null});
-      resetAccessoryInputs(); imu = defaultImu(); imuPreviousAt = null;
+      resetEnvironmentInputs(); resetAccessoryInputs(); imu = defaultImu(); imuPreviousAt = null;
       setStatus('configured'); return { ...snapshot(), warnings: validation.warnings };
     }); },
     configureFlight(options) { return exclusive(async () => {

@@ -59,4 +59,5 @@ export default [
  ['本批次：成功 {0} · 失败 {1}', 'This batch: {0} succeeded · {1} failed', [1]],
  ['本体 · {0}', 'Base model · {0}'],
  ['仅预览：{0}', 'Preview only: {0}'],
+ ['已排队，客体时钟 {0} 秒。请观察固件随后绘制的图像。', 'Queued at guest time {0} seconds. Check the next frames drawn by the firmware.'],
 ];
