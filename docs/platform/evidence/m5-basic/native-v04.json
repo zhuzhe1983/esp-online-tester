@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "productIds": [
+    "m5stack-k001",
+    "m5stack-k001-v27"
+  ],
+  "board": "m5stack-basic",
+  "codeRevision": "6e65140a",
+  "backend": "native classic ESP32, official ROM, JIT",
+  "factorySha256": "fe8fb0305384e6b4b5c4b8ff497bf12323a7f8ed68ef218966886e5ab85a1d05",
+  "romSha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+  "testCard": {
+    "format": "FAT32",
+    "bytes": 67108864,
+    "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+    "mode": "copy-on-write"
+  },
+  "command": "esp32sim --chip esp32 --board m5stack-basic --boot rom --rom <esp32_rev300_rom.elf> --flash-image <factory.bin> --flash-mb 16 --max-seconds 31 --console uart0 --no-dump --tft-png <frame.png> --sd <blank-64MiB-FAT32.img> --script <events.txt>",
+  "result": "Factory ROM boot, 320 × 240 display, SD file round-trip, and live A/B/C button labels verified.",
+  "verifiedSerial": [
+    "M5Stack initializing...",
+    "scan done",
+    "Listing directory: /",
+    "Writing file: /hello.txt",
+    "File written",
+    "Reading file: /hello.txt",
+    "Read from file: Hello world"
+  ],
+  "observations": [
+    {
+      "label": "native-no-key",
+      "script": [],
+      "guestSeconds": 31,
+      "width": 320,
+      "height": 240,
+      "rgbSha256": "58a62604161afb8594982b31b1da3ea0b8a2617fe93fd94f38eeafbe6fec6a47",
+      "ramwr": 116039,
+      "pixelsWritten": 5474791,
+      "sdCommands": 27,
+      "sdReadBlocks": 8,
+      "sdWrittenBlocks": 6,
+      "freshButtonSerial": ""
+    },
+    {
+      "label": "native-wrong-pin",
+      "script": [
+        "25.0 press 34 350"
+      ],
+      "guestSeconds": 31,
+      "width": 320,
+      "height": 240,
+      "rgbSha256": "58a62604161afb8594982b31b1da3ea0b8a2617fe93fd94f38eeafbe6fec6a47",
+      "ramwr": 116039,
+      "pixelsWritten": 5474791,
+      "sdCommands": 27,
+      "sdReadBlocks": 8,
+      "sdWrittenBlocks": 6,
+      "freshButtonSerial": ""
+    },
+    {
+      "label": "native-abc",
+      "script": [
+        "25.0 press button-a 350",
+        "26.5 press button-b 350",
+        "28.0 press button-c 350"
+      ],
+      "guestSeconds": 31,
+      "width": 320,
+      "height": 240,
+      "rgbSha256": "d7ada114cf9fb1f9ec8fa9b5c7783b93132de768321575ca6761144851042c64",
+      "ramwr": 116088,
+      "pixelsWritten": 5474840,
+      "sdCommands": 27,
+      "sdReadBlocks": 8,
+      "sdWrittenBlocks": 6,
+      "freshButtonSerial": "ABC"
+    }
+  ],
+  "limitations": [
+    "Scope is the common LCD/button/TF wiring documented on the two Basic product pages.",
+    "No physical hardware comparison.",
+    "Initial no-card case reports CMD0 and FAT mount errors. Stock program reports absent PSRAM and unsupported IMU probes; power controller, wireless association, audio capture, and external modules were not qualified."
+  ]
+}
