@@ -1,7 +1,8 @@
 //! Functional classic ESP32 native-clock sampler, NOT a radio/controller implementation.
 //! ROM rev300 r_ld_read_clock / r_ea_time_get_slot_rounded establish +0x1c SAMP/busy,
 //! low28 CLKN and +0x20 fine-time reads. Bluetooth native clock: 3.2kHz (312.5us).
-//! Public reverse-engineering reference: docs/platform/stick-k016-c-bt-native-functional.md.
+//! The factory run is documented in docs/platform/stick-k016-c-runtime.md.
+//! The original getters and register accesses are checked in esp32/tests/bt_native_clock_rom.rs.
 //! Explicit simulation policy (not measured silicon): 1us configurable completion,
 //! 2MHz descending fine phase 624..0, held atomic snapshots, coalesced busy requests,
 //! dedicated LC/BB clock gating and a conservative reset union. No wall clock/PC hooks.
@@ -45,6 +46,9 @@ impl BtNativeClock {
     pub fn set_bb_clock(&mut self, enabled: bool) { self.bb_enabled=enabled; }
     pub fn enter_lp_sleep(&mut self) { self.sleeping=true; self.lp_resumed=false; }
     pub fn take_slot_event(&mut self) -> bool { std::mem::take(&mut self.slot_event) }
+    pub(crate) fn needs_service(&self) -> bool {
+        self.slot_event || self.counter_enabled()
+    }
     fn counter_enabled(&self) -> bool {
         !self.in_reset && !self.sleeping && (self.enabled || self.lp_resumed && self.bb_enabled)
     }
@@ -188,6 +192,35 @@ mod tests {
   p.write32(0x3ff7100c,1);assert_eq!(p.read32(0x3ff71010),1);assert_ne!(p.source_status(0)[0]&(1<<6),0);
   p.write32(0x3ff71018,4);assert_eq!(p.read32(0x3ff71014),1);p.write32(0x3ff71018,1);assert_eq!(p.read32(0x3ff71014),0);
   p.tick(PERIOD*2-1);assert_eq!(p.read32(0x3ff71014),0);p.tick(1);assert_eq!(p.read32(0x3ff71014),1);
+ }
+ #[test]
+ fn soc_services_pending_events_and_bb_only_native_clock() {
+     let mut p = crate::periph::Peripherals::new([0; 6]);
+     p.write32(0x3ff000cc, 1 << 11);
+     p.bt_clock.set_bb_clock(true);
+     p.write32(0x3ff7100c, 1);
+     p.write32(0x3ff71040, 624);
+     p.write32(0x3ff71044, 1 << 31);
+     p.write32(0x3ff71030, 8);
+
+     // Complete the correction before the rendezvous to exercise its pending handoff.
+     p.bt_sleep.advance(240);
+     assert!(!p.bt_sleep.active());
+     assert!(!p.bt_clock.clock_enabled());
+     p.tick(1);
+
+     // The LP-corrected base clock runs with BB alone. The LC sampler is still gated.
+     p.tick(PERIOD * 2 - 1);
+     assert_eq!(p.read32(0x3ff71010), 0);
+     assert!(p.tick(1));
+     assert_eq!(p.read32(0x3ff71010), 1);
+     p.write32(0x3ff71018, 1);
+
+     // A pending native slot still reaches the IRQ latch after its clock stops.
+     p.bt_clock.advance(PERIOD * 2);
+     p.bt_clock.set_bb_clock(false);
+     assert!(p.tick(1));
+     assert_eq!(p.read32(0x3ff71010), 1);
  }
  #[test] fn native_lp_cross_peripheral_handoffs_are_chunk_invariant(){
   fn setup()->crate::periph::Peripherals {let mut p=crate::periph::Peripherals::new([0;6]);p.write32(0x3ff000d0,0);p.write32(0x3ff000cc,0x30800);p.write32(0x3ff000d4,79);p.write32(0x3ff000d8,0x04000001);p.write32(0x3ff71034,200);p.write32(0x3ff71030,7);p}

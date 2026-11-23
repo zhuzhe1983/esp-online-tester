@@ -210,12 +210,6 @@ pub trait BoardModel {
     /// Cold motion stimulus; board owns its physical GPIO, power and autonomous deadlines.
     fn accessory_motion_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _motion: bool) -> bool { false }
 
-    /// Virtual PMIC stimulus. Only the modeled PMIC and guest ADC control affect conversions.
-    fn power_environment_at(&mut self, _cycle: VirtualCycle, _input: esp_periph::i2c::axp192::Axp192PowerInput) -> bool { false }
-
-    /// Synthetic thermal source counts: background, hotspot, center X/Y and radius.
-    fn thermal_environment_at(&mut self, _cycle: VirtualCycle, _sample: [u16; 5]) -> bool { false }
-
     /// Cold ambient input; the board owns powered, physically routed I2C sensor devices.
     fn accessory_environment_at(&mut self, _cycle: VirtualCycle, _model: &str, _port: &str, _connected: bool, _sample: esp_periph::i2c::env4::Environment) -> bool { false }
     /// Cold optical input; board owns the physical I2C route and supply.
@@ -265,6 +259,12 @@ pub trait BoardModel {
     fn default_analog_inputs(&self) -> Vec<(u8, esp_periph::AnalogSource)> { Vec::new() }
     /// Cold route snapshot before RGB START and each completed frame.
     fn lcd_rgb_pins(&mut self, _pins: LcdRgbPins) {}
+    // Cold Stick environment inputs follow existing hot vtable slots.
+    /// Virtual PMIC stimulus. Only the modeled PMIC and guest ADC control affect conversions.
+    fn power_environment_at(&mut self, _cycle: VirtualCycle, _input: esp_periph::i2c::axp192::Axp192PowerInput) -> bool { false }
+
+    /// Synthetic thermal source counts: background, hotspot, center X/Y and radius.
+    fn thermal_environment_at(&mut self, _cycle: VirtualCycle, _sample: [u16; 5]) -> bool { false }
 }
 
 pub type Board = Box<dyn BoardModel>;

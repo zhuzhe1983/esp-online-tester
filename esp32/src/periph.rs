@@ -1133,24 +1133,33 @@ impl Peripherals {
     pub(crate) fn sleep_timer_cycles(&self, ticks: u64) -> u64 {
         ticks.saturating_mul(1600).saturating_sub(self.clock.cycles() % 1600).max(1)
     }
+    #[cold]
+    #[inline(never)]
+    fn tick_native_bt(&mut self, mut remaining: u64) -> bool {
+        let irq_before = self.bt_sleep.irq();
+        while remaining > 0 {
+            let step = self.bt_sleep.next_event_ticks().map_or(remaining, |deadline| deadline.min(remaining));
+            let entries = self.bt_sleep.entries;
+            self.bt_clock.advance(step);
+            if self.bt_sleep.active() { self.bt_sleep.advance(step); }
+            if self.bt_clock.take_slot_event() { self.bt_sleep.native_clock_event(); }
+            if self.bt_sleep.entries != entries { self.bt_clock.enter_lp_sleep(); }
+            if let Some(delta) = self.bt_sleep.take_native_correction() {
+                self.bt_clock.apply_lp_correction(delta);
+            }
+            remaining -= step;
+        }
+        irq_before != self.bt_sleep.irq()
+    }
     pub fn tick(&mut self, cycles: u64) -> bool {
         if self.ble_clock.clock_enabled() {self.ble_clock.advance(cycles);}
         if self.bt_init.active() {self.bt_init.advance(cycles);}
-        let bt_irq_before=self.bt_sleep.irq();
-        let mut bt_left=cycles;
-        while bt_left>0 {
-            let step=self.bt_sleep.next_event_ticks().map_or(bt_left,|n|n.min(bt_left));
-            let entries=self.bt_sleep.entries;
-            self.bt_clock.advance(step);
-            if self.bt_sleep.active() {self.bt_sleep.advance(step);}
-            if self.bt_clock.take_slot_event() {self.bt_sleep.native_clock_event();}
-            if self.bt_sleep.entries!=entries {self.bt_clock.enter_lp_sleep();}
-            if let Some(delta)=self.bt_sleep.take_native_correction() {self.bt_clock.apply_lp_correction(delta);}
-            bt_left-=step;
-        }
+        let bt_irq_changed = cycles != 0
+            && (self.bt_clock.needs_service() || self.bt_sleep.needs_service())
+            && self.tick_native_bt(cycles);
         if self.phy_noise.advancing() {self.phy_noise.advance(cycles);}
         let gpio_before = self.gpio.raw_status();
-        let mut irq_changed = Dispatch::tick(self, cycles) || bt_irq_before != self.bt_sleep.irq();
+        let mut irq_changed = Dispatch::tick(self, cycles) || bt_irq_changed;
         let phase = self.apb_phase + cycles * (6 / self.apb_divider());
         self.apb_phase = phase % 6;
         let ticks = phase / 6;
