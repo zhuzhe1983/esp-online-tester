@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:32:37Z",
   "hardwareRevision": "FN4R2 4MB Flash / 2MB PSRAM; current GC9A01 panel",
   "identity": {
     "manufacturer": "LILYGO",
@@ -144,6 +144,19 @@
         "official-store-shopify-1"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-qt-pro-official-factory",
+        "version": "260310"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "当前配置采用新版 GC9A01 面板、4 MiB Flash 和 2 MiB PSRAM，对应 N4R2 新面板出厂镜像。旧面板和 N8 版各有专用文件。"
     }
   ],
   "revisions": [],
@@ -397,6 +410,17 @@
       "sha256": "6ae8e81bda9f99908a4b3f60d96ef2a0483b1d28b9514c225e995cf4fe0c3136",
       "bytes": 8044,
       "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "T-QT-Pro N4R2 LVGL Factory (new panel)",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-QT/230f0c0ea7677fdde29ca7a49a419dbf597e6b3e/firmware/T-QT-Pro-N4R2_LVGL_Factory_NewPanel_260310.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:32:37Z",
+      "sha256": "178b0cd0c8246e35e34feada0315378b832fdc5536b47d6955c4cf66a70fcfca",
+      "bytes": 1242432,
+      "archiveName": "178b0cd0c8246e35e34feada0315378b832fdc5536b47d6955c4cf66a70fcfca.bin"
     }
   ],
   "assets": [
@@ -451,16 +475,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -477,15 +491,22 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "not-found-in-inspected-pages",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-qt-pro-official-factory",
     "sourceIds": [
-      "official-store-shopify-1"
+      "official-factory-bin"
     ],
-    "links": [],
-    "evidenceNotes": [],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    "previousInvestigation": {
+      "status": "not-found-in-inspected-pages",
+      "sourceIds": [
+        "official-store-shopify-1"
+      ],
+      "links": [],
+      "evidenceNotes": [],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "Product page and official documentation inspected. Linked firmware directories are discovery evidence only; this audit does not establish an exact complete image, digest, factory identity for a sibling variant, or runtime compatibility."
+    }
   },
   "modelReview": {
     "model": {

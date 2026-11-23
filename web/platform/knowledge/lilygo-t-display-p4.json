@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:34:48Z",
   "hardwareRevision": "T-Display-P4 V1.0 TFT; simulator selects P4 silicon rev < 3, not V2.0 evaluation hardware",
   "identity": {
     "manufacturer": "LILYGO",
@@ -190,6 +190,19 @@
         "official-wiki-t-display-p4"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-display-p4-official-factory",
+        "version": "v1.2.4 · T-Display-P4 V1.0"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家将 LilygoBox 列为 T-Display-P4 最新出厂程序。此合并文件匹配 V1.0 主板及 ESP32-P4 V1.0 芯片，厂商同时发布了单独应用文件。"
     }
   ],
   "revisions": [],
@@ -619,6 +632,17 @@
       "path": "components/soc/esp32p4/register/hw_ver1/soc/gpio_reg.h",
       "repository": "espressif/esp-idf",
       "mediaType": "text/plain"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "LilygoBox",
+      "url": "https://github.com/Xinyuan-LilyGO/lilygobox-espidf/releases/download/v1.2.4/lilygobox-t-display-p4-v1.0-esp32p4-v1.0-v1.2.4-merged.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:34:48Z",
+      "sha256": "588ead1bea2e954af281da2220454c5da466cfe7fbd3afb3a8fc20a0e642216d",
+      "bytes": 4490512,
+      "archiveName": "588ead1bea2e954af281da2220454c5da466cfe7fbd3afb3a8fc20a0e642216d.bin"
     }
   ],
   "assets": [
@@ -673,16 +697,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -699,12 +713,19 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-firmware-candidates-listed-unverified",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-display-p4-official-factory",
     "sourceIds": [
-      "p4-README-md"
+      "official-factory-bin"
     ],
-    "simulationVerified": false,
-    "notes": "Pinned manufacturer repository has TFT/AMOLED and software-specific firmware directories. MIPI-DSI and most external devices are unmodeled; no factory binary is installed as a platform default."
+    "previousInvestigation": {
+      "status": "official-firmware-candidates-listed-unverified",
+      "sourceIds": [
+        "p4-README-md"
+      ],
+      "simulationVerified": false,
+      "notes": "Pinned manufacturer repository has TFT/AMOLED and software-specific firmware directories. MIPI-DSI and most external devices are unmodeled; no factory binary is installed as a platform default."
+    }
   },
   "modelReview": {
     "model": {

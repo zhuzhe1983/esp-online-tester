@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:32Z",
   "hardwareRevision": "T-Display-S3-Long with AXS15231B integrated touch; GFX_AXS15231B_Image example (not CST3530 assembly)",
   "identity": {
     "manufacturer": "LILYGO",
@@ -142,6 +142,19 @@
         "official-wiki-t-display-s3-long"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-display-s3-long-official-factory",
+        "version": "3deece89098f"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "AXS15231B 直接触摸版本；CST3530 版使用单独的 factory-cst3530.bin。"
     }
   ],
   "revisions": [],
@@ -392,6 +405,17 @@
       "mediaType": "text/plain; charset=utf-8",
       "archiveName": "s3add-long-touch.source",
       "archiveStorage": "Ignored source cache; pinned public URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "factory.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Display-S3-Long/3deece89098f25e7d155e41e4e0f5dd8b368ab02/firmware/factory.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:32Z",
+      "sha256": "e0bb2cb5ed53839cc711cd2c1ac702da6d72dac9e27009f006f90af38321e566",
+      "bytes": 1815872,
+      "archiveName": "e0bb2cb5ed53839cc711cd2c1ac702da6d72dac9e27009f006f90af38321e566.bin"
     }
   ],
   "assets": [
@@ -446,16 +470,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -472,22 +486,29 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-display-s3-long-official-factory",
     "sourceIds": [
-      "s3add-long-readme",
-      "s3add-long-pins",
-      "s3add-long-display",
-      "s3add-long-display-h",
-      "s3add-long-gfx",
-      "s3add-long-gfx-pins",
-      "s3add-long-gfx-display",
-      "s3add-long-touch",
-      "official-store-shopify-1",
-      "official-wiki-t-display-s3-long"
+      "official-factory-bin"
     ],
-    "candidates": [],
-    "simulationVerified": false,
-    "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "s3add-long-readme",
+        "s3add-long-pins",
+        "s3add-long-display",
+        "s3add-long-display-h",
+        "s3add-long-gfx",
+        "s3add-long-gfx-pins",
+        "s3add-long-gfx-display",
+        "s3add-long-touch",
+        "official-store-shopify-1",
+        "official-wiki-t-display-s3-long"
+      ],
+      "candidates": [],
+      "simulationVerified": false,
+      "notes": "The exact manufacturer source/example is recorded. No official binary boot is claimed."
+    }
   },
   "modelReview": {
     "model": {

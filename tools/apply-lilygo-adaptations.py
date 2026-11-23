@@ -175,7 +175,8 @@ def main():
             upsert(knowledge['facts'], {'id': 'adaptation-chronology', 'label': '排序日期及依据',
                 'value': chronology, 'basis': 'official', 'sourceIds': [chronology['sourceId']],
                 'notes': '官方硬件版次日期优先；上架时间只是代用排序依据，不宣称零售首发日期。'})
-        knowledge['factoryFirmwareInvestigation'] = profile.get('factoryFirmwareInvestigation', item['factoryFirmwareInvestigation']) if profile else (blocker or {}).get('factoryFirmwareInvestigation', item['factoryFirmwareInvestigation'])
+        if knowledge.get('factoryFirmwareInvestigation', {}).get('status') != 'image-pinned':
+            knowledge['factoryFirmwareInvestigation'] = profile.get('factoryFirmwareInvestigation', item['factoryFirmwareInvestigation']) if profile else (blocker or {}).get('factoryFirmwareInvestigation', item['factoryFirmwareInvestigation'])
         model = model_by_id.get(product['id'])
         if model:
             product['model'] = model['model']
@@ -307,7 +308,8 @@ def main():
         if entry['id'] in changed:
             entry['updatedAt'] = now
     index['updatedAt'] = now
-    catalog['revision'] = '2026-11-22-lilygo-adaptation'
+    if catalog.get('revision', '')[:10] <= '2026-11-22':
+        catalog['revision'] = '2026-11-22-lilygo-adaptation'
     write(WEB / 'catalog/products.json', catalog)
     write(WEB / 'knowledge/index.json', index)
     print(f'Updated {len(changed)} chronologies, {len(profiles)} explicit runtime profiles and {len(model_by_id)} model previews.')

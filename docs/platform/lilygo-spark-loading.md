@@ -2,6 +2,16 @@
 
 The Spark catalog is metadata, not a guarantee that every advertised URL still works or that the firmware's features are implemented by the simulator. The runtime checks the selected chip, flash size, image structure and SHA-256 before starting it. It detects a complete flash image or a supported application image automatically; changing boot mode cannot repair an HTTP 404 or a missing file.
 
+## Finding firmware for a product
+
+Select a LILYGO device and open its firmware library. Factory entries identify the represented hardware option. Official test programs and product-specific source pages carry their own labels. **浏览 LILYGO Spark 固件** opens the existing Spark search for that device, including when its local firmware list is empty.
+
+Spark lists manufacturer and community projects together. For the expanded devices, the selector compares the Spark product ID, publisher repository and SHA-256 with reviewed manufacturer binaries. A matching version links to the complete BIN at a fixed revision and can be selected for a trial. Where the vendor publishes a file that the simulator cannot load, the firmware library links to the original download and explains the limitation. For example, the T-Dongle-C5 factory firmware contains Flash partitions and the C5 simulator currently executes SRAM programs only.
+
+The November 23, 2026 review covered 121 additional listings. The firmware library gained manufacturer downloads for 82 of them, including 78 with an image accepted by the simulator’s loader. Forty-eight of the 82 have a documented factory program selected by default. Of the remainder, 37 have source or variant-specific references and two have no matching standalone image. The [pinned Spark manifest](https://github.com/Xinyuan-LilyGO/LILYGO-Spark/blob/a88415a33a699dbdf64d90f5d38263f549d53017/firmware_manifest_v2.json) tags 50 of the 121 listings. Exact manufacturer files matched 23 device/version combinations across 21 listings.
+
+The [per-product review](research/lilygo-official-firmware-links-2026-11-23.json) records source pages, selected hardware, binary versions and observed hashes. Run `node tools/verify-lilygo-firmware-links.mjs` to recheck the pinned files and production loader decisions. Verification of file identity and layout does not establish a successful boot.
+
 ## Single-BIN ZIP sources
 
 Spark's [download script](https://github.com/Xinyuan-LilyGO/LILYGO-Spark/blob/main/scripts/download_firmware.mjs) creates a separate ZIP for each BIN. Its manifest hash identifies the **uncompressed BIN**. An audited source can declare:

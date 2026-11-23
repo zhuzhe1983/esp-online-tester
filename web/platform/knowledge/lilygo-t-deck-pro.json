@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:38Z",
   "hardwareRevision": "T-Deck Pro V1.0 / HD-V1-250326 only",
   "identity": {
     "manufacturer": "LILYGO",
@@ -459,6 +459,19 @@
         "official-store-shopify-1"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-deck-pro-official-factory",
+        "version": "V1.2 · 2025-04-12"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "H693 V1.2 屏幕复位修复版在 0xC90000 处包含完整的 SPIFFS，与厂商单独发布的 spiffs.bin 逐字节相同。v1.6 主程序需要另写文件系统。"
     }
   ],
   "revisions": [],
@@ -962,6 +975,17 @@
         "transport": "GitHub connector GET git/commits; exact returned UTF-8 snapshot",
         "archiveName": "target/lilygo-audit/git-object-verification/Xinyuan-LilyGO__T-Deck-Pro.raw"
       }
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "H693_factory_v1.2_20250412_fix.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/53bcfa593b1df064894a8efc5a7e15e4524b09d2/firmware/H693_factory_v1.2_20250412_fix.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:38Z",
+      "sha256": "35b60973f03e930888242d4fb2a3bcb74f74e833fb73e484de32996a0044d79d",
+      "bytes": 16711680,
+      "archiveName": "35b60973f03e930888242d4fb2a3bcb74f74e833fb73e484de32996a0044d79d.bin"
     }
   ],
   "assets": [
@@ -1016,16 +1040,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -1042,65 +1056,72 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-deck-pro-official-factory",
     "sourceIds": [
-      "deck-pro-factory-readme",
-      "deck-pro-readme"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "path": "firmware/H693_factory_v1.2_20250412_fix.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.2_20250412_fix.bin",
-        "status": "linked",
-        "gitBlobSha": "59a8eeb79b96a0a24a35fc2bb3a86e8b9f3a6b24",
-        "bytesFromTree": 16711680,
-        "layoutVerified": false,
-        "binaryFetched": false,
-        "sha256": null
-      },
-      {
-        "path": "firmware/H693_factory_v1.3_20251015.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.3_20251015.bin",
-        "status": "linked",
-        "gitBlobSha": "0f71515d071858dfa2b26b9eb0948e6bedcde73f",
-        "bytesFromTree": 1755152,
-        "layoutVerified": false,
-        "binaryFetched": false,
-        "sha256": null
-      },
-      {
-        "path": "firmware/H693_factory_v1.4_20251209.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.4_20251209.bin",
-        "status": "linked",
-        "gitBlobSha": "9eadd10ed4f76529064b2050a702d0febcf4253c",
-        "bytesFromTree": 1755136,
-        "layoutVerified": false,
-        "binaryFetched": false,
-        "sha256": null
-      },
-      {
-        "path": "firmware/H693_factory_v1.5_20251230.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.5_20251230.bin",
-        "status": "linked",
-        "gitBlobSha": "738c6ddd919df369fcd32780f34a9e6fcc470757",
-        "bytesFromTree": 1817600,
-        "layoutVerified": false,
-        "binaryFetched": false,
-        "sha256": null
-      },
-      {
-        "path": "firmware/H693_factory_v1.6_20260401.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.6_20260401.bin",
-        "status": "linked",
-        "gitBlobSha": "8bbc94760f8d8c918e471a7fe8414d7aedbab2f8",
-        "bytesFromTree": 1820160,
-        "layoutVerified": false,
-        "binaryFetched": false,
-        "sha256": null
-      }
-    ],
-    "simulationVerified": false,
-    "notes": "Official firmware README identifies H693 factory and SPIFFS recovery. Current v1.6 file is linked; no binary inspected, app/merged layout unverified. Do not infer offset or complete-image identity from file size."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "deck-pro-factory-readme",
+        "deck-pro-readme"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/H693_factory_v1.2_20250412_fix.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.2_20250412_fix.bin",
+          "status": "linked",
+          "gitBlobSha": "59a8eeb79b96a0a24a35fc2bb3a86e8b9f3a6b24",
+          "bytesFromTree": 16711680,
+          "layoutVerified": false,
+          "binaryFetched": false,
+          "sha256": null
+        },
+        {
+          "path": "firmware/H693_factory_v1.3_20251015.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.3_20251015.bin",
+          "status": "linked",
+          "gitBlobSha": "0f71515d071858dfa2b26b9eb0948e6bedcde73f",
+          "bytesFromTree": 1755152,
+          "layoutVerified": false,
+          "binaryFetched": false,
+          "sha256": null
+        },
+        {
+          "path": "firmware/H693_factory_v1.4_20251209.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.4_20251209.bin",
+          "status": "linked",
+          "gitBlobSha": "9eadd10ed4f76529064b2050a702d0febcf4253c",
+          "bytesFromTree": 1755136,
+          "layoutVerified": false,
+          "binaryFetched": false,
+          "sha256": null
+        },
+        {
+          "path": "firmware/H693_factory_v1.5_20251230.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.5_20251230.bin",
+          "status": "linked",
+          "gitBlobSha": "738c6ddd919df369fcd32780f34a9e6fcc470757",
+          "bytesFromTree": 1817600,
+          "layoutVerified": false,
+          "binaryFetched": false,
+          "sha256": null
+        },
+        {
+          "path": "firmware/H693_factory_v1.6_20260401.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck-Pro/e3246046972716edd5f264a6047ba3572a851b23/firmware/H693_factory_v1.6_20260401.bin",
+          "status": "linked",
+          "gitBlobSha": "8bbc94760f8d8c918e471a7fe8414d7aedbab2f8",
+          "bytesFromTree": 1820160,
+          "layoutVerified": false,
+          "binaryFetched": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Official firmware README identifies H693 factory and SPIFFS recovery. Current v1.6 file is linked; no binary inspected, app/merged layout unverified. Do not infer offset or complete-image identity from file size."
+    }
   },
   "modelReview": {
     "model": {

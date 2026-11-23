@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:32Z",
   "hardwareRevision": "T-Beam 1W V1.0, T_BEAM_1W_SX1262 manufacturer target",
   "identity": {
     "manufacturer": "LILYGO",
@@ -170,6 +170,19 @@
         "lora-factory-readme"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-beam-1w-official-factory",
+        "version": "2026-07-15"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "V1.x 主板的 SX1262 选件，厂家标记全频段。"
     }
   ],
   "revisions": [],
@@ -379,6 +392,17 @@
       "mediaType": "text/plain; charset=utf-8",
       "archiveName": "lora-factory-readme.source",
       "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:32Z",
+      "sha256": "456f04d414140c8b4fe3875ebddea3450b9cab506276f0bd2f9e0175075743c5",
+      "bytes": 958928,
+      "archiveName": "456f04d414140c8b4fe3875ebddea3450b9cab506276f0bd2f9e0175075743c5.bin"
     }
   ],
   "assets": [
@@ -433,16 +457,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -459,24 +473,31 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-beam-1w-official-factory",
     "sourceIds": [
-      "lora-factory-readme"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "path": "firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
-        "status": "linked",
-        "gitBlobSha": "25fd919265b2de5e3f25f17e2c7dd912c5942be5",
-        "bytesFromTree": 958928,
-        "binaryFetched": false,
-        "layoutVerified": false,
-        "sha256": null
-      }
-    ],
-    "simulationVerified": false,
-    "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "lora-factory-readme"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-LoRa-Series/5f537f1783933eae79723478c80b69d8c1530b99/firmware/tbeam1w-v1.x-all-band-sx1262-factory-20260715_0x0.bin",
+          "status": "linked",
+          "gitBlobSha": "25fd919265b2de5e3f25f17e2c7dd912c5942be5",
+          "bytesFromTree": 958928,
+          "binaryFetched": false,
+          "layoutVerified": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Manufacturer factory candidate is recorded for the selected hardware. Filename and tree size do not prove ESP image layout or a successful boot. No official payload is redistributed."
+    }
   },
   "modelReview": {
     "model": {

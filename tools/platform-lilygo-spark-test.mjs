@@ -85,3 +85,58 @@ assert.deepEqual(sparkHistoryFirmware(archivedEntry).source,bruceVersion.source)
 for(const change of [{url:bruceUrl.replace('lilygo.oss-accelerate.aliyuncs.com','evil.example')},{sha256:hash},{archive:{format:'zip',entry:'other-board.bin'}},{deviceId:'t-embed-cc1101-plus'}])assert.equal(sparkHistoryFirmware({...archivedEntry,...change}),null);
 const restoredSend=(await archives.versions('cc1101-send-irq','t-embed-cc1101'))[0].source;assert.equal(restoredSend.sha256,sendHash);assert.equal(restoredSend.url,sendUrl.replace('/master/','/68ef3042980e51711c0318efd6cc944999e688db/'));
 console.log('ok Spark ZIP identity/history and same-hash pinned recovery of deleted upstream paths');
+
+// Spark indexes both CameraPlus-S3 revisions. Only the audited V1.2 LVGL image
+// may run on this profile. Its old Spark path was moved upstream.
+const camera='t-camera-plus-s3',cameraProduct='lilygo-t-camera-plus-s3';
+const cameraHash='25b77114190ffef9b1c71532eb919fbea4e113076e9f837c0803835ad52acb0a';
+const cameraUrl='https://raw.githubusercontent.com/Xinyuan-LilyGO/T-CameraPlus-S3/arduino-esp32-libs_V2.0.14/firmware/[T-CameraPlus-S3_V1.2][Lvgl_UI]_firmware_202504081446.bin';
+const cameraProject={id:'camera-lvgl',name:'Camera LVGL',source:'tree',supported_product_ids:[camera,'t-deck-plus-1'],
+  latest_sha256:otherHash,versions:[{version:'other PCB',sha256:otherHash,download_url:cameraUrl},{version:'V1.2',sha256:cameraHash,download_url:cameraUrl}]};
+const cameraManifest={...deckManifest,product_list:[...deckManifest.product_list,{product_id:camera,name:'CameraPlus S3'}],firmwares:[
+  {...cameraProject,id:'community-copy',source:'third_party'},
+  {...cameraProject,id:'other-owner',versions:[{...cameraProject.versions[1],download_url:cameraUrl.replace('Xinyuan-LilyGO','somebody')}]},
+  cameraProject,
+]};
+const cameras=createLilygoSparkClient(async()=>Response.json(cameraManifest));
+const cameraRows=(await cameras.search(camera)).rows;
+assert.equal(cameraRows[0].firmwareId,'camera-lvgl','Prioritize the confirmed image over unverified index tags');
+assert.equal(cameraRows[0].currentVersionId,cameraHash,'Select the matching hardware over a newer unreviewed image');
+const [otherCamera,matchingCamera]=cameraRows[0].versions;
+assert.equal(otherCamera.source,null);assert.equal(otherCamera.detailsUrl,'https://github.com/Xinyuan-LilyGO/T-CameraPlus-S3');
+const cameraFirmware=sparkFirmware(cameraRows[0],matchingCamera,camera);
+assert.equal(cameraFirmware.downloadUrl,cameraFirmware.source.url);assert.match(cameraFirmware.source.url,/\/d2d6d36194569706c4a48b54d5af7b7d81f6592c\//);
+assert.equal(cameraFirmware.simulationVerified,false);assert.equal(cameraFirmware.source.bootMode,'rom');
+assert.equal(cameraRows[1].versions[1].source,null);assert.match(cameraRows[1].versions[1].sourceNote,/第三方/);assert.equal(cameraRows[2].versions[0].source,null);
+assert.equal((await cameras.search('t-deck-plus-1')).rows.find(row=>row.firmwareId==='camera-lvgl').versions[1].source,null,'A shared tag cannot transfer a known digest across boards');
+const cameraEntry={...entry,productId:cameraProduct,deviceId:camera,firmwareId:cameraProject.id,...cameraFirmware.source};
+assert.deepEqual(cameras.history(cameraEntry).source,cameraFirmware.source);
+for(const change of [{productId:pid},{url:cameraUrl},{sha256:otherHash},{archive:{format:'zip',entry:'old.bin'}}])assert.equal(cameras.history({...cameraEntry,...change}),null);
+
+const localProduct={...deckProduct,providers:{'lilygo-spark':{productId:'t-deck-plus-1'}}};
+const fixed={url:'https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/'+('1'.repeat(40))+'/firmware/board.bin',sha256:otherHash,bootMode:'app-direct'};
+const catalogItem={productIds:[localProduct.id],status:'trial',role:'factory',publisher:'LILYGO',source:fixed};
+const deckVersion={...cameraProject.versions[0],download_url:'https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/main/firmware/board.bin'};
+const localZip={...deckVersion,download_url:undefined,filename:'board.bin',oss_url:`https://lilygo.oss-accelerate.aliyuncs.com/firmware/${otherHash.slice(0,16)}_board.bin.zip`};
+const localManifest={...cameraManifest,firmwares:[
+  {...cameraProject,versions:[deckVersion,cameraProject.versions[1]]},
+  {...cameraProject,id:'official-zip',author:{name:'LILYGO'},source_code_url:'https://github.com/Xinyuan-LilyGO/T-Deck',versions:[localZip]},
+  {...cameraProject,id:'other-vendor-board',versions:[{...deckVersion,download_url:cameraUrl}]},
+]};
+const withCatalog=(items,products=[localProduct])=>createLilygoSparkClient(async()=>Response.json(localManifest),{products,firmwares:items});
+const localClient=withCatalog([catalogItem]);
+const localVersions=await localClient.versions(cameraProject.id,'t-deck-plus-1');
+assert.deepEqual((await localClient.versions('official-zip','t-deck-plus-1'))[0].source,fixed,'Use the verified same-byte BIN when Spark publishes an OSS ZIP');
+assert.equal((await localClient.versions('other-vendor-board','t-deck-plus-1'))[0].source,null,'Different manufacturer repositories retain distinct identities');
+assert.deepEqual(localVersions[0].source,fixed);assert.equal(localVersions[1].source,null);
+const localEntry={...entry,firmwareId:cameraProject.id,productId:localProduct.id,deviceId:'t-deck-plus-1',...fixed};
+assert.deepEqual(localClient.history(localEntry).source,fixed);
+for(const client of [
+  withCatalog([{...catalogItem,publisher:'Other'}]),withCatalog([{...catalogItem,status:'reference'}]),
+  withCatalog([{...catalogItem,source:{...fixed,url:fixed.url.replace('1'.repeat(40),'main')}}]),
+  withCatalog([catalogItem],[localProduct,{...localProduct,id:'duplicate-upstream-id'}]),
+]) {
+  assert.equal((await client.versions(cameraProject.id,'t-deck-plus-1'))[0].source,null);
+  assert.equal(client.history(localEntry),null);
+}
+console.log('ok audited Spark image priority and direct downloads, manufacturer sources, PCB and publisher boundaries, exact catalog digest matching and history');

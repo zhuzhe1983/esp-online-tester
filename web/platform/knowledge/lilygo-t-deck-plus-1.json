@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:35Z",
   "hardwareRevision": "T-Deck Plus SX1262-equipped ST7789/GT911 hardware; excludes T-Deck V2, Pro and no-LoRa SKUs",
   "identity": {
     "manufacturer": "LILYGO",
@@ -482,6 +482,19 @@
         "official-store-shopify-1"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-deck-plus-1-official-factory",
+        "version": "2026-11-03"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家为 T-Deck 和 T-Deck Plus 共用的 SX1262 出厂程序。"
     }
   ],
   "revisions": [],
@@ -786,6 +799,17 @@
       "mediaType": "text/plain; charset=utf-8",
       "archiveName": "lib-deck-pins.source",
       "archiveStorage": "Ignored target/lilygo-additional-sources source cache; pinned public URL and SHA-256 permit re-fetch."
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "tdeck-sx1262-factory-20261103-0x0.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:35Z",
+      "sha256": "d7389eaed791ebb77648feacda0dccb59e7c649b5da6f15427b85cdee3239945",
+      "bytes": 16711680,
+      "archiveName": "d7389eaed791ebb77648feacda0dccb59e7c649b5da6f15427b85cdee3239945.bin"
     }
   ],
   "assets": [
@@ -840,16 +864,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -866,34 +880,41 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "reference-only",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-deck-plus-1-official-factory",
     "sourceIds": [
-      "deck-firmware"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "path": "firmware/tdeck-sx1262-factory-20261103-0x0.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/tdeck-sx1262-factory-20261103-0x0.bin",
-        "status": "linked",
-        "gitBlobSha": "8404918622a68aa6c0fa692aba261ee9a91e4dc7",
-        "bytesFromTree": 16711680,
-        "layoutVerified": false,
-        "binaryFetched": false,
-        "sha256": null
-      },
-      {
-        "path": "firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
-        "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
-        "status": "linked",
-        "gitBlobSha": "68d70860be5f4658776b968e6d04c519f705939a",
-        "bytesFromTree": 3563024,
-        "layoutVerified": false,
-        "binaryFetched": false,
-        "sha256": null
-      }
-    ],
-    "simulationVerified": false,
-    "notes": "Manufacturer labels shared T-Deck/T-Deck-Plus factory target and TFT Meshtastic image. Exact bytes and merged/app layout have not been inspected; filename/size alone do not establish a bootable platform image."
+    "previousInvestigation": {
+      "status": "reference-only",
+      "sourceIds": [
+        "deck-firmware"
+      ],
+      "candidates": [
+        {
+          "path": "firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/tdeck-sx1262-factory-20261103-0x0.bin",
+          "status": "linked",
+          "gitBlobSha": "8404918622a68aa6c0fa692aba261ee9a91e4dc7",
+          "bytesFromTree": 16711680,
+          "layoutVerified": false,
+          "binaryFetched": false,
+          "sha256": null
+        },
+        {
+          "path": "firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
+          "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Deck/9aac147a313975ad063594b3fe11e28a96d94936/firmware/firmware-t-deck-tft-2.7.10.94d4bdf.bin",
+          "status": "linked",
+          "gitBlobSha": "68d70860be5f4658776b968e6d04c519f705939a",
+          "bytesFromTree": 3563024,
+          "layoutVerified": false,
+          "binaryFetched": false,
+          "sha256": null
+        }
+      ],
+      "simulationVerified": false,
+      "notes": "Manufacturer labels shared T-Deck/T-Deck-Plus factory target and TFT Meshtastic image. Exact bytes and merged/app layout have not been inspected; filename/size alone do not establish a bootable platform image."
+    }
   },
   "modelReview": {
     "model": {

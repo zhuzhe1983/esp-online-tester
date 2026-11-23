@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:48Z",
   "hardwareRevision": "Exact GxEPD2_213_BN header explicitly names T5 V2.3.1; DEPG0213BN variant and zero-origin GxEPD2 driver selected",
   "identity": {
     "manufacturer": "LILYGO",
@@ -147,6 +147,19 @@
         "official-store-shopify-1"
       ],
       "notes": "物理硬件与已实现模拟能力分开记录；出厂固件运行不由引脚或协议单测推导。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t5-v2-3-1-official-factory",
+        "version": "2026-07-09"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "Q229 对应 DEPG0213BN 屏，匹配本目录的 T5 V2.3.1。"
     }
   ],
   "revisions": [],
@@ -537,6 +550,17 @@
       "kind": "official-documentation",
       "archiveName": "official-store-shopify-1.source",
       "archiveStorage": "Retained in ignored manufacturer audit cache; pinned URL and content hash permit re-fetch."
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "Q229_T5_Factory_DEPG0213BN_260709.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/LilyGo-T5-Epaper-Series/0390f9f7a7383cd34693c8d9d7cdeb8ca5c7f16a/firmware/Q229_T5_Factory_DEPG0213BN_260709.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:48Z",
+      "sha256": "a6ed0ba40030ee00e8e33e81433b1212a9eb4416de73155027b546a21ce82cb9",
+      "bytes": 894640,
+      "archiveName": "a6ed0ba40030ee00e8e33e81433b1212a9eb4416de73155027b546a21ce82cb9.bin"
     }
   ],
   "assets": [
@@ -579,16 +603,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -605,24 +619,31 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-artifacts-found-exact-revision-unverified",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t5-v2-3-1-official-factory",
     "sourceIds": [
-      "lilygo-gap-t5-repository-tree",
-      "lilygo-gap-t5-factory-readme"
+      "official-factory-bin"
     ],
-    "links": [
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T5-Epaper-Series/blob/0390f9f7a7383cd34693c8d9d7cdeb8ca5c7f16a/firmware/Q229_T5_Factory_DEPG0213BN_260709.bin",
-        "status": "linked"
-      },
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T5-Epaper-Series/blob/0390f9f7a7383cd34693c8d9d7cdeb8ca5c7f16a/firmware/Q300_T5_Factory_GDEM0213B74_260709.bin",
-        "status": "linked"
-      }
-    ],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "The manufacturer firmware directory contains two panel-specific binaries; current README also covers V2.4. Neither byte-level image contents nor exact V2.3.1 factory compatibility was established."
+    "previousInvestigation": {
+      "status": "official-artifacts-found-exact-revision-unverified",
+      "sourceIds": [
+        "lilygo-gap-t5-repository-tree",
+        "lilygo-gap-t5-factory-readme"
+      ],
+      "links": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T5-Epaper-Series/blob/0390f9f7a7383cd34693c8d9d7cdeb8ca5c7f16a/firmware/Q229_T5_Factory_DEPG0213BN_260709.bin",
+          "status": "linked"
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/LilyGo-T5-Epaper-Series/blob/0390f9f7a7383cd34693c8d9d7cdeb8ca5c7f16a/firmware/Q300_T5_Factory_GDEM0213B74_260709.bin",
+          "status": "linked"
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "The manufacturer firmware directory contains two panel-specific binaries; current README also covers V2.4. Neither byte-level image contents nor exact V2.3.1 factory compatibility was established."
+    }
   },
   "modelReview": {
     "model": {

@@ -9,6 +9,7 @@ const base = 'docs/platform/research/lilygo-spark-product-';
 const inventory = await read(`${base}source-2026-10-28.json`);
 const receipt = await read(`${base}source-receipt-2026-10-28.json`);
 const audit = await read(`${base}mapping-2026-10-28.json`);
+const firmwareAudit = await read('docs/platform/research/lilygo-official-firmware-links-2026-11-23.json');
 const catalog = Object.fromEntries(await Promise.all(['products', 'accessories', 'firmwares'].map(async name => [name, (await read(`web/platform/catalog/${name}.json`)).items])));
 const lilygo = catalog.products.filter(p => p.manufacturer === 'LILYGO');
 const byProvider = new Map(lilygo.map(p => [p.providers?.['lilygo-spark']?.productId, p]));
@@ -69,7 +70,7 @@ test('T-Deck is a six-item family with independent Plus, Pro and software editio
     assert.ok(p.model?.url, `${p.id}: exact preview exists`);
     assert.notEqual(p.runtime.board, 'tdeck', 'A sibling must not inherit original T-Deck hardware');
     if(p.runtime.board) assert.equal(p.runtime.board,p.id,'Explicitly adapted variant retains an independent board identity');
-    assert.equal(p.defaultFirmwareId, undefined);
+    assert.notEqual(p.defaultFirmwareId, curated['t-deck'][3], 'Only the original Deck can inherit its exact default');
   }
   for (const pid of ['t-deck-meshtastic', 't-deck-plus-meshtastic', 't-deck-pro-meshtastic']) assert.equal(byProvider.get(pid).firmwareEdition, 'Meshtastic');
 });
@@ -85,9 +86,13 @@ test('every LilyGO preview round-trips and new protocol support stays separate f
     assert.ok(['diagnostic','unavailable'].includes(product.runtime.status));
     if(!product.runtime.board){assert.equal(product.runtime.status,'unavailable');assert.equal(product.runtime.flashMb,null);assert.equal(product.runtime.psramMb,null);}
     if(product.displayStatus==='unknown')assert.equal(product.display,null,'An unknown display cannot be a guessed physical screen');
-    assert.equal(product.defaultFirmwareId, undefined);
     const knowledge = await read(`web/platform/knowledge/${product.id}.json`);
-    assert.ok(knowledge.unknowns.some(f => f.id === 'factory-firmware' && f.value === null));
+    if (product.defaultFirmwareId) {
+      const factory = catalog.firmwares.find(f => f.id === product.defaultFirmwareId);
+      assert.equal(factory?.role, 'factory', product.id);
+      assert.deepEqual(factory.productIds, [product.id]);
+      assert.equal(knowledge.facts.find(f => f.id === 'factory-firmware')?.value.firmwareId, factory.id);
+    } else assert.ok(knowledge.unknowns.some(f => f.id === 'factory-firmware' && f.value === null));
     assert.equal(knowledge.sources.find(s => s.id === 'spark-product-catalog').sha256, receipt.source.sha256);
     assert.ok(knowledge.factoryFirmwareInvestigation,'Each product has a recorded factory-source investigation');
     assert.ok(knowledge.sources.filter(s => s.status === 'linked').every(s => !s.fetchedAt && !s.sha256));
@@ -103,4 +108,38 @@ test('the curated source projection has exact retained byte identity and no inve
   assert.equal(receipt.identity.uuidFound, false);
   assert.equal(receipt.identity.productKey, 'product_list[].products[].product_id');
   assert.equal(receipt.identity.groupKey, 'product_list[].id');
+});
+
+test('firmware receipts cover the expansion and pin the exact public download for each mapped product', () => {
+  const expansion = lilygo.filter(p => !Object.hasOwn(curated, p.providers['lilygo-spark'].productId));
+  assert.deepEqual(firmwareAudit.items.map(r => r.productId).sort(), expansion.map(p => p.id).sort());
+  for (const row of firmwareAudit.items) {
+    const {productId, artifact} = row;
+    const product = lilygo.find(p => p.id === productId);
+    assert.ok(row.notes, productId);
+    if (row.package) {
+      const file = row.package;
+      const entry = catalog.firmwares.find(f => f.productIds.includes(productId) && f.sources.some(s => s.url === file.url));
+      assert.equal(entry?.status, 'reference', productId);
+      assert.equal(entry.source, null);
+      assert.match(file.sha256, /^[a-f0-9]{64}$/);
+      if (file.role === 'factory') assert.equal(product.defaultFirmwareId, entry.id);
+    }
+    if (!artifact) {
+      if (row.package?.role !== 'factory') assert.equal(product.defaultFirmwareId, undefined, productId);
+      continue;
+    }
+    const fw = catalog.firmwares.find(f => f.productIds.includes(productId) && f.sources.some(s => s.url === artifact.url));
+    assert.deepEqual(fw?.productIds, [productId], productId);
+    assert.equal(fw.role, artifact.role);
+    assert.match(artifact.sha256, /^[a-f0-9]{64}$/);
+    assert.equal(fw.simulationVerified, false);
+    assert.equal(fw.hardwareValidated, false);
+    if (artifact.role === 'factory') assert.equal(product.defaultFirmwareId, fw.id);
+    if (fw.source) {
+      assert.equal(fw.status, 'trial');
+      assert.equal(fw.source.url, artifact.url);
+      assert.equal(fw.source.sha256, artifact.sha256);
+    } else assert.equal(fw.status, 'reference');
+  }
 });

@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "spark-product-catalog"
   ],
-  "updatedAt": "2026-11-22T09:33:51Z",
+  "updatedAt": "2026-11-23T03:29:38Z",
   "hardwareRevision": "T-Panel V1.2 (replaceable CAN/RS485 module variant), not T-Panel-Lite",
   "identity": {
     "manufacturer": "LILYGO",
@@ -221,6 +221,19 @@
         "official-store-shopify-1"
       ],
       "notes": "保留官方资料之间的冲突；所选调试配置不自动适用于其他硬件版次。"
+    },
+    {
+      "id": "factory-firmware",
+      "label": "所列版次的官方出厂固件",
+      "value": {
+        "firmwareId": "lilygo-t-panel-s3-official-factory",
+        "version": "2026-08-20"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-factory-bin"
+      ],
+      "notes": "厂家固件表将 general_test 列为 T-Panel V1.2 整板出厂测试。此文件用于 ESP32-S3 主控；H2 协处理器另有固件。"
     }
   ],
   "revisions": [],
@@ -642,6 +655,17 @@
       "archiveName": "T-Panel-tree.raw",
       "notes": "Exact original GitHub connector UTF-8 snapshot copied from the model lane; original fetch timestamp retained. A normalized sha field is a pinned revision, not proof of Git commit/tree object type. Firmware metadata is discovery evidence only, not a fetched firmware checksum.",
       "sourceCachePath": "target/lilygo-s3-io2-sources/T-Panel-tree.raw"
+    },
+    {
+      "id": "official-factory-bin",
+      "title": "[t-panel_v1.2][general_test]_firmware_202608200958.bin",
+      "url": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T03:29:38Z",
+      "sha256": "4c9d73034aa1bfad6777f4fd9e2f30bed60c91fc809ed2d7e031e637adcd30e1",
+      "bytes": 2774496,
+      "archiveName": "4c9d73034aa1bfad6777f4fd9e2f30bed60c91fc809ed2d7e031e637adcd30e1.bin"
     }
   ],
   "assets": [
@@ -696,16 +720,6 @@
       "notes": "已建立可检查的模型；来源、估算和缺失结构见 modelReview。调试占位的尺寸不代表实物尺寸。"
     },
     {
-      "id": "factory-firmware",
-      "label": "确切硬件的官方出厂镜像",
-      "value": null,
-      "basis": "unknown",
-      "sourceIds": [
-        "spark-product-catalog"
-      ],
-      "notes": "逐款检索结果见 factoryFirmwareInvestigation；发现官方入口或候选镜像不等于已完成硬件版次、启动和模拟兼容验证。"
-    },
-    {
       "id": "runtime",
       "label": "模拟执行与实机结果",
       "value": null,
@@ -722,51 +736,58 @@
     "2026-11-22 按官方版次日期优先、官方上架日期代用的顺序补充适配；日期不明的项目排在末尾。"
   ],
   "factoryFirmwareInvestigation": {
-    "status": "official-entries-linked",
+    "status": "image-pinned",
+    "firmwareId": "lilygo-t-panel-s3-official-factory",
     "sourceIds": [
-      "T-Panel-tree",
-      "T-Panel-README.md",
-      "T-Panel-firmware-general_test-README.md"
+      "official-factory-bin"
     ],
-    "candidates": [
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/T-Panel/blob/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
-        "path": "firmware/[t-panel_v1.2][general_test]/[t-panel_v1.2][general_test]_firmware_202608200958.bin",
-        "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
-        "gitBlobSha": "da191a4172aca16c83f47924cf0736706766f3b8",
-        "bytes": 2774496,
-        "status": "linked",
-        "sourceId": "T-Panel-tree",
-        "role": "factory",
-        "chip": "esp32s3",
-        "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
-        "binaryFetched": false,
-        "simulationVerified": false,
-        "flashOffset": 0
-      },
-      {
-        "url": "https://github.com/Xinyuan-LilyGO/T-Panel/blob/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5BESP32H2%5D%5BT-Panel_V1.2%5D%5BESP32H2_BLE_Test%5D_firmware_V1.0.2.bin",
-        "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5BESP32H2%5D%5BT-Panel_V1.2%5D%5BESP32H2_BLE_Test%5D_firmware_V1.0.2.bin",
-        "path": "firmware/[t-panel_v1.2][general_test]/[ESP32H2][T-Panel_V1.2][ESP32H2_BLE_Test]_firmware_V1.0.2.bin",
-        "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
-        "gitBlobSha": "7f829c3bb4b977f7c3152eccd79a81838b683a47",
-        "bytes": 1213952,
-        "status": "linked",
-        "sourceId": "T-Panel-tree",
-        "role": "coprocessor-factory",
-        "chip": "esp32h2",
-        "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
-        "binaryFetched": false,
-        "simulationVerified": false
+    "previousInvestigation": {
+      "status": "official-entries-linked",
+      "sourceIds": [
+        "T-Panel-tree",
+        "T-Panel-README.md",
+        "T-Panel-firmware-general_test-README.md"
+      ],
+      "candidates": [
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Panel/blob/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D_firmware_202608200958.bin",
+          "path": "firmware/[t-panel_v1.2][general_test]/[t-panel_v1.2][general_test]_firmware_202608200958.bin",
+          "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+          "gitBlobSha": "da191a4172aca16c83f47924cf0736706766f3b8",
+          "bytes": 2774496,
+          "status": "linked",
+          "sourceId": "T-Panel-tree",
+          "role": "factory",
+          "chip": "esp32s3",
+          "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+          "binaryFetched": false,
+          "simulationVerified": false,
+          "flashOffset": 0
+        },
+        {
+          "url": "https://github.com/Xinyuan-LilyGO/T-Panel/blob/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5BESP32H2%5D%5BT-Panel_V1.2%5D%5BESP32H2_BLE_Test%5D_firmware_V1.0.2.bin",
+          "downloadUrl": "https://raw.githubusercontent.com/Xinyuan-LilyGO/T-Panel/80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67/firmware/%5Bt-panel_v1.2%5D%5Bgeneral_test%5D/%5BESP32H2%5D%5BT-Panel_V1.2%5D%5BESP32H2_BLE_Test%5D_firmware_V1.0.2.bin",
+          "path": "firmware/[t-panel_v1.2][general_test]/[ESP32H2][T-Panel_V1.2][ESP32H2_BLE_Test]_firmware_V1.0.2.bin",
+          "pinnedGitRevision": "80b6ce5eecd2c4cb3aaeac3408225c97a13b9b67",
+          "gitBlobSha": "7f829c3bb4b977f7c3152eccd79a81838b683a47",
+          "bytes": 1213952,
+          "status": "linked",
+          "sourceId": "T-Panel-tree",
+          "role": "coprocessor-factory",
+          "chip": "esp32h2",
+          "identityEvidence": "Exact manufacturer tree path; factory identity is supported by the product README.",
+          "binaryFetched": false,
+          "simulationVerified": false
+        }
+      ],
+      "binaryFetched": false,
+      "simulationVerified": false,
+      "notes": "README identifies general_test as V1.2 factory firmware at flash offset0. Latest pinned S3 binary is linked with tree size/blob metadata; no image bytes or flash header were fetched/boot-verified. H2 binary is a separate unsimulated chip, not an alternative S3 image.",
+      "watchlist": {
+        "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
+        "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
       }
-    ],
-    "binaryFetched": false,
-    "simulationVerified": false,
-    "notes": "README identifies general_test as V1.2 factory firmware at flash offset0. Latest pinned S3 binary is linked with tree size/blob metadata; no image bytes or flash header were fetched/boot-verified. H2 binary is a separate unsimulated chip, not an alternative S3 image.",
-    "watchlist": {
-      "uiFlow": "No exact official UIFlow image mapping was found in the inspected product documentation/repositories.",
-      "xiaozhi": "No exact official Xiaozhi image mapping was found in the inspected product documentation/repositories."
     }
   },
   "modelReview": {
