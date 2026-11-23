@@ -125,6 +125,9 @@ check('all finishes have distinct optical responses while color and opacity rema
   near(shell.material.roughness, .66); near(shell.material.metalness, 0); near(shell.material.transmission, 0); near(shell.material.clearcoat, 0); near(shell.material.iridescence, 0);
   assert.equal(shell.material.depthWrite, true); assert.equal(shell.material.side, THREE.FrontSide); assert.equal(occluder.visible, true);
   for (const [id, preset] of Object.entries(SHELL_PRESETS)) assert.equal(shellPreset(preset), id);
+  assert.deepEqual(Object.keys(SHELL_PRESETS).filter(id => id.startsWith('titanium-')), ['titanium-spectrum']);
+  assert.equal(shellPreset({color:'#6682ae', opacity:1, finish:'iridescent-titanium'}), 'custom');
+  assert.equal(shellPreset({color:'#b8b3a8', opacity:1, finish:'brushed-metal'}), 'custom');
   shell.material.dispose();
 });
 check('shell material isolation preserves shared screen/button/port/halo resources and original geometry', () => {
@@ -141,21 +144,35 @@ check('shell material isolation preserves shared screen/button/port/halo resourc
   }
   owned.dispose(); assert.equal(sourceDisposals, 0, 'shared input material belongs to other surfaces');
 });
-check('procedural brushing needs no UVs or textures and releases its owned material hooks', () => {
+check('procedural brushing needs no UVs and releases its shared reflection resource after the last shell', () => {
   const shell = cube(0); shell.geometry.deleteAttribute('uv');
   let originalDisposals = 0; shell.material.addEventListener('dispose', () => originalDisposals++);
   applyShellAppearance(shell, normalizeShellAppearance({shell: {finish: 'brushed-metal'}}));
   const material = shell.material, brushedKey = material.customProgramCacheKey();
+  assert.ok(material.anisotropy > 0);
+  const reflection = material.envMap, second = cube(1);
+  let reflectionDisposals = 0;
+  reflection.addEventListener('dispose', () => reflectionDisposals++);
+  applyShellAppearance(second, normalizeShellAppearance({shell: {finish: 'brushed-metal'}}));
+  assert.equal(second.material.envMap, reflection);
   assert.equal(originalDisposals, 1, 'replaced exclusive material is released');
   assert.equal(shell.geometry.getAttribute('uv'), undefined); assert.equal(material.roughnessMap, null); assert.equal(material.normalMap, null);
   const pristine = {vertexShader: THREE.ShaderLib.physical.vertexShader, fragmentShader: THREE.ShaderLib.physical.fragmentShader};
   const brushed = {...pristine}; material.onBeforeCompile(brushed);
-  assert.notEqual(brushed.vertexShader, pristine.vertexShader); assert.notEqual(brushed.fragmentShader, pristine.fragmentShader);
+  assert.notEqual(brushed.vertexShader, pristine.vertexShader);
+  assert.match(brushed.fragmentShader, /material\.anisotropyT = brushLength/);
+  assert.match(brushed.fragmentShader, /fwidth\(coordinate\)/);
   applyShellAppearance(shell, normalizeShellAppearance(null));
   assert.equal(shell.material, material); assert.notEqual(material.customProgramCacheKey(), brushedKey);
+  assert.equal(material.anisotropy, 0); assert.equal(material.envMap, null);
+  assert.equal(reflectionDisposals, 0);
+  assert.equal(second.material.envMap, reflection);
   const restored = {...pristine}; material.onBeforeCompile(restored); assert.deepEqual(restored, pristine);
   applyShellAppearance(shell, normalizeShellAppearance({shell: {finish: 'brushed-metal'}}));
   material.dispose(); const afterDispose = {...pristine}; material.onBeforeCompile(afterDispose); assert.deepEqual(afterDispose, pristine);
+  assert.equal(reflectionDisposals, 0);
+  second.material.dispose();
+  assert.equal(reflectionDisposals, 1);
 });
 check('direct shell normalization rejects unknown fields and invalid shapes instead of accepting textures or scripts', () => {
   for (const value of [[], 1, 'plastic', {shell: null}, {shell: []}, {other: 1}, {shell: {finish: null}}, {shell: {opacity: null}}, {shell: {color: null}}, {shell: {texture: 'remote.png'}}]) assert.throws(() => normalizeShellAppearance(value));
