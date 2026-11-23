@@ -6,6 +6,8 @@ import {chipIdForBoard} from '../web/platform/app-image.js';
 import {createPlatformRuntime,validateMergedImage,fetchBytes} from '../web/platform/runtime.js';
 import {createDefaultScene,validateScene,encodeScene,decodeScene} from '../web/platform/catalog.js';
 import {imuModelForBoard} from '../web/platform/imu.js';
+import * as THREE from '../web/platform/vendor/three.module.min.js';
+import {createPlateGeometry} from '../web/platform/plate-geometry.js';
 const catalog={};for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url),'utf8')).items;
 const product=catalog.products.find(p=>p.id==='m5stack-k150');
 // Synthetic image/layout and worker transport only: no claim of firmware execution.
@@ -42,6 +44,20 @@ test('K150 input regions preserve manufacturer geometry and UNKNOWN internals',a
  const model=JSON.parse(await readFile(new URL('../web/platform/assets/m5stack-k150/model.json',import.meta.url),'utf8'));
  for(const name of ['geometry.bin','source.stl'])assert.equal(createHash('sha256').update(await readFile(new URL(`../web/platform/assets/m5stack-k150/${name}`,import.meta.url))).digest('hex'),model.artifacts[name]);assert.equal(model.artifacts['geometry.bin'],'e2de53c2cf1b6d3a2e6dd66bf60ee66c37050c12794bde5bb41dd9c294189e7d');assert.equal(model.parts.find(p=>p.name==='cad-component-3').controlId,'btnA');
  assert.equal(model.presentation.buttons[0].id,'btnB');assert.equal(model.presentation.buttons[0].basis,'image-measurement');assert.equal(model.derivedParts.find(p=>p.id==='pcb-main').label,'UNKNOWN');assert.equal(product.model.status,'partial');
+});
+
+test('K150 Hat2 has two rows of eight open female pockets on 2.54 mm pitch',async()=>{
+  const model=JSON.parse(await readFile(new URL('../web/platform/assets/m5stack-k150/model.json',import.meta.url),'utf8'));
+  const header=model.derivedParts.find(part=>part.id==='hat2-header');
+  const geometry=createPlateGeometry(header.geometry);
+  const material=new THREE.MeshBasicMaterial({side:THREE.DoubleSide});
+  try {
+    const surface=new THREE.Mesh(geometry,material);
+    const through=(x,y)=>new THREE.Raycaster(new THREE.Vector3(x,y,5),new THREE.Vector3(0,0,-1)).intersectObject(surface);
+    assert.equal(header.geometry.holesMm.length,16);
+    for(const y of [-1.27,1.27])for(let i=0;i<8;i++)assert.equal(through((i-3.5)*2.54,y).length,0);
+    assert.ok(through(0,0).length>0,'Center web remains solid between the rows');
+  }finally{geometry.dispose();material.dispose();}
 });
 
 test('K150 republished exact UIFlow pin retains real download gate and no boot claims',async()=>{
