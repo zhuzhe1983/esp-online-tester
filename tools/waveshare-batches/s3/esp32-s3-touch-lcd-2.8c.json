@@ -1,0 +1,1309 @@
+{
+  "listingId": "esp32-s3-touch-lcd-2.8c",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2.8C",
+      "manufacturer": "Waveshare",
+      "sku": "29086",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "2.8 英寸 480×480 圆屏，16 MiB Flash / 8 MiB Octal PSRAM；原厂界面已出屏，后续 BLE 测试阶段仍受限。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-2-8c.json",
+      "family": {
+        "id": "waveshare-s3-tca-rgb",
+        "name": "Waveshare ESP32-S3 TCA9554 RGB 屏"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd28c",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB565",
+        "diagonalInches": 2.8,
+        "touch": true,
+        "controller": "ST7701S",
+        "shape": "circle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC 单线",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "sd-driver"
+          ],
+          "notes": "原厂使用 SDMMC 单线；DAT3 经 TCA9554 P3 拉高选择模式，不是第四根数据线或电源脚。原生 FAT32 挂载已验证。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方型号、SKU 与硬件说明",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "精确来源原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "lcd-driver",
+          "title": "官方 LCD 初始化与 RGB 引脚",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sd-driver",
+          "title": "官方 TF 连接",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "官方原厂恢复镜像说明",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "固定提交的原始官方出厂镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-2.8c.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-2.8C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-official-overview-1",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-0",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/BAT_Driver/BAT_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-1",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/BAT_Driver/BAT_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-2",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Button_Driver/Button_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-3",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Button_Driver/Button_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-4",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Button_Driver/multi_button.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-5",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Button_Driver/multi_button.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-6",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Buzzer/Buzzer.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-7",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Buzzer/Buzzer.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-8",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/EXIO/TCA9554PWR.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-9",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/EXIO/TCA9554PWR.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-10",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/I2C_Driver/I2C_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-11",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/I2C_Driver/I2C_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-12",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/LCD_Driver/ST7701S.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-13",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/LCD_Driver/ST7701S.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-14",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/LVGL_Driver/LVGL_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-15",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/LVGL_Driver/LVGL_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-16",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/PCF85063/PCF85063.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-17",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/PCF85063/PCF85063.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-18",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/QMI8658/QMI8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-19",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/QMI8658/QMI8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-20",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/SD_Card/SD_MMC.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-21",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/SD_Card/SD_MMC.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-22",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Simulated_Gesture/Simulated_Gesture.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-23",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Simulated_Gesture/Simulated_Gesture.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-24",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Wireless/Wireless.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-25",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Wireless/Wireless.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-26",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-27",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-28",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/BAT_Driver/BAT_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-29",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/BAT_Driver/BAT_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-30",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Buzzer/Buzzer.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-31",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Buzzer/Buzzer.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-32",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/EXIO/TCA9554PWR.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-33",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/EXIO/TCA9554PWR.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-34",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/I2C_Driver/I2C_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-35",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/I2C_Driver/I2C_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-36",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/LCD_Driver/ST7701S.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-37",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/LCD_Driver/ST7701S.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-38",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/LVGL_Driver/LVGL_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-39",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/LVGL_Driver/LVGL_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-40",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/PCF85063/PCF85063.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-41",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/PCF85063/PCF85063.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-42",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/QMI8658/QMI8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-43",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/QMI8658/QMI8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-44",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/SD_Card/SD_MMC.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-45",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/SD_Card/SD_MMC.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-46",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Touch_Driver/GT911.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-47",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Touch_Driver/GT911.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-48",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Touch_Driver/esp_lcd_touch/esp_lcd_touch.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-49",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Touch_Driver/esp_lcd_touch/esp_lcd_touch.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-50",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Wireless/Wireless.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-51",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Wireless/Wireless.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-52",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-53",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-54",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-55",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-LCD-2.8C_schematic_diagram.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+        "原生测试已验证早期滑动与相同时刻无输入对照存在差异；后续触摸响应尚未通过。",
+        "原厂程序已通过真实 SDMMC 1-bit 路径挂载默认 64 MiB FAT32 卡；此前按 SPI 解释接线的失败已定位并修正，历史失败记录保留。",
+        "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+        "独立 3D 模型已接入；真实 IMU 板坐标与实物朝向标定仍未完成；无线、USB、模拟电池和全部外设未验收。",
+        "Grounded QMI SA0 selects 0x6B; the old opposite-address inference is withdrawn.",
+        "Factory I2C write failures remain visible; exact failing binary transaction not traced.",
+        "GT911 8146-8149 actual resolution is separate from 8048/804A configuration RAM; physical configuration application and factory numeric config version are outside this subset.",
+        "已通过公开 runtime → production Worker → WASM 的实际原厂加载、出屏与输入投递检查；浏览器/WebGL 尚未验收。",
+        "IMU 数字输入：支持虚拟传感器轴；物理朝向和原厂程序的动作响应尚未验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Filename date is an official firmware artifact date, not a product release date."
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-2-8c-factory-2-s3-touch-lcd-2-8c-fac-62f382ee",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-2-8c/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-2-8c",
+      "name": "Waveshare ESP32-S3-LCD-2.8C",
+      "manufacturer": "Waveshare",
+      "sku": "30254",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "2.8 英寸 480×480 圆屏，16 MiB Flash / 8 MiB Octal PSRAM；原厂界面已出屏，后续 BLE 测试阶段仍受限。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-2-8c.json",
+      "family": {
+        "id": "waveshare-s3-tca-rgb",
+        "name": "Waveshare ESP32-S3 TCA9554 RGB 屏"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd28c",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB565",
+        "diagonalInches": 2.8,
+        "touch": false,
+        "controller": "ST7701S",
+        "shape": "circle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC 单线",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "sd-driver"
+          ],
+          "notes": "原厂使用 SDMMC 单线；DAT3 经 TCA9554 P3 拉高选择模式，不是第四根数据线或电源脚。原生 FAT32 挂载已验证。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方型号、SKU 与硬件说明",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-2.8C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "精确来源原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "lcd-driver",
+          "title": "官方 LCD 初始化与 RGB 引脚",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sd-driver",
+          "title": "官方 TF 连接",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "官方原厂恢复镜像说明",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "固定提交的原始官方出厂镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-2.8c.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-2.8C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-official-overview-1",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-0",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/BAT_Driver/BAT_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-1",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/BAT_Driver/BAT_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-2",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Button_Driver/Button_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-3",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Button_Driver/Button_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-4",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Button_Driver/multi_button.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-5",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Button_Driver/multi_button.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-6",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Buzzer/Buzzer.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-7",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Buzzer/Buzzer.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-8",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/EXIO/TCA9554PWR.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-9",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/EXIO/TCA9554PWR.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-10",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/I2C_Driver/I2C_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-11",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/I2C_Driver/I2C_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-12",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/LCD_Driver/ST7701S.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-13",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/LCD_Driver/ST7701S.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-14",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/LVGL_Driver/LVGL_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-15",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/LVGL_Driver/LVGL_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-16",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/PCF85063/PCF85063.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-17",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/PCF85063/PCF85063.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-18",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/QMI8658/QMI8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-19",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/QMI8658/QMI8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-20",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/SD_Card/SD_MMC.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-21",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/SD_Card/SD_MMC.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-22",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Simulated_Gesture/Simulated_Gesture.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-23",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Simulated_Gesture/Simulated_Gesture.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-24",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Wireless/Wireless.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-25",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/Wireless/Wireless.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-26",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-27",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8C-Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-28",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/BAT_Driver/BAT_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-29",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/BAT_Driver/BAT_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-30",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Buzzer/Buzzer.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-31",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Buzzer/Buzzer.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-32",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/EXIO/TCA9554PWR.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-33",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/EXIO/TCA9554PWR.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-34",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/I2C_Driver/I2C_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-35",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/I2C_Driver/I2C_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-36",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/LCD_Driver/ST7701S.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-37",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/LCD_Driver/ST7701S.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-38",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/LVGL_Driver/LVGL_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-39",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/LVGL_Driver/LVGL_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-40",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/PCF85063/PCF85063.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-41",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/PCF85063/PCF85063.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-42",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/QMI8658/QMI8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-43",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/QMI8658/QMI8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-44",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/SD_Card/SD_MMC.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-45",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/SD_Card/SD_MMC.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-46",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Touch_Driver/GT911.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-47",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Touch_Driver/GT911.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-48",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Touch_Driver/esp_lcd_touch/esp_lcd_touch.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-49",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Touch_Driver/esp_lcd_touch/esp_lcd_touch.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-50",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Wireless/Wireless.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-51",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/Wireless/Wireless.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-52",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-53",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8C-Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-54",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-55",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-LCD-2.8C_schematic_diagram.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+        "此型号物理上无触摸屏；BOOT 输入没有产生可归因的原厂页面变化。",
+        "原厂程序已通过真实 SDMMC 1-bit 路径挂载默认 64 MiB FAT32 卡；此前按 SPI 解释接线的失败已定位并修正，历史失败记录保留。",
+        "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+        "独立 3D 模型已接入；真实 IMU 板坐标与实物朝向标定仍未完成；无线、USB、模拟电池和全部外设未验收。",
+        "Grounded QMI SA0 selects 0x6B; the old opposite-address inference is withdrawn.",
+        "Factory I2C write failures remain visible; exact failing binary transaction not traced.",
+        "Official non-touch Resources page links the Touch-named schematic, byte-identical to the touch PDF. Own non-touch demo source is independently retained and no touch device is attached.",
+        "已通过公开 runtime → production Worker → WASM 的实际原厂加载、出屏与输入投递检查；浏览器/WebGL 尚未验收。",
+        "IMU 数字输入：支持虚拟传感器轴；物理朝向和原厂程序的动作响应尚未验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Filename date is an official firmware artifact date, not a product release date."
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-2-8c-factory-esp32-s3-lcd-2-8c-facto-63f8b89c",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-2-8c/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c-factory-esp32-s3-lcd-2-8c-facto-63f8b89c",
+      "name": "ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-2-8c"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin",
+        "sha256": "d55874ca244adeae3a7152125802a498764aca53428d8d746a5ceeed55774034",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LCD-2.8C_FactoryOnly_20250124",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/blob/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "固定515acab官方firmware/README明确触/非触factory restoration、各自BIN与offset0；两个源BIN真实ROM5秒均480×480、496帧43色，33SD命令/1744B读、64MB挂载。两份DemoZIP内16MiB Firmware成员也按双hash和完整目录审计，登记为official-demo，不从Test名称断言factory。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-lcd-2-8c-factory-esp32-s3-lcd-2-8c-facto-63f8b89c-watch"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c-factory-2-s3-touch-lcd-2-8c-fac-62f382ee",
+      "name": "ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin",
+      "productIds": [
+        "waveshare-esp32-s3-touch-lcd-2-8c"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin",
+        "sha256": "b414a2d7dc327dcf265067f59627e9c0e6fa16cdcbe9a5ad6cf32c139ca7f93e",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/blob/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "固定515acab官方firmware/README明确触/非触factory restoration、各自BIN与offset0；两个源BIN真实ROM5秒均480×480、496帧43色，33SD命令/1744B读、64MB挂载。两份DemoZIP内16MiB Firmware成员也按双hash和完整目录审计，登记为official-demo，不从Test名称断言factory。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-lcd-2-8c-factory-2-s3-touch-lcd-2-8c-fac-62f382ee-watch"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c-demo-esp32-s3-lcd-2-8c",
+      "name": "ESP32-S3-LCD-2.8C.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-2-8c"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+        "sha256": "d57aaf42ee6dc2a999a3797f164e3b138c7b12030bae0f38617a06fd4a82c264",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "Firmware/ESP32-S3-LCD-2.8C.bin",
+          "sha256": "9ef1cfed62cd87476de8391347aa4b65fcbe7fb1b4b8960ed2a93d1a1be6ca63"
+        }
+      },
+      "role": "official-demo",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LCD-2.8C",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-S3-LCD-2.8C/Resources-And-Documents",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "固定515acab官方firmware/README明确触/非触factory restoration、各自BIN与offset0；两个源BIN真实ROM5秒均480×480、496帧43色，33SD命令/1744B读、64MB挂载。两份DemoZIP内16MiB Firmware成员也按双hash和完整目录审计，登记为official-demo，不从Test名称断言factory。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-lcd-2-8c-demo-esp32-s3-lcd-2-8c-watch"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c-demo-esp32-s3-touch-lcd-2-8c",
+      "name": "ESP32-S3-Touch-LCD-2.8C.bin",
+      "productIds": [
+        "waveshare-esp32-s3-touch-lcd-2-8c"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+        "sha256": "623eefeeffca6211f9a5fdbc7c6bace928b08b376aff87329cc9039ca5bea626",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "Firmware/ESP32-S3-Touch-LCD-2.8C.bin",
+          "sha256": "f93eff03664f7dded6f91f9c362fda0d7c870991b4fa99ccbcfdd3e57ce39cf5"
+        }
+      },
+      "role": "official-demo",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-LCD-2.8C",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8C/Resources-And-Documents",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "固定515acab官方firmware/README明确触/非触factory restoration、各自BIN与offset0；两个源BIN真实ROM5秒均480×480、496帧43色，33SD命令/1744B读、64MB挂载。两份DemoZIP内16MiB Firmware成员也按双hash和完整目录审计，登记为official-demo，不从Test名称断言factory。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-lcd-2-8c-demo-esp32-s3-touch-lcd-2-8c-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c-factory-esp32-s3-lcd-2-8c-facto-63f8b89c-watch",
+      "name": "ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Touch-LCD-2.8C",
+      "metadataUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/blob/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/blob/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+      "version": "515acabcc2845a32722e7a4bae2cbab080ae0648",
+      "checkedAt": "2026-11-23T07:31:03Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin",
+          "sha256": "d55874ca244adeae3a7152125802a498764aca53428d8d746a5ceeed55774034",
+          "bytes": 1936304,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-2-8c"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c-factory-2-s3-touch-lcd-2-8c-fac-62f382ee-watch",
+      "name": "ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Touch-LCD-2.8C",
+      "metadataUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/blob/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/blob/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/README.md",
+      "version": "515acabcc2845a32722e7a4bae2cbab080ae0648",
+      "checkedAt": "2026-11-23T07:31:06Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8C/515acabcc2845a32722e7a4bae2cbab080ae0648/firmware/ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin",
+          "sha256": "b414a2d7dc327dcf265067f59627e9c0e6fa16cdcbe9a5ad6cf32c139ca7f93e",
+          "bytes": 1955360,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-lcd-2-8c"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c-demo-esp32-s3-lcd-2-8c-watch",
+      "name": "ESP32-S3-LCD-2.8C.bin",
+      "category": "development",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Touch-LCD-2.8C",
+      "metadataUrl": "https://docs.waveshare.com/ESP32-S3-LCD-2.8C/Resources-And-Documents",
+      "releaseUrl": "https://docs.waveshare.com/ESP32-S3-LCD-2.8C/Resources-And-Documents",
+      "version": "archive-sha256-9ef1cfed62cd87476de8391347aa4b65fcbe7fb1b4b8960ed2a93d1a1be6ca63",
+      "checkedAt": "2026-11-24T00:14:10Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LCD-2.8C-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8C/ESP32-S3-LCD-2.8C-Demo.zip",
+          "sha256": "9ef1cfed62cd87476de8391347aa4b65fcbe7fb1b4b8960ed2a93d1a1be6ca63",
+          "bytes": 69289203,
+          "format": "zip-bundle",
+          "member": {
+            "path": "Firmware/ESP32-S3-LCD-2.8C.bin",
+            "sha256": "d57aaf42ee6dc2a999a3797f164e3b138c7b12030bae0f38617a06fd4a82c264",
+            "bytes": 16777216,
+            "format": "merged"
+          }
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-2-8c"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-8c-demo-esp32-s3-touch-lcd-2-8c-watch",
+      "name": "ESP32-S3-Touch-LCD-2.8C.bin",
+      "category": "development",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Touch-LCD-2.8C",
+      "metadataUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8C/Resources-And-Documents",
+      "releaseUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8C/Resources-And-Documents",
+      "version": "archive-sha256-f93eff03664f7dded6f91f9c362fda0d7c870991b4fa99ccbcfdd3e57ce39cf5",
+      "checkedAt": "2026-11-24T00:14:23Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8C/ESP32-S3-Touch-LCD-2.8C-Demo.zip",
+          "sha256": "f93eff03664f7dded6f91f9c362fda0d7c870991b4fa99ccbcfdd3e57ce39cf5",
+          "bytes": 70960575,
+          "format": "zip-bundle",
+          "member": {
+            "path": "Firmware/ESP32-S3-Touch-LCD-2.8C.bin",
+            "sha256": "623eefeeffca6211f9a5fdbc7c6bace928b08b376aff87329cc9039ca5bea626",
+            "bytes": 16777216,
+            "format": "merged"
+          }
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-lcd-2-8c"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-2-8c.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-2-8c.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-touch-lcd28c": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-lcd28c": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "保留既有精确TCA/ST7701S/GT911/QMI/RTC/SDMMC路径与源CAD；触摸和非触地址存在性独立。",
+    "触/非触两个完整factory BIN各5guest秒真实彩色UI及SD挂载；2次初始化早期超时按原日志保留。",
+    "既有两个模型由生产加载器重新检查几何/屏幕/BOOT射线/图片与原始来源哈希。"
+  ],
+  "limitations": [
+    "RF/BLE、模拟电池ADC/充电、buzzer声学、完整触摸交互、RTC闹钟/IMU IRQ和物理验收未完成。",
+    "既有原生PCB/光学CAD为厂家参考修订，不声明所有当前销售批次内部器件外观完全一致。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

@@ -1,31 +1,48 @@
-//! Original 800x480 Waveshare 7-inch and4.3-inch boards (not B/C).
+//! Source-specific Waveshare RGB boards with a real CH422G expander.
+//! Original7/4.3 omit RTC and have optional LCD reset links.5/4.3B have
+//! PCF85063A and populated R20=100R;5 also offers a distinct1024x600 panel.
 //! CH422G is the multi-address device in the pinned manufacturer driver:
 //! WR_SET24, WR_OC23, WR_IO38, RD_IO26; one data byte, no register prefix.
 //! Exact official demo sources are retained in waveshare-s3-tail-sources.
 use std::sync::{Arc,Mutex};
 use esp_periph::{i2c::{I2cDevice,gt911::{Gt911,Gt911State}},sdmmc::{SdCardConfig,SdStore,card::spi::SpiSdCard}};
-use esp_soc::devices::waveshare_ch422g::{Ch422gState as Io,Ch422gPort as IoPort,ADDRESSES};
+use esp_soc::devices::{waveshare_ch422g::{Ch422gState as Io,Ch422gPort as IoPort,ADDRESSES},pcf85063::{Pcf85063,Pcf85063State}};
 use esp_soc::{board::{Board,BoardModel,BoardEdge,LcdRgbPins,SpiQspiPins},pins::PinRoutes,devices::i2c_bitbang::I2cBitBang};
 const HZ:u64=240_000_000;const RGB:[u8;16]=[14,38,18,17,10,39,0,45,48,47,21,1,2,42,41,40];
 struct TouchPort{inner:Gt911,io:Arc<Mutex<Io>>,at:u8,address:Arc<Mutex<u8>>}
 impl I2cDevice for TouchPort{fn start(&mut self,r:bool)->bool{self.io.lock().expect("CH422G").level(1)==Some(true)&&*self.address.lock().expect("GT address")==self.at&&self.inner.start(r)}fn write(&mut self,v:u8)->bool{self.io.lock().expect("CH422G").level(1)==Some(true)&&self.inner.write(v)}fn read(&mut self)->u8{if self.io.lock().expect("CH422G").level(1)==Some(true){self.inner.read()}else{255}}}
-pub fn make_board(name:&str)->Option<Board>{let(name,touch)=match name{"waveshare-s3-touch-lcd7"=>("waveshare-s3-touch-lcd7",true),"waveshare-s3-lcd7"=>("waveshare-s3-lcd7",false),"waveshare-s3-touch-lcd7-external"=>("waveshare-s3-touch-lcd7-external",true),"waveshare-s3-touch-lcd43"=>("waveshare-s3-touch-lcd43",true),"waveshare-s3-lcd43"=>("waveshare-s3-lcd43",false),_=>return None};Some(Box::new(WaveshareCh422Rgb::new(name,touch)))}
-struct WaveshareCh422Rgb{name:&'static str,touch_enabled:bool,io:Arc<Mutex<Io>>,touch:Arc<Mutex<Gt911State>>,address:Arc<Mutex<u8>>,i2c:I2cBitBang,attached:bool,cycle:u64,levels:[bool;3],edges:Vec<BoardEdge>,reset_high:bool,reset_falls:u64,irq_drive:Option<bool>,frame:Vec<u16>,mapping:Option<[u8;16]>,frames:u64,version:u64,sd:Option<SpiSdCard>,present:bool,rejected_sd:u64}
+pub fn make_board(name:&str)->Option<Board>{let(name,touch,w,h,rtc)=match name{
+ "waveshare-s3-touch-lcd7"=>("waveshare-s3-touch-lcd7",true,800,480,false),
+ "waveshare-s3-lcd7"=>("waveshare-s3-lcd7",false,800,480,false),
+ "waveshare-s3-touch-lcd7-external"=>("waveshare-s3-touch-lcd7-external",true,800,480,false),
+ "waveshare-s3-touch-lcd43"=>("waveshare-s3-touch-lcd43",true,800,480,false),
+ "waveshare-s3-lcd43"=>("waveshare-s3-lcd43",false,800,480,false),
+ "waveshare-s3-touch-lcd5"=>("waveshare-s3-touch-lcd5",true,800,480,true),
+ "waveshare-s3-lcd5"=>("waveshare-s3-lcd5",false,800,480,true),
+ "waveshare-s3-touch-lcd5-1024"=>("waveshare-s3-touch-lcd5-1024",true,1024,600,true),
+ "waveshare-s3-lcd5-1024"=>("waveshare-s3-lcd5-1024",false,1024,600,true),
+ "waveshare-s3-touch-lcd43b"=>("waveshare-s3-touch-lcd43b",true,800,480,true),
+ _=>return None};Some(Box::new(WaveshareCh422Rgb::configured(name,touch,w,h,rtc)))}
+struct WaveshareCh422Rgb{name:&'static str,touch_enabled:bool,width:u32,height:u32,rtc:Option<Arc<Mutex<Pcf85063State>>>,lcd_reset_wired:bool,lcd_reset_falls:u64,io:Arc<Mutex<Io>>,touch:Arc<Mutex<Gt911State>>,address:Arc<Mutex<u8>>,i2c:I2cBitBang,attached:bool,cycle:u64,levels:[bool;3],edges:Vec<BoardEdge>,reset_high:bool,reset_falls:u64,irq_drive:Option<bool>,frame:Vec<u16>,mapping:Option<[u8;16]>,frames:u64,version:u64,sd:Option<SpiSdCard>,present:bool,rejected_sd:u64}
 impl WaveshareCh422Rgb{
- fn new(name:&'static str,touch_enabled:bool)->Self{Self{name,touch_enabled,io:Arc::new(Mutex::new(Io::new())),touch:Arc::new(Mutex::new(Gt911State::new(800,480,HZ/100))),address:Arc::new(Mutex::new(0x5d)),i2c:I2cBitBang::new(),attached:false,cycle:0,levels:[true;3],edges:Vec::new(),reset_high:false,reset_falls:0,irq_drive:None,frame:vec![0;800*480],mapping:None,frames:0,version:0,sd:None,present:false,rejected_sd:0}}
- fn sync(&mut self){if !self.touch_enabled{return;}let(high,falls)={let io=self.io.lock().expect("CH422G");(io.level(1)==Some(true),io.falls[1])};if falls!=self.reset_falls{self.reset_falls=falls;*self.touch.lock().expect("GT911")=Gt911State::new(800,480,HZ/100);}
+ #[cfg(test)]fn new(name:&'static str,touch_enabled:bool)->Self{Self::configured(name,touch_enabled,800,480,false)}
+ fn configured(name:&'static str,touch_enabled:bool,width:u32,height:u32,rtc:bool)->Self{Self{name,touch_enabled,width,height,rtc:rtc.then(||Arc::new(Mutex::new(Pcf85063State::new(HZ)))),lcd_reset_wired:rtc,lcd_reset_falls:0,io:Arc::new(Mutex::new(Io::new())),touch:Arc::new(Mutex::new(Gt911State::new(width as u16,height as u16,HZ/100))),address:Arc::new(Mutex::new(0x5d)),i2c:I2cBitBang::new(),attached:false,cycle:0,levels:[true;3],edges:Vec::new(),reset_high:false,reset_falls:0,irq_drive:None,frame:vec![0;(width*height)as usize],mapping:None,frames:0,version:0,sd:None,present:false,rejected_sd:0}}
+ fn sync(&mut self){if self.lcd_reset_wired{let falls=self.io.lock().expect("CH422G").falls[3];if falls!=self.lcd_reset_falls{self.lcd_reset_falls=falls;self.frame.fill(0);self.version+=1;}}
+ if !self.touch_enabled{return;}let(high,falls)={let io=self.io.lock().expect("CH422G");(io.level(1)==Some(true),io.falls[1])};if falls!=self.reset_falls{self.reset_falls=falls;*self.touch.lock().expect("GT911")=Gt911State::new(self.width as u16,self.height as u16,HZ/100);}
  if high&&!self.reset_high{*self.address.lock().expect("GT address")=if self.irq_drive==Some(false){0x5d}else{0x14};}self.reset_high=high;let irq={let mut t=self.touch.lock().expect("GT911");t.powered=high;t.advance_to(self.cycle);!high||!t.ready};if irq!=self.levels[2]{self.levels[2]=irq;self.edges.push(BoardEdge{cycle:self.cycle,pin:4,level:irq});}}
- fn visible(&self)->bool{self.mapping.is_some()&&self.io.lock().expect("CH422G").level(2)==Some(true)}
+ fn lcd_released(&self)->bool{!self.lcd_reset_wired||self.io.lock().expect("CH422G").level(3)==Some(true)}
+ fn visible(&self)->bool{self.mapping.is_some()&&self.lcd_released()&&self.io.lock().expect("CH422G").level(2)==Some(true)}
 }
 impl BoardModel for WaveshareCh422Rgb{
  fn name(&self)->&'static str{self.name}
  fn uses_gpio_routes(&self)->bool{true}
- fn gpio_waveform_at(&mut self,c:u64,r:PinRoutes<'_>){self.cycle=c;self.irq_drive=r.software_output(4);let clock=r.software_output(9).unwrap_or(true);let data=self.i2c.drive(clock,r.software_output(8).unwrap_or(true));for(i,(pin,high))in[(8,data),(9,clock)].into_iter().enumerate(){if high!=self.levels[i]{self.levels[i]=high;self.edges.push(BoardEdge{cycle:c,pin,level:high});}}self.sync();}
+ fn gpio_waveform_at(&mut self,c:u64,r:PinRoutes<'_>){self.advance_to(c);let pins=LcdRgbPins{clock:if r.matrix_output(7,154){1<<7}else{0},hsync:if r.matrix_output(46,151){1<<46}else{0},vsync:if r.matrix_output(3,152){1<<3}else{0},enable:if r.matrix_output(5,150){1<<5}else{0},data:std::array::from_fn(|i|RGB.iter().filter(|&&pin|r.matrix_output(usize::from(pin),133+i as u32)).fold(0,|v,&pin|v|(1<<pin))),width:16};self.lcd_rgb_pins(pins);self.irq_drive=r.software_output(4);let clock=r.software_output(9).unwrap_or(true);let data=self.i2c.drive(clock,r.software_output(8).unwrap_or(true));for(i,(pin,high))in[(8,data),(9,clock)].into_iter().enumerate(){if high!=self.levels[i]{self.levels[i]=high;self.edges.push(BoardEdge{cycle:c,pin,level:high});}}self.sync();}
  fn lcd_rgb_pins(&mut self,p:LcdRgbPins){let mut valid=p.width==16&&p.clock&(1<<7)!=0&&p.hsync&(1<<46)!=0&&p.vsync&(1<<3)!=0&&p.enable&(1<<5)!=0;let mut map=[0;16];for(i,pad)in RGB.into_iter().enumerate(){if let Some(bit)=(0..16).find(|bit|p.data[*bit]&(1<<pad)!=0){map[i]=bit as u8;}else{valid=false;}}let next=valid.then_some(map);if next!=self.mapping{self.mapping=next;self.version+=1;}}
- fn lcd_frame(&mut self,w:u32,h:u32,bytes:&[u8]){let Some(map)=self.mapping else{return;};if(w,h)!=(800,480)||bytes.len()!=self.frame.len()*2{return;}for(d,s)in self.frame.iter_mut().zip(bytes.as_chunks::<2>().0){let v=u16::from_le_bytes(*s);*d=map.iter().enumerate().fold(0,|out,(bit,input)|out|(((v>>input)&1)<<bit));}self.frames+=1;self.version+=1;}
+ fn lcd_frame(&mut self,w:u32,h:u32,bytes:&[u8]){let Some(map)=self.mapping else{return;};if(w,h)!=(self.width,self.height)||bytes.len()!=self.frame.len()*2||!self.lcd_released(){return;}for(d,s)in self.frame.iter_mut().zip(bytes.as_chunks::<2>().0){let v=u16::from_le_bytes(*s);*d=map.iter().enumerate().fold(0,|out,(bit,input)|out|(((v>>input)&1)<<bit));}self.frames+=1;self.version+=1;}
  fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)>{if !self.attached{for at in ADDRESSES{self.i2c.attach(at,Box::new(IoPort::new(self.io.clone(),at)));}
+ if let Some(rtc)=&self.rtc{self.i2c.attach(0x51,Box::new(Pcf85063::new(rtc.clone())));}
  if self.touch_enabled{for at in[0x5d,0x14]{self.i2c.attach(at,Box::new(TouchPort{inner:Gt911::new(self.touch.clone()),io:self.io.clone(),at,address:self.address.clone()}));}}self.attached=true;}(0..2).flat_map(|b|self.i2c.controller_devices(Some((8,9))).into_iter().map(move|(a,d)|(b,a,d))).collect()}
- fn advance_to(&mut self,c:u64){self.cycle=c;self.sync();}
+ fn advance_to(&mut self,c:u64){self.cycle=c;if let Some(rtc)=&self.rtc{rtc.lock().expect("PCF85063").advance_to(c);}self.sync();}
  fn touch(&mut self,x:u16,y:u16,d:bool){if self.touch_enabled{self.touch.lock().expect("GT911").update(x,y,d);self.sync();}}
  fn take_edges(&mut self)->Vec<BoardEdge>{std::mem::take(&mut self.edges)}
  fn input_levels(&self)->Vec<(u8,bool)>{let mut x=vec![(0,true),(8,self.levels[0]),(9,self.levels[1])];if self.touch_enabled{x.push((4,self.levels[2]));}x}
@@ -34,10 +51,11 @@ impl BoardModel for WaveshareCh422Rgb{
  fn spi_transfer_qspi_pins(&mut self,_host:u8,p:SpiQspiPins,tx:&[u8],rx:usize)->Vec<u8>{let valid=self.present&&p.sclk&(1<<12)!=0&&p.data[0]&(1<<11)!=0&&!p.unsupported_mode&&!p.sio&&!p.clock_idle_high&&!p.clock_output_edge&&p.dummy_cycles==0&&p.command_bits==0&&p.address_bits==0&&p.data_bits.is_multiple_of(8)&&p.read_bits.is_multiple_of(8)&&[p.command_width,p.address_width,p.data_width,p.read_width].iter().all(|w|*w<=1);if !valid{self.rejected_sd+=1;return vec![255;rx];}let selected=self.io.lock().expect("CH422G").level(4)==Some(false);if let Some(card)=&mut self.sd{let reply=card.transfer(selected,tx,rx);if p.input[1]==Some(13){return reply;}}vec![255;rx]}
  fn attach_spi_sd_card(&mut self,image:Box<dyn SdStore>,config:SdCardConfig)->Result<String,String>{let card=SpiSdCard::new(image,config)?;let description=card.describe();self.sd=Some(card);self.present=true;Ok(description)}
  fn set_sd_card_present(&mut self,p:bool){if self.present!=p{if let Some(card)=&mut self.sd{card.power_cycle();}}self.present=p;}
- fn display(&self)->Option<(u32,u32,Vec<u16>,u64)>{Some((800,480,if self.visible(){self.frame.clone()}else{vec![0;self.frame.len()]},self.display_version()))}
+ fn display(&self)->Option<(u32,u32,Vec<u16>,u64)>{Some((self.width,self.height,if self.visible(){self.frame.clone()}else{vec![0;self.frame.len()]},self.display_version()))}
  fn display_version(&self)->u64{self.version.wrapping_add(self.io.lock().expect("CH422G").writes)}
  fn display_frames(&self)->u64{self.frames}
- fn report(&self)->String{format!("{} 800x480 exact RGB565 pin map; actual CH422G byte/address24/23/38/26 control subset; EX2 backlight EX1 GT911reset/IRQ4, strap5D/14 touch={}; SPI TFCLK12/MOSI11/MISO13 externalEX4 active-low; frames={} SDreject={}. EX3 LCD_RST series R20/R112 is NC/100R in retained schematics; optional link population and reset effect unverified. No CH32 MCU alias, nativeSDMMC, CH422 scan/sleep/input calibration, CAN/USB mux electrical effect, RS485, RF/antenna or complete factory/hardware acceptance.",self.name,self.touch_enabled,self.frames,self.rejected_sd)}
+ fn report(&self)->String{let routing={let io=self.io.lock().expect("CH422G");format!("mapping={:?} reset={:?} backlight={:?}",self.mapping,io.level(3),io.level(2))};format!("{} {}x{} exact RGB565 pin map; CH422G byte/address24/23/38/26 control subset; EX2 backlight EX1 GT911reset/IRQ4 strap5D/14 touch={}; SPI TFCLK12/MOSI11/MISO13 externalEX4 active-low; frames={} SDreject={}. {} PCF85063 calendar={} guest-cycle digital subset. {} No nativeSDMMC, CH422 scan/sleep/input calibration, optocoupler analog circuit, CAN/USB mux/RS485, RF or complete factory/hardware acceptance.",self.name,self.width,self.height,self.touch_enabled,self.frames,self.rejected_sd,if self.lcd_reset_wired{"EX3 LCD reset through populated R20=100R; held-low blocks frames and falling edge clears pixel memory."}else{"EX3 LCD_RST series R20/R112 optional NC/100R; population and reset effect unverified."},self.rtc.is_some(),routing)}
+
 }
 #[cfg(test)]mod tests{use super::*;
  fn write(d:&mut dyn I2cDevice,v:u8){assert!(d.start(false));assert!(d.write(v));assert!(!d.write(v));d.stop();}

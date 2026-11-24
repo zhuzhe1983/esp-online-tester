@@ -144,12 +144,19 @@ def main():
             return bool(set(all_listings) & {
                 'esp32-touch-lcd-3.5', 'thermal-45-camera-esp32-module',
                 'esp32-xx-basic-kit'})
+        if path.startswith('docs/evidence/waveshare-touch4-v4-runtime-'):
+            return 'esp32-s3-touch-lcd-4' in all_listings
+        if path.startswith('docs/platform/evidence/waveshare-final-'):
+            return args.final
         if path.startswith(('docs/evidence/waveshare-', 'docs/research/waveshare-', 'docs/platform/evidence/waveshare-')):
             return any(('waveshare-' + chip) in path for chip in chips) or 'store-inventory' in path
         if path == 'tools/platform-waveshare-test.mjs':
             # This source contains exact seven-profile P4 assertions. Include when
-            # its full P4 fixture selection is present, otherwise defer its file.
-            return sum(p.get('defaultFirmwareId') == 'waveshare-p4-rev3-idf-hello' for p in selected_products) == 7
+            # its full explicit example target set is present. A later audited
+            # factory default must not remove this diagnostic boot coverage.
+            fixture = next((f for f in obj(source, 'web/platform/catalog/firmwares.json')['items']
+                            if f['id'] == 'waveshare-p4-rev3-idf-hello'), None)
+            return bool(fixture and fixture.get('productIds')) and set(fixture['productIds']) <= all_product_ids
         return True
 
     args.output.mkdir(parents=True, exist_ok=True)

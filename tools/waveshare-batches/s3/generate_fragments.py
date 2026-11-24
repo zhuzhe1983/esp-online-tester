@@ -23,7 +23,10 @@ def source(s,sid,title,kind,archive=None,notes=''):
  if s.get('extractedFromArchive'):
   d.setdefault('revision',{}).update(containerSha256=s.get('sourceArchiveSha256',s.get('archiveSha256')),containerBytes=s.get('sourceArchiveBytes',s.get('archiveBytes')),member=s.get('sourceArchiveMember',s.get('path')))
   d['notes'] += ' 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。'
- if isinstance(s.get('archive'),dict):
+ if isinstance(s.get('archive'),dict) and 'containerSha256' in s['archive']:
+  d.setdefault('revision',{}).update(containerSha256=s['archive']['containerSha256'],containerBytes=s['archive']['containerBytes'],member=s['archive']['entry'])
+  d['notes'] += ' 原始来源字节属于已保存原包的精确成员；URL指向容器，成员与容器分别保留SHA256及大小，不冒称成员直接HTTP响应。'
+ elif isinstance(s.get('archive'),dict):
   d.setdefault('revision',{}).update(containerSha256=s['archive']['sha256'],containerBytes=s.get('archiveBytes'),member=s['archive']['entry'])
   d['notes'] += ' 此BIN的sha256/bytes属于明确ZIP成员；URL返回原包，原包哈希与成员路径见revision，未声称远程URL直接返回BIN。'
  if s.get('mediaType'):d['mediaType']=s['mediaType']

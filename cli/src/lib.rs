@@ -496,7 +496,7 @@ fn setup_s3(o: &Opts) -> esp32s3::Machine {
     }
     if flash_mb != 8 { m.bus.set_flash_size(flash_mb << 20); }
     if psram_mb != 2 { m.bus.set_psram_size(psram_mb << 20).unwrap(); }
-    if o.flash_octal || esp32s3::board::waveshare_rgb_matrix::memory_mib(m.bus.board.name()).is_some() { m.bus.set_flash_octal(true); }
+    if o.flash_octal || esp32s3::board::waveshare_rgb_matrix::memory_mib(m.bus.board.name()).is_some() || esp32s3::board::waveshare_core::variant(m.bus.board.name()).is_some_and(|v|v.flash_octal()) { m.bus.set_flash_octal(true); }
     if let Some(p) = &o.efuse_regs {
         let txt = std::fs::read_to_string(p).expect("efuse file");
         let mut n = 0;

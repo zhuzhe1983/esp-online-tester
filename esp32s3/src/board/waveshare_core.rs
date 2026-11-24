@@ -1,5 +1,6 @@
-//! Four exact Waveshare S3 core boards; source manifest and native reproduction:
-//! docs/evidence/waveshare-s3-core-2026-11-23. No display or invented peripherals.
+//! Sixteen exact Waveshare S3 core SKU profiles; source manifest and native reproduction:
+//! docs/evidence/waveshare-s3-core-2026-11-23 and docs/research/waveshare-s3-industrial-2026-11-24/batch-04.
+//! No display or invented peripherals. Header options do not change electrical routing.
 //! Zero: official BlinkRGB/Arduino wire order GRB, GPIO21, FH4R2 (4F/2P).
 //! Pico and DEV-KIT-N8R8: official rgb.py explicitly selects RGB wire order;
 //! schematic GPIO21 / GPIO38 respectively, 16F/2P and 8F/8P.
@@ -12,15 +13,28 @@
 use esp_soc::{board::{Board,BoardModel},devices::Ws2812Chain,pins::PinRoutes};
 
 #[derive(Clone,Copy,Debug,Eq,PartialEq)]
-pub enum Variant {Zero,Pico,Nano,DevKitN8R8}
+pub enum Variant {Zero,ZeroM,ZeroN8R8,ZeroN8R8M,Pico,PicoM,Nano,NanoM,DevKitN8R8,DevKitN8R8M,DevKitN16R8,DevKitN16R8M,DevKitN32R16V,DevKitN32R16VM,DevKitN16R8U,DevKitN16R8UM}
 impl Variant {
-    pub fn name(self)->&'static str {match self {Self::Zero=>"waveshare-s3-zero",Self::Pico=>"waveshare-s3-pico",Self::Nano=>"waveshare-s3-nano",Self::DevKitN8R8=>"waveshare-s3-devkit-n8r8"}}
-    pub fn memory_mib(self)->(usize,usize) {match self {Self::Zero=>(4,2),Self::Pico=>(16,2),Self::Nano=>(16,8),Self::DevKitN8R8=>(8,8)}}
-    pub fn boot(self)->Option<u8> {(self!=Self::Nano).then_some(0)}
-    fn addressable_pin(self)->Option<u8> {match self {Self::Zero|Self::Pico=>Some(21),Self::DevKitN8R8=>Some(38),Self::Nano=>None}}
-    fn rgb_wire(self)->bool {matches!(self,Self::Pico|Self::DevKitN8R8)}
+    pub const ALL:[Self;16]=[Self::Zero,Self::ZeroM,Self::ZeroN8R8,Self::ZeroN8R8M,Self::Pico,Self::PicoM,Self::Nano,Self::NanoM,Self::DevKitN8R8,Self::DevKitN8R8M,Self::DevKitN16R8,Self::DevKitN16R8M,Self::DevKitN32R16V,Self::DevKitN32R16VM,Self::DevKitN16R8U,Self::DevKitN16R8UM];
+    pub fn name(self)->&'static str {match self {
+        Self::Zero=>"waveshare-s3-zero",Self::ZeroM=>"waveshare-s3-zero-m",Self::ZeroN8R8=>"waveshare-s3-zero-n8r8",Self::ZeroN8R8M=>"waveshare-s3-zero-n8r8-m",
+        Self::Pico=>"waveshare-s3-pico",Self::PicoM=>"waveshare-s3-pico-m",Self::Nano=>"waveshare-s3-nano",Self::NanoM=>"waveshare-s3-nano-m",
+        Self::DevKitN8R8=>"waveshare-s3-devkit-n8r8",Self::DevKitN8R8M=>"waveshare-s3-devkit-n8r8-m",Self::DevKitN16R8=>"waveshare-s3-devkit-n16r8",Self::DevKitN16R8M=>"waveshare-s3-devkit-n16r8-m",
+        Self::DevKitN32R16V=>"waveshare-s3-devkit-n32r16v",Self::DevKitN32R16VM=>"waveshare-s3-devkit-n32r16v-m",Self::DevKitN16R8U=>"waveshare-s3-devkit-n16r8-u",Self::DevKitN16R8UM=>"waveshare-s3-devkit-n16r8-um",
+    }}
+    pub fn memory_mib(self)->(usize,usize) {match self {
+        Self::Zero|Self::ZeroM=>(4,2),Self::ZeroN8R8|Self::ZeroN8R8M|Self::DevKitN8R8|Self::DevKitN8R8M=>(8,8),Self::Pico|Self::PicoM=>(16,2),
+        Self::DevKitN32R16V|Self::DevKitN32R16VM=>(32,16),_ =>(16,8),
+    }}
+    /// Exact WROOM-2 N32R16V option: SPI0/1 OPI identity and FLASH_TYPE eFuse.
+    /// Other variants retain their documented QSPI flash; PSRAM size is separate.
+    pub fn flash_octal(self)->bool {matches!(self,Self::DevKitN32R16V|Self::DevKitN32R16VM)}
+    pub fn nano(self)->bool {matches!(self,Self::Nano|Self::NanoM)}
+    pub fn boot(self)->Option<u8> {(!self.nano()).then_some(0)}
+    fn addressable_pin(self)->Option<u8> {match self {Self::Zero|Self::ZeroM|Self::ZeroN8R8|Self::ZeroN8R8M|Self::Pico|Self::PicoM=>Some(21),Self::Nano|Self::NanoM=>None,_=>Some(38)}}
+    fn rgb_wire(self)->bool {!matches!(self,Self::Zero|Self::ZeroM|Self::ZeroN8R8|Self::ZeroN8R8M|Self::Nano|Self::NanoM)}
 }
-pub fn variant(name:&str)->Option<Variant> {[Variant::Zero,Variant::Pico,Variant::Nano,Variant::DevKitN8R8].into_iter().find(|v|v.name()==name)}
+pub fn variant(name:&str)->Option<Variant> {Variant::ALL.into_iter().find(|v|v.name()==name)}
 pub fn make_board(name:&str)->Option<Board> {variant(name).map(|v|Box::new(WaveshareCore::new(v))as Board)}
 
 pub struct WaveshareCore {variant:Variant,chain:Ws2812Chain,leds:[[u8;3];2],version:u64,gpio:[Option<bool>;4]}
@@ -43,19 +57,19 @@ impl BoardModel for WaveshareCore {
     fn uses_gpio_edges(&self)->bool {false}
     fn uses_gpio_routes(&self)->bool {true}
     fn uses_gpio_waveform(&self)->bool {self.variant.addressable_pin().is_some()}
-    fn uses_gpio_pwm(&self)->bool {self.variant==Variant::Nano}
+    fn uses_gpio_pwm(&self)->bool {self.variant.nano()}
     fn gpio_waveform_at(&mut self,cycle:u64,p:PinRoutes<'_>) {
         if let Some(pin)=self.variant.addressable_pin() {let level=p.software_output(pin);self.chain.gpio_drive(cycle,level.is_some(),level.unwrap_or(false));self.sync_chain();}
         else {self.gpio=[46,0,45,48].map(|pin|p.software_output(pin));self.sync_nano(&|_|None);}
     }
-    fn gpio_pwm_at(&mut self,_cycle:u64,pwm:&dyn Fn(u8)->Option<(f64,u32)>) {if self.variant==Variant::Nano {self.sync_nano(pwm);}}
+    fn gpio_pwm_at(&mut self,_cycle:u64,pwm:&dyn Fn(u8)->Option<(f64,u32)>) {if self.variant.nano() {self.sync_nano(pwm);}}
     fn next_deadline(&self)->Option<u64> {self.variant.addressable_pin().and_then(|_|self.chain.gpio_deadline())}
     fn advance_to(&mut self,cycle:u64) {if self.variant.addressable_pin().is_some(){self.chain.advance_gpio(cycle);self.sync_chain();}}
     fn rmt_frame(&mut self,pin:u8,bits:&[bool]) {if self.variant.addressable_pin()==Some(pin){self.chain.from_bits(bits);self.sync_chain();}}
     fn input_levels(&self)->Vec<(u8,bool)> {self.variant.boot().into_iter().map(|pin|(pin,true)).collect()}
     fn named_pin(&self,id:&str)->Option<u8> {match id {"boot"|"btn"|"btn1"=>self.variant.boot(),_=>None}}
-    fn leds(&self)->Option<(&[[u8;3]],u64)> {Some((&self.leds[..if self.variant==Variant::Nano{2}else{1}],self.version))}
-    fn report(&self)->String {let (flash,psram)=self.variant.memory_mib();format!("[{}] {flash}F/{psram}P boot={:?} ledUpdates={} rgb={:?} wireFrames={} addressablePin={:?} RGBwire={} discreteRGB={} radio/USBhub/analog=unmodeled",self.name(),self.variant.boot(),self.version,self.leds().unwrap().0,self.chain.updates,self.variant.addressable_pin(),self.variant.rgb_wire(),self.variant==Variant::Nano)}
+    fn leds(&self)->Option<(&[[u8;3]],u64)> {Some((&self.leds[..if self.variant.nano(){2}else{1}],self.version))}
+    fn report(&self)->String {let (flash,psram)=self.variant.memory_mib();format!("[{}] {flash}F/{psram}P boot={:?} ledUpdates={} rgb={:?} wireFrames={} addressablePin={:?} RGBwire={} discreteRGB={} radio/USBhub/analog=unmodeled",self.name(),self.variant.boot(),self.version,self.leds().unwrap().0,self.chain.updates,self.variant.addressable_pin(),self.variant.rgb_wire(),self.variant.nano())}
 }
 
 #[cfg(test)]
@@ -69,7 +83,7 @@ mod tests {
             b.rmt_frame(pin+1,&bits(&[0x12,0x34,0x56]));assert_eq!(b.version,0);b.rmt_frame(pin,&[true;23]);assert_eq!(b.version,0);
             b.rmt_frame(pin,&bits(&[0x12,0x34,0x56]));assert_eq!(b.leds().unwrap(),(&[rgb][..],1));
         }
-        let mut nano=WaveshareCore::new(Variant::Nano);assert_eq!(nano.variant.memory_mib(),(16,8));assert_eq!(nano.named_pin("boot"),None);assert!(nano.input_levels().is_empty());nano.rmt_frame(21,&[true;24]);assert_eq!(nano.version,0);assert!(make_board("waveshare-s3-zero-n8r8").is_none());
+        let mut nano=WaveshareCore::new(Variant::Nano);assert_eq!(nano.variant.memory_mib(),(16,8));assert_eq!(nano.named_pin("boot"),None);assert!(nano.input_levels().is_empty());nano.rmt_frame(21,&[true;24]);assert_eq!(nano.version,0);assert!(make_board("waveshare-s3-zero-n32r16v").is_none());
     }
     #[test]
     fn nano_discrete_leds_use_physical_enable_mux_inversion_and_pwm() {

@@ -61,7 +61,8 @@ def prepare(cache, family, model, cad, drawing, photos, config):
     for index, photo in enumerate(photos):
         retain(folder / photo, f'reference-{index}{Path(photo).suffix}', f'photo-{index}', 'manufacturer-photograph')
     special = config['parts']
-    consumed = {i for p in special for i in p['indices']}
+    omitted = config.get('omittedIndices', [])
+    consumed = {i for p in special for i in p['indices']} | set(omitted)
     parts = []
     for p in special:
         record = {k: v for k, v in p.items() if k != 'indices'}
@@ -81,7 +82,7 @@ def prepare(cache, family, model, cad, drawing, photos, config):
     n = inspection['nativeComponents']
     plan = {'schemaVersion': 1, 'id': model, 'method': 'official-cad', 'sources': sources,
             'sourceTopologyCounts': {'source.stp.gz': n},
-            'sourceCoverage': {'source.stp.gz': {'includedIndices': list(range(n)), 'omittedIndices': []}},
+            'sourceCoverage': {'source.stp.gz': {'includedIndices': [i for i in range(n) if i not in omitted], 'omittedIndices': omitted}},
             'parts': parts, 'derivedParts': [],
             'materialBasis': 'Native CAD colors where available; optical black follows the retained exact-family photograph. Grey means source material/color is unknown, not a measured finish.',
             'assemblyNotes': 'Original millimetre coordinates and all source topology retained without scaling. Inspection separation is illustrative, not a mechanical travel or assembly fit claim.',

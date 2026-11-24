@@ -1,0 +1,3022 @@
+{
+  "listingId": "esp32-s3-amoled-1.91",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-v2",
+      "name": "Waveshare ESP32-S3-AMOLED-1.91 (Non-Touch, Pin Header-Free Version) · V2 · native SDMMC",
+      "manufacturer": "Waveshare",
+      "sku": "28872",
+      "chip": "esp32s3",
+      "hardwareRevision": "Active official VersionControl_V2 branch; exact retailSKU shipping revision unspecified",
+      "summary": "1.91英寸536×240横向AMOLED，16MiB Flash/8MiB PSRAM；四SKU分别保留触摸/非触和焊接排针差异。原厂V1 SPI与V2原生SD接线分为明确硬件配置。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-amoled-1-91-v2.json",
+      "family": {
+        "id": "waveshare-esp32-s3-amoled-1-91",
+        "name": "Waveshare ESP32-S3-AMOLED-1.91"
+      },
+      "runtime": {
+        "board": "waveshare-s3-amoled191-v2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 536,
+        "height": 240,
+        "type": "AMOLED",
+        "controller": "RM67162-linked / SH8601-named BSP",
+        "bus": "QSPI RGB565",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 9
+            },
+            {
+              "name": "CMD",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 8
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact source bus; prepared64MiB FAT32 media is a default simulation image, not a claim that physical media is included."
+        }
+      ],
+      "limitations": [
+        "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+        "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+        "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+        "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+        "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-AMOLED-1.91",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：03_Playablity/02_examples/RGBpalette/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/RGBpalette/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：03_Playablity/02_examples/SliderControl/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/SliderControl/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-AMOLED-1.91.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AMOLED-1.91/ESP32-S3-AMOLED-1.91.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/RM67162.pdf",
+          "url": "https://files.waveshare.com/wiki/common/RM67162.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-amoled-1-91/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-amoled-1-91-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-v1",
+      "name": "Waveshare ESP32-S3-AMOLED-1.91 (Non-Touch, Pin Header-Free Version) · V1 · legacy SPI TF",
+      "manufacturer": "Waveshare",
+      "sku": "28872",
+      "chip": "esp32s3",
+      "hardwareRevision": "Legacy schematic/#else SPI branch; current factoryBIN usesV2 and is not a V1 default",
+      "summary": "1.91英寸536×240横向AMOLED，16MiB Flash/8MiB PSRAM；四SKU分别保留触摸/非触和焊接排针差异。原厂V1 SPI与V2原生SD接线分为明确硬件配置。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-amoled-1-91-v1.json",
+      "family": {
+        "id": "waveshare-esp32-s3-amoled-1-91",
+        "name": "Waveshare ESP32-S3-AMOLED-1.91"
+      },
+      "runtime": {
+        "board": "waveshare-s3-amoled191-v1",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 536,
+        "height": 240,
+        "type": "AMOLED",
+        "controller": "RM67162-linked / SH8601-named BSP",
+        "bus": "QSPI RGB565",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 47
+            },
+            {
+              "name": "MOSI",
+              "gpio": 42
+            },
+            {
+              "name": "MISO",
+              "gpio": 8
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact source bus; prepared64MiB FAT32 media is a default simulation image, not a claim that physical media is included."
+        }
+      ],
+      "limitations": [
+        "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+        "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+        "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+        "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+        "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-AMOLED-1.91",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：03_Playablity/02_examples/RGBpalette/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/RGBpalette/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：03_Playablity/02_examples/SliderControl/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/SliderControl/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-AMOLED-1.91.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AMOLED-1.91/ESP32-S3-AMOLED-1.91.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/RM67162.pdf",
+          "url": "https://files.waveshare.com/wiki/common/RM67162.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-amoled-1-91/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-sku-28873-v2",
+      "name": "Waveshare ESP32-S3-AMOLED-1.91-M (Non-Touch Version with Pin Headers) · V2 · native SDMMC",
+      "manufacturer": "Waveshare",
+      "sku": "28873",
+      "chip": "esp32s3",
+      "hardwareRevision": "Active official VersionControl_V2 branch; exact retailSKU shipping revision unspecified",
+      "summary": "1.91英寸536×240横向AMOLED，16MiB Flash/8MiB PSRAM；四SKU分别保留触摸/非触和焊接排针差异。原厂V1 SPI与V2原生SD接线分为明确硬件配置。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-amoled-1-91-sku-28873-v2.json",
+      "family": {
+        "id": "waveshare-esp32-s3-amoled-1-91",
+        "name": "Waveshare ESP32-S3-AMOLED-1.91"
+      },
+      "runtime": {
+        "board": "waveshare-s3-amoled191-v2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 536,
+        "height": 240,
+        "type": "AMOLED",
+        "controller": "RM67162-linked / SH8601-named BSP",
+        "bus": "QSPI RGB565",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 9
+            },
+            {
+              "name": "CMD",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 8
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact source bus; prepared64MiB FAT32 media is a default simulation image, not a claim that physical media is included."
+        }
+      ],
+      "limitations": [
+        "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+        "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+        "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+        "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+        "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-AMOLED-1.91",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：03_Playablity/02_examples/RGBpalette/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/RGBpalette/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：03_Playablity/02_examples/SliderControl/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/SliderControl/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-AMOLED-1.91.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AMOLED-1.91/ESP32-S3-AMOLED-1.91.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/RM67162.pdf",
+          "url": "https://files.waveshare.com/wiki/common/RM67162.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-amoled-1-91-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-amoled-1-91-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-sku-28873-v1",
+      "name": "Waveshare ESP32-S3-AMOLED-1.91-M (Non-Touch Version with Pin Headers) · V1 · legacy SPI TF",
+      "manufacturer": "Waveshare",
+      "sku": "28873",
+      "chip": "esp32s3",
+      "hardwareRevision": "Legacy schematic/#else SPI branch; current factoryBIN usesV2 and is not a V1 default",
+      "summary": "1.91英寸536×240横向AMOLED，16MiB Flash/8MiB PSRAM；四SKU分别保留触摸/非触和焊接排针差异。原厂V1 SPI与V2原生SD接线分为明确硬件配置。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-amoled-1-91-sku-28873-v1.json",
+      "family": {
+        "id": "waveshare-esp32-s3-amoled-1-91",
+        "name": "Waveshare ESP32-S3-AMOLED-1.91"
+      },
+      "runtime": {
+        "board": "waveshare-s3-amoled191-v1",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 536,
+        "height": 240,
+        "type": "AMOLED",
+        "controller": "RM67162-linked / SH8601-named BSP",
+        "bus": "QSPI RGB565",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 47
+            },
+            {
+              "name": "MOSI",
+              "gpio": 42
+            },
+            {
+              "name": "MISO",
+              "gpio": 8
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact source bus; prepared64MiB FAT32 media is a default simulation image, not a claim that physical media is included."
+        }
+      ],
+      "limitations": [
+        "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+        "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+        "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+        "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+        "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-AMOLED-1.91",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：03_Playablity/02_examples/RGBpalette/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/RGBpalette/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：03_Playablity/02_examples/SliderControl/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/SliderControl/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-AMOLED-1.91.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AMOLED-1.91/ESP32-S3-AMOLED-1.91.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/RM67162.pdf",
+          "url": "https://files.waveshare.com/wiki/common/RM67162.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-amoled-1-91-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-sku-28596-v2",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.91 (Touch-Enabled, Pin Header-Free Version) · V2 · native SDMMC",
+      "manufacturer": "Waveshare",
+      "sku": "28596",
+      "chip": "esp32s3",
+      "hardwareRevision": "Active official VersionControl_V2 branch; exact retailSKU shipping revision unspecified",
+      "summary": "1.91英寸536×240横向AMOLED，16MiB Flash/8MiB PSRAM；四SKU分别保留触摸/非触和焊接排针差异。原厂V1 SPI与V2原生SD接线分为明确硬件配置。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-amoled-1-91-sku-28596-v2.json",
+      "family": {
+        "id": "waveshare-esp32-s3-amoled-1-91",
+        "name": "Waveshare ESP32-S3-AMOLED-1.91"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled191-v2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 536,
+        "height": 240,
+        "type": "AMOLED",
+        "controller": "RM67162-linked / SH8601-named BSP",
+        "bus": "QSPI RGB565",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 9
+            },
+            {
+              "name": "CMD",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 8
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact source bus; prepared64MiB FAT32 media is a default simulation image, not a claim that physical media is included."
+        }
+      ],
+      "limitations": [
+        "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+        "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+        "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+        "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+        "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-AMOLED-1.91",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：03_Playablity/02_examples/RGBpalette/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/RGBpalette/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：03_Playablity/02_examples/SliderControl/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/SliderControl/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-AMOLED-1.91.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AMOLED-1.91/ESP32-S3-AMOLED-1.91.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/RM67162.pdf",
+          "url": "https://files.waveshare.com/wiki/common/RM67162.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-91/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-amoled-1-91-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-sku-28596-v1",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.91 (Touch-Enabled, Pin Header-Free Version) · V1 · legacy SPI TF",
+      "manufacturer": "Waveshare",
+      "sku": "28596",
+      "chip": "esp32s3",
+      "hardwareRevision": "Legacy schematic/#else SPI branch; current factoryBIN usesV2 and is not a V1 default",
+      "summary": "1.91英寸536×240横向AMOLED，16MiB Flash/8MiB PSRAM；四SKU分别保留触摸/非触和焊接排针差异。原厂V1 SPI与V2原生SD接线分为明确硬件配置。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-amoled-1-91-sku-28596-v1.json",
+      "family": {
+        "id": "waveshare-esp32-s3-amoled-1-91",
+        "name": "Waveshare ESP32-S3-AMOLED-1.91"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled191-v1",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 536,
+        "height": 240,
+        "type": "AMOLED",
+        "controller": "RM67162-linked / SH8601-named BSP",
+        "bus": "QSPI RGB565",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 47
+            },
+            {
+              "name": "MOSI",
+              "gpio": 42
+            },
+            {
+              "name": "MISO",
+              "gpio": 8
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact source bus; prepared64MiB FAT32 media is a default simulation image, not a claim that physical media is included."
+        }
+      ],
+      "limitations": [
+        "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+        "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+        "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+        "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+        "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-AMOLED-1.91",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：03_Playablity/02_examples/RGBpalette/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/RGBpalette/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：03_Playablity/02_examples/SliderControl/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/SliderControl/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-AMOLED-1.91.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AMOLED-1.91/ESP32-S3-AMOLED-1.91.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/RM67162.pdf",
+          "url": "https://files.waveshare.com/wiki/common/RM67162.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-91/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-sku-28871-v2",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.91-M (Touch-Enabled Version with Pin Headers) · V2 · native SDMMC",
+      "manufacturer": "Waveshare",
+      "sku": "28871",
+      "chip": "esp32s3",
+      "hardwareRevision": "Active official VersionControl_V2 branch; exact retailSKU shipping revision unspecified",
+      "summary": "1.91英寸536×240横向AMOLED，16MiB Flash/8MiB PSRAM；四SKU分别保留触摸/非触和焊接排针差异。原厂V1 SPI与V2原生SD接线分为明确硬件配置。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-amoled-1-91-sku-28871-v2.json",
+      "family": {
+        "id": "waveshare-esp32-s3-amoled-1-91",
+        "name": "Waveshare ESP32-S3-AMOLED-1.91"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled191-v2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 536,
+        "height": 240,
+        "type": "AMOLED",
+        "controller": "RM67162-linked / SH8601-named BSP",
+        "bus": "QSPI RGB565",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 9
+            },
+            {
+              "name": "CMD",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 8
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact source bus; prepared64MiB FAT32 media is a default simulation image, not a claim that physical media is included."
+        }
+      ],
+      "limitations": [
+        "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+        "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+        "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+        "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+        "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-AMOLED-1.91",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：03_Playablity/02_examples/RGBpalette/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/RGBpalette/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：03_Playablity/02_examples/SliderControl/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/SliderControl/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-AMOLED-1.91.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AMOLED-1.91/ESP32-S3-AMOLED-1.91.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/RM67162.pdf",
+          "url": "https://files.waveshare.com/wiki/common/RM67162.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-91-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-amoled-1-91-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-sku-28871-v1",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.91-M (Touch-Enabled Version with Pin Headers) · V1 · legacy SPI TF",
+      "manufacturer": "Waveshare",
+      "sku": "28871",
+      "chip": "esp32s3",
+      "hardwareRevision": "Legacy schematic/#else SPI branch; current factoryBIN usesV2 and is not a V1 default",
+      "summary": "1.91英寸536×240横向AMOLED，16MiB Flash/8MiB PSRAM；四SKU分别保留触摸/非触和焊接排针差异。原厂V1 SPI与V2原生SD接线分为明确硬件配置。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-amoled-1-91-sku-28871-v1.json",
+      "family": {
+        "id": "waveshare-esp32-s3-amoled-1-91",
+        "name": "Waveshare ESP32-S3-AMOLED-1.91"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled191-v1",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 536,
+        "height": 240,
+        "type": "AMOLED",
+        "controller": "RM67162-linked / SH8601-named BSP",
+        "bus": "QSPI RGB565",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 47
+            },
+            {
+              "name": "MOSI",
+              "gpio": 42
+            },
+            {
+              "name": "MISO",
+              "gpio": 8
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact source bus; prepared64MiB FAT32 media is a default simulation image, not a claim that physical media is included."
+        }
+      ],
+      "limitations": [
+        "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+        "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+        "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+        "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+        "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-AMOLED-1.91",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：03_Playablity/02_examples/RGBpalette/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/RGBpalette/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：03_Playablity/02_examples/SliderControl/Display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/03_Playablity/02_examples/SliderControl/Display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CHANGELOG.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/esp_lcd_sh8601.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/include/esp_lcd_sh8601.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_lcd_sh8601/license.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/components/user_bsp/user_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/example_qspi_with_ram.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/02_Example/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-AMOLED-1.91.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AMOLED-1.91/ESP32-S3-AMOLED-1.91.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/RM67162.pdf",
+          "url": "https://files.waveshare.com/wiki/common/RM67162.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-91-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-factory",
+      "name": "ESP32-S3-AMOLED-1.91_FactoryOnly_20241111.bin",
+      "productIds": [
+        "waveshare-esp32-s3-amoled-1-91-v2",
+        "waveshare-esp32-s3-amoled-1-91-sku-28873-v2",
+        "waveshare-esp32-s3-amoled-1-91-sku-28596-v2",
+        "waveshare-esp32-s3-amoled-1-91-sku-28871-v2"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/ESP32-S3-AMOLED-1.91_FactoryOnly_20241111.bin",
+        "sha256": "913a254bb4f7b52a11fe7afff0708364da86fa7711d1925f1352cb69e0c5c234",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-AMOLED-1.91_FactoryOnly_20241111",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/ESP32-S3-AMOLED-1.91_FactoryOnly_20241111.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原厂固定e134d305的FactoryOnly完整S3镜像，README明确恢复用途。四个电气配置都保留5秒原图观察：536×240/45帧/17色早期绿屏与FPS。V2实际挂载64MB SIMSD；当前镜像使用V2单线TF，V1实测9次SD超时、无卡读，故不列为V1可兼容默认。并未将绿底/FPS误报完整厂测主页或触摸验收。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-amoled-1-91-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-amoled-1-91-factory-watch",
+      "name": "ESP32-S3-AMOLED-1.91_FactoryOnly_20241111.bin",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-AMOLED-1.91",
+      "metadataUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+      "releaseUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-amoled-1.91.htm",
+      "version": "e134d3055101d2751e93124417e132e0c01af8a3",
+      "checkedAt": "2026-11-23T16:51:56Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-AMOLED-1.91_FactoryOnly_20241111.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-AMOLED-1.91/e134d3055101d2751e93124417e132e0c01af8a3/firmware/ESP32-S3-AMOLED-1.91_FactoryOnly_20241111.bin",
+          "sha256": "913a254bb4f7b52a11fe7afff0708364da86fa7711d1925f1352cb69e0c5c234",
+          "bytes": 2927584,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-amoled-1-91-v2",
+          "waveshare-esp32-s3-amoled-1-91-sku-28873-v2",
+          "waveshare-esp32-s3-amoled-1-91-sku-28596-v2",
+          "waveshare-esp32-s3-amoled-1-91-sku-28871-v2"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-amoled-1-91-v2.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-amoled-1-91-v1.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-amoled-1-91-sku-28873-v2.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-amoled-1-91-sku-28873-v1.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-amoled-1-91-sku-28596-v2.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-amoled-1-91-sku-28596-v1.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-amoled-1-91-sku-28871-v2.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-amoled-1-91-sku-28871-v1.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-amoled191-v2": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-amoled191-v1": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-touch-amoled191-v2": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-touch-amoled191-v1": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "RM-linked独立MADCTR逆MV约束、F0参考、两像素GRAM、8位亮度、错误线/交换轴拒绝，不复用CO5300或SH8601身份。",
+    "FT3168真实坐标转换rawX=240-y/rawY=x、RST17共享复位、非触无38h、未知ID保持NACK。",
+    "V1实际SPI CMD0/R1、错误MISO/双CS负例与V2 SDMMC互斥；两V2原厂ROM实际SD挂载。"
+  ],
+  "limitations": [
+    "官方driver名SH8601与所链接RM67162数据表不一致，板级只实现明确原BSP数字子集，真实die/OTP身份、模拟gamma/扫描和物理方向校准仍未知。",
+    "RM数据表MV=1正常坐标；交换轴与RSMX/RSMY/保留位组合未实现时拒绝显示，不能借用CO5300语义。",
+    "V1/SPI旧接线有官方原理图与条件分支，但尚无匹配V1的完整原厂BIN。当前V2原图在V1的负向执行只用于记录不兼容，不能作为V1默认。",
+    "唯一nativeCAD为非触-M；无排针SKU明确删除两个原排针source2/3，触摸玻璃由精确28.5×59.6尺寸派生。改版内部布置、触摸FPC/胶层、排针配件与机械插接仍未验收。",
+    "真实原图目前仅早期绿底+FPS，RF、IMU完整自检、SD文件应用和完整UI/触摸未验收；simulationVerified保持false。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

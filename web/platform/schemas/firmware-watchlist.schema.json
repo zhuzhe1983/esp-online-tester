@@ -83,27 +83,63 @@
             "type": "string",
             "maxLength": 160,
             "pattern": "^\\^.*\\$$"
+          },
+          "assets": {
+            "type": "array",
+            "maxItems": 8
           }
         },
         "allOf": [
           {
-            "if": { "required": ["metadataProvider"], "properties": { "metadataProvider": { "const": "manual" } } },
-            "then": {
-              "required": ["monitoringNote"],
+            "if": {
+              "required": [
+                "metadataProvider"
+              ],
               "properties": {
-                "monitoringNote": { "type": "string", "minLength": 20 },
-                "catalogTargets": { "maxItems": 0 },
+                "metadataProvider": {
+                  "const": "manual"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "monitoringNote"
+              ],
+              "properties": {
+                "monitoringNote": {
+                  "type": "string",
+                  "minLength": 20
+                },
+                "catalogTargets": {
+                  "maxItems": 0
+                },
                 "assetMetadata": false,
                 "metadataAssetNamePattern": false
               }
             }
           },
           {
-            "if": { "required": ["metadataAssetNamePattern"] },
+            "if": {
+              "required": [
+                "metadataAssetNamePattern"
+              ]
+            },
             "then": {
               "properties": {
-                "catalogTargets": { "maxItems": 0 },
-                "compatibility": { "type": "object", "required": ["status"], "properties": { "status": { "const": "reference-only" } } }
+                "catalogTargets": {
+                  "maxItems": 0
+                },
+                "compatibility": {
+                  "type": "object",
+                  "required": [
+                    "status"
+                  ],
+                  "properties": {
+                    "status": {
+                      "const": "reference-only"
+                    }
+                  }
+                }
               }
             }
           }

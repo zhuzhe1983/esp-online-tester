@@ -92,6 +92,7 @@ fn factory(variant: TcaRgbVariant) {
         TcaRgbVariant::TouchLcd28B => ("ESP32-S3-Touch-LCD-2.8B", "ESP32-S3-Touch-LCD-2.8B", "ESP32-S3-Touch-LCD-2.8B_FactoryOnly_20241025.bin"),
         TcaRgbVariant::Lcd28C => ("ESP32-S3-LCD-2.8C", "ESP32-S3-Touch-LCD-2.8C", "ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin"),
         TcaRgbVariant::TouchLcd28C => ("ESP32-S3-Touch-LCD-2.8C", "ESP32-S3-Touch-LCD-2.8C", "ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin"),
+        TcaRgbVariant::Driver | TcaRgbVariant::Driver21 | TcaRgbVariant::Driver28 | TcaRgbVariant::Driver4 => panic!("Separate LCD Driver board has no complete factory image in this six-board SD fixture"),
     };
     let source = std::env::var("ESP32SIM_WAVESHARE_RGB_SOURCES").expect("pinned official image cache");
     let rom = std::env::var("ESP32SIM_ROM_DIR").expect("original S3 ROM");

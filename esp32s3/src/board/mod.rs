@@ -71,6 +71,9 @@ mod waveshare_lcd7b;
 mod waveshare_serial_rgb;
 mod waveshare_knob18;
 mod waveshare_lcd2;
+mod waveshare_lcd147_plain;
+mod waveshare_amoled191;
+mod waveshare_round_tca;
 mod waveshare_amoled_compact;
 mod waveshare_small_spi;
 mod waveshare_lcd147;
@@ -87,6 +90,8 @@ pub mod waveshare_rgb_matrix;
 pub mod waveshare_thermal;
 mod waveshare_tail_spi;
 mod waveshare_s3_geek;
+mod waveshare_s3_cellular;
+mod waveshare_touch4_v4;
 mod waveshare_matrix8;
 mod waveshare_ch422_rgb;
 pub mod waveshare_epaper133;
@@ -125,9 +130,18 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-s3-touch-amoled143-co5300" => Some(Box::new(waveshare_amoled_compact::WaveshareCompact::new(waveshare_amoled_compact::CompactVariant::Amoled143Co5300))),
         "waveshare-s3-touch-amoled18-v1" => Some(Box::new(waveshare_amoled_compact::WaveshareCompact::new(waveshare_amoled_compact::CompactVariant::Amoled18V1))),
         "waveshare-s3-touch-amoled18-v2" => Some(Box::new(waveshare_amoled_compact::WaveshareCompact::new(waveshare_amoled_compact::CompactVariant::Amoled18V2))),
+        "waveshare-s3-lcd147"=>Some(Box::new(waveshare_lcd147_plain::WaveshareLcd147Plain::new())),
+        "waveshare-s3-touch-lcd146"=>Some(Box::new(waveshare_round_tca::WaveshareRoundTca::new(true,true))),
+        "waveshare-s3-touch-lcd185"=>Some(Box::new(waveshare_round_tca::WaveshareRoundTca::new(false,true))),
+        "waveshare-s3-lcd185"=>Some(Box::new(waveshare_round_tca::WaveshareRoundTca::new(false,false))),
+        "waveshare-s3-amoled191-v1"=>Some(Box::new(waveshare_amoled191::WaveshareAmoled191::new(false,false))),
+        "waveshare-s3-amoled191-v2"=>Some(Box::new(waveshare_amoled191::WaveshareAmoled191::new(false,true))),
+        "waveshare-s3-touch-amoled191-v1"=>Some(Box::new(waveshare_amoled191::WaveshareAmoled191::new(true,false))),
+        "waveshare-s3-touch-amoled191-v2"=>Some(Box::new(waveshare_amoled191::WaveshareAmoled191::new(true,true))),
         "waveshare-s3-lcd2"=>Some(Box::new(waveshare_lcd2::WaveshareLcd2::new(false))),
         "waveshare-s3-touch-lcd2"=>Some(Box::new(waveshare_lcd2::WaveshareLcd2::new(true))),
         "waveshare-s3-lcd19" | "waveshare-s3-touch-lcd19" | "waveshare-s3-lcd13" => waveshare_small_spi::make_board(name),
+        "waveshare-s3-touch-lcd4-v4" | "waveshare-s3-lcd4-v4" => waveshare_touch4_v4::make_board(name),
         "waveshare-s3-matrix8" => Some(Box::new(waveshare_matrix8::WaveshareMatrix8::new())),
         "waveshare-s3-lcd147b" | "waveshare-s3-touch-lcd147" => waveshare_lcd147::make_board(name),
         "waveshare-s3-touch-lcd35-v2" => Some(Box::new(waveshare_lcd35::WaveshareLcd35::new())),
@@ -240,7 +254,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-s3-knob-touch-lcd18" => Some(Box::new(waveshare_knob18::WaveshareKnob18::new())),
         "waveshare-s3-lcd316" => Some(Box::new(waveshare_serial_rgb::WaveshareSerialRgb::new(waveshare_serial_rgb::Variant::Lcd316))),
         "waveshare-s3-geek" => Some(Box::new(waveshare_s3_geek::WaveshareS3Geek::new())),
-        _ => waveshare_tail_spi::make_board(name).or_else(|| waveshare_ch422_rgb::make_board(name)).or_else(|| waveshare_epaper_catalog::make_board(name)).or_else(|| waveshare_rgb_catalog::make_board(name)).or_else(|| waveshare_co5300_catalog::make_board(name))
+        _ => waveshare_s3_cellular::make_board(name).or_else(|| waveshare_tail_spi::make_board(name)).or_else(|| waveshare_ch422_rgb::make_board(name)).or_else(|| waveshare_epaper_catalog::make_board(name)).or_else(|| waveshare_rgb_catalog::make_board(name)).or_else(|| waveshare_co5300_catalog::make_board(name))
             .or_else(|| waveshare_spi_catalog::make_board(name))
             .or_else(|| waveshare_rgb_matrix::make_board(name))
             .or_else(|| waveshare_epaper133::make_board(name))

@@ -319,10 +319,10 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         esp32s3::board::configure_chip_identity(m.bus.board.name(), &mut m.bus.periph.efuse);
         m.bus.attach_board_devices();
         m.bus.set_flash_size(flash_bytes);
-        // The exact RGB Matrix controller and its kits use WROOM-2-N32R16V.
+        // Exact RGB Matrix and DEV-KIT N32R16V profiles use WROOM-2-N32R16V.
         // Its physical octal flash and FLASH_TYPE eFuse must agree before boot.
-        if esp32s3::board::waveshare_rgb_matrix::memory_mib(&board).is_some() { m.bus.set_flash_octal(true); }
         let _ = m.bus.set_psram_size(psram_bytes);
+        if esp32s3::board::waveshare_rgb_matrix::memory_mib(&board).is_some() || esp32s3::board::waveshare_core::variant(&board).is_some_and(|v|v.flash_octal()) { m.bus.set_flash_octal(true); }
         m.bus.periph.lcd_cam.frame_cycles = esp32s3::periph::CPU_HZ / 10;
         prepare(&mut m);
         MachineKind::S3(Box::new(m))

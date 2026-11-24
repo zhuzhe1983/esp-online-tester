@@ -1,0 +1,60 @@
+{
+  "checkedAt": "2026-11-24T00:20:17Z",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "checks": [
+    {
+      "command": "CARGO_BUILD_JOBS=1 cargo test -p esp32s3 --test waveshare_core_skus",
+      "status": "passed",
+      "testCount": 4,
+      "testNames": [
+        "nano_header_option_retains_discrete_active_low_rgb_and_separate_gpio48_indicator",
+        "n32r16v_last_flash_and_psram_pages_do_not_alias_and_opi_survives_chip_reboot",
+        "sixteen_exact_skus_keep_physical_memory_boot_and_absent_interfaces",
+        "zero_grb_and_pico_devkit_rgb_use_actual_rmt_routes_and_reject_wrong_or_inverted_pins"
+      ]
+    },
+    {
+      "command": "CARGO_BUILD_JOBS=1 cargo test -p esp32s3 --lib board::waveshare_core::tests",
+      "status": "passed",
+      "testCount": 3,
+      "testNames": [
+        "board::waveshare_core::tests::nano_discrete_leds_use_physical_enable_mux_inversion_and_pwm",
+        "board::waveshare_core::tests::exact_variant_memory_buttons_and_addressable_color_order",
+        "board::waveshare_core::tests::gpio_addressable_pixels_require_routed_pulses_and_latch"
+      ]
+    },
+    {
+      "command": "CARGO_BUILD_JOBS=1 cargo test -p esp32sim-wasm --lib core_n32r16v_physical_identity_survives_guest_and_platform_restart",
+      "status": "passed",
+      "testCount": 1,
+      "testNames": [
+        "storage::tests::core_n32r16v_physical_identity_survives_guest_and_platform_restart"
+      ]
+    },
+    {
+      "command": "CARGO_BUILD_JOBS=1 cargo clippy -p esp32s3 --test waveshare_core_skus --lib -- -D warnings",
+      "status": "passed",
+      "testCount": null,
+      "testNames": []
+    },
+    {
+      "command": "CARGO_BUILD_JOBS=1 cargo clippy -p esp32sim-wasm -p esp32sim --all-targets -- -D warnings",
+      "status": "passed",
+      "testCount": null,
+      "testNames": []
+    }
+  ],
+  "sourceFiles": {
+    "esp32s3/src/board/waveshare_core.rs": "d5a85aef04f4bd0bc5afbce4453d51d3bcf71611b9cc336f2e958ce95fe86118",
+    "esp32s3/tests/waveshare_core_skus.rs": "a4edbfc96b87b97b37cb0e0849eb2e057aafac7c294358c2febbebed176aaa00",
+    "cli/src/lib.rs": "fc7f0d65bf2c39e101c7202fa4e4ecac5998db69283f153cf0737e581ff034b1",
+    "wasm/src/lib.rs": "006be259fc0897fd5e15a60514943a63c30f0199359a89cbff1177a3f4520859",
+    "wasm/src/storage.rs": "abab9fb138b15a70ed2b28d19a4b5012550e1e24ca46e637e43e5d25478269c1"
+  },
+  "scope": "Actual LX7 register diagnostic and host-built WASM C ABI tests. No new original firmware execution, browser WebAssembly/WebGL, analog voltage or real hardware acceptance.",
+  "findings": [
+    "Exact32F/16P highestFlashandPSRAM pages read/write without alias.",
+    "N32 OPI FLASH_TYPE,JEDEC andPSRAMMR2 survive chipreset; explicitwrong32F/8P platformconfiguration rejected.",
+    "MCU reboot preserves a still-powered addressableLED latch; fresh guestframe changes light; fresh platformdevice starts dark."
+  ]
+}

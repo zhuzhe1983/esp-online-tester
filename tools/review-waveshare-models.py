@@ -6,6 +6,7 @@ Original photos remain unchanged; the second plot overlays measured geometry
 coordinates and explicitly registered reference photographs.
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 
@@ -71,12 +72,30 @@ def annotation_visible(point, depth, extent, zbuffer):
     return 0 <= x < width and 0 <= y < height and depth >= zbuffer[y, x] - .001
 
 
-def review(path, output):
+def checked_registration(directory, record):
+    """Apply a separate, source-bound QA registration without editing the asset."""
+    registration = record['registration']
+    filename = registration['file']
+    if Path(filename).name != filename:
+        raise ValueError('Registration photo must be local to the model directory')
+    for filename, key in [('model.json', 'modelSha256'), ('model-plan.json', 'planSha256'), (filename, 'photoSha256')]:
+        actual = hashlib.sha256((directory / filename).read_bytes()).hexdigest()
+        if actual != record[key]:
+            raise ValueError(f'Stale photo registration: {directory.name}/{filename}')
+    affine = np.asarray(registration['pixelFromModelXY'], dtype=float)
+    if affine.shape != (2, 3) or not np.isfinite(affine).all():
+        raise ValueError('Photo registration requires a finite 2 by 3 affine matrix')
+    return registration
+
+
+def review(path, output, registrations=None):
     record = json.loads(path.read_text())
     product_id = record['id']
     directory = ROOT / 'web/platform/assets' / product_id
     metadata = json.loads((directory / 'model.json').read_text())
     plan = json.loads((directory / 'model-plan.json').read_text())
+    if registrations and product_id in registrations:
+        plan['photoRegistration'] = {'review': checked_registration(directory, registrations[product_id])}
     parts = meshes(record)
     fig, axes = plt.subplots(2, 2, figsize=(12, 10), facecolor='#fafaf6')
     views = [('Front', [1, 0, 0], [0, 1, 0]), ('Reverse', [-1, 0, 0], [0, 1, 0]),
@@ -196,6 +215,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--meshes', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--registrations', type=Path, help='Separate model/plan/photo SHA-bound review registrations')
     arguments = parser.parse_args()
+    registrations = json.loads(arguments.registrations.read_text())['models'] if arguments.registrations else None
     for path in sorted(arguments.meshes.glob('waveshare-*.json')):
-        review(path, arguments.output)
+        review(path, arguments.output, registrations)

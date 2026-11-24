@@ -88,6 +88,27 @@ mod tests {
         }
     }
     #[test]
+    fn core_n32r16v_physical_identity_survives_guest_and_platform_restart() {
+        for name in ["waveshare-s3-devkit-n32r16v","waveshare-s3-devkit-n32r16v-m"] {
+            // SAFETY: This test owns both handles and every byte buffer until deletion.
+            unsafe {
+                assert!(esp32sim_new(name.as_ptr(),name.len(),32,8).is_null());
+                for _ in 0..2 {
+                    let e=esp32sim_new(name.as_ptr(),name.len(),32,16);assert!(!e.is_null());
+                    let m=(*e).m.s3_mut().unwrap();
+                    assert_eq!((m.bus.flash.len(),m.bus.psram.len()),(32<<20,16<<20));
+                    assert!(m.bus.periph.spi0.octal_flash&&m.bus.periph.spi1.octal_flash);
+                    assert_eq!(m.bus.periph.spi1.jedec,[0xc2,0x80,0x39]);
+                    m.bus.periph.spi1.flash_cr2=2;m.reboot();
+                    assert_eq!(m.bus.periph.spi1.flash_cr2,2);
+                    assert_eq!(m.bus.periph.efuse.ram.read(0x3c)&(1<<9),1<<9);
+                    assert_eq!(m.bus.periph.spi1.psram_mr[2],0x8d);
+                    esp32sim_delete(e);
+                }
+            }
+        }
+    }
+    #[test]
     fn sd_export_retains_written_blocks_across_reset_and_checks_attachment() {
         use esp_periph::sdmmc::SdStore;
         // SAFETY: This test owns the emulator and every buffer for their full lifetime.
