@@ -12,6 +12,8 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 
 pub mod waveshare_lcd147;
 pub mod waveshare_lcd_family;
+pub mod waveshare_touch28;
+pub mod waveshare_lcd273;
 pub mod xiao;
 pub mod nanoc6;
 pub mod nesso_n1;
@@ -30,6 +32,8 @@ pub use xiao::XiaoEsp32C6;
 pub fn make_board(name: &str) -> Option<Board> {
     if let Some(variant)=waveshare_lcd_family::LcdVariant::from_name(name) { return Some(Box::new(waveshare_lcd_family::WaveshareLcd::new(variant))); }
     match name {
+        "waveshare-c6-lcd273" => Some(Box::new(waveshare_lcd273::Lcd273::new())),
+        "waveshare-c6-touch28" => Some(Box::new(waveshare_touch28::Touch28::new())),
         "lilygo-t7-c6" => Some(Box::new(lilygo::LilygoC6::t7_c6())),
         "lilygo-t-knob" => Some(Box::new(lilygo::LilygoC6::t_knob())),
         "lilygo-t-qt-c6" => Some(Box::new(lilygo_tqt::TQtC6::new())),
@@ -57,3 +61,6 @@ mod tests {
         }
     }
 }
+
+#[cfg(test)]
+mod waveshare_new_lcd_tests;

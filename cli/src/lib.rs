@@ -661,8 +661,9 @@ fn setup_esp32(o: &Opts) -> esp32::Machine {
 
 fn setup_c6(o: &Opts) -> esp32c6::Machine {
     let exact = esp32c6::board::waveshare_lcd_family::LcdVariant::from_name(&o.board);
-    let flash_mb = o.flash_mb.unwrap_or_else(|| exact.map_or(4, |v|v.flash_mb()));
-    if exact.is_some_and(|v|flash_mb!=v.flash_mb()) {usage_error("Waveshare C6 profile requires its exact documented Flash capacity");}
+    let memory = esp_soc::waveshare_profiles::memory_mib(&o.board).or_else(|| exact.map(|v|(v.flash_mb(),0)));
+    let flash_mb = o.flash_mb.unwrap_or_else(|| memory.map_or(4, |v|v.0));
+    if memory.is_some_and(|v|flash_mb!=v.0) {usage_error("Waveshare C6 profile requires its exact documented Flash capacity");}
     let mut m = esp32c6::machine(o.mac.unwrap_or([0xdc, 0x1e, 0xd5, 0x6e, 0x8c, 0xdc]), flash_mb << 20);
     m.bus.set_flash_size(flash_mb << 20);   // the JEDEC capacity follows the size
     if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }

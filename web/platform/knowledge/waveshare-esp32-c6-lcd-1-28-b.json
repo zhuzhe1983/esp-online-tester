@@ -1,0 +1,445 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-c6-lcd-1-28-b",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-c6-lcd-1-28-b",
+  "title": "Waveshare ESP32-C6-LCD-1.28-B",
+  "summary": "1.28 英寸 240×240 GC9A01A，16 MiB Flash、无PSRAM；无触摸。",
+  "summarySourceIds": [
+    "electrical-0",
+    "electrical-1",
+    "electrical-2",
+    "overview"
+  ],
+  "updatedAt": "2026-11-23T17:15:54Z",
+  "hardwareRevision": "unspecified",
+  "facts": [
+    {
+      "id": "hardware",
+      "label": "精确SKU硬件与接线",
+      "value": {
+        "sku": "35451",
+        "storeOptions": {
+          "Version Options": "with metal case"
+        },
+        "flashMiB": 16,
+        "psramMiB": 0,
+        "display": {
+          "width": 240,
+          "height": 240,
+          "type": "TFT LCD",
+          "controller": "GC9A01A",
+          "bus": "SPI2",
+          "diagonalInches": 1.28,
+          "touch": false
+        },
+        "spi": {
+          "CLK": 11,
+          "MOSI": 21,
+          "CS": 10,
+          "DC": 19,
+          "RST": 20,
+          "BL": 7
+        },
+        "i2c": {
+          "SDA": 18,
+          "SCL": 8
+        },
+        "sd": {
+          "CLK": 11,
+          "MOSI": 21,
+          "MISO": 22,
+          "CS": 15
+        },
+        "components": [
+          "QMI8658@0x6b (common register subset)",
+          "PCF85063@0x51"
+        ],
+        "buttons": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true,
+            "defaultKeyCode": "Space"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "overview",
+        "product"
+      ]
+    },
+    {
+      "id": "factory-layout",
+      "label": "原厂镜像字节与分区验证",
+      "value": {
+        "sha256": "59788ab31632396f27cff960329f63e75192b39863f99cd34400d55cf609accc",
+        "bytes": 1432176,
+        "layout": {
+          "loadOffset": 0,
+          "chipId": 13,
+          "bootloaderChecksumAndDigestValid": true,
+          "partitionTableOffset": 32768,
+          "partitionTableMd5Valid": true,
+          "partitions": [
+            {
+              "type": 1,
+              "subtype": 2,
+              "offset": 36864,
+              "bytes": 24576,
+              "label": "nvs",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 1,
+              "offset": 61440,
+              "bytes": 4096,
+              "label": "phy_init",
+              "flags": 0
+            },
+            {
+              "type": 0,
+              "subtype": 0,
+              "offset": 65536,
+              "bytes": 6291456,
+              "label": "factory",
+              "flags": 0,
+              "imageChipId": 13,
+              "imageChecksumsValid": true
+            }
+          ],
+          "fitsFlashMiB": 16,
+          "headerFlashSizeCode": 4,
+          "minimumChipRevision": 0,
+          "minimumFullRevision": 0,
+          "maximumFullRevision": 99
+        },
+        "evidencePath": "docs/evidence/waveshare-c6-new-lcd-2026-11-23/factory-image-verification.json"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory"
+      ]
+    },
+    {
+      "id": "ecosystem-investigation",
+      "label": "原厂、小智与UIFlow调查",
+      "value": {
+        "officialFactory": "exact downloaded merged image; checksums pass; application partial",
+        "xiaozhiExactBoardPaths": [],
+        "xiaozhiBinaryVerified": false,
+        "uiflowExactNamedBoardPaths": [],
+        "uiflowBinaryVerified": false,
+        "note": "Exact path presence is source support, not a verified flashable image; lack of a matching named path is limited to the pinned inspected tree."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory",
+        "resources",
+        "xiaozhi-tree",
+        "uiflow-tree"
+      ]
+    },
+    {
+      "id": "source-conflicts",
+      "label": "厂家资料冲突及采用依据",
+      "value": [
+        "The non-touch board has no CST816 device; neither touch reporting nor touch IRQ is invented.",
+        "Current mechanical drawing specifiesR18.25 for bare board and11.5 mm case depth; touch variant dimensions do not apply."
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "overview"
+      ]
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.28",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-LCD-1.28",
+      "fetchedAt": "2026-11-23T16:31:56Z",
+      "bytes": 42562,
+      "sha256": "a1f1d797202128fb20df1aceb74c5dd9ebc3b067121fe2c25580318dc51ae44c",
+      "archiveName": "overview.html.gz",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-c6-lcd-1-28/overview.html.gz"
+    },
+    {
+      "id": "resources",
+      "title": "resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.28/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-LCD-1.28/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T16:35:19Z",
+      "bytes": 33956,
+      "sha256": "fcd5f0a6c94f5c691c319f2949080004f2c5cf8b8f4582618a702bac896766dc",
+      "archiveName": "resources.html.gz",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-c6-lcd-1-28/resources.html.gz"
+    },
+    {
+      "id": "repository-tree",
+      "title": "repository-tree.json.gz",
+      "url": "https://github.com/waveshareteam/ESP32-C6-LCD-1.28/tree/54e704868fef1c997b7a1afdb273750bd02abd2b",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://github.com/waveshareteam/ESP32-C6-LCD-1.28/tree/54e704868fef1c997b7a1afdb273750bd02abd2b",
+      "fetchedAt": "2026-11-23T16:46:37Z",
+      "bytes": 338738,
+      "sha256": "44230d435811a0b208e2146732ad95f96be10d426bdf4f5fca9c59cdc59dcbd5",
+      "archiveName": "repository-tree.json.gz",
+      "notes": "Derived public Git tree listing, not original HTTP bytes. Retained in web/platform/assets/waveshare-esp32-c6-lcd-1-28/repository-tree.json.gz"
+    },
+    {
+      "id": "back-photo",
+      "title": "back-photo.jpg",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-lcd-1.28-3.jpg",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-lcd-1.28-3.jpg",
+      "fetchedAt": "2026-11-23T16:56:17Z",
+      "bytes": 81440,
+      "sha256": "feb856b8620761e6f665e97bac1ad4c9d060cd013fada9c2f9eb1d3fa210fad2",
+      "archiveName": "back-photo.jpg",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-c6-lcd-1-28/back-photo.jpg"
+    },
+    {
+      "id": "angle-photo",
+      "title": "angle-photo.jpg",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-lcd-1.28-4.jpg",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-lcd-1.28-4.jpg",
+      "fetchedAt": "2026-11-23T16:56:23Z",
+      "bytes": 79446,
+      "sha256": "116573336ff8c3c1b46494f186af8b682f6dc4044d92c0c88b83af04021c7660",
+      "archiveName": "angle-photo.jpg",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-c6-lcd-1-28/angle-photo.jpg"
+    },
+    {
+      "id": "product",
+      "title": "Official exact-SKU storefront selection",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-lcd-1.28.htm",
+      "kind": "manufacturer-product",
+      "status": "linked",
+      "notes": "Public SKU selection and original-page receipt retained in model source manifest. Full storefront response remains scratch because it contains anonymous session fields; the selection is not presented as raw response bytes."
+    },
+    {
+      "id": "electrical-0",
+      "title": "HARDWARE_REFERENCE.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/HARDWARE_REFERENCE.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/HARDWARE_REFERENCE.md",
+      "fetchedAt": "2026-11-23T16:40:15Z",
+      "bytes": 5334,
+      "sha256": "ef6fa3d6207f9842d144275c1faa1b81fbba2f2f218df42950789622480077dd",
+      "archiveName": "ESP32-C6-LCD-1.28_files_HARDWARE_REFERENCE.md.gz",
+      "notes": "Original response bytes retained at docs/platform/research/waveshare-c6-new-lcd-sources/ESP32-C6-LCD-1.28_files_HARDWARE_REFERENCE.md.gz"
+    },
+    {
+      "id": "electrical-1",
+      "title": "README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/README.md",
+      "fetchedAt": "2026-11-23T16:40:20Z",
+      "bytes": 2338,
+      "sha256": "8c5af2aa898d8ed07ca4551b23ce261ea40c51f47a220d3a0c472bb807a2aba7",
+      "archiveName": "ESP32-C6-LCD-1.28_files_README.md.gz",
+      "notes": "Original response bytes retained at docs/platform/research/waveshare-c6-new-lcd-sources/ESP32-C6-LCD-1.28_files_README.md.gz"
+    },
+    {
+      "id": "electrical-2",
+      "title": "firmware/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/firmware/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/firmware/README.md",
+      "fetchedAt": "2026-11-23T16:40:27Z",
+      "bytes": 768,
+      "sha256": "a4d85b5d7dd11381125e3ed75327b4b16930c8749f23f5cd57538f00a7a8ac2c",
+      "archiveName": "ESP32-C6-LCD-1.28_files_firmware_README.md.gz",
+      "notes": "Original response bytes retained at docs/platform/research/waveshare-c6-new-lcd-sources/ESP32-C6-LCD-1.28_files_firmware_README.md.gz"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "78/xiaozhi-esp32 exact board-path inventory",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Pinned Git tree inspected at 2026-11-23T16:55:27Z; method=public filtered git clone and git ls-tree -r --name-only HEAD. Shared investigation receipt: docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json"
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "m5stack/uiflow-micropython exact board-path inventory",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Pinned Git tree inspected at 2026-11-23T16:55:27Z; method=public filtered git clone and git ls-tree -r --name-only HEAD. Shared investigation receipt: docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json"
+    },
+    {
+      "id": "dimension-photo",
+      "title": "dimension-photo.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.28-B-ProductSize-15a3ce7dcb5dff380e1e40e6df68e39b.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.28-B-ProductSize-15a3ce7dcb5dff380e1e40e6df68e39b.webp",
+      "fetchedAt": "2026-11-23T16:44:19Z",
+      "bytes": 63052,
+      "sha256": "beeabda7f94778f91a917a51b5418720a56909dba098066e1c3edb03bd285dbb",
+      "archiveName": "dimension-photo.webp",
+      "notes": "Exact -B enclosure drawing retained in web/platform/assets/waveshare-esp32-c6-lcd-1-28-b/dimension-photo.webp"
+    },
+    {
+      "id": "factory",
+      "title": "firmware/ESP32-C6-LCD-1.28_FactoryOnly_20260813.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/firmware/ESP32-C6-LCD-1.28_FactoryOnly_20260813.bin",
+      "kind": "manufacturer-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/firmware/ESP32-C6-LCD-1.28_FactoryOnly_20260813.bin",
+      "fetchedAt": "2026-11-23T16:51:05Z",
+      "bytes": 1432176,
+      "sha256": "59788ab31632396f27cff960329f63e75192b39863f99cd34400d55cf609accc",
+      "archiveName": "ESP32-C6-LCD-1.28_FactoryOnly_20260813.bin",
+      "notes": "Original binary validated in scratch and kept remote-only. Retained checksum/partition evidence is docs/evidence/waveshare-c6-new-lcd-2026-11-23/factory-image-verification.json."
+    }
+  ],
+  "assets": [
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.28"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.28/Resources-And-Documents"
+    },
+    {
+      "id": "repository-tree",
+      "sourceId": "repository-tree",
+      "role": "source-document",
+      "url": "https://github.com/waveshareteam/ESP32-C6-LCD-1.28/tree/54e704868fef1c997b7a1afdb273750bd02abd2b"
+    },
+    {
+      "id": "back-photo",
+      "sourceId": "back-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-lcd-1.28-3.jpg"
+    },
+    {
+      "id": "angle-photo",
+      "sourceId": "angle-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-lcd-1.28-4.jpg"
+    },
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-lcd-1.28.htm"
+    },
+    {
+      "id": "electrical-0",
+      "sourceId": "electrical-0",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/HARDWARE_REFERENCE.md"
+    },
+    {
+      "id": "electrical-1",
+      "sourceId": "electrical-1",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/README.md"
+    },
+    {
+      "id": "electrical-2",
+      "sourceId": "electrical-2",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/firmware/README.md"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "sourceId": "xiaozhi-tree",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+    },
+    {
+      "id": "uiflow-tree",
+      "sourceId": "uiflow-tree",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+    },
+    {
+      "id": "dimension-photo",
+      "sourceId": "dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.28-B-ProductSize-15a3ce7dcb5dff380e1e40e6df68e39b.webp"
+    },
+    {
+      "id": "factory",
+      "sourceId": "factory",
+      "role": "firmware-download",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.28/54e704868fef1c997b7a1afdb273750bd02abd2b/firmware/ESP32-C6-LCD-1.28_FactoryOnly_20260813.bin"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "真实硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview",
+        "product"
+      ]
+    },
+    {
+      "id": "full-app-acceptance",
+      "label": "完整原厂应用验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "factory"
+      ],
+      "notes": "Native 5-second bounded run: waveshare-c6-lcd128.log; 1 RGB colors. No browser/WebGL or hardware acceptance inferred."
+    },
+    {
+      "id": "hardware-depth",
+      "label": "未出版内部/深度尺寸",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "resources"
+      ],
+      "notes": "Exact source/model limits are retained in waveshare-esp32-c6-lcd-1-28-b/model-plan.json."
+    }
+  ],
+  "collectionNotes": [
+    "部分适配：数字显示/复位/触摸/BOOT和精确总线接线已实现；原厂完整交互、无线和实物尚未验收。",
+    "使用原始厂家合并镜像、真实ESP32-C6 ROM；五秒执行记录有0异常，板级像素测试独立于原厂UI。",
+    "音频PCM、模拟电源/充电/电池ADC、SHTC3、外部扩展、物理扫描/色彩和传感器姿态未逐项验收。",
+    "3D来源与未确认内部结构见模型；重建模型的估计厚度不作为厂家尺寸。",
+    "TF数字卡接口已接入；本次原厂记录未插卡，不把无卡错误声明为卡槽不存在。",
+    "五秒原厂执行已写入显示像素，但最终快照单色；仍需逐项核验界面资源、时序与交互。",
+    "The non-touch board has no CST816 device; neither touch reporting nor touch IRQ is invented.",
+    "Current mechanical drawing specifiesR18.25 for bare board and11.5 mm case depth; touch variant dimensions do not apply."
+  ]
+}

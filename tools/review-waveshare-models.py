@@ -141,6 +141,11 @@ def review(path, output):
         filename = 'dimension-photo.webp'
         affine = np.array([[0, -614/63.3, 437], [-247/25.4, 0, 322.5]])
     else:
+        if not any(key in plan.get('photoRegistration', {}) for key in ['driverFront', 'front']):
+            # A source photograph is not an asserted registration. Preserve the
+            # geometry review without inventing a pixel-to-millimetre transform.
+            print(product_id + ' geometry review written; no registered-photo overlay declared', flush=True)
+            return
         filename = 'front-photo.jpg'
         reg = plan['photoRegistration']['driverFront' if 'driverFront' in plan['photoRegistration'] else 'front']
         left, top, right, bottom = reg['pcbPixelBounds']

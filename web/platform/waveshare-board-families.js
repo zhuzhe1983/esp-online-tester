@@ -459,5 +459,47 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
       "boot",
       "power"
     ]
+  },
+  "waveshare-c6-touch-lcd128": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-lcd128": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-lcd273": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch28": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-lcd154": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-lcd154": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
   }
 }));
