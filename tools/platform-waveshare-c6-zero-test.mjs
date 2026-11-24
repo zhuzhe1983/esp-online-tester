@@ -35,7 +35,8 @@ test('three exact C6 Zero capacity/board profiles execute real RMT and BOOT inpu
       const expected=[0x34,0x12,0x56];
       const scene=createDefaultScene(catalog,id);scene.firmware=null;await runtime.configure(scene);
       await runtime.loadFirmware({url:origin+'/sram-'+flashMb+'.bin',bootMode:'app-direct'});await runtime.start();
-      const ready=await until(runtime,s=>s.serialByPort?.uart0?.includes('BOOT UP\n')&&JSON.stringify(s.leds)===JSON.stringify([expected]));
+      // UART/RMT output and periodic counters arrive as independent observations.
+      const ready=await until(runtime,s=>s.stats.insns>0&&s.serialByPort?.uart0?.includes('BOOT UP\n')&&JSON.stringify(s.leds)===JSON.stringify([expected]));
       assert.equal(ready.frame,null);assert(ready.stats.insns>0,id+' executes guest instructions');
       for(const [pressed,marker] of [[true,'BOOT DOWN\n'],[false,'BOOT UP\n']]){
         const before=(await runtime.observe()).serialByPort.uart0.length;

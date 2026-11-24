@@ -62,6 +62,7 @@ jobs:
       - name: Validate product platform and real StopWatch execution
         run: |
           node --test tools/platform-*-test.mjs
+          node tools/check-waveshare-stat-order.mjs
           node tools/platform-recording-test.mjs --real
           node tools/wasm-test.mjs demo-stopwatch
       - name: Verify LilyGO models and actual guest input in Chromium

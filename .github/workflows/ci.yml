@@ -69,6 +69,7 @@ jobs:
       - name: Product platform contracts and real worker execution
         run: |
           ESP32SIM_ROM_DIR=$PWD/roms node --test tools/platform-*-test.mjs
+          ESP32SIM_ROM_DIR=$PWD/roms node tools/check-waveshare-stat-order.mjs
           ESP32SIM_ROM_DIR=$PWD/roms node tools/platform-recording-test.mjs --real
           ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs demo-stopwatch
           ESP32SIM_ROM_DIR=$PWD/roms node tools/probe-hardware-diagnostics.mjs tools/fixtures/stopwatch-hardware-checks.json /tmp/stopwatch-hardware-checks.json

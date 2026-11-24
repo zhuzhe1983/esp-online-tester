@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-24T05:43:57.282594+00:00",
+  "sourceParent": "dc2417da6629dd9a5ba0f72217079cb9c6bf3411",
+  "sourceFileSha256": {
+    "tools/platform-waveshare-c5-core-test.mjs": "53accaa5c1a0f1b562805b7623c3cccf968479c60b91a60fc63b5582c5d6ea64",
+    "tools/platform-waveshare-c6-zero-test.mjs": "0438eff2ee548b3a7c575a61be507032e0a473fd316d337a90d5c5d30fbf7c21",
+    "tools/platform-waveshare-h2-test.mjs": "a79fc29dbef28d86c56778ecdbaac9534d9a3b3bf9eab7e89d801922bc0b8a76",
+    "tools/check-waveshare-stat-order.mjs": "724d6864e37907427d7ad067378bf3bf05961e6366ff1613eb7b708508a23a1d"
+  },
+  "failedPagesRun": {
+    "url": "https://github.com/zhuzhe1983/esp-online-tester/actions/runs/45333305475",
+    "failedStep": "Validate product platform and real StopWatch execution",
+    "passed": 520,
+    "failed": 1,
+    "reason": "C5 Pico UART and exact RMT LED output arrived before a positive periodic instruction-count observation; the fixture asserted the counter too early."
+  },
+  "correction": "C5/C6/H2 fixtures wait for the original positive instruction count, UART marker and exact LED output together; all original assertions, BOOT checks and reload coverage remain.",
+  "regression": {
+    "harness": "tools/check-waveshare-stat-order.mjs",
+    "delayMs": 250,
+    "scope": "Only real Worker stat messages delayed; no invented UART, LED, counter, firmware or guest output. Timers cleared on worker termination.",
+    "before": {
+      "revision": "dc2417da6629dd9a5ba0f72217079cb9c6bf3411",
+      "exitCode": 1,
+      "failed": 3,
+      "logSha256": "bc35211558064f6d04ccbb568f2ead789d831e1273915cfff1ed409d27ee8b0d"
+    },
+    "after": {
+      "exitCode": 0,
+      "passed": 4,
+      "failed": 0,
+      "logSha256": "9618d1fb359e758bb35894deecef8c1cd09836db46a72a841e55b137265cb3b9"
+    }
+  },
+  "fullPlatform": {
+    "passed": 521,
+    "failed": 0,
+    "skipped": 0,
+    "logSha256": "2be82cfdad5cf391d9d2f3b4883d054579ac243d7bd71dbc382e30e89856464a"
+  },
+  "localWasm": {
+    "bytes": 8507306,
+    "sha256": "6152aa4ca567a6e1efa5d846fdf7d902d80c9431f35c8c0f4f59d57a37c7ae25"
+  },
+  "runtimeAndNativeSourcesChanged": false,
+  "ciAndPagesRunDeterministicRegression": true
+}

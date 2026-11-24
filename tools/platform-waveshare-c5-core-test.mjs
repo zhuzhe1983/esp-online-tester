@@ -35,7 +35,8 @@ test('five exact C5 core profiles execute real RMT and BOOT input through the pu
       const caps=await runtime.capabilities();assert.deepEqual(caps.execution.bootModes,['app-direct']);
       for(const available of [caps.network.available,caps.sdCard.available,caps.deviceStorage.available,caps.audio.output.available])assert.equal(available,false);
       await runtime.loadFirmware({file:new File([waveshareC5CoreProbe()],'original-core-sram-diagnostic.bin')});await runtime.start();
-      const ready=await until(runtime,s=>s.serialByPort?.uart0?.includes('BOOT UP\n')&&JSON.stringify(s.leds)===JSON.stringify([expected]));
+      // UART/RMT output and periodic counters arrive as independent observations.
+      const ready=await until(runtime,s=>s.stats.insns>0&&s.serialByPort?.uart0?.includes('BOOT UP\n')&&JSON.stringify(s.leds)===JSON.stringify([expected]));
       assert.equal(ready.frame,null);assert(ready.stats.insns>0,id+' executes guest instructions');
       for(const [pressed,marker] of [[true,'BOOT DOWN\n'],[false,'BOOT UP\n']]){
         const before=(await runtime.observe()).serialByPort.uart0.length;

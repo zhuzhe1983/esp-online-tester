@@ -35,7 +35,8 @@ test('four exact H2 sale options execute actual H2 RMT/UART/BOOT and reload with
       const file=new File([waveshareH2CoreProbe()],'authored-h2-sram-diagnostic.bin');
       await assert.rejects(runtime.loadFirmware({file,bootMode:'rom'}),e=>e.code==='H2_SRAM_REQUIRED');
       await runtime.loadFirmware({file});await runtime.start();
-      const ready=await until(runtime,s=>s.serialByPort?.uart0?.includes('BOOT UP\n')&&JSON.stringify(s.leds)===JSON.stringify([[0x34,0x12,0x56]]));
+      // UART/RMT output and periodic counters arrive as independent observations.
+      const ready=await until(runtime,s=>s.stats.insns>0&&s.serialByPort?.uart0?.includes('BOOT UP\n')&&JSON.stringify(s.leds)===JSON.stringify([[0x34,0x12,0x56]]));
       assert.equal(ready.frame,null);assert(ready.stats.insns>0,id+' executes guest instructions');
       for(const [pressed,marker] of [[true,'BOOT DOWN\n'],[false,'BOOT UP\n']]){
         const before=(await runtime.observe()).serialByPort.uart0.length;

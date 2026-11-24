@@ -23,6 +23,10 @@
 
 x86 CI 的 Rust 和 Clippy 通过后，三个新增平台夹具固定读取网页目录的 ROM，忽略了 CI 的 `ESP32SIM_ROM_DIR`，导致 517/520 项通过、3 项缺少输入文件。修正这三个夹具的读取路径，并在没有任何网页 ROM 缓存的新工作区复现原失败；使用部署中的生产 WASM、`roms/` 内的原始 ROM 与 CI 原有输入准备命令，完整 521 项平台测试通过。保留原始芯片/wafer、输入哈希、运行和输出断言。[独立复验收据](ci-rom-layout.json)包含前后结果与输入哈希。
 
+## 独立观测到达顺序
+
+随后一次 Pages 平台套件出现 C5 Pico 计数断言失败：真实 UART 和精确 LED 结果已到达，而统计仍是初始值。C5/C6/H2 夹具现在同时等待计数、串口及 LED，保留所有启动、按键和重载断言。`tools/check-waveshare-stat-order.mjs` 只延后真实 Worker 统计消息 250 ms：旧提交稳定复现三个失败，修正后四项回归通过，完整 521 项平台检查通过。CI 和 Pages 均加入这项确定性回归。[顺序检查收据](ci-stat-order.json)保留来源、结果及哈希；运行时和固件未修改。
+
 ## 原生 CPU 对比
 
 延续 [EX201](../../../experiments.md#ex201) 的物理总线/板级回调正确性检查，并参考 [EX206](../../../experiments.md#ex206)、[EX212](../../../experiments.md#ex212)、[EX235](../../../experiments.md#ex235) 的布局和测量限制。本次不同之处是 Waveshare 全批次与 Cloudzao 的集成状态、板型和输入边界；没有提出新的执行优化机制。
