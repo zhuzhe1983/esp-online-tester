@@ -1,0 +1,694 @@
+{
+  "listingId": "esp32-s3-touch-lcd-2",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2",
+      "manufacturer": "Waveshare",
+      "sku": "29667",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "精确2英寸ST7789、240×320物理显示、16MiB Flash/8MiB PSRAM；CST816D触摸@0x15，SPI共享真实TF。标准与-C/OV5640套装分别保留身份和厂家机械来源。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-2.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-2",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-2"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 320,
+        "type": "IPS LCD",
+        "controller": "ST7789",
+        "bus": "SPI",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / shared SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 39
+            },
+            {
+              "name": "MOSI",
+              "gpio": 38
+            },
+            {
+              "name": "MISO",
+              "gpio": 40
+            },
+            {
+              "name": "CS",
+              "gpio": 41
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact physical bus with a prepared64MiB FAT32 default; native1bit and SPI transports are explicitly distinct."
+        }
+      ],
+      "limitations": [
+        "原厂相机探测失败；OV5640/DVP图像、模拟电池ADC/充电、RF、IMU中断/校准和完整应用/物理触控未验收。",
+        "厂商当前说明Flash改为XM25QH128DHIQT，但容量仍16MiB；原2024/2025机械来源不宣称精确新Flash封装/PCB修订已验证。",
+        "CST816D只有本BSP证实的身份与触点/休眠子集，未知固件ID、手势和真实扫描时序保持未知。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-2.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：Arduino/examples/01_factory/01_factory.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_i2c.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_i2c.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_lv_port.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_lv_port.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_spi.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_spi.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：Arduino/examples/01_factory/lv_conf.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_camera.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_camera.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_qmi8658.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_qmi8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_system.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_system.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_wifi.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_wifi.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/lvgl_ui.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/lvgl_ui.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/camera_tab.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/qmi8658_tab.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/system_tab.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/tabview.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/wifi_tab.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：Arduino/examples/03_sd_card_test/03_sd_card_test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：Arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：Arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：Arduino/libraries/bsp_cst816/bsp_cst816.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：Arduino/libraries/bsp_cst816/bsp_cst816.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-LCD-2-SchDoc.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2/ESP32-S3-Touch-LCD-2-SchDoc.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-LCD-2_V2.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2_V2.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-2/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-2-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-sku-29668",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2-C",
+      "manufacturer": "Waveshare",
+      "sku": "29668",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "精确2英寸ST7789、240×320物理显示、16MiB Flash/8MiB PSRAM；CST816D触摸@0x15，SPI共享真实TF。标准与-C/OV5640套装分别保留身份和厂家机械来源。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-2-sku-29668.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-2",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-2"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 320,
+        "type": "IPS LCD",
+        "controller": "ST7789",
+        "bus": "SPI",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / shared SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 39
+            },
+            {
+              "name": "MOSI",
+              "gpio": 38
+            },
+            {
+              "name": "MISO",
+              "gpio": 40
+            },
+            {
+              "name": "CS",
+              "gpio": 41
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact physical bus with a prepared64MiB FAT32 default; native1bit and SPI transports are explicitly distinct."
+        }
+      ],
+      "limitations": [
+        "原厂相机探测失败；OV5640/DVP图像、模拟电池ADC/充电、RF、IMU中断/校准和完整应用/物理触控未验收。",
+        "厂商当前说明Flash改为XM25QH128DHIQT，但容量仍16MiB；原2024/2025机械来源不宣称精确新Flash封装/PCB修订已验证。",
+        "CST816D只有本BSP证实的身份与触点/休眠子集，未知固件ID、手势和真实扫描时序保持未知。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-2.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：Arduino/examples/01_factory/01_factory.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_i2c.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_i2c.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_lv_port.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_lv_port.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_spi.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：Arduino/examples/01_factory/bsp_spi.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：Arduino/examples/01_factory/lv_conf.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_camera.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_camera.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_qmi8658.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_qmi8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_system.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_system.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_wifi.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/app/app_wifi.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/lvgl_ui.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/lvgl_ui.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/camera_tab.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/qmi8658_tab.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/system_tab.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/tabview.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：Arduino/examples/01_factory/src/lvgl_ui/tabview/wifi_tab.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：Arduino/examples/03_sd_card_test/03_sd_card_test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：Arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：Arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：Arduino/libraries/bsp_cst816/bsp_cst816.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：Arduino/libraries/bsp_cst816/bsp_cst816.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-LCD-2-SchDoc.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2/ESP32-S3-Touch-LCD-2-SchDoc.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-LCD-2_V2.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2_V2.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-2-c/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-2-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-factory",
+      "name": "ESP32-S3-Touch-LCD-2-factory.bin",
+      "productIds": [
+        "waveshare-esp32-s3-touch-lcd-2",
+        "waveshare-esp32-s3-touch-lcd-2-sku-29668"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+        "sha256": "c047cdf7be61f2e768e17a2e6ec478def259bbe047b324b8fc9b051733e2af24",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "Firmware/ESP32-S3-Touch-LCD-2-factory.bin",
+          "sha256": "f7fc300a7710b221a9bfe33fc0cae588fd03d02fc655d509e09069fd60475e48"
+        }
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-LCD-2-factory",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2/Resources-And-Documents",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方静态Demo原ZIP中精确factory成员，两层SHA、全部目录及S3 boot/table/app校验通过。原厂完整ROM真实5guest秒：Touch2为9帧/50色；真实SPI卡识别为SDHC。OV5640探测返回0x105，未替换镜像或伪造摄像头。画面保留物理portrait，Arduino逻辑旋转由MADCTL与guest触控变换完成。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-lcd-2-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-factory-watch",
+      "name": "ESP32-S3-Touch-LCD-2-factory.bin",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Touch-LCD-2",
+      "metadataUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2/Resources-And-Documents",
+      "releaseUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2/Resources-And-Documents",
+      "version": "archive-sha256-f7fc300a7710b221a9bfe33fc0cae588fd03d02fc655d509e09069fd60475e48",
+      "checkedAt": "2026-11-23T22:57:08Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-LCD-2-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2/ESP32-S3-Touch-LCD-2-Demo.zip",
+          "sha256": "f7fc300a7710b221a9bfe33fc0cae588fd03d02fc655d509e09069fd60475e48",
+          "bytes": 68497354,
+          "format": "zip-bundle",
+          "member": {
+            "path": "Firmware/ESP32-S3-Touch-LCD-2-factory.bin",
+            "sha256": "c047cdf7be61f2e768e17a2e6ec478def259bbe047b324b8fc9b051733e2af24",
+            "bytes": 1339040,
+            "format": "merged"
+          }
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-lcd-2",
+          "waveshare-esp32-s3-touch-lcd-2-sku-29668"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-2.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-2-sku-29668.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-touch-lcd2": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "实际ST7789 RGB565/MADCTL像素、全双工MOSI、mode0/3、错误MOSI/同时片选拒绝，GPIO0低不越过NC电阻复位面板。",
+    "BL1用PWM第二字段duty；改变频率不改变光度。SPI TF实CMD0/R1，并验证错误MISO/拔卡/冲突片选隔离。",
+    "CST816D精确A7=B6与真实坐标报告、非触摸版无15h；原厂完整ROM5秒、原始帧/UART留存。"
+  ],
+  "limitations": [
+    "原厂相机探测失败；OV5640/DVP图像、模拟电池ADC/充电、RF、IMU中断/校准和完整应用/物理触控未验收。",
+    "厂商当前说明Flash改为XM25QH128DHIQT，但容量仍16MiB；原2024/2025机械来源不宣称精确新Flash封装/PCB修订已验证。",
+    "CST816D只有本BSP证实的身份与触点/休眠子集，未知固件ID、手势和真实扫描时序保持未知。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

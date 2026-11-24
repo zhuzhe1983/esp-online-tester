@@ -1,0 +1,1723 @@
+{
+  "listingId": "esp32-s3-touch-amoled-1.8",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-8-v2",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.8 · V2 CO5300 + CST820",
+      "manufacturer": "Waveshare",
+      "sku": "29957",
+      "chip": "esp32s3",
+      "hardwareRevision": "V2; official shipments switch2026-05-30",
+      "summary": "1.8英寸368×448、16MiB Flash/8MiB PSRAM；官方V1 SH8601/FT3168与2026-05-30起V2 CO5300/CST820分开。TCA/AXP/ES8311、真实单线TF与高有效SYS_OUT电源键；电池/无电池SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-8-v2.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-8",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.8"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled18-v2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 368,
+        "height": 448,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "QSPI RGB565",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 P4/SYS_OUT",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Actual NFET sense: idleLOW, pressedHIGH. This input does not simulate PMU long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC 1-bit",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact physical bus with a prepared64MiB FAT32 default; native1bit and SPI transports are explicitly distinct."
+        }
+      ],
+      "limitations": [
+        "原V2程序在读取CST820身份时abort；该未知寄存器保持NACK，未借用CST816S/D身份。数字触点坐标可单独测，不能声称V2原厂UI已通过。",
+        "V1实际早期彩色画面仍不等于完整界面/音频/联网/物理触摸通过；所有条目simulationVerified=false。",
+        "AXP使用明确理想USB/no-cell、datasheet参考启动子集；变体DC5/充电、watchdog、长按关机/CPU供电及模拟音频不假ACK。",
+        "可用STEP为裸参考板，不确认当前V2内部改版；按官方37.6×45.2×15mm外尺寸建有孔空心壳，半径/壁厚明示估计。电池尺寸/标签/安装、内部机械装配和精确侧孔UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/arduino-v2/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/examples/arduino-v2/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：docs/FIRMWARE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/docs/FIRMWARE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/brookesia/README.md",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/brookesia/README_ZH.md",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/brookesia/components/brookesia_core/test_apps/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/brookesia_core/test_apps/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：firmware/brookesia/components/bsp_extra/include/bsp_board_extra.h",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/bsp_extra/include/bsp_board_extra.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：firmware/brookesia/components/bsp_extra/src/bsp_board_extra.c",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/bsp_extra/src/bsp_board_extra.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：firmware/brookesia/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：firmware/brookesia/main/main.cpp",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：firmware/brookesia/original/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/original/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：firmware/brookesia/v2/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/v2/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/CMakeLists.txt",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/Kconfig",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/LICENSE",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/README.md",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/esp32_s3_touch_amoled_1_8.c",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/idf_component.yml",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/config.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/display.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/esp-bsp.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/esp32_s3_touch_amoled_1_8.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/touch.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/priv_include/bsp_err_check.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/CMakeLists.txt",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/Kconfig",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/LICENSE",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/README.md",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/esp32_s3_touch_amoled_1_8.c",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/idf_component.yml",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/config.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/display.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/esp-bsp.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/esp32_s3_touch_amoled_1_8.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/touch.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/priv_include/bsp_err_check.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-AMOLED-1.8.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.8/ESP32-S3-Touch-AMOLED-1.8.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/registry-s3-am18-1.1.4.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定原始来源：official-resources/registry-s3-am18-1.1.4.html",
+          "url": "https://components.espressif.com/components/waveshare/esp32_s3_touch_amoled_1_8/versions/1.1.4/readme",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定原始来源：official-resources/registry-s3-am18-2.0.3.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-44",
+          "title": "固定原始来源：official-resources/registry-s3-am18-2.0.3.html",
+          "url": "https://components.espressif.com/components/waveshare/esp32_s3_touch_amoled_1_8/versions/2.0.3/readme",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-8/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-f970670d"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-8-v1",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.8 · V1 SH8601 + FT3168",
+      "manufacturer": "Waveshare",
+      "sku": "29957",
+      "chip": "esp32s3",
+      "hardwareRevision": "V1 discontinued; separate factory image required",
+      "summary": "1.8英寸368×448、16MiB Flash/8MiB PSRAM；官方V1 SH8601/FT3168与2026-05-30起V2 CO5300/CST820分开。TCA/AXP/ES8311、真实单线TF与高有效SYS_OUT电源键；电池/无电池SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-8-v1.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-8",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.8"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled18-v1",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 368,
+        "height": 448,
+        "type": "AMOLED",
+        "controller": "SH8601",
+        "bus": "QSPI manufacturer RGB565 subset",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 P4/SYS_OUT",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Actual NFET sense: idleLOW, pressedHIGH. This input does not simulate PMU long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC 1-bit",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact physical bus with a prepared64MiB FAT32 default; native1bit and SPI transports are explicitly distinct."
+        }
+      ],
+      "limitations": [
+        "原V2程序在读取CST820身份时abort；该未知寄存器保持NACK，未借用CST816S/D身份。数字触点坐标可单独测，不能声称V2原厂UI已通过。",
+        "V1实际早期彩色画面仍不等于完整界面/音频/联网/物理触摸通过；所有条目simulationVerified=false。",
+        "AXP使用明确理想USB/no-cell、datasheet参考启动子集；变体DC5/充电、watchdog、长按关机/CPU供电及模拟音频不假ACK。",
+        "可用STEP为裸参考板，不确认当前V2内部改版；按官方37.6×45.2×15mm外尺寸建有孔空心壳，半径/壁厚明示估计。电池尺寸/标签/安装、内部机械装配和精确侧孔UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/arduino-v2/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/examples/arduino-v2/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：docs/FIRMWARE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/docs/FIRMWARE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/brookesia/README.md",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/brookesia/README_ZH.md",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/brookesia/components/brookesia_core/test_apps/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/brookesia_core/test_apps/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：firmware/brookesia/components/bsp_extra/include/bsp_board_extra.h",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/bsp_extra/include/bsp_board_extra.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：firmware/brookesia/components/bsp_extra/src/bsp_board_extra.c",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/bsp_extra/src/bsp_board_extra.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：firmware/brookesia/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：firmware/brookesia/main/main.cpp",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：firmware/brookesia/original/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/original/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：firmware/brookesia/v2/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/v2/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/CMakeLists.txt",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/Kconfig",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/LICENSE",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/README.md",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/esp32_s3_touch_amoled_1_8.c",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/idf_component.yml",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/config.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/display.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/esp-bsp.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/esp32_s3_touch_amoled_1_8.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/touch.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/priv_include/bsp_err_check.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/CMakeLists.txt",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/Kconfig",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/LICENSE",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/README.md",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/esp32_s3_touch_amoled_1_8.c",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/idf_component.yml",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/config.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/display.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/esp-bsp.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/esp32_s3_touch_amoled_1_8.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/touch.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/priv_include/bsp_err_check.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-AMOLED-1.8.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.8/ESP32-S3-Touch-AMOLED-1.8.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/registry-s3-am18-1.1.4.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定原始来源：official-resources/registry-s3-am18-1.1.4.html",
+          "url": "https://components.espressif.com/components/waveshare/esp32_s3_touch_amoled_1_8/versions/1.1.4/readme",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定原始来源：official-resources/registry-s3-am18-2.0.3.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-44",
+          "title": "固定原始来源：official-resources/registry-s3-am18-2.0.3.html",
+          "url": "https://components.espressif.com/components/waveshare/esp32_s3_touch_amoled_1_8/versions/2.0.3/readme",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-8/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-a14c4a2f"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v2",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.8-EN · V2 CO5300 + CST820",
+      "manufacturer": "Waveshare",
+      "sku": "29958",
+      "chip": "esp32s3",
+      "hardwareRevision": "V2; official shipments switch2026-05-30",
+      "summary": "1.8英寸368×448、16MiB Flash/8MiB PSRAM；官方V1 SH8601/FT3168与2026-05-30起V2 CO5300/CST820分开。TCA/AXP/ES8311、真实单线TF与高有效SYS_OUT电源键；电池/无电池SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v2.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-8",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.8"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled18-v2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 368,
+        "height": 448,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "QSPI RGB565",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 P4/SYS_OUT",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Actual NFET sense: idleLOW, pressedHIGH. This input does not simulate PMU long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC 1-bit",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact physical bus with a prepared64MiB FAT32 default; native1bit and SPI transports are explicitly distinct."
+        }
+      ],
+      "limitations": [
+        "原V2程序在读取CST820身份时abort；该未知寄存器保持NACK，未借用CST816S/D身份。数字触点坐标可单独测，不能声称V2原厂UI已通过。",
+        "V1实际早期彩色画面仍不等于完整界面/音频/联网/物理触摸通过；所有条目simulationVerified=false。",
+        "AXP使用明确理想USB/no-cell、datasheet参考启动子集；变体DC5/充电、watchdog、长按关机/CPU供电及模拟音频不假ACK。",
+        "可用STEP为裸参考板，不确认当前V2内部改版；按官方37.6×45.2×15mm外尺寸建有孔空心壳，半径/壁厚明示估计。电池尺寸/标签/安装、内部机械装配和精确侧孔UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/arduino-v2/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/examples/arduino-v2/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：docs/FIRMWARE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/docs/FIRMWARE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/brookesia/README.md",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/brookesia/README_ZH.md",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/brookesia/components/brookesia_core/test_apps/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/brookesia_core/test_apps/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：firmware/brookesia/components/bsp_extra/include/bsp_board_extra.h",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/bsp_extra/include/bsp_board_extra.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：firmware/brookesia/components/bsp_extra/src/bsp_board_extra.c",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/bsp_extra/src/bsp_board_extra.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：firmware/brookesia/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：firmware/brookesia/main/main.cpp",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：firmware/brookesia/original/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/original/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：firmware/brookesia/v2/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/v2/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/CMakeLists.txt",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/Kconfig",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/LICENSE",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/README.md",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/esp32_s3_touch_amoled_1_8.c",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/idf_component.yml",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/config.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/display.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/esp-bsp.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/esp32_s3_touch_amoled_1_8.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/touch.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/priv_include/bsp_err_check.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/CMakeLists.txt",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/Kconfig",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/LICENSE",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/README.md",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/esp32_s3_touch_amoled_1_8.c",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/idf_component.yml",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/config.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/display.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/esp-bsp.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/esp32_s3_touch_amoled_1_8.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/touch.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/priv_include/bsp_err_check.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-AMOLED-1.8.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.8/ESP32-S3-Touch-AMOLED-1.8.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/registry-s3-am18-1.1.4.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定原始来源：official-resources/registry-s3-am18-1.1.4.html",
+          "url": "https://components.espressif.com/components/waveshare/esp32_s3_touch_amoled_1_8/versions/1.1.4/readme",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定原始来源：official-resources/registry-s3-am18-2.0.3.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-44",
+          "title": "固定原始来源：official-resources/registry-s3-am18-2.0.3.html",
+          "url": "https://components.espressif.com/components/waveshare/esp32_s3_touch_amoled_1_8/versions/2.0.3/readme",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-8-en/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-f970670d"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v1",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.8-EN · V1 SH8601 + FT3168",
+      "manufacturer": "Waveshare",
+      "sku": "29958",
+      "chip": "esp32s3",
+      "hardwareRevision": "V1 discontinued; separate factory image required",
+      "summary": "1.8英寸368×448、16MiB Flash/8MiB PSRAM；官方V1 SH8601/FT3168与2026-05-30起V2 CO5300/CST820分开。TCA/AXP/ES8311、真实单线TF与高有效SYS_OUT电源键；电池/无电池SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v1.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-8",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.8"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled18-v1",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 368,
+        "height": 448,
+        "type": "AMOLED",
+        "controller": "SH8601",
+        "bus": "QSPI manufacturer RGB565 subset",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 P4/SYS_OUT",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Actual NFET sense: idleLOW, pressedHIGH. This input does not simulate PMU long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC 1-bit",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact physical bus with a prepared64MiB FAT32 default; native1bit and SPI transports are explicitly distinct."
+        }
+      ],
+      "limitations": [
+        "原V2程序在读取CST820身份时abort；该未知寄存器保持NACK，未借用CST816S/D身份。数字触点坐标可单独测，不能声称V2原厂UI已通过。",
+        "V1实际早期彩色画面仍不等于完整界面/音频/联网/物理触摸通过；所有条目simulationVerified=false。",
+        "AXP使用明确理想USB/no-cell、datasheet参考启动子集；变体DC5/充电、watchdog、长按关机/CPU供电及模拟音频不假ACK。",
+        "可用STEP为裸参考板，不确认当前V2内部改版；按官方37.6×45.2×15mm外尺寸建有孔空心壳，半径/壁厚明示估计。电池尺寸/标签/安装、内部机械装配和精确侧孔UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/arduino-v2/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/examples/arduino-v2/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：docs/FIRMWARE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/docs/FIRMWARE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/brookesia/README.md",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/brookesia/README_ZH.md",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/brookesia/components/brookesia_core/test_apps/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/brookesia_core/test_apps/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：firmware/brookesia/components/bsp_extra/include/bsp_board_extra.h",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/bsp_extra/include/bsp_board_extra.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：firmware/brookesia/components/bsp_extra/src/bsp_board_extra.c",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/components/bsp_extra/src/bsp_board_extra.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：firmware/brookesia/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：firmware/brookesia/main/main.cpp",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：firmware/brookesia/original/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/original/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：firmware/brookesia/v2/main/idf_component.yml",
+          "url": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/brookesia/v2/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/CMakeLists.txt",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/Kconfig",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/LICENSE",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/README.md",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/esp32_s3_touch_amoled_1_8.c",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/idf_component.yml",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/config.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/display.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/esp-bsp.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/esp32_s3_touch_amoled_1_8.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/include/bsp/touch.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：registry-1.1.4/esp32_s3_touch_amoled_1_8/priv_include/bsp_err_check.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/CMakeLists.txt",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/Kconfig",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/LICENSE",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/README.md",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/esp32_s3_touch_amoled_1_8.c",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/idf_component.yml",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/config.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/display.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/esp-bsp.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/esp32_s3_touch_amoled_1_8.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/include/bsp/touch.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定原始来源：registry-2.0.3/esp32_s3_touch_amoled_1_8/priv_include/bsp_err_check.h",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定原始来源：official-resources/ESP32-S3-Touch-AMOLED-1.8.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.8/ESP32-S3-Touch-AMOLED-1.8.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定原始来源：official-resources/registry-s3-am18-1.1.4.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=f4d5f0a7-4256-485b-89b7-22a258cc10cd",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定原始来源：official-resources/registry-s3-am18-1.1.4.html",
+          "url": "https://components.espressif.com/components/waveshare/esp32_s3_touch_amoled_1_8/versions/1.1.4/readme",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定原始来源：official-resources/registry-s3-am18-2.0.3.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=144fecbb-34de-4caf-a14d-3c5cb356223f",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-44",
+          "title": "固定原始来源：official-resources/registry-s3-am18-2.0.3.html",
+          "url": "https://components.espressif.com/components/waveshare/esp32_s3_touch_amoled_1_8/versions/2.0.3/readme",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-8-en/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-a14c4a2f"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-a14c4a2f",
+      "name": "ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20260915.bin",
+      "productIds": [
+        "waveshare-esp32-s3-touch-amoled-1-8-v1",
+        "waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v1"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20260915.bin",
+        "sha256": "c811100a0cc8ca4cf94eb1c5d1b9fc5e320954b70888f945a21098e4020f47d7",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20260915",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20260915.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "固定Git commit的官方README与BSP依赖分别确认V1组件1.1.4、V2组件2.0.3；原厂两完整BIN严格定向对应版本。V1真实ROM5秒201帧/1304色进入Brookesia早期UI；V2真实运行337guest ms发现CST@15后因未知ID读取NACK触发ESP_ERR_INVALID_STATE/abort/reset，0帧。保留失败原UART和黑帧，不假ID或修改原BIN。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-a14c4a2f-watch"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-f970670d",
+      "name": "ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20261118.bin",
+      "productIds": [
+        "waveshare-esp32-s3-touch-amoled-1-8-v2",
+        "waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v2"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20261118.bin",
+        "sha256": "4621d61def9ec75903e447668d53e0f3d6d50317193dbfe4c25308502ba66033",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20261118",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20261118.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "固定Git commit的官方README与BSP依赖分别确认V1组件1.1.4、V2组件2.0.3；原厂两完整BIN严格定向对应版本。V1真实ROM5秒201帧/1304色进入Brookesia早期UI；V2真实运行337guest ms发现CST@15后因未知ID读取NACK触发ESP_ERR_INVALID_STATE/abort/reset，0帧。保留失败原UART和黑帧，不假ID或修改原BIN。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-f970670d-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-a14c4a2f-watch",
+      "name": "ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20260915.bin",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Touch-AMOLED-1.8",
+      "metadataUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+      "version": "01fd3200370a4417b257e8a4c185a04ef931342a",
+      "checkedAt": "2026-11-23T16:52:26Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20260915.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20260915.bin",
+          "sha256": "c811100a0cc8ca4cf94eb1c5d1b9fc5e320954b70888f945a21098e4020f47d7",
+          "bytes": 16777216,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-amoled-1-8-v1",
+          "waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v1"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "原厂固定Git树内BIN分发，README明确V1/V2与命名修订；本条不假设存在GitHubRelease自动资产接口。当前精确commit/路径/hash已审计，未来变更需人工重新检查板版本、BIN布局和原始ROM结果。",
+      "metadataProvider": "manual"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-8-factory-s3-touch-amoled-1-8-f-f970670d-watch",
+      "name": "ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20261118.bin",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Touch-AMOLED-1.8",
+      "metadataUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/blob/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/README.md",
+      "version": "01fd3200370a4417b257e8a4c185a04ef931342a",
+      "checkedAt": "2026-11-23T16:52:25Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20261118.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.8/01fd3200370a4417b257e8a4c185a04ef931342a/firmware/ESP32-S3-Touch-AMOLED-1.8_FactoryOnly_20261118.bin",
+          "sha256": "4621d61def9ec75903e447668d53e0f3d6d50317193dbfe4c25308502ba66033",
+          "bytes": 16777216,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-amoled-1-8-v2",
+          "waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v2"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "原厂固定Git树内BIN分发，README明确V1/V2与命名修订；本条不假设存在GitHubRelease自动资产接口。当前精确commit/路径/hash已审计，未来变更需人工重新检查板版本、BIN布局和原始ROM结果。",
+      "metadataProvider": "manual"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-amoled-1-8-v2.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-amoled-1-8-v1.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v2.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-amoled-1-8-sku-29958-v1.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-touch-amoled18-v2": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": [
+        "power"
+      ]
+    },
+    "waveshare-s3-touch-amoled18-v1": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": [
+        "power"
+      ]
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "V1/V2独立显示die、gap0/gap16与触摸地址38h/15h，实际GRAM红像素、错误quad线拒绝。",
+    "真实TCA P0/P2独立复位、P1 DSI不误关屏、P4高有效key、P7 TF native门控；DCDC1掉电重置TCA/QMI/codec并撤回触控ACK。",
+    "原厂两个完整ROM分别有界运行，V1彩色UI与V2未知CST身份失败都保留；7份本组原厂STEP中包含1.8裸参考板。"
+  ],
+  "limitations": [
+    "原V2程序在读取CST820身份时abort；该未知寄存器保持NACK，未借用CST816S/D身份。数字触点坐标可单独测，不能声称V2原厂UI已通过。",
+    "V1实际早期彩色画面仍不等于完整界面/音频/联网/物理触摸通过；所有条目simulationVerified=false。",
+    "AXP使用明确理想USB/no-cell、datasheet参考启动子集；变体DC5/充电、watchdog、长按关机/CPU供电及模拟音频不假ACK。",
+    "可用STEP为裸参考板，不确认当前V2内部改版；按官方37.6×45.2×15mm外尺寸建有孔空心壳，半径/壁厚明示估计。电池尺寸/标签/安装、内部机械装配和精确侧孔UNKNOWN。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

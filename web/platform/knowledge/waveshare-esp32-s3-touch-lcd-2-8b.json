@@ -1,0 +1,3191 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-touch-lcd-2-8b",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-touch-lcd-2-8b",
+  "title": "Waveshare ESP32-S3-Touch-LCD-2.8B",
+  "summary": "2.8 英寸 480×640 竖屏，16 MiB Flash / 8 MiB Octal PSRAM；原厂界面已出屏，后续 BLE 测试阶段仍受限。",
+  "summarySourceIds": [
+    "overview",
+    "schematic"
+  ],
+  "updatedAt": "2026-11-24T00:04:04Z",
+  "hardwareRevision": "unspecified",
+  "facts": [
+    {
+      "id": "identity",
+      "label": "精确型号与存储",
+      "value": {
+        "sku": "30103",
+        "flashMiB": 16,
+        "psramMiB": 8,
+        "psramBus": "octal"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic"
+      ]
+    },
+    {
+      "id": "display",
+      "label": "屏幕规格",
+      "value": {
+        "width": 480,
+        "height": 640,
+        "shape": "rectangular",
+        "controller": "ST7701S",
+        "touch": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "lcd-driver"
+      ]
+    },
+    {
+      "id": "pins",
+      "label": "板载信号路由",
+      "value": {
+        "i2c": {
+          "sda": 15,
+          "scl": 7,
+          "expanderAddress": "0x20",
+          "qmiAddress": "0x6b",
+          "qmiSa0": "grounded",
+          "rtcAddress": "0x51"
+        },
+        "lcdInit": {
+          "clock": 2,
+          "mosi": 1,
+          "cs": "TCA P2",
+          "reset": "TCA P0",
+          "commandBits": 1,
+          "addressBits": 8
+        },
+        "rgb": {
+          "dataLeastSignificantFirst": [
+            5,
+            45,
+            48,
+            47,
+            21,
+            14,
+            13,
+            12,
+            11,
+            10,
+            9,
+            46,
+            3,
+            8,
+            18,
+            17
+          ],
+          "pclk": 41,
+          "de": 40,
+          "vsync": 39,
+          "hsync": 38,
+          "backlight": 6
+        },
+        "touch": {
+          "addressAfterOfficialReset": "0x5d",
+          "alternatePhysicalStrapAddress": "0x14",
+          "reset": "TCA P1",
+          "irq": 16,
+          "addressPolicy": "Only the address selected by actual INT level at reset release ACKs."
+        },
+        "tf": {
+          "runtimeTransport": "sdmmc",
+          "busWidth": 1,
+          "pins": {
+            "clk": 2,
+            "cmd": 1,
+            "d0": 42,
+            "d1": null,
+            "d2": null,
+            "d3": null
+          },
+          "dat3Selection": "TCA9554 P3 held high for the supported native path; not a power gate or GPIO data lane",
+          "secondaryHardwareSpiPins": {
+            "clock": 2,
+            "mosi": 1,
+            "miso": 42,
+            "cs": "TCA9554 P3"
+          },
+          "limits": "No four-bit route, wire timing, hot mode switching or DAT3-low native behavior modeled."
+        },
+        "boot": 0
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "lcd-driver",
+        "sd-driver",
+        "i2c-driver"
+      ]
+    },
+    {
+      "id": "controllers",
+      "label": "板载器件",
+      "value": {
+        "lcd": "ST7701S",
+        "touch": "GT911",
+        "imu": "QMI8658C",
+        "rtc": "PCF85063ATL",
+        "expander": "TCA9554"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic",
+        "imu-driver"
+      ]
+    },
+    {
+      "id": "factory",
+      "label": "原始原厂镜像",
+      "value": {
+        "name": "ESP32-S3-Touch-LCD-2.8B_FactoryOnly_20241025.bin",
+        "bytes": 1955632,
+        "sha256": "85416d0dbb548e9b3f161b3163c70680b0a016e4c6f10d14c2a02a061db7cd53",
+        "offset": 0,
+        "applicableProducts": [
+          "ESP32-S3-Touch-LCD-2.8B"
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory-readme",
+        "factory-binary"
+      ]
+    },
+    {
+      "id": "model-dimensions",
+      "label": "3D 模型尺寸与适用版本",
+      "value": {
+        "pcb": {
+          "sizeMm": [
+            47.91702145999997,
+            66.71725817999997,
+            1.6000002000000713
+          ],
+          "sourceIds": [
+            "official-cad"
+          ],
+          "scope": "Native exact-named assembly; PCB electrical revision unverified."
+        },
+        "display": {
+          "activeSizeMm": [
+            43.2,
+            57.6
+          ],
+          "sourceIds": [
+            "official-cad"
+          ],
+          "scope": "Active pixel window (AA); separate from cover VA."
+        },
+        "sourceAssemblySizeMm": [
+          52.9,
+          71.3,
+          11.100000099999999
+        ],
+        "sku": "30103",
+        "mechanicalRevision": "source-specific; current PCB revision unverified",
+        "touchCover": {
+          "sizeMm": [
+            52.9,
+            71.3,
+            8
+          ],
+          "sourceIds": [
+            "official-cad",
+            "mechanical-drawing"
+          ],
+          "scope": "Native cover component bounding dimensions, including any attached flex; not a glass thickness claim."
+        }
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "model-mechanical-archive-1",
+        "model-official-cad",
+        "model-mechanical-drawing",
+        "model-overview",
+        "model-resources",
+        "model-product",
+        "model-front-photo",
+        "model-back-photo",
+        "model-angle-photo",
+        "model-dimension-photo"
+      ],
+      "method": "Retained original CAD/dimensioned source measurements and registered photographs; unknown values and visual estimates are explicit.",
+      "notes": "Each SKU uses its own explicitly named official STEP and mechanical drawing. All native solids, orphan shells and faces are retained; fine parts are grouped by material only. Shared part names or a shared schematic do not certify equivalent PCBs. Runtime hardwareRevision is unspecified. STEP filename dates, optical-module part-name versions and photograph silkscreen are source evidence, not certification of the present electrical board revision or a product release date. Native millimetres are preserved with a proper rigid transform only; no nonuniform scaling or inferred component relocation. Native source assembly overlaps are not Boolean-repaired. BOOT alone is bound to the physically identified source key. RESET and the slide power switch remain visible source geometry; reset uses the platform action and no unverified GPIO power control is created. The framebuffer is a separate live surface 0.008 mm in front of the native exposed optical window for rendering. This offset is not physical laminate thickness. AA dimensions and larger cover VA dimensions remain distinct. Source photographs remain unchanged references. Approximate rear registration is a mechanical placement review, not calibration of factory text orientation relative to USB, hardware fit, or browser/WebGL acceptance. External batteries, cables and other accessories are not included in the native assembly and have not been invented. The rectangle AA43.20×57.60 mm is native LCD component face0 (2488.32 mm²) and corresponds to480×640 portrait pixels. The overall LCD source includes flex tails, and its bounds are not the same quantity as the65.20 mm main-body drawing annotation. Touch SKU30103 has a separate52.90×71.30 mm cover with outer corner radius3 mm and larger VA43.60×58.00 mm. Its active framebuffer stays rectangular43.20×57.60 mm. The cover source includes its flex, hence an8 mm component bounding depth; this is not8 mm glass thickness."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "官方型号、SKU 与硬件说明",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B",
+      "fetchedAt": "2026-11-23T08:05:22Z",
+      "sha256": "f85c882f092efa32ea079d8077400123e854cb3e75a869bb3a1ea8dcd2ae059b",
+      "bytes": 69255,
+      "mediaType": "text/html",
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B-overview.html"
+    },
+    {
+      "id": "schematic",
+      "title": "精确来源原理图",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B_schematic_diagram.pdf",
+      "kind": "official-schematic",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B_schematic_diagram.pdf",
+      "fetchedAt": "2026-11-23T07:30:45Z",
+      "sha256": "9c7d84529d421a86b907ff29063155ddb54a01bc1805d1f81769097b9af95947",
+      "bytes": 292361,
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B_schematic_diagram.pdf",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "lcd-datasheet",
+      "title": "ST7701S 数据手册",
+      "url": "https://files.waveshare.com/wiki/common/ST7701S_SPEC_V1.4.pdf",
+      "kind": "official-datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/common/ST7701S_SPEC_V1.4.pdf",
+      "fetchedAt": "2026-11-23T07:30:56Z",
+      "sha256": "ef682eda3c4f226470f8d71e936000b477f1c0908ac1a16a416f43e4165433d2",
+      "bytes": 8502996,
+      "archiveName": "ST7701S_SPEC_V1.4.pdf",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "lcd-driver",
+      "title": "官方 LCD 初始化与 RGB 引脚",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "fetchedAt": "2026-11-23T07:30:45Z",
+      "sha256": "992797c3d380b45d4cb0b4fb811cdc3cd56d4aea8470bec0fb25ccf3bf4f1f97",
+      "bytes": 4357,
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B-Display_ST7701.h",
+      "notes": "ZIP 成员 Arduino/examples/LVGL_Arduino/Display_ST7701.h；容器 SHA-256 5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c，不是单独的 HTTP 响应。"
+    },
+    {
+      "id": "sd-driver",
+      "title": "官方 SDMMC 单线初始化源码",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "fetchedAt": "2026-11-23T07:30:45Z",
+      "sha256": "b467ddb5ca3b85b134c6ef073f9706f55ebcd7e492c03ce0926a4ffab73cf617",
+      "bytes": 4219,
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B-SD_Card.cpp",
+      "notes": "ZIP 成员 Arduino/examples/LVGL_Arduino/SD_Card.cpp；容器 SHA-256 5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c，不是单独 HTTP 响应。SD_MMC.setPins(2,1,42,-1,-1,-1) 与 begin(...,true,true) 明确单线模式。"
+    },
+    {
+      "id": "i2c-driver",
+      "title": "官方 I2C 引脚",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "fetchedAt": "2026-11-23T07:30:45Z",
+      "sha256": "aa302b60eedfbe8671d091e1d24c6962b3e9a3c171f3f6139a7460c5d1e32d86",
+      "bytes": 340,
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B-I2C_Driver.h",
+      "notes": "ZIP 成员 Arduino/examples/LVGL_Arduino/I2C_Driver.h；容器 SHA-256 5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c，不是单独的 HTTP 响应。"
+    },
+    {
+      "id": "imu-driver",
+      "title": "官方 QMI8658 驱动",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "fetchedAt": "2026-11-23T07:30:45Z",
+      "sha256": "72e017c9c15ea13aa5c288185b8e33a95a72a0930ca2881153052e3d6ba7a3c4",
+      "bytes": 9013,
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B-Gyro_QMI8658.cpp",
+      "notes": "ZIP 成员 Arduino/examples/LVGL_Arduino/Gyro_QMI8658.cpp；容器 SHA-256 5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c，不是单独的 HTTP 响应。"
+    },
+    {
+      "id": "factory-readme",
+      "title": "官方原厂恢复镜像说明",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8B/5a140abfa0ea9e9703a2dbd61585307c12e7d3f0/firmware/README.md",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8B/5a140abfa0ea9e9703a2dbd61585307c12e7d3f0/firmware/README.md",
+      "fetchedAt": "2026-11-23T07:31:03Z",
+      "sha256": "d18cf919f37fecbc940dbb608ca63712eab983c55b424685c6f7e0d889d0e2b3",
+      "bytes": 686,
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B-firmware-README.md",
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "factory-binary",
+      "title": "固定提交的原始官方出厂镜像",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8B/5a140abfa0ea9e9703a2dbd61585307c12e7d3f0/firmware/ESP32-S3-Touch-LCD-2.8B_FactoryOnly_20241025.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.8B/5a140abfa0ea9e9703a2dbd61585307c12e7d3f0/firmware/ESP32-S3-Touch-LCD-2.8B_FactoryOnly_20241025.bin",
+      "fetchedAt": "2026-11-23T07:31:03Z",
+      "sha256": "85416d0dbb548e9b3f161b3163c70680b0a016e4c6f10d14c2a02a061db7cd53",
+      "bytes": 1955632,
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B_FactoryOnly_20241025.bin",
+      "notes": "仅保存下载收据和远程链接，不提交原厂 BIN。"
+    },
+    {
+      "id": "xiaozhi",
+      "title": "小智固定源码树中的 Waveshare 目标",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards/waveshare",
+      "kind": "official-repository",
+      "status": "linked",
+      "notes": "已核对该完整树的 46 个 Waveshare config / 70 个 build；本批六款没有精确目标。C5/C6 的同尺寸屏不能替代 S3。"
+    },
+    {
+      "id": "model-mechanical-archive-1",
+      "title": "mechanical-archive-1",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "fetchedAt": "2026-11-23T09:28:55Z",
+      "bytes": 3859408,
+      "sha256": "238cd1b4693a0a84c37698fec0a20507d876a88cc996e624f11aee0233939eaf",
+      "archiveName": "mechanical-archive-1.zip",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/mechanical-archive-1.zip. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-official-cad",
+      "title": "official-cad",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "fetchedAt": "2026-11-23T09:28:55Z",
+      "bytes": 20875978,
+      "sha256": "fcdb372a4ddd7e446fc2fcf30572aa26c0aea0187ca6e22848d827ef5a8282b3",
+      "archiveName": "source.stp",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/source.stp.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify extracted member ESP32-S3-Touch-LCD-2.8B-20241031.stp in ZIP SHA-256 238cd1b4693a0a84c37698fec0a20507d876a88cc996e624f11aee0233939eaf, not a separate HTTP response."
+    },
+    {
+      "id": "model-mechanical-drawing",
+      "title": "mechanical-drawing",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "fetchedAt": "2026-11-23T09:28:55Z",
+      "bytes": 168177,
+      "sha256": "a8ed9b5085c927e58c51064bbb3d9b855433718b6930f7a0b5ca43224a742407",
+      "archiveName": "mechanical-drawing.pdf",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/mechanical-drawing.pdf. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify extracted member ESP32-S3-Touch-LCD-2.8B-20241031.pdf in ZIP SHA-256 238cd1b4693a0a84c37698fec0a20507d876a88cc996e624f11aee0233939eaf, not a separate HTTP response."
+    },
+    {
+      "id": "model-overview",
+      "title": "overview",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B",
+      "fetchedAt": "2026-11-23T08:05:22Z",
+      "bytes": 69255,
+      "sha256": "f85c882f092efa32ea079d8077400123e854cb3e75a869bb3a1ea8dcd2ae059b",
+      "archiveName": "overview.html",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/overview.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-resources",
+      "title": "resources",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B/Resources-And-Documents",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T08:05:22Z",
+      "bytes": 59560,
+      "sha256": "18b6fe9b36a9751f3b8d60ae5dba0a0e4c5eec1ffe52e939023addd893d8661f",
+      "archiveName": "resources.html",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/resources.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-product",
+      "title": "product",
+      "url": "https://www.waveshare.com/esp32-s3-touch-lcd-2.8b.htm?sku=30103",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/esp32-s3-touch-lcd-2.8b.htm?sku=30103",
+      "fetchedAt": "2026-11-23T09:31:55Z",
+      "bytes": 333133,
+      "sha256": "86b4db2e877475bfd645301df4d0d54c1ef058f125aa517f458e2e26b1e59a23",
+      "archiveName": "product.html",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/product.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-front-photo",
+      "title": "front-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-2.jpg",
+      "fetchedAt": "2026-11-23T09:32:46Z",
+      "bytes": 16625,
+      "sha256": "8e888a270ed12cc79099803b98dc09aa8a0be980762f343e6bd015616b46a65f",
+      "archiveName": "front-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/front-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-back-photo",
+      "title": "back-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-3_2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-3_2.jpg",
+      "fetchedAt": "2026-11-23T09:32:46Z",
+      "bytes": 94986,
+      "sha256": "42b901ef2b22f87c1f7904764955de267391235258ba8d179a7f9ff1cc4ab081",
+      "archiveName": "back-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/back-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-angle-photo",
+      "title": "angle-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-4_2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-4_2.jpg",
+      "fetchedAt": "2026-11-23T09:32:47Z",
+      "bytes": 90937,
+      "sha256": "c9a43a0a35d6a70a66310c2551777ca9766efacd4ffe12e8bd3634fc47953d03",
+      "archiveName": "angle-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/angle-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-dimension-photo",
+      "title": "dimension-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-details-size.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-details-size.jpg",
+      "fetchedAt": "2026-11-23T09:32:52Z",
+      "bytes": 122555,
+      "sha256": "78438de98bab6620cc72a712cb44e0961896d165b70417588a9dc2bb2dfd5fa5",
+      "archiveName": "dimension-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-2-8b/dimension-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "official-store",
+      "title": "官方商品页与精确SKU选项",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-2.8b.htm",
+      "kind": "storefront",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:21Z",
+      "sha256": "be60df34a24132a35288d19649e394e3d7f7dfee489501a79099c9b874c707dc",
+      "bytes": 324218,
+      "archiveName": "store-response-not-retained.html",
+      "notes": "原HTTP响应的字节哈希；原始商店HTML含匿名会话值，Git仅保留无会话值的SKU抽取与收据。",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-2.8b.htm"
+    },
+    {
+      "id": "official-overview",
+      "title": "官方型号、容量、接口与屏幕规格",
+      "url": "https://docs.waveshare.com/ESP32-S3-LCD-2.8B",
+      "kind": "documentation",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:32:56Z",
+      "sha256": "aaea111c42300c1f9d2e0d38bd7897ed0a3e0b7f5b6d790f96dc1cb7ffb1dc82",
+      "bytes": 69008,
+      "archiveName": "esp32-s3-touch-lcd-2-8b-overview.html",
+      "notes": "原始文档响应收据；可核对厂家URL与curated inventory。",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-LCD-2.8B"
+    },
+    {
+      "id": "official-overview-1",
+      "title": "官方型号、容量、接口与屏幕规格",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B",
+      "kind": "documentation",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:48Z",
+      "sha256": "103e4bbe215b621131b1917f78c0aa9fc8121516f29c0e33c89918abcce212b5",
+      "bytes": 69255,
+      "archiveName": "esp32-s3-touch-lcd-2-8b-overview.html",
+      "notes": "原始文档响应收据；可核对厂家URL与curated inventory。",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B"
+    },
+    {
+      "id": "board-source-0",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/BAT_Driver.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "ef706a4f2edced58762844364925b42eb680a3adb7ddad5370d3f847335ec38b",
+      "bytes": 411,
+      "archiveName": "ef706a4f2edced5876-BAT_Driver.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/BAT_Driver.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-1",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/BAT_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "bb4873c9e60ad2ee1a32b2dca1f9b7aa4867b8a5bdf5f913ce4e67e5d2db6133",
+      "bytes": 184,
+      "archiveName": "bb4873c9e60ad2ee1a-BAT_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/BAT_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-2",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Button_Driver.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "3a898805487187eba05cf994c605ca9bc8813520fb975d20ad0e319dac4d4326",
+      "bytes": 1532,
+      "archiveName": "3a898805487187eba0-Button_Driver.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Button_Driver.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-3",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Button_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "fa269a7813640aec61e3c2f6ea43fae4808c1b8b3a3a178755b09896979e219f",
+      "bytes": 739,
+      "archiveName": "fa269a7813640aec61-Button_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Button_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-4",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Display_ST7701.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "831eea7faa6a6090696782695cc3e7af055f1e9a9257fd29a02158f1b8ae4d5e",
+      "bytes": 14248,
+      "archiveName": "831eea7faa6a609069-Display_ST7701.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Display_ST7701.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-5",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Display_ST7701.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "3c93802a21dbd1c7ae52eaaf5158f566bb36b203e789a61b8d1d61a221ac46f3",
+      "bytes": 4365,
+      "archiveName": "3c93802a21dbd1c7ae-Display_ST7701.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Display_ST7701.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-6",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Gyro_QMI8658.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "72e017c9c15ea13aa5c288185b8e33a95a72a0930ca2881153052e3d6ba7a3c4",
+      "bytes": 9013,
+      "archiveName": "72e017c9c15ea13aa5-Gyro_QMI8658.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Gyro_QMI8658.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-7",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Gyro_QMI8658.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "5b9c704ede28cb21ce095c3b3586a1b955d14dddbca1579db03381783dae347d",
+      "bytes": 5273,
+      "archiveName": "5b9c704ede28cb21ce-Gyro_QMI8658.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Gyro_QMI8658.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-8",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/I2C_Driver.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "96d642ae6e63a235b904a5d74474ad8c28f682da52be69d8ec8002fa1ae8963d",
+      "bytes": 975,
+      "archiveName": "96d642ae6e63a235b9-I2C_Driver.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/I2C_Driver.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-9",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/I2C_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "aa302b60eedfbe8671d091e1d24c6962b3e9a3c171f3f6139a7460c5d1e32d86",
+      "bytes": 340,
+      "archiveName": "aa302b60eedfbe8671-I2C_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/I2C_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-10",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Arduino.ino",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "f1dc4c896894921ab8e5b9afb900ab699acd5171c85e972263b9ca8294fbc719",
+      "bytes": 1549,
+      "archiveName": "f1dc4c896894921ab8-LVGL_Arduino.ino.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Arduino.ino"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-11",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Driver.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "eeb70b0642d7bb03c5b2232cfd1423aea991cbf49d4a9d41304302f28b68d298",
+      "bytes": 3628,
+      "archiveName": "eeb70b0642d7bb03c5-LVGL_Driver.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Driver.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-12",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "cededcbd8a8f6bbe948096dfa5e063686aabefbc5d5a0fee86f7104145481393",
+      "bytes": 862,
+      "archiveName": "cededcbd8a8f6bbe94-LVGL_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-13",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Example.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "92b9fe46aae060d801523d76acdfd35cac8d9fcbc467d902e839d211e8dec49b",
+      "bytes": 26211,
+      "archiveName": "92b9fe46aae060d801-LVGL_Example.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Example.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-14",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Example.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "27f9949834903b0d753a49e36d17f0639e06ef5029024b7cdab372b9028b1531",
+      "bytes": 515,
+      "archiveName": "27f9949834903b0d75-LVGL_Example.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Example.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-15",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/RTC_PCF85063.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "c7ff03ad937cac0cd8d6869ec1b8a70c31d903f4f36e8d95a50bdbe89213fa9f",
+      "bytes": 7443,
+      "archiveName": "c7ff03ad937cac0cd8-RTC_PCF85063.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/RTC_PCF85063.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-16",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/RTC_PCF85063.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "7262287fc2e669b2a94bcdcd56c1030dc7377759beff93e7091e2ba304e881d7",
+      "bytes": 3060,
+      "archiveName": "7262287fc2e669b2a9-RTC_PCF85063.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/RTC_PCF85063.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-17",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/SD_Card.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "b467ddb5ca3b85b134c6ef073f9706f55ebcd7e492c03ce0926a4ffab73cf617",
+      "bytes": 4219,
+      "archiveName": "b467ddb5ca3b85b134-SD_Card.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/SD_Card.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-18",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/SD_Card.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "355f9ef9cd3fd989280c94f1ea5ce3f18cca8583aa35ed103d44a4c8860ed76a",
+      "bytes": 480,
+      "archiveName": "355f9ef9cd3fd98928-SD_Card.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/SD_Card.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-19",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Simulated_Gesture.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "6e9a2a27bb728bc36946c35f1ba3a7e92a8167d519aba695cc065cfbab285619",
+      "bytes": 6485,
+      "archiveName": "6e9a2a27bb728bc369-Simulated_Gesture.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Simulated_Gesture.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-20",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Simulated_Gesture.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "c90ef1fe8a0fcd71f76c46f14a868595b105300bcd46d2034f035844167b7e42",
+      "bytes": 741,
+      "archiveName": "c90ef1fe8a0fcd71f7-Simulated_Gesture.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Simulated_Gesture.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-21",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/TCA9554PWR.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "ec790005562912c22a85de3100440b7dfafe68c996b94e8b277684bdf71254cc",
+      "bytes": 4935,
+      "archiveName": "ec790005562912c22a-TCA9554PWR.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/TCA9554PWR.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-22",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/TCA9554PWR.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "057428ce8f113b49bafc4e4d60f9054f8b5b897fa15bf5b2228ba6b08b19a6dc",
+      "bytes": 3480,
+      "archiveName": "057428ce8f113b49ba-TCA9554PWR.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/TCA9554PWR.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-23",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Wireless.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "25070e07f8f08067baffbd75ab59962412ea9d207452209feb0302c8bba453fd",
+      "bytes": 1906,
+      "archiveName": "25070e07f8f08067ba-Wireless.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Wireless.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-24",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Wireless.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "21cd10157748d5a95ca5cb13db17fa816c8bb5e445bf7deb2daa5be4a4de9f39",
+      "bytes": 478,
+      "archiveName": "21cd10157748d5a95c-Wireless.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "Arduino/examples/LVGL_Arduino/Wireless.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-25",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/BAT_Driver/BAT_Driver.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "34e575f9f685639d1b067c8a6ced57fd8e14aa12d17161ca6aa66d48f0a29b9e",
+      "bytes": 4715,
+      "archiveName": "34e575f9f685639d1b-BAT_Driver.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/BAT_Driver/BAT_Driver.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-26",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/BAT_Driver/BAT_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "52c1911baccbb2095320f3a6890fcb059be1a23ecfcf6cc69f4edc2120a752f2",
+      "bytes": 596,
+      "archiveName": "52c1911baccbb20953-BAT_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/BAT_Driver/BAT_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-27",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Button_Driver/Button_Driver.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "31b0a29156daab557433c14fc330041840630c954f94b35f5d150036107ef4df",
+      "bytes": 2465,
+      "archiveName": "31b0a29156daab5574-Button_Driver.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Button_Driver/Button_Driver.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-28",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Button_Driver/Button_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "f4a79ed936a0aced6f9460c5956c2ea5b68305ac88874a3d43ca2ea4175b8d12",
+      "bytes": 261,
+      "archiveName": "f4a79ed936a0aced6f-Button_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Button_Driver/Button_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-29",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Button_Driver/multi_button.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "d6da9c446faf4173e2c13718a4c0f75b1378707081546ac8ff1447dd17d4124c",
+      "bytes": 5388,
+      "archiveName": "d6da9c446faf4173e2-multi_button.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Button_Driver/multi_button.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-30",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Button_Driver/multi_button.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "cc23058be945db3a252b89461fcefd688ad2d8f7078564811cb68a51f838af9c",
+      "bytes": 1358,
+      "archiveName": "cc23058be945db3a25-multi_button.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Button_Driver/multi_button.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-31",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Buzzer/Buzzer.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "a231adb0aeebd3878e605704cf35dbc690e44279cbe502bce48e707df702d730",
+      "bytes": 149,
+      "archiveName": "a231adb0aeebd3878e-Buzzer.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Buzzer/Buzzer.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-32",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Buzzer/Buzzer.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "67e15beb6dfefcaed7c7639abd216502fc795785f8072cb2da3bf425423f5af1",
+      "bytes": 90,
+      "archiveName": "67e15beb6dfefcaed7-Buzzer.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Buzzer/Buzzer.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-33",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/CMakeLists.txt",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "eda0ba3ac742c82bea90b945981cd5c1b030919e12298e580d135f9efd18e347",
+      "bytes": 1601,
+      "archiveName": "eda0ba3ac742c82bea-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/CMakeLists.txt"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-34",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/EXIO/TCA9554PWR.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "a92844e3590f4f2a5d7c87781d361e3cc3356cdbaf7afc64de4ee47d9d2da8ef",
+      "bytes": 5575,
+      "archiveName": "a92844e3590f4f2a5d-TCA9554PWR.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/EXIO/TCA9554PWR.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-35",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/EXIO/TCA9554PWR.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "d6d4f31c02d6163b0735afad3000b308e0395347813346979db6fa677a9a2ba3",
+      "bytes": 4077,
+      "archiveName": "d6d4f31c02d6163b07-TCA9554PWR.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/EXIO/TCA9554PWR.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-36",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/I2C_Driver/I2C_Driver.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "d309b0daa631629dee72c50fdab8a30e2f9095814225bb2013e9c4816817ba3d",
+      "bytes": 2053,
+      "archiveName": "d309b0daa631629dee-I2C_Driver.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/I2C_Driver/I2C_Driver.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-37",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/I2C_Driver/I2C_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "908e4f523145e7939dad450e2ec89bdb7596a511b91d115b5dacd69191c625c4",
+      "bytes": 1086,
+      "archiveName": "908e4f523145e7939d-I2C_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/I2C_Driver/I2C_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-38",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LCD_Driver/ST7701S.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "a87332f27e341851398c67a91f4c2fb757af0425a010d0451bc14208a190c11f",
+      "bytes": 15108,
+      "archiveName": "a87332f27e34185139-ST7701S.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LCD_Driver/ST7701S.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-39",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LCD_Driver/ST7701S.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "45d7d09e69de7b4aee8e1232238e037a5aac26f38c6cce6c5d725613f87625da",
+      "bytes": 3877,
+      "archiveName": "45d7d09e69de7b4aee-ST7701S.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LCD_Driver/ST7701S.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-40",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LVGL_Driver/LVGL_Driver.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "782646a3911cdb25128f7e5999ccbaf500b0b5a7eb92c66a949ed36e954b26f5",
+      "bytes": 3891,
+      "archiveName": "782646a3911cdb2512-LVGL_Driver.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LVGL_Driver/LVGL_Driver.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-41",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LVGL_Driver/LVGL_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "40c0d09e24cd85252cbe223b99300fe7f9190f068e55b12475f269cbdb9120ca",
+      "bytes": 690,
+      "archiveName": "40c0d09e24cd85252c-LVGL_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LVGL_Driver/LVGL_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-42",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LVGL_UI/LVGL_Example.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "bb718034b25234f0ad1653e01344aba93d75768cadd7af2aee4c71b4746d33f6",
+      "bytes": 17729,
+      "archiveName": "bb718034b25234f0ad-LVGL_Example.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LVGL_UI/LVGL_Example.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-43",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LVGL_UI/LVGL_Example.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "bff1b3561011b8bd298b431ca366ceb7098417f28dc97929b131ef6c3315a3ea",
+      "bytes": 596,
+      "archiveName": "bff1b3561011b8bd29-LVGL_Example.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/LVGL_UI/LVGL_Example.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-44",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/PCF85063/PCF85063.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "c8df49554f78e6fa1178cf61bfdcff859c7ea7f492b0e6178439b90d5e9dd008",
+      "bytes": 6896,
+      "archiveName": "c8df49554f78e6fa11-PCF85063.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/PCF85063/PCF85063.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-45",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/PCF85063/PCF85063.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "83f878ee6b86d289ec50268ff62114053fe056123d90911472a100057424c675",
+      "bytes": 2959,
+      "archiveName": "83f878ee6b86d289ec-PCF85063.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/PCF85063/PCF85063.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-46",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/QMI8658/QMI8658.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "82918dbcbd164a2c26b475cf2c3daa811d2ec72136080ed9952da1f05e989d95",
+      "bytes": 8725,
+      "archiveName": "82918dbcbd164a2c26-QMI8658.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/QMI8658/QMI8658.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-47",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/QMI8658/QMI8658.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "3ee12fcda504d1dd958befe1e3e80529c910e6a8944865b99e159865dd3d4a78",
+      "bytes": 5113,
+      "archiveName": "3ee12fcda504d1dd95-QMI8658.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/QMI8658/QMI8658.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-48",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/SD_Card/SD_MMC.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "a8f19439fec99fdb2b5f57fd1b83353b4d798f2ec03cbab2858917c5db267c03",
+      "bytes": 4539,
+      "archiveName": "a8f19439fec99fdb2b-SD_MMC.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/SD_Card/SD_MMC.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-49",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/SD_Card/SD_MMC.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "a2543113d3a8e496581a84f27d631e371a38c58c0aafb6ce94c375fc3a87dc09",
+      "bytes": 759,
+      "archiveName": "a2543113d3a8e49658-SD_MMC.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/SD_Card/SD_MMC.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-50",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Simulated_Gesture/Simulated_Gesture.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "514f6a6fae2e988423ee9b7778d19078a62f4cc1f59d2a1280e2f8ea5beca969",
+      "bytes": 6516,
+      "archiveName": "514f6a6fae2e988423-Simulated_Gesture.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Simulated_Gesture/Simulated_Gesture.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-51",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Simulated_Gesture/Simulated_Gesture.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "5450dd861b359f6ad71dbea90657ccbadad7943b46f247a8808539207af9a367",
+      "bytes": 719,
+      "archiveName": "5450dd861b359f6ad7-Simulated_Gesture.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Simulated_Gesture/Simulated_Gesture.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-52",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Wireless/Wireless.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "9814efa4911f4b1f15dbd433db6130e44dbd3f80366833cf5c24ecc315f68334",
+      "bytes": 7589,
+      "archiveName": "9814efa4911f4b1f15-Wireless.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Wireless/Wireless.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-53",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Wireless/Wireless.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "3b57b1ae7017e6b12b993aa8f905682e41e32b4aa6ed17a3484941fca1da9d04",
+      "bytes": 520,
+      "archiveName": "3b57b1ae7017e6b12b-Wireless.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/Wireless/Wireless.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-54",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/idf_component.yml",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "d79f97801a1f28461467ded9d307b4d5ef48729d8c49d166fc43542f848b03d1",
+      "bytes": 51,
+      "archiveName": "d79f97801a1f284614-idf_component.yml.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/idf_component.yml"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-55",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/main.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:15Z",
+      "sha256": "dc22ee53495b960a13c44059aa03ed484b6d01bf7d440439090f79e09e62e9fc",
+      "bytes": 1602,
+      "archiveName": "dc22ee53495b960a13-main.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerSha256": "a2b5377b47e4d2fb462f5224b4ed40131194451d4e3e0472419daa8b105cdcbf",
+        "containerBytes": 70954096,
+        "member": "ESP-IDF/ESP32-S3-LCD-2.8B-Test/main/main.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-56",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/BAT_Driver.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "ef706a4f2edced58762844364925b42eb680a3adb7ddad5370d3f847335ec38b",
+      "bytes": 411,
+      "archiveName": "ef706a4f2edced5876-BAT_Driver.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/BAT_Driver.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-57",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/BAT_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "bb4873c9e60ad2ee1a32b2dca1f9b7aa4867b8a5bdf5f913ce4e67e5d2db6133",
+      "bytes": 184,
+      "archiveName": "bb4873c9e60ad2ee1a-BAT_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/BAT_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-58",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Display_ST7701.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "bd3368c29bb2bdc91ea1196c1e73c3685769c3d374ab7e2ef6a4d826a13f246d",
+      "bytes": 14328,
+      "archiveName": "bd3368c29bb2bdc91e-Display_ST7701.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/Display_ST7701.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-59",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Display_ST7701.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "992797c3d380b45d4cb0b4fb811cdc3cd56d4aea8470bec0fb25ccf3bf4f1f97",
+      "bytes": 4357,
+      "archiveName": "992797c3d380b45d4c-Display_ST7701.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/Display_ST7701.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-60",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Gyro_QMI8658.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "72e017c9c15ea13aa5c288185b8e33a95a72a0930ca2881153052e3d6ba7a3c4",
+      "bytes": 9013,
+      "archiveName": "72e017c9c15ea13aa5-Gyro_QMI8658.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/Gyro_QMI8658.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-61",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Gyro_QMI8658.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "5b9c704ede28cb21ce095c3b3586a1b955d14dddbca1579db03381783dae347d",
+      "bytes": 5273,
+      "archiveName": "5b9c704ede28cb21ce-Gyro_QMI8658.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/Gyro_QMI8658.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-62",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/I2C_Driver.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "96d642ae6e63a235b904a5d74474ad8c28f682da52be69d8ec8002fa1ae8963d",
+      "bytes": 975,
+      "archiveName": "96d642ae6e63a235b9-I2C_Driver.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/I2C_Driver.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-63",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/I2C_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "aa302b60eedfbe8671d091e1d24c6962b3e9a3c171f3f6139a7460c5d1e32d86",
+      "bytes": 340,
+      "archiveName": "aa302b60eedfbe8671-I2C_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/I2C_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-64",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Arduino.ino",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "22c76d4d03aa7a8095eac742cb85a2a059c640ef3361e0ddb0be3aeb7ae0866e",
+      "bytes": 1506,
+      "archiveName": "22c76d4d03aa7a8095-LVGL_Arduino.ino.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Arduino.ino"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-65",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Driver.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "51fa6fcb18b2b8b419fc3cbce7b4d918e1f41c716647d763975e747fa59f3320",
+      "bytes": 3818,
+      "archiveName": "51fa6fcb18b2b8b419-LVGL_Driver.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Driver.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-66",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "c0b7e100777dcdc0c53b583ddf005e93ce27080f35011962990ce73b59f540c5",
+      "bytes": 856,
+      "archiveName": "c0b7e100777dcdc0c5-LVGL_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-67",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Example.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "6b525ae6951dc45e6e4c0bb8132ac6d50d3bb8bf9e0fbc21dbd51ed56ad58273",
+      "bytes": 24509,
+      "archiveName": "6b525ae6951dc45e6e-LVGL_Example.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Example.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-68",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/LVGL_Example.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "d80bd27f00af102e887a8b1cbe5209e4a231694cd42728793d724ca6361aebe1",
+      "bytes": 379,
+      "archiveName": "d80bd27f00af102e88-LVGL_Example.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/LVGL_Example.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-69",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/RTC_PCF85063.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "c7ff03ad937cac0cd8d6869ec1b8a70c31d903f4f36e8d95a50bdbe89213fa9f",
+      "bytes": 7443,
+      "archiveName": "c7ff03ad937cac0cd8-RTC_PCF85063.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/RTC_PCF85063.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-70",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/RTC_PCF85063.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "7262287fc2e669b2a94bcdcd56c1030dc7377759beff93e7091e2ba304e881d7",
+      "bytes": 3060,
+      "archiveName": "7262287fc2e669b2a9-RTC_PCF85063.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/RTC_PCF85063.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-71",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/SD_Card.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "b467ddb5ca3b85b134c6ef073f9706f55ebcd7e492c03ce0926a4ffab73cf617",
+      "bytes": 4219,
+      "archiveName": "b467ddb5ca3b85b134-SD_Card.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/SD_Card.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-72",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/SD_Card.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "355f9ef9cd3fd989280c94f1ea5ce3f18cca8583aa35ed103d44a4c8860ed76a",
+      "bytes": 480,
+      "archiveName": "355f9ef9cd3fd98928-SD_Card.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/SD_Card.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-73",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/TCA9554PWR.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "ec790005562912c22a85de3100440b7dfafe68c996b94e8b277684bdf71254cc",
+      "bytes": 4935,
+      "archiveName": "ec790005562912c22a-TCA9554PWR.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/TCA9554PWR.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-74",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/TCA9554PWR.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "057428ce8f113b49bafc4e4d60f9054f8b5b897fa15bf5b2228ba6b08b19a6dc",
+      "bytes": 3480,
+      "archiveName": "057428ce8f113b49ba-TCA9554PWR.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/TCA9554PWR.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-75",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Touch_GT911.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "58077b532e1edf165c4f13f495043636180967d200623d6090bdee7aa23f0415",
+      "bytes": 5949,
+      "archiveName": "58077b532e1edf165c-Touch_GT911.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/Touch_GT911.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-76",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Touch_GT911.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "ef06974fce80cee53bf63935dc72a6c00846e26982c34df1a8aecf24da9cec2d",
+      "bytes": 1234,
+      "archiveName": "ef06974fce80cee53b-Touch_GT911.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/Touch_GT911.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-77",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Wireless.cpp",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "25070e07f8f08067baffbd75ab59962412ea9d207452209feb0302c8bba453fd",
+      "bytes": 1906,
+      "archiveName": "25070e07f8f08067ba-Wireless.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/Wireless.cpp"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-78",
+      "title": "固定原始来源：Arduino/examples/LVGL_Arduino/Wireless.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "21cd10157748d5a95ca5cb13db17fa816c8bb5e445bf7deb2daa5be4a4de9f39",
+      "bytes": 478,
+      "archiveName": "21cd10157748d5a95c-Wireless.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Arduino/examples/LVGL_Arduino/Wireless.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-79",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/BAT_Driver/BAT_Driver.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "34e575f9f685639d1b067c8a6ced57fd8e14aa12d17161ca6aa66d48f0a29b9e",
+      "bytes": 4715,
+      "archiveName": "34e575f9f685639d1b-BAT_Driver.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/BAT_Driver/BAT_Driver.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-80",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/BAT_Driver/BAT_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "52c1911baccbb2095320f3a6890fcb059be1a23ecfcf6cc69f4edc2120a752f2",
+      "bytes": 596,
+      "archiveName": "52c1911baccbb20953-BAT_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/BAT_Driver/BAT_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-81",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Buzzer/Buzzer.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "a231adb0aeebd3878e605704cf35dbc690e44279cbe502bce48e707df702d730",
+      "bytes": 149,
+      "archiveName": "a231adb0aeebd3878e-Buzzer.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Buzzer/Buzzer.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-82",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Buzzer/Buzzer.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "67e15beb6dfefcaed7c7639abd216502fc795785f8072cb2da3bf425423f5af1",
+      "bytes": 90,
+      "archiveName": "67e15beb6dfefcaed7-Buzzer.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Buzzer/Buzzer.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-83",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/CMakeLists.txt",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "b401acc26c4e22613f792e1cdd32be4f5979b8c5e2f4c180ab0d275813c4ccfe",
+      "bytes": 1547,
+      "archiveName": "b401acc26c4e22613f-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/CMakeLists.txt"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-84",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/EXIO/TCA9554PWR.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "a92844e3590f4f2a5d7c87781d361e3cc3356cdbaf7afc64de4ee47d9d2da8ef",
+      "bytes": 5575,
+      "archiveName": "a92844e3590f4f2a5d-TCA9554PWR.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/EXIO/TCA9554PWR.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-85",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/EXIO/TCA9554PWR.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "d6d4f31c02d6163b0735afad3000b308e0395347813346979db6fa677a9a2ba3",
+      "bytes": 4077,
+      "archiveName": "d6d4f31c02d6163b07-TCA9554PWR.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/EXIO/TCA9554PWR.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-86",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/I2C_Driver/I2C_Driver.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "d309b0daa631629dee72c50fdab8a30e2f9095814225bb2013e9c4816817ba3d",
+      "bytes": 2053,
+      "archiveName": "d309b0daa631629dee-I2C_Driver.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/I2C_Driver/I2C_Driver.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-87",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/I2C_Driver/I2C_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "908e4f523145e7939dad450e2ec89bdb7596a511b91d115b5dacd69191c625c4",
+      "bytes": 1086,
+      "archiveName": "908e4f523145e7939d-I2C_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/I2C_Driver/I2C_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-88",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LCD_Driver/ST7701S.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "a87332f27e341851398c67a91f4c2fb757af0425a010d0451bc14208a190c11f",
+      "bytes": 15108,
+      "archiveName": "a87332f27e34185139-ST7701S.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LCD_Driver/ST7701S.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-89",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LCD_Driver/ST7701S.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "45d7d09e69de7b4aee8e1232238e037a5aac26f38c6cce6c5d725613f87625da",
+      "bytes": 3877,
+      "archiveName": "45d7d09e69de7b4aee-ST7701S.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LCD_Driver/ST7701S.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-90",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LVGL_Driver/LVGL_Driver.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "dd8c99192492fcbe760f08c25b108a89d7a15aac9b5ee4e5c9e41de5b1dcc4c7",
+      "bytes": 4116,
+      "archiveName": "dd8c99192492fcbe76-LVGL_Driver.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LVGL_Driver/LVGL_Driver.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-91",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LVGL_Driver/LVGL_Driver.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "e81392949418f1cc4756c2c5852bfa418b954823e80d28b71244014903fe2cf3",
+      "bytes": 676,
+      "archiveName": "e81392949418f1cc47-LVGL_Driver.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LVGL_Driver/LVGL_Driver.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-92",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LVGL_UI/LVGL_Example.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "8b392ca8dd683fe7f3f86ca6dfc6b3a49db908febbcec451e9e4e42ffec6d63d",
+      "bytes": 15984,
+      "archiveName": "8b392ca8dd683fe7f3-LVGL_Example.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LVGL_UI/LVGL_Example.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-93",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LVGL_UI/LVGL_Example.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "a8c45fd9378c776c4c33862a371d90632442bcd0c8c5d782a22ed4542ef9eac2",
+      "bytes": 458,
+      "archiveName": "a8c45fd9378c776c4c-LVGL_Example.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/LVGL_UI/LVGL_Example.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-94",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/PCF85063/PCF85063.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "c8df49554f78e6fa1178cf61bfdcff859c7ea7f492b0e6178439b90d5e9dd008",
+      "bytes": 6896,
+      "archiveName": "c8df49554f78e6fa11-PCF85063.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/PCF85063/PCF85063.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-95",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/PCF85063/PCF85063.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "83f878ee6b86d289ec50268ff62114053fe056123d90911472a100057424c675",
+      "bytes": 2959,
+      "archiveName": "83f878ee6b86d289ec-PCF85063.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/PCF85063/PCF85063.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-96",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/QMI8658/QMI8658.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "82918dbcbd164a2c26b475cf2c3daa811d2ec72136080ed9952da1f05e989d95",
+      "bytes": 8725,
+      "archiveName": "82918dbcbd164a2c26-QMI8658.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/QMI8658/QMI8658.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-97",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/QMI8658/QMI8658.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "3ee12fcda504d1dd958befe1e3e80529c910e6a8944865b99e159865dd3d4a78",
+      "bytes": 5113,
+      "archiveName": "3ee12fcda504d1dd95-QMI8658.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/QMI8658/QMI8658.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-98",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/SD_Card/SD_MMC.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "a8f19439fec99fdb2b5f57fd1b83353b4d798f2ec03cbab2858917c5db267c03",
+      "bytes": 4539,
+      "archiveName": "a8f19439fec99fdb2b-SD_MMC.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/SD_Card/SD_MMC.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-99",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/SD_Card/SD_MMC.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "a2543113d3a8e496581a84f27d631e371a38c58c0aafb6ce94c375fc3a87dc09",
+      "bytes": 759,
+      "archiveName": "a2543113d3a8e49658-SD_MMC.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/SD_Card/SD_MMC.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-100",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Touch_Driver/GT911.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "b3895cabe383641c4048e0c43f2656b8dc202a79273100ad57e946fca9fc167d",
+      "bytes": 8848,
+      "archiveName": "b3895cabe383641c40-GT911.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Touch_Driver/GT911.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-101",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Touch_Driver/GT911.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "80c99005ef2c7e6718649d63f806f349f4531dac2866d5bf08dd3066b85e0128",
+      "bytes": 2030,
+      "archiveName": "80c99005ef2c7e6718-GT911.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Touch_Driver/GT911.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-102",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Touch_Driver/esp_lcd_touch/esp_lcd_touch.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "2727b60babfb3c3a9e86b1dcfd769981188b7d84f2c8669930268be6f1aa2d51",
+      "bytes": 6910,
+      "archiveName": "2727b60babfb3c3a9e-esp_lcd_touch.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Touch_Driver/esp_lcd_touch/esp_lcd_touch.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-103",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Touch_Driver/esp_lcd_touch/esp_lcd_touch.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "326401d3b06d87e5f5a812509aab4220b29eed9b530e9dcdf32507305a352e2b",
+      "bytes": 11009,
+      "archiveName": "326401d3b06d87e5f5-esp_lcd_touch.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Touch_Driver/esp_lcd_touch/esp_lcd_touch.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-104",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Wireless/Wireless.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "9814efa4911f4b1f15dbd433db6130e44dbd3f80366833cf5c24ecc315f68334",
+      "bytes": 7589,
+      "archiveName": "9814efa4911f4b1f15-Wireless.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Wireless/Wireless.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-105",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Wireless/Wireless.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "3b57b1ae7017e6b12b993aa8f905682e41e32b4aa6ed17a3484941fca1da9d04",
+      "bytes": 520,
+      "archiveName": "3b57b1ae7017e6b12b-Wireless.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/Wireless/Wireless.h"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-106",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/idf_component.yml",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "d79f97801a1f28461467ded9d307b4d5ef48729d8c49d166fc43542f848b03d1",
+      "bytes": 51,
+      "archiveName": "d79f97801a1f284614-idf_component.yml.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/idf_component.yml"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-107",
+      "title": "固定原始来源：ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/main.c",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "39399d485a1e2972c58afa0b7f4f5a37bcd23cd61659d7930836c2c28e2bca68",
+      "bytes": 1592,
+      "archiveName": "39399d485a1e2972c5-main.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "ESP-IDF/ESP32-S3-Touch-LCD-2.8B-Test/main/main.c"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "board-source-108",
+      "title": "固定原始来源：official-resources/ESP32-S3-LCD-2.8B.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:20Z",
+      "sha256": "70743992137c3e7433685e4fa9d6c347aedb1f03ec618f27c3de58ed59fb48c7",
+      "bytes": 180051,
+      "archiveName": "70743992137c3e7433-ESP32-S3-LCD-2.8B.pdf.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-LCD-2.8B/ESP32-S3-LCD-2.8B.pdf",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "board-source-109",
+      "title": "固定原始来源：official-resources/ESP32-S3-Touch-LCD-2.8B_schematic_diagram.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B_schematic_diagram.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:27Z",
+      "sha256": "9c7d84529d421a86b907ff29063155ddb54a01bc1805d1f81769097b9af95947",
+      "bytes": 292361,
+      "archiveName": "9c7d84529d421a86b9-ESP32-S3-Touch-LCD-2.8B_schematic_diagram.pdf.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B_schematic_diagram.pdf",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "UIFlow 固定板树调查",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "pinned-source-tree-inspection",
+      "status": "linked",
+      "notes": "完整固定提交板树的生成检查收据见 docs/platform/research/waveshare-shared-ecosystem-sources；不是HTTP原文。"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "小智固定板树调查",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards/waveshare",
+      "kind": "pinned-source-tree-inspection",
+      "status": "linked",
+      "notes": "精确目标目录与型号关联须独立检查；不使用generic镜像替换。"
+    },
+    {
+      "id": "firmware-85416d0dbb54",
+      "title": "ESP32-S3-Touch-LCD-2.8B.bin",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "kind": "original-manufacturer-binary",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:57:28Z",
+      "sha256": "85416d0dbb548e9b3f161b3163c70680b0a016e4c6f10d14c2a02a061db7cd53",
+      "bytes": 1955632,
+      "archiveName": "ESP32-S3-Touch-LCD-2.8B.bin",
+      "notes": "下载并检查原始镜像字节，BIN未收入Git；结构检查详情在firmware-manifest.json。 此BIN的sha256/bytes属于明确ZIP成员；URL返回原包，原包哈希与成员路径见revision，未声称远程URL直接返回BIN。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-Demo.zip",
+      "revision": {
+        "containerRevision": "archive-sha256-5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerSha256": "5e706cca3d3eb651025547956e9101dd30b195c480793d7f5817413e13a9659c",
+        "containerBytes": 70933375,
+        "member": "Firmware/ESP32-S3-Touch-LCD-2.8B.bin"
+      },
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "ecosystem-http-0",
+      "title": "UIFlow/小智公开发布调查：78-xiaozhi-esp32.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:55:50Z",
+      "sha256": "f157e88b07fcee7614e4514fbebdf94058a8d2442f946fe3d28b013ecbe0e62f",
+      "bytes": 295537,
+      "archiveName": "78-xiaozhi-esp32.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-1",
+      "title": "UIFlow/小智公开发布调查：m5stack-uiflow-micropython.json.gz",
+      "url": "https://api.github.com/repos/m5stack/uiflow-micropython/releases/latest",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:55:55Z",
+      "sha256": "2fe27212a5f23523b4f4e120e815235800721a0ac8d69695b1fb85dc19726c7e",
+      "bytes": 102561,
+      "archiveName": "m5stack-uiflow-micropython.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/m5stack/uiflow-micropython/releases/latest",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-2",
+      "title": "UIFlow/小智公开发布调查：uiflow-landing-main.js.gz",
+      "url": "https://flow.m5stack.com/main-es2015.f7d6676b98a624264591.js",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:59:05Z",
+      "sha256": "769b89daaa624cad09a8e0af1bcbe0e42649e1377eae2f39b3e8dc1b7410f64c",
+      "bytes": 4078547,
+      "archiveName": "uiflow-landing-main.js.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://flow.m5stack.com/main-es2015.f7d6676b98a624264591.js",
+      "mediaType": "application/javascript"
+    },
+    {
+      "id": "ecosystem-http-3",
+      "title": "UIFlow/小智公开发布调查：uiflow-landing.html.gz",
+      "url": "https://flow.m5stack.com/",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:56:11Z",
+      "sha256": "c6832f2986ee8b5c7c6d4e568d17d5c3bace665d9a2a3bfd81dd731fc64190ab",
+      "bytes": 3838,
+      "archiveName": "uiflow-landing.html.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://flow.m5stack.com/",
+      "mediaType": "text/html"
+    },
+    {
+      "id": "ecosystem-http-4",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-1.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=1",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "30db04ee457856106c1856b6dd84cf9cd2e8a89e2fb7139f1d7d28fd56d9d449",
+      "bytes": 141802,
+      "archiveName": "xiaozhi-assets-page-1.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=1",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-5",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-2.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=2",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "00fd0a5e85787a9b125a6544efd77bd3e846605946ba0168bce748ad250d48e4",
+      "bytes": 143388,
+      "archiveName": "xiaozhi-assets-page-2.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=2",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-6",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-3.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=3",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "archiveName": "xiaozhi-assets-page-3.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=3",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "model-source-0",
+      "title": "模型原始来源：mechanical-archive-1.zip",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "kind": "source-archive",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T09:28:55Z",
+      "sha256": "238cd1b4693a0a84c37698fec0a20507d876a88cc996e624f11aee0233939eaf",
+      "bytes": 3859408,
+      "archiveName": "mechanical-archive-1.zip",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip"
+    },
+    {
+      "id": "model-source-1",
+      "title": "模型原始来源：source.stp.gz",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "kind": "cad-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T09:28:55Z",
+      "sha256": "fcdb372a4ddd7e446fc2fcf30572aa26c0aea0187ca6e22848d827ef5a8282b3",
+      "bytes": 20875978,
+      "archiveName": "source.stp.gz",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。 URL指向原始容器，sha256/bytes对应精确解包成员；model-plan.json保留containerSourceId与双层校验。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "revision": {
+        "containerSha256": "238cd1b4693a0a84c37698fec0a20507d876a88cc996e624f11aee0233939eaf",
+        "containerBytes": 3859408,
+        "member": "ESP32-S3-Touch-LCD-2.8B-20241031.stp"
+      }
+    },
+    {
+      "id": "model-source-2",
+      "title": "模型原始来源：mechanical-drawing.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "kind": "dimension-reference",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T09:28:55Z",
+      "sha256": "a8ed9b5085c927e58c51064bbb3d9b855433718b6930f7a0b5ca43224a742407",
+      "bytes": 168177,
+      "archiveName": "mechanical-drawing.pdf",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。 URL指向原始容器，sha256/bytes对应精确解包成员；model-plan.json保留containerSourceId与双层校验。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "revision": {
+        "containerSha256": "238cd1b4693a0a84c37698fec0a20507d876a88cc996e624f11aee0233939eaf",
+        "containerBytes": 3859408,
+        "member": "ESP32-S3-Touch-LCD-2.8B-20241031.pdf"
+      }
+    },
+    {
+      "id": "model-source-3",
+      "title": "模型原始来源：overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B",
+      "kind": "reference-only",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:05:22Z",
+      "sha256": "f85c882f092efa32ea079d8077400123e854cb3e75a869bb3a1ea8dcd2ae059b",
+      "bytes": 69255,
+      "archiveName": "overview.html.gz",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B"
+    },
+    {
+      "id": "model-source-4",
+      "title": "模型原始来源：resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B/Resources-And-Documents",
+      "kind": "reference-only",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:05:22Z",
+      "sha256": "18b6fe9b36a9751f3b8d60ae5dba0a0e4c5eec1ffe52e939023addd893d8661f",
+      "bytes": 59560,
+      "archiveName": "resources.html.gz",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B/Resources-And-Documents"
+    },
+    {
+      "id": "model-source-5",
+      "title": "模型原始来源：product.html.gz",
+      "url": "https://www.waveshare.com/esp32-s3-touch-lcd-2.8b.htm?sku=30103",
+      "kind": "reference-only",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T09:31:55Z",
+      "sha256": "86b4db2e877475bfd645301df4d0d54c1ef058f125aa517f458e2e26b1e59a23",
+      "bytes": 333133,
+      "archiveName": "product.html.gz",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://www.waveshare.com/esp32-s3-touch-lcd-2.8b.htm?sku=30103"
+    },
+    {
+      "id": "model-source-6",
+      "title": "模型原始来源：front-photo.jpg",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-2.jpg",
+      "kind": "reference-only",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T09:32:46Z",
+      "sha256": "8e888a270ed12cc79099803b98dc09aa8a0be980762f343e6bd015616b46a65f",
+      "bytes": 16625,
+      "archiveName": "front-photo.jpg",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-2.jpg"
+    },
+    {
+      "id": "model-source-7",
+      "title": "模型原始来源：back-photo.jpg",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-3_2.jpg",
+      "kind": "reference-only",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T09:32:46Z",
+      "sha256": "42b901ef2b22f87c1f7904764955de267391235258ba8d179a7f9ff1cc4ab081",
+      "bytes": 94986,
+      "archiveName": "back-photo.jpg",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-3_2.jpg"
+    },
+    {
+      "id": "model-source-8",
+      "title": "模型原始来源：angle-photo.jpg",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-4_2.jpg",
+      "kind": "reference-only",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T09:32:47Z",
+      "sha256": "c9a43a0a35d6a70a66310c2551777ca9766efacd4ffe12e8bd3634fc47953d03",
+      "bytes": 90937,
+      "archiveName": "angle-photo.jpg",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-4_2.jpg"
+    },
+    {
+      "id": "model-source-9",
+      "title": "模型原始来源：dimension-photo.jpg",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-details-size.jpg",
+      "kind": "dimension-reference",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T09:32:52Z",
+      "sha256": "78438de98bab6620cc72a712cb44e0961896d165b70417588a9dc2bb2dfd5fa5",
+      "bytes": 122555,
+      "archiveName": "dimension-photo.jpg",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-details-size.jpg"
+    }
+  ],
+  "assets": [
+    {
+      "id": "schematic",
+      "sourceId": "schematic",
+      "role": "schematic",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B_schematic_diagram.pdf"
+    },
+    {
+      "id": "model-mechanical-archive-1",
+      "sourceId": "model-mechanical-archive-1",
+      "role": "source-archive",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/mechanical-archive-1.zip"
+    },
+    {
+      "id": "model-official-cad",
+      "sourceId": "model-official-cad",
+      "role": "cad-source",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/source.stp.gz"
+    },
+    {
+      "id": "model-mechanical-drawing",
+      "sourceId": "model-mechanical-drawing",
+      "role": "dimension-reference",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/mechanical-drawing.pdf"
+    },
+    {
+      "id": "model-overview",
+      "sourceId": "model-overview",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/overview.html.gz"
+    },
+    {
+      "id": "model-resources",
+      "sourceId": "model-resources",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B/Resources-And-Documents",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/resources.html.gz"
+    },
+    {
+      "id": "model-product",
+      "sourceId": "model-product",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/esp32-s3-touch-lcd-2.8b.htm?sku=30103",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/product.html.gz"
+    },
+    {
+      "id": "model-front-photo",
+      "sourceId": "model-front-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/front-photo.jpg"
+    },
+    {
+      "id": "model-back-photo",
+      "sourceId": "model-back-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-3_2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/back-photo.jpg"
+    },
+    {
+      "id": "model-angle-photo",
+      "sourceId": "model-angle-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-4_2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/angle-photo.jpg"
+    },
+    {
+      "id": "model-dimension-photo",
+      "sourceId": "model-dimension-photo",
+      "role": "dimension-reference",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-details-size.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/dimension-photo.jpg"
+    },
+    {
+      "id": "model-asset-0",
+      "sourceId": "model-source-0",
+      "role": "source-archive",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/mechanical-archive-1.zip"
+    },
+    {
+      "id": "model-asset-1",
+      "sourceId": "model-source-1",
+      "role": "cad-source",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/source.stp.gz"
+    },
+    {
+      "id": "model-asset-2",
+      "sourceId": "model-source-2",
+      "role": "dimension-reference",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-20241031.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/mechanical-drawing.pdf"
+    },
+    {
+      "id": "model-asset-3",
+      "sourceId": "model-source-3",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/overview.html.gz"
+    },
+    {
+      "id": "model-asset-4",
+      "sourceId": "model-source-4",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.8B/Resources-And-Documents",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/resources.html.gz"
+    },
+    {
+      "id": "model-asset-5",
+      "sourceId": "model-source-5",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/esp32-s3-touch-lcd-2.8b.htm?sku=30103",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/product.html.gz"
+    },
+    {
+      "id": "model-asset-6",
+      "sourceId": "model-source-6",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/front-photo.jpg"
+    },
+    {
+      "id": "model-asset-7",
+      "sourceId": "model-source-7",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-3_2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/back-photo.jpg"
+    },
+    {
+      "id": "model-asset-8",
+      "sourceId": "model-source-8",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-touch-lcd-2.8b-4_2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/angle-photo.jpg"
+    },
+    {
+      "id": "model-asset-9",
+      "sourceId": "model-source-9",
+      "role": "dimension-reference",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-2.8B/ESP32-S3-Touch-LCD-2.8B-details-size.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-2-8b/dimension-photo.jpg"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview"
+      ],
+      "notes": "Filename date is an official firmware artifact date, not a product release date."
+    },
+    {
+      "id": "uiflow",
+      "label": "此精确型号 UIFlow 镜像",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview",
+        "factory-readme"
+      ],
+      "notes": "已检查官方产品与固件资料，未发现精确镜像；未用其他品牌设备替代。"
+    },
+    {
+      "id": "xiaozhi",
+      "label": "此精确型号小智镜像",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "xiaozhi"
+      ],
+      "notes": "固定源码树未包含本批六款的精确目标，不把尺寸相同的 C5/C6 镜像用于 S3。"
+    }
+  ],
+  "collectionNotes": [
+    "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+    "原生测试已验证早期滑动与相同时刻无输入对照存在差异；后续触摸响应尚未通过。",
+    "原厂程序已通过原生和公开 Worker／WASM 的 SDMMC 单线挂载默认 64 MiB FAT32；原生记录 33 个命令、1744 字节读取、0 重启及 2 次初始化超时。",
+    "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+    "独立 3D 模型已接入；真实 IMU 板坐标与实物朝向标定仍未完成；无线、USB、模拟电池和全部外设未验收。",
+    "Grounded QMI SA0 selects 0x6B; the old opposite-address inference is withdrawn.",
+    "Factory I2C write failures remain visible; exact failing binary transaction not traced.",
+    "GT911 8146-8149 actual resolution is separate from 8048/804A configuration RAM; physical configuration application and factory numeric config version are outside this subset.",
+    "本次原生执行记录位于 docs/evidence/waveshare-tca-rgb-2026-11-23；运行结果不等于浏览器/WebGL 或实物验收。",
+    "原文位于 docs/research/waveshare-tca-rgb-sources 与 waveshare-tca-rgb-central-sources；源码 ZIP 成员与原始 HTTP 文档分别记账。",
+    "新 public Worker/WASM 结果在 docs/evidence/waveshare-tca-rgb-public-2026-11-23。真实早期触摸投递已观察；此轮像素差包含时间变化，因果对照仍以独立 native matched-time 为准。",
+    "IMU 数字输入：QMI8658 寄存器转换和八款板级 I2C 已验证；场景联动默认关闭，物理安装方向未标定。",
+    "TF 修复依据与前后证据：docs/evidence/waveshare-tca-sdmmc-2026-11-23/manifest.json",
+    "修复后的公开运行证据：docs/evidence/waveshare-tca-rgb-public-sdmmc-2026-11-23/results.json；之前挂载失败记录仍保留。",
+    "3D 来源：官方 CAD 机械参考。 生产加载器几何与输入射线已检查；浏览器 WebGL 和实物装配尚未验收。",
+    "本轮新增/复核来源模型 waveshare-esp32-s3-touch-lcd-2-8b；只声明model-plan.json列出的几何范围，保留原数字外设与原厂验收记录。",
+    "复用已来源校准的TCA/RGB/GT911/RTC/QMI/原生单线TF子集，不创建重复虚假屏幕路由。",
+    "两份原厂完整ZIP及exact SKU BIN双hash/布局验证，分别真实ROM5秒彩色帧和SD挂载。",
+    "复用既有480/482零件原厂native模型及AA、源BOOT实体/材料/照片注册，当前生产加载器复核。",
+    "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance.",
+    "精确SKU包内电池、外壳、排针和天线差异保持独立身份；共用数字路径不表示机械与RF等价。",
+    "UIFlow/小智是固定Git板树的范围化调查，生成检查收据不冒称HTTP响应：{\"uiflow\": \"固定提交a61a29409f09f1f4bebae05e15c4bd6dcc4956b6板树中无Waveshare命名目录；此检索范围不证明不存在第三方移植。\", \"xiaozhi\": \"固定提交92d400d6374bbe750e0a0188fa969fc4042820c2板树已检索；未建立此精确SKU的可直接运行镜像。\"}",
+    "模型来源和几何范围：waveshare-esp32-s3-touch-lcd-2-8b；model-plan.json保留原始参考、尺寸、图像像素/UV及UNKNOWN边界。",
+    "模型逐项边界：Each SKU uses its own explicitly named official STEP and mechanical drawing. All native solids, orphan shells and faces are retained; fine parts are grouped by material only. Shared part names or a shared schematic do not certify equivalent PCBs.；Runtime hardwareRevision is unspecified. STEP filename dates, optical-module part-name versions and photograph silkscreen are source evidence, not certification of the present electrical board revision or a product release date.；Native millimetres are preserved with a proper rigid transform only; no nonuniform scaling or inferred component relocation. Native source assembly overlaps are not Boolean-repaired.；BOOT alone is bound to the physically identified source key. RESET and the slide power switch remain visible source geometry; reset uses the platform action and no unverified GPIO power control is created.；The framebuffer is a separate live surface 0.008 mm in front of the native exposed optical window for rendering. This offset is not physical laminate thickness. AA dimensions and larger cover VA dimensions remain distinct.；Source photographs remain unchanged references. Approximate rear registration is a mechanical placement review, not calibration of factory text orientation relative to USB, hardware fit, or browser/WebGL acceptance.；External batteries, cables and other accessories are not included in the native assembly and have not been invented.；The rectangle AA43.20×57.60 mm is native LCD component face0 (2488.32 mm²) and corresponds to480×640 portrait pixels. The overall LCD source includes flex tails, and its bounds are not the same quantity as the65.20 mm main-body drawing annotation.；Touch SKU30103 has a separate52.90×71.30 mm cover with outer corner radius3 mm and larger VA43.60×58.00 mm. Its active framebuffer stays rectangular43.20×57.60 mm. The cover source includes its flex, hence an8 mm component bounding depth; this is not8 mm glass thickness."
+  ]
+}

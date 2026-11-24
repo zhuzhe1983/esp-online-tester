@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-11-24T00:09:12Z",
+  "sources": {
+    "esp32s3/src/board/waveshare_serial_rgb.rs": "8075b36917540cf15160275b5f0471f31b81a00c3f80927c10b593570e3c6add",
+    "esp32s3/src/board/waveshare_lcd7b.rs": "595ddd737996d7867e5d14884573427b0fb5288afb1f9996a10d76635db575aa",
+    "esp32s3/src/board/waveshare_rgb_catalog.rs": "0420def3f410845b36a2fdcef7d581b0cda78e4a9bddf6e018182281515e036e",
+    "esp32s3/tests/waveshare_rgb_route_delivery.rs": "d3446320c8653c854a5dab1dba58926352c6559f82be440959695a2b9f66e508"
+  },
+  "result": "pass",
+  "diagnosticGuest": "Original LX7 s32i/l32i instructions, actual GPIO matrix, hardware I2C, physical 9-bit ST7701 control, LCD_CAM registers and GDMA descriptors",
+  "coverage": [
+    "LCD7B touch and no-touch",
+    "LCD7C",
+    "LCD4.3C",
+    "LCD4B",
+    "LCD3.16"
+  ],
+  "positive": "Distinct red / green / blue pixels at beginning, middle and end of the actual frame",
+  "negative": [
+    "incorrect data signal",
+    "incorrect pixel clock signal",
+    "backlight off",
+    "source-wired LCD reset"
+  ],
+  "scope": "No direct Board::lcd_frame or Board::lcd_rgb_pins invocation in the CPU integration tests. Not substituted original manufacturer firmware. Full original application and physical validation remain separate."
+}

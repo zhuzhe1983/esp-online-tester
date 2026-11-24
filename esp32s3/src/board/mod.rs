@@ -70,6 +70,8 @@ mod waveshare_dualeye;
 mod waveshare_lcd7b;
 mod waveshare_serial_rgb;
 mod waveshare_knob18;
+mod waveshare_lcd2;
+mod waveshare_amoled_compact;
 mod waveshare_small_spi;
 mod waveshare_lcd147;
 mod waveshare_lcd169;
@@ -119,6 +121,12 @@ pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "waveshare-s3-lcd169-v1" | "waveshare-s3-lcd169-v2" => waveshare_lcd169::make_board(name),
         "waveshare-s3-thermal-camera" => Some(Box::<waveshare_thermal::WaveshareThermal>::default()),
+        "waveshare-s3-touch-amoled143-sh8601" => Some(Box::new(waveshare_amoled_compact::WaveshareCompact::new(waveshare_amoled_compact::CompactVariant::Amoled143Sh8601))),
+        "waveshare-s3-touch-amoled143-co5300" => Some(Box::new(waveshare_amoled_compact::WaveshareCompact::new(waveshare_amoled_compact::CompactVariant::Amoled143Co5300))),
+        "waveshare-s3-touch-amoled18-v1" => Some(Box::new(waveshare_amoled_compact::WaveshareCompact::new(waveshare_amoled_compact::CompactVariant::Amoled18V1))),
+        "waveshare-s3-touch-amoled18-v2" => Some(Box::new(waveshare_amoled_compact::WaveshareCompact::new(waveshare_amoled_compact::CompactVariant::Amoled18V2))),
+        "waveshare-s3-lcd2"=>Some(Box::new(waveshare_lcd2::WaveshareLcd2::new(false))),
+        "waveshare-s3-touch-lcd2"=>Some(Box::new(waveshare_lcd2::WaveshareLcd2::new(true))),
         "waveshare-s3-lcd19" | "waveshare-s3-touch-lcd19" | "waveshare-s3-lcd13" => waveshare_small_spi::make_board(name),
         "waveshare-s3-matrix8" => Some(Box::new(waveshare_matrix8::WaveshareMatrix8::new())),
         "waveshare-s3-lcd147b" | "waveshare-s3-touch-lcd147" => waveshare_lcd147::make_board(name),

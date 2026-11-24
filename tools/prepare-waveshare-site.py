@@ -19,7 +19,8 @@ def main():
     p.add_argument('--patches',required=True,type=Path)
     p.add_argument('--site',required=True,type=Path)
     p.add_argument('--complete',action='store_true')
-    a=p.parse_args();state=json.loads(a.state.read_text())
+    p.add_argument('--skip-parts-through',type=int,default=0,help='Keep full metadata but do not stage an already verified R2 prefix; uploader must verify its canonical gzip and active immutable manifest.')
+    a=p.parse_args();state=json.loads(a.state.read_text());assert 0<=a.skip_parts_through<=len(state['batches'])
     dist=a.site/'dist';downloads=dist/'downloads';downloads.mkdir(parents=True,exist_ok=True)
     template=ROOT/'tools/waveshare-batches/site'
     for name in ['index.html','app.js','style.css']:shutil.copyfile(template/name,dist/name)
@@ -36,7 +37,7 @@ def main():
             name=b['gzipFilename']+'.part'+str(at//(8*1024*1024)+1).zfill(3)
             target=downloads/name
             if target.exists():assert target.read_bytes()==body,'Previously published part must be immutable'
-            else:target.write_bytes(body)
+            elif b['number']>a.skip_parts_through:target.write_bytes(body)
             b['parts'].append({'filename':name,'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest()})
         save(downloads/f'waveshare-{b["number"]:03d}.json',b)
     save(downloads/'manifest.json',manifest)
