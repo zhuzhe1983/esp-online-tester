@@ -23,7 +23,7 @@ mod native {
     use crate::bus::{Bus, FastMem, TlbEntry, TLB_ENTRIES, TLB_INDEX_SHIFT, TLB_XOR_SHIFT, VPAGE_SHIFT};
     use crate::decode::Op;
     use crate::exec::{exec_insn, Trap};
-    use crate::state::{exc, Cpu};
+    use crate::state::{exc, ps, vec, Cpu, NUM_WINDOWS};
     use std::ffi::{c_int, c_void};
 
     pub const AVAILABLE: bool = true;
@@ -94,10 +94,11 @@ mod native {
     // ------------------------------------------------------------------ helpers called from generated code
     /// Function pointers the generated code calls; field order is the offset table below.
     #[repr(C)]
-    pub struct Helpers { read8: *const (), read16: *const (), read32: *const (), write8: *const (), write16: *const (), write32: *const (), exec: *const (), raise_mem: *const (), overflow: *const (), pie: *const () }
+    pub struct Helpers { read8: *const (), read16: *const (), read32: *const (), write8: *const (), write16: *const (), write32: *const (), exec: *const (), raise_mem: *const (), overflow: *const (), pie: *const (), call8: *const (), callx8: *const (), entry: *const (), retw: *const () }
     const H_READ8: u32 = 0; const H_READ16: u32 = 8; const H_READ32: u32 = 16;
     const H_WRITE8: u32 = 24; const H_WRITE16: u32 = 32; const H_WRITE32: u32 = 40;
     const H_EXEC: u32 = 48; const H_RAISE_MEM: u32 = 56; const H_OVERFLOW: u32 = 64; const H_PIE: u32 = 72;
+    const H_CALL8: u32 = 80; const H_CALLX8: u32 = 88; const H_ENTRY: u32 = 96; const H_RETW: u32 = 104;
 
     /// Loads return the value in the low word, bit 32 = fault, bit 33 = the bus wants the block to end.
     macro_rules! read_helper {
@@ -139,6 +140,64 @@ mod native {
         cpu.pc = pc;
         bus.note_pc(pc);
         match exec_insn(cpu, bus, &i.insn) { Ok(()) => (bus.block_break() as u32) << 1, Err(t) => { cpu.jit_trap = Some(t); 1 } }
+    }
+    /// Native window helpers avoid exec_insn's full opcode dispatch. KIND is compile-time:
+    /// CALL8, CALLX8, ENTRY or RETW/RETW.N. Keep exec_insn's exact window/exception rules and
+    /// its fall-through loop tail for ENTRY only; the other three are taken transfers.
+    /// The generated caller retains the same overflow checks, retirement and exit handling.
+    extern "C" fn h_window<B: Bus, const KIND: u8>(cpu: *mut Cpu, bus: *mut B, insn: *const BlockInsn, pc: u32) -> u32 {
+        // SAFETY: as for h_exec: copy the stable arena instruction before exclusively borrowing
+        // its owning Cpu, and use the exclusive bus pointer supplied to run.
+        let i = unsafe { *insn };
+        let (cpu, bus) = unsafe { (&mut *cpu, &mut *bus) };
+        cpu.pc = pc;
+        bus.note_pc(pc);
+        let result = (|| {
+            if !cpu.woe() { return Err(cpu.raise(exc::ILLEGAL)); }
+            let next = pc.wrapping_add(i.insn.len as u32);
+            match KIND {
+                0 | 1 => {
+                    // Read an indirect target before writing a8: CALLX8 a8 aliases its link.
+                    let target = if KIND == 1 { cpu.get_ar(i.insn.s) } else { i.insn.imm as u32 };
+                    cpu.ps = (cpu.ps & !ps::CALLINC_MASK) | (2 << ps::CALLINC_SHIFT);
+                    cpu.set_ar(8, (2 << 30) | (next & 0x3fff_ffff));
+                    cpu.pc = target;
+                }
+                2 => {
+                    if i.insn.s > 3 { return Err(cpu.raise(exc::ILLEGAL)); }
+                    let sp = cpu.get_ar(i.insn.s).wrapping_sub(i.insn.imm as u32);
+                    cpu.windowbase = cpu.windowbase.wrapping_add(cpu.callinc()) & (NUM_WINDOWS - 1);
+                    cpu.windowstart |= 1 << cpu.windowbase;
+                    cpu.set_ar(i.insn.s, sp);
+                    cpu.pc = next;
+                    if next == cpu.lend && cpu.lcount != 0 {
+                        cpu.lcount = cpu.lcount.wrapping_sub(1);
+                        cpu.pc = cpu.lbeg;
+                    }
+                }
+                _ => {
+                    let a0 = cpu.get_ar(0);
+                    let n = a0 >> 30;
+                    if n == 0 { return Err(cpu.raise(exc::ILLEGAL)); }
+                    let newbase = cpu.windowbase.wrapping_sub(n) & (NUM_WINDOWS - 1);
+                    if cpu.windowstart & (1 << newbase) != 0 {
+                        cpu.windowstart &= !(1 << (cpu.windowbase & (NUM_WINDOWS - 1)));
+                        cpu.windowbase = newbase;
+                        cpu.ps = (cpu.ps & !ps::CALLINC_MASK) | (n << ps::CALLINC_SHIFT);
+                        cpu.pc = (a0 & 0x3fff_ffff) | (pc & 0xc000_0000);
+                    } else {
+                        cpu.ps = (cpu.ps & !ps::OWB_MASK) | (cpu.windowbase << ps::OWB_SHIFT);
+                        cpu.windowbase = newbase;
+                        cpu.epc[1] = pc;
+                        cpu.ps |= ps::EXCM;
+                        cpu.pc = cpu.vecbase.wrapping_add(match n { 1 => vec::WINDOW_UF4, 2 => vec::WINDOW_UF8, _ => vec::WINDOW_UF12 });
+                        return Err(Trap::Exception(0x300 + n));
+                    }
+                }
+            }
+            Ok(())
+        })();
+        match result { Ok(()) => (bus.block_break() as u32) << 1, Err(t) => { cpu.jit_trap = Some(t); 1 } }
     }
     /// A PIE instruction straight into `pie::exec`, skipping `exec_insn`'s dispatch. PIE never
     /// transfers control, so its tail is `exec_insn`'s fall-through tail: the zero-overhead loop
@@ -186,6 +245,8 @@ mod native {
                 write8: h_write8::<B> as *const (), write16: h_write16::<B> as *const (), write32: h_write32::<B> as *const (),
                 exec: h_exec::<B> as *const (), raise_mem: h_raise_mem as *const (), overflow: h_overflow as *const (),
                 pie: h_pie::<B> as *const (),
+                call8: h_window::<B, 0> as *const (), callx8: h_window::<B, 1> as *const (),
+                entry: h_window::<B, 2> as *const (), retw: h_window::<B, 3> as *const (),
             }
         }
 
@@ -198,7 +259,7 @@ mod native {
 
     // The generated AArch64 loads use these byte offsets and pointer width directly.
     const _: () = {
-        assert!(std::mem::size_of::<Helpers>() == 80);
+        assert!(std::mem::size_of::<Helpers>() == 112);
         assert!(std::mem::align_of::<Helpers>() == 8);
         assert!(std::mem::offset_of!(Helpers, read8) == H_READ8 as usize);
         assert!(std::mem::offset_of!(Helpers, read16) == H_READ16 as usize);
@@ -210,6 +271,10 @@ mod native {
         assert!(std::mem::offset_of!(Helpers, raise_mem) == H_RAISE_MEM as usize);
         assert!(std::mem::offset_of!(Helpers, overflow) == H_OVERFLOW as usize);
         assert!(std::mem::offset_of!(Helpers, pie) == H_PIE as usize);
+        assert!(std::mem::offset_of!(Helpers, call8) == H_CALL8 as usize);
+        assert!(std::mem::offset_of!(Helpers, callx8) == H_CALLX8 as usize);
+        assert!(std::mem::offset_of!(Helpers, entry) == H_ENTRY as usize);
+        assert!(std::mem::offset_of!(Helpers, retw) == H_RETW as usize);
     };
 
     // ------------------------------------------------------------------ the compiler
@@ -543,7 +608,7 @@ mod native {
                     g.a.mov_x(0, CPU); g.a.mov_x(1, BUS);
                     g.a.mov64(2, (&raw const *block_insn) as u64);
                     g.a.mov32(3, pc);
-                    g.call(if i.op == crate::decode::Op::Pie { H_PIE } else { H_EXEC });
+                    g.call(match i.op { Pie => H_PIE, Call8 => H_CALL8, Callx8 => H_CALLX8, Entry => H_ENTRY, Retw | RetwN => H_RETW, _ => H_EXEC });
                     let tr = g.exit_trap;
                     g.a.tbnz(0, 0, tr);
                     g.a.lsr_imm(12, 0, 1);
