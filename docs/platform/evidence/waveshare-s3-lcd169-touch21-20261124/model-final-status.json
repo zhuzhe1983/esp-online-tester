@@ -1,0 +1,48 @@
+[
+  {
+    "command": [
+      "python",
+      "tools/waveshare-batches/root-s3-five/prepare_native_models.py",
+      "--cache",
+      "<source-cache>"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "python",
+      "tools/build-waveshare-models.py",
+      "waveshare-esp32-s3-lcd-1-69",
+      "waveshare-esp32-s3-touch-lcd-2-1",
+      "waveshare-esp32-s3-touch-lcd-2-1b",
+      "--output",
+      "web/platform/assets"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "node",
+      "tools/check-waveshare-model-loading.mjs",
+      "waveshare-esp32-s3-lcd-1-69",
+      "waveshare-esp32-s3-touch-lcd-2-1",
+      "waveshare-esp32-s3-touch-lcd-2-1b",
+      "--output",
+      "<source-cache>/native-loader-check.json",
+      "--dump",
+      "<source-cache>/native-mesh"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "python",
+      "tools/review-waveshare-models.py",
+      "--meshes",
+      "<source-cache>/native-mesh",
+      "--output",
+      "<source-cache>/native-reviews"
+    ],
+    "exit": 0
+  }
+]

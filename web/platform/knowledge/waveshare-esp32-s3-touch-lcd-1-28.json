@@ -1,0 +1,1300 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-touch-lcd-1-28",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-touch-lcd-1-28",
+  "title": "Waveshare ESP32-S3-Touch-LCD-1.28",
+  "summary": "1.28 英寸 240×240；16 MiB Flash / 2 MiB PSRAM。",
+  "summarySourceIds": [
+    "tail-resources",
+    "tail-overview",
+    "tail-electrical-11",
+    "tail-electrical-12",
+    "tail-electrical-13",
+    "tail-electrical-14",
+    "tail-electrical-15",
+    "tail-electrical-16",
+    "tail-electrical-17",
+    "tail-electrical-18"
+  ],
+  "updatedAt": "2026-11-23T23:30:48Z",
+  "hardwareRevision": "Rev3electrical;olderunmarkedCADpartialreference",
+  "facts": [
+    {
+      "id": "identity",
+      "label": "精确型号与存储",
+      "value": {
+        "sku": "25098",
+        "chip": "ESP32-S3R2",
+        "flashMiB": 16,
+        "psramMiB": 2,
+        "psramBus": "quad"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic"
+      ]
+    },
+    {
+      "id": "display",
+      "label": "屏幕与控制器",
+      "value": {
+        "width": 240,
+        "height": 240,
+        "shape": "circle",
+        "controller": "GC9A01A",
+        "touch": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "lcd-datasheet"
+      ]
+    },
+    {
+      "id": "pins",
+      "label": "板载信号引脚",
+      "value": {
+        "lcd": {
+          "clock": 10,
+          "mosi": 11,
+          "cs": 9,
+          "dc": 8,
+          "reset": 14,
+          "backlight": 2,
+          "miso": 12
+        },
+        "i2c": {
+          "sda": 6,
+          "scl": 7,
+          "qmiAddress": "0x6b",
+          "qmiSa0": "grounded"
+        },
+        "touch": {
+          "address": "0x15",
+          "reset": 13,
+          "irq": 5
+        },
+        "boot": 0
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "imu-datasheet"
+      ]
+    },
+    {
+      "id": "imu",
+      "label": "惯性传感器",
+      "value": {
+        "controller": "QMI8658A",
+        "sa0": "GND",
+        "address7bit": 107
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "imu-datasheet"
+      ],
+      "notes": "两版 QST 数据手册均为 SA0 低=0x6B、高/悬空=0x6A。"
+    },
+    {
+      "id": "factory",
+      "label": "原厂镜像",
+      "value": {
+        "name": "ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin",
+        "bytes": 1393680,
+        "sha256": "11f684711366e2968d301c64a887d5483d8f2ebff16d672d57b3b610e68d8608",
+        "offset": 0
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory-readme",
+        "factory-binary"
+      ]
+    },
+    {
+      "id": "model-dimensions",
+      "label": "3D 模型尺寸与适用版本",
+      "value": {
+        "sourceCadPcb": {
+          "sizeMm": [
+            37.533828134679055,
+            39.525809950928036,
+            1.0000000000000002
+          ],
+          "basis": [
+            "official-cad"
+          ],
+          "scope": "2024 mechanical reference; current Rev3 PCB thickness and exact revised footprint layout are not certified"
+        },
+        "currentRevisionPcb": {
+          "revision": "Rev3 in current photograph and schematic",
+          "verifiedSizeMm": null,
+          "layoutStatus": "UNKNOWN beyond corroborated outer assembly and major interfaces"
+        },
+        "display": {
+          "lensDiameterMm": 38.51,
+          "activeDiameterMm": 32.4,
+          "lensApertureMm": 33.4,
+          "sourceIds": [
+            "mechanical-drawing",
+            "overview"
+          ]
+        },
+        "sourceAssemblySizeMm": [
+          38.510000000000005,
+          41.03584221796379,
+          8.4
+        ]
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "model-official-archive",
+        "model-official-cad",
+        "model-mechanical-drawing",
+        "model-resources",
+        "model-overview",
+        "model-product",
+        "model-front-photo",
+        "model-back-photo",
+        "model-angle-photo",
+        "model-dimension-photo",
+        "model-schematic"
+      ],
+      "method": "Retained original CAD/dimensioned source measurements and registered photographs; unknown values and visual estimates are explicit.",
+      "notes": "The retained STEP was authored on 2024-03-20 and remains linked by the current official resource page. That CAD date is not a product release date. Native millimetres, source topology and assembly positions are preserved; no source geometry is scaled to fit a photograph. USB orientation versus a particular factory firmware text direction has not been physically calibrated; the geometric view keeps native USB at negative Y. No enclosure, battery or external cable is supplied by this model. RESET is visible geometry only; reset remains a platform action. The live circular display is a 32.4 mm optical projection at the front cover plane, slightly offset to avoid coplanar rendering; it is not a manufactured laminate thickness. Photographic registration is approximate and does not certify hidden dimensions or physical fit. Current shop image explicitly reads Rev3 and the current schematic is Rev3. The 2024 CAD does not identify its PCB revision; only display stack, source board outline and photographed major connectors/buttons are retained. Omitted circuit details remain UNKNOWN. The neutral board body is a 1.0 mm-thick reference from that CAD, not a measured current Rev3 layer stack. The visible UNKNOWN marking is a model provenance cue, not physical silkscreen. Touch -B SKU26959 is a separately documented packaging option and is not represented by this base SKU25098 model."
+    },
+    {
+      "id": "tail-exact-hardware",
+      "label": "精确SKU、容量与接线",
+      "value": {
+        "sku": "25098",
+        "hardwareRevision": "Rev3electrical;olderunmarkedCADpartialreference",
+        "flashMiB": 16,
+        "psramMiB": 2,
+        "display": {
+          "width": 240,
+          "height": 240,
+          "type": "TFT LCD",
+          "controller": "GC9A01A",
+          "bus": "SPI",
+          "diagonalInches": 1.28,
+          "touch": true,
+          "shape": "circle"
+        },
+        "SPI": {
+          "CLK": 10,
+          "MOSI": 11,
+          "CS": 9,
+          "DC": 8,
+          "RST": 14,
+          "BL": 2
+        },
+        "I2C": {
+          "main": [
+            6,
+            7
+          ]
+        },
+        "SD": null,
+        "components": [
+          "ExactbareSKU25098,ESP32-S3R2/RH2,16MiBFlash/2MiBPSRAM",
+          "Rev3CST816S@15,RST13 IRQ5;QMI8658A@6B",
+          "BOOT0,RESET CHIP_PU; noTF"
+        ],
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true,
+            "defaultKeyCode": "Space"
+          },
+          {
+            "id": "touch",
+            "name": "Touch input",
+            "type": "touch"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "tail-resources",
+        "tail-overview",
+        "tail-electrical-11",
+        "tail-electrical-12",
+        "tail-electrical-13",
+        "tail-electrical-14",
+        "tail-electrical-15",
+        "tail-electrical-16",
+        "tail-electrical-17",
+        "tail-electrical-18"
+      ]
+    },
+    {
+      "id": "tail-source-conflicts",
+      "label": "版次、来源冲突与范围",
+      "value": [
+        "Existingproduct identity,digitalruntime andmanufacturerCAD-derived modelarepreserved. Model keeps UNKNOWN currentRev3boarddetails instead ofpresentingunmarked2024CAD circuitryascurrentlayout.",
+        "Independent5s originalfactoryrerun:40RAMWRcommands,50finalRGB565colors; continuousUI andphysicaltouchacceptance remainunverified.",
+        "CasedSKU26959 isaseparatefamily covered inpreviousbatch; no case isaddedtobare25098."
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "tail-resources",
+        "tail-overview",
+        "tail-electrical-11",
+        "tail-electrical-12",
+        "tail-electrical-13",
+        "tail-electrical-14",
+        "tail-electrical-15",
+        "tail-electrical-16",
+        "tail-electrical-17",
+        "tail-electrical-18"
+      ]
+    },
+    {
+      "id": "tail-mechanical",
+      "label": "机械来源与未知项",
+      "value": {
+        "method": "official-cad",
+        "dimensions": {
+          "sourceCadPcb": {
+            "sizeMm": [
+              37.533828134679055,
+              39.525809950928036,
+              1.0000000000000002
+            ],
+            "basis": [
+              "official-cad"
+            ],
+            "scope": "2024 mechanical reference; current Rev3 PCB thickness and exact revised footprint layout are not certified"
+          },
+          "currentRevisionPcb": {
+            "revision": "Rev3 in current photograph and schematic",
+            "verifiedSizeMm": null,
+            "layoutStatus": "UNKNOWN beyond corroborated outer assembly and major interfaces"
+          },
+          "display": {
+            "lensDiameterMm": 38.51,
+            "activeDiameterMm": 32.4,
+            "lensApertureMm": 33.4,
+            "sourceIds": [
+              "mechanical-drawing",
+              "overview"
+            ]
+          },
+          "sourceAssemblySizeMm": [
+            38.510000000000005,
+            41.03584221796379,
+            8.4
+          ]
+        },
+        "limitations": [
+          "The retained STEP was authored on 2024-03-20 and remains linked by the current official resource page. That CAD date is not a product release date.",
+          "Native millimetres, source topology and assembly positions are preserved; no source geometry is scaled to fit a photograph.",
+          "USB orientation versus a particular factory firmware text direction has not been physically calibrated; the geometric view keeps native USB at negative Y.",
+          "No enclosure, battery or external cable is supplied by this model. RESET is visible geometry only; reset remains a platform action.",
+          "The live circular display is a 32.4 mm optical projection at the front cover plane, slightly offset to avoid coplanar rendering; it is not a manufactured laminate thickness.",
+          "Photographic registration is approximate and does not certify hidden dimensions or physical fit.",
+          "Current shop image explicitly reads Rev3 and the current schematic is Rev3. The 2024 CAD does not identify its PCB revision; only display stack, source board outline and photographed major connectors/buttons are retained. Omitted circuit details remain UNKNOWN.",
+          "The neutral board body is a 1.0 mm-thick reference from that CAD, not a measured current Rev3 layer stack. The visible UNKNOWN marking is a model provenance cue, not physical silkscreen.",
+          "Touch -B SKU26959 is a separately documented packaging option and is not represented by this base SKU25098 model."
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "tail-dimension-photo",
+        "tail-resources",
+        "tail-official-cad"
+      ]
+    },
+    {
+      "id": "tail-ecosystem-investigation",
+      "label": "原厂、小智、UIFlow调查",
+      "value": {
+        "factory": "touch128",
+        "xiaozhiExactTargetPaths": [],
+        "xiaozhiAcceptedBinary": false,
+        "uiflowExactWaveshareNamedPaths": [],
+        "uiflowAcceptedBinary": false,
+        "scope": "Exact retained official resource pages and pinned upstreamboardtrees. No generic platformimage assigned; source support does not provebinary compatibility."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "tail-resources",
+        "tail-xiaozhi-tree",
+        "tail-uiflow-tree"
+      ]
+    },
+    {
+      "id": "tail-factory-layout",
+      "label": "原始镜像布局与实际运行",
+      "value": {
+        "sha256": "11f684711366e2968d301c64a887d5483d8f2ebff16d672d57b3b610e68d8608",
+        "bytes": 1393680,
+        "role": "factory",
+        "layout": {
+          "loadOffset": 0,
+          "chipId": 9,
+          "bootloaderChecksumAndDigestValid": true,
+          "partitionTableOffset": 32768,
+          "partitionTableMd5Valid": true,
+          "partitions": [
+            {
+              "type": 1,
+              "subtype": 2,
+              "offset": 36864,
+              "bytes": 20480,
+              "label": "nvs",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 0,
+              "offset": 57344,
+              "bytes": 8192,
+              "label": "otadata",
+              "flags": 0
+            },
+            {
+              "type": 0,
+              "subtype": 16,
+              "offset": 65536,
+              "bytes": 3145728,
+              "label": "app0",
+              "flags": 0,
+              "imageChipId": 9,
+              "imageChecksumsValid": true
+            },
+            {
+              "type": 0,
+              "subtype": 17,
+              "offset": 3211264,
+              "bytes": 3145728,
+              "label": "app1",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 129,
+              "offset": 6356992,
+              "bytes": 10354688,
+              "label": "ffat",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 3,
+              "offset": 16711680,
+              "bytes": 65536,
+              "label": "coredump",
+              "flags": 0
+            }
+          ],
+          "fitsFlashMiB": 16,
+          "headerFlashSizeCode": 4
+        },
+        "observed": {
+          "board": "waveshare-s3-touch-lcd128",
+          "guestCycles": 1200000000,
+          "guestMilliseconds": 5000,
+          "stop": "Halted",
+          "reboots": 0,
+          "width": 240,
+          "height": 240,
+          "distinctColors": 50,
+          "version": 230570,
+          "frames": 40,
+          "pc": [
+            1073921397,
+            1077406830
+          ],
+          "sdCommands": 0,
+          "sdTimeouts": 0,
+          "sdBytesRead": 0,
+          "sdBytesWritten": 0,
+          "physicalValidated": false,
+          "fullApplicationValidated": false
+        },
+        "evidence": "docs/evidence/waveshare-s3-tail-second-five-2026-11-23/native-runs.json"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "tail-firmware"
+      ],
+      "notes": "Runtimeobservation is simulator-derived, not manufacturercompatibility assurance."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "官方设备说明与 SKU",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28",
+      "fetchedAt": "2026-11-23T07:25:16Z",
+      "sha256": "1d8ef6bc76ba9229257a2149ca2e59a3beab685ddf76201b47f8af747689f74a",
+      "bytes": 67515,
+      "mediaType": "text/html",
+      "archiveName": "touch128-overview.html"
+    },
+    {
+      "id": "repository",
+      "title": "官方仓库说明",
+      "url": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/blob/e0325e262a0c081ef554bd05d052c901ded58933/README.md",
+      "kind": "official-repository",
+      "status": "fetched",
+      "resolvedUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/blob/e0325e262a0c081ef554bd05d052c901ded58933/README.md",
+      "fetchedAt": "2026-11-23T07:08:40Z",
+      "sha256": "db74b8a44a6246730c94e2644e1c73f4829892e52b205979c7b16afc4636e8c4",
+      "bytes": 3720,
+      "mediaType": "text/plain",
+      "archiveName": "touch128-README.md"
+    },
+    {
+      "id": "factory-readme",
+      "title": "官方出厂固件用途与烧录说明",
+      "url": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/blob/e0325e262a0c081ef554bd05d052c901ded58933/firmware/README.md",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/blob/e0325e262a0c081ef554bd05d052c901ded58933/firmware/README.md",
+      "fetchedAt": "2026-11-23T07:10:18Z",
+      "sha256": "afe74ef73a4497a9c76807cfe0836dd61f03516dbe4c10af8ceb0b31f25d6303",
+      "bytes": 232,
+      "mediaType": "text/plain",
+      "archiveName": "touch128-firmware-README.md"
+    },
+    {
+      "id": "schematic",
+      "title": "精确型号原理图",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "kind": "official-schematic",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "fetchedAt": "2026-11-23T07:08:14Z",
+      "sha256": "6001fdb2c4d78322b83bcc06621ac10df32d1a20b38198f16a84f8440b58a56e",
+      "bytes": 639349,
+      "mediaType": "application/pdf",
+      "archiveName": "touch128-schematic.pdf"
+    },
+    {
+      "id": "lcd-datasheet",
+      "title": "GC9A01A 官方数据手册",
+      "url": "https://files.waveshare.com/wiki/common/GC9A01A.pdf",
+      "kind": "official-datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/common/GC9A01A.pdf",
+      "fetchedAt": "2026-11-23T07:08:04Z",
+      "sha256": "af8f6f0a03f4a340510fc06321eb78a2d9bb49670ff1f59164bd6ccf71a2bd47",
+      "bytes": 5341097,
+      "mediaType": "application/pdf",
+      "archiveName": "gc9a01a.pdf"
+    },
+    {
+      "id": "imu-datasheet",
+      "title": "QST QMI8658A Rev A 数据手册",
+      "url": "https://www.qstcorp.com/upload/pdf/202301/13-52-25%20QMI8658A%20Datasheet%20Rev%20A.pdf",
+      "kind": "official-datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://www.qstcorp.com/upload/pdf/202301/13-52-25%20QMI8658A%20Datasheet%20Rev%20A.pdf",
+      "fetchedAt": "2026-11-23T06:44:10Z",
+      "sha256": "bc371af17cd94fca481a3b40a89417776996b7baa50dacf20e9f53d5a6a57b85",
+      "bytes": 3085534,
+      "mediaType": "application/pdf",
+      "archiveName": "qmi8658a-rev-a.pdf"
+    },
+    {
+      "id": "touch-registers",
+      "title": "CST816S 官方寄存器说明",
+      "url": "https://files.waveshare.com/wiki/common/CST816S_register_declaration.pdf",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/common/CST816S_register_declaration.pdf",
+      "fetchedAt": "2026-11-23T07:08:11Z",
+      "sha256": "696d3517c7c21ea575f4cd63b6debc20727b74ef1b5188ecdf23bec6b5867b43",
+      "bytes": 66813,
+      "mediaType": "application/pdf",
+      "archiveName": "cst816s-registers.pdf"
+    },
+    {
+      "id": "touch-datasheet",
+      "title": "CST816S 官方数据手册",
+      "url": "https://files.waveshare.com/wiki/common/CST816S_Datasheet_EN.pdf",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/common/CST816S_Datasheet_EN.pdf",
+      "fetchedAt": "2026-11-23T07:08:11Z",
+      "sha256": "d9c644a9280c9b49ee5ccdb58be187564a244f4d5e01294a9f4ed601a8bdad7e",
+      "bytes": 860974,
+      "mediaType": "application/pdf",
+      "archiveName": "cst816s-datasheet.pdf"
+    },
+    {
+      "id": "pin-config",
+      "title": "官方示例 GPIO 配置",
+      "url": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/blob/e0325e262a0c081ef554bd05d052c901ded58933/examples/arduino/examples/ESP32-S3-Touch-LCD-1.28-Test/DEV_Config.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/blob/e0325e262a0c081ef554bd05d052c901ded58933/examples/arduino/examples/ESP32-S3-Touch-LCD-1.28-Test/DEV_Config.h",
+      "fetchedAt": "2026-11-23T07:12:02Z",
+      "sha256": "87ef9e56c61828847c138873ed785d982a26fef5861785e188b1ef118b051d8a",
+      "bytes": 3280,
+      "mediaType": "text/plain",
+      "archiveName": "touch128-DEV_Config.h"
+    },
+    {
+      "id": "lcd-driver",
+      "title": "官方 LCD 驱动",
+      "url": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/blob/e0325e262a0c081ef554bd05d052c901ded58933/examples/arduino/examples/ESP32-S3-Touch-LCD-1.28-Test/LCD_1in28.cpp",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/blob/e0325e262a0c081ef554bd05d052c901ded58933/examples/arduino/examples/ESP32-S3-Touch-LCD-1.28-Test/LCD_1in28.cpp",
+      "fetchedAt": "2026-11-23T07:08:41Z",
+      "sha256": "210a174148d0869f2346a1b8f024120786b422c041bcd7e903c2c3d82fdb68ab",
+      "bytes": 12960,
+      "mediaType": "text/plain",
+      "archiveName": "touch128-LCD_1in28.cpp"
+    },
+    {
+      "id": "factory-binary",
+      "title": "固定提交的官方出厂镜像",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin",
+      "fetchedAt": "2026-11-23T07:08:04Z",
+      "sha256": "11f684711366e2968d301c64a887d5483d8f2ebff16d672d57b3b610e68d8608",
+      "bytes": 1393680,
+      "mediaType": "application/octet-stream",
+      "archiveName": "touch128-factory.bin"
+    },
+    {
+      "id": "model-official-archive",
+      "title": "official-archive",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "fetchedAt": "2026-11-23T08:15:09Z",
+      "bytes": 2592932,
+      "sha256": "b23b537ff9994be6fad8f194ca62b9fe6ae92a4040674c6ce80e48cc190a069a",
+      "archiveName": "source.zip",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/source.zip. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-official-cad",
+      "title": "official-cad",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "fetchedAt": "2026-11-23T08:15:09Z",
+      "bytes": 12529084,
+      "sha256": "4a2a3a950d1c7bac0749a60d4804bb508580d51a89cd72b4953a6c51451d0e58",
+      "archiveName": "source.stp",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/source.stp.gz. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify extracted member ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1_28.stp in ZIP SHA-256 b23b537ff9994be6fad8f194ca62b9fe6ae92a4040674c6ce80e48cc190a069a, not a separate HTTP response."
+    },
+    {
+      "id": "model-mechanical-drawing",
+      "title": "mechanical-drawing",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "fetchedAt": "2026-11-23T08:15:09Z",
+      "bytes": 126440,
+      "sha256": "881aece720e4725cae8dff8aae585f51023a8beca81236432a0fd28463386c02",
+      "archiveName": "mechanical-drawing.pdf",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/mechanical-drawing.pdf. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify extracted member ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.pdf in ZIP SHA-256 b23b537ff9994be6fad8f194ca62b9fe6ae92a4040674c6ce80e48cc190a069a, not a separate HTTP response."
+    },
+    {
+      "id": "model-resources",
+      "title": "resources",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28/Resources-And-Documents",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T08:15:05Z",
+      "bytes": 71439,
+      "sha256": "92656eacbba3aa0bba6ba2b8a5b147306cee65d4796320dd65bfb139398cdc64",
+      "archiveName": "resources.html",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/resources.html.gz. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-overview",
+      "title": "overview",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28",
+      "fetchedAt": "2026-11-23T08:15:05Z",
+      "bytes": 67515,
+      "sha256": "1d8ef6bc76ba9229257a2149ca2e59a3beab685ddf76201b47f8af747689f74a",
+      "archiveName": "overview.html",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/overview.html.gz. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-product",
+      "title": "product",
+      "url": "https://www.waveshare.com/esp32-s3-touch-lcd-1.28.htm",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/esp32-s3-touch-lcd-1.28.htm",
+      "fetchedAt": "2026-11-23T08:15:18Z",
+      "bytes": 252888,
+      "sha256": "5a29d60341213026e5fb5a1f4d9ab6135ab2f7674c4af2dbb1ee431d49dd03de",
+      "archiveName": "product.html",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/product.html.gz. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-front-photo",
+      "title": "front-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-2.jpg",
+      "fetchedAt": "2026-11-23T08:17:58Z",
+      "bytes": 122727,
+      "sha256": "729e19a0ed0c65e2ab6f9461045df4d19ea78a40d500fd79eed7327e8a5e222f",
+      "archiveName": "front-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/front-photo.jpg. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-back-photo",
+      "title": "back-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-3_6.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-3_6.jpg",
+      "fetchedAt": "2026-11-23T08:18:06Z",
+      "bytes": 255139,
+      "sha256": "730188499f17faa462be4f9b46845a8e8ce42162a0a205f6af66ffbf9e0810fb",
+      "archiveName": "back-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/back-photo.jpg. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-angle-photo",
+      "title": "angle-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-4.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-4.jpg",
+      "fetchedAt": "2026-11-23T08:18:04Z",
+      "bytes": 271385,
+      "sha256": "e28411e9b114edcf67af98d43fd3fdace51fd04af270e52827d93f56a1610149",
+      "archiveName": "angle-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/angle-photo.jpg. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-dimension-photo",
+      "title": "dimension-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-details-size-2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-details-size-2.jpg",
+      "fetchedAt": "2026-11-23T08:18:16Z",
+      "bytes": 175130,
+      "sha256": "b7af8ffba714855421da239828102773b3f4cc70be0419aee87f919771123b44",
+      "archiveName": "dimension-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/dimension-photo.jpg. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-schematic",
+      "title": "schematic",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "fetchedAt": "2026-11-23T07:08:14Z",
+      "bytes": 639349,
+      "sha256": "6001fdb2c4d78322b83bcc06621ac10df32d1a20b38198f16a84f8440b58a56e",
+      "archiveName": "schematic-rev3.pdf",
+      "notes": "Original source retained in assets/waveshare-esp32-s3-touch-lcd-1-28/schematic-rev3.pdf. Waveshare source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "tail-official-archive",
+      "title": "source.zip",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:15:09Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "bytes": 2592932,
+      "sha256": "b23b537ff9994be6fad8f194ca62b9fe6ae92a4040674c6ce80e48cc190a069a",
+      "archiveName": "source.zip",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/source.zip"
+    },
+    {
+      "id": "tail-official-cad",
+      "title": "source.stp.gz",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:15:09Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "bytes": 12529084,
+      "sha256": "4a2a3a950d1c7bac0749a60d4804bb508580d51a89cd72b4953a6c51451d0e58",
+      "archiveName": "source.stp.gz",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/source.stp.gz"
+    },
+    {
+      "id": "tail-mechanical-drawing",
+      "title": "mechanical-drawing.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:15:09Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "bytes": 126440,
+      "sha256": "881aece720e4725cae8dff8aae585f51023a8beca81236432a0fd28463386c02",
+      "archiveName": "mechanical-drawing.pdf",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/mechanical-drawing.pdf"
+    },
+    {
+      "id": "tail-resources",
+      "title": "resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:15:05Z",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28/Resources-And-Documents",
+      "bytes": 71439,
+      "sha256": "92656eacbba3aa0bba6ba2b8a5b147306cee65d4796320dd65bfb139398cdc64",
+      "archiveName": "resources.html.gz",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/resources.html.gz"
+    },
+    {
+      "id": "tail-overview",
+      "title": "overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:15:05Z",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28",
+      "bytes": 67515,
+      "sha256": "1d8ef6bc76ba9229257a2149ca2e59a3beab685ddf76201b47f8af747689f74a",
+      "archiveName": "overview.html.gz",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/overview.html.gz"
+    },
+    {
+      "id": "tail-front-photo",
+      "title": "front-photo.jpg",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-2.jpg",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:17:58Z",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-2.jpg",
+      "bytes": 122727,
+      "sha256": "729e19a0ed0c65e2ab6f9461045df4d19ea78a40d500fd79eed7327e8a5e222f",
+      "archiveName": "front-photo.jpg",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/front-photo.jpg"
+    },
+    {
+      "id": "tail-back-photo",
+      "title": "back-photo.jpg",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-3_6.jpg",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:18:06Z",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-3_6.jpg",
+      "bytes": 255139,
+      "sha256": "730188499f17faa462be4f9b46845a8e8ce42162a0a205f6af66ffbf9e0810fb",
+      "archiveName": "back-photo.jpg",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/back-photo.jpg"
+    },
+    {
+      "id": "tail-angle-photo",
+      "title": "angle-photo.jpg",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-4.jpg",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:18:04Z",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-4.jpg",
+      "bytes": 271385,
+      "sha256": "e28411e9b114edcf67af98d43fd3fdace51fd04af270e52827d93f56a1610149",
+      "archiveName": "angle-photo.jpg",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/angle-photo.jpg"
+    },
+    {
+      "id": "tail-dimension-photo",
+      "title": "dimension-photo.jpg",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-details-size-2.jpg",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T08:18:16Z",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-details-size-2.jpg",
+      "bytes": 175130,
+      "sha256": "b7af8ffba714855421da239828102773b3f4cc70be0419aee87f919771123b44",
+      "archiveName": "dimension-photo.jpg",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/dimension-photo.jpg"
+    },
+    {
+      "id": "tail-schematic",
+      "title": "schematic-rev3.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T07:08:14Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "bytes": 639349,
+      "sha256": "6001fdb2c4d78322b83bcc06621ac10df32d1a20b38198f16a84f8440b58a56e",
+      "archiveName": "schematic-rev3.pdf",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-28/schematic-rev3.pdf"
+    },
+    {
+      "id": "tail-product",
+      "title": "Exact officialSKU/options",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.28.htm",
+      "kind": "manufacturer-product",
+      "status": "linked",
+      "notes": "PublicSKU fields retained as derived selection; rawstorefrontbody is not published."
+    },
+    {
+      "id": "tail-electrical-11",
+      "title": "ESP32-S3-Touch-LCD-1.28/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:20:57Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/README.md",
+      "bytes": 3720,
+      "sha256": "db74b8a44a6246730c94e2644e1c73f4829892e52b205979c7b16afc4636e8c4",
+      "archiveName": "ESP32-S3-Touch-LCD-1.28_files_README.md.gz",
+      "notes": "Originalbytes. docs/platform/research/waveshare-s3-tail-second-five-sources/ESP32-S3-Touch-LCD-1.28_files_README.md.gz; member/container provenance inmanifest."
+    },
+    {
+      "id": "tail-electrical-12",
+      "title": "ESP32-S3-Touch-LCD-1.28/archive-members/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:21:25Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "bytes": 126440,
+      "sha256": "881aece720e4725cae8dff8aae585f51023a8beca81236432a0fd28463386c02",
+      "archiveName": "ESP32-S3-Touch-LCD-1.28_files_archive-members_ESP32-S3-Touch-LCD-1.28_ESP32-S3-Touch-LCD-1.28_ESP32-S3-Touch-LCD-1.28.pdf.gz",
+      "notes": "Originalbytes. docs/platform/research/waveshare-s3-tail-second-five-sources/ESP32-S3-Touch-LCD-1.28_files_archive-members_ESP32-S3-Touch-LCD-1.28_ESP32-S3-Touch-LCD-1.28_ESP32-S3-Touch-LCD-1.28.pdf.gz; member/container provenance inmanifest."
+    },
+    {
+      "id": "tail-electrical-13",
+      "title": "ESP32-S3-Touch-LCD-1.28/firmware/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:21:03Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/README.md",
+      "bytes": 232,
+      "sha256": "afe74ef73a4497a9c76807cfe0836dd61f03516dbe4c10af8ceb0b31f25d6303",
+      "archiveName": "ESP32-S3-Touch-LCD-1.28_files_firmware_README.md.gz",
+      "notes": "Originalbytes. docs/platform/research/waveshare-s3-tail-second-five-sources/ESP32-S3-Touch-LCD-1.28_files_firmware_README.md.gz; member/container provenance inmanifest."
+    },
+    {
+      "id": "tail-electrical-14",
+      "title": "ESP32-S3-Touch-LCD-1.28/firmware/README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/README_ZH.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:55Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/README_ZH.md",
+      "bytes": 221,
+      "sha256": "148406cec8596f351dea092b7cb6599b8c03212c75e51e4db582c68ddf3e252f",
+      "archiveName": "ESP32-S3-Touch-LCD-1.28_files_firmware_README_ZH.md.gz",
+      "notes": "Originalbytes. docs/platform/research/waveshare-s3-tail-second-five-sources/ESP32-S3-Touch-LCD-1.28_files_firmware_README_ZH.md.gz; member/container provenance inmanifest."
+    },
+    {
+      "id": "tail-electrical-15",
+      "title": "ESP32-S3-Touch-LCD-1.28/official-resources/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:21:25Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "bytes": 639349,
+      "sha256": "6001fdb2c4d78322b83bcc06621ac10df32d1a20b38198f16a84f8440b58a56e",
+      "archiveName": "ESP32-S3-Touch-LCD-1.28_files_official-resources_ESP32-S3-Touch-LCD-1.28-Sch.pdf.gz",
+      "notes": "Originalbytes. docs/platform/research/waveshare-s3-tail-second-five-sources/ESP32-S3-Touch-LCD-1.28_files_official-resources_ESP32-S3-Touch-LCD-1.28-Sch.pdf.gz; member/container provenance inmanifest."
+    },
+    {
+      "id": "tail-electrical-16",
+      "title": "ESP32-S3-Touch-LCD-1.28/official-resources/ESP32-S3-Touch-LCD-1.28_Rev3.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28_Rev3.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:21:32Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28_Rev3.pdf",
+      "bytes": 205936,
+      "sha256": "0e146bf619920d74bbebd5296c1152cc875b0a27b9d7d203c3f0cf7afcc7e1eb",
+      "archiveName": "ESP32-S3-Touch-LCD-1.28_files_official-resources_ESP32-S3-Touch-LCD-1.28_Rev3.pdf.gz",
+      "notes": "Originalbytes. docs/platform/research/waveshare-s3-tail-second-five-sources/ESP32-S3-Touch-LCD-1.28_files_official-resources_ESP32-S3-Touch-LCD-1.28_Rev3.pdf.gz; member/container provenance inmanifest."
+    },
+    {
+      "id": "tail-electrical-17",
+      "title": "ESP32-S3-Touch-LCD-1.28/official-resources/GC9A01A.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/GC9A01A.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:21:32Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/GC9A01A.pdf",
+      "bytes": 5341097,
+      "sha256": "af8f6f0a03f4a340510fc06321eb78a2d9bb49670ff1f59164bd6ccf71a2bd47",
+      "archiveName": "ESP32-S3-Touch-LCD-1.28_files_official-resources_GC9A01A.pdf.gz",
+      "notes": "Originalbytes. docs/platform/research/waveshare-s3-tail-second-five-sources/ESP32-S3-Touch-LCD-1.28_files_official-resources_GC9A01A.pdf.gz; member/container provenance inmanifest."
+    },
+    {
+      "id": "tail-electrical-18",
+      "title": "manufacturer-storefront/esp32-s3-touch-lcd-1.28-public-selection.json",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.28.htm",
+      "kind": "derived-public-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:55Z",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.28.htm",
+      "bytes": 928,
+      "sha256": "6b62408c65e46bd037ef3110f0729dd7487b5093d0a52ad669c5ce38a86b8bfc",
+      "archiveName": "esp32-s3-touch-lcd-1.28-public-selection.json.gz",
+      "notes": "Derivedpublicfields; notoriginalHTTPbody. docs/platform/research/waveshare-s3-tail-second-five-sources/esp32-s3-touch-lcd-1.28-public-selection.json.gz; member/container provenance inmanifest."
+    },
+    {
+      "id": "tail-xiaozhi-tree",
+      "title": "78/xiaozhi-esp32 pinned device-tree investigation",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Receipt retained at docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json. Source target existence is not binary acceptance."
+    },
+    {
+      "id": "tail-uiflow-tree",
+      "title": "m5stack/uiflow-micropython pinned device-tree investigation",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Receipt retained at docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json. Source target existence is not binary acceptance."
+    },
+    {
+      "id": "tail-firmware",
+      "title": "firmware/ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin",
+      "kind": "manufacturer-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:56Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin",
+      "bytes": 1393680,
+      "sha256": "11f684711366e2968d301c64a887d5483d8f2ebff16d672d57b3b610e68d8608",
+      "archiveName": "ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin",
+      "notes": "Originalcomplete image verified; remote-onlydistribution. No fullapplication orphysicalacceptance."
+    }
+  ],
+  "assets": [
+    {
+      "id": "schematic",
+      "sourceId": "schematic",
+      "role": "schematic",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf"
+    },
+    {
+      "id": "model-official-archive",
+      "sourceId": "model-official-archive",
+      "role": "cad-source",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/source.zip"
+    },
+    {
+      "id": "model-official-cad",
+      "sourceId": "model-official-cad",
+      "role": "cad-source",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/source.stp.gz"
+    },
+    {
+      "id": "model-mechanical-drawing",
+      "sourceId": "model-mechanical-drawing",
+      "role": "dimension-reference",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/mechanical-drawing.pdf"
+    },
+    {
+      "id": "model-resources",
+      "sourceId": "model-resources",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28/Resources-And-Documents",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/resources.html.gz"
+    },
+    {
+      "id": "model-overview",
+      "sourceId": "model-overview",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/overview.html.gz"
+    },
+    {
+      "id": "model-product",
+      "sourceId": "model-product",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/esp32-s3-touch-lcd-1.28.htm",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/product.html.gz"
+    },
+    {
+      "id": "model-front-photo",
+      "sourceId": "model-front-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/front-photo.jpg"
+    },
+    {
+      "id": "model-back-photo",
+      "sourceId": "model-back-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-3_6.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/back-photo.jpg"
+    },
+    {
+      "id": "model-angle-photo",
+      "sourceId": "model-angle-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-4.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/angle-photo.jpg"
+    },
+    {
+      "id": "model-dimension-photo",
+      "sourceId": "model-dimension-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-details-size-2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/dimension-photo.jpg"
+    },
+    {
+      "id": "model-schematic",
+      "sourceId": "model-schematic",
+      "role": "electrical-revision-reference",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-1-28/schematic-rev3.pdf"
+    },
+    {
+      "id": "tail-official-archive",
+      "sourceId": "tail-official-archive",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip"
+    },
+    {
+      "id": "tail-official-cad",
+      "sourceId": "tail-official-cad",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip"
+    },
+    {
+      "id": "tail-mechanical-drawing",
+      "sourceId": "tail-mechanical-drawing",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip"
+    },
+    {
+      "id": "tail-resources",
+      "sourceId": "tail-resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28/Resources-And-Documents"
+    },
+    {
+      "id": "tail-overview",
+      "sourceId": "tail-overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.28"
+    },
+    {
+      "id": "tail-front-photo",
+      "sourceId": "tail-front-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-2.jpg"
+    },
+    {
+      "id": "tail-back-photo",
+      "sourceId": "tail-back-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-3_6.jpg"
+    },
+    {
+      "id": "tail-angle-photo",
+      "sourceId": "tail-angle-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/media/catalog/product/e/s/esp32-s3-touch-lcd-1.28-4.jpg"
+    },
+    {
+      "id": "tail-dimension-photo",
+      "sourceId": "tail-dimension-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-details-size-2.jpg"
+    },
+    {
+      "id": "tail-schematic",
+      "sourceId": "tail-schematic",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf"
+    },
+    {
+      "id": "tail-product",
+      "sourceId": "tail-product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.28.htm"
+    },
+    {
+      "id": "tail-electrical-11",
+      "sourceId": "tail-electrical-11",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/README.md"
+    },
+    {
+      "id": "tail-electrical-12",
+      "sourceId": "tail-electrical-12",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28.zip"
+    },
+    {
+      "id": "tail-electrical-13",
+      "sourceId": "tail-electrical-13",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/README.md"
+    },
+    {
+      "id": "tail-electrical-14",
+      "sourceId": "tail-electrical-14",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/README_ZH.md"
+    },
+    {
+      "id": "tail-electrical-15",
+      "sourceId": "tail-electrical-15",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28-Sch.pdf"
+    },
+    {
+      "id": "tail-electrical-16",
+      "sourceId": "tail-electrical-16",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/ESP32-S3-Touch-LCD-1.28_Rev3.pdf"
+    },
+    {
+      "id": "tail-electrical-17",
+      "sourceId": "tail-electrical-17",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.28/GC9A01A.pdf"
+    },
+    {
+      "id": "tail-electrical-18",
+      "sourceId": "tail-electrical-18",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.28.htm"
+    },
+    {
+      "id": "tail-xiaozhi-tree",
+      "sourceId": "tail-xiaozhi-tree",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+    },
+    {
+      "id": "tail-uiflow-tree",
+      "sourceId": "tail-uiflow-tree",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+    },
+    {
+      "id": "tail-firmware",
+      "sourceId": "tail-firmware",
+      "role": "firmware-download",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.28/e0325e262a0c081ef554bd05d052c901ded58933/firmware/ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "设备发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "镜像文件名日期不是硬件发布日期。"
+    },
+    {
+      "id": "uiflow",
+      "label": "本型号官方 UIFlow 镜像",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "repository",
+        "overview"
+      ],
+      "notes": "本轮精确型号检索与官方资料中未找到，不借用同尺寸其他品牌设备。"
+    },
+    {
+      "id": "xiaozhi",
+      "label": "本型号官方小智镜像",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "repository",
+        "overview"
+      ],
+      "notes": "本轮未找到精确型号的官方完整镜像；DualEye 1.28、1.85 与 Spotpear 1.28 不作为此设备的替代。"
+    },
+    {
+      "id": "physical-pose",
+      "label": "相对实物的显示和传感器朝向",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "schematic"
+      ],
+      "notes": "当前为数字参考朝向，未进行实物校准。"
+    },
+    {
+      "id": "tail-release-date",
+      "label": "真实硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "tail-product",
+        "tail-overview"
+      ]
+    },
+    {
+      "id": "tail-full-acceptance",
+      "label": "完整应用与实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "tail-resources"
+      ]
+    }
+  ],
+  "collectionNotes": [
+    "原厂程序能显示参数页，但约 4 秒后停止更新；测试中的滑动和点击尚未产生客体触摸报告或页面变化。",
+    "CST816S 的报告/中断子集通过定向测试，不代表本原厂应用的触摸交互已验收。",
+    "QMI8658A 在 SA0 接地时为 0x6B；支持已记录的寄存器和脚本运动子集，暂不支持前端自由姿态注入。",
+    "圆形裁剪、屏幕朝向与背光亮度是数字模型，未完成实物光学校准；电池、充电、无线网络和全部外设未验收。",
+    "Factory image README does not name PCB revision; Rev3 wiring is separately sourced.",
+    "Old QMI source BE bit and little-endian host interpretation disagree.",
+    "Old recovered emulator QMI address inference was reversed. QST section 16.3.1 and grounded SA0 establish only 0x6B.",
+    "来源原文保存在 docs/research/waveshare-legacy128-sources 和 qmi8658-rev-a-sources；gzip 解压后的字节与来源 SHA-256 对应。",
+    "固定源码通过 GitHub API 解码获取的是仓库原始文件字节，不是 GitHub HTML 页面。",
+    "新的 native 验收、无输入对照和负例位于 docs/evidence/waveshare-legacy128-2026-11-23/；未使用历史遗失结果作验收。",
+    "3D 来源：官方 CAD 机械参考。 生产加载器几何与输入射线已检查；浏览器 WebGL 和实物装配尚未验收。",
+    "IMU 数字输入：QMI8658 寄存器转换和八款板级 I2C 已验证；场景联动默认关闭，物理安装方向未标定。",
+    "部分适配：真实ESP32-S3数字板级路径，完整应用、无线、模拟电源和实物未验收。",
+    "厂家资料、CAD和原始固件校验可追溯；未知版次、机械偏差与实际运行失败均保留。",
+    "Existingproduct identity,digitalruntime andmanufacturerCAD-derived modelarepreserved. Model keeps UNKNOWN currentRev3boarddetails instead ofpresentingunmarked2024CAD circuitryascurrentlayout.",
+    "Independent5s originalfactoryrerun:40RAMWRcommands,50finalRGB565colors; continuousUI andphysicaltouchacceptance remainunverified.",
+    "CasedSKU26959 isaseparatefamily covered inpreviousbatch; no case isaddedtobare25098.",
+    "The retained STEP was authored on 2024-03-20 and remains linked by the current official resource page. That CAD date is not a product release date.",
+    "Native millimetres, source topology and assembly positions are preserved; no source geometry is scaled to fit a photograph.",
+    "USB orientation versus a particular factory firmware text direction has not been physically calibrated; the geometric view keeps native USB at negative Y.",
+    "No enclosure, battery or external cable is supplied by this model. RESET is visible geometry only; reset remains a platform action.",
+    "The live circular display is a 32.4 mm optical projection at the front cover plane, slightly offset to avoid coplanar rendering; it is not a manufactured laminate thickness.",
+    "Photographic registration is approximate and does not certify hidden dimensions or physical fit.",
+    "Current shop image explicitly reads Rev3 and the current schematic is Rev3. The 2024 CAD does not identify its PCB revision; only display stack, source board outline and photographed major connectors/buttons are retained. Omitted circuit details remain UNKNOWN.",
+    "The neutral board body is a 1.0 mm-thick reference from that CAD, not a measured current Rev3 layer stack. The visible UNKNOWN marking is a model provenance cue, not physical silkscreen.",
+    "Touch -B SKU26959 is a separately documented packaging option and is not represented by this base SKU25098 model.",
+    "原始BIN 5秒有界观测：{\"board\":\"waveshare-s3-touch-lcd128\",\"guestCycles\":1200000000,\"guestMilliseconds\":5000,\"stop\":\"Halted\",\"reboots\":0,\"width\":240,\"height\":240,\"distinctColors\":50,\"version\":230570,\"frames\":40,\"pc\":[1073921397,1077406830],\"sdCommands\":0,\"sdTimeouts\":0,\"sdBytesRead\":0,\"sdBytesWritten\":0,\"physicalValidated\":false,\"fullApplicationValidated\":false}",
+    "Earlierfacts,sources andmodel revisionboundaries preserved; thisupdate addsboundedexecution receipts and exactbatchselection."
+  ]
+}

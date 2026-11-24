@@ -1,0 +1,20 @@
+{
+  "listingId": "esp32-s3-lcd-driver-board",
+  "boardProfiles": [
+    "waveshare-s3-lcd-driver",
+    "waveshare-s3-lcd-driver-21",
+    "waveshare-s3-lcd-driver-28",
+    "waveshare-s3-lcd-driver-4"
+  ],
+  "checkedAt": "2026-11-23T23:34:50Z",
+  "command": "cargo test --release -p esp32s3 --test waveshare_extended --test waveshare_industrial_controls",
+  "result": "12 passed;0 failed",
+  "scope": "Real LX7 MMIO: all19 exact memory/controls; real RMT RGB; ETH SPI SD roundtrip/wrong-route/eject/partial-write; old8RO native SD/RTC/expander; Relay6 six coils; LCD3 RGB DMA/CS42/P0-P2 reset and BL gates/CST820/GT911 strap/LEDC.",
+  "regression": "Eight existing TCA-RGB unit tests plus focused Clippy; full repository gates owned by integration parent.",
+  "limitations": [
+    "Partial source-bounded digital simulation. Physical hardware, complete original factory applications and browser/WebGL acceptance are not claimed.",
+    "Bare board has no display/touch. RGB kits480x480: CST820@15 for2.1; GT911@14/5d for2.8/4. TCA20 SDA15/SCL7,P0touchreset/P1BLenable/P2LCDreset,GPIO42CS/2SCLK/1MOSI.",
+    "No onboard RTC/IMU/TF. GPIO6 backlight uses AP3032 feedback injection; inverse duty is normalized display policy, not calibrated analog brightness.",
+    "541714255-byte legacy ZIP,26972entries,2329844170expandedbytes exceeds all browser archive limits. Complete separate files were inspected for evidence without remerging/rebuilding firmware or relaxing limits."
+  ]
+}

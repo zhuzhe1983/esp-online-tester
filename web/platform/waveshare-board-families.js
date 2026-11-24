@@ -1785,5 +1785,299 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "psramMb": 8,
     "sdCard": true,
     "boardButtons": []
+  },
+  "waveshare-s3-geek": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 2,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-touch-lcd43": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-lcd43": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-lcd169-v1": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-s3-lcd169-v2": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-s3-eth-8di-8ro": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot",
+      "di1",
+      "di2",
+      "di3",
+      "di4",
+      "di5",
+      "di6",
+      "di7",
+      "di8"
+    ]
+  },
+  "waveshare-s3-poe-eth-8di-8ro": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot",
+      "di1",
+      "di2",
+      "di3",
+      "di4",
+      "di5",
+      "di6",
+      "di7",
+      "di8"
+    ]
+  },
+  "waveshare-s3-eth": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-eth-cam-kit": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-eth-poe": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-eth-poe-cam-kit": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-eth-m": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-eth-cam-kit-m": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-eth-poe-m": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-eth-poe-cam-kit-m": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-lcd-driver": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-lcd-driver-21": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": 8,
+    "display": true,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-lcd-driver-28": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": 8,
+    "display": true,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-lcd-driver-4": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": 8,
+    "display": true,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-tiny": {
+    "chip": "esp32s3",
+    "flashMb": 4,
+    "psramMb": 2,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-s3-tiny-kit": {
+    "chip": "esp32s3",
+    "flashMb": 4,
+    "psramMb": 2,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-tiny-n8r8": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-s3-tiny-n8r8-kit": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-relay-6ch": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 0,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
   }
 }));

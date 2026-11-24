@@ -9,12 +9,12 @@ use esp_soc::{board::{Board,BoardModel,BoardEdge},pins::PinRoutes,devices::{
     es8311::Es8311,es7210::Es7210,tca9554::{Tca9554,Tca9554State}}};
 const HZ:u64=240_000_000;
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
-pub enum Profile {Audio,AudioEn,Rs485Can,Rs485CanU,Relay1,Relay1U,PoeDiDo,EthDiRoC,PoeDiRoC}
+pub enum Profile {Audio,AudioEn,Rs485Can,Rs485CanU,Relay1,Relay1U,PoeDiDo,EthDiRoC,PoeDiRoC,EthDiRo,PoeDiRo}
 impl Profile {
-    pub const ALL:[Self;9]=[Self::Audio,Self::AudioEn,Self::Rs485Can,Self::Rs485CanU,Self::Relay1,Self::Relay1U,Self::PoeDiDo,Self::EthDiRoC,Self::PoeDiRoC];
-    pub fn name(self)->&'static str {match self {Self::Audio=>"waveshare-s3-audio-board",Self::AudioEn=>"waveshare-s3-audio-board-en",Self::Rs485Can=>"waveshare-s3-rs485-can",Self::Rs485CanU=>"waveshare-s3-rs485-can-u",Self::Relay1=>"waveshare-s3-relay-1ch",Self::Relay1U=>"waveshare-s3-relay-1ch-u",Self::PoeDiDo=>"waveshare-s3-poe-eth-8di-8do",Self::EthDiRoC=>"waveshare-s3-eth-8di-8ro-c",Self::PoeDiRoC=>"waveshare-s3-poe-eth-8di-8ro-c"}}
+    pub const ALL:[Self;11]=[Self::Audio,Self::AudioEn,Self::Rs485Can,Self::Rs485CanU,Self::Relay1,Self::Relay1U,Self::PoeDiDo,Self::EthDiRoC,Self::PoeDiRoC,Self::EthDiRo,Self::PoeDiRo];
+    pub fn name(self)->&'static str {match self {Self::Audio=>"waveshare-s3-audio-board",Self::AudioEn=>"waveshare-s3-audio-board-en",Self::Rs485Can=>"waveshare-s3-rs485-can",Self::Rs485CanU=>"waveshare-s3-rs485-can-u",Self::Relay1=>"waveshare-s3-relay-1ch",Self::Relay1U=>"waveshare-s3-relay-1ch-u",Self::PoeDiDo=>"waveshare-s3-poe-eth-8di-8do",Self::EthDiRoC=>"waveshare-s3-eth-8di-8ro-c",Self::PoeDiRoC=>"waveshare-s3-poe-eth-8di-8ro-c",Self::EthDiRo=>"waveshare-s3-eth-8di-8ro",Self::PoeDiRo=>"waveshare-s3-poe-eth-8di-8ro"}}
     pub fn audio(self)->bool {matches!(self,Self::Audio|Self::AudioEn)}
-    pub fn eight(self)->bool {matches!(self,Self::PoeDiDo|Self::EthDiRoC|Self::PoeDiRoC)}
+    pub fn eight(self)->bool {matches!(self,Self::PoeDiDo|Self::EthDiRoC|Self::PoeDiRoC|Self::EthDiRo|Self::PoeDiRo)}
     pub fn relay1(self)->bool {matches!(self,Self::Relay1|Self::Relay1U)}
     pub fn i2c_pins(self)->(u8,u8) {if self.audio(){(11,10)}else if self.eight(){(42,41)}else{(39,38)}}
     pub fn led_count(self)->usize {if self.audio(){7}else if self.eight(){1}else{0}}

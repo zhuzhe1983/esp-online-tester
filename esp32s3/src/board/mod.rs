@@ -72,6 +72,7 @@ mod waveshare_serial_rgb;
 mod waveshare_knob18;
 mod waveshare_small_spi;
 mod waveshare_lcd147;
+mod waveshare_lcd169;
 mod waveshare_lcd35b;
 mod waveshare_lcd35;
 mod waveshare_amoled164;
@@ -79,6 +80,7 @@ mod waveshare_amoled241;
 pub mod waveshare_core;
 pub mod waveshare_industrial;
 pub mod waveshare_industrial_controls;
+pub mod waveshare_extended;
 pub mod waveshare_rgb_matrix;
 pub mod waveshare_thermal;
 mod waveshare_tail_spi;
@@ -115,6 +117,7 @@ pub use waveshare_lcd4b::*;
 /// Board by name: `atech14` (default), `none`, `stopwatch` or a supported Waveshare board.
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
+        "waveshare-s3-lcd169-v1" | "waveshare-s3-lcd169-v2" => waveshare_lcd169::make_board(name),
         "waveshare-s3-thermal-camera" => Some(Box::<waveshare_thermal::WaveshareThermal>::default()),
         "waveshare-s3-lcd19" | "waveshare-s3-touch-lcd19" | "waveshare-s3-lcd13" => waveshare_small_spi::make_board(name),
         "waveshare-s3-matrix8" => Some(Box::new(waveshare_matrix8::WaveshareMatrix8::new())),
@@ -210,6 +213,10 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-amoled18-v2" | "amoled18-v2" => Some(Box::new(WaveshareAmoled18V2::new())),
         "waveshare-s3-lcd128" => Some(Box::new(waveshare_spi_legacy::WaveshareLegacySpi::new(waveshare_spi_legacy::LegacySpiVariant::Lcd128))),
         "waveshare-s3-touch-lcd128" => Some(Box::new(waveshare_spi_legacy::WaveshareLegacySpi::new(waveshare_spi_legacy::LegacySpiVariant::TouchLcd128))),
+        "waveshare-s3-lcd-driver" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::Driver))),
+        "waveshare-s3-lcd-driver-21" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::Driver21))),
+        "waveshare-s3-lcd-driver-28" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::Driver28))),
+        "waveshare-s3-lcd-driver-4" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::Driver4))),
         "waveshare-s3-touch-lcd21" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::TouchLcd21))),
         "waveshare-s3-touch-lcd21b" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::TouchLcd21B))),
         "waveshare-s3-lcd28b" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::Lcd28B))),
@@ -231,6 +238,7 @@ pub fn make_board(name: &str) -> Option<Board> {
             .or_else(|| waveshare_epaper133::make_board(name))
             .or_else(|| waveshare_core::make_board(name))
             .or_else(|| waveshare_industrial::make_board(name))
+            .or_else(|| waveshare_extended::make_board(name))
             .or_else(|| waveshare_industrial_controls::make_board(name))
             .or_else(|| lilygo_display::make_board(name))
             .or_else(|| lilygo_additional::make_board(name)),

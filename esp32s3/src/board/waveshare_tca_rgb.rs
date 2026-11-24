@@ -13,7 +13,7 @@ const I2C_PADS: (u8, u8) = (15, 7);
 const RGB_PADS: [u8; 16] = [5, 45, 48, 47, 21, 14, 13, 12, 11, 10, 9, 46, 3, 8, 18, 17];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum TcaRgbVariant { TouchLcd21, TouchLcd21B, Lcd28B, TouchLcd28B, Lcd28C, TouchLcd28C }
+pub enum TcaRgbVariant { TouchLcd21, TouchLcd21B, Lcd28B, TouchLcd28B, Lcd28C, TouchLcd28C, Driver, Driver21, Driver28, Driver4 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum TouchKind { None, Cst820, Gt911 }
 #[derive(Clone, Copy)]
@@ -27,13 +27,18 @@ impl TcaRgbVariant {
             Self::TouchLcd28B => ("waveshare-s3-touch-lcd28b", "ESP32-S3-Touch-LCD-2.8B", 640, false, TouchKind::Gt911),
             Self::Lcd28C => ("waveshare-s3-lcd28c", "ESP32-S3-LCD-2.8C", 480, true, TouchKind::None),
             Self::TouchLcd28C => ("waveshare-s3-touch-lcd28c", "ESP32-S3-Touch-LCD-2.8C", 480, true, TouchKind::Gt911),
+            Self::Driver => ("waveshare-s3-lcd-driver", "ESP32-S3-LCD-Driver-Board", 0, false, TouchKind::None),
+            Self::Driver21 => ("waveshare-s3-lcd-driver-21", "ESP32-S3-LCD-Driver-Board + 2.1inch RGB LCD", 480, true, TouchKind::Cst820),
+            Self::Driver28 => ("waveshare-s3-lcd-driver-28", "ESP32-S3-LCD-Driver-Board + 2.8inch RGB LCD", 480, true, TouchKind::Gt911),
+            Self::Driver4 => ("waveshare-s3-lcd-driver-4", "ESP32-S3-LCD-Driver-Board + 4inch RGB LCD", 480, false, TouchKind::Gt911),
         };
         Profile { variant: self, name, sku, height, round, touch }
     }
     pub fn name(self) -> &'static str { self.profile().name }
     pub fn sku(self) -> &'static str { self.profile().sku }
     pub fn dimensions(self) -> (u32, u32) { (480, u32::from(self.profile().height)) }
-    pub fn flash_mib(self) -> usize { 16 }
+    pub fn driver(self) -> bool { matches!(self, Self::Driver | Self::Driver21 | Self::Driver28 | Self::Driver4) }
+    pub fn flash_mib(self) -> usize { if self.driver() { 8 } else { 16 } }
     pub fn psram_mib(self) -> usize { 8 }
 }
 
@@ -42,24 +47,24 @@ impl TcaRgbVariant {
 // shared GT911 behavior remains unchanged. CST820 has its own documented
 // one-byte register protocol; it is not a differently named GT911/CST816S.
 struct TouchChip {
-    kind: TouchKind, io: Arc<Mutex<Tca9554State>>, height: u16, cycle: u64,
+    kind: TouchKind, io: Arc<Mutex<Tca9554State>>, reset_pin: u8, height: u16, cycle: u64,
     reset_falls: u64, enabled: bool, irq_drive: Option<bool>, address: u8,
     gt_state: Arc<Mutex<Gt911State>>, gt: Gt911, next_scan: u64,
     pointer: u16, phase: u8, pointer_valid: bool, x: u16, y: u16, down: bool, irq_until: u64,
     disable_auto_sleep: Option<u8>, reads: u64, contact_reads: u64, updates: u64,
 }
 impl TouchChip {
-    fn new(kind: TouchKind, height: u16, io: Arc<Mutex<Tca9554State>>) -> Self {
+    fn new(kind: TouchKind, height: u16, reset_pin: u8, io: Arc<Mutex<Tca9554State>>) -> Self {
         let gt_state = Arc::new(Mutex::new(Gt911State::new(480, height, HZ / 100)));
         let gt = Gt911::new(gt_state.clone());
-        Self { kind, io, height, cycle: 0, reset_falls: 0, enabled: true,
+        Self { kind, io, height, reset_pin, cycle: 0, reset_falls: 0, enabled: true,
             irq_drive: None, address: if kind == TouchKind::Gt911 { 0x14 } else { 0x15 },
             gt_state, gt, next_scan: 0, pointer: 0, phase: 0, pointer_valid: false, x: 0, y: 0,
             down: false, irq_until: 0, disable_auto_sleep: None, reads: 0,
             contact_reads: 0, updates: 0 }
     }
     fn sync_reset(&mut self) {
-        let (falls, high) = { let io = self.io.lock().expect("RGB expander"); (io.falling_edges(1), io.high(1)) };
+        let (falls, high) = { let io = self.io.lock().expect("RGB expander"); (io.falling_edges(self.reset_pin), io.high(self.reset_pin)) };
         if falls != self.reset_falls {
             self.reset_falls = falls; self.enabled = false;
             self.pointer = 0; self.phase = 0; self.pointer_valid = false; self.down = false; self.irq_until = 0;
@@ -180,7 +185,7 @@ impl WaveshareTcaRgb {
         let p = variant.profile(); let io = Arc::new(Mutex::new(Tca9554State::default()));
         let imu = Arc::new(ImuMotion::default());
         let qmi = Rc::new(RefCell::new(Qmi8658::new_c(imu.clone(), HZ)));
-        Self { p, touch: Rc::new(RefCell::new(TouchChip::new(p.touch, p.height, io.clone()))),
+        Self { p, touch: Rc::new(RefCell::new(TouchChip::new(p.touch, p.height.max(1), if variant.driver() { 0 } else { 1 }, io.clone()))),
             io, rtc: Arc::new(Mutex::new(Pcf85063State::new(HZ))), imu, qmi,
             i2c: I2cBitBang::new(), attached: false, cycle: 0, input: [true; 3],
             edges: Vec::new(), gpio_events: 0, frame: vec![0; 480 * usize::from(p.height)],
@@ -191,6 +196,7 @@ impl WaveshareTcaRgb {
             commands: 0, vendor_bytes: 0, rejected_spi: 0, rejected_rgb: 0,
             sd: None, sd_present: false, sd_select_rises: 0 }
     }
+    fn reset_pin(&self) -> u8 { if self.p.variant.driver() { 2 } else { 0 } }
     fn panel_reset(&mut self) {
         self.page = 0; self.command = 0; self.count = 0; self.sleeping = true;
         self.on = false; self.inverted = false; self.madctl = 0; self.colmod = 0x70;
@@ -198,7 +204,7 @@ impl WaveshareTcaRgb {
     }
     fn sync_io(&mut self) {
         let (falls, high, rises, sd_rises) = { let io = self.io.lock().expect("RGB expander");
-            (io.falling_edges(0), io.high(0), io.rising_edges(2), io.rising_edges(3)) };
+            (io.falling_edges(self.reset_pin()), io.high(self.reset_pin()), io.rising_edges(2), io.rising_edges(3)) };
         if falls != self.reset_falls { self.reset_falls = falls; self.panel_reset(); }
         if high != self.reset_high { self.reset_high = high; self.version += 1; }
         // Each delivered transfer is a complete 9-bit word. Raising CS between
@@ -240,7 +246,8 @@ impl WaveshareTcaRgb {
     }
     fn visible(&self) -> bool {
         let io = self.io.lock().expect("RGB expander");
-        io.high(0) && io.falling_edges(0) == self.reset_falls && self.rgb_valid
+        self.p.height > 0 && io.high(self.reset_pin()) && io.falling_edges(self.reset_pin()) == self.reset_falls && self.rgb_valid
+            && (!self.p.variant.driver() || io.high(1))
             && self.backlight > 0 && self.on && !self.sleeping
     }
 }
@@ -256,7 +263,7 @@ impl BoardModel for WaveshareTcaRgb {
             && routes.matrix_output(39, 152) && routes.matrix_output(38, 151);
         let mapping = RGB_PADS.map(|pin| (0..16).find(|i| routes.matrix_output(usize::from(pin), 133 + u32::from(*i))));
         self.set_mapping(controls, mapping);
-        self.backlight_gpio = routes.software_output(6) == Some(true);
+        self.backlight_gpio = routes.software_output(6) == Some(!self.p.variant.driver());
         let scl = routes.software_output(I2C_PADS.1).unwrap_or(true);
         let sda = self.i2c.drive(scl, routes.software_output(I2C_PADS.0).unwrap_or(true));
         for (i, (pin, level)) in [(I2C_PADS.0, sda), (I2C_PADS.1, scl)].into_iter().enumerate() {
@@ -272,19 +279,23 @@ impl BoardModel for WaveshareTcaRgb {
     fn uses_gpio_pwm(&self) -> bool { true }
     fn gpio_pwm_at(&mut self, cycle: VirtualCycle, pwm: &dyn Fn(u8) -> Option<(f64, u32)>) {
         self.advance_to(cycle);
-        let duty = pwm(6).map_or(if self.backlight_gpio { 65535 } else { 0 }, |(_, d)| d.min(65535));
+        // Driver RGB uses AP3032 feedback injection: low PWM increases LED current.
+        // Inverse normalized duty is a display policy, not an analog current model.
+        let duty = pwm(6).filter(|(hz, _)| hz.is_finite() && *hz > 0.0).map_or(if self.backlight_gpio { 65535 } else { 0 }, |(_, d)| if self.p.variant.driver() { 65535 - d.min(65535) } else { d.min(65535) });
         if duty != self.backlight { self.backlight = duty; self.version += 1; }
     }
     fn uses_qspi_pins(&self) -> bool { true }
     fn spi_transfer_qspi_pins(&mut self, _host: u8, pins: SpiQspiPins, tx: &[u8], rx_len: usize) -> Vec<u8> {
         self.sync_io();
-        let (lcd_selected, sd_selected) = { let io = self.io.lock().expect("RGB expander"); (!io.high(2), !io.high(3)) };
+        let (lcd_selected, sd_selected) = { let io = self.io.lock().expect("RGB expander");
+            if self.p.variant.driver() { (pins.cs & (1 << 42) != 0 && self.p.height > 0, false) } else { (!io.high(2), !io.high(3)) } };
         let wires = pins.sclk & (1 << 2) != 0 && pins.data[0] & (1 << 1) != 0;
         let common = wires && !pins.unsupported_mode && !pins.sio && !pins.clock_idle_high
             && !pins.clock_output_edge && pins.dummy_cycles == 0
             && [pins.command_width, pins.address_width, pins.data_width, pins.read_width].iter().all(|w| *w <= 1);
         if lcd_selected {
-            // TCA P2, not an MCU hardware-CS selector, controls this glass.
+            // Integrated boards select through TCA P2; the separate Driver Board
+            // uses MCU GPIO42. Bare Driver profiles have no attached glass.
             // Official SPI2: 1-bit D/C command followed by an 8-bit address.
             if !common || sd_selected || !self.reset_high || pins.command_width != 1
                 || pins.command_bits != 1 || pins.address_width != 1 || pins.address_bits != 8
@@ -306,7 +317,7 @@ impl BoardModel for WaveshareTcaRgb {
     }
     fn lcd_frame(&mut self, w: u32, h: u32, data: &[u8]) {
         self.sync_io();
-        if !self.rgb_valid || !self.reset_high || (w, h) != self.p.variant.dimensions() || data.len() != self.frame.len() * 2 {
+        if self.p.height == 0 || !self.rgb_valid || !self.reset_high || (w, h) != self.p.variant.dimensions() || data.len() != self.frame.len() * 2 {
             self.rejected_rgb += 1; return;
         }
         let direct = self.rgb_map.iter().enumerate().all(|(i, bit)| usize::from(*bit) == i);
@@ -319,8 +330,10 @@ impl BoardModel for WaveshareTcaRgb {
     fn i2c_devices(&mut self) -> Vec<(u8, u8, Box<dyn I2cDevice>)> {
         if !self.attached {
             self.i2c.attach(0x20, Box::new(Tca9554::new(self.io.clone())));
-            self.i2c.attach(0x51, Box::new(Pcf85063::new(self.rtc.clone())));
-            self.i2c.attach(Qmi8658::i2c_address(false), Box::new(Qmi8658Port::new(self.qmi.clone())));
+            if !self.p.variant.driver() {
+                self.i2c.attach(0x51, Box::new(Pcf85063::new(self.rtc.clone())));
+                self.i2c.attach(Qmi8658::i2c_address(false), Box::new(Qmi8658Port::new(self.qmi.clone())));
+            }
             let addresses: &[u8] = match self.p.touch { TouchKind::None => &[], TouchKind::Cst820 => &[0x15], TouchKind::Gt911 => &[0x5d, 0x14] };
             for &address in addresses { self.i2c.attach(address, Box::new(TouchPort { chip: self.touch.clone(), address })); }
             self.attached = true;
@@ -328,8 +341,9 @@ impl BoardModel for WaveshareTcaRgb {
         (0..2).flat_map(|bus| self.i2c.controller_devices(Some(I2C_PADS)).into_iter().map(move |(a, d)| (bus, a, d))).collect()
     }
     fn advance_to(&mut self, cycle: VirtualCycle) {
-        self.cycle = cycle; self.imu.cycle.store(cycle, Ordering::Relaxed);
-        self.rtc.lock().expect("RGB RTC state").advance_to(cycle);
+        self.cycle = cycle;
+        if !self.p.variant.driver() { self.imu.cycle.store(cycle, Ordering::Relaxed);
+            self.rtc.lock().expect("RGB RTC state").advance_to(cycle); }
         self.sync_io(); self.touch.borrow_mut().advance_to(cycle); self.sync_irq();
     }
     fn next_deadline(&self) -> Option<VirtualCycle> {
@@ -345,8 +359,8 @@ impl BoardModel for WaveshareTcaRgb {
         if self.p.touch != TouchKind::None { self.touch.borrow_mut().update(x, y, down); self.sync_irq(); }
     }
     fn touch_at(&mut self, cycle: VirtualCycle, x: u16, y: u16, down: bool) { self.advance_to(cycle); self.touch(x, y, down); }
-    fn set_imu_motion(&mut self, mode: u32) -> bool { self.qmi.borrow_mut().set_motion_mode(mode) }
-    fn set_imu_sample(&mut self, accel_g: [f64; 3], gyro_dps: [f64; 3]) -> bool { self.qmi.borrow_mut().set_host_sample(accel_g, gyro_dps) }
+    fn set_imu_motion(&mut self, mode: u32) -> bool { !self.p.variant.driver() && self.qmi.borrow_mut().set_motion_mode(mode) }
+    fn set_imu_sample(&mut self, accel_g: [f64; 3], gyro_dps: [f64; 3]) -> bool { !self.p.variant.driver() && self.qmi.borrow_mut().set_host_sample(accel_g, gyro_dps) }
     fn imu_motion(&self) -> u32 { self.imu.mode.load(Ordering::Relaxed) }
     fn take_edges(&mut self) -> Vec<BoardEdge> { std::mem::take(&mut self.edges) }
     fn input_levels(&self) -> Vec<(u8, bool)> {
@@ -355,6 +369,7 @@ impl BoardModel for WaveshareTcaRgb {
     }
     fn named_pin(&self, name: &str) -> Option<u8> { match name { "boot" | "button" => Some(0), _ => None } }
     fn sd_card_slot(&self) -> Option<([u8; 6], bool)> {
+        if self.p.variant.driver() { return None; }
         // Every retained SD_Card.cpp uses SD_MMC.setPins(2, 1, 42, -1, -1, -1)
         // and one-bit mode. EXIO_PIN4 is one-based, hence physical TCA P3:
         // the factory holds that DAT3 pin high for native SD selection.
@@ -365,14 +380,16 @@ impl BoardModel for WaveshareTcaRgb {
             self.sd_present && self.io.lock().expect("RGB expander").high(3)))
     }
     fn attach_spi_sd_card(&mut self, image: Box<dyn SdStore>, config: SdCardConfig) -> Result<String, String> {
+        if self.p.variant.driver() { return Err("LCD Driver Board has no onboard TF socket".into()); }
         let card = SpiSdCard::new(image, config)?; let description = card.describe();
         self.sd = Some(Box::new(card)); self.sd_present = true; Ok(description)
     }
     fn set_sd_card_present(&mut self, present: bool) {
         if present != self.sd_present { if let Some(card) = &mut self.sd { card.power_cycle(); } }
-        self.sd_present = present;
+        self.sd_present = present && !self.p.variant.driver();
     }
     fn display(&self) -> Option<(u32, u32, Vec<u16>, u64)> {
+        if self.p.height == 0 { return None; }
         let mut out = vec![0; self.frame.len()];
         if self.visible() {
             let height = usize::from(self.p.height);
@@ -390,9 +407,10 @@ impl BoardModel for WaveshareTcaRgb {
     }
     fn display_frames(&self) -> u64 { self.frames }
     fn display_version(&self) -> u64 { self.frames.wrapping_add(self.version) }
-    fn gram(&self) -> Option<(Vec<u16>, usize, usize)> { Some((self.frame.clone(), 480, usize::from(self.p.height))) }
+    fn gram(&self) -> Option<(Vec<u16>, usize, usize)> { (self.p.height > 0).then(|| (self.frame.clone(), 480, usize::from(self.p.height))) }
     fn report(&self) -> String {
         let touch = self.touch.borrow(); let io = self.io.lock().expect("RGB expander");
+        if self.p.variant.driver() { return format!("{} 8F8P; ST7701 RGB565 480x{} frames={} commands={} rejectedSPI={} rejectedRGB={} routed={} resetP2={} touch={:?} resetP0={} reads={} contacts={} BL_EN_P1={} inverseGPIO6Duty={}. LCD SPI CS42/SCLK2/MOSI1; RGB lanes and controls bound to original Driver BSP. No panel/touch on bare SKU; no onboard RTC, IMU, TF, audio. AP3032 optical brightness is normalized inverse-duty policy, not calibrated current/voltage. Battery/charger/ADC and optional18-pinSPI panels unimplemented.", self.p.sku, self.p.height, self.frames, self.commands, self.rejected_spi, self.rejected_rgb, self.rgb_valid, io.high(2), self.p.touch, io.high(0), touch.reads, touch.contact_reads, io.high(1), self.backlight); }
         let mut report = format!("{}: ST7701S RGB565 480x{} frames={} commands={} vendorBytes={} rejectedSPI={} rejectedRGB={} routed={} map={:?} on={} sleeping={} reset={} bank={:02x} madctl={:02x} colmod={:02x} backlight={} TCA9554@20 levels={:02x} touch={:?}@{:02x} reset={} reads={} contactReads={} hostUpdates={} QMI8658C@6b motion={} PCF85063A@51 I2C=15/7 physicalTF=true inserted={} SD={}. Analog panel voltages/gamma, exact reset/power timings, calibrated brightness/optical pose, CST IDs/gestures/scan/auto-sleep, GT config-engine/IRQ-mode/physical scan timing, QMI IRQ/calibration, RTC alarm/clock outputs, buzzer/battery/charger and RF are outside this subset.",
             self.p.sku, self.p.height, self.frames, self.commands, self.vendor_bytes, self.rejected_spi, self.rejected_rgb,
             self.rgb_valid, self.rgb_map, self.on, self.sleeping, io.high(0), self.page, self.madctl, self.colmod,
@@ -486,7 +504,7 @@ mod tests {
         b.spi_transfer(2, &[0, 0x28], 0); assert!(b.on, "unrouted callback has no panel side effect");
     }
     #[test]
-    fn idf_one_bit_command_alignment_survives_actual_spi_mmio_and_external_cs_boundaries() {
+    fn idf_one_bit_command_alignment_survives_actual_spi_mmio_and_expander_cs_boundaries() {
         let mut b = WaveshareTcaRgb::new(TcaRgbVariant::TouchLcd21);
         let mut gpio = esp_periph::Gpio::new(); let mut mux = esp_periph::RegRam::new();
         for (pin, signal) in [(2, 101), (1, 103)] {
@@ -595,6 +613,7 @@ mod tests {
             TcaRgbVariant::TouchLcd28B => ("ESP32-S3-Touch-LCD-2.8B", "ESP32-S3-Touch-LCD-2.8B_FactoryOnly_20241025.bin"),
             TcaRgbVariant::Lcd28C => ("ESP32-S3-Touch-LCD-2.8C", "ESP32-S3-LCD-2.8C_FactoryOnly_20250124.bin"),
             TcaRgbVariant::TouchLcd28C => ("ESP32-S3-Touch-LCD-2.8C", "ESP32-S3-Touch-LCD-2.8C_FactoryOnly_20250224.bin"),
+            TcaRgbVariant::Driver | TcaRgbVariant::Driver21 | TcaRgbVariant::Driver28 | TcaRgbVariant::Driver4 => panic!("Separate LCD Driver board has no complete factory image in this test fixture"),
         };
         let make = || {
             let mut m = crate::machine([2, 0, 0, 0, 0, 1]); m.bus.board = Box::new(WaveshareTcaRgb::new(v)); m.bus.attach_board_devices();

@@ -1,0 +1,17 @@
+{
+  "listingId": "esp32-s3-eth-8di-8ro",
+  "boardProfiles": [
+    "waveshare-s3-eth-8di-8ro",
+    "waveshare-s3-poe-eth-8di-8ro"
+  ],
+  "checkedAt": "2026-11-23T23:34:50Z",
+  "command": "cargo test --release -p esp32s3 --test waveshare_extended --test waveshare_industrial_controls",
+  "result": "12 passed;0 failed",
+  "scope": "Real LX7 MMIO: all19 exact memory/controls; real RMT RGB; ETH SPI SD roundtrip/wrong-route/eject/partial-write; old8RO native SD/RTC/expander; Relay6 six coils; LCD3 RGB DMA/CS42/P0-P2 reset and BL gates/CST820/GT911 strap/LEDC.",
+  "regression": "Eight existing TCA-RGB unit tests plus focused Clippy; full repository gates owned by integration parent.",
+  "limitations": [
+    "Partial source-bounded digital simulation. Physical hardware, complete original factory applications and browser/WebGL acceptance are not claimed.",
+    "Old8DI8RO has RS485, not C-revision CAN. TCA9554+PCF85063 SDA42/SCL41,DI4..11,RGB38wireRGB,buzzer46 and native SD48/47/45.",
+    "8relay coil states are digital controls; relay contacts, W5500 network, PoE/optocouplers/RS485 peer and electrical loads remain unmodeled."
+  ]
+}
