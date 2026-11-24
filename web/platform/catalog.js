@@ -83,7 +83,9 @@ export async function loadCatalog() {
     for (const item of document.items) {
       if (!idPattern.test(item.id) || ids.has(item.id)) fail('CATALOG_SCHEMA', `Invalid or duplicate ${name} ID.`);
       ids.add(item.id);
-      if (name === 'firmwares' && item.source?.manifestUrl) item.source.manifestUrl = new URL(item.source.manifestUrl, import.meta.url).href;
+      if (name === 'firmwares' && item.source) {
+        for (const key of ['manifestUrl', 'url']) if (item.source[key]) item.source[key] = new URL(item.source[key], import.meta.url).href;
+      }
     }
     return [name, document.items];
   }));

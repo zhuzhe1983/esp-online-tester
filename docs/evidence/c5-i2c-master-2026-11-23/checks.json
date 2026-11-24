@@ -1,0 +1,59 @@
+{
+  "recordedAtUTC": "2026-11-23T09:06:06.412322+00:00",
+  "parentCommit": "8012354b26e63b601878a9b0feddccbef327200c",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "environment": {
+    "profile": "release",
+    "lto": false,
+    "buildJobs": 1
+  },
+  "checks": [
+    {
+      "command": "cargo test -p esp32c5 --release -- --include-ignored --skip external_",
+      "passed": 36,
+      "failed": 0,
+      "externalTestsExcluded": 1
+    },
+    {
+      "command": "cargo clippy -p esp32c5 --release --all-targets -- -D warnings",
+      "exitCode": 0
+    }
+  ],
+  "newTests": [
+    "c5_pin_routes_byte_clock_ack_irq_and_stop_are_actual",
+    "c5_reset_gates_unknown_source_fifo_capacity_and_busy_routes"
+  ],
+  "artifacts": [
+    {
+      "path": "esp32c5/src/i2c.rs",
+      "bytes": 5438,
+      "sha256": "d696b0d7fed8ee12bf1a7f6d3bae4db0d7f9651c9943261e3280d35d5956361b"
+    },
+    {
+      "path": "esp32c5/src/i2c_regs.rs",
+      "bytes": 2231,
+      "sha256": "e34ec3b81fe79be8ce343696d48bbd904f87135ac0ee6d12b37c76102d36bb0f"
+    },
+    {
+      "path": "esp32c5/tests/i2c.rs",
+      "bytes": 3823,
+      "sha256": "035fba61a5ffca6ab594261b5c56c5ad6a3364c94aeae012c648d731ae2cf85b"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "bytes": 17705,
+      "sha256": "fcdbe84c48102950b9e22ef68d0b0ec22f39610eebc6b2f43f003defec8e1325"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "bytes": 8746,
+      "sha256": "b441258a1c9f9750b3700bfb3be91d1548ca8052a505d414a2cbbe54356419c5"
+    },
+    {
+      "path": "esp32c5/tools/generate_i2c_registers.py",
+      "bytes": 1453,
+      "sha256": "c4c00e5aa8853eee8424eb6e966d486cf2914fb5e5c87558fcca04fdf9af0fac"
+    }
+  ],
+  "scope": "C5 transport/MMIO tests; not factory firmware acceptance; no C3/C6/S3/P4 bus edits"
+}

@@ -3,7 +3,15 @@ import {isClassicStickBoard} from './board-compatibility.js';
 // Virtual sensor axes: +X model right, +Y model top, +Z out of the display.
 // This registration is explicit, not a claim about the unmeasured PCB mounting.
 // Official StopWatch HAL swaps sensor X/Y for its labels; firmware performs that swap.
-export const imuModelForBoard = board => isClassicStickBoard(board)?'mpu6886-register-subset':({sticks3:'bmi270-register-subset',stopwatch:'bmi270-register-subset',corematrix:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset',papermono:'bmi270-register-subset','papermono-lite':'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[board] || null);
+const waveshareQmiBoards = new Set([
+  'waveshare-s3-lcd128', 'waveshare-s3-touch-lcd128',
+  'waveshare-s3-touch-lcd21', 'waveshare-s3-touch-lcd21b',
+  'waveshare-s3-lcd28b', 'waveshare-s3-touch-lcd28b',
+  'waveshare-s3-lcd28c', 'waveshare-s3-touch-lcd28c',
+]);
+// QMI guest register conversions are verified; physical PCB/screen orientation
+// and motion responses in the vendor application remain uncalibrated.
+export const imuModelForBoard = board => isClassicStickBoard(board)?'mpu6886-register-subset':waveshareQmiBoards.has(board) ? 'qmi8658-register-subset' : ({sticks3:'bmi270-register-subset',stopwatch:'bmi270-register-subset',corematrix:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset',papermono:'bmi270-register-subset','papermono-lite':'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[board] || null);
 
 // UI choice is deliberately ephemeral, separate from the agent IMU API and
 // shared scene. At most one request runs and one latest sample waits for it.

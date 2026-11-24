@@ -442,7 +442,7 @@ function renderProduct() {
     renderProductChoices(selected.manufacturer, {familyId:keepFilter ? productFamilyFilter : selected.family?.id || '',selectedId:selected.id});
   }
   text('stage-title', selected.name); text('product-name', selected.name.replace(/^M5Stack /, ''));
-  text('model-origin', selected.model?.mode === 'screen-only' ? '屏幕调试模型 · 支撑框尺寸不代表实物' : selected.model?.mode === 'debug-placeholder' ? '结构未知的调试占位 · 不代表实物外观' : selected.model?.type === 'source-derived' ? selected.model.basis === 'manufacturer-cad' ? '厂家 CAD 与派生部件 · 内部结构有未知项' : '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '3D 模型 · 外观来源可查' : '模型待建 · 来源资料可查');
+  text('model-origin', selected.model?.provenance === 'official-cad' ? '官方 CAD 模型 · 适用版本见来源' : selected.model?.provenance === 'dimension-photo-reconstruction' ? '照片与尺寸重建 · 未知结构已标注' : selected.model?.mode === 'screen-only' ? '屏幕调试模型 · 支撑框尺寸不代表实物' : selected.model?.mode === 'debug-placeholder' ? '结构未知的调试占位 · 不代表实物外观' : selected.model?.type === 'source-derived' ? selected.model.basis === 'manufacturer-cad' ? '厂家 CAD 与派生部件 · 内部结构有未知项' : '照片与尺寸建模 · 内部结构有未知项' : selected.model || selected.id === 'm5stack-stopwatch' ? '3D 模型 · 外观来源可查' : '模型待建 · 来源资料可查');
   text('product-model', productIdentityLabel(selected));
   text('product-symbol', selected.displayStatus === 'unknown' ? '?' : selected.display?.shape === 'round' ? '◉' : selected.display ? '▤' : '▧');
   if ($('product-select')) $('product-select').value = selected.id;
@@ -728,14 +728,18 @@ async function loadSelected() {
   const next = clone(scene); next.firmware = source.file || source.files ? null : source;
   await configure(next);
   let state;
-  try {state=await runtime.loadFirmware(source);}
-  catch(error) {
-    if(!firmwareRecoverySource(error,source))throw error;
-    if(!await recoverFirmwareDownload({error,source,firmware:known,issueUrl:buildRunIssueUrl(errorContext(error))}))throw Object.assign(new Error('已取消下载恢复。'),{code:'RECOVERY_CANCELLED'});
-    if(scene.productId!==next.productId||!firmwareSourceMatches(scene.firmware,source))throw new Error('设备或固件选择已改变，请重新点击运行。');
-    state=await runtime.loadFirmware(source);
-    if($('toast')?.classList.contains('error')){clearTimeout(toastTimer);$('toast').hidden=true;}
-    if($('firmware-issue'))$('firmware-issue').hidden=true;
+  const recovered=new Set();
+  for(;;) {
+    try {state=await runtime.loadFirmware(source);break;}
+    catch(error) {
+      const pinned=firmwareRecoverySource(error,source),key=JSON.stringify(pinned);
+      if(!pinned||recovered.has(key)||recovered.size>=32)throw error;
+      if(!await recoverFirmwareDownload({error,source,firmware:known,issueUrl:buildRunIssueUrl(errorContext(error))}))throw Object.assign(new Error('已取消下载恢复。'),{code:'RECOVERY_CANCELLED'});
+      if(scene.productId!==next.productId||scene.runtimeConfigurationId!==next.runtimeConfigurationId||!firmwareSourceMatches(scene.firmware,source))throw new Error('设备或固件选择已改变，请重新点击运行。');
+      recovered.add(key);
+      if($('toast')?.classList.contains('error')){clearTimeout(toastTimer);$('toast').hidden=true;}
+      if($('firmware-issue'))$('firmware-issue').hidden=true;
+    }
   }
   if (history) {
     const metadata = state.firmware?.metadata;

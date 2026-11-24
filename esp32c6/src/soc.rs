@@ -35,6 +35,7 @@ impl Soc for C6 {
 }
 
 impl esp_soc::SocBus for SocBus {
+    fn attach_sd_card(&mut self,image:Box<dyn esp_periph::sdmmc::SdStore>,config:esp_periph::sdmmc::SdCardConfig)->Result<String,String>{self.board.attach_spi_sd_card(image,config)}
     fn enable_ble(&mut self, elf: &esp_soc::elf::Elf) -> Result<(), String> { self.ble.enable(&elf.by_name, elf.symbol_sizes.get("esp_bt_controller_init").copied().unwrap_or(0), elf.idf_version().unwrap_or("")) }
     fn ble_enabled(&self) -> bool { !self.ble.hooks.is_empty() }
     fn ble_pending_commands(&self) -> usize { self.ble.session.pending_commands() }

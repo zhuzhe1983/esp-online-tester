@@ -8,7 +8,7 @@ fn bus(name: &str) -> esp32c5::C5Bus {
     b.attach_board(esp32c5::board::make_board(name).unwrap()); b
 }
 fn output(b: &mut esp32c5::C5Bus, pin: u8, level: bool) {
-    b.write32(0x6009_0004 + 4 * pin as u32, 1 << 12).unwrap();
+    b.write32(0x6009_0000 + 4 * pin as u32, 1 << 12).unwrap();
     b.write32(0x6009_1ad4 + 4 * pin as u32, 256).unwrap();
     level_pin(b, pin, level);
     b.write32(0x6009_1038, 1 << pin).unwrap();
@@ -37,7 +37,7 @@ fn first(b: &esp32c5::C5Bus) -> u16 { let (w,h,p,_) = b.board.display().unwrap()
 fn t7_c5_boot_is_a_real_active_low_input_and_has_no_screen_or_led() {
     let mut b = bus("lilygo-t7-c5");
     assert_eq!(b.board.named_pin("boot"), Some(28));
-    b.write32(0x6009_0074, (1 << 12) | (1 << 9)).unwrap();
+    b.write32(0x6009_0070, (1 << 12) | (1 << 9)).unwrap();
     assert_ne!(b.read32(0x6009_1064).unwrap() & (1 << 28), 0);
     b.gpio_set_input(28, false); assert_eq!(b.read32(0x6009_1064).unwrap() & (1 << 28), 0);
     b.gpio_set_input(28, true); assert_ne!(b.read32(0x6009_1064).unwrap() & (1 << 28), 0);

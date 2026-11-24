@@ -597,7 +597,7 @@ fn s31_one(hex: &str, regs: &[(usize, u32)]) -> (Cpu, FlatRam, Result<(), Trap>)
 
 /// `a0 = op(a1, a2)` for each Zba/Zbb/Zbs instruction (bit-manipulation v1.0.0), edge cases included.
 #[test]
-fn s31_zba_zbb_zbs_compute() {
+fn s31_and_p4_rev3_zba_zbb_zbs_compute() {
     const A0: usize = 10;
     let cases: &[(&str, u32, u32, u32)] = &[
         ("20c5a533", 3, 10, 16), ("20c5c533", 3, 10, 22), ("20c5e533", 3, 10, 34),            // sh1add sh2add sh3add
@@ -621,10 +621,32 @@ fn s31_zba_zbb_zbs_compute() {
         ("28c59533", 0, 31, 0x8000_0000), ("29f59513", 1, 0, 0x8000_0001),                       // bset bseti
     ];
     for &(hex, a, b, want) in cases {
-        let (cpu, _, t) = s31_one(hex, &[(11, a), (12, b)]);
-        assert_eq!(t, Ok(()), "{hex}");
-        assert_eq!(cpu.x[A0], want, "{hex} a1={a:#x} a2={b:#x}");
-        assert_eq!(cpu.pc, BASE + 4);
+        for mut cpu in [Cpu::new_esp32s31(), Cpu::new_esp32p4_rev3()] {
+            let mut ram=FlatRam::new(BASE,64);ram.mem[..4].copy_from_slice(&asm(hex));
+            cpu.pc=BASE;cpu.x[11]=a;cpu.x[12]=b;
+            assert_eq!(step(&mut cpu,&mut ram),Ok(()),"{hex}");
+            assert_eq!(cpu.x[A0],want,"{hex} a1={a:#x} a2={b:#x}");
+            assert_eq!(cpu.pc,BASE+4);
+        }
+    }
+}
+
+/// The actual BSETI encoding that a P4 rev3 bootloader uses must stay legal
+/// through reset, while earlier P4, C3 and C6 cores still trap on it.
+#[test]
+fn p4_rev3_bit_manipulation_survives_reset_without_changing_older_cores() {
+    let mut ram=FlatRam::new(BASE,64);ram.mem[..4].copy_from_slice(&0x29b7_1713u32.to_le_bytes());
+    for mut cpu in [Cpu::new(),Cpu::new_rv32imac(),Cpu::new_esp32p4()] {
+        cpu.pc=BASE;cpu.x[14]=1;
+        assert_eq!(step(&mut cpu,&mut ram),Err(Trap::Exception(2)));
+        assert_eq!((cpu.mepc,cpu.mtval),(BASE,0x29b7_1713));
+    }
+    let mut cpu=Cpu::new_esp32p4_rev3();
+    for _ in 0..2 {
+        cpu.pc=BASE;cpu.x[14]=1;assert_eq!(step(&mut cpu,&mut ram),Ok(()));
+        assert_eq!(cpu.x[14],0x0800_0001);assert_eq!(cpu.pc,BASE+4);
+        assert_eq!(cpu.isa()&(decode::ISA_ZC|decode::ISA_PIE),0);
+        cpu.reset();
     }
 }
 

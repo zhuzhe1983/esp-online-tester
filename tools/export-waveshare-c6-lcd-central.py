@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""Export exact, source-verified C6 LCD entries; never edit central catalogs."""
+import argparse,datetime,gzip,hashlib,json,re
+from pathlib import Path
+
+parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--sources',type=Path,required=True);parser.add_argument('--output',type=Path,required=True);args=parser.parse_args()
+root=Path(__file__).resolve().parents[1];src=args.sources;cache=src/'c6-lcd-batch';out=args.output;out.mkdir(parents=True,exist_ok=True)
+now=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
+archive=root/'docs/research/waveshare-c6-lcd-sources-2026-11-23';archive.mkdir(parents=True,exist_ok=True)
+rows=[]
+def save(p,d):p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+def retained(file,receipt,group):
+ b=file.read_bytes();assert len(b)==receipt['bytes'] and hashlib.sha256(b).hexdigest()==receipt['sha256'],file
+ if receipt.get('gitBlobSha1'):assert hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()==receipt['gitBlobSha1'],file
+ url=receipt['url'];name=re.sub(r'[^a-zA-Z0-9._-]','_',group+'__'+str(file.relative_to(src)))
+ record={k:receipt[k] for k in ['url','bytes','sha256','gitBlobSha1','repo','commit','captureKind'] if k in receipt}
+ record['fetchedAt']=receipt.get('fetchedAt')or receipt.get('fetchedAtUTC');assert record['fetchedAt'],file
+ record['resolvedUrl']=receipt.get('resolvedUrl',receipt.get('finalUrl',url));record['group']=group;record['fileName']=file.name
+ if file.suffix!='.bin':
+  compressed=gzip.compress(b,mtime=0);(archive/(name+'.gz')).write_bytes(compressed);record.update(archive=name+'.gz',archiveSha256=hashlib.sha256(compressed).hexdigest())
+ rows.append(record);return record
+for p in sorted(cache.rglob('*.receipt.json')):
+ d=json.loads(p.read_text());stem=str(p).removesuffix('.receipt.json');candidates=[Path(stem)]+[Path(stem+ext) for ext in ['.pdf','.c','.h','.py']];f=next((f for f in candidates if f.exists()and f.is_file()and f.stat().st_size==d['bytes']and hashlib.sha256(f.read_bytes()).hexdigest()==d['sha256']),None)
+ if f is None:raise ValueError('Missing exact source body: '+str(p))
+ retained(f,d,str(f.relative_to(cache).parts[0]))
+for name in ['ESP32-C6-LCD-0.85','ESP32-C6-LCD-1.9','ESP32-C6-Touch-LCD-1.69','ESP32-C6-Touch-LCD-1.47']:
+ for kind in ['overview','resources']:
+  folder=src/'catalog-docs'/name;d=json.loads((folder/(kind+'.receipt.json')).read_text());retained(folder/(kind+'.html'),d,name)
+save(archive/'manifest.json',{'schemaVersion':'1','generatedAt':now,'description':'Exact downloaded public bodies; binary images retained outside Git; hashes never substitute connector metadata for response bytes.','sources':rows})
+profiles=[
+ dict(slug='lcd-0-85',name='ESP32-C6-LCD-0.85',sku='33966',board='waveshare-c6-lcd085',flash=8,w=128,h=128,inches=.85,controller='ST7735',touch=None,repo='ESP32-C6-LCD-0.85',date='20260507',spi=dict(CLK=1,MOSI=2,CS=5,DC=3,RESET=4,BL=6),i2c=dict(SDA=8,SCL=7),sd=dict(CLK=1,MOSI=2,MISO=16,CS=17),parts=['ES8311@0x18','ES7210@0x40','8×WS2812@GPIO14'],conflicts=['BSP显示头文件把CLK/MOSI互换；原理图、独立SPI定义及原厂实际运行均为CLK1/MOSI2，未为错误拷贝接受第二套线路。','示例目录含其他芯片遗留镜像；只登记芯片ID13且校验通过的C6 FactoryOnly。','官方概要未确认QMI，原理图相关区只有预留网络，不添加虚构IMU。']),
+ dict(slug='lcd-1-9',name='ESP32-C6-LCD-1.9',sku='30937',board='waveshare-c6-lcd19',flash=8,w=170,h=320,inches=1.9,controller='ST7789V2',touch=None,repo='ESP32-C6-LCD-1.9',date='20260312',spi=dict(CLK=5,MOSI=4,CS=7,DC=6,RESET=14,BL=15,backlightActiveLow=True),i2c=dict(SDA=18,SCL=8),sd=dict(CLK=5,MOSI=4,MISO=19,CS=20),parts=['QMI8658C@0x6b','TCA9554@0x20'],conflicts=['原厂项目通过SH8601 API包装发送ST7789命令，不据软件名称误标AMOLED。','示例BLINK_GPIO不证明板载LED；原理图未确认该器件。']),
+ dict(slug='touch-lcd-1-9',name='ESP32-C6-Touch-LCD-1.9',sku='30941',board='waveshare-c6-touch-lcd19',flash=8,w=170,h=320,inches=1.9,controller='ST7789V2',touch='CST816',repo='ESP32-C6-LCD-1.9',date='20260312',spi=dict(CLK=5,MOSI=4,CS=7,DC=6,RESET=14,BL=15,backlightActiveLow=True),i2c=dict(SDA=18,SCL=8),sd=dict(CLK=5,MOSI=4,MISO=19,CS=20),parts=['CST816@0x15 (polling)','QMI8658C@0x6b','TCA9554@0x20'],conflicts=['触摸IRQ22和RESET21经过默认NC电阻，无有效焊接连接；按轮询实现，不人为制造GPIO中断或复位。','官方同页区分30937无触摸/30941触摸；同一原厂镜像分别执行，不能把触摸版结果给无触摸版。','原厂驱动名SH8601不等于物理控制器。']),
+ dict(slug='touch-lcd-1-69',name='ESP32-C6-Touch-LCD-1.69',sku='31538',board='waveshare-c6-touch-lcd169',flash=16,w=240,h=280,inches=1.69,controller='ST7789V2',touch='CST816T',repo='ESP32-C6-Touch-LCD-1.69',date='20250618',spi=dict(CLK=1,MOSI=2,CS=5,DC=3,RESET=4,BL=6),i2c=dict(SDA=8,SCL=7),sd=None,parts=['CST816T@0x15 IRQ11 RESET4','QMI8658A@0x6b','PCF85063A@0x51','ES8311@0x18'],conflicts=['外置W25Q128与QFN40 C6是16MiB Flash；不是其余C6FH8的8MiB。','BSP写触摸RESET=NC，但原理图R33=0Ω将其接到LCD RESET4；实现真实共用复位和上拉。','IMU中断线复用BOOT9；未合成未经验证的IMU中断。']),
+ dict(slug='touch-lcd-1-47',name='ESP32-C6-Touch-LCD-1.47',sku='31203',board='waveshare-c6-touch-lcd147',flash=8,w=172,h=320,inches=1.47,controller='JD9853',touch='AXS5106L',repo='ESP32-C6-Touch-LCD-1.47',date='20261119',spi=dict(CLK=1,MOSI=2,CS=14,DC=15,RESET=22,BL=23),i2c=dict(SDA=18,SCL=19),sd=dict(CLK=1,MOSI=2,MISO=3,CS=4),parts=['AXS5106L@0x63 IRQ21 RESET20','QMI8658A@0x6b'],conflicts=['概要表将BOOT写为GPIO8；原理图实际GPIO9，保留冲突并使用原理图。','JD9853原厂初始化显式COLMOD05表示RGB565；不是ST7789或其他CST触摸的别名。']),
+]
+profiles.append({**profiles[-1],'slug':'touch-lcd-1-47-m','name':'ESP32-C6-Touch-LCD-1.47-M','sku':'31201'})
+products=[];knowledge=[];firmwares=[];watch=[];indices=[];fwgroups={}
+for q in profiles:
+ pid='waveshare-esp32-c6-'+q['slug'];factory=next(s for s in rows if s['fileName']==q['repo']+'_FactoryOnly_'+q['date']+'.bin')
+ selected=[s for s in rows if (s['group']==q['repo'] or (s['group']=='official-pdfs' and s['fileName']==q['name'].removesuffix('-M')+'-Schematic.pdf')) and not s['fileName'].endswith('.bin')]+[factory]
+ sources=[];assets=[];overview_id=None;factoryid=None
+ for i,s in enumerate(selected):
+  sid='factory'if s is factory else 'overview'if s['fileName']=='overview.html'else 'resources'if s['fileName']=='resources.html'else 'source-'+str(i)
+  stamp=datetime.datetime.fromisoformat(s['fetchedAt'].replace('Z','+00:00')).astimezone(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
+  sources.append({'id':sid,'title':s['fileName'],'url':s['url'],'kind':'manufacturer-firmware'if s is factory else 'manufacturer-source','status':'fetched','resolvedUrl':s['resolvedUrl'],'fetchedAt':stamp,'bytes':s['bytes'],'sha256':s['sha256'],'archiveName':s.get('archive',s['fileName']).removesuffix('.gz'),'notes':'Original response bytes verified; retained archive: '+str(archive.relative_to(root))+'/'+s['archive'] if s.get('archive')else'Original manufacturer binary independently downloaded and checked; remote link retained, no Git binary mirror.'})
+  assets.append({'id':sid,'sourceId':sid,'role':'firmware-download'if s is factory else'source-document','url':s['url']})
+ public=[{'id':s['id'],'title':s['title'],'url':s['url'],'checkedAt':'2026-11-23'}for s in sources if s['id']in['overview','resources','factory']]
+ limits=['部分适配：显示／触摸／GPIO／SD数字路径按精确接线实现；原厂执行结果逐项记录，未把进程正常退出当成功。','无PSRAM；CPU修订沿用虚拟C6 v0.1，真实板修订、嵌入Flash厂商和模拟电源没有猜测。','显示遵循原厂数字坐标和RGB565；物理色彩、扫描、触摸采样周期和姿态安装方向未标定。','无线、音频PCM、电池／充电、外部扩展和完整应用交互尚未逐项验收。','默认TF卡仅用于声明有卡槽的型号；准备FAT32不等于原厂已挂载。'if q['sd']else'此精确型号无TF卡槽，拒绝挂接不存在的SD设备。']
+ fwkey=q['repo']+'-'+q['date'];fid='waveshare-'+q['repo'].lower().removeprefix('esp32-').replace('.','')+'-factory';fwgroups.setdefault(fwkey,{'id':fid,'q':q,'factory':factory,'pids':[]})['pids'].append(pid)
+ product={'id':pid,'name':'Waveshare '+q['name'],'manufacturer':'Waveshare','sku':q['sku'],'chip':'esp32c6','hardwareRevision':'unspecified','summary':f"{q['inches']} 英寸 {q['w']}×{q['h']} {q['controller']}，{q['flash']} MiB Flash，无PSRAM；"+('触摸 '+q['touch'] if q['touch']else'无触摸')+'。','knowledgeUrl':'./knowledge/'+pid+'.json','family':{'id':q['board'],'name':'Waveshare ESP32-C6 LCD'},'runtime':{'board':q['board'],'flashMb':q['flash'],'psramMb':0,'touch':bool(q['touch']),'status':'partial'},'displayStatus':'known','display':{'width':q['w'],'height':q['h'],'type':'TFT LCD','controller':q['controller'],'bus':'SPI2','diagonalInches':q['inches'],'touch':bool(q['touch'])},'controls':[{'id':'boot','name':'BOOT','type':'button','pin':9,'activeLow':True,'defaultKeyCode':'Space'}],'interfaces':[{'id':'tf','name':'TF / microSD','type':'microSD','external':True,'pins':list(q['sd'].values())}]if q['sd']else[],'sources':public,'limitations':limits,'defaultFirmwareId':fid,'chronology':{'date':None,'basis':'unknown','confidence':'unknown','sourceId':None,'sourceUrl':None,'notes':'固件文件日期不作为硬件发布日期。'}}
+ refs=[s['id']for s in sources if s['id']!='factory'];facts=[{'id':'hardware','label':'精确硬件及接线','value':{'sku':q['sku'],'flashMiB':q['flash'],'psramMiB':0,'chipPackage':'QFN40/external W25Q128'if q['flash']==16 else'C6FH8 QFN32','display':product['display'],'spi':q['spi'],'i2c':q['i2c'],'touch':q['touch'],'components':q['parts'],'boot':9,'sd':q['sd']},'basis':'official','sourceIds':refs},{'id':'factory','label':'校验后的精确原厂镜像','value':{'sha256':factory['sha256'],'bytes':factory['bytes'],'chipId':13,'bootloaderOffset':0,'partitionTableOffset':32768,'applicationOffset':65536,'checksumAndDigestValid':True,'nativeEvidence':'docs/evidence/waveshare-c6-lcd-family-2026-11-23/README.md'},'basis':'official','sourceIds':['factory']}]
+ k={'schemaVersion':'1','id':pid,'kind':'product','catalogId':pid,'title':product['name'],'summary':product['summary'],'summarySourceIds':refs,'updatedAt':now,'hardwareRevision':'unspecified','facts':facts,'revisions':[],'sources':sources,'assets':assets,'unknowns':[{'id':'hardware-release','label':'硬件发布日期','value':None,'basis':'unknown','sourceIds':['overview']},{'id':'uiflow','label':'精确UIFlow镜像','value':None,'basis':'unknown','sourceIds':['resources'],'notes':'本批尚未完成精确UIFlow版本验证；不替换为其他品牌／芯片镜像。'}],'collectionNotes':limits+q['conflicts']}
+ products.append(product);knowledge.append(k);indices.append({'id':pid,'kind':'product','catalogId':pid,'name':product['name'],'url':'./'+pid+'.json','updatedAt':now})
+for g in fwgroups.values():
+ q=g['q'];f=g['factory'];firmwares.append({'id':g['id'],'name':q['repo']+' · 官方出厂镜像（验证中）','productIds':g['pids'],'version':'FactoryOnly_'+q['date'],'status':'trial','source':{'url':f['url'],'sha256':f['sha256']},'role':'factory','publisher':'Waveshare','publisherGroup':'官方','simulationVerified':False,'hardwareValidated':False,'sources':[{'title':'Pinned original manufacturer binary','url':f['url'],'checkedAt':'2026-11-23'}],'limitations':['原厂ROM执行与外设支持仍有已知边界，未声称完整应用可用；以本批运行证据为准。','未经浏览器/WebGL和实物测试。']})
+ repo='waveshareteam/'+q['repo'];watch.append({'id':g['id']+'-watch','name':q['repo']+' official factory','category':'factory','upstreamRepo':repo,'metadataUrl':'https://api.github.com/repos/'+repo+'/releases/latest','releaseUrl':'https://github.com/'+repo+'/releases','version':'FactoryOnly_'+q['date'],'checkedAt':now,'assets':[{'name':f['fileName'],'url':f['url'],'bytes':f['bytes'],'sha256':f['sha256'],'format':'merged'}],'compatibility':{'status':'reference-only','productIds':g['pids'],'simulationVerified':False,'hardwareValidated':False,'note':'精确硬件容量与镜像芯片检查已完成，执行和外设验收另行记录。'},'storage':'remote-links-only','catalogTargets':[],'monitoringNote':'固件日期不等于产品发布日期；仅登记精确型号。'})
+save(out/'entries.json',{'schemaVersion':'1','generatedAt':now,'products':products,'knowledge':knowledge,'knowledgeIndexEntries':indices,'firmwares':firmwares,'watchlistEntries':watch});print(json.dumps({'products':len(products),'verifiedSources':len(rows),'factoryEntries':len(firmwares),'output':str(out/'entries.json')}))

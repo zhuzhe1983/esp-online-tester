@@ -5,7 +5,7 @@
 .global _start
 _start:
     la sp, stack_top
-    li t0, 0x60090074
+    li t0, 0x60090070
     li t1, 0x1000
     sw t1, 0(t0)
     li t0, 0x60091b44
@@ -66,7 +66,7 @@ drive:
     sw t1, 0(t0)
     j ack
 wrong_pin:
-    li t0, 0x60090070
+    li t0, 0x6009006c
     li t1, 0x1000
     sw t1, 0(t0)
     li t0, 0x60091b40
@@ -79,7 +79,7 @@ wrong_pin:
     sw t1, 0(t0)
     j ack
 rmt:
-    li t0, 0x60090018
+    li t0, 0x60090014
     li t1, 0x1000
     sw t1, 0(t0)
     li t0, 0x60091ae8

@@ -5,6 +5,16 @@ import agents from './en-agents.js';
 import deviceTools from './en-device-tools.js';
 
 export default {
+  "BOOT · 原厂模式选择": "BOOT · Factory mode selection",
+  "USB-C 编程 / 电源": "USB-C programming / power",
+  "选配 13.3E6 玻璃接口": "Optional 13.3E6 panel connector",
+  "锂电池接口": "Lithium battery connector",
+  "圆形触摸区域": "Circular touch area",
+  "TF · SDMMC 单线": "TF · One-bit SDMMC",
+  "BOOT · 退出原厂画板": "BOOT · Exit factory drawing app",
+  "USB-C · 编程与供电": "USB-C · Programming and power",
+  "I2C 调试焊盘": "I2C debug pads",
+  "UART0 调试焊盘": "UART0 debug pads",
   "AXP192 虚拟电源环境": "AXP192 virtual power",
   "AXP192 PEK · 短按事件（非GPIO）": "AXP192 PEK · short press (no GPIO)",
   "内部 ST7735SV SPI": "Internal ST7735SV SPI",

@@ -22,9 +22,10 @@ export function lilygoC5Probe() {
   const command=(value,data=[])=>{li(6,8);sw(6,19);byte(value);li(6,8);sw(6,18);for(const b of data)byte(b);};
   // s2/s3 keep GPIO OUT_W1TS/OUT_W1TC; no C3/C6 register aliases.
   li(18,0x60091008);li(19,0x6009100c);
-  for(const pin of [0,1,2,3,6,10]){write(0x60090004+pin*4,1<<12);write(0x60091ad4+pin*4,256);}
+  // C5 GPIO0 starts at IO_MUX+0 (unlike the shared host PinRoutes layout).
+  for(const pin of [0,1,2,3,6,10]){write(0x60090000+pin*4,1<<12);write(0x60091ad4+pin*4,256);}
   write(0x60091004,1<<1);write(0x60091038,(1<<0)|(1<<1)|(1<<2)|(1<<3)|(1<<6)|(1<<10));
-  write(0x60090074,(1<<12)|(1<<9));
+  write(0x60090070,(1<<12)|(1<<9));
   command(0x11);command(0x29);command(0x3a,[0x05]);command(0x36,[0x08]);
   uart('LILYGO C5 SRAM READY\n');
   li(21,2); // impossible initial pressed state forces the first framebuffer.

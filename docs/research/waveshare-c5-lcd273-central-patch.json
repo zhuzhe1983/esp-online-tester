@@ -1,0 +1,141 @@
+{
+  "kind": "independent-central-integration-patch",
+  "productId": "waveshare-esp32-c5-lcd-2-73",
+  "name": "Waveshare ESP32-C5-LCD-2.73",
+  "chip": "esp32c5",
+  "profile": "waveshare-c5-lcd273",
+  "skus": {
+    "base": "35224",
+    "batteryFreePackaging": "35225"
+  },
+  "flashMB": 32,
+  "psramMB": 8,
+  "capacityBasis": "Official schematic N32R8 and both original factory image headers32MiB; PSRAM8MiB retained as physical capacity and exercised by guest.",
+  "resolution": [
+    320,
+    320
+  ],
+  "controllers": [
+    "ILI9488",
+    "CH32V006K8U7",
+    "QMI8658C",
+    "PCF85063A"
+  ],
+  "hasTfSlot": true,
+  "hasTouch": false,
+  "buttonIds": [
+    "prev",
+    "next",
+    "boot"
+  ],
+  "runtimeStatus": "experimental-sram-diagnostic",
+  "runtimeEvidence": "docs/evidence/waveshare-c5-lcd273-2026-11-23/inputs-and-hashes.json",
+  "runtimeDocumentation": "docs/platform/waveshare-c5-lcd273.md",
+  "sourceReceipt": "docs/research/waveshare-c5-lcd273-sources-2026-11-23/manifest.json",
+  "dataConflicts": [
+    "Canonical text namesCH32V003, but schematic fitsCH32V006K8U7 and this repository factory io_extension uses16-bitLE direction/output/input. ExplicitV006 used.",
+    "Source mirror(false,false) setsMX; native framebuffer referenceMADCTL48 follows this actual driver, not the API argument name. Physicalscan/color calibration remains unverified.",
+    "Original factory usesIDFv5.5.3; sharedC5 register models cite independently retainedIDFv5.5.4 headers. Source wiring/phase behavior is exact for this board; no wholefactory compatibility claim."
+  ],
+  "projectDiagnostic": {
+    "role": "project-original-sram-diagnostic",
+    "name": "C5 LCD2.73 RGB666/PSRAM/GDMA/three-keys/SD diagnostic",
+    "chip": "esp32c5",
+    "board": "waveshare-c5-lcd273",
+    "app_direct": true,
+    "files": {
+      "app": "firmware/c5-lcd273-probe/probe.bin"
+    },
+    "appOffset": 65536,
+    "appBytes": 4224,
+    "appSha256": "44cf80f57df4227ac568084955bb4a26aec49803e2e7390c9e845ab5fc444fcd",
+    "flashMB": 32,
+    "psramMB": 8,
+    "nominalXtalMHz": 48,
+    "spiMHz": 24,
+    "i2cHz": 400000,
+    "verified": [
+      "Native App32F8P; full8MiB guest PSRAM write/read",
+      "307200B RGB666 framebuffer from PSRAM via actual GDMA;320x320 and5120RGB565 hostcolors",
+      "Real16-bitV00624 reset/PWM andQMI6B identity at400kHzI2C",
+      "PREV2 andNEXT3 each26752changedpixels;BOOT28 changes73728; all releasesexact",
+      "Quiet0pixels;226000000retired/dispatched;0exceptions/resets",
+      "Public SocBus SD CMD0/CMD8/ACMD41/CMD17/CMD24 saves/tests/restoresLBA32; whole8MiB nonzero sample identical"
+    ],
+    "notExercised": [
+      "manufacturer desktop/ROMflashboot",
+      "physicalPSRAM manufacturer identity",
+      "physicalcolor/scan/PWMcalibration",
+      "Wi-Fi/BLE/USB/OTA",
+      "SHTC3/charger/battery/powerkey",
+      "SD filesystemmount"
+    ],
+    "sdTest": {
+      "guestLba": 32,
+      "bytes": 512,
+      "readBlocks": 3,
+      "writtenBlocks": 2,
+      "originalBytesRestoredAfterCompletedRun": true,
+      "interruptedRunTransactionalGuarantee": false
+    }
+  },
+  "downloadedFirmware": {
+    "captureKind": "raw-http-response",
+    "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+    "finalUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+    "mediaType": "application/octet-stream",
+    "fetchedAtUTC": "2026-11-23T08:35:11.624239+00:00",
+    "bytes": 3346992,
+    "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+    "repository": "waveshareteam/ESP32-C5-LCD-2.73",
+    "commit": "418de818f4f40c5a04c4292dbe293bfaa1351068",
+    "path": "firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+    "httpStatus": 200,
+    "status": "reference",
+    "role": "factory",
+    "simulationVerified": false,
+    "loadOffset": 0,
+    "bootloaderOffset": 8192,
+    "partitionTableOffset": 32768,
+    "applicationOffsets": [
+      131072
+    ],
+    "validation": {
+      "downloadHashVerified": true,
+      "imageChecksumsAndDigestsValid": true,
+      "chipId": 23,
+      "minRevision": 100,
+      "maxRevision": 199,
+      "imageFlashMB": 32,
+      "physicalFlashMB": 32,
+      "physicalPsramMB": 8,
+      "publicLoaderAccepted": false,
+      "factoryBootPassed": false,
+      "evidence": "docs/evidence/waveshare-c5-lcd273-2026-11-23/factory-validation.json",
+      "note": "Unchanged ROM6831steps reads PMU600b00e4 at4001df26; zero UART/display. PublicC5 loader SRAM-only."
+    }
+  },
+  "relatedFirmware": [],
+  "xiaozhiInvestigation": {
+    "result": "no-exact-c5-lcd273-asset-in-inspected-release",
+    "version": "v2.6.0",
+    "metadataUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+    "metadataOriginalBytes": 359605,
+    "metadataOriginalSha256": "18e80d5605e2db16f81316bf20b45f846ec2cea09b80ad2f9d7745d11a806037",
+    "assetCountInspected": 200,
+    "examinedAtUTC": "2026-11-23T10:59:07.994400+00:00",
+    "scope": "Retrieved latest-release APIcontent and exactC5 LCD2.73 name; no universalabsenceclaim."
+  },
+  "officialUiflowInvestigation": {
+    "result": "not-found-in-inspected-manufacturer-pages",
+    "scope": "PinnedrootREADME, firmwareREADME, canonicaloverview/resources; no exactC5 LCD2.73 UIFlow package link."
+  },
+  "integrationNotes": [
+    "ExactC5runtime32F8P, noC6alias.",
+    "ILI9488 usesRGB666 threewirebytes per pixel;GRAM320x480,visible320x320 atorigin;hostAPI RGB565 quantizationexplicit.",
+    "Native buttons prevGPIO2,nextGPIO3,bootGPIO28 allactiveLow. No touchinterface.",
+    "RealSPI SD6/7/5/9; platform64MiB FAT32card prepared, guestmountnotyetvalidated.",
+    "Factory at0,bootloader2000h,table8000h,app20000h; projectApp10000h is independentdiagnostic.",
+    "Rawcaptures underignoredtarget/c5-lcd273-2026-11-23; no remotearchiveclaim."
+  ]
+}

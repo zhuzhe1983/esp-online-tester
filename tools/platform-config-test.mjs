@@ -56,13 +56,17 @@ test('every executable catalog source is a valid portable scene', () => {
   for (const firmware of catalog.firmwares.filter(item => item.source)) {
     for (const productId of firmware.productIds) {
       const source={...firmware.source};
-      if(source.manifestUrl?.startsWith('file:'))source.manifestUrl=`https://platform.example/platform/${source.manifestUrl.split('/platform/')[1]}`;
+      for(const key of ['manifestUrl','url']) if(source[key]?.startsWith('file:'))source[key]=`https://platform.example/platform/${source[key].split('/platform/')[1]}`;
       const scene={...createDefaultScene(catalog,productId),firmware:source};
       const result=validateScene(scene,catalog);
       assert.equal(result.valid,true,`${firmware.id}: ${JSON.stringify(result.errors)}`);
       assert.deepEqual(decodeScene(encodeScene(scene,catalog),catalog).firmware,source);
     }
   }
+});
+
+test('original Waveshare diagnostics remain repository test fixtures', () => {
+  assert.ok(catalog.firmwares.every(item=>!/^waveshare-c5-.*-sram-diagnostic$/.test(item.id)));
 });
 
 test('configuration validity is separate from execution readiness', () => {

@@ -20,9 +20,15 @@ pub struct C5Bus {
     pub uart: [Uart; 2], pub gpio: Gpio, pub io_mux: RegRam, pub rmt: RmtCompact,
     pub board: Board, pub clic: ClicCore, pub(crate) map: [u32; SOURCES], clic_config: u32, lp_ana_date: u32, pub(crate) reset_cause: u32,
     pub first_fault: Option<AccessFault>, pc: u32, pub cycles: u64,
-    pub flash: Vec<u8>, pub(crate) app_off: Option<usize>, pub(crate) app_entry: Option<u32>,
+    pub flash: Vec<u8>, pub psram: Vec<u8>, pub(crate) mspi: crate::mspi::Mspi,
+    pub(crate) xtal_hz: u32, pub(crate) app_off: Option<usize>, pub(crate) app_entry: Option<u32>,
     pub(crate) irq_dirty: bool, pub(crate) reset_requested: bool, pub(crate) misc: esp_periph::Misc,
     pub(crate) gpio_events: Option<Vec<(u64, u8, bool)>>, pub debug: esp_soc::DebugFlags,
+    pub(crate) transport: Option<Box<crate::transport::Transport>>,
+    lp_peri:crate::lp_peri::LpPeri,
+    lp_wdt:crate::lp_wdt::LpWdt,
+    pub(crate) i2c:Option<Box<crate::i2c::C5I2c>>,
+    cache:crate::cache::CacheControls,
 }
 impl Default for C5Bus { fn default() -> Self { Self::new() } }
 impl C5Bus {
@@ -30,21 +36,42 @@ impl C5Bus {
         // C5 uart_reg.h: RX full/count 8 bits, CONF0_SYNC RXFIFO_RST bit22.
         let layout = UartLayout { thrhd_mask: 0xff, rxfifo_rst: 1 << 22, rxfifo_cnt_mask: 0xff, autobaud_en: 0, autobaud_regs: 0, autobaud_clock_hz: 0 };
         let mut gpio = Gpio::with_pins(29); gpio.input_select = 0x100; gpio.func_in_sel.fill(96); gpio.strap = 0;
+        // C5 gpio[29] begins at physical IO_MUX+0. PinRoutes stores its shared
+        // internal view at +4; this private offset is not a hardware alias.
+        let mut io_mux = RegRam::new();
+        for pin in 0..29 { io_mux.write(4 + 4 * pin, 0x1800); gpio.set_pad(pin as u8, 0x1800); }
+        io_mux.write(0x200, 36_770_416);
         Self { rom: vec![0; ROM_SIZE], sram: vec![0; SRAM_SIZE], lp_sram: vec![0; LP_SIZE],
-            uart: [Uart::new(layout), Uart::new(layout)], gpio, io_mux: RegRam::new(), rmt: RmtCompact::new(CPU_HZ),
+            uart: [Uart::new(layout), Uart::new(layout)], gpio, io_mux, rmt: RmtCompact::new(CPU_HZ),
             board: Box::new(NoBoard), clic: ClicCore::default(), map: [0; SOURCES], clic_config: 0, lp_ana_date: 36_774_528, reset_cause: 0x21, first_fault: None, pc: 0, cycles: 0,
-            flash: Vec::new(), app_off: None, app_entry: None, irq_dirty: true, reset_requested: false, misc: Default::default(), gpio_events: None, debug: Default::default() }
+            flash: Vec::new(), psram: Vec::new(), mspi: crate::mspi::Mspi::new(), xtal_hz: 48_000_000,
+            app_off: None, app_entry: None, irq_dirty: true, reset_requested: false, misc: Default::default(), gpio_events: None, debug: Default::default(), transport: None, lp_peri:crate::lp_peri::LpPeri::new(),lp_wdt:crate::lp_wdt::LpWdt::new(),i2c:None,cache:crate::cache::CacheControls::new() }
+    }
+    /// Explicit nominal board crystal; RC_FAST and PLL remain unmodeled here.
+    pub fn set_xtal_mhz(&mut self, mhz: u32) -> Result<(), String> {
+        if mhz != 48 { return Err("C5 current source-backed clock subset requires 48 MHz XTAL".into()); }
+        self.xtal_hz = mhz * 1_000_000; self.mspi.set_xtal_hz(self.xtal_hz); Ok(())
+    }
+    pub fn configure_psram(&mut self, bytes: usize) -> Result<(), String> {
+        self.mspi.configure_psram(bytes)?; self.psram.resize(bytes, 0); Ok(())
     }
     pub fn attach_board(&mut self, board: Board) { self.board = board; self.attach_board_devices(); }
     pub fn attach_board_devices(&mut self) {
+        self.attach_i2c_devices();
         for (pin, level) in self.board.input_levels() { self.gpio.set_input(pin, level); }
         self.publish_gpio();
+    }
+    pub(crate) fn attach_i2c_devices(&mut self){
+        if let Some(i)=&mut self.i2c{i.clear_devices();}
+        for(host,address,device)in self.board.i2c_devices(){if host==0{self.i2c.get_or_insert_with(||Box::new(crate::i2c::C5I2c::new(self.cycles))).attach(address,device);}}
     }
     pub(crate) fn publish_gpio(&mut self) {
         self.board.gpio_waveform_at(self.cycles, PINS.routes(&self.gpio, &self.io_mux));
         if let Some(events) = &mut self.gpio_events { events.extend(self.gpio.changes.drain(..).map(|(p, l)| (self.cycles, p, l))); }
         else { self.gpio.changes.clear(); }
         self.gpio.input_changes.clear();
+        if let Some(mut t)=self.transport.take(){t.publish_pwm(self);self.transport=Some(t);}
+        self.irq_dirty|=esp_soc::gpio::drain_board_inputs(&mut *self.board,&mut self.gpio,&mut self.gpio_events,self.cycles);
     }
     fn range(address: u32, size: usize, base: u32, len: usize) -> Option<std::ops::Range<usize>> {
         let start = address.checked_sub(base)? as usize; let end = start.checked_add(size)?;
@@ -77,10 +104,11 @@ impl C5Bus {
             _ => return None,
         })
     }
-    pub(crate) fn sources(&self) -> [(usize, bool); 4] { [(31, self.gpio.irq()), (47, self.uart[0].irq()), (48, self.uart[1].irq()), (55, self.rmt.rmt.irq())] }
+    pub(crate) fn sources(&self) -> [(usize, bool); 6] { [(31, self.gpio.irq()), (44, self.mspi.irq()), (47, self.uart[0].irq()), (48, self.uart[1].irq()), (55, self.rmt.rmt.irq()),(56,self.i2c.as_ref().is_some_and(|i|i.irq()))] }
     pub fn refresh_irq(&mut self, threshold: u32) -> Option<u32> {
         let mut input = 0;
         for (source, asserted) in self.sources() { let id = self.map[source] as usize; if asserted && (16..48).contains(&id) { input |= 1u64 << id; } }
+        if let Some(t)=&self.transport {for(source,asserted)in t.sources(){let id=self.map[source] as usize;if asserted&&(16..48).contains(&id){input|=1u64<<id;}}}
         self.clic.set_input(input); self.clic.thresh = (threshold & 0xff) << 24;
         self.clic.candidate().filter(|&(id, _)| id >= 16).map(|(id, level)|
             (id as u32 - 16) | level << riscv_rv32::exec::CLIC_IRQ_LEVEL_SHIFT | if self.clic.vectored(id) { riscv_rv32::exec::CLIC_IRQ_SHV } else { 0 })
@@ -93,19 +121,37 @@ impl C5Bus {
         for (ch, bits) in std::mem::take(&mut self.rmt.rmt.done) {
             for pin in PINS.routes(&self.gpio, &self.io_mux).output_pins(64 + ch as u32) { self.board.rmt_frame(pin, &bits); }
         }
+        if self.transport.as_ref().is_some_and(|t|t.deadline.is_some_and(|d|self.cycles>=d)){
+            let mut t=self.transport.take().unwrap();t.publish_pwm(self);t.pump(self);self.transport=Some(t);self.irq_dirty=true;
+        }
+        if self.i2c.as_ref().is_some_and(|i|i.deadline.is_some_and(|d|self.cycles>=d)){let mut i=self.i2c.take().unwrap();i.sync(self);self.i2c=Some(i);self.irq_dirty=true;}
+    }
+    fn i2c_read(&mut self,a:u32)->Option<u32>{let mut i=self.i2c.take().unwrap_or_else(||Box::new(crate::i2c::C5I2c::new(self.cycles)));let v=i.read(a,self);self.i2c=Some(i);self.irq_dirty=true;v}
+    fn i2c_write(&mut self,a:u32,v:u32)->bool{let mut i=self.i2c.take().unwrap_or_else(||Box::new(crate::i2c::C5I2c::new(self.cycles)));let ok=i.write(a,v,self);self.i2c=Some(i);self.irq_dirty=true;ok}
+    fn transport_read(&mut self,a:u32)->Option<u32>{let mut t=self.transport.take().unwrap_or_else(||Box::new(crate::transport::Transport::new(self.cycles)));let v=t.read(a,self);t.pump(self);self.transport=Some(t);self.irq_dirty=true;v}
+    fn transport_write(&mut self,a:u32,value:u32)->bool{let mut t=self.transport.take().unwrap_or_else(||Box::new(crate::transport::Transport::new(self.cycles)));let ok=t.write(a,value,self);if ok{t.pump(self);}self.transport=Some(t);ok}
+    fn source_status(&self,word:usize)->u32{
+        let mut v=self.sources().into_iter().filter(|&(s,on)|on&&s/32==word).fold(0,|v,(s,_)|v|1<<(s%32));
+        if let Some(t)=&self.transport{v|=t.sources().into_iter().filter(|&(s,on)|on&&s/32==word).fold(0,|v,(s,_)|v|1<<(s%32));}v
     }
     fn mmio_read(&mut self, a: u32) -> Option<u32> {
+        if crate::transport::Transport::contains(a){return self.transport_read(a);}
+        if crate::i2c::C5I2c::contains(a){return self.i2c_read(a);}
         match a {
+            0x6000_2000..=0x6000_33fc | 0x6009_6018..=0x6009_601c => self.mspi.read(a),
+            0x600b_2800..=0x600b_2bfc=>self.lp_peri.read(a-0x600b_2800),
+            0x600b_1c00..=0x600b_1ffc=>self.lp_wdt.read(a-0x600b_1c00),
+            0x600c_8000..=0x600c_83fc=>self.cache.read(a-0x600c_8000),
             // IDF v5.5.4 lp_analog_peri_reg.h DATE default; lp_clkrst_reg.h cause;
             // esp_rom/esp32c5/include/esp32c5/rom/rtc.h POWER_ON=1.
             0x600b_2ffc => Some(self.lp_ana_date), 0x600b_0410 => Some(self.reset_cause),
             0x6000_0000..=0x6000_0098 => Some(self.uart[0].read(a & 0xfff)),
             0x6000_1000..=0x6000_1098 => Some(self.uart[1].read(a & 0xfff)),
             0x6000_6000..=0x6000_6070 | 0x6000_6400..=0x6000_66fc => Some(self.rmt.read(a & 0xfff)),
-            0x6009_0000..=0x6009_0074 => Some(self.io_mux.read(a & 0xfff)),
+            0x6009_0000..=0x6009_0070 | 0x6009_01fc => Some(self.io_mux.read((a & 0xfff) + 4)),
             0x6009_1000..=0x6009_1b44 => Self::gpio_offset(a & 0xfff).map(|o| self.gpio.read(o)),
             0x6001_0000..=0x6001_014c => Some(self.map[((a & 0xfff) / 4) as usize]),
-            0x6001_0150..=0x6001_0158 => Some(self.sources().into_iter().filter(|&(s, on)| on && s / 32 == ((a - 0x6001_0150) / 4) as usize).fold(0, |v, (s, _)| v | 1 << (s % 32))),
+            0x6001_0150..=0x6001_0158 => Some(self.source_status(((a-0x6001_0150)/4) as usize)),
             0x2080_0000 => Some(self.clic_config), 0x2080_0004 => Some(self.clic.read(4)),
             0x2080_1000..=0x2080_10bc => Some(self.clic.read(a - 0x2080_0000)),
             _ => None,
@@ -115,7 +161,13 @@ impl C5Bus {
         self.irq_dirty = true;
         if (0x2080_1000..=0x2080_10bc).contains(&a) { self.clic.write(a - 0x2080_0000, value, lanes); return true; }
         if lanes != 15 { return false; } // other subword MMIO deliberately unsupported
+        if crate::transport::Transport::contains(a){return self.transport_write(a,value);}
+        if crate::i2c::C5I2c::contains(a){return self.i2c_write(a,value);}
         match a {
+            0x6000_2000..=0x6000_33fc | 0x6009_6018..=0x6009_601c => return self.mspi.write(a, value, &mut self.flash, &mut self.psram, false),
+            0x600b_2800..=0x600b_2bfc=>return self.lp_peri.write(a-0x600b_2800,value),
+            0x600b_1c00..=0x600b_1ffc=>return self.lp_wdt.write(a-0x600b_1c00,value),
+            0x600c_8000..=0x600c_83fc=>return self.cache.write(a-0x600c_8000,value),
             0x600b_2ffc => self.lp_ana_date = value & 0x7fff_ffff,
             // lp_clkrst_reg.h: CORE0_RESET_FLAG bit5 resets1; independent cause
             // clear bit29, flag SET bit30 and CLR bit31 are write triggers.
@@ -127,7 +179,12 @@ impl C5Bus {
             0x6000_0000..=0x6000_0098 => self.uart[0].write(a & 0xfff, value),
             0x6000_1000..=0x6000_1098 => self.uart[1].write(a & 0xfff, value),
             0x6000_6000..=0x6000_6070 | 0x6000_6400..=0x6000_66fc => { self.rmt.write(a & 0xfff, value); }
-            0x6009_0000..=0x6009_0074 => { self.io_mux.write(a & 0xfff, value); if a & 0xfff >= 4 { self.gpio.set_pad(((a & 0xfff) / 4 - 1) as u8, value); } self.publish_gpio(); }
+            0x6009_0000..=0x6009_0070 => {
+                let pin = ((a & 0xfff) / 4) as u8; let value = value & 0x3ffff;
+                self.io_mux.write((a & 0xfff) + 4, value); self.gpio.set_pad(pin, value);
+                self.mspi.set_pad(pin, (value >> 12) & 7); self.publish_gpio();
+            }
+            0x6009_01fc => self.io_mux.write(0x200, value & 0x0fff_ffff),
             0x6009_1000..=0x6009_1b44 => { if let Some(o) = Self::gpio_offset(a & 0xfff) { if o != 0x38 { self.gpio.write(o, value); } self.publish_gpio(); } else { return false; } }
             0x6001_0000..=0x6001_014c => self.map[((a & 0xfff) / 4) as usize] = value & 0x3f,
             0x6001_0150..=0x6001_0158 => {},
@@ -136,10 +193,18 @@ impl C5Bus {
         }
         true
     }
-    fn read(&mut self, address: u32, width: u8) -> Result<u32, Fault> {
+    fn read(&mut self, address: u32, width: u8,instruction:bool) -> Result<u32, Fault> {
         if address & (width as u32 - 1) != 0 { return self.fail(address, width, false, Fault::Misaligned); }
         for (base, mem) in [(ROM_BASE, &self.rom), (SRAM_BASE, &self.sram), (LP_BASE, &self.lp_sram)] {
             if let Some(r) = Self::range(address, width as usize, base, mem.len()) { let mut bytes = [0; 4]; bytes[..width as usize].copy_from_slice(&mem[r]); return Ok(u32::from_le_bytes(bytes)); }
+        }
+        if (0x4200_0000..0x4400_0000).contains(&address)&&!self.cache.cpu_allowed(instruction){return self.fail(address,width,false,Fault::Prohibited);}
+        if let Some((psram, offset)) = self.mspi.translate(address) {
+            let memory = if psram { &self.psram } else { &self.flash };
+            if (!psram || self.mspi.psram_access(false)) && offset.checked_add(width as usize).is_some_and(|end| end <= memory.len()) {
+                let mut bytes = [0; 4]; bytes[..width as usize].copy_from_slice(&memory[offset..offset + width as usize]);
+                return Ok(u32::from_le_bytes(bytes));
+            }
         }
         if let Some(word) = self.mmio_read(address & !3) { return Ok((word >> ((address & 3) * 8)) & (u32::MAX >> (32 - width as u32 * 8))); }
         self.fail(address, width, false, Fault::Unmapped)
@@ -148,6 +213,12 @@ impl C5Bus {
         if address & (width as u32 - 1) != 0 { return self.fail(address, width, true, Fault::Misaligned); }
         for (base, mem) in [(SRAM_BASE, &mut self.sram), (LP_BASE, &mut self.lp_sram)] {
             if let Some(r) = Self::range(address, width as usize, base, mem.len()) { mem[r].copy_from_slice(&value.to_le_bytes()[..width as usize]); return Ok(()); }
+        }
+        if (0x4200_0000..0x4400_0000).contains(&address)&&!self.cache.cpu_allowed(false){return self.fail(address,width,true,Fault::Prohibited);}
+        if let Some((true, offset)) = self.mspi.translate(address) {
+            if self.mspi.psram_access(true) && offset.checked_add(width as usize).is_some_and(|end| end <= self.psram.len()) {
+                self.psram[offset..offset + width as usize].copy_from_slice(&value.to_le_bytes()[..width as usize]); return Ok(());
+            }
         }
         let shift = address & 3;
         if self.mmio_write(address & !3, value << (shift * 8), ((1 << width) - 1) << shift) { return Ok(()); }
@@ -159,15 +230,15 @@ impl Bus for C5Bus {
     fn note_pc(&mut self, pc: u32) { self.pc = pc; self.misc.cur_pc = pc; }
     fn block_break(&self) -> bool { self.irq_dirty }
     fn tick(&mut self, cycles: u32) -> u32 { self.advance(cycles as u64); u32::from(self.irq_dirty) }
-    fn read8(&mut self, a: u32) -> Result<u8, Fault> { self.read(a, 1).map(|v| v as u8) }
-    fn read16(&mut self, a: u32) -> Result<u16, Fault> { self.read(a, 2).map(|v| v as u16) }
-    fn read32(&mut self, a: u32) -> Result<u32, Fault> { self.read(a, 4) }
+    fn read8(&mut self, a: u32) -> Result<u8, Fault> { self.read(a, 1,false).map(|v| v as u8) }
+    fn read16(&mut self, a: u32) -> Result<u16, Fault> { self.read(a, 2,false).map(|v| v as u16) }
+    fn read32(&mut self, a: u32) -> Result<u32, Fault> { self.read(a, 4,false) }
     fn write8(&mut self, a: u32, v: u8) -> Result<(), Fault> { self.write(a, v as u32, 1) }
     fn write16(&mut self, a: u32, v: u16) -> Result<(), Fault> { self.write(a, v as u32, 2) }
     fn write32(&mut self, a: u32, v: u32) -> Result<(), Fault> { self.write(a, v, 4) }
     fn fetch(&mut self, pc: u32) -> Result<[u8; 4], Fault> {
-        if ![(ROM_BASE, ROM_SIZE), (SRAM_BASE, SRAM_SIZE), (LP_BASE, LP_SIZE)].into_iter().any(|(base, len)| Self::range(pc, 2, base, len).is_some()) { return self.fail(pc, 2, false, Fault::Prohibited); }
-        let lo = self.read16(pc)?; let hi = if lo & 3 == 3 { self.read16(pc.checked_add(2).ok_or(Fault::Unmapped)?)? } else { 0 };
+        if ![(ROM_BASE, ROM_SIZE), (SRAM_BASE, SRAM_SIZE), (LP_BASE, LP_SIZE), (0x4200_0000, 0x200_0000)].into_iter().any(|(base, len)| Self::range(pc, 2, base, len).is_some()) { return self.fail(pc, 2, false, Fault::Prohibited); }
+        let lo = self.read(pc,2,true)? as u16; let hi = if lo & 3 == 3 { self.read(pc.checked_add(2).ok_or(Fault::Unmapped)?,2,true)? as u16 } else { 0 };
         Ok((u32::from(lo) | u32::from(hi) << 16).to_le_bytes())
     }
 }

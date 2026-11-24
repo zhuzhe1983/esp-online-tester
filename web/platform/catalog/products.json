@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-11-23-lilygo-firmware-variants",
+  "revision": "2026-11-23-waveshare-s3-core",
   "items": [
     {
       "id": "seeed-xiao-ips-147",
@@ -39992,6 +39992,1719 @@
         "name": "Chain 系列"
       },
       "defaultFirmwareId": "m5stack-c147-userdemo-v0-8"
+    },
+    {
+      "id": "waveshare-esp32-c5-lcd-1-47",
+      "name": "Waveshare ESP32-C5-LCD-1.47",
+      "manufacturer": "Waveshare",
+      "sku": "34961",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "1.47 英寸 172×320 ST7789，4 MiB Flash、无 PSRAM，BOOT 与 SPI TF；当前可运行项目 SRAM 诊断，原厂启动仍在开发。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-lcd-1-47.json",
+      "family": {
+        "id": "waveshare-c5-lcd147",
+        "name": "Waveshare ESP32-C5 1.47 英寸 LCD"
+      },
+      "runtime": {
+        "board": "waveshare-c5-lcd147",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ST7789",
+        "bus": "SPI2",
+        "diagonalInches": 1.47,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 7
+            },
+            {
+              "name": "MOSI",
+              "gpio": 6
+            },
+            {
+              "name": "MISO",
+              "gpio": 5
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "bsp"
+          ],
+          "notes": "默认 64 MiB FAT32 空卡；块读写已验证，尚无原厂 FAT 挂载验收。"
+        },
+        {
+          "id": "usb-c",
+          "name": "USB-C 编程 / 电源",
+          "type": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "D+",
+              "gpio": 14
+            },
+            {
+              "name": "D-",
+              "gpio": 13
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "接口位置已登记，USB 总线行为尚未实现。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方规格、SKU 与排针选项",
+          "url": "https://docs.waveshare.com/ESP32-C5-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "hardware",
+          "title": "HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-c5-lcd-1.47/acf81d83f8cc580fb8bc4f3f13e7332ab6b1332d/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-c5-lcd-1.47/acf81d83f8cc580fb8bc4f3f13e7332ab6b1332d/hardware/schematics/esp32_c5_lcd_1_47_schematics.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "bsp1.0.0.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=8f8780f1-3d41-40b3-803f-413a445724f9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "未修改的官方出厂完整镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-c5-lcd-1.47/acf81d83f8cc580fb8bc4f3f13e7332ab6b1332d/firmware/ESP32-C5-LCD-1.47_FactoryOnly_20260618.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-lcd-1.47.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "当前只开放 SRAM 诊断程序；原厂 ROM／Flash 启动仍在开发，官方出厂镜像保留为来源参考。",
+        "诊断验证真实 SPI2／GDMA 出屏、BOOT 按下与释放、SPI TF 块写读并恢复；没有验证原厂应用、FAT 挂载、USB、无线或完整外设。",
+        "物理设备为 4 MiB Flash、无 PSRAM；独立 8 MiB PSRAM 测试夹具不代表此板容量。",
+        "官方资料中的 ESP32-C5FH4 与原理图 ESP32-C5HF4 后缀拼写冲突尚未解决。",
+        "3D 使用此 SKU 的官方 CAD；生产几何与交互射线已检查，浏览器 WebGL 和实物装配尚未验收。",
+        "官方 SKU 34961；套装选项：Without pinheader。电池与排针包装差异不代表额外固件或实机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件和文档日期不等同于产品发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-lcd147-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-lcd-1-47/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c5-lcd-1-47-m",
+      "name": "Waveshare ESP32-C5-LCD-1.47-M",
+      "manufacturer": "Waveshare",
+      "sku": "34960",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "1.47 英寸 172×320 ST7789，4 MiB Flash、无 PSRAM，BOOT 与 SPI TF；当前可运行项目 SRAM 诊断，原厂启动仍在开发。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-lcd-1-47-m.json",
+      "family": {
+        "id": "waveshare-c5-lcd147",
+        "name": "Waveshare ESP32-C5 1.47 英寸 LCD"
+      },
+      "runtime": {
+        "board": "waveshare-c5-lcd147",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ST7789",
+        "bus": "SPI2",
+        "diagonalInches": 1.47,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 7
+            },
+            {
+              "name": "MOSI",
+              "gpio": 6
+            },
+            {
+              "name": "MISO",
+              "gpio": 5
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "bsp"
+          ],
+          "notes": "默认 64 MiB FAT32 空卡；块读写已验证，尚无原厂 FAT 挂载验收。"
+        },
+        {
+          "id": "usb-c",
+          "name": "USB-C 编程 / 电源",
+          "type": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "D+",
+              "gpio": 14
+            },
+            {
+              "name": "D-",
+              "gpio": 13
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "接口位置已登记，USB 总线行为尚未实现。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方规格、SKU 与排针选项",
+          "url": "https://docs.waveshare.com/ESP32-C5-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "hardware",
+          "title": "HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-c5-lcd-1.47/acf81d83f8cc580fb8bc4f3f13e7332ab6b1332d/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-c5-lcd-1.47/acf81d83f8cc580fb8bc4f3f13e7332ab6b1332d/hardware/schematics/esp32_c5_lcd_1_47_schematics.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "bsp1.0.0.zip",
+          "url": "https://components.espressif.com/api/downloads/?object_type=component&object_id=8f8780f1-3d41-40b3-803f-413a445724f9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "未修改的官方出厂完整镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-c5-lcd-1.47/acf81d83f8cc580fb8bc4f3f13e7332ab6b1332d/firmware/ESP32-C5-LCD-1.47_FactoryOnly_20260618.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-lcd-1.47.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "当前只开放 SRAM 诊断程序；原厂 ROM／Flash 启动仍在开发，官方出厂镜像保留为来源参考。",
+        "诊断验证真实 SPI2／GDMA 出屏、BOOT 按下与释放、SPI TF 块写读并恢复；没有验证原厂应用、FAT 挂载、USB、无线或完整外设。",
+        "物理设备为 4 MiB Flash、无 PSRAM；独立 8 MiB PSRAM 测试夹具不代表此板容量。",
+        "官方资料中的 ESP32-C5FH4 与原理图 ESP32-C5HF4 后缀拼写冲突尚未解决。",
+        "当前尚未接入此型号的独立 3D 模型；屏幕输出和来源资料可以单独检查。",
+        "此 SKU 自带预焊排针；与无排针版共用已核验电路配置，排针几何尚待独立建模。",
+        "官方 SKU 34960；套装选项：With pre-soldered headers。电池与排针包装差异不代表额外固件或实机验收。",
+        "3D 复用本系列已核验的主板／屏幕几何；电池、排针或摄像头包装的独立外观差异未完整还原。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件和文档日期不等同于产品发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-lcd147-factory",
+      "visualVariantOf": "waveshare-esp32-c5-lcd-1-47",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-lcd-1-47/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c5-touch-lcd-1-69",
+      "name": "Waveshare ESP32-C5-Touch-LCD-1.69",
+      "manufacturer": "Waveshare",
+      "sku": "35471",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "1.69 英寸 240×280 ST7789V2 触摸屏，16 MiB Flash、8 MiB Quad PSRAM；支持原生显示／触摸／BOOT 诊断，原厂启动仍在开发。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-touch-lcd-1-69.json",
+      "family": {
+        "id": "waveshare-c5-touch169",
+        "name": "Waveshare ESP32-C5 1.69 英寸触摸屏"
+      },
+      "runtime": {
+        "board": "waveshare-c5-touch169",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 280,
+        "type": "TFT LCD",
+        "controller": "ST7789V2",
+        "bus": "SPI2",
+        "diagonalInches": 1.69,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-1.69",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware__schematic__ESP32-C5-Touch-LCD-1.69.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/hardware/schematic/ESP32-C5-Touch-LCD-1.69.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "example__esp-idf__components__esp32_c5_touch_lcd_1_69__esp32_c5_touch_lcd_1_69.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/example/esp-idf/components/esp32_c5_touch_lcd_1_69/esp32_c5_touch_lcd_1_69.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "example__esp-idf__components__esp32_c5_touch_lcd_1_69__include__bsp__esp32_c5_touch_lcd_1_69.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/example/esp-idf/components/esp32_c5_touch_lcd_1_69/include/bsp/esp32_c5_touch_lcd_1_69.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified FactoryOnly_20260626 merged image",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/firmware/ESP32-C5-Touch-LCD-1.69_FactoryOnly_20260626.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-1.69.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-1.69",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "当前公开入口为项目 SRAM 诊断；原厂 ROM／Flash 启动当前停在尚未实现的 PMU 寄存器，原始镜像作为独立来源参考。",
+        "原生和公开 Worker／WASM 已验证完整 8 MiB PSRAM、GDMA 显示、触摸 1024 像素和 BOOT 44928 像素反馈，6 个阶段与原生画面逐字节一致；浏览器 WebGL 未验收。",
+        "物理设备无 TF 卡槽；电源键、BQ27220 电量计、I2S 音频、USB、无线和模拟电源尚未实现。",
+        "LCD 复位实际由 3V3 上拉，TCA EX1 只复位触摸，按原理图处理 BSP 的共享复位注释冲突。",
+        "3D 已根据可用官方资料建立；未声称实物外观或安装尺寸验收。",
+        "官方 SKU 35471；套装选项：with 3.7V Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件和文档日期不等同于设备发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-touch169-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-touch-lcd-1-69/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c5-touch-lcd-2-8",
+      "name": "Waveshare ESP32-C5-Touch-LCD-2.8",
+      "manufacturer": "Waveshare",
+      "sku": "34957",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "2.8 英寸 240×320 ST7789V2 触摸屏，32 MiB Flash、8 MiB PSRAM，CH32V003 扩展与 TF 卡槽；项目诊断已原生验证，原厂启动开发中。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-touch-lcd-2-8.json",
+      "family": {
+        "id": "waveshare-c5-touch28",
+        "name": "Waveshare ESP32-C5 2.8 英寸触摸屏"
+      },
+      "runtime": {
+        "board": "waveshare-c5-touch28",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ST7789V2",
+        "bus": "SPI2",
+        "diagonalInches": 2.8,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "MOSI",
+              "gpio": 7
+            },
+            {
+              "name": "MISO",
+              "gpio": 8
+            },
+            {
+              "name": "CS",
+              "gpio": 23
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "bsp-pins"
+          ],
+          "notes": "默认 64 MiB FAT32 空卡；原生块读写已验证，FAT 文件系统挂载尚未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "canonical-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/esp32_c5_touch_lcd_2.8.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/esp32_c5_touch_lcd_2.8.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp32_c5_touch_lcd_2.8.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp32_c5_touch_lcd_2.8.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified FactoryOnly_20261024 merged image",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/firmware/ESP32-C5-Touch-LCD-2.8_FactoryOnly_20261024.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-2.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "公开入口为项目 SRAM 诊断；原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止，原始镜像独立列为参考。",
+        "原生与公开 Worker／WASM 已验证完整 8 MiB PSRAM、GDMA 出屏、CST3530 触摸和 BOOT；6 阶段画面逐字节相同，整张默认 64 MiB FAT32 卡在块读写后恢复；浏览器 WebGL 与 FAT 挂载未验收。",
+        "物理模块为 32 MiB Flash、8 MiB PSRAM；官方当前镜像使用 16 MiB Flash 布局，不据此缩减物理容量。",
+        "CH32V003 仅实现文档中的 8 位数字 IO／PWM 协议；未知命令、充电、电池 ADC、SHTC3、I2S 音频、USB、无线和电源键不冒充已实现。",
+        "3D 已根据可用官方资料建立；物理 PWM 频率、触摸扫描时序和姿态方向尚未标定。",
+        "官方 SKU 34957；套装选项：with 3.7V Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件和文档日期不等同于设备发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-touch28-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-touch-lcd-2-8/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c5-touch-lcd-3-5",
+      "name": "Waveshare ESP32-C5-Touch-LCD-3.5",
+      "manufacturer": "Waveshare",
+      "sku": "35417",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "3.5 英寸 320×480 ST7796＋FT6336，32 MiB Flash、8 MiB PSRAM，16 位 CH32V006、AXP2101 和 TF 卡槽；原创诊断已原生验证，原厂启动开发中。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-touch-lcd-3-5.json",
+      "family": {
+        "id": "waveshare-c5-touch35",
+        "name": "Waveshare ESP32-C5 3.5 英寸触摸屏"
+      },
+      "runtime": {
+        "board": "waveshare-c5-touch35",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "TFT LCD",
+        "controller": "ST7796",
+        "bus": "SPI2",
+        "diagonalInches": 3.5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "MOSI",
+              "gpio": 7
+            },
+            {
+              "name": "MISO",
+              "gpio": 2
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "bsp-pins"
+          ],
+          "notes": "默认 64 MiB FAT32 空卡；原生测试仅验证块级保存／读写／恢复，未验证文件系统挂载。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "canonical-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/firmware/ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-3.5.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止；原始 FactoryOnly 镜像独立保持 reference。",
+        "原创 SRAM 诊断已原生验证完整 8 MiB PSRAM、GDMA 出屏、FT6336 输入、BOOT 与 SD 块保存／读写／恢复；此记录不替代公开 Worker 或浏览器验收。",
+        "物理模块为 32 MiB Flash、8 MiB PSRAM；PWR 属于外部电源／CH32 电路，不映射为普通 GPIO。",
+        "CH32V006 初始方向／输出保持未知，ADC／RTC 固件命令不支持；QMI8658 物理 A/C 后缀未证实。",
+        "AXP USB 无电池数字电源场景；模拟充电、温湿度、音频、相机、无线、物理颜色／扫描／PWM 校准和 FAT 挂载尚未验收。",
+        "官方 SKU 35417；套装选项：Without camera / With 3.7V Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件／文档日期不等同于产品发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-touch35-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-touch-lcd-3-5/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c5-lcd-2-73",
+      "name": "Waveshare ESP32-C5-LCD-2.73",
+      "manufacturer": "Waveshare",
+      "sku": "35224",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "2.73 英寸320×320 ILI9488非触摸屏，32MiB Flash、8MiB PSRAM，CH32V006、三按键和TF卡槽；RGB666原创诊断已原生验证，原厂启动开发中。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-lcd-2-73.json",
+      "family": {
+        "id": "waveshare-c5-lcd273",
+        "name": "Waveshare ESP32-C5 2.73 英寸LCD"
+      },
+      "runtime": {
+        "board": "waveshare-c5-lcd273",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ILI9488",
+        "bus": "SPI2 RGB666",
+        "diagonalInches": 2.73,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "prev",
+          "name": "PREV",
+          "type": "button",
+          "pin": 2,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "next",
+          "name": "NEXT",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "MOSI",
+              "gpio": 7
+            },
+            {
+              "name": "MISO",
+              "gpio": 5
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "bsp-pins"
+          ],
+          "notes": "默认64MiB FAT32空卡；原生块读写后整张8MiB样本卡恢复，FAT挂载尚未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "canonical-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic/ESP32-C5-LCD-2.73.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/schematic/ESP32-C5-LCD-2.73.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "display-driver",
+          "title": "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-lcd-2.73.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原厂 FactoryOnly_20260724 使用独立 app20000h 布局；未修改的 ROM 在第 6831 条指令读取 PMU0x600b00e4 时停止，保持 reference。",
+        "原创 SRAM App 已原生验证完整8MiB PSRAM、RGB666经GDMA出屏、PREV／NEXT／BOOT输入及SD块保存／读写／恢复；公开Worker／浏览器验收需独立执行。",
+        "ILI9488 内部保留320×480×18位GRAM，显示玻璃320×320；既有主机RGB565输出会丢弃红／蓝的第6位，不冒称18位物理校准。",
+        "仅MV0及RGB666三字节传输；TE、滚动、RAMWRC、屏幕读回、模拟gamma／PWM频率未实现。",
+        "CH32V006数字IO／PWM、QMI8658C、PCF85063A仅对应已建模协议；SHTC3、充电／电池／电源键、无线、USB、OTA、FAT挂载未验收。",
+        "官方 SKU 35224；套装选项：with 3.7V Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件／文档日期不等同于产品发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-lcd273-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-lcd-2-73/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c5-touch-lcd-3-5-en",
+      "name": "Waveshare ESP32-C5-Touch-LCD-3.5-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35416",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "3.5 英寸 320×480 ST7796＋FT6336，32 MiB Flash、8 MiB PSRAM，16 位 CH32V006、AXP2101 和 TF 卡槽；原创诊断已原生验证，原厂启动开发中。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-touch-lcd-3-5-en.json",
+      "family": {
+        "id": "waveshare-c5-touch35",
+        "name": "Waveshare ESP32-C5 3.5 英寸触摸屏"
+      },
+      "runtime": {
+        "board": "waveshare-c5-touch35",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "TFT LCD",
+        "controller": "ST7796",
+        "bus": "SPI2",
+        "diagonalInches": 3.5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "MOSI",
+              "gpio": 7
+            },
+            {
+              "name": "MISO",
+              "gpio": 2
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "bsp-pins"
+          ],
+          "notes": "默认 64 MiB FAT32 空卡；原生测试仅验证块级保存／读写／恢复，未验证文件系统挂载。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "canonical-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/firmware/ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-3.5.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止；原始 FactoryOnly 镜像独立保持 reference。",
+        "原创 SRAM 诊断已原生验证完整 8 MiB PSRAM、GDMA 出屏、FT6336 输入、BOOT 与 SD 块保存／读写／恢复；此记录不替代公开 Worker 或浏览器验收。",
+        "物理模块为 32 MiB Flash、8 MiB PSRAM；PWR 属于外部电源／CH32 电路，不映射为普通 GPIO。",
+        "CH32V006 初始方向／输出保持未知，ADC／RTC 固件命令不支持；QMI8658 物理 A/C 后缀未证实。",
+        "AXP USB 无电池数字电源场景；模拟充电、温湿度、音频、相机、无线、物理颜色／扫描／PWM 校准和 FAT 挂载尚未验收。",
+        "官方 SKU 35416；套装选项：Without camera / Without Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。",
+        "3D 复用本系列已核验的主板／屏幕几何；电池、排针或摄像头包装的独立外观差异未完整还原。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件／文档日期不等同于产品发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-touch35-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-touch-lcd-3-5/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "visualVariantOf": "waveshare-esp32-c5-touch-lcd-3-5"
+    },
+    {
+      "id": "waveshare-esp32-c5-touch-lcd-3-5-c",
+      "name": "Waveshare ESP32-C5-Touch-LCD-3.5-C",
+      "manufacturer": "Waveshare",
+      "sku": "35419",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "3.5 英寸 320×480 ST7796＋FT6336，32 MiB Flash、8 MiB PSRAM，16 位 CH32V006、AXP2101 和 TF 卡槽；原创诊断已原生验证，原厂启动开发中。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-touch-lcd-3-5-c.json",
+      "family": {
+        "id": "waveshare-c5-touch35",
+        "name": "Waveshare ESP32-C5 3.5 英寸触摸屏"
+      },
+      "runtime": {
+        "board": "waveshare-c5-touch35",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "TFT LCD",
+        "controller": "ST7796",
+        "bus": "SPI2",
+        "diagonalInches": 3.5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "MOSI",
+              "gpio": 7
+            },
+            {
+              "name": "MISO",
+              "gpio": 2
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "bsp-pins"
+          ],
+          "notes": "默认 64 MiB FAT32 空卡；原生测试仅验证块级保存／读写／恢复，未验证文件系统挂载。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "canonical-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/firmware/ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-3.5.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止；原始 FactoryOnly 镜像独立保持 reference。",
+        "原创 SRAM 诊断已原生验证完整 8 MiB PSRAM、GDMA 出屏、FT6336 输入、BOOT 与 SD 块保存／读写／恢复；此记录不替代公开 Worker 或浏览器验收。",
+        "物理模块为 32 MiB Flash、8 MiB PSRAM；PWR 属于外部电源／CH32 电路，不映射为普通 GPIO。",
+        "CH32V006 初始方向／输出保持未知，ADC／RTC 固件命令不支持；QMI8658 物理 A/C 后缀未证实。",
+        "AXP USB 无电池数字电源场景；模拟充电、温湿度、音频、相机、无线、物理颜色／扫描／PWM 校准和 FAT 挂载尚未验收。",
+        "官方 SKU 35419；套装选项：With built-in camera / With 3.7V Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。",
+        "3D 复用本系列已核验的主板／屏幕几何；电池、排针或摄像头包装的独立外观差异未完整还原。",
+        "本 SKU 带摄像头；当前板型仅运行共享显示／触摸子集，摄像头传输与摄像头外壳未模拟。",
+        "本 SKU 带摄像头；当前板型仅运行共享显示／触摸子集，摄像头传输与摄像头外壳未模拟。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件／文档日期不等同于产品发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-touch35-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-touch-lcd-3-5/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "visualVariantOf": "waveshare-esp32-c5-touch-lcd-3-5"
+    },
+    {
+      "id": "waveshare-esp32-c5-touch-lcd-3-5-c-en",
+      "name": "Waveshare ESP32-C5-Touch-LCD-3.5-C-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35418",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "3.5 英寸 320×480 ST7796＋FT6336，32 MiB Flash、8 MiB PSRAM，16 位 CH32V006、AXP2101 和 TF 卡槽；原创诊断已原生验证，原厂启动开发中。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-touch-lcd-3-5-c-en.json",
+      "family": {
+        "id": "waveshare-c5-touch35",
+        "name": "Waveshare ESP32-C5 3.5 英寸触摸屏"
+      },
+      "runtime": {
+        "board": "waveshare-c5-touch35",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "TFT LCD",
+        "controller": "ST7796",
+        "bus": "SPI2",
+        "diagonalInches": 3.5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "MOSI",
+              "gpio": 7
+            },
+            {
+              "name": "MISO",
+              "gpio": 2
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "bsp-pins"
+          ],
+          "notes": "默认 64 MiB FAT32 空卡；原生测试仅验证块级保存／读写／恢复，未验证文件系统挂载。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "canonical-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/firmware/ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-3.5.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止；原始 FactoryOnly 镜像独立保持 reference。",
+        "原创 SRAM 诊断已原生验证完整 8 MiB PSRAM、GDMA 出屏、FT6336 输入、BOOT 与 SD 块保存／读写／恢复；此记录不替代公开 Worker 或浏览器验收。",
+        "物理模块为 32 MiB Flash、8 MiB PSRAM；PWR 属于外部电源／CH32 电路，不映射为普通 GPIO。",
+        "CH32V006 初始方向／输出保持未知，ADC／RTC 固件命令不支持；QMI8658 物理 A/C 后缀未证实。",
+        "AXP USB 无电池数字电源场景；模拟充电、温湿度、音频、相机、无线、物理颜色／扫描／PWM 校准和 FAT 挂载尚未验收。",
+        "官方 SKU 35418；套装选项：With built-in camera / Without Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。",
+        "3D 复用本系列已核验的主板／屏幕几何；电池、排针或摄像头包装的独立外观差异未完整还原。",
+        "本 SKU 带摄像头；当前板型仅运行共享显示／触摸子集，摄像头传输与摄像头外壳未模拟。",
+        "本 SKU 带摄像头；当前板型仅运行共享显示／触摸子集，摄像头传输与摄像头外壳未模拟。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件／文档日期不等同于产品发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-touch35-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-touch-lcd-3-5/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "visualVariantOf": "waveshare-esp32-c5-touch-lcd-3-5"
+    },
+    {
+      "id": "waveshare-esp32-c5-touch-lcd-1-69-en",
+      "name": "Waveshare ESP32-C5-Touch-LCD-1.69-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35356",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "1.69 英寸 240×280 ST7789V2 触摸屏，16 MiB Flash、8 MiB Quad PSRAM；支持原生显示／触摸／BOOT 诊断，原厂启动仍在开发。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-touch-lcd-1-69-en.json",
+      "family": {
+        "id": "waveshare-c5-touch169",
+        "name": "Waveshare ESP32-C5 1.69 英寸触摸屏"
+      },
+      "runtime": {
+        "board": "waveshare-c5-touch169",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 280,
+        "type": "TFT LCD",
+        "controller": "ST7789V2",
+        "bus": "SPI2",
+        "diagonalInches": 1.69,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-1.69",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware__schematic__ESP32-C5-Touch-LCD-1.69.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/hardware/schematic/ESP32-C5-Touch-LCD-1.69.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "example__esp-idf__components__esp32_c5_touch_lcd_1_69__esp32_c5_touch_lcd_1_69.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/example/esp-idf/components/esp32_c5_touch_lcd_1_69/esp32_c5_touch_lcd_1_69.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "example__esp-idf__components__esp32_c5_touch_lcd_1_69__include__bsp__esp32_c5_touch_lcd_1_69.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/example/esp-idf/components/esp32_c5_touch_lcd_1_69/include/bsp/esp32_c5_touch_lcd_1_69.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified FactoryOnly_20260626 merged image",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/firmware/ESP32-C5-Touch-LCD-1.69_FactoryOnly_20260626.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-1.69.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-1.69",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "当前公开入口为项目 SRAM 诊断；原厂 ROM／Flash 启动当前停在尚未实现的 PMU 寄存器，原始镜像作为独立来源参考。",
+        "原生和公开 Worker／WASM 已验证完整 8 MiB PSRAM、GDMA 显示、触摸 1024 像素和 BOOT 44928 像素反馈，6 个阶段与原生画面逐字节一致；浏览器 WebGL 未验收。",
+        "物理设备无 TF 卡槽；电源键、BQ27220 电量计、I2S 音频、USB、无线和模拟电源尚未实现。",
+        "LCD 复位实际由 3V3 上拉，TCA EX1 只复位触摸，按原理图处理 BSP 的共享复位注释冲突。",
+        "3D 已根据可用官方资料建立；未声称实物外观或安装尺寸验收。",
+        "官方 SKU 35356；套装选项：without Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。",
+        "3D 复用本系列已核验的主板／屏幕几何；电池、排针或摄像头包装的独立外观差异未完整还原。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件和文档日期不等同于设备发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-touch169-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-touch-lcd-1-69/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-c5-touch-lcd-1-69"
+    },
+    {
+      "id": "waveshare-esp32-c5-lcd-2-73-en",
+      "name": "Waveshare ESP32-C5-LCD-2.73-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35225",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "2.73 英寸320×320 ILI9488非触摸屏，32MiB Flash、8MiB PSRAM，CH32V006、三按键和TF卡槽；RGB666原创诊断已原生验证，原厂启动开发中。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-lcd-2-73-en.json",
+      "family": {
+        "id": "waveshare-c5-lcd273",
+        "name": "Waveshare ESP32-C5 2.73 英寸LCD"
+      },
+      "runtime": {
+        "board": "waveshare-c5-lcd273",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ILI9488",
+        "bus": "SPI2 RGB666",
+        "diagonalInches": 2.73,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "prev",
+          "name": "PREV",
+          "type": "button",
+          "pin": 2,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "next",
+          "name": "NEXT",
+          "type": "button",
+          "pin": 3,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "MOSI",
+              "gpio": 7
+            },
+            {
+              "name": "MISO",
+              "gpio": 5
+            },
+            {
+              "name": "CS",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "bsp-pins"
+          ],
+          "notes": "默认64MiB FAT32空卡；原生块读写后整张8MiB样本卡恢复，FAT挂载尚未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "canonical-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic/ESP32-C5-LCD-2.73.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/schematic/ESP32-C5-LCD-2.73.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "display-driver",
+          "title": "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-lcd-2.73.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原厂 FactoryOnly_20260724 使用独立 app20000h 布局；未修改的 ROM 在第 6831 条指令读取 PMU0x600b00e4 时停止，保持 reference。",
+        "原创 SRAM App 已原生验证完整8MiB PSRAM、RGB666经GDMA出屏、PREV／NEXT／BOOT输入及SD块保存／读写／恢复；公开Worker／浏览器验收需独立执行。",
+        "ILI9488 内部保留320×480×18位GRAM，显示玻璃320×320；既有主机RGB565输出会丢弃红／蓝的第6位，不冒称18位物理校准。",
+        "仅MV0及RGB666三字节传输；TE、滚动、RAMWRC、屏幕读回、模拟gamma／PWM频率未实现。",
+        "CH32V006数字IO／PWM、QMI8658C、PCF85063A仅对应已建模协议；SHTC3、充电／电池／电源键、无线、USB、OTA、FAT挂载未验收。",
+        "官方 SKU 35225；套装选项：without Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。",
+        "3D 复用本系列已核验的主板／屏幕几何；电池、排针或摄像头包装的独立外观差异未完整还原。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件／文档日期不等同于产品发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-lcd273-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-lcd-2-73/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-c5-lcd-2-73"
+    },
+    {
+      "id": "waveshare-esp32-c5-touch-lcd-2-8-en",
+      "name": "Waveshare ESP32-C5-Touch-LCD-2.8-EN",
+      "manufacturer": "Waveshare",
+      "sku": "34958",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32c5",
+      "summary": "2.8 英寸 240×320 ST7789V2 触摸屏，32 MiB Flash、8 MiB PSRAM，CH32V003 扩展与 TF 卡槽；项目诊断已原生验证，原厂启动开发中。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c5-touch-lcd-2-8-en.json",
+      "family": {
+        "id": "waveshare-c5-touch28",
+        "name": "Waveshare ESP32-C5 2.8 英寸触摸屏"
+      },
+      "runtime": {
+        "board": "waveshare-c5-touch28",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ST7789V2",
+        "bus": "SPI2",
+        "diagonalInches": 2.8,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 28,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SPI",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "MOSI",
+              "gpio": 7
+            },
+            {
+              "name": "MISO",
+              "gpio": 8
+            },
+            {
+              "name": "CS",
+              "gpio": 23
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "bsp-pins"
+          ],
+          "notes": "默认 64 MiB FAT32 空卡；原生块读写已验证，FAT 文件系统挂载尚未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "canonical-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/esp32_c5_touch_lcd_2.8.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/esp32_c5_touch_lcd_2.8.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp32_c5_touch_lcd_2.8.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp32_c5_touch_lcd_2.8.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "Unmodified FactoryOnly_20261024 merged image",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/firmware/ESP32-C5-Touch-LCD-2.8_FactoryOnly_20261024.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-store-20261124",
+          "title": "Official storefront package options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-2.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sku-doc-20261124",
+          "title": "Official exact SKU and product table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "公开入口为项目 SRAM 诊断；原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止，原始镜像独立列为参考。",
+        "原生与公开 Worker／WASM 已验证完整 8 MiB PSRAM、GDMA 出屏、CST3530 触摸和 BOOT；6 阶段画面逐字节相同，整张默认 64 MiB FAT32 卡在块读写后恢复；浏览器 WebGL 与 FAT 挂载未验收。",
+        "物理模块为 32 MiB Flash、8 MiB PSRAM；官方当前镜像使用 16 MiB Flash 布局，不据此缩减物理容量。",
+        "CH32V003 仅实现文档中的 8 位数字 IO／PWM 协议；未知命令、充电、电池 ADC、SHTC3、I2S 音频、USB、无线和电源键不冒充已实现。",
+        "3D 已根据可用官方资料建立；物理 PWM 频率、触摸扫描时序和姿态方向尚未标定。",
+        "官方 SKU 34958；套装选项：without Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。",
+        "3D 复用本系列已核验的主板／屏幕几何；电池、排针或摄像头包装的独立外观差异未完整还原。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件和文档日期不等同于设备发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-c5-touch28-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c5-touch-lcd-2-8/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "visualVariantOf": "waveshare-esp32-c5-touch-lcd-2-8"
     }
   ]
 }

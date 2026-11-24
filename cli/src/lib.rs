@@ -478,9 +478,16 @@ fn setup_s3(o: &Opts) -> esp32s3::Machine {
     set_camera_image(&mut m.bus.board, o.cam_image.as_deref());
     set_imu_motion(m.bus.board.as_mut(), o);
     m.bus.periph.lcd_cam.frame_cycles = (esp32s3::periph::CPU_HZ as f64 / o.cam_fps) as u64;
-    let stopwatch = m.bus.board.name() == "stopwatch";
-    let flash_mb = o.flash_mb.unwrap_or(if stopwatch { 16 } else { 8 });
-    let psram_mb = o.psram_mb.unwrap_or(if stopwatch { 8 } else { 2 });
+    let (default_flash, default_psram) = match m.bus.board.name() {
+        "stopwatch" => (16, 8),
+        "waveshare-s3-touch-amoled143c" => (8, 8),
+        "waveshare-s3-epaper133e6" => (32, 16),
+        "waveshare-s3-lcd128" | "waveshare-s3-touch-lcd128" => (16, 2),
+        "waveshare-s3-touch-lcd21" | "waveshare-s3-touch-lcd21b" | "waveshare-s3-lcd28b" | "waveshare-s3-touch-lcd28b" | "waveshare-s3-lcd28c" | "waveshare-s3-touch-lcd28c" => (16, 8),
+        name => esp32s3::board::waveshare_core::variant(name).map(|v| v.memory_mib()).unwrap_or((8, 2)),
+    };
+    let flash_mb = o.flash_mb.unwrap_or(default_flash);
+    let psram_mb = o.psram_mb.unwrap_or(default_psram);
     if flash_mb != 8 { m.bus.set_flash_size(flash_mb << 20); }
     if psram_mb != 2 { m.bus.set_psram_size(psram_mb << 20).unwrap(); }
     if o.flash_octal { m.bus.set_flash_octal(true); }
@@ -582,16 +589,23 @@ fn attach_wifi<B: SocBus>(bus: &mut B, o: &Opts, net_log: bool) {
 }
 
 fn setup_c5(o: &Opts) -> esp32c5::Machine {
-    if o.flash_mb.unwrap_or(4) != 4 || o.psram_mb.unwrap_or(0) != 0 { usage_error("Stamp-C5 supports exactly 4 MiB Flash and no PSRAM"); }
+    let board = if o.board == "atech14" { "stamp-c5" } else { &o.board };
+    let (flash_mb, psram_mb) = match board {
+        "waveshare-c5-touch169" => (16, 8),
+        "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8),
+        "lilygo-t-dongle-c5" => (16, 0),
+        _ => (4, 0),
+    };
+    if o.flash_mb.unwrap_or(flash_mb) != flash_mb || o.psram_mb.unwrap_or(psram_mb) != psram_mb { usage_error("C5 board requires its documented Flash and PSRAM capacity"); }
     if o.boot.as_deref().is_some_and(|boot| boot != "app") || o.rom.is_some() || o.app.is_none() || o.bootloader.is_some() || o.ptable.is_some() || o.flash_image.is_some() || !o.flash_at.is_empty() {
         usage_error("C5 currently requires --boot app --app SRAM.bin; ROM/Flash boot and ESP-IDF images are not supported");
     }
-    for (flag, on) in [("--wifi", !o.wifi.is_empty()), ("--wifi-nearby", !o.wifi_nearby.is_empty()), ("--ble", o.ble || o.ble_full || !o.ble_nearby.is_empty()), ("--cam-image", o.cam_image.is_some()), ("--cam-stream", o.cam_stream.is_some()), ("--sd", o.sd.is_some()), ("--usb-host", o.usb_host.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
+    for (flag, on) in [("--wifi", !o.wifi.is_empty()), ("--wifi-nearby", !o.wifi_nearby.is_empty()), ("--ble", o.ble || o.ble_full || !o.ble_nearby.is_empty()), ("--cam-image", o.cam_image.is_some()), ("--cam-stream", o.cam_stream.is_some()), ("--sd", o.sd.is_some() && !matches!(board,"waveshare-c5-lcd147"|"waveshare-c5-touch28"|"waveshare-c5-touch35"|"waveshare-c5-lcd273")), ("--usb-host", o.usb_host.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
         if on { usage_error(&format!("{flag} is not available on the C5 SRAM runtime")); }
     }
-    let mut m = esp32c5::machine(o.mac.unwrap_or([0x30, 0xed, 0xa0, 0x00, 0x11, 0x25]), 4 << 20);
-    let board = if o.board == "atech14" { "stamp-c5" } else { &o.board };
-    m.bus.board = esp32c5::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown C5 board '{board}' (stamp-c5, stamp-c5-dip)")));
+    let mut m = esp32c5::machine(o.mac.unwrap_or([0x30, 0xed, 0xa0, 0x00, 0x11, 0x25]), flash_mb << 20);
+    m.bus.set_psram_size(psram_mb << 20).unwrap_or_else(|e| usage_error(&e));
+    m.bus.board = esp32c5::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown C5 board '{board}' (stamp-c5, stamp-c5-dip, waveshare-c5-lcd147, waveshare-c5-touch169, waveshare-c5-touch28)")));
     m.bus.attach_board_devices();
     if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
     m
@@ -643,8 +657,11 @@ fn setup_esp32(o: &Opts) -> esp32::Machine {
 }
 
 fn setup_c6(o: &Opts) -> esp32c6::Machine {
-    let mut m = esp32c6::machine(o.mac.unwrap_or([0xdc, 0x1e, 0xd5, 0x6e, 0x8c, 0xdc]), o.flash_mb.unwrap_or(4) << 20);
-    m.bus.set_flash_size(o.flash_mb.unwrap_or(4) << 20);   // the JEDEC capacity follows the size
+    let exact = esp32c6::board::waveshare_lcd_family::LcdVariant::from_name(&o.board);
+    let flash_mb = o.flash_mb.unwrap_or_else(|| exact.map_or(4, |v|v.flash_mb()));
+    if exact.is_some_and(|v|flash_mb!=v.flash_mb()) {usage_error("Waveshare C6 profile requires its exact documented Flash capacity");}
+    let mut m = esp32c6::machine(o.mac.unwrap_or([0xdc, 0x1e, 0xd5, 0x6e, 0x8c, 0xdc]), flash_mb << 20);
+    m.bus.set_flash_size(flash_mb << 20);   // the JEDEC capacity follows the size
     if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
     let name = if o.board == "atech14" { "none" } else { o.board.as_str() };   // the S3 default means "bare module" here
     match esp32c6::board::make_board(name) { Some(b) => m.bus.board = b, None => { eprintln!("--board {}: none, waveshare-c6-lcd147 or xiao-esp32c6 on the C6", name); std::process::exit(2) } }
@@ -684,6 +701,10 @@ fn setup_c61(o: &Opts) -> esp32c61::Machine {
 /// places, or that of the bootloader in the flash image (`esp32p4::built_for_rev3`). The silicon
 /// revision follows them.
 fn p4_rev3(o: &Opts) -> bool {
+    if let Some(revision) = esp32p4::board::lcd35_virtual_revision(&o.board) { return revision >= 300; }
+    // These are explicitly rev3.1 virtual profiles. Their image must still pass
+    // the revision-aware loader; this does not identify every physical board.
+    if esp32p4::board::waveshare_platform::profile(&o.board).is_some() { return true; }
     let head = |p: &str, at: usize| std::fs::read(p).ok().and_then(|d| d.get(at..).map(esp32p4::built_for_rev3));
     let placed = |boot: bool| o.flash_at.iter().filter_map(|s| s.split_once('='))
         .filter(move |(off, _)| (usize::from_str_radix(off.trim_start_matches("0x"), 16) == Ok(0x2000)) == boot).map(|(_, p)| p);
@@ -696,10 +717,17 @@ fn p4_rev3(o: &Opts) -> bool {
 
 /// The ESP32-P4, a bare module: 16 MB of flash unless told otherwise, PSRAM with `--psram-mb`.
 fn setup_p4<R: esp32p4::Revision>(o: &Opts) -> esp_soc::Machine<esp32p4::Esp32p4<R>> {
-    let flash = o.flash_mb.unwrap_or(16) << 20;
+    let profile = esp32p4::board::waveshare_platform::profile(&o.board);
+    let memory = profile.map(|p| (p.flash_mib, p.psram_mib)).or_else(|| esp32p4::board::lcd35_virtual_revision(&o.board).map(|_| (16, 32)));
+    let flash_mb = o.flash_mb.unwrap_or(memory.map_or(16, |p| p.0));
+    let psram_mb = o.psram_mb.or(memory.map(|p| p.1));
+    if memory.is_some_and(|p| flash_mb != p.0 || psram_mb != Some(p.1)) {
+        usage_error("Waveshare P4 profile requires its exact documented Flash and PSRAM capacity");
+    }
+    let flash = flash_mb << 20;
     let mut m = esp32p4::machine_rev::<R>(o.mac.unwrap_or([0x30, 0xed, 0xa0, 0x00, 0x11, 0x22]), flash);
     m.bus.set_flash_size(flash);   // the JEDEC capacity follows the size
-    if let Some(mb) = o.psram_mb { m.bus.set_psram_size(mb << 20).unwrap(); }
+    if let Some(mb) = psram_mb { m.bus.set_psram_size(mb << 20).unwrap_or_else(|e| usage_error(&e)); }
     if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
     let board = if o.board == "atech14" { "none" } else { o.board.as_str() };   // the S3 default means "bare module" here
     match esp32p4::board::make_board(board) { Some(b) => m.bus.board = b, None => usage_error(&format!("--board {board}: none, stamp-p4 or waveshare-p4-lcd35 on the P4")) }

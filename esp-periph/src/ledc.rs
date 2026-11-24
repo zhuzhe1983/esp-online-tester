@@ -8,7 +8,10 @@ use emu_core::ClockDomain;
 /// `P4`: the C6's register fields (and its external clock) with the S3's eight channels; a
 /// channel's fade step count is in the gamma RAM at 0x400 (IDF v5.5.4 esp32p4 hal/ledc_ll.h,
 /// register/hw_ver3/soc/ledc_reg.h).
-pub enum LedcLayout { S3, C3, C6, P4 }
+/// `C5`: six channels, 9-bit output matrix, C6-width timer fields, external PCR
+/// clock and P4-style gamma RAM. C5 IDF v5.5.4 sources are retained in
+/// docs/research/c5-ledc-sources-2026-11-23; the chip adapter owns reset and gates.
+pub enum LedcLayout { S3, C3, C6, P4, C5 }
 
 /// `CLASSIC` marks a classic ESP32 speed group: S3's eight channels, C6-width timer fields and a
 /// configuration write that drops a pending duty update. S3/C3/C6 use the default.
@@ -36,8 +39,8 @@ impl Ledc {
     pub fn output(&self, gpio: &Gpio, pin: u8) -> Option<(f64, u32)> {
         let matrix = *gpio.func_out_sel.get(pin as usize)?;
         if gpio.enable & (1u64 << pin) == 0 { return None; }
-        let base = match self.layout { LedcLayout::S3 => 73, LedcLayout::C3 => 45, LedcLayout::C6 => 0, LedcLayout::P4 => 126 };
-        let bits = if matches!(self.layout, LedcLayout::S3 | LedcLayout::P4) { 9 } else { 8 };
+        let base = match self.layout { LedcLayout::S3 => 73, LedcLayout::C3 => 45, LedcLayout::C6 | LedcLayout::C5 => 0, LedcLayout::P4 => 126 };
+        let bits = if matches!(self.layout, LedcLayout::S3 | LedcLayout::P4 | LedcLayout::C5) { 9 } else { 8 };
         let channel = (matrix & ((1 << bits) - 1)).checked_sub(base)? as usize;
         let timer = self.channel_timer_settings(channel)?;
         let hz = self.source_hz();
@@ -85,10 +88,10 @@ impl Ledc<$classic> {
             unsupported_fade: [false; 8], phase: [0; 4], active: 0, timer_params: [0; 4], raw: 0, ena: 0, external_clock_hz: 0, clock_enabled: true }
     }
     fn channels(&self) -> usize { if matches!(self.layout, LedcLayout::S3 | LedcLayout::P4) { 8 } else { 6 } }
-    fn shift(&self) -> u32 { u32::from($classic || matches!(self.layout, LedcLayout::C6 | LedcLayout::P4)) }
+    fn shift(&self) -> u32 { u32::from($classic || matches!(self.layout, LedcLayout::C6 | LedcLayout::P4 | LedcLayout::C5)) }
     fn source_hz(&self) -> u64 {
         if !self.clock_enabled { return 0; }
-        if matches!(self.layout, LedcLayout::C6 | LedcLayout::P4) { return self.external_clock_hz; }
+        if matches!(self.layout, LedcLayout::C6 | LedcLayout::P4 | LedcLayout::C5) { return self.external_clock_hz; }
         match self.regs.read(0xd0) & 3 { 1 => APB_HZ, 2 => 17_500_000, 3 => 40_000_000, _ => 0 }
     }
     fn timer_settings(&self, n: usize) -> Option<(u64, u64)> {
@@ -118,6 +121,18 @@ impl Ledc<$classic> {
         let high = (self.duty[channel] as u64).min(full);
         let duty = ((high * 65535 + full / 2) / full) as u32;
         (hz as f64 * 256.0 / divider as f64 / period as f64, duty)
+    }
+    /// APB-reference ticks until a pending static duty latches. A chip adapter
+    /// can schedule one board-output refresh instead of polling PWM every tick.
+    /// No caller is added to existing SoCs; unsupported fades have no deadline.
+    pub fn next_output_change(&self) -> Option<u64> {
+        let hz = self.source_hz();
+        if hz == 0 { return None; }
+        (0..4).filter_map(|n| {
+            if !(0..self.channels()).any(|ch| self.pending[ch] && self.regs.read(ch as u32 * 0x14) & 3 == n as u32) { return None; }
+            let (period, div) = self.timer(n)?;
+            Some(((APB_HZ / 256 * div * period) - self.phase[n]).div_ceil(hz))
+        }).min()
     }
     /// Advance the timers, each clocked at `source(timer, timer_conf)` Hz.
     #[inline(always)]
@@ -174,7 +189,7 @@ impl Device for Ledc<$classic> {
                         if value & (1 << 4) != 0 && self.regs.read(off + 12) & (1 << 31) != 0 {
                             let fade = match self.layout {
                                 LedcLayout::C6 => (self.regs.read(0x100 + n as u32 * 16) >> 11) & 0x3ff,
-                                LedcLayout::P4 => (self.regs.read(0x400 + n as u32 * 0x40) >> 21) & 0x3ff,   // range 0's DUTY_NUM
+                                LedcLayout::P4 | LedcLayout::C5 => (self.regs.read(0x400 + n as u32 * 0x40) >> 21) & 0x3ff,   // range 0's DUTY_NUM
                                 _ => self.regs.read(off + 12) & 0x3ff,
                             };
                             self.unsupported_fade[n] = fade != 0;
@@ -330,6 +345,36 @@ mod tests {
         assert!(ledc.output(&gpio, 0).is_none());
         assert_eq!(ledc.read(0xc0) & (1 << 4), 0);
         assert_ne!(ledc.read(12) & (1 << 31), 0);
+    }
+
+    /// C5 IDF v5.5.4: six signals 0..5, 9-bit GPIO_OUT_SEL and OUT_INV bit9;
+    /// 20-bit timers and gamma entries at 0x400+0x40*channel (DUTY_NUM[30:21]).
+    #[test]
+    fn c5_six_channels_nine_bit_matrix_and_external_clock_are_explicit() {
+        let mut ledc = Ledc::new(LedcLayout::C5);
+        ledc.external_clock_hz = 48_000_000;
+        ledc.write(0xa0, 10 | (256 << 5) | (1 << 26));
+        let off = 5 * 0x14;
+        ledc.write(off + 8, 256 << 4); ledc.write(off + 12, 1 << 31); ledc.write(off, 4 | (1 << 4));
+        let mut gpio = Gpio::with_pins(29); gpio.enable = (1 << 10) | (1 << 11);
+        gpio.func_out_sel[10] = 5; gpio.func_out_sel[11] = 5 | (1 << 9);
+        assert_eq!(ledc.next_output_change(), Some(1707));
+        assert_eq!(ledc.read(off + 16), 0); ledc.tick(1706); assert_eq!(ledc.read(off + 16), 0);
+        assert_eq!(ledc.next_output_change(), Some(1));
+        ledc.tick(1); assert_eq!(ledc.read(off + 16), 256 << 4); assert_eq!(ledc.next_output_change(), None);
+        assert_eq!(ledc.output(&gpio, 10), Some((46875.0, 16384)));
+        assert_eq!(ledc.output(&gpio, 11), Some((46875.0, 49151)));
+        gpio.func_out_sel[11] = 5 | (1 << 8); assert!(ledc.output(&gpio, 11).is_none(), "bit8 is part of the signal number");
+        gpio.func_out_sel[11] = 6; assert!(ledc.output(&gpio, 11).is_none(), "C5 has only six channels");
+        ledc.clock_enabled = false; let before = ledc.read(0xa4); ledc.tick(u64::MAX);
+        assert_eq!(ledc.read(0xa4), before); assert!(ledc.output(&gpio, 10).is_none());
+        ledc.clock_enabled = true; ledc.external_clock_hz = 0;
+        assert!(ledc.output(&gpio, 10).is_none(), "unknown source is not the legacy 40 MHz XTAL");
+        ledc.external_clock_hz = 48_000_000; ledc.write(0x540, 1 << 21);
+        ledc.write(off + 12, 1 << 31); ledc.write(off, 4 | (1 << 4)); ledc.write(0xcc, u32::MAX);
+        ledc.tick(1 << 20); assert!(ledc.output(&gpio, 10).is_none());
+        assert_eq!(ledc.read(0xc0) & (1 << 9), 0, "unimplemented fade has no completion");
+        assert_ne!(ledc.read(off + 12) & (1 << 31), 0);
     }
 
 }

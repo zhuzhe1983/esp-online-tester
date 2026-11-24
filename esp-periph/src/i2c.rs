@@ -83,11 +83,11 @@ struct Program<const N: usize> {
 }
 
 #[derive(Clone, Copy)]
-struct ClockParameters { num: u8, a: u8, b: u8, rc_fast: bool }
+struct ClockParameters { num: u8, a: u8, b: u8, rc_fast: bool, explicit_hz:u32 }
 impl ClockParameters {
     /// S3/C3 CLK_CONF and the existing C6 PCR adapter use six-bit A/B fields.
     fn from_config(config: u32) -> Self {
-        Self { num: config as u8, a: ((config >> 8) & 63) as u8, b: ((config >> 14) & 63) as u8, rc_fast: config & (1 << 20) != 0 }
+        Self { num: config as u8, a: ((config >> 8) & 63) as u8, b: ((config >> 14) & 63) as u8, rc_fast: config & (1 << 20) != 0,explicit_hz:0 }
     }
 }
 
@@ -112,7 +112,15 @@ impl I2c<$n> {
     /// CTRL11 bits 15:8/23:16 for I2C1). Its i2c_ll.h writes div_a to NUMERATOR.
     /// rc_fast chooses nominal 17.5 MHz; false chooses the 40 MHz crystal.
     pub fn set_external_clock_parameters(&mut self, num: u8, a: u8, b: u8, rc_fast: bool) {
-        self.program.external_clock = Some(ClockParameters { num, a, b, rc_fast });
+        self.program.external_clock = Some(ClockParameters { num, a, b, rc_fast,explicit_hz:0 });
+    }
+    /// Opt-in source rate before the divider, for a separately validated SoC
+    /// clock (C5 uses 48 MHz XTAL). Zero is rejected without changing state.
+    /// Existing clock setters replace this override and retain their old rates.
+    /// The SoC must gate stopped/unsupported sources before starting a transfer.
+    pub fn set_external_clock_hz(&mut self,hz:u32,num:u8,a:u8,b:u8)->Result<(),&'static str>{
+        if hz==0{return Err("I2C explicit source frequency must be nonzero");}
+        self.program.external_clock=Some(ClockParameters{num,a,b,rc_fast:false,explicit_hz:hz});Ok(())
     }
     /// A device attached at an occupied address and pin pair replaces the one there: a board swapped before
     /// boot (`esp32sim_set_measured_te`) must not leave the old board's devices answering.
@@ -226,7 +234,7 @@ impl I2c<$n> {
         let (a, b) = (u64::from(c.a), u64::from(c.b));
         let denominator = a.max(1);
         let divisor = (u64::from(c.num) + 1) * denominator + if a > 0 { b } else { 0 };
-        let hz = if c.rc_fast { 17_500_000 } else { 40_000_000 };
+        let hz = if c.explicit_hz!=0 {u64::from(c.explicit_hz)} else if c.rc_fast { 17_500_000 } else { 40_000_000 };
         (cycles * divisor * 80_000_000).div_ceil(hz * denominator).max(1)
     }
 
@@ -433,6 +441,24 @@ mod clock_observation_tests {
         i2c.write(0x24,u32::MAX);i2c.write(0x18,3<<12);i2c.write(0x1c,u32::from(address<<1));
         i2c.write(0x58,6<<11);i2c.write(0x5c,(1<<11)|(1<<8)|1);i2c.write(0x60,2<<11);
         i2c.write(4,1<<5);i2c.advance(u64::MAX);
+    }
+    #[test]
+    fn explicit_48mhz_clock_drives_byte_deadlines_and_device_observation(){
+        let seen=Arc::new(Mutex::new(Vec::new()));let mut c=I2c::new();c.attach(0x6e,Box::new(Probe(seen.clone())));c.set_pins(Some((47,48)));
+        c.write(0,59);c.write(0x38,60);c.set_external_clock_hz(48_000_000,0,0,0).unwrap();
+        c.write(0x1c,0xdc);c.write(0x58,6<<11);c.write(0x5c,(1<<11)|(1<<8)|1);c.write(0x60,2<<11);c.write(4,1<<5);
+        assert_eq!(c.next_deadline(),Some(4));c.advance(4);assert_eq!(c.next_deadline(),Some(1800));
+        c.advance(1799);assert!(seen.lock().unwrap().is_empty());c.advance(1);assert_eq!(*seen.lock().unwrap(),[Some(400_000)]);
+        c.advance(4);assert_ne!(c.int_raw&INT_TRANS_COMPLETE,0);assert!(!c.is_active());
+        c.set_external_clock_hz(48_000_000,1,2,1).unwrap();send(&mut c,0x6e);assert_eq!(seen.lock().unwrap().last(),Some(&Some(160_000)));
+    }
+    #[test]
+    fn explicit_zero_is_atomic_and_existing_setters_restore_legacy_sources(){
+        let mut c=I2c::new();c.write(0,59);c.write(0x38,60);c.set_external_clock_hz(48_000_000,0,0,0).unwrap();
+        assert!(c.set_external_clock_hz(0,255,255,255).is_err());assert_eq!(c.scl_hz(),Some(400_000));
+        c.set_external_clock_parameters(0,0,0,false);assert_eq!(c.scl_hz(),Some(333_333));
+        c.set_external_clock_hz(48_000_000,0,0,0).unwrap();c.set_external_clock_config(Some(0));assert_eq!(c.scl_hz(),Some(333_333));
+        c.set_external_clock_hz(48_000_000,0,0,0).unwrap();c.set_external_clock_config(None);assert_eq!(c.scl_hz(),Some(333_333));
     }
     #[test]
     fn full_width_external_fraction_reaches_device_and_byte_deadlines() {

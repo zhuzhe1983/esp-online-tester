@@ -12,6 +12,7 @@ use esp_periph::i2c::{I2cDevice, Reg8Device};
 use esp_soc::board::{BoardEdge, VirtualCycle};
 use esp_soc::{Board, BoardModel, NoBoard};
 pub mod lilygo;
+pub mod waveshare_platform;
 
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
@@ -19,8 +20,17 @@ pub fn make_board(name: &str) -> Option<Board> {
         "stamp-p4" | "m5stack-s013" => Some(Box::new(StampP4)),
         "lilygo-t-display-p4" => Some(Box::new(lilygo::TDisplayP4::new())),
         "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" => Some(Box::new(WaveshareP4Lcd35::new())),
-        _ => None,
+        "waveshare-p4-lcd35-v13" => Some(Box::new(WaveshareP4Lcd35::with_name("waveshare-p4-lcd35-v13"))),
+        "waveshare-p4-lcd35-v32" => Some(Box::new(WaveshareP4Lcd35::with_name("waveshare-p4-lcd35-v32"))),
+        _ => waveshare_platform::make_board(name),
     }
+}
+
+/// Manufacturer firmware/README.md at 3e2fcd48 maps V1.3 and V3.2 separately.
+/// These choose compatible virtual wafer families (1.0 / 3.1), not a claim
+/// that the virtual revision equals the revision of a physical production die.
+pub fn lcd35_virtual_revision(name: &str) -> Option<u16> {
+    match name { "waveshare-p4-lcd35-v13" => Some(100), "waveshare-p4-lcd35-v32" => Some(301), _ => None }
 }
 
 /// M5Stack S013 Stamp-P4: bare P4NRW32 module, 16 MiB Flash and 32 MiB PSRAM.
@@ -68,6 +78,8 @@ pub fn lcd_visible(p: &DcsPanel) -> Vec<u16> {
 
 /// The Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5.
 pub struct WaveshareP4Lcd35 {
+    name: &'static str,
+    boot_high: bool,
     /// the ST7796; `lcd_visible` is what the glass shows
     pub panel: DcsPanel,
     /// the speaker amplifier's enable (GPIO 53)
@@ -88,13 +100,16 @@ pub struct WaveshareP4Lcd35 {
 impl Default for WaveshareP4Lcd35 { fn default() -> Self { Self::new() } }
 impl WaveshareP4Lcd35 {
     pub fn new() -> Self {
-        WaveshareP4Lcd35 { panel: DcsPanel::new(LCD_COLS, LCD_ROWS), amp: false, touch: Default::default(), gpio_events: 0,
+        Self::with_name("waveshare-p4-lcd35")
+    }
+    fn with_name(name: &'static str) -> Self {
+        WaveshareP4Lcd35 { name, boot_high: true, panel: DcsPanel::new(LCD_COLS, LCD_ROWS), amp: false, touch: Default::default(), gpio_events: 0,
                            cycle: 0, next_pulse: None, pulse_end: None, down_at: 0, release_at: None, edges: Vec::new() }
     }
     fn touched(&self) -> bool { self.touch.lock().unwrap().iter().any(|p| p.is_some()) }
 }
 impl BoardModel for WaveshareP4Lcd35 {
-    fn name(&self) -> &'static str { "waveshare-p4-lcd35" }
+    fn name(&self) -> &'static str { self.name }
     fn gpio_changes(&mut self, changes: &[(u8, bool)]) {
         for &(pin, level) in changes {
             self.gpio_events += 1;
@@ -125,7 +140,16 @@ impl BoardModel for WaveshareP4Lcd35 {
         // a report now: the first of a touch, or the one that says the finger has gone
         self.next_pulse = Some(self.next_pulse.map_or(cycle, |p| p.min(cycle)));
     }
-    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_TOUCH_INT, true)] }
+    // Schematic BOOT key connects GPIO35 to GND. PWR is PMIC circuitry,
+    // and is not advertised as a second generic GPIO button.
+    fn input_levels(&self) -> Vec<(u8, bool)> { vec![(PIN_TOUCH_INT, true), (35, self.boot_high)] }
+    fn named_pin(&self, name: &str) -> Option<u8> { matches!(name, "boot" | "btn").then_some(35) }
+    fn button_at(&mut self, cycle: VirtualCycle, id: &str, pressed: bool) -> bool {
+        if self.named_pin(id) != Some(35) { return false; }
+        let high = !pressed;
+        if high != self.boot_high { self.boot_high = high; self.edges.push(BoardEdge { cycle, pin: 35, level: high }); }
+        true
+    }
     fn next_deadline(&self) -> Option<VirtualCycle> {
         [self.next_pulse, self.pulse_end, self.release_at].into_iter().flatten().min()
     }
@@ -170,6 +194,21 @@ impl BoardModel for WaveshareP4Lcd35 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn lcd35_revisions_keep_distinct_identity_and_only_the_sourced_boot_key() {
+        for (name, revision) in [("waveshare-p4-lcd35-v13", 100), ("waveshare-p4-lcd35-v32", 301)] {
+            let mut board = make_board(name).unwrap();
+            assert_eq!(board.name(), name);
+            assert_eq!(lcd35_virtual_revision(name), Some(revision));
+            assert_eq!(board.named_pin("boot"), Some(35));
+            assert!(board.button_at(10, "boot", true));
+            assert!(board.input_levels().contains(&(35, false)));
+            assert!(board.button_at(20, "boot", false));
+            let edges = board.take_edges();
+            assert_eq!(edges.iter().map(|e| (e.cycle, e.pin, e.level)).collect::<Vec<_>>(), [(10, 35, false), (20, 35, true)]);
+            assert!(!board.button_at(30, "power", true));
+        }
+    }
     #[test]
     fn stamp_p4_does_not_inherit_carrier_devices() {
         for name in ["stamp-p4", "m5stack-s013"] {

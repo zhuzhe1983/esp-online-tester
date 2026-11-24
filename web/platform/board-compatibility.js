@@ -1,4 +1,5 @@
 import {LILYGO_BOARD_CAPABILITIES} from './lilygo-board-families.js';
+import {WAVESHARE_BOARD_CAPABILITIES} from './waveshare-board-families.js';
 // Same flash layout / screen / storage, but Lite physically lacks NFC and LoRa.
 export const isPaperMonoBoard = board => board === 'papermono' || board === 'papermono-lite';
 export const firmwareBoardMatches = (manifestBoard,board) => manifestBoard === board || isPaperMonoBoard(manifestBoard) && isPaperMonoBoard(board);
@@ -12,4 +13,4 @@ export const isStickPlusBoard = board => board === 'stickc-plus' || board === 'm
 export const isClassicStickBoard = board => board === 'stickc' || isStickPlusBoard(board) || board === 'stickt2';
 
 // Physical card transports are board-specific; this only exposes shared storage UI.
-export const hasSdCard = board => LILYGO_BOARD_CAPABILITIES[board]?.sdCard === true || isPaperMonoBoard(board) || isCore2Board(board) || board === 'papers3' || board === 'paperdiy' || board === 'corematrix' || board === 'metalio-ink4' || board === 'metalio-ink4-plus' || ['m5stack-basic','cores3','cores3-se','cores3-lite','cores3-thread-br'].includes(board) || ['seeed-reterminal-sticky','seeed-reterminal-e1001','seeed-reterminal-e1002','seeed-reterminal-e1003','seeed-reterminal-e1004'].includes(board);
+export const hasSdCard = board => WAVESHARE_BOARD_CAPABILITIES[board]?.sdCard === true || LILYGO_BOARD_CAPABILITIES[board]?.sdCard === true || isPaperMonoBoard(board) || isCore2Board(board) || board === 'papers3' || board === 'paperdiy' || board === 'corematrix' || board === 'metalio-ink4' || board === 'metalio-ink4-plus' || ['m5stack-basic','cores3','cores3-se','cores3-lite','cores3-thread-br'].includes(board) || ['seeed-reterminal-sticky','seeed-reterminal-e1001','seeed-reterminal-e1002','seeed-reterminal-e1003','seeed-reterminal-e1004'].includes(board);

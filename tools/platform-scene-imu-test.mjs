@@ -86,7 +86,10 @@ test('all host-fed runtime IMUs accept the same documented virtual axes, with no
       assert.equal((await runtime.observe()).imu.source,'agent');
       const result=await runtime.setImu({source:'scene',quaternion:tilted});assert.ok(Math.abs(result.accelG[0]-1)<1e-8);assert.deepEqual(result.gyroDps,[0,0,0]);
     }
-    assert.equal([...seen].filter(board=>!stickProfiles.has(board)).length,12);
+    assert.equal([...seen].filter(board=>!stickProfiles.has(board)&&!board.startsWith('waveshare-')).length,12);
+    // Incremental Waveshare deliveries contain a growing subset of products;
+    // exercise every published IMU board without weakening the upstream set.
+    for(const board of new Set(catalog.products.filter(p=>p.manufacturer==='Waveshare'&&imuModelForBoard(p.runtime?.board)).map(p=>p.runtime.board)))assert(seen.has(board));
     await runtime.configure({...createDefaultScene(catalog,'m5stack-k138'),flight:{enabled:true,model:'stampfly-rigid-body-v1'}});
     assert.equal((await runtime.capabilities()).imu.inputOwner,'flight');
     await assert.rejects(runtime.setImu({source:'scene',quaternion:q}),{code:'FLIGHT_OWNS_IMU'});

@@ -1,0 +1,1245 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-c5-touch-lcd-2-8",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-c5-touch-lcd-2-8",
+  "title": "Waveshare ESP32-C5-Touch-LCD-2.8",
+  "summary": "2.8 英寸 240×320 ST7789V2 触摸屏，32 MiB Flash、8 MiB PSRAM，CH32V003 扩展与 TF 卡槽；项目诊断已原生验证，原厂启动开发中。",
+  "summarySourceIds": [
+    "overview",
+    "schematic",
+    "bsp"
+  ],
+  "updatedAt": "2026-11-23T16:40:21Z",
+  "hardwareRevision": "unspecified",
+  "facts": [
+    {
+      "id": "identity",
+      "label": "SKU 与物理存储",
+      "value": {
+        "sku": "34957",
+        "module": "ESP32-C5-WROOM-1-N32R8",
+        "flashMiB": 32,
+        "psramMiB": 8,
+        "factoryFlashLayoutMiB": 16,
+        "hasTfSlot": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic",
+        "readme"
+      ]
+    },
+    {
+      "id": "display",
+      "label": "屏幕、触摸与 BOOT 布线",
+      "value": {
+        "resolution": [
+          240,
+          320
+        ],
+        "controller": "ST7789V2",
+        "spi": {
+          "CLK": 6,
+          "MOSI": 7,
+          "CS": 10,
+          "DC": 9,
+          "reset": "CH32 EXIO1",
+          "backlight": "CH32 PWM command 0x05"
+        },
+        "touch": {
+          "controller": "CST3530",
+          "address": "0x58",
+          "reset": "CH32 EXIO0",
+          "irq": 5
+        },
+        "i2c": {
+          "SDA": 0,
+          "SCL": 1
+        },
+        "boot": 28
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp",
+        "bsp-pins",
+        "expander-protocol"
+      ]
+    },
+    {
+      "id": "components",
+      "label": "板载外设与 TF 接线",
+      "value": {
+        "expander": "CH32V003@0x24 (8-bit protocol)",
+        "imu": "QMI8658C@0x6b",
+        "rtc": "PCF85063A@0x51",
+        "codec": "ES8311@0x18",
+        "sd": {
+          "CLK": 6,
+          "MOSI": 7,
+          "MISO": 8,
+          "CS": 23
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp",
+        "bsp-pins",
+        "resources"
+      ]
+    },
+    {
+      "id": "factory",
+      "label": "原厂镜像",
+      "value": {
+        "bytes": 12839935,
+        "sha256": "e577a5451b58630acabdc322829fbeb3d52f4c1dc4248e1c6f06a7e8f34d24b3",
+        "loadOffset": 0,
+        "bootloaderOffset": 8192,
+        "partitionTableOffset": 32768,
+        "applicationOffset": 131072,
+        "chipId": 23,
+        "minimumRevision": 100,
+        "maximumRevision": 199
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory"
+      ]
+    },
+    {
+      "id": "model-dimensions",
+      "label": "3D 模型尺寸与适用版本",
+      "value": {
+        "pcb": {
+          "sizeMm": [
+            49.91358143632378,
+            69.01108689836522,
+            1.5999995400000002
+          ],
+          "nominalSizeMm": [
+            49.9,
+            69.0,
+            1.6
+          ],
+          "sourceIds": [
+            "official-cad",
+            "mechanical-drawing"
+          ],
+          "scope": "Native board geometry; nominal PDF tolerance difference preserved."
+        },
+        "display": {
+          "activeSizeMm": [
+            43.2,
+            57.6
+          ],
+          "viewingAreaSizeMm": [
+            43.8,
+            58.2
+          ],
+          "sourceIds": [
+            "official-cad",
+            "mechanical-drawing",
+            "dimension-photo"
+          ],
+          "nativeActiveFace": {
+            "sourceComponent": 1,
+            "faceIndex": 32,
+            "boundsMm": [
+              [
+                -21.6,
+                -28.8,
+                -0.6
+              ],
+              [
+                21.6,
+                28.8,
+                -0.6
+              ]
+            ]
+          },
+          "nativeViewingFace": {
+            "sourceComponent": 0,
+            "faceIndex": 11,
+            "boundsMm": [
+              [
+                -21.9,
+                -29.1,
+                0.65
+              ],
+              [
+                21.9,
+                29.1,
+                0.65
+              ]
+            ]
+          }
+        },
+        "cover": {
+          "outerSizeMm": [
+            50.54,
+            73.06
+          ],
+          "frontLaminateReferenceMm": 0.7,
+          "cornerRadiusMm": 2,
+          "sourceIds": [
+            "mechanical-drawing"
+          ],
+          "scope": "Native component also includes folded flex; complete component depth is not front glass thickness."
+        },
+        "sourceAssemblySizeMm": [
+          50.54,
+          73.06,
+          10.199999439999997
+        ],
+        "sourceAssemblyBoundsMm": [
+          [
+            -25.27,
+            -39.53,
+            -9.499999439999998
+          ],
+          [
+            25.27,
+            33.53,
+            0.7
+          ]
+        ]
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "model-official-cad",
+        "model-mechanical-drawing",
+        "model-repository-tree",
+        "model-repository-head-selection",
+        "model-overview",
+        "model-resources",
+        "model-product",
+        "model-schematic",
+        "model-front-photo",
+        "model-back-photo",
+        "model-angle-photo",
+        "model-component-photo",
+        "model-dimension-photo",
+        "model-package-without-battery",
+        "model-package-with-battery"
+      ],
+      "method": "Retained original CAD/dimensioned source measurements and registered photographs; unknown values and visual estimates are explicit.",
+      "notes": "All 728 native source components, including five open shells, are retained in their original millimetre assembly positions. Small components are grouped for rendering only; each source index is independently exported and bounds-checked. SKU34957 includes a separate lithium battery; SKU34958 (-EN) omits it. This model is the native board/display assembly, without an invented battery or external speaker placement. No additional enclosure is present in the supplied assembly. The 0.70 mm cover reference in the PDF is a front laminate dimension. Native touch component0 also includes folded flex reaching below the PCB; its 7.00 mm total component depth is not glass thickness. The LCD AA is 43.20×57.60 mm. The separate touch VA is 43.80×58.20 mm, and cover outer size50.54×73.06 mm has R2 corners. The runtime uses rectangular AA, not cover or VA dimensions. Native PCB49.913581×69.011087×1.600000 mm differs slightly from PDF nominal49.90×69.00×1.60 mm. Native geometry is preserved without scaling. BOOT is physical component9 and binds to runtime control boot, GPIO28 active-low. RESET component8 and power component712 remain visible but unbound; PWR belongs to the CH32/power circuit and is not exposed as a fictitious ordinary GPIO key. Native shielding part271 has the reused library name ESP32-WROOM-32E_SHIELDING_CASE_. This is a mechanical library label in the explicit C5 assembly; it is not evidence that the board uses a classic ESP32. The actual C5 module identity comes from separate electrical sources and photographs. Native colors are retained except for a dark optical cover and black PCB, selected from the exact official photographs. Source photographs remain unchanged references and no stock screenshot replaces the live framebuffer. Optical text-to-USB registration and physical fit have not been calibrated on hardware. The identity transform preserves the supplied portrait assembly and 240×320 framebuffer shape; firmware/native execution is separately documented. Repository and CAD dates are source dates, not a product release-date certification or proof of a specific shipping PCB revision. Native parts are not Boolean-unioned; any source assembly overlaps remain as provided. The 0.008 mm screen offset is a rendering offset, not a physical layer. No pre-reset model, source archive or lost historical acceptance result is reused."
+    },
+    {
+      "id": "exact-package-sku",
+      "label": "官方 SKU 与包装选项",
+      "value": {
+        "sku": "34957",
+        "name": "ESP32-C5-Touch-LCD-2.8",
+        "options": [
+          "with 3.7V Lithium Batt"
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "sku-store-20261124",
+        "sku-doc-20261124"
+      ]
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "readme",
+      "title": "README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/README.md",
+      "fetchedAt": "2026-11-23T08:33:44Z",
+      "bytes": 5559,
+      "sha256": "4af0a3fdf5f5d4f6d7e5d86513f8576e7088c4427662a55b0fa9d1a0231d8183",
+      "archiveName": "README.md",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/README.md.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-1",
+      "title": "README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/README_ZH.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/README_ZH.md",
+      "fetchedAt": "2026-11-23T08:33:44Z",
+      "bytes": 5463,
+      "sha256": "0add5366dfcb5cb48d3021e7f3d1d99b312431cf4e4330417f728b4e6a49177a",
+      "archiveName": "README_ZH.md",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/README_ZH.md.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "expander-protocol",
+      "title": "docs/ch32v003.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/docs/ch32v003.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/docs/ch32v003.md",
+      "fetchedAt": "2026-11-23T09:48:49Z",
+      "bytes": 1035,
+      "sha256": "56d203c9db814f51b17e432d94f25ea0b6c0ff00e267a3d7386c98e5bcf840e0",
+      "archiveName": "docs__ch32v003.md",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/docs__ch32v003.md.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-3",
+      "title": "examples/arduino/libraries/board_config/src/Touch_CST3530.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/arduino/libraries/board_config/src/Touch_CST3530.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/arduino/libraries/board_config/src/Touch_CST3530.cpp",
+      "fetchedAt": "2026-11-23T09:52:11Z",
+      "bytes": 3954,
+      "sha256": "79c4705f60bf9489a55167ba3759621f9c7c1c7a43cf458b799c624799871990",
+      "archiveName": "examples__arduino__libraries__board_config__src__Touch_CST3530.cpp",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__arduino__libraries__board_config__src__Touch_CST3530.cpp.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-4",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/CMakeLists.txt",
+      "fetchedAt": "2026-11-23T08:33:44Z",
+      "bytes": 478,
+      "sha256": "4366158860902086714beedddf6a00195520a2f388b15043d4e5a28c00514633",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__CMakeLists.txt",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__CMakeLists.txt.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-5",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/Kconfig",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/Kconfig",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/Kconfig",
+      "fetchedAt": "2026-11-23T08:33:44Z",
+      "bytes": 223,
+      "sha256": "8b0b3b3b161126a133ce5df570ef98fe848626bc8b7eab78d65462fc90be281a",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__Kconfig",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__Kconfig.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-6",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/LICENSE",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/LICENSE",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/LICENSE",
+      "fetchedAt": "2026-11-23T08:33:44Z",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__LICENSE",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__LICENSE.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-7",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/README.md",
+      "fetchedAt": "2026-11-23T08:33:44Z",
+      "bytes": 902,
+      "sha256": "44739eee4bd8a2974f06303b9231e4ef4b017e7eb5636ef920075f3633a12f65",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__README.md",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__README.md.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-8",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/README_ZH.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/README_ZH.md",
+      "fetchedAt": "2026-11-23T08:33:51Z",
+      "bytes": 814,
+      "sha256": "d45c91d28e164da6592043392f32da2796422ed06df36d2e95adad70b5f5c2e2",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__README_ZH.md",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__README_ZH.md.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-9",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/bsp_board.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/bsp_board.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/bsp_board.c",
+      "fetchedAt": "2026-11-23T08:33:51Z",
+      "bytes": 16421,
+      "sha256": "c89b648f2f7c755c303a6a3e5f2ca2b1abaa20e81aec3e71ac59e7e008682b0a",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__bsp_board.c",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__bsp_board.c.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "bsp",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/esp32_c5_touch_lcd_2.8.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/esp32_c5_touch_lcd_2.8.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/esp32_c5_touch_lcd_2.8.c",
+      "fetchedAt": "2026-11-23T08:33:51Z",
+      "bytes": 17145,
+      "sha256": "552b113178fd4a51bf78dc20b21afe0fb2f8decb4df013a9c5bd3b2ad177e1f7",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__esp32_c5_touch_lcd_2.8.c",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__esp32_c5_touch_lcd_2.8.c.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-11",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/idf_component.yml",
+      "fetchedAt": "2026-11-23T08:33:51Z",
+      "bytes": 552,
+      "sha256": "16cea167a73ece20e8ce059284e963fac945486cf2f414744021c599f5f75a25",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__idf_component.yml",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__idf_component.yml.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-12",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/board.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/board.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/board.h",
+      "fetchedAt": "2026-11-23T08:33:51Z",
+      "bytes": 3851,
+      "sha256": "4cb3849dea74f7297ef25b1ab923e055123de64ebccd1435aec2d473482059b7",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__board.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__board.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-13",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/config.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/config.h",
+      "fetchedAt": "2026-11-23T08:33:51Z",
+      "bytes": 148,
+      "sha256": "41fd2602f410d6047e1d33f2639427be2c4d1516bdf4ccfac7100c48f8a39300",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__config.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__config.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-14",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/display.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/display.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/display.h",
+      "fetchedAt": "2026-11-23T08:33:58Z",
+      "bytes": 1621,
+      "sha256": "882b5ad9c11c48e11512936d00ca3df6e9206a373edd9dbbd2aa45cef6739bd4",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__display.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__display.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-15",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp-bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp-bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp-bsp.h",
+      "fetchedAt": "2026-11-23T08:33:58Z",
+      "bytes": 53,
+      "sha256": "f1082c8e58b28eea9ad15db3bc09812bd04bdbfc180ba77559cdd1ba9d92889f",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__esp-bsp.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__esp-bsp.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "bsp-pins",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp32_c5_touch_lcd_2.8.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp32_c5_touch_lcd_2.8.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp32_c5_touch_lcd_2.8.h",
+      "fetchedAt": "2026-11-23T08:33:58Z",
+      "bytes": 5689,
+      "sha256": "1d2de7998b25222f721c361d21549cc006033adb7ec75b31acefefaba14c160c",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__esp32_c5_touch_lcd_2.8.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__esp32_c5_touch_lcd_2.8.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-17",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/touch.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/touch.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/touch.h",
+      "fetchedAt": "2026-11-23T08:33:58Z",
+      "bytes": 398,
+      "sha256": "c52d6ff3f82b4585fd49d13d13a27756c01ae86f70fec7f038dbe2c289109077",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__touch.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__include__bsp__touch.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-18",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/priv_include/bsp_board_internal.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/priv_include/bsp_board_internal.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/priv_include/bsp_board_internal.h",
+      "fetchedAt": "2026-11-23T08:33:58Z",
+      "bytes": 122,
+      "sha256": "c7258d0d186f68f8e9bde14fb51cf8a3e98b9a873ebb20e5bb6960c0a97a459d",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__priv_include__bsp_board_internal.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__priv_include__bsp_board_internal.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-19",
+      "title": "examples/factory/components/esp32_c5_touch_lcd_2_8/priv_include/bsp_err_check.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/priv_include/bsp_err_check.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/priv_include/bsp_err_check.h",
+      "fetchedAt": "2026-11-23T08:33:58Z",
+      "bytes": 1501,
+      "sha256": "9270b22036dfca465fc493152099afec5ea455e45fea02c71b8d653723fecaa9",
+      "archiveName": "examples__factory__components__esp32_c5_touch_lcd_2_8__priv_include__bsp_err_check.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__esp32_c5_touch_lcd_2_8__priv_include__bsp_err_check.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-20",
+      "title": "examples/factory/components/pedrominatel__shtc3/examples/shtc3_read/main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/pedrominatel__shtc3/examples/shtc3_read/main/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/pedrominatel__shtc3/examples/shtc3_read/main/idf_component.yml",
+      "fetchedAt": "2026-11-23T08:34:05Z",
+      "bytes": 53,
+      "sha256": "5d3edf6880cf45665b1c49121385e6850c379f6a85cb70e0f23c46aa3626f7fb",
+      "archiveName": "examples__factory__components__pedrominatel__shtc3__examples__shtc3_read__main__idf_component.yml",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__pedrominatel__shtc3__examples__shtc3_read__main__idf_component.yml.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-21",
+      "title": "examples/factory/components/waveshare__esp_lcd_touch_cst3530/esp_lcd_touch_cst3530.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/esp_lcd_touch_cst3530.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/esp_lcd_touch_cst3530.c",
+      "fetchedAt": "2026-11-23T09:48:49Z",
+      "bytes": 20161,
+      "sha256": "44d7e727a69b6a5639cef586416e36f8946539dd61fd33f4c62b5c2fc6b0b103",
+      "archiveName": "examples__factory__components__waveshare__esp_lcd_touch_cst3530__esp_lcd_touch_cst3530.c",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__waveshare__esp_lcd_touch_cst3530__esp_lcd_touch_cst3530.c.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-22",
+      "title": "examples/factory/components/waveshare__esp_lcd_touch_cst3530/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/idf_component.yml",
+      "fetchedAt": "2026-11-23T09:48:49Z",
+      "bytes": 47,
+      "sha256": "9f6f26f16a5c6ab0fa9941bc337425ca6a0f8a9eb39261e6608606c007b42335",
+      "archiveName": "examples__factory__components__waveshare__esp_lcd_touch_cst3530__idf_component.yml",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__waveshare__esp_lcd_touch_cst3530__idf_component.yml.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-23",
+      "title": "examples/factory/components/waveshare__esp_lcd_touch_cst3530/include/esp_lcd_touch_cst3530.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/include/esp_lcd_touch_cst3530.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/include/esp_lcd_touch_cst3530.h",
+      "fetchedAt": "2026-11-23T09:48:49Z",
+      "bytes": 2142,
+      "sha256": "8d129f3e1e499a2750d57fa989a7181ba8a965d32dde64e108c37cb483ab9e87",
+      "archiveName": "examples__factory__components__waveshare__esp_lcd_touch_cst3530__include__esp_lcd_touch_cst3530.h",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__components__waveshare__esp_lcd_touch_cst3530__include__esp_lcd_touch_cst3530.h.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-24",
+      "title": "examples/factory/main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/main/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/main/idf_component.yml",
+      "fetchedAt": "2026-11-23T08:34:05Z",
+      "bytes": 123,
+      "sha256": "a51b8045265f1b1b073a9a4952e67930734b396f8c4a3eb06b975839c89f27fc",
+      "archiveName": "examples__factory__main__idf_component.yml",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__main__idf_component.yml.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-25",
+      "title": "examples/factory/sdkconfig",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/sdkconfig",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/sdkconfig",
+      "fetchedAt": "2026-11-23T08:34:05Z",
+      "bytes": 94268,
+      "sha256": "31e2833cfe97fe2ebe8d29d4906e16c2e295d5b825bc8f5c8920e08144e5e90d",
+      "archiveName": "examples__factory__sdkconfig",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__sdkconfig.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-26",
+      "title": "examples/factory/sdkconfig.defaults",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/sdkconfig.defaults",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/sdkconfig.defaults",
+      "fetchedAt": "2026-11-23T08:34:05Z",
+      "bytes": 2195,
+      "sha256": "9e2bef673982a6bc5629c54ade9661dd67fb83b57c1cd5fe7fbf6222d5bd71d0",
+      "archiveName": "examples__factory__sdkconfig.defaults",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/examples__factory__sdkconfig.defaults.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-27",
+      "title": "firmware/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/firmware/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/firmware/README.md",
+      "fetchedAt": "2026-11-23T10:06:53Z",
+      "bytes": 1133,
+      "sha256": "f2e8922c7b0678483c584466dac4145dc54ebaee0c0e8cb98a1eb4f9fbc20ac7",
+      "archiveName": "firmware__README.md",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/firmware__README.md.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "schematic",
+      "title": "hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+      "kind": "manufacturer-schematic",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+      "fetchedAt": "2026-11-23T08:34:05Z",
+      "bytes": 202209,
+      "sha256": "22e6ff67d7a5892789acbc362cc3cd4c8d8ddae29fabac16d753ccb83ed501ae",
+      "archiveName": "hardware__schematic__ESP32-C5-Touch-LCD-2.8.pdf",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/hardware__schematic__ESP32-C5-Touch-LCD-2.8.pdf.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "overview",
+      "title": "canonical-overview.html",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+      "fetchedAt": "2026-11-23T07:58:45Z",
+      "bytes": 41484,
+      "sha256": "c3bc7104bd7b05c719d279cd9cea1c4e3961246bd4ab729c3588c899fc99ee68",
+      "archiveName": "canonical-overview.html",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/canonical-overview.html.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "resources",
+      "title": "canonical-resources.html",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T07:58:45Z",
+      "bytes": 33146,
+      "sha256": "24f8c4d07c0e5282b930683a35251a76d61f3d8bca9ec73feb4d93d68a47cb88",
+      "archiveName": "canonical-resources.html",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/canonical-resources.html.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "source-31",
+      "title": "custom_io_expander_ch32v003-1.0.1.zip",
+      "url": "https://components.espressif.com/api/downloads/?object_id=017b8d7c-18a9-4945-b5dd-4d5da52b43b4&object_type=component",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://components-file.espressif.com/components/waveshare/custom_io_expander_ch32v003/1.0.1/download/017b8d7c-18a9-4945-b5dd-4d5da52b43b4.zip",
+      "fetchedAt": "2026-11-23T09:49:35Z",
+      "bytes": 11311,
+      "sha256": "89c37e81980bfab9d8c5c8408d505f4754a8cf4795769bff1d7160e66b16ccbb",
+      "archiveName": "custom_io_expander_ch32v003-1.0.1.zip",
+      "notes": "Exact original response bytes are retained as docs/research/waveshare-c5-touch28-sources-2026-11-23/custom_io_expander_ch32v003-1.0.1.zip.gz. ZIP hashes identify the original container response, not a member."
+    },
+    {
+      "id": "factory",
+      "title": "Unmodified FactoryOnly_20261024 merged image",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/firmware/ESP32-C5-Touch-LCD-2.8_FactoryOnly_20261024.bin",
+      "kind": "manufacturer-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/firmware/ESP32-C5-Touch-LCD-2.8_FactoryOnly_20261024.bin",
+      "fetchedAt": "2026-11-23T08:34:06Z",
+      "bytes": 12839935,
+      "sha256": "e577a5451b58630acabdc322829fbeb3d52f4c1dc4248e1c6f06a7e8f34d24b3",
+      "notes": "Exact original binary downloaded and validated; ROM startup currently stops at the PMU read. No factory success claim or local binary mirror.",
+      "archiveName": "ESP32-C5-Touch-LCD-2.8_FactoryOnly_20261024.bin"
+    },
+    {
+      "id": "model-official-cad",
+      "title": "official-cad",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/mechanical/ESP32-C5-Touch-LCD-2.8.stp",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/mechanical/ESP32-C5-Touch-LCD-2.8.stp",
+      "fetchedAt": "2026-11-23T10:19:11Z",
+      "bytes": 26358968,
+      "sha256": "73c84092e7d6b55574125d2bf0885a61688514762b796ca43c98dfed1bc18c5c",
+      "archiveName": "source.stp",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/source.stp.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-mechanical-drawing",
+      "title": "mechanical-drawing",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/mechanical/ESP32-C5-Touch-LCD-2.8.pdf",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/mechanical/ESP32-C5-Touch-LCD-2.8.pdf",
+      "fetchedAt": "2026-11-23T10:19:10Z",
+      "bytes": 122432,
+      "sha256": "3a453ce244f5c71ab1aa1babe79eec7df5e568e48e5e21935b73123d04f6f4d0",
+      "archiveName": "mechanical.pdf",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/mechanical.pdf. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-repository-tree",
+      "title": "repository-tree",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-Touch-LCD-2.8/git/trees/110c31532ac9975e8035e185df59a0a715774a59?recursive=1",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C5-Touch-LCD-2.8/git/trees/110c31532ac9975e8035e185df59a0a715774a59?recursive=1",
+      "fetchedAt": "2026-11-23T08:30:52Z",
+      "bytes": 698490,
+      "sha256": "4ef5d5b082a5be8ad4bd3c84d07de8f3dead66d78ec173de7b26a707b0555121",
+      "archiveName": "repository-tree.json",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/repository-tree.json.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify retained connector JSON content, not raw HTTP response bytes. fetchedAt records the connector capture time. Captured immediately after connector retrieval."
+    },
+    {
+      "id": "model-repository-head-selection",
+      "title": "repository-head-selection",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-Touch-LCD-2.8/commits/main",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C5-Touch-LCD-2.8/commits/main",
+      "fetchedAt": "2026-11-23T10:19:00Z",
+      "bytes": 609,
+      "sha256": "9db023d4490c893dfc777578f500505a1e8c51ededb34d84d011c41a0eeae772",
+      "archiveName": "repository-head-selection.json",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/repository-head-selection.json. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify the retained selection of connector metadata fields, not the complete connector or HTTP response. fetchedAt records the observation time. Selected mechanical-search fields from the GitHub connector response; not original HTTP response bytes."
+    },
+    {
+      "id": "model-overview",
+      "title": "overview",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+      "fetchedAt": "2026-11-23T07:58:45Z",
+      "bytes": 41484,
+      "sha256": "c3bc7104bd7b05c719d279cd9cea1c4e3961246bd4ab729c3588c899fc99ee68",
+      "archiveName": "overview.html",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/overview.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-resources",
+      "title": "resources",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8/Resources-And-Documents",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T07:58:45Z",
+      "bytes": 33146,
+      "sha256": "24f8c4d07c0e5282b930683a35251a76d61f3d8bca9ec73feb4d93d68a47cb88",
+      "archiveName": "resources.html",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/resources.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-product",
+      "title": "product",
+      "url": "https://www.waveshare.com/esp32-c5-touch-lcd-2.8.htm?sku=34957",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/esp32-c5-touch-lcd-2.8.htm?sku=34957",
+      "fetchedAt": "2026-11-23T10:19:12Z",
+      "bytes": 280029,
+      "sha256": "80469818ccf8b09f727c11d547aae39eff3b6e951016eeb2e549a5a559db3895",
+      "archiveName": "product.html",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/product.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-schematic",
+      "title": "schematic",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+      "fetchedAt": "2026-11-23T08:34:05Z",
+      "bytes": 202209,
+      "sha256": "22e6ff67d7a5892789acbc362cc3cd4c8d8ddae29fabac16d753ccb83ed501ae",
+      "archiveName": "schematic.pdf",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/schematic.pdf.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-front-photo",
+      "title": "front-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-2.jpg",
+      "fetchedAt": "2026-11-23T10:19:39Z",
+      "bytes": 26111,
+      "sha256": "753af26dd48b5c75f37fa79d9a1e7ae17d3885e63beff8b86f8c146279f143e1",
+      "archiveName": "front-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/front-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-back-photo",
+      "title": "back-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-4.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-4.jpg",
+      "fetchedAt": "2026-11-23T10:19:45Z",
+      "bytes": 99594,
+      "sha256": "2371e43424525ca17a822dadb70e27d017a19016a499c267f48a8e428cae142d",
+      "archiveName": "back-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/back-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-angle-photo",
+      "title": "angle-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-5.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-5.jpg",
+      "fetchedAt": "2026-11-23T10:19:47Z",
+      "bytes": 91084,
+      "sha256": "c3bf9aa08a3be26526c0517d1c8df6a7be2f8e7565383265e7065885dd4762e3",
+      "archiveName": "angle-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/angle-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-component-photo",
+      "title": "component-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-intro.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-intro.jpg",
+      "fetchedAt": "2026-11-23T10:19:39Z",
+      "bytes": 164566,
+      "sha256": "e28a1153c5d17fa33f1452655d0273c59117e697481829d19240f62746a4e4b6",
+      "archiveName": "component-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/component-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-dimension-photo",
+      "title": "dimension-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-size.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-size.jpg",
+      "fetchedAt": "2026-11-23T10:19:39Z",
+      "bytes": 150691,
+      "sha256": "abf6b6dc46d7edc0cac70233e3023ec2be67134406b911c14c1d0ec1d60d5bf3",
+      "archiveName": "dimension-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/dimension-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-package-without-battery",
+      "title": "package-without-battery",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-3-1.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-3-1.jpg",
+      "fetchedAt": "2026-11-23T10:19:26Z",
+      "bytes": 12750,
+      "sha256": "c5dc61abe8801b801005f90e24ae8588859a0d9c0eaf3152e8ac6966879674ee",
+      "archiveName": "package-without-battery.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/package-without-battery.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-package-with-battery",
+      "title": "package-with-battery",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-3-2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-3-2.jpg",
+      "fetchedAt": "2026-11-23T10:19:32Z",
+      "bytes": 18973,
+      "sha256": "99a4eb56b98b4fa2168056546d2b08be3c31ec317207000e7759ae25bfe1546c",
+      "archiveName": "package-with-battery.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-touch-lcd-2-8/package-with-battery.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "sku-store-20261124",
+      "title": "Official storefront package options",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-2.8.htm",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-c5-touch-lcd-2.8.htm",
+      "kind": "manufacturer-product",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:31:29Z",
+      "bytes": 270434,
+      "sha256": "06ddef55960ed3552191fe9a376f56fdee86e5b8472f3231bd1d507fdab4f404",
+      "archiveName": "esp32-c5-touch-lcd-2.8-sku-store-20261124.html",
+      "notes": "Hash identifies the fetched official HTTP body. Raw storefront pages remain local because they contain transient session metadata; selected SKU facts and this receipt are retained."
+    },
+    {
+      "id": "sku-doc-20261124",
+      "title": "Official exact SKU and product table",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+      "kind": "manufacturer-product",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:31:51Z",
+      "bytes": 41484,
+      "sha256": "e65d6fb93a7c7c1923458251043d905fe096e152c8ea85ab40a71995db61b336",
+      "archiveName": "esp32-c5-touch-lcd-2.8-sku-doc-20261124.html",
+      "notes": "Hash identifies the fetched official HTTP body. Raw storefront pages remain local because they contain transient session metadata; selected SKU facts and this receipt are retained."
+    }
+  ],
+  "assets": [
+    {
+      "id": "readme",
+      "sourceId": "readme",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/README.md"
+    },
+    {
+      "id": "source-1",
+      "sourceId": "source-1",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/README_ZH.md"
+    },
+    {
+      "id": "expander-protocol",
+      "sourceId": "expander-protocol",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/docs/ch32v003.md"
+    },
+    {
+      "id": "source-3",
+      "sourceId": "source-3",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/arduino/libraries/board_config/src/Touch_CST3530.cpp"
+    },
+    {
+      "id": "source-4",
+      "sourceId": "source-4",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/CMakeLists.txt"
+    },
+    {
+      "id": "source-5",
+      "sourceId": "source-5",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/Kconfig"
+    },
+    {
+      "id": "source-6",
+      "sourceId": "source-6",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/LICENSE"
+    },
+    {
+      "id": "source-7",
+      "sourceId": "source-7",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/README.md"
+    },
+    {
+      "id": "source-8",
+      "sourceId": "source-8",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/README_ZH.md"
+    },
+    {
+      "id": "source-9",
+      "sourceId": "source-9",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/bsp_board.c"
+    },
+    {
+      "id": "bsp",
+      "sourceId": "bsp",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/esp32_c5_touch_lcd_2.8.c"
+    },
+    {
+      "id": "source-11",
+      "sourceId": "source-11",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/idf_component.yml"
+    },
+    {
+      "id": "source-12",
+      "sourceId": "source-12",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/board.h"
+    },
+    {
+      "id": "source-13",
+      "sourceId": "source-13",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/config.h"
+    },
+    {
+      "id": "source-14",
+      "sourceId": "source-14",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/display.h"
+    },
+    {
+      "id": "source-15",
+      "sourceId": "source-15",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp-bsp.h"
+    },
+    {
+      "id": "bsp-pins",
+      "sourceId": "bsp-pins",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/esp32_c5_touch_lcd_2.8.h"
+    },
+    {
+      "id": "source-17",
+      "sourceId": "source-17",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/include/bsp/touch.h"
+    },
+    {
+      "id": "source-18",
+      "sourceId": "source-18",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/priv_include/bsp_board_internal.h"
+    },
+    {
+      "id": "source-19",
+      "sourceId": "source-19",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/esp32_c5_touch_lcd_2_8/priv_include/bsp_err_check.h"
+    },
+    {
+      "id": "source-20",
+      "sourceId": "source-20",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/pedrominatel__shtc3/examples/shtc3_read/main/idf_component.yml"
+    },
+    {
+      "id": "source-21",
+      "sourceId": "source-21",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/esp_lcd_touch_cst3530.c"
+    },
+    {
+      "id": "source-22",
+      "sourceId": "source-22",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/idf_component.yml"
+    },
+    {
+      "id": "source-23",
+      "sourceId": "source-23",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/components/waveshare__esp_lcd_touch_cst3530/include/esp_lcd_touch_cst3530.h"
+    },
+    {
+      "id": "source-24",
+      "sourceId": "source-24",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/main/idf_component.yml"
+    },
+    {
+      "id": "source-25",
+      "sourceId": "source-25",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/sdkconfig"
+    },
+    {
+      "id": "source-26",
+      "sourceId": "source-26",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/examples/factory/sdkconfig.defaults"
+    },
+    {
+      "id": "source-27",
+      "sourceId": "source-27",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/firmware/README.md"
+    },
+    {
+      "id": "schematic",
+      "sourceId": "schematic",
+      "role": "schematic",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf"
+    },
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8/Resources-And-Documents"
+    },
+    {
+      "id": "source-31",
+      "sourceId": "source-31",
+      "role": "source-document",
+      "url": "https://components.espressif.com/api/downloads/?object_id=017b8d7c-18a9-4945-b5dd-4d5da52b43b4&object_type=component"
+    },
+    {
+      "id": "factory",
+      "sourceId": "factory",
+      "role": "firmware-download",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/firmware/ESP32-C5-Touch-LCD-2.8_FactoryOnly_20261024.bin"
+    },
+    {
+      "id": "model-official-cad",
+      "sourceId": "model-official-cad",
+      "role": "cad-source",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/mechanical/ESP32-C5-Touch-LCD-2.8.stp",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/source.stp.gz"
+    },
+    {
+      "id": "model-mechanical-drawing",
+      "sourceId": "model-mechanical-drawing",
+      "role": "dimension-reference",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/mechanical/ESP32-C5-Touch-LCD-2.8.pdf",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/mechanical.pdf"
+    },
+    {
+      "id": "model-repository-tree",
+      "sourceId": "model-repository-tree",
+      "role": "reference-only",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-Touch-LCD-2.8/git/trees/110c31532ac9975e8035e185df59a0a715774a59?recursive=1",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/repository-tree.json.gz"
+    },
+    {
+      "id": "model-repository-head-selection",
+      "sourceId": "model-repository-head-selection",
+      "role": "reference-only",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-Touch-LCD-2.8/commits/main",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/repository-head-selection.json"
+    },
+    {
+      "id": "model-overview",
+      "sourceId": "model-overview",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/overview.html.gz"
+    },
+    {
+      "id": "model-resources",
+      "sourceId": "model-resources",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-C5-Touch-LCD-2.8/Resources-And-Documents",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/resources.html.gz"
+    },
+    {
+      "id": "model-product",
+      "sourceId": "model-product",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/esp32-c5-touch-lcd-2.8.htm?sku=34957",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/product.html.gz"
+    },
+    {
+      "id": "model-schematic",
+      "sourceId": "model-schematic",
+      "role": "reference-only",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-2.8/0196dcb7e601d6faa1c33785a71f6b0c35b532e6/hardware/schematic/ESP32-C5-Touch-LCD-2.8.pdf",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/schematic.pdf.gz"
+    },
+    {
+      "id": "model-front-photo",
+      "sourceId": "model-front-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-2.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/front-photo.jpg"
+    },
+    {
+      "id": "model-back-photo",
+      "sourceId": "model-back-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-4.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/back-photo.jpg"
+    },
+    {
+      "id": "model-angle-photo",
+      "sourceId": "model-angle-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-touch-lcd-2.8-5.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/angle-photo.jpg"
+    },
+    {
+      "id": "model-component-photo",
+      "sourceId": "model-component-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-intro.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/component-photo.jpg"
+    },
+    {
+      "id": "model-dimension-photo",
+      "sourceId": "model-dimension-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-size.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/dimension-photo.jpg"
+    },
+    {
+      "id": "model-package-without-battery",
+      "sourceId": "model-package-without-battery",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-3-1.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/package-without-battery.jpg"
+    },
+    {
+      "id": "model-package-with-battery",
+      "sourceId": "model-package-with-battery",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-Touch-LCD-2.8/ESP32-C5-Touch-LCD-2.8-details-3-2.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-touch-lcd-2-8/package-with-battery.jpg"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "产品发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview"
+      ]
+    },
+    {
+      "id": "uiflow",
+      "label": "此精确型号的 UIFlow 镜像",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "readme",
+        "resources"
+      ],
+      "notes": "not-found-in-inspected-manufacturer-pages; PinnedREADME, firmwareREADME and canonicaloverview/resources; no exact C5Touch2.8 UIFlow package link found."
+    }
+  ],
+  "collectionNotes": [
+    "公开入口为项目 SRAM 诊断；原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止，原始镜像独立列为参考。",
+    "原生与公开 Worker／WASM 已验证完整 8 MiB PSRAM、GDMA 出屏、CST3530 触摸和 BOOT；6 阶段画面逐字节相同，整张默认 64 MiB FAT32 卡在块读写后恢复；浏览器 WebGL 与 FAT 挂载未验收。",
+    "物理模块为 32 MiB Flash、8 MiB PSRAM；官方当前镜像使用 16 MiB Flash 布局，不据此缩减物理容量。",
+    "CH32V003 仅实现文档中的 8 位数字 IO／PWM 协议；未知命令、充电、电池 ADC、SHTC3、I2S 音频、USB、无线和电源键不冒充已实现。",
+    "3D 已根据可用官方资料建立；物理 PWM 频率、触摸扫描时序和姿态方向尚未标定。",
+    "Physical module32F8P; officialcurrentfactory/appheader andsdkconfig use16MiBflash layout. Preserve both facts.",
+    "docs/ch32v003.md assignsSHTC3 toEXIO4/5 while schematic signal table puts itsbus onGPIO0/1; unimplementedSHTC3 is not assigned a speculative route.",
+    "Resourcepage explicitlyQMI8658C vs genericQMI8658 in schematic; modelCvariant withphysicalgroundedSA0=6B only.",
+    "原生诊断证据：docs/evidence/waveshare-c5-touch28-2026-11-23/inputs-and-hashes.json",
+    "同页 EN SKU34958 已发现，语言固件对应关系尚未核验；基础 SKU 镜像不自动代替 EN。",
+    "公开执行和完整默认卡恢复证据：docs/evidence/waveshare-c5-touch28-web-2026-11-23/result.json。",
+    "3D 来源：官方 CAD 机械参考。 生产加载器几何与输入射线已检查；浏览器 WebGL 和实物装配尚未验收。",
+    "官方 SKU 34957；套装选项：with 3.7V Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。",
+    "共用板型的既有测试只证明已建模数字接口；不继承任何真实硬件、摄像头、射频或电池验证。"
+  ]
+}

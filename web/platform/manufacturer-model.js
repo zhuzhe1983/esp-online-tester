@@ -15,6 +15,23 @@ const safeAsset = (name, root) => {
 };
 const vector = (v, fallback=[0,0,0]) => Array.isArray(v)&&v.length===3&&v.every(Number.isFinite)?v:fallback;
 function geometry(values) {const result=new THREE.BufferGeometry(),buffer=new THREE.InterleavedBuffer(new Float32Array(values),6);result.setAttribute('position',new THREE.InterleavedBufferAttribute(buffer,3,0));result.setAttribute('normal',new THREE.InterleavedBufferAttribute(buffer,3,3));result.computeBoundingSphere();return result;}
+export function createManufacturerDisplayGeometry(display) {
+  if(display.shape==='circle')return new THREE.CircleGeometry(display.sizeMm[0]/2,96);
+  if(display.cornerRadiusMm===undefined)return new THREE.PlaneGeometry(...display.sizeMm);
+  const size=display.sizeMm,r=display.cornerRadiusMm;
+  if(!Array.isArray(size)||size.length!==2||!size.every(v=>Number.isFinite(v)&&v>0&&v<=5000)||!Number.isFinite(r)||r<0||r>Math.min(...size)/2)throw Error('Invalid rounded display dimensions');
+  if(r===0)return new THREE.PlaneGeometry(...size);
+  const [w,h]=size,x=w/2,y=h/2,shape=new THREE.Shape();
+  shape.moveTo(-x+r,-y);shape.lineTo(x-r,-y);shape.absarc(x-r,-y+r,r,-Math.PI/2,0,false);
+  shape.lineTo(x,y-r);shape.absarc(x-r,y-r,r,0,Math.PI/2,false);
+  shape.lineTo(-x+r,y);shape.absarc(-x+r,y-r,r,Math.PI/2,Math.PI,false);
+  shape.lineTo(-x,-y+r);shape.absarc(-x+r,-y+r,r,Math.PI,Math.PI*1.5,false);shape.closePath();
+  const result=new THREE.ShapeGeometry(shape,24),positions=result.getAttribute('position'),uv=[];
+  // ShapeGeometry defaults to millimetre XY as UVs. Normalize to the complete
+  // framebuffer rectangle so clipping the glass corners never stretches pixels.
+  for(let i=0;i<positions.count;i++)uv.push(THREE.MathUtils.clamp((positions.getX(i)+x)/w,0,1),THREE.MathUtils.clamp((positions.getY(i)+y)/h,0,1));
+  result.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return result;
+}
 function flatLabel(text) {
   if(typeof document==='undefined')return null;
   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const context=canvas.getContext('2d');context.fillStyle='#f2f2e9';context.font='bold 100px monospace';context.textAlign='center';context.textBaseline='middle';context.fillText(text,256,64);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
@@ -185,7 +202,7 @@ export function createManufacturerModel(product, screenTexture) {
       const mesh=new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));mesh.name=`cover-key:${region.id}`;mesh.position.set(...pos);mesh.rotation.set(...vector(region.rotation));mesh.userData={control:region.id,inputOccluder:true,dragToOrbit:region.dragToOrbit===true};parts[mesh.name]=mesh;buttons.push(mesh);group.add(mesh);
     }
     const display=metadata.presentation?.screen;
-    if(display&&product.display){screen=new THREE.Mesh(display.shape==='circle'?new THREE.CircleGeometry(display.sizeMm[0]/2,96):new THREE.PlaneGeometry(...display.sizeMm),new THREE.MeshBasicMaterial({map:screenTexture,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));screen.position.set(...vector(display.positionMm));screen.rotation.set(...vector(display.rotation));screen.name='live-display';screen.userData.screen=true;parts.screen=screen;group.add(screen);}
+    if(display&&product.display){screen=new THREE.Mesh(createManufacturerDisplayGeometry(display),new THREE.MeshBasicMaterial({map:screenTexture,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-4}));screen.position.set(...vector(display.positionMm));screen.rotation.set(...vector(display.rotation));screen.name='live-display';screen.userData.screen=true;parts.screen=screen;group.add(screen);}
     // Some devices (AtomS3) use the whole non-touch display cover as a physical button.
     if(screen && display.controlId && product.controls?.some(control=>control.id===display.controlId && control.type==='button')){screen.userData.control=display.controlId;buttons.push(screen);}
     createServoJoints(group,metadata.presentation?.servoJoints);

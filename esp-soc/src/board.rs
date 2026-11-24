@@ -26,6 +26,40 @@ pub struct SpiPins {
     pub keep_cs: bool,
 }
 
+/// Opt-in GP-SPI phase and pad snapshot taken when USR is accepted. Data lanes
+/// are D/Q/WP/HD (IO0..3), not merely the single MOSI route. Width zero means a
+/// disabled phase; 1/2/4/8 retain the programmed width even when unsupported.
+/// Byte payloads are still provided by GP-SPI. A board must reject unsupported
+/// modes, unrouted lanes and phase lengths its device does not implement.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct SpiQspiPins {
+    pub sclk: u64,
+    pub data: [u64; 4],
+    pub input: [Option<u8>; 4],
+    pub cs: u64,
+    pub hardware_cs: u64,
+    pub software_cs: u64,
+    /// MISC.CS_KEEP_ACTIVE, with the same meaning as SpiPins.keep_cs. Software
+    /// selects remain low until a subsequent physical GPIO route/drive change.
+    pub keep_cs: bool,
+    pub command_width: u8,
+    pub address_width: u8,
+    pub data_width: u8,
+    pub read_width: u8,
+    pub command_bits: u8,
+    pub address_bits: u8,
+    pub data_bits: u32,
+    pub read_bits: u32,
+    pub dummy_cycles: u16,
+    pub sio: bool,
+    pub full_duplex: bool,
+    pub clock_idle_high: bool,
+    pub clock_output_edge: bool,
+    /// Octal, DTR, non-default bit order, conflicting width selectors, slave /
+    /// configuration mode, and quad input swap are outside this byte transport.
+    pub unsupported_mode: bool,
+}
+
 /// GPIO matrix masks at an LCD_CAM i80 transaction. Each data bit may drive several pads.
 /// `dc_high` is the physical D/C level after the controller's phase polarity,
 /// independent of the callback's logical command/data phase.
@@ -265,6 +299,14 @@ pub trait BoardModel {
 
     /// Synthetic thermal source counts: background, hotspot, center X/Y and radius.
     fn thermal_environment_at(&mut self, _cycle: VirtualCycle, _sample: [u16; 5]) -> bool { false }
+    /// Opt in to complete GP-SPI phase/pad snapshots. Appended to preserve all
+    /// existing hot vtable slots. Takes precedence over uses_spi_pins.
+    fn uses_qspi_pins(&self) -> bool { false }
+    /// No fallback to the legacy byte callback: an opt-in board without a
+    /// matching implementation represents disconnected input, not a device ACK.
+    fn spi_transfer_qspi_pins(&mut self, _host: u8, _pins: SpiQspiPins, _tx: &[u8], rx_len: usize) -> Vec<u8> {
+        vec![0xff; rx_len]
+    }
 }
 
 pub type Board = Box<dyn BoardModel>;

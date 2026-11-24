@@ -1,0 +1,1245 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-c5-lcd-2-73",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-c5-lcd-2-73",
+  "title": "Waveshare ESP32-C5-LCD-2.73",
+  "summary": "2.73 英寸320×320 ILI9488非触摸屏，32MiB Flash、8MiB PSRAM，CH32V006、三按键和TF卡槽；RGB666原创诊断已原生验证，原厂启动开发中。",
+  "summarySourceIds": [
+    "overview",
+    "schematic",
+    "bsp"
+  ],
+  "updatedAt": "2026-11-23T16:40:21Z",
+  "hardwareRevision": "unspecified",
+  "facts": [
+    {
+      "id": "identity",
+      "label": "SKU与物理容量",
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic"
+      ],
+      "value": {
+        "baseSku": "35224",
+        "batteryFreeSku": "35225",
+        "module": "ESP32-C5-WROOM-1-N32R8",
+        "flashMiB": 32,
+        "psramMiB": 8,
+        "hasTfSlot": true,
+        "hasTouch": false
+      }
+    },
+    {
+      "id": "display",
+      "label": "屏幕与真实布线",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp",
+        "bsp-pins",
+        "display-driver",
+        "display-datasheet"
+      ],
+      "value": {
+        "resolution": [
+          320,
+          320
+        ],
+        "controller": "ILI9488",
+        "gram": [
+          320,
+          480
+        ],
+        "storageBitsPerPixel": 18,
+        "wirePixelFormat": "RGB666, three8bitserialbytes",
+        "spi": {
+          "CLK": 6,
+          "MOSI": 7,
+          "CS": 8,
+          "DC": 4,
+          "reset": "CH32 EXIO0",
+          "backlight": "CH32 PWM command05"
+        },
+        "sourceMadctl": "0x48",
+        "sourceInvert": true,
+        "sourceGap": [
+          0,
+          0
+        ],
+        "i2c": {
+          "SDA": 27,
+          "SCL": 26
+        }
+      }
+    },
+    {
+      "id": "components",
+      "label": "数字IO与板载外设",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp",
+        "bsp-pins",
+        "expander-protocol",
+        "resources"
+      ],
+      "value": {
+        "expander": "CH32V006K8U7@0x24,16-bitLEdigitalIO",
+        "imu": "QMI8658C@0x6b, SA0grounded",
+        "rtc": "PCF85063A@0x51",
+        "humiditySensor": "SHTC3 (notmodeled)",
+        "sd": {
+          "CLK": 6,
+          "MOSI": 7,
+          "MISO": 5,
+          "CS": 9
+        }
+      }
+    },
+    {
+      "id": "buttons",
+      "label": "三个实体按键",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "overview"
+      ],
+      "value": {
+        "activeLow": true,
+        "pullupOhms": 10000,
+        "prev": {
+          "gpio": 2,
+          "schematicNet": "KEY_L"
+        },
+        "next": {
+          "gpio": 3,
+          "schematicNet": "KEY_R"
+        },
+        "boot": {
+          "gpio": 28,
+          "schematicNet": "BOOT/ENTER"
+        }
+      }
+    },
+    {
+      "id": "factory",
+      "label": "原厂镜像及独立布局",
+      "basis": "official",
+      "sourceIds": [
+        "factory"
+      ],
+      "value": {
+        "bytes": 3346992,
+        "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+        "loadOffset": 0,
+        "bootloaderOffset": 8192,
+        "partitionTableOffset": 32768,
+        "applicationOffsets": [
+          131072
+        ],
+        "chipId": 23,
+        "minimumRevision": 100,
+        "maximumRevision": 199,
+        "imageFlashMiB": 32
+      }
+    },
+    {
+      "id": "model-dimensions",
+      "label": "3D 模型尺寸与适用版本",
+      "value": {
+        "cover": {
+          "sizeMm": [
+            68,
+            68,
+            null
+          ],
+          "nominalVisualThicknessMm": 0.8,
+          "estimatedCornerRadiusMm": 2.5,
+          "sourceIds": [
+            "dimension-photo"
+          ],
+          "scope": "Published XY only; depth and radius estimated."
+        },
+        "display": {
+          "activeSizeMm": [
+            48.96,
+            48.96
+          ],
+          "sourceIds": [
+            "dimension-photo"
+          ],
+          "touch": false
+        },
+        "pcb": {
+          "sizeMm": [
+            68,
+            68,
+            null
+          ],
+          "nominalVisualThicknessMm": 1.6,
+          "thicknessUncertaintyMm": 0.4,
+          "scope": "Nominal XY derived from mounting pitch plus edge offset; thickness and internal layout UNKNOWN.",
+          "sourceIds": [
+            "dimension-photo",
+            "back-photo"
+          ]
+        },
+        "mounting": {
+          "pitchMm": [
+            62,
+            62
+          ],
+          "boardHoleDiameterMm": 2.2,
+          "edgeOffsetMm": 3,
+          "sourceIds": [
+            "dimension-photo"
+          ]
+        },
+        "header": {
+          "modeledVisibleHoles": 32,
+          "estimatedPitchMm": 2.54,
+          "estimatedDrillDiameterMm": 1.1,
+          "scope": "Photo-derived appearance; not certified connector geometry."
+        },
+        "packageHeights": "Unmeasured estimates; see photoRegistration.packageEnvelopes.",
+        "assemblyDepthMm": null,
+        "nominalVisualDepthMm": 9.6
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "model-overview",
+        "model-resources",
+        "model-product",
+        "model-repository-tree",
+        "model-repository-head-selection",
+        "model-repository-readme",
+        "model-schematic",
+        "model-dimension-photo",
+        "model-component-photo",
+        "model-front-angle-photo",
+        "model-back-photo",
+        "model-back-angle-photo",
+        "model-package-without-battery",
+        "model-package-with-battery"
+      ],
+      "method": "Retained original CAD/dimensioned source measurements and registered photographs; unknown values and visual estimates are explicit.",
+      "notes": "This is a dimension/photo reconstruction, not manufacturer CAD. The complete pinned repository tree and canonical resources contain no matching mechanical file/link in the recorded search scope; this is not a global assertion that CAD does not exist. The canonical overview refers to a mechanical drawing in a resource package, but the retained Resources page and fixed repository only expose a schematic PDF. That unresolved reference is recorded; the model is based on the independently retrieved official shop dimension image and photographs. SKU35224 includes a separate lithium battery; SKU35225 (-EN) omits it. Both are explicitly non-touch. This model shows the board/display and photographed standoff envelopes; external battery and cable geometry are not invented. Published front size68×68 mm, active area48.96×48.96 mm and mounting pitch62×62 mm / Φ2.2 holes are preserved. PCB68 mm nominal is inferred from62 mm pitch plus3 mm edges, not from a guessed diagonal display size. Every Z dimension is unmeasured: cover0.8, display-body2.4, spacer0.8 and PCB1.6 mm are explicit rendering estimates. The resulting model depth is not a documented physical assembly depth. Corner radius2.5 mm, header drill diameter1.1 mm, approximate2.54 mm header pitch, package heights and connector contacts are photographic estimates. A 32-hole visual header does not certify pitch or insertion fit. The internal PCB face, traces, layer stack and support structure are UNKNOWN. The inspection view separates the optical stack to expose that label; it is not a manufacturer disassembly procedure. Hollow brass standoff envelopes come from the exact oblique photograph. Their height, bore and threading remain unverified; no M2/M2.5 screw compatibility is asserted. Photographed KEY_L, KEY_R and BOOT bind to prev / GPIO2, next / GPIO3 and boot / GPIO28 respectively. The official schematic shows 10 kΩ pull-ups and ground-closing switches; the canonical table supplies PREV/NEXT semantics. PWR remains unbound. No RESET button is invented. Rear source pixels remain unchanged and are projected with a declared uniform scale. Photographic registration and package envelopes do not certify a shipping PCB revision or hidden component placement. The live display is rectangular320×320 with no touch control. Optical text-to-USB calibration is not certified. No factory screenshot is substituted for runtime framebuffer output. The0.008 mm display offset is a rendering offset, not a physical laminate. Source commit dates are not release dates, and no lost pre-reset model or acceptance claim is reused.",
+      "uncertainty": "Known outlines retain manufacturer dimensions. Unknown thickness, package heights and debug layout estimates are not manufacturing measurements."
+    },
+    {
+      "id": "exact-package-sku",
+      "label": "官方 SKU 与包装选项",
+      "value": {
+        "sku": "35224",
+        "name": "ESP32-C5-LCD-2.73",
+        "options": [
+          "with 3.7V Lithium Batt"
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "sku-store-20261124",
+        "sku-doc-20261124"
+      ]
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "readme",
+      "title": "README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/README.md",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/README.md",
+      "fetchedAt": "2026-11-23T08:34:52Z",
+      "bytes": 193,
+      "sha256": "4e5b60e59ef495e5e71824d42f2deac010819c28cf28bcb25df1a1bddd3a13c7",
+      "archiveName": "source-README.md",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/README.md.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "display-driver",
+      "title": "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c",
+      "fetchedAt": "2026-11-23T09:48:55Z",
+      "bytes": 16076,
+      "sha256": "364522b7a2b7ab7cc653efb6cd9d856781a824323bb51938f54b628b1de41929",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__esp_lcd_ili9488.c",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__esp_lcd_ili9488.c.gz; captureKind=raw-http-response-bytes. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-2",
+      "title": "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl/main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl/main/idf_component.yml",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl/main/idf_component.yml",
+      "fetchedAt": "2026-11-23T08:34:52Z",
+      "bytes": 123,
+      "sha256": "cf021e2d2e050223ad4dc3556f6df1f365442e25ac7f2f44cc1fd44086fcfe68",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__examples__lvgl__main__idf_component.yml",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__examples__lvgl__main__idf_component.yml.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-3",
+      "title": "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl/sdkconfig.defaults",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl/sdkconfig.defaults",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl/sdkconfig.defaults",
+      "fetchedAt": "2026-11-23T08:34:52Z",
+      "bytes": 97,
+      "sha256": "e47aba6459e5cfbd369be7ba2a7034f7ffcf75478653b483fffec5e7890dc388",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__examples__lvgl__sdkconfig.defaults",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__examples__lvgl__sdkconfig.defaults.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-4",
+      "title": "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/idf_component.yml",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/idf_component.yml",
+      "fetchedAt": "2026-11-23T08:34:52Z",
+      "bytes": 124,
+      "sha256": "b0fc80073b9f85402b0298764bf9007ebfe62ca736ab932f38824cab25b9cc7d",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__examples__lvgl_for_i8080__main__idf_component.yml",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__examples__lvgl_for_i8080__main__idf_component.yml.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-5",
+      "title": "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/sdkconfig.defaults",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/sdkconfig.defaults",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/sdkconfig.defaults",
+      "fetchedAt": "2026-11-23T08:34:52Z",
+      "bytes": 55,
+      "sha256": "0142249678ca6657e76b71bec7df5d87755346f7ebfbe20123af871dc3ed6fcc",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__examples__lvgl_for_i8080__sdkconfig.defaults",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__examples__lvgl_for_i8080__sdkconfig.defaults.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-6",
+      "title": "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/include/esp_lcd_ili9488.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/include/esp_lcd_ili9488.h",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/include/esp_lcd_ili9488.h",
+      "fetchedAt": "2026-11-23T09:48:55Z",
+      "bytes": 1278,
+      "sha256": "8aea3f79a3309501a36336f0daf88108b04671562c1f6fc369badae41aa2291a",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__include__esp_lcd_ili9488.h",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__atanisoft__esp_lcd_ili9488__include__esp_lcd_ili9488.h.gz; captureKind=raw-http-response-bytes. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "expander-protocol",
+      "title": "example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.c",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.c",
+      "fetchedAt": "2026-11-23T09:48:55Z",
+      "bytes": 7782,
+      "sha256": "80acac11b0e69fd402f71012fc5511ef939a31971281716a131f897f66837be5",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__io_extension__io_extension.c",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__io_extension__io_extension.c.gz; captureKind=raw-http-response-bytes. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-8",
+      "title": "example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.h",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.h",
+      "fetchedAt": "2026-11-23T09:48:55Z",
+      "bytes": 3232,
+      "sha256": "9b7bcf4242559bcccb9ff9ac846d78cce93577f5d6b951bb87036d4e31bfdb88",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__io_extension__io_extension.h",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__io_extension__io_extension.h.gz; captureKind=raw-http-response-bytes. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-9",
+      "title": "example/ESP-IDF-V553/01_factory/components/shtc3/examples/shtc3_read/main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/shtc3/examples/shtc3_read/main/idf_component.yml",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/shtc3/examples/shtc3_read/main/idf_component.yml",
+      "fetchedAt": "2026-11-23T08:34:52Z",
+      "bytes": 53,
+      "sha256": "5d3edf6880cf45665b1c49121385e6850c379f6a85cb70e0f23c46aa3626f7fb",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__shtc3__examples__shtc3_read__main__idf_component.yml",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__shtc3__examples__shtc3_read__main__idf_component.yml.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-10",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/.component_hash",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/.component_hash",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/.component_hash",
+      "fetchedAt": "2026-11-23T08:34:58Z",
+      "bytes": 64,
+      "sha256": "4b70f359cdd3b75ba5c571d5dbc55dd34a2dec417fd0f7f13406d66687e10f05",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__.component_hash",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__.component_hash.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-11",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/CHECKSUMS.json",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/CHECKSUMS.json",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/CHECKSUMS.json",
+      "fetchedAt": "2026-11-23T08:34:58Z",
+      "bytes": 1485,
+      "sha256": "3e23f7008cc8ddf34df9df696499fc1723f5134399c50b2d542abc1ea56073e9",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__CHECKSUMS.json",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__CHECKSUMS.json.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-12",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/CMakeLists.txt",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/CMakeLists.txt",
+      "fetchedAt": "2026-11-23T08:34:58Z",
+      "bytes": 338,
+      "sha256": "738d9024f0d22b6f4d61b5ae96160f41aa6849c1e275e10fb3da02857e94e7f1",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__CMakeLists.txt",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__CMakeLists.txt.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-13",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/Kconfig",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/Kconfig",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/Kconfig",
+      "fetchedAt": "2026-11-23T08:34:58Z",
+      "bytes": 2713,
+      "sha256": "a8015a289a2075e1708046af382765c2db317fe0a909c74619c5495930ba835f",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__Kconfig",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__Kconfig.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-14",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/LICENSE",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/LICENSE",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/LICENSE",
+      "fetchedAt": "2026-11-23T08:34:58Z",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__LICENSE",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__LICENSE.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-15",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/README.md",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/README.md",
+      "fetchedAt": "2026-11-23T08:34:58Z",
+      "bytes": 548,
+      "sha256": "d98e3428027b7b5ca52ad019b06aa8cc7a6f0d26fd6b7f5064e18560d9cab98e",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__README.md",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__README.md.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "bsp",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c",
+      "fetchedAt": "2026-11-23T08:35:04Z",
+      "bytes": 17973,
+      "sha256": "85ce081ce21671d3c9a745de0f3d7247a3240cee38a1445fdea9cfbdd60f20d8",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__esp32_c5_lcd_2_73.c",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__esp32_c5_lcd_2_73.c.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-17",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/idf_component.yml",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/idf_component.yml",
+      "fetchedAt": "2026-11-23T08:35:04Z",
+      "bytes": 569,
+      "sha256": "3c130ba45e368cbc355124fdffb64a4e51b125b91478a98610c2608c44060cb9",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__idf_component.yml",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__idf_component.yml.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-18",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/config.h",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/config.h",
+      "fetchedAt": "2026-11-23T08:35:04Z",
+      "bytes": 575,
+      "sha256": "9c2b3229543db1cebb75cdc9a1411f24480543b410cc12a6263553dcbfcc9dec",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__config.h",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__config.h.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-19",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/display.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/display.h",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/display.h",
+      "fetchedAt": "2026-11-23T08:35:04Z",
+      "bytes": 3168,
+      "sha256": "8f8933bd0fb7656696543a12b51120077135a7df02c06dcfe23636e1a9ca9180",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__display.h",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__display.h.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-20",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp-bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp-bsp.h",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp-bsp.h",
+      "fetchedAt": "2026-11-23T08:35:04Z",
+      "bytes": 48,
+      "sha256": "6000974dc6ecde70b6d2e94086cb96c7db6019bc23669612f9444dab36374e47",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__esp-bsp.h",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__esp-bsp.h.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "bsp-pins",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h",
+      "fetchedAt": "2026-11-23T08:35:04Z",
+      "bytes": 14369,
+      "sha256": "f35a43b84e9a821c836ccc154fca98b53d7413aa4436d243bf0d0a6463a1a44c",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__esp32_c5_lcd_2_73.h",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__esp32_c5_lcd_2_73.h.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-22",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/touch.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/touch.h",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/touch.h",
+      "fetchedAt": "2026-11-23T08:35:11Z",
+      "bytes": 257,
+      "sha256": "0cc79612f24bee5fe2040b059facdfd0dcc0f2334176ad53a3c9ff9914626904",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__touch.h",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__include__bsp__touch.h.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-23",
+      "title": "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/priv_include/bsp_err_check.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/priv_include/bsp_err_check.h",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/priv_include/bsp_err_check.h",
+      "fetchedAt": "2026-11-23T08:35:11Z",
+      "bytes": 1501,
+      "sha256": "9270b22036dfca465fc493152099afec5ea455e45fea02c71b8d653723fecaa9",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__priv_include__bsp_err_check.h",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__components__waveshare__esp32_c5_lcd_2_73__priv_include__bsp_err_check.h.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-24",
+      "title": "example/ESP-IDF-V553/01_factory/dependencies.lock",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/dependencies.lock",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/dependencies.lock",
+      "fetchedAt": "2026-11-23T08:35:11Z",
+      "bytes": 7066,
+      "sha256": "2a589aee7bd07ca0cf193b4b8886d77aa00438bbc2f5895b25b26bb473e9ea59",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__dependencies.lock",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__dependencies.lock.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-26",
+      "title": "example/ESP-IDF-V553/01_factory/sdkconfig",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/sdkconfig",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/sdkconfig",
+      "fetchedAt": "2026-11-23T08:35:11Z",
+      "bytes": 90546,
+      "sha256": "6bf8d1d58e75fbce29e2c93f8e6a63c1dd5c57dd650fae4f181003e160c8c91c",
+      "archiveName": "source-example__ESP-IDF-V553__01_factory__sdkconfig",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/example__ESP-IDF-V553__01_factory__sdkconfig.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-27",
+      "title": "firmware/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/README.md",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/README.md",
+      "fetchedAt": "2026-11-23T10:49:44Z",
+      "bytes": 2109,
+      "sha256": "94ba5272e787c1902cb8bc51dfc61f24ae7672bab7fdc7f9795d29a95a56eed2",
+      "archiveName": "source-firmware__README.md",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/firmware__README.md.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-28",
+      "title": "firmware/README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/README_ZH.md",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/README_ZH.md",
+      "fetchedAt": "2026-11-23T10:49:50Z",
+      "bytes": 1901,
+      "sha256": "34220797cba9bda577d2337850e06249fb38d1d58c12aac685be8820120fcba7",
+      "archiveName": "source-firmware__README_ZH.md",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/firmware__README_ZH.md.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "schematic",
+      "title": "schematic/ESP32-C5-LCD-2.73.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/schematic/ESP32-C5-LCD-2.73.pdf",
+      "kind": "manufacturer-schematic",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/schematic/ESP32-C5-LCD-2.73.pdf",
+      "fetchedAt": "2026-11-23T08:35:18Z",
+      "bytes": 182049,
+      "sha256": "b698481c0cb5b838942da326b7e1474293c61eed1cfc443ce4bc92f64febc103",
+      "archiveName": "source-schematic__ESP32-C5-LCD-2.73.pdf",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/schematic__ESP32-C5-LCD-2.73.pdf.gz; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "source-30",
+      "title": "repository-tree.json",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/git/trees/5282f0112760f1d53a79092548303df96602d4b8?recursive=1",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/git/trees/5282f0112760f1d53a79092548303df96602d4b8?recursive=1",
+      "fetchedAt": "2026-11-23T08:30:51Z",
+      "bytes": 685547,
+      "sha256": "68a02da42d95b78af85588c0a33b647a53ff6c37c41c431a2788042338bd6ebb",
+      "archiveName": "source-repository-tree.json",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/repository-tree.json.gz; captureKind=github-connector-json-content. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "overview",
+      "title": "canonical-overview.html",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+      "fetchedAt": "2026-11-23T07:58:39Z",
+      "bytes": 38556,
+      "sha256": "6605fc2602ea4f0b653b2a47c91a2b3a9b9715ad26ebd7f788462b86cb3cd52f",
+      "archiveName": "source-canonical-overview.html",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/canonical-overview.html.gz; captureKind=recorded source receipt. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "resources",
+      "title": "canonical-resources.html",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73/Resources-And-Documents",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-LCD-2.73/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T07:58:39Z",
+      "bytes": 28139,
+      "sha256": "e1418e70826c91acb2096fb54c45b16048dbbc8d05da29c17d3a88835e68decd",
+      "archiveName": "source-canonical-resources.html",
+      "notes": "Original retrieved content retained in docs/research/waveshare-c5-lcd273-sources-2026-11-23/canonical-resources.html.gz; captureKind=recorded source receipt. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "display-datasheet",
+      "title": "ILI9488_Data_Sheet.pdf",
+      "url": "https://files.waveshare.com/upload/2/2d/ILI9488_Data_Sheet.pdf",
+      "kind": "primary-technical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/upload/2/2d/ILI9488_Data_Sheet.pdf",
+      "fetchedAt": "2026-11-23T10:37:26Z",
+      "bytes": 10826145,
+      "sha256": "aeb23170f809610458e05ab514a5e3017344938ccdba1c2031acb453941df38b",
+      "archiveName": "source-ILI9488_Data_Sheet.pdf",
+      "notes": "Original downloaded document retained locally; no redistributed copy. Receipt and cited pages are in the source manifest.; captureKind=raw-http-response. Hashes describe original bytes, not compressed archives."
+    },
+    {
+      "id": "factory",
+      "title": "Unmodified ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+      "kind": "manufacturer-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+      "fetchedAt": "2026-11-23T08:35:11Z",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+      "archiveName": "ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+      "notes": "Downloaded original image verified by hash/checksum/digest. Binary retained outside Git; no local public mirror or successful factory-boot claim. Unchanged ROM6831steps reads PMU600b00e4 at4001df26; zero UART/display. PublicC5 loader SRAM-only."
+    },
+    {
+      "id": "model-overview",
+      "title": "overview",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+      "fetchedAt": "2026-11-23T07:58:39Z",
+      "bytes": 38556,
+      "sha256": "6605fc2602ea4f0b653b2a47c91a2b3a9b9715ad26ebd7f788462b86cb3cd52f",
+      "archiveName": "overview.html",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/overview.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-resources",
+      "title": "resources",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73/Resources-And-Documents",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-LCD-2.73/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T07:58:39Z",
+      "bytes": 28139,
+      "sha256": "e1418e70826c91acb2096fb54c45b16048dbbc8d05da29c17d3a88835e68decd",
+      "archiveName": "resources.html",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/resources.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-product",
+      "title": "product",
+      "url": "https://www.waveshare.com/esp32-c5-lcd-2.73.htm?sku=35224",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/esp32-c5-lcd-2.73.htm?sku=35224",
+      "fetchedAt": "2026-11-23T10:31:39Z",
+      "bytes": 279090,
+      "sha256": "261872d1bfc81ddcb219d3de167a85c3d5c60953b3e5ec7f80c3fb0b8441d5be",
+      "archiveName": "product.html",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/product.html.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-repository-tree",
+      "title": "repository-tree",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/git/trees/5282f0112760f1d53a79092548303df96602d4b8?recursive=1",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/git/trees/5282f0112760f1d53a79092548303df96602d4b8?recursive=1",
+      "fetchedAt": "2026-11-23T08:30:51Z",
+      "bytes": 685547,
+      "sha256": "68a02da42d95b78af85588c0a33b647a53ff6c37c41c431a2788042338bd6ebb",
+      "archiveName": "repository-tree.json",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/repository-tree.json.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify retained connector JSON content, not raw HTTP response bytes. fetchedAt records the connector capture time. Captured immediately after connector retrieval."
+    },
+    {
+      "id": "model-repository-head-selection",
+      "title": "repository-head-selection",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/commits/main",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/commits/main",
+      "fetchedAt": "2026-11-23T10:31:23Z",
+      "bytes": 503,
+      "sha256": "82acf266555cafb29921ad8979caa8cce8a59a71c48c7d2bc1e54ca1c502b8f6",
+      "archiveName": "repository-head-selection.json",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/repository-head-selection.json. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify the retained selection of connector metadata fields, not the complete connector or HTTP response. fetchedAt records the observation time. Selected mechanical-search fields from the GitHub connector response; not original HTTP response bytes."
+    },
+    {
+      "id": "model-repository-readme",
+      "title": "repository-readme",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/README.md",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/README.md",
+      "fetchedAt": "2026-11-23T08:34:52Z",
+      "bytes": 193,
+      "sha256": "4e5b60e59ef495e5e71824d42f2deac010819c28cf28bcb25df1a1bddd3a13c7",
+      "archiveName": "repository-readme.md",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/repository-readme.md. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-schematic",
+      "title": "schematic",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/schematic/ESP32-C5-LCD-2.73.pdf",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/schematic/ESP32-C5-LCD-2.73.pdf",
+      "fetchedAt": "2026-11-23T08:35:18Z",
+      "bytes": 182049,
+      "sha256": "b698481c0cb5b838942da326b7e1474293c61eed1cfc443ce4bc92f64febc103",
+      "archiveName": "schematic.pdf",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/schematic.pdf.gz. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-dimension-photo",
+      "title": "dimension-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-size.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-size.jpg",
+      "fetchedAt": "2026-11-23T10:32:17Z",
+      "bytes": 81341,
+      "sha256": "aa2954549e61264670bcaa677c4f07a16119815f2e156448925f697cdca14de7",
+      "archiveName": "dimension-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/dimension-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-component-photo",
+      "title": "component-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-intro.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-intro.jpg",
+      "fetchedAt": "2026-11-23T10:32:42Z",
+      "bytes": 174731,
+      "sha256": "35406c60ed6fd24eaa689105bf51cb8486471b8029d48d2fa988ea73cbca023c",
+      "archiveName": "component-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/component-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-front-angle-photo",
+      "title": "front-angle-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-3.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-3.jpg",
+      "fetchedAt": "2026-11-23T10:32:35Z",
+      "bytes": 28768,
+      "sha256": "77c360bb891e13aaac0047328c235bf9a38bee3094d5c729bfe6432d5437d2c6",
+      "archiveName": "front-angle-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/front-angle-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-back-photo",
+      "title": "back-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-4.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-4.jpg",
+      "fetchedAt": "2026-11-23T10:32:42Z",
+      "bytes": 85929,
+      "sha256": "12a383e9b5e081dc60acfb8c3005a6cd3d0ac389bbc2ec9dcc07b7ea26fca6e4",
+      "archiveName": "back-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/back-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-back-angle-photo",
+      "title": "back-angle-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-5.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-5.jpg",
+      "fetchedAt": "2026-11-23T10:32:31Z",
+      "bytes": 76642,
+      "sha256": "cf7b9718a2fe78fc1f5d6c43a73f73a61042650fc693529009ccb3dd520a2f05",
+      "archiveName": "back-angle-photo.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/back-angle-photo.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-package-without-battery",
+      "title": "package-without-battery",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-5-1.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-5-1.jpg",
+      "fetchedAt": "2026-11-23T10:31:58Z",
+      "bytes": 15694,
+      "sha256": "d7a1e9659834a6792eb63721cdc7cb83d6ad3486d6ccf4e377c65baf74080889",
+      "archiveName": "package-without-battery.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/package-without-battery.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "model-package-with-battery",
+      "title": "package-with-battery",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-5-2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-5-2.jpg",
+      "fetchedAt": "2026-11-23T10:32:10Z",
+      "bytes": 19463,
+      "sha256": "e985f70a471a17f2429fa6c5744b5372ba4ddb88a90286b0bdd289350b83d9f0",
+      "archiveName": "package-with-battery.jpg",
+      "notes": "Original source retained in assets/waveshare-esp32-c5-lcd-2-73/package-with-battery.jpg. Manufacturer source rights retained; public download does not establish an MIT redistribution licence. Hash and size identify decompressed original response bytes."
+    },
+    {
+      "id": "sku-store-20261124",
+      "title": "Official storefront package options",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c5-lcd-2.73.htm",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-c5-lcd-2.73.htm",
+      "kind": "manufacturer-product",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:31:29Z",
+      "bytes": 269524,
+      "sha256": "74b0224dc74c0ab379b525b59ac0a81489a5ba9de8addb76a92d6fbb2f8f1568",
+      "archiveName": "esp32-c5-lcd-2.73-sku-store-20261124.html",
+      "notes": "Hash identifies the fetched official HTTP body. Raw storefront pages remain local because they contain transient session metadata; selected SKU facts and this receipt are retained."
+    },
+    {
+      "id": "sku-doc-20261124",
+      "title": "Official exact SKU and product table",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+      "kind": "manufacturer-product",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:31:47Z",
+      "bytes": 38556,
+      "sha256": "42f73c3e7f6e115f71d7c7c7f79c7057f188615f02fd5beb06fa94276f53a3f1",
+      "archiveName": "esp32-c5-lcd-2.73-sku-doc-20261124.html",
+      "notes": "Hash identifies the fetched official HTTP body. Raw storefront pages remain local because they contain transient session metadata; selected SKU facts and this receipt are retained."
+    }
+  ],
+  "assets": [
+    {
+      "id": "readme",
+      "sourceId": "readme",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/README.md"
+    },
+    {
+      "id": "display-driver",
+      "sourceId": "display-driver",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c"
+    },
+    {
+      "id": "source-2",
+      "sourceId": "source-2",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl/main/idf_component.yml"
+    },
+    {
+      "id": "source-3",
+      "sourceId": "source-3",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl/sdkconfig.defaults"
+    },
+    {
+      "id": "source-4",
+      "sourceId": "source-4",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/idf_component.yml"
+    },
+    {
+      "id": "source-5",
+      "sourceId": "source-5",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/sdkconfig.defaults"
+    },
+    {
+      "id": "source-6",
+      "sourceId": "source-6",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/include/esp_lcd_ili9488.h"
+    },
+    {
+      "id": "expander-protocol",
+      "sourceId": "expander-protocol",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.c"
+    },
+    {
+      "id": "source-8",
+      "sourceId": "source-8",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.h"
+    },
+    {
+      "id": "source-9",
+      "sourceId": "source-9",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/shtc3/examples/shtc3_read/main/idf_component.yml"
+    },
+    {
+      "id": "source-10",
+      "sourceId": "source-10",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/.component_hash"
+    },
+    {
+      "id": "source-11",
+      "sourceId": "source-11",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/CHECKSUMS.json"
+    },
+    {
+      "id": "source-12",
+      "sourceId": "source-12",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/CMakeLists.txt"
+    },
+    {
+      "id": "source-13",
+      "sourceId": "source-13",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/Kconfig"
+    },
+    {
+      "id": "source-14",
+      "sourceId": "source-14",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/LICENSE"
+    },
+    {
+      "id": "source-15",
+      "sourceId": "source-15",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/README.md"
+    },
+    {
+      "id": "bsp",
+      "sourceId": "bsp",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c"
+    },
+    {
+      "id": "source-17",
+      "sourceId": "source-17",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/idf_component.yml"
+    },
+    {
+      "id": "source-18",
+      "sourceId": "source-18",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/config.h"
+    },
+    {
+      "id": "source-19",
+      "sourceId": "source-19",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/display.h"
+    },
+    {
+      "id": "source-20",
+      "sourceId": "source-20",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp-bsp.h"
+    },
+    {
+      "id": "bsp-pins",
+      "sourceId": "bsp-pins",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h"
+    },
+    {
+      "id": "source-22",
+      "sourceId": "source-22",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/touch.h"
+    },
+    {
+      "id": "source-23",
+      "sourceId": "source-23",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/priv_include/bsp_err_check.h"
+    },
+    {
+      "id": "source-24",
+      "sourceId": "source-24",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/dependencies.lock"
+    },
+    {
+      "id": "source-26",
+      "sourceId": "source-26",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/example/ESP-IDF-V553/01_factory/sdkconfig"
+    },
+    {
+      "id": "source-27",
+      "sourceId": "source-27",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/README.md"
+    },
+    {
+      "id": "source-28",
+      "sourceId": "source-28",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/README_ZH.md"
+    },
+    {
+      "id": "schematic",
+      "sourceId": "schematic",
+      "role": "schematic",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/schematic/ESP32-C5-LCD-2.73.pdf"
+    },
+    {
+      "id": "source-30",
+      "sourceId": "source-30",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/git/trees/5282f0112760f1d53a79092548303df96602d4b8?recursive=1"
+    },
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73/Resources-And-Documents"
+    },
+    {
+      "id": "display-datasheet",
+      "sourceId": "display-datasheet",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/upload/2/2d/ILI9488_Data_Sheet.pdf"
+    },
+    {
+      "id": "factory",
+      "sourceId": "factory",
+      "role": "firmware-download",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin"
+    },
+    {
+      "id": "model-overview",
+      "sourceId": "model-overview",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/overview.html.gz"
+    },
+    {
+      "id": "model-resources",
+      "sourceId": "model-resources",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-C5-LCD-2.73/Resources-And-Documents",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/resources.html.gz"
+    },
+    {
+      "id": "model-product",
+      "sourceId": "model-product",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/esp32-c5-lcd-2.73.htm?sku=35224",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/product.html.gz"
+    },
+    {
+      "id": "model-repository-tree",
+      "sourceId": "model-repository-tree",
+      "role": "reference-only",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/git/trees/5282f0112760f1d53a79092548303df96602d4b8?recursive=1",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/repository-tree.json.gz"
+    },
+    {
+      "id": "model-repository-head-selection",
+      "sourceId": "model-repository-head-selection",
+      "role": "reference-only",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-LCD-2.73/commits/main",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/repository-head-selection.json"
+    },
+    {
+      "id": "model-repository-readme",
+      "sourceId": "model-repository-readme",
+      "role": "reference-only",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/README.md",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/repository-readme.md"
+    },
+    {
+      "id": "model-schematic",
+      "sourceId": "model-schematic",
+      "role": "reference-only",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/schematic/ESP32-C5-LCD-2.73.pdf",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/schematic.pdf.gz"
+    },
+    {
+      "id": "model-dimension-photo",
+      "sourceId": "model-dimension-photo",
+      "role": "dimension-reference",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-size.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/dimension-photo.jpg"
+    },
+    {
+      "id": "model-component-photo",
+      "sourceId": "model-component-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-intro.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/component-photo.jpg"
+    },
+    {
+      "id": "model-front-angle-photo",
+      "sourceId": "model-front-angle-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-3.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/front-angle-photo.jpg"
+    },
+    {
+      "id": "model-back-photo",
+      "sourceId": "model-back-photo",
+      "role": "runtime-texture-and-reference",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-4.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/back-photo.jpg"
+    },
+    {
+      "id": "model-back-angle-photo",
+      "sourceId": "model-back-angle-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c5-lcd-2.73-5.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/back-angle-photo.jpg"
+    },
+    {
+      "id": "model-package-without-battery",
+      "sourceId": "model-package-without-battery",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-5-1.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/package-without-battery.jpg"
+    },
+    {
+      "id": "model-package-with-battery",
+      "sourceId": "model-package-with-battery",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-C5-LCD-2.73/ESP32-C5-LCD-2.73-details-5-2.jpg",
+      "localUrl": "./assets/waveshare-esp32-c5-lcd-2-73/package-with-battery.jpg"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "产品发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview"
+      ]
+    },
+    {
+      "id": "uiflow",
+      "label": "精确型号的 UIFlow 镜像",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "readme",
+        "resources"
+      ],
+      "notes": "not-found-in-inspected-manufacturer-pages; PinnedrootREADME, firmwareREADME, canonicaloverview/resources; no exactC5 LCD2.73 UIFlow package link."
+    }
+  ],
+  "collectionNotes": [
+    "原厂 FactoryOnly_20260724 使用独立 app20000h 布局；未修改的 ROM 在第 6831 条指令读取 PMU0x600b00e4 时停止，保持 reference。",
+    "原创 SRAM App 已原生验证完整8MiB PSRAM、RGB666经GDMA出屏、PREV／NEXT／BOOT输入及SD块保存／读写／恢复；公开Worker／浏览器验收需独立执行。",
+    "ILI9488 内部保留320×480×18位GRAM，显示玻璃320×320；既有主机RGB565输出会丢弃红／蓝的第6位，不冒称18位物理校准。",
+    "仅MV0及RGB666三字节传输；TE、滚动、RAMWRC、屏幕读回、模拟gamma／PWM频率未实现。",
+    "CH32V006数字IO／PWM、QMI8658C、PCF85063A仅对应已建模协议；SHTC3、充电／电池／电源键、无线、USB、OTA、FAT挂载未验收。",
+    "Canonical text namesCH32V003, but schematic fitsCH32V006K8U7 and this repository factory io_extension uses16-bitLE direction/output/input. ExplicitV006 used.",
+    "Source mirror(false,false) setsMX; native framebuffer referenceMADCTL48 follows this actual driver, not the API argument name. Physicalscan/color calibration remains unverified.",
+    "Original factory usesIDFv5.5.3; sharedC5 register models cite independently retainedIDFv5.5.4 headers. Source wiring/phase behavior is exact for this board; no wholefactory compatibility claim.",
+    "SKU35224与无电池-EN35225按包装记录；未认证二者的语言固件映射。",
+    "机械模型由独立照片／尺寸资料维护，此电气生成器不推造实体几何或发布日期。",
+    "小智v2.6.0已检索200个release assets，未发现精确C5 LCD2.73；没有拿相似C6或Touch型号替代。",
+    "原生证据：docs/evidence/waveshare-c5-lcd273-2026-11-23/inputs-and-hashes.json",
+    "源资料收据：docs/research/waveshare-c5-lcd273-sources-2026-11-23/manifest.json",
+    "3D 来源：官方尺寸与照片重建。 生产加载器几何与输入射线已检查；浏览器 WebGL 和实物装配尚未验收。",
+    "官方 SKU 35224；套装选项：with 3.7V Lithium Batt。电池与排针包装差异不代表额外固件或实机验收。",
+    "共用板型的既有测试只证明已建模数字接口；不继承任何真实硬件、摄像头、射频或电池验证。"
+  ]
+}

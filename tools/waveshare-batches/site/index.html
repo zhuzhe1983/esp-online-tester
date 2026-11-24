@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Waveshare ESP32 适配增量补丁下载：每五款型号一批，按序应用，附来源与验证记录。"><title>Waveshare · 增量适配下载</title><link rel="stylesheet" href="./style.css"></head>
+<body><header><div class="brand">ESP ONLINE TESTER <span> / WAVESHARE</span></div><a href="https://github.com/zhuzhe1983/esp-online-tester" target="_blank" rel="noreferrer">项目仓库</a></header>
+<main><section class="intro"><div><p class="eyebrow">硬件适配交付 · 2026.11.24</p><h1>所有批次，<br>在这里依次下载。</h1><p class="lede">每 5 款型号生成一份增量 git diff。后续批次基于前一批继续添加，已发布文件保持不变。</p></div><aside class="status-card"><span id="status-label">正在读取清单</span><strong id="progress">— / 149</strong><span>已交付型号家族</span><div class="progress-track"><div id="progress-bar"></div></div><p id="counts">载入中…</p></aside></section>
+<section class="toolbar" aria-label="批量下载"><div><h2>补丁批次</h2><p id="updated">以页面清单中的生成时间为准</p></div><div class="actions"><button id="download-all" disabled>下载全部已发布补丁</button><a class="secondary" href="./downloads/README.txt" download>应用说明</a><a class="secondary" href="./downloads/apply-waveshare.py" download>校验与应用脚本</a></div></section>
+<p class="download-status" id="download-status" role="status" aria-live="polite"></p>
+<div id="batches" class="batches"><p>正在载入批次信息…</p></div>
+<section class="instructions"><div><p class="eyebrow">顺序与基线</p><h2>从第 001 批开始，<br>按编号依次应用。</h2><p>一键下载包内保留每一份独立补丁、校验清单和应用脚本。脚本先检查全部补丁能否连续应用，再按顺序写入工作区。</p></div><div><p>基础仓库提交</p><code id="base">载入中</code><pre><code>git switch -c waveshare-adaptation &lt;基础提交&gt;
+python /补丁目录/apply-waveshare.py --check
+python /补丁目录/apply-waveshare.py --apply</code></pre><p class="muted">在项目目录执行。需先解压下载的 ZIP；保留各个 .diff.gz 文件，脚本会验证 SHA-256 并自动解压。已有本地修改时，先由你自行保存；脚本不会重置、覆盖提交或推送远程。</p></div></section>
+<section class="scope"><h2>适配范围与验证边界</h2><div class="scope-grid"><div><h3>官方清单覆盖</h3><p>按 Waveshare 官方 ESP32 分类页逐项清点。一个型号家族包含其排针、电池、摄像头、外壳与容量选项；实际 SKU 数量单独列出。</p></div><div><h3>屏幕与较新产品优先</h3><p>优先带屏幕设备。官方未提供统一发布日期，因此以官方商品展示排序作为优先级参考，并明确保留“发布日期未知”。</p></div><div><h3>每批都有验证记录</h3><p>模型来源、数字接口测试、原厂固件试运行与实机验证分别记录。未实现的功能保留限制说明；模拟通过不代表实机验收。</p></div></div><a href="./downloads/inventory.json" download>下载完整官方型号与 SKU 清单</a></section>
+</main><footer><span>增量补丁 · 二进制资产完整包含 · SHA-256 校验</span><a href="./downloads/manifest.json" download>下载机器可读清单</a></footer><script type="module" src="./app.js"></script></body></html>

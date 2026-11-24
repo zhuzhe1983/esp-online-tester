@@ -1,0 +1,18 @@
+
+$C5_SOURCES/esp32c5_rev100_rom.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+4001deee <clear_super_wdt_reset_flag>:
+4001deee:	600b2737          	lui	a4,0x600b2
+4001def2:	c1c72783          	lw	a5,-996(a4) # 600b1c1c <LP_WDT+0x1c>
+4001def6:	000806b7          	lui	a3,0x80
+4001defa:	8fd5                	or	a5,a5,a3
+4001defc:	c0f72e23          	sw	a5,-996(a4)
+4001df00:	8082                	ret
+
+4001df02 <software_reset>:
+4001df02:	600b1737          	lui	a4,0x600b1
+4001df06:	5b5c                	lw	a5,52(a4)
+4001df08:	800006b7          	lui	a3,0x80000

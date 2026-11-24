@@ -60,10 +60,11 @@ fn c5_map_rejects_c6_aliases_bounds_and_wrong_gpio_routes() {
     assert!(m.bus.write32(0x2000_1000, 1).is_err(), "C6 PLIC is absent");
     assert!(m.bus.write32(0x6009_1554, 128).is_err(), "C6 output table is absent");
     assert!(m.bus.write32(0x6009_1024, 1 << 28).is_err(), "C6 enable register is absent");
-    for (a, v) in [(0x6009_0074, 1 << 12), (0x6009_1b44, 256), (0x6009_1038, 1 << 28)] { m.bus.write32(a, v).unwrap(); }
+    assert!(m.bus.write32(0x6009_0074, 1 << 12).is_err(), "C5 GPIO28 is +0x70; +0x74 is reserved, not a compatibility alias");
+    for (a, v) in [(0x6009_0070, 1 << 12), (0x6009_1b44, 256), (0x6009_1038, 1 << 28)] { m.bus.write32(a, v).unwrap(); }
     assert_eq!(m.bus.board.leds().unwrap().0, [[0, 0, 255]]);
-    m.bus.write32(0x6009_0074, 0).unwrap(); assert_eq!(m.bus.board.leds().unwrap().0, [[0; 3]]);
-    m.bus.write32(0x6009_0074, 1 << 12).unwrap();
+    m.bus.write32(0x6009_0070, 0).unwrap(); assert_eq!(m.bus.board.leds().unwrap().0, [[0; 3]]);
+    m.bus.write32(0x6009_0070, 1 << 12).unwrap();
     m.bus.write32(0x6009_103c, 1 << 28).unwrap(); assert_eq!(m.bus.board.leds().unwrap().0, [[0; 3]]);
     assert!(m.bus.read32(u32::MAX).is_err()); assert!(m.bus.write16(0x4085_ffff, 0).is_err());
 }
@@ -86,7 +87,7 @@ fn external_c5_actual_rom_first_unsupported_access() {
     let mut m = Bringup::new(); m.load_rom_elf(&std::fs::read(p).expect("read C5_ROM_ELF")).unwrap();
     let run = m.run(1_000_000);
     eprintln!("C5 ROM steps={} stop={:?} pc={:#x} fault={:?} UART={:?}", run.steps, run.stop, m.cpu.pc, m.bus.first_fault, String::from_utf8_lossy(&m.bus.uart[0].tx_out));
-    assert_eq!(run.steps, 6575); assert_eq!(run.stop, Stop::Trap(riscv_rv32::Trap::Exception(5)));
-    let f = m.bus.first_fault.unwrap(); assert_eq!((f.pc, f.address, f.write, f.width), (0x4002_69b6, 0x600b_2804, false, 4));
+    assert_eq!(run.steps, 6831); assert_eq!(run.stop, Stop::Trap(riscv_rv32::Trap::Exception(5)));
+    let f = m.bus.first_fault.unwrap(); assert_eq!((f.pc, f.address, f.write, f.width), (0x4001_df26, 0x600b_00e4, false, 4));
     assert!(m.bus.uart[0].tx_out.is_empty(), "No ROM boot banner or firmware execution is claimed");
 }

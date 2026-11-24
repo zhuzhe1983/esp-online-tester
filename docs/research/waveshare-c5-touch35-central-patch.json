@@ -1,0 +1,155 @@
+{
+  "kind": "independent-central-integration-patch",
+  "productId": "waveshare-esp32-c5-touch-lcd-3-5",
+  "name": "Waveshare ESP32-C5-Touch-LCD-3.5",
+  "chip": "esp32c5",
+  "profile": "waveshare-c5-touch35",
+  "skus": {
+    "base": "35417",
+    "batteryFreePackaging": "35416",
+    "cameraVariant": "35419",
+    "cameraBatteryFreePackaging": "35418"
+  },
+  "flashMB": 32,
+  "psramMB": 8,
+  "capacityBasis": "Schematic N32R8, pinned README, factory sdkconfig and both image headers agree32F8P. Arduino16MiB menu uses only part of physical32MiB.",
+  "resolution": [
+    320,
+    480
+  ],
+  "controllers": [
+    "ST7796",
+    "FT6336",
+    "CH32V006",
+    "AXP2101",
+    "QMI8658 (physical A/C suffix unconfirmed)",
+    "PCF85063A",
+    "ES8311"
+  ],
+  "hasTfSlot": true,
+  "hasTouch": true,
+  "buttonIds": [
+    "boot"
+  ],
+  "runtimeStatus": "experimental-sram-diagnostic",
+  "runtimeEvidence": "docs/evidence/waveshare-c5-touch35-2026-11-23/inputs-and-hashes.json",
+  "runtimeDocumentation": "docs/platform/waveshare-c5-touch35.md",
+  "sourceReceipt": "docs/research/waveshare-c5-touch35-sources-2026-11-23/manifest.json",
+  "dataConflicts": [
+    "Physical16-bit CH32V006 vs8-bit V003-named factory component; low-byte accesses coexist with separately sourced16-bit LE protocol, upper startup bits stay unknown.",
+    "Schematic/README QMI8658 has no suffix; A PDF and qmi8658c example disagree on reserved controls. Strict shared A/C intersection only; no physical C identity claim.",
+    "Arduino16MiB menu is not physical capacity; current factory really uses32MiB."
+  ],
+  "projectDiagnostic": {
+    "role": "project-original-sram-diagnostic",
+    "name": "C5 Touch3.5 PSRAM/GDMA/touch/BOOT/SD diagnostic",
+    "chip": "esp32c5",
+    "board": "waveshare-c5-touch35",
+    "app_direct": true,
+    "files": {
+      "app": "firmware/c5-touch35-probe/probe.bin"
+    },
+    "appOffset": 65536,
+    "appBytes": 4688,
+    "appSha256": "9395b2b72f506fabdcbe238f1a8fe39ce7825ecf78ab535c572d054f45f3b1e3",
+    "flashMB": 32,
+    "psramMB": 8,
+    "nominalXtalMHz": 48,
+    "spiMHz": 24,
+    "i2cHz": 400000,
+    "verified": [
+      "native App load with physical32F8P",
+      "guest writes/reads full8MiB PSRAM",
+      "GDMA reads307200B framebuffer from mapped PSRAM",
+      "AXP34 nominal DCDC1+V00624 actual16bit reset/PWM+QMI6B identity via I2C",
+      "FT6336 count/coordinates cause1024 changed pixels; release exact",
+      "BOOT28 causes119808 changed pixels; release exact",
+      "quiet0pixels;170250000 instructions;0exception/reset",
+      "public SocBus SPI SD CMD0/CMD8/ACMD41/CMD17/CMD24 saves/tests/restores LBA32; whole8MiB nonzero card byte-identical"
+    ],
+    "notExercised": [
+      "manufacturer desktop/flashboot",
+      "physical PSRAM vendor identity",
+      "physical color/scan/PWM calibration",
+      "Wi-Fi/BLE/USB/audio/camera",
+      "battery/charger/PWR/SHTC3",
+      "SD filesystem mount"
+    ],
+    "sdTest": {
+      "guestLba": 32,
+      "bytes": 512,
+      "readBlocks": 3,
+      "writtenBlocks": 2,
+      "originalBytesRestoredAfterCompletedRun": true,
+      "interruptedRunTransactionalGuarantee": false
+    }
+  },
+  "downloadedFirmware": {
+    "captureKind": "raw-http-response",
+    "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/firmware/ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+    "finalUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-3.5/a39067a9b897f54c2b8dccb597542caa4e826349/firmware/ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+    "mediaType": "application/octet-stream",
+    "fetchedAtUTC": "2026-11-23T08:34:25.808150+00:00",
+    "bytes": 8580095,
+    "sha256": "4aaac1808cfc5fe7f7e518e5a700dcd2df49395875427f9bc96d76f36b766aec",
+    "repository": "waveshareteam/ESP32-C5-Touch-LCD-3.5",
+    "commit": "a39067a9b897f54c2b8dccb597542caa4e826349",
+    "path": "firmware/ESP32-C5-Touch-LCD-3.5_FactoryOnly_20261022.bin",
+    "httpStatus": 200,
+    "status": "reference",
+    "role": "factory",
+    "simulationVerified": false,
+    "loadOffset": 0,
+    "bootloaderOffset": 8192,
+    "partitionTableOffset": 32768,
+    "applicationOffsets": [
+      65536
+    ],
+    "validation": {
+      "downloadHashVerified": true,
+      "imageChecksumsAndDigestsValid": true,
+      "chipId": 23,
+      "minRevision": 100,
+      "maxRevision": 199,
+      "imageFlashMB": 32,
+      "physicalFlashMB": 32,
+      "physicalPsramMB": 8,
+      "publicLoaderAccepted": false,
+      "factoryBootPassed": false,
+      "evidence": "docs/evidence/waveshare-c5-touch35-2026-11-23/factory-validation.json",
+      "note": "Unchanged ROM6831steps -> PMU600b00e4 at4001df26; zero UART/display. Public C5 loader remains SRAM-only."
+    }
+  },
+  "relatedFirmware": [
+    {
+      "role": "xiaozhi",
+      "status": "linked",
+      "version": "v2.6.0",
+      "releaseUrl": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+      "releasePublishedAt": "2026-11-13T19:34:49Z",
+      "assetName": "v2.6.0_waveshare-esp32-c5-touch-lcd-3.5.zip",
+      "url": "https://github.com/78/xiaozhi-esp32/releases/download/v2.6.0/v2.6.0_waveshare-esp32-c5-touch-lcd-3.5.zip",
+      "publishedBytes": 2488412,
+      "publishedDigest": "sha256:61decb753511c800ec9d1897a7a6b434a3a0312d75d012776f869c387e203519",
+      "downloadedInThisBoardBatch": false,
+      "simulationVerified": false,
+      "metadataSource": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+      "metadataOriginalBytes": 359605,
+      "metadataOriginalSha256": "18e80d5605e2db16f81316bf20b45f846ec2cea09b80ad2f9d7745d11a806037",
+      "captureKind": "selected-fields-from-retrieved-api-content",
+      "selectionCreatedAtUTC": "2026-11-23T10:34:35.276114+00:00"
+    }
+  ],
+  "officialUiflowInvestigation": {
+    "result": "not-found-in-inspected-manufacturer-pages",
+    "scope": "Pinned README, firmware README and canonical overview/resources; no exact C5Touch3.5 UIFlow package link found."
+  },
+  "integrationNotes": [
+    "Use exact C5 runtime32F8P; no C6 alias or omitted PSRAM.",
+    "microSD socket is real; use platform default64MiB FAT32 card and public C5 SocBus delegate.",
+    "Project SRAM App is an explicit option; factory remains independent reference until actual ROM loader supports it.",
+    "Native portrait320x480 source MX/BGR/INVON, FT6336 IRQ3; direct GPIO control onlyboot28.",
+    "Base SKU without camera; do not attach BF3901 or map PWR to ordinary GPIO.",
+    "Raw evidence retained under ignored target/c5-touch35-2026-11-23; compact summaries/reproducer only in Git."
+  ]
+}

@@ -37,7 +37,7 @@ impl Soc for C5 {
 }
 impl SocBus for C5Bus {
     fn cycles(&self) -> u64 { self.cycles }
-    fn next_deadline(&self) -> Option<u64> { self.rmt.rmt.is_running().then_some(1) }
+    fn next_deadline(&self) -> Option<u64> { self.rmt.rmt.is_running().then_some(1).into_iter().chain(self.transport.as_ref().and_then(|t|t.deadline).map(|d|d.saturating_sub(self.cycles).max(1))).chain(self.i2c.as_ref().and_then(|i|i.deadline).map(|d|d.saturating_sub(self.cycles).max(1))).min() }
     fn irq_dirty(&mut self) -> &mut bool { &mut self.irq_dirty }
     fn refresh_irq(&mut self) -> bool { C5Bus::refresh_irq(self, 0); true } // core applies standard CSR threshold
     fn misc(&mut self) -> &mut esp_periph::Misc { &mut self.misc }
@@ -64,13 +64,15 @@ impl SocBus for C5Bus {
         let mut fresh = C5Bus::new();
         std::mem::swap(&mut fresh.rom, &mut self.rom); std::mem::swap(&mut fresh.sram, &mut self.sram);
         std::mem::swap(&mut fresh.lp_sram, &mut self.lp_sram); std::mem::swap(&mut fresh.flash, &mut self.flash);
+        std::mem::swap(&mut fresh.psram, &mut self.psram); fresh.mspi.preserve_psram(&self.mspi);
+        fresh.xtal_hz = self.xtal_hz; fresh.mspi.set_xtal_hz(self.xtal_hz);
         std::mem::swap(&mut fresh.board, &mut self.board);
         fresh.gpio.restore_external(&self.gpio); fresh.gpio.strap = self.gpio.strap;
         fresh.cycles = self.cycles; fresh.debug = self.debug.clone(); fresh.reset_cause = self.reset_cause;
         fresh.gpio_events = self.gpio_events.as_ref().map(|_| Vec::new());
         fresh.app_off = self.app_off;
         if let Some(off) = self.app_off { if let Err(reason) = fresh.boot_app(off) { fresh.misc.log_unknown = true; eprintln!("[c5] app-direct restart rejected: {reason}"); } }
-        fresh.publish_gpio(); *self = fresh; self.reset_cause & 0x1f
+        fresh.attach_i2c_devices();fresh.publish_gpio(); *self = fresh; self.reset_cause & 0x1f
     }
     fn sw_reset(&self) -> bool { self.reset_requested }
     fn request_reset(&mut self, cause: u32) { self.reset_requested = true; self.reset_cause = cause & 0x1f | 1 << 5; }
@@ -92,12 +94,14 @@ impl SocBus for C5Bus {
     fn board(&mut self) -> &mut dyn BoardModel { &mut *self.board }
     fn board_ref(&self) -> &dyn BoardModel { &*self.board }
     fn audio(&self) -> (&[i16], u32) { (&[], 0) }
-    fn irq_sources_of(&self, _core: usize, line: u32) -> Vec<usize> { self.sources().into_iter().filter(|&(source, active)| active && self.map[source] == line + 16).map(|(source, _)| source).collect() }
+    fn irq_sources_of(&self, _core: usize, line: u32) -> Vec<usize> { self.sources().into_iter().chain(self.transport.as_ref().into_iter().flat_map(|t|t.sources())).filter(|&(source, active)| active && self.map[source] == line + 16).map(|(source, _)| source).collect() }
     fn set_debug(&mut self, f: &esp_soc::DebugFlags) { self.debug = f.clone(); }
     fn set_flash_size(&mut self, bytes: usize) { self.flash.resize(bytes.min(32 << 20), 0xff); }
-    fn set_psram_size(&mut self, bytes: usize) -> Result<(), String> { if bytes == 0 { Ok(()) } else { Err("C5 SRAM app-direct profile has no PSRAM".into()) } }
+    fn set_psram_size(&mut self, bytes: usize) -> Result<(), String> { self.configure_psram(bytes) }
     fn set_strap(&mut self, v: u32) { self.gpio.strap = v & 0xffff; }
     fn set_reset_cause(&mut self, cause: u32) { self.reset_cause = (self.reset_cause & !0x1f) | cause & 0x1f; }
+    fn attach_sd_card(&mut self,image:Box<dyn esp_periph::sdmmc::SdStore>,config:esp_periph::sdmmc::SdCardConfig)->Result<String,String>{self.board.attach_spi_sd_card(image,config)}
     fn refresh_board_outputs(&mut self) { self.publish_gpio(); }
-    fn report(&self) -> String { format!("[c5] SRAM app-direct; ROM/flash-MMU/IDF boot unimplemented; HP={SRAM_SIZE}B LP={LP_SIZE}B at{LP_BASE:#x}; {}", self.board.report()) }
+    fn touch_input(&mut self,x:u16,y:u16,down:bool){self.board.touch_at(self.cycles,x,y,down);self.irq_dirty|=esp_soc::gpio::drain_board_inputs(&mut *self.board,&mut self.gpio,&mut self.gpio_events,self.cycles);}
+    fn report(&self) -> String { format!("[c5] SRAM app-direct; functional MSPI/MMU; PSRAM={}B Quad requires guest pads/QPI/phases/maps; factory startup incomplete; HP={SRAM_SIZE}B LP={LP_SIZE}B at{LP_BASE:#x}; {}; {}", self.mspi.psram_size(), self.transport.as_ref().map_or_else(||"SPI2/GDMA/LEDC unused".into(),|t|t.report()),self.board.report()) }
 }

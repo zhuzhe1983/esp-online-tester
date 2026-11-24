@@ -1,0 +1,166 @@
+   Compiling esp32c5 v0.3.0 ($CHECKOUT/esp32c5)
+    Finished `release` profile [optimized + debuginfo] target(s) in 13.53s
+     Running unittests src/lib.rs (target-c5-rebuild/release/build/esp32c5/b58c7b08197c779c/out/esp32c5-b58c7b08197c779c)
+
+running 5 tests
+test board::waveshare_touch28_parts::tests::cst3530_uses_big_endian_selector_and_does_not_ack_unknown_identity ... ok
+test board::waveshare_touch28_parts::tests::ch32_direction_preload_pwm_and_unsupported_adc_are_distinct ... ok
+test lp_wdt::tests::only_the_write_trigger_can_clear_an_asserted_flag_and_keys_are_independent ... ok
+test rom::tests::reconstructs_only_explicit_payload_and_rejects_missing_or_conflicting_data ... ok
+test rom::tests::malformed_tables_fail_before_any_guest_memory_is_loaded ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cache.rs (target-c5-rebuild/release/build/esp32c5/d6f309a603644789/out/cache-d6f309a603644789)
+
+running 2 tests
+test c5_cache_geometry_is_read_only_and_absent_engines_do_not_fake_completion ... ok
+test c5_cache_mask_controls_instruction_and_data_access_independently ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/guest.rs (target-c5-rebuild/release/build/esp32c5/1b531c9f2275693a/out/guest-1b531c9f2275693a)
+
+running 5 tests
+test c5_map_rejects_c6_aliases_bounds_and_wrong_gpio_routes ... ok
+test actual_guest_rmt_symbols_follow_c5_matrix_and_complete ... ok
+test real_rv32_guest_uart_clic_controls_stamp_blue_led ... ok
+test reset_cause_and_reset_flag_have_independent_write_triggers ... ok
+test loader_validates_all_segments_and_entry_before_mutating ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/i2c.rs (target-c5-rebuild/release/build/esp32c5/6705c87bda5dbcd6/out/i2c-6705c87bda5dbcd6)
+
+running 2 tests
+test c5_pin_routes_byte_clock_ack_irq_and_stop_are_actual ... ok
+test c5_reset_gates_unknown_source_fifo_capacity_and_busy_routes ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/lilygo.rs (target-c5-rebuild/release/build/esp32c5/654a56ee76c36d1f/out/lilygo-654a56ee76c36d1f)
+
+running 3 tests
+test dongle_rotation_and_full_visible_window_match_the_official_offsets ... ok
+test t7_c5_boot_is_a_real_active_low_input_and_has_no_screen_or_led ... ok
+test dongle_software_spi_obeys_select_routes_backlight_sleep_and_reset ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/lp_peri.rs (target-c5-rebuild/release/build/esp32c5/a6a99bbdd0b72d84/out/lp_peri-a6a99bbdd0b72d84)
+
+running 2 tests
+test unmodeled_lp_engines_and_bus_cpu_reset_are_not_generic_register_ram ... ok
+test virtual_rng_has_explicit_reset_gate_config_and_reproducible_samples ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/lp_wdt.rs (target-c5-rebuild/release/build/esp32c5/bac40400ab03ef99/out/lp_wdt-bac40400ab03ef99)
+
+running 2 tests
+test exact_defaults_protection_and_write_triggers_are_not_register_ram ... ok
+test unmodeled_active_watchdogs_and_interrupts_are_rejected_atomically ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/machine.rs (target-c5-rebuild/release/build/esp32c5/71d395ed3412e64d/out/machine-71d395ed3412e64d)
+
+running 4 tests
+test app_header_padding_alignment_and_trailing_data_are_bounded ... ok
+test sram_app_contract_rejects_wrong_chip_flash_segments_integrity_and_revision ... ok
+test actual_guest_fault_stops_once_and_restart_preserves_totals_without_poisoning_app ... ok
+test espressif_app_image_uses_real_shared_machine_irq_gpio_and_restart ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/psram.rs (target-c5-rebuild/release/build/esp32c5/ec32d32c2be0dbf9/out/psram-ec32d32c2be0dbf9)
+
+running 8 tests
+test explicit_capacity_fixed_pads_chip_select_and_id_are_independent ... ok
+test controller_and_cpu_resets_preserve_die_cells_and_mode_without_preserving_maps ... ok
+test all_mmu_page_sizes_and_axi_power_clock_encryption_boundaries_are_checked ... ok
+test serial_qpi_reset_sequence_and_wrap_have_real_state ... ok
+test cache_requires_qpi_real_phase_configuration_and_valid_capacity_mapping ... ok
+test serial_host_boundaries_and_the_actual_c5_mspi_interrupt_are_observable ... ok
+test cpu_cache_data_mask_blocks_psram_stores_without_destroying_die_contents ... ok
+test original_sram_guest_checks_all_eight_mib_and_executes_through_its_own_mmu_map ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.86s
+
+     Running tests/touch169.rs (target-c5-rebuild/release/build/esp32c5/6adcc0fa0cd7e72b/out/touch169-6adcc0fa0cd7e72b)
+
+running 2 tests
+test touch169_fixed_bus_addresses_wrong_routes_and_peripheral_state_survive_controller_reset ... ok
+test touch169_uses_the_real_expander_reset_and_cst_irq_without_resetting_lcd ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/touch28.rs (target-c5-rebuild/release/build/esp32c5/100b61887e083e51/out/touch28-100b61887e083e51)
+
+running 2 tests
+test touch28_does_not_alias_other_board_addresses_or_invent_adc_or_touch_identity ... ok
+test touch28_expander_resets_touch_and_panel_independently_and_pwm_gates_light ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/transport.rs (target-c5-rebuild/release/build/esp32c5/1fc3c54b986b88fc/out/transport-1fc3c54b986b88fc)
+
+running 8 tests
+test gdma_c5_uses_trigger_one_full_address_partial_descriptors_owner_and_bounds ... ok
+test c5_usr_snapshots_routes_and_finishes_after_real_selected_serial_clocks ... ok
+test unsupported_qpi_partial_byte_capacity_and_unknown_clock_are_not_silent_fallbacks ... ok
+test c5_ledc_48mhz_wrap_controls_real_backlight_and_reset_gates_it ... ok
+test gdma_receive_uses_c5_full_link_address_and_writes_actual_miso ... ok
+test lcd_requires_its_actual_clock_reset_dc_and_backlight_nets ... ok
+test gdma_reaches_guest_mapped_quad_psram_without_an_sram_alias ... ok
+test public_sd_loading_delegates_only_to_the_real_board_socket ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests examples/app_image.rs (target-c5-rebuild/release/build/esp32c5/b4896e3490a250a5/out/app_image-b4896e3490a250a5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/bringup.rs (target-c5-rebuild/release/build/esp32c5/7c3eda2de82c2d27/out/bringup-7c3eda2de82c2d27)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/factory_boundary.rs (target-c5-rebuild/release/build/esp32c5/d6ef53136f9e72ee/out/factory_boundary-d6ef53136f9e72ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/lcd147_probe.rs (target-c5-rebuild/release/build/esp32c5/d477b6b54e5cdfda/out/lcd147_probe-d477b6b54e5cdfda)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/memory_idle.rs (target-c5-rebuild/release/build/esp32c5/145983a8020094f5/out/memory_idle-145983a8020094f5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/psram_probe.rs (target-c5-rebuild/release/build/esp32c5/2cb52df894d62017/out/psram_probe-2cb52df894d62017)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/touch169_probe.rs (target-c5-rebuild/release/build/esp32c5/b25dbd20eac88837/out/touch169_probe-b25dbd20eac88837)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests examples/touch28_probe.rs (target-c5-rebuild/release/build/esp32c5/ef9cd6a2cdd6a66f/out/touch28_probe-ef9cd6a2cdd6a66f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

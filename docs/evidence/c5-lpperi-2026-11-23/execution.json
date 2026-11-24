@@ -1,0 +1,47 @@
+{
+  "observedAtUTC": "2026-11-23T08:30:52.274486+00:00",
+  "rom": {
+    "name": "esp32c5_rev100_rom.elf",
+    "bytes": 472300,
+    "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+    "sourceReceipt": "../c5-memory-2026-11-23/inputs.json"
+  },
+  "disassembly": {
+    "command": [
+      "$C5_SOURCES/toolchain/riscv32-esp-elf/bin/riscv32-esp-elf-objdump",
+      "-d",
+      "--start-address=0x4001deee",
+      "--stop-address=0x4001df0c",
+      "$C5_SOURCES/esp32c5_rev100_rom.elf"
+    ],
+    "exitCode": 0,
+    "rawSha256": "78690484f3c17ab98a059ae76d4512e9e7e69901e09f819cd0405e4afb828818",
+    "normalizedSha256": "21a5dddabf61d373c793eb2e4adc13699596ae3981420b9e0c42e7dd024a655d"
+  },
+  "execution": {
+    "budgetSteps": 1000000,
+    "steps": 6818,
+    "stop": "Trap(Exception(5))",
+    "trapPC": "0x40001600",
+    "firstFault": {
+      "pc": "0x4001def2",
+      "address": "0x600b1c1c",
+      "write": false,
+      "width": 4
+    },
+    "uart": ""
+  },
+  "allTargetTestObservation": {
+    "command": "CARGO_BUILD_JOBS=1 CARGO_PROFILE_RELEASE_LTO=false CARGO_TARGET_DIR=target-c5-rebuild cargo test -p esp32c5 --release --all-targets",
+    "passed": 31,
+    "failed": 0,
+    "ignored": 1,
+    "note": "Observed before external ROM test, which then passed separately; this summary is not a reconstructed raw log."
+  },
+  "limits": [
+    "No physical entropy or calibrated RNG sampling is claimed.",
+    "No firmware flash was installed for this actual ROM probe.",
+    "No ROM boot banner or successful boot is claimed.",
+    "LP WDT remains unsupported at this checkpoint."
+  ]
+}

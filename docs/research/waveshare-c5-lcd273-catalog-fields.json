@@ -1,0 +1,231 @@
+{
+  "schemaVersion": "1",
+  "productId": "waveshare-esp32-c5-lcd-2-73",
+  "shortName": "C5 LCD2.73",
+  "familyName": "Waveshare ESP32-C5 2.73 英寸LCD",
+  "summary": "2.73 英寸320×320 ILI9488非触摸屏，32MiB Flash、8MiB PSRAM，CH32V006、三按键和TF卡槽；RGB666原创诊断已原生验证，原厂启动开发中。",
+  "sourceAliases": {
+    "README.md": "readme",
+    "canonical-overview.html": "overview",
+    "canonical-resources.html": "resources",
+    "schematic/ESP32-C5-LCD-2.73.pdf": "schematic",
+    "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c": "bsp",
+    "example/ESP-IDF-V553/01_factory/components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h": "bsp-pins",
+    "example/ESP-IDF-V553/01_factory/components/io_extension/io_extension.c": "expander-protocol",
+    "example/ESP-IDF-V553/01_factory/components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c": "display-driver",
+    "ILI9488_Data_Sheet.pdf": "display-datasheet"
+  },
+  "publicSourceIds": [
+    "overview",
+    "schematic",
+    "bsp",
+    "bsp-pins",
+    "display-driver",
+    "factory"
+  ],
+  "summarySourceIds": [
+    "overview",
+    "schematic",
+    "bsp"
+  ],
+  "display": {
+    "width": 320,
+    "height": 320,
+    "type": "TFT LCD",
+    "controller": "ILI9488",
+    "bus": "SPI2 RGB666",
+    "diagonalInches": 2.73,
+    "touch": false
+  },
+  "controls": [
+    {
+      "id": "prev",
+      "name": "PREV",
+      "type": "button",
+      "pin": 2,
+      "activeLow": true,
+      "defaultKeyCode": "ArrowLeft"
+    },
+    {
+      "id": "next",
+      "name": "NEXT",
+      "type": "button",
+      "pin": 3,
+      "activeLow": true,
+      "defaultKeyCode": "ArrowRight"
+    },
+    {
+      "id": "boot",
+      "name": "BOOT",
+      "type": "button",
+      "pin": 28,
+      "activeLow": true,
+      "defaultKeyCode": "Space"
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "micro-sd",
+      "name": "TF · SPI",
+      "type": "microSD",
+      "external": true,
+      "pins": [
+        {
+          "name": "CLK",
+          "gpio": 6
+        },
+        {
+          "name": "MOSI",
+          "gpio": 7
+        },
+        {
+          "name": "MISO",
+          "gpio": 5
+        },
+        {
+          "name": "CS",
+          "gpio": 9
+        }
+      ],
+      "sourceIds": [
+        "schematic",
+        "bsp-pins"
+      ],
+      "notes": "默认64MiB FAT32空卡；原生块读写后整张8MiB样本卡恢复，FAT挂载尚未验收。"
+    }
+  ],
+  "limitations": [
+    "原厂 FactoryOnly_20260724 使用独立 app20000h 布局；未修改的 ROM 在第 6831 条指令读取 PMU0x600b00e4 时停止，保持 reference。",
+    "原创 SRAM App 已原生验证完整8MiB PSRAM、RGB666经GDMA出屏、PREV／NEXT／BOOT输入及SD块保存／读写／恢复；公开Worker／浏览器验收需独立执行。",
+    "ILI9488 内部保留320×480×18位GRAM，显示玻璃320×320；既有主机RGB565输出会丢弃红／蓝的第6位，不冒称18位物理校准。",
+    "仅MV0及RGB666三字节传输；TE、滚动、RAMWRC、屏幕读回、模拟gamma／PWM频率未实现。",
+    "CH32V006数字IO／PWM、QMI8658C、PCF85063A仅对应已建模协议；SHTC3、充电／电池／电源键、无线、USB、OTA、FAT挂载未验收。"
+  ],
+  "factoryLimitations": [
+    "原厂 FactoryOnly_20260724 使用独立 app20000h 布局；未修改的 ROM 在第 6831 条指令读取 PMU0x600b00e4 时停止，保持 reference。"
+  ],
+  "diagnosticTitle": "C5 LCD2.73 · 项目诊断 · PSRAM／RGB666／三按键／SD",
+  "diagnosticLimitations": [
+    "本项目原创SRAM App，独立于厂商镜像。",
+    "原创 SRAM App 已原生验证完整8MiB PSRAM、RGB666经GDMA出屏、PREV／NEXT／BOOT输入及SD块保存／读写／恢复；公开Worker／浏览器验收需独立执行。",
+    "ILI9488 内部保留320×480×18位GRAM，显示玻璃320×320；既有主机RGB565输出会丢弃红／蓝的第6位，不冒称18位物理校准。",
+    "完成运行会恢复原始SD块；中途终止不保证事务式恢复。"
+  ],
+  "collectionNotes": [
+    "SKU35224与无电池-EN35225按包装记录；未认证二者的语言固件映射。",
+    "机械模型由独立照片／尺寸资料维护，此电气生成器不推造实体几何或发布日期。",
+    "小智v2.6.0已检索200个release assets，未发现精确C5 LCD2.73；没有拿相似C6或Touch型号替代。"
+  ],
+  "facts": [
+    {
+      "id": "identity",
+      "label": "SKU与物理容量",
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic"
+      ],
+      "value": {
+        "baseSku": "35224",
+        "batteryFreeSku": "35225",
+        "module": "ESP32-C5-WROOM-1-N32R8",
+        "flashMiB": 32,
+        "psramMiB": 8,
+        "hasTfSlot": true,
+        "hasTouch": false
+      }
+    },
+    {
+      "id": "display",
+      "label": "屏幕与真实布线",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp",
+        "bsp-pins",
+        "display-driver",
+        "display-datasheet"
+      ],
+      "value": {
+        "resolution": [
+          320,
+          320
+        ],
+        "controller": "ILI9488",
+        "gram": [
+          320,
+          480
+        ],
+        "storageBitsPerPixel": 18,
+        "wirePixelFormat": "RGB666, three8bitserialbytes",
+        "spi": {
+          "CLK": 6,
+          "MOSI": 7,
+          "CS": 8,
+          "DC": 4,
+          "reset": "CH32 EXIO0",
+          "backlight": "CH32 PWM command05"
+        },
+        "sourceMadctl": "0x48",
+        "sourceInvert": true,
+        "sourceGap": [
+          0,
+          0
+        ],
+        "i2c": {
+          "SDA": 27,
+          "SCL": 26
+        }
+      }
+    },
+    {
+      "id": "components",
+      "label": "数字IO与板载外设",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp",
+        "bsp-pins",
+        "expander-protocol",
+        "resources"
+      ],
+      "value": {
+        "expander": "CH32V006K8U7@0x24,16-bitLEdigitalIO",
+        "imu": "QMI8658C@0x6b, SA0grounded",
+        "rtc": "PCF85063A@0x51",
+        "humiditySensor": "SHTC3 (notmodeled)",
+        "sd": {
+          "CLK": 6,
+          "MOSI": 7,
+          "MISO": 5,
+          "CS": 9
+        }
+      }
+    },
+    {
+      "id": "buttons",
+      "label": "三个实体按键",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "overview"
+      ],
+      "value": {
+        "activeLow": true,
+        "pullupOhms": 10000,
+        "prev": {
+          "gpio": 2,
+          "schematicNet": "KEY_L"
+        },
+        "next": {
+          "gpio": 3,
+          "schematicNet": "KEY_R"
+        },
+        "boot": {
+          "gpio": 28,
+          "schematicNet": "BOOT/ENTER"
+        }
+      }
+    }
+  ]
+}

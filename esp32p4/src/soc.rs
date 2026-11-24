@@ -290,6 +290,9 @@ impl esp_soc::SocBus for SocBus {
     /// The card goes in the reference board's socket, on slot 0's IO MUX pins; firmware reaches
     /// it through slot 0 or, routing those pins through the GPIO matrix, slot 1.
     fn attach_sd_card(&mut self, image: Box<dyn esp_periph::sdmmc::SdStore>, config: esp_periph::sdmmc::SdCardConfig) -> Result<String, String> {
+        if crate::board::waveshare_platform::profile(self.board.name()).is_some_and(|p| !p.sd) {
+            return Err("This Waveshare P4 board profile has no physical TF socket".into());
+        }
         let timed = config.timed_bus;
         let card = esp_periph::sdmmc::SdCard::with_config(image, config)?;
         let what = format!("{}, {} blocks ({}), serial {:08x}, programming {} us, at CLK {} CMD {} D0-D3 {:?}", card.describe(), card.blocks(), if card.sdxc() { "SDXC" } else { "SDHC" },

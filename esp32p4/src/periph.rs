@@ -16,6 +16,8 @@ use esp_periph::{RST_POWERON, RST_SW_CPU, RST_SW_SYS};
 /// The emulator's time base: the rev < 3 application clock, CPLL 360 MHz
 /// (IDF v5.5.3 sdkconfig CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_360). One instruction is one cycle.
 pub const CPU_HZ: u64 = 360_000_000;
+/// P4 GPIO matrix/pad layout, ESP-IDF v5.5.3 gpio_sig_map.h and gpio_reg.h.
+pub const GPIO_PINS: esp_soc::pins::ChipPins = esp_soc::pins::ChipPins { valid: (1u64 << 57) - 1, input_select: 0x80, output_mask: 0x3ff };
 
 /// Interrupt sources, numbered as IDF v5.5.3 components/soc/esp32p4/include/soc/interrupts.h
 /// numbers them; the interrupt matrix has one map register per source at 4 * n
@@ -581,6 +583,8 @@ pub struct Peripherals {
     /// I2C0 at 0x500C4000. Optional dispatch keeps idle boards out of its deadline work.
     /// T-Display-P4's XL9535 uses this controller, not Waveshare's I2C1.
     pub i2c0: esp_periph::i2c::I2c,
+    /// Optional board wiring: a socket is reachable only when this pad drives its active level.
+    pub sd_power_enable: Option<(u8, bool)>,
 }
 
 // Every peripheral, its 4 KB block (address >> 12) and its interrupt sources.
@@ -647,6 +651,12 @@ impl DeviceSet for Peripherals {
         if block == 0x500c5 {
             let (c10, c11) = (self.hp_clkrst.read(0x40), self.hp_clkrst.read(0x44));
             self.i2c1.set_external_clock_parameters(c11 as u8, (c11 >> 8) as u8, (c11 >> 16) as u8, c10 & (1 << 26) != 0);
+            if write && off == 4 && self.i2c1.has_pinned_devices() {
+                // ESP-IDF v5.5.3 2c211b23 gpio_sig_map.h: I2C1 SDA71/SCL70.
+                // Sample the physical pad routes only when starting a command list.
+                let routes = GPIO_PINS.routes(&self.gpio.g, &self.io_mux);
+                self.i2c1.set_pins(routes.i2c_pin(71).zip(routes.i2c_pin(70)));
+            }
         }
         if block == 0x500c4 {
             // IDF v5.5.3 hw_ver1: CTRL10 packs I2C0's source/divisor/fraction.
@@ -655,8 +665,7 @@ impl DeviceSet for Peripherals {
             if write && off==4 && self.i2c0.has_pinned_devices() {
                 // GPIO matrix indices 68/69, physical pad mux and input/output enables.
                 // Only an I2C register access decodes these routes; no CPU/tick polling.
-                const PINS:esp_soc::pins::ChipPins=esp_soc::pins::ChipPins{valid:(1u64<<57)-1,input_select:0x80,output_mask:0x3ff};
-                let routes=PINS.routes(&self.gpio.g,&self.io_mux);
+                let routes=GPIO_PINS.routes(&self.gpio.g,&self.io_mux);
                 self.i2c0.set_pins(routes.i2c_pin(69).zip(routes.i2c_pin(68)));
             }
         }
@@ -684,7 +693,7 @@ impl Peripherals {
             sha: Sha::new(), intmtx: IntMatrix::new(), clic: Clic::default(), cache: Cache::new(), hp_sys: HpSys::default(), hp_clkrst: HpClkRst::new(),
             lp: LpAon::new(), ana_mst: AnaMst::default(), assist_debug: AssistDebug::default(), rng: Rng::new(),
             spi2: GpSpi::new(), i2c1: esp_periph::i2c::I2c::new(), axi_dma: AxiDma::new(), ahb_dma: AhbDma::new(), i2s1: esp_periph::I2s::new(CPU_HZ), ledc: Ledc::new(LedcLayout::P4),
-            misc: Misc::new(), spi_exec: false, psram_exec: false, clock: Self::new_clock(), cycle_base: 0, last_status: [0; 4], i2c0: esp_periph::i2c::I2c::new(),
+            misc: Misc::new(), spi_exec: false, psram_exec: false, clock: Self::new_clock(), cycle_base: 0, last_status: [0; 4], i2c0: esp_periph::i2c::I2c::new(), sd_power_enable: None,
         }
     }
 
@@ -747,6 +756,9 @@ impl Peripherals {
     pub fn sd_routes(&self) -> [Option<usize>; SLOTS] {
         let mut r = [None; SLOTS];
         for (i, p) in self.sd_pins.iter().enumerate() {
+            if *p == SdPins::SOCKET && self.sd_power_enable.is_some_and(|(pin, active)| GPIO_PINS.routes(&self.gpio.g, &self.io_mux).software_output(pin) != Some(active)) {
+                continue;
+            }
             match pad_function(&self.io_mux, p.clk) {
                 0 if *p == SdPins::SOCKET => r[0] = Some(i),
                 1 if self.gpio.out_signal(p.clk) == SIG_SD_CCLK_2 => r[1] = Some(i),
@@ -927,6 +939,50 @@ mod tests {
     }
 
     #[test]
+    fn i2c1_physical_routes_use_its_own_matrix_signals() {
+        use std::sync::{Arc, atomic::{AtomicUsize, Ordering}};
+        struct Probe(Arc<AtomicUsize>);
+        impl esp_periph::i2c::I2cDevice for Probe {
+            fn pins(&self) -> Option<(u8, u8)> { Some((7, 8)) }
+            fn start(&mut self, _read: bool) -> bool { self.0.fetch_add(1, Ordering::Relaxed); true }
+            fn write(&mut self, _byte: u8) -> bool { true }
+            fn read(&mut self) -> u8 { 0x83 }
+        }
+        fn send(p: &mut Peripherals) {
+            let base = 0x500c_5000;
+            for (off, value) in [(0x24, u32::MAX), (0x18, 3 << 12), (0x1c, 0x30),
+                (0x58, 6 << 11), (0x5c, (1 << 11) | (1 << 8) | 1), (0x60, 2 << 11), (4, 1 << 5)] {
+                p.write32(base + off, value);
+            }
+            esp_periph::Device::tick(&mut p.i2c1, u64::MAX);
+        }
+        let mut p = Peripherals::new([0; 6], (3, 2));
+        let seen = Arc::new(AtomicUsize::new(0));
+        p.i2c1.attach(0x18, Box::new(Probe(seen.clone())));
+        send(&mut p);
+        assert_ne!(p.i2c1.int_raw & esp_periph::i2c::INT_NACK, 0);
+        // I2C0 selectors do not connect I2C1 to the same pads.
+        for (pin, signal) in [(7, 69), (8, 68)] {
+            p.io_mux.write(4 + pin * 4, (1 << 12) | (1 << 9));
+            p.gpio.g.func_in_sel[signal] = 0x80 | pin;
+            p.gpio.g.func_out_sel[pin as usize] = signal as u32;
+        }
+        send(&mut p);
+        assert_eq!(seen.load(Ordering::Relaxed), 0);
+        for (pin, signal) in [(7, 71), (8, 70)] {
+            p.gpio.g.func_in_sel[signal] = 0x80 | pin;
+            p.gpio.g.func_out_sel[pin as usize] = signal as u32;
+        }
+        send(&mut p);
+        assert_eq!(seen.load(Ordering::Relaxed), 1);
+        assert_eq!(p.i2c1.int_raw & esp_periph::i2c::INT_NACK, 0);
+        p.io_mux.write(4 + 7 * 4, 1 << 12); // missing SDA input enable
+        send(&mut p);
+        assert_eq!(seen.load(Ordering::Relaxed), 1);
+        assert_ne!(p.i2c1.int_raw & esp_periph::i2c::INT_NACK, 0);
+    }
+
+    #[test]
     fn both_revisions_random_sources_read_the_generator() {
         // WDEV_RND_REG: LP_SYSTEM RNG_DATA on rev < 3, LP_TRNG RNG_DATA on rev >= 3.
         let mut p = Peripherals::new([0; 6], (3, 1));
@@ -1019,6 +1075,25 @@ mod tests {
         p.write32(0x500e_1000 + 4 + 4 * 18, 1 << 12);
         p.write32(0x500e_0558 + 4 * 18, SIG_SD_CCLK_2);
         assert_eq!(p.sd_routes(), [Some(0), Some(1)], "the socket on slot 0, the other device on slot 1");
+    }
+
+    #[test]
+    fn optional_socket_power_gate_requires_a_routed_active_pad() {
+        let mut p = Peripherals::new([0; 6], (3, 2));
+        p.attach_sd(SdPins::SOCKET, card());
+        assert_eq!(p.sd_routes(), [Some(0), None]);
+        p.sd_power_enable = Some((45, false));
+        assert_eq!(p.sd_routes(), [None, None]);
+        p.io_mux.write(4 + 45 * 4, 1 << 12);
+        p.gpio.g.enable |= 1 << 45;
+        assert_eq!(p.sd_routes(), [Some(0), None]);
+        p.gpio.g.out |= 1 << 45;
+        assert_eq!(p.sd_routes(), [None, None]);
+        p.gpio.g.out &= !(1 << 45);
+        p.gpio.g.func_out_sel[45] = 70; // A peripheral route cannot act as the GPIO power latch.
+        assert_eq!(p.sd_routes(), [None, None]);
+        p.sd_power_enable = None;
+        assert_eq!(p.sd_routes(), [Some(0), None], "unconfigured older boards retain their route contract");
     }
 
     #[test]

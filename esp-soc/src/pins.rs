@@ -1,6 +1,15 @@
 //! Physical GPIO matrix and IO_MUX route decoding shared by chip buses and board devices.
 use esp_periph::{Gpio, GpSpi, RegRam};
-use crate::board::SpiPins;
+use crate::board::{SpiPins, SpiQspiPins};
+
+/// One native GP-SPI IO_MUX group, in physical D/Q/WP/HD order. Chip adapters
+/// supply only documented groups; unsupported chip signals are u32::MAX.
+pub struct SpiQspiNative<'a> {
+    pub function: u32,
+    pub sclk: u8,
+    pub data: [u8; 4],
+    pub cs: &'a [u8],
+}
 
 pub struct ChipPins {
     pub valid: u64,
@@ -23,6 +32,81 @@ pub struct PinRoutes<'a> {
     mux: &'a RegRam,
 }
 impl PinRoutes<'_> {
+    /// Opt-in SDR phase snapshot. Signals: CLK,D,Q,WP,HD,CS0..5. Sources:
+    /// ESP-IDF 735507283d5b2f9fb363a1901172dbd9e847945d S3 spi_reg.h,
+    /// gpio_sig_map.h and io_mux_reg.h (retained with their content hashes).
+    /// Only chip adapters whose register layout matches this source may call it.
+    pub fn spi_qspi_pins(&self, spi: &GpSpi, signals: [u32; 11], native: &[SpiQspiNative<'_>]) -> SpiQspiPins {
+        let user = spi.read(0x10);
+        let ctrl = spi.read(0x08);
+        let misc = spi.read(0x20);
+        let user1 = spi.read(0x14);
+        let user2 = spi.read(0x18);
+        let width = |enabled: bool, bits: u32| -> u8 {
+            if !enabled { 0 } else if bits & 4 != 0 { 8 } else if bits & 2 != 0 { 4 } else if bits & 1 != 0 { 2 } else { 1 }
+        };
+        let command_width = width(user & (1 << 31) != 0, (ctrl >> 8) & 7);
+        let address_width = width(user & (1 << 30) != 0, (ctrl >> 5) & 7);
+        let data_width = width(user & (1 << 27) != 0, (user >> 12) & 7);
+        let read_width = width(user & (1 << 28) != 0, (ctrl >> 14) & 7);
+        let data_bits = (spi.read(0x1c) & 0x3ffff) + 1;
+        let mut pins = SpiQspiPins {
+            command_width, address_width, data_width, read_width,
+            command_bits: if command_width != 0 { ((user2 >> 28) & 15) as u8 + 1 } else { 0 },
+            address_bits: if address_width != 0 { (user1 >> 27) as u8 + 1 } else { 0 },
+            data_bits: if data_width != 0 { data_bits } else { 0 },
+            read_bits: if read_width != 0 { data_bits } else { 0 },
+            dummy_cycles: if user & (1 << 29) != 0 { (user1 & 255) as u16 + 1 } else { 0 },
+            sio: user & (1 << 17) != 0,
+            full_duplex: user & 1 != 0,
+            keep_cs: misc & (1 << 30) != 0,
+            clock_idle_high: misc & (1 << 29) != 0,
+            clock_output_edge: user & (1 << 9) != 0,
+            unsupported_mode: ctrl & (15 << 23) != 0 || misc & ((15 << 16) | (1 << 31)) != 0
+                || spi.read(0xe0) & ((1 << 26) | (1 << 28)) != 0 || user & (1 << 15) != 0
+                || [command_width, address_width, data_width, read_width].contains(&8)
+                || [(command_width, (ctrl >> 8) & 7), (address_width, (ctrl >> 5) & 7),
+                    (data_width, (user >> 12) & 7), (read_width, (ctrl >> 14) & 7)]
+                    .iter().any(|&(w, bits)| w != 0 && bits.count_ones() > 1),
+            ..Default::default()
+        };
+        for pin in 0..64 {
+            if !self.valid_pin(pin) { continue; }
+            let native_pad = |n: &SpiQspiNative<'_>, pad: u8| usize::from(pad) == pin && self.function(pin, n.function);
+            if self.matrix_output(pin, signals[0]) || native.iter().any(|n| native_pad(n, n.sclk)) {
+                pins.sclk |= 1 << pin;
+            }
+            for lane in 0..4 {
+                if self.matrix_output(pin, signals[1 + lane]) || native.iter().any(|n| native_pad(n, n.data[lane])) {
+                    pins.data[lane] |= 1 << pin;
+                }
+            }
+            if self.software_output(pin as u8) == Some(false) { pins.software_cs |= 1 << pin; }
+            for cs in 0..6 {
+                if misc & ((1 << cs) | (1 << (cs + 7))) == 0
+                    && (self.matrix_output(pin, signals[5 + cs])
+                        || native.iter().any(|n| n.cs.get(cs).is_some_and(|&pad| native_pad(n, pad))))
+                {
+                    pins.hardware_cs |= 1 << pin;
+                }
+            }
+        }
+        if read_width != 0 {
+            for lane in 0..4 {
+                let signal = signals[1 + lane] as usize;
+                if signal >= self.gpio.func_in_sel.len() { continue; }
+                pins.input[lane] = self.matrix_input(signal);
+                if self.gpio.func_in_sel[signal] & self.chip.input_select == 0 {
+                    pins.input[lane] = native.iter().find_map(|n| {
+                        let pad = n.data[lane];
+                        self.input_function(usize::from(pad), n.function).then_some(pad)
+                    });
+                }
+            }
+        }
+        pins.cs = pins.hardware_cs | pins.software_cs;
+        pins
+    }
     /// Programmed GPIO-latch drive, not electrical input/pull resolution or a peripheral output.
     /// IDF v5.5.4 components/soc/{esp32,esp32s3}/register/soc/gpio_reg.h:
     /// FUNC0_OUT_SEL/OUT_INV_SEL/OEN_INV_SEL bits 0..8/9/11 (lines 7065..7092 and

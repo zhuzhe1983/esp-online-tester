@@ -1,0 +1,58 @@
+{
+  "scope": "explicit C5 LEDC variant and lazy static-duty output deadline",
+  "sourceSHA256": "f0211bbc38aa5bffcc24862e42d4e367840444f37e1c4ce24e5139f9cbfa1c5a",
+  "sources": "../../research/c5-ledc-sources-2026-11-23/manifest.json",
+  "runs": [
+    {
+      "executedAtUTC": "2026-11-23T07:23:35.532251+00:00",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp-periph",
+        "--lib",
+        "ledc::tests",
+        "--",
+        "--nocapture"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 21.26156238400108,
+      "log": "tests.txt",
+      "originalLogSHA256": "5c3c7e15909b980c7dca1d907c5f5d2d22d54a4108ebbb149d938c1de08a781b",
+      "logSHA256": "846d40cbfc73837bc104bd57346b2785f746e45a22ccf297be706a091437d841"
+    },
+    {
+      "executedAtUTC": "2026-11-23T07:23:56.793936+00:00",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp-periph",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "wallSeconds": 3.0126885270001367,
+      "log": "clippy.txt",
+      "originalLogSHA256": "cf9ccdef484dec4c132250b4b29d83589fa7acc17ba6759a7a7db5672ed026ce",
+      "logSHA256": "6c33e41abd8974dd4d6280710b83d83e1635faf47fff14766d1c1796245e7472"
+    }
+  ],
+  "testsPassed": 6,
+  "legacyVariantsCovered": [
+    "S3",
+    "C3",
+    "C6",
+    "P4"
+  ],
+  "redaction": "Checkout path normalized and trailing blank log lines trimmed; measured values unchanged.",
+  "limits": [
+    "No existing chip calls the new deadline method; C5 bus integration is a subsequent commit.",
+    "Hardware gamma fade is not implemented and has no synthetic completion.",
+    "This focused protocol check is not a whole-workspace or CPU performance gate."
+  ],
+  "baseLEDCSourceCommit": "f61aae75fe4733fde6368d0ea9f9b8f4ef48019a"
+}

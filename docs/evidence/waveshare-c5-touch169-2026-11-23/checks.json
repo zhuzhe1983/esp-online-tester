@@ -1,0 +1,164 @@
+{
+  "normalization": "Checkout, source, output and executable path prefixes; trailing blank lines removed with pre-trim hashes retained. No numeric results changed.",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_TARGET_DIR": "target-c5-rebuild"
+  },
+  "commands": [
+    {
+      "name": "all-target-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "startedAtUTC": "2026-11-23T09:20:48.500311+00:00",
+      "finishedAtUTC": "2026-11-23T09:20:50.786925+00:00",
+      "exitCode": 0,
+      "log": "all-target-clippy.log",
+      "rawLogSha256": "21ed124733089e159c978ea3871db3a22c4ce625630277e92379b6448a1abd08",
+      "normalizedLogSha256": "35a68e75d25ed4a3c95d0f0ff6c5c3984c8bedd9fc02cac9474f11cdc9671fc8"
+    },
+    {
+      "name": "all-target-tests",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "startedAtUTC": "2026-11-23T09:20:50.787667+00:00",
+      "finishedAtUTC": "2026-11-23T09:21:04.191357+00:00",
+      "exitCode": 0,
+      "log": "initial-all-target-tests.log",
+      "rawLogSha256": "0190c54a7fb6e5a9d7c3e0d8cc29a00ea41e780bb4001a0ac4c52adca816595f",
+      "normalizedLogSha256": "a099f88f356a4a54942cc9d1dde15e1a6074365dd60639c960b23e2998ae7e51",
+      "note": "One new test accidentally contained the external_ substring and was skipped by the CI filter; renamed to peripheral_state and repeated below.",
+      "preTrimNormalizedLogSha256": "32f293a2e2a17594a7e8e66d89c850005690d38e38900c91af88ad7b1dff5650"
+    },
+    {
+      "name": "actual-rom-regression",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--test",
+        "guest",
+        "external_c5_actual_rom_first_unsupported_access",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "startedAtUTC": "2026-11-23T09:21:04.193109+00:00",
+      "finishedAtUTC": "2026-11-23T09:21:04.226670+00:00",
+      "exitCode": 0,
+      "log": "actual-rom-regression.log",
+      "rawLogSha256": "6440b36077ba51e5b665a730d21509c4977e37dd93ab901cc37125864d5a723b",
+      "normalizedLogSha256": "c8233e7e7c4de7b1f72b69199b7ea207db124674c04cb9714090abdf33ad93dc",
+      "preTrimNormalizedLogSha256": "6440b36077ba51e5b665a730d21509c4977e37dd93ab901cc37125864d5a723b"
+    },
+    {
+      "name": "native-diagnostic",
+      "command": [
+        "cargo",
+        "run",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--example",
+        "touch169_probe",
+        "--",
+        "firmware/c5-touch169-probe/probe.bin",
+        "$OUTPUT"
+      ],
+      "startedAtUTC": "2026-11-23T09:21:04.227456+00:00",
+      "finishedAtUTC": "2026-11-23T09:21:13.880251+00:00",
+      "exitCode": 0,
+      "log": "native-diagnostic.log",
+      "rawLogSha256": "136bae3b1427fe2915b8637c008e12939821f8247c7ff970b05eabbc661ef17c",
+      "normalizedLogSha256": "3a9c3f44391da4067bcc1419c59ba87444ae0a68adb0f5c545f7dbc12502340e"
+    },
+    {
+      "name": "factory-boundary",
+      "command": [
+        "cargo",
+        "run",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--example",
+        "factory_boundary",
+        "--",
+        "waveshare-c5-touch169",
+        "16",
+        "8",
+        "$C5_SOURCES/esp32c5_rev100_rom.elf",
+        "$C5_SOURCES/next-boards/ESP32-C5-Touch-LCD-1.69/source/firmware/ESP32-C5-Touch-LCD-1.69_FactoryOnly_20260626.bin",
+        "1000000"
+      ],
+      "startedAtUTC": "2026-11-23T09:21:13.882200+00:00",
+      "finishedAtUTC": "2026-11-23T09:21:13.944503+00:00",
+      "exitCode": 0,
+      "log": "factory-boundary.log",
+      "rawLogSha256": "0f93c0c1e20d8294320ded822e7a049fdc249d23f8d31adbf94aa9e2d852d307",
+      "normalizedLogSha256": "636c2e99e14396370816c8cee85f17fba84408f6d6d75f94be299940a5fc0ec2"
+    },
+    {
+      "name": "all-target-tests",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "startedAtUTC": "2026-11-23T09:29:36.359694+00:00",
+      "finishedAtUTC": "2026-11-23T09:29:37.865137+00:00",
+      "exitCode": 0,
+      "log": "all-target-tests.log",
+      "rawLogSha256": "4171164677b052391cfcc16aac03da91eeb6828138cedd506dbb77c0ebeb28df",
+      "normalizedLogSha256": "446149c6f4d34e372aa58be02d4aa1dd5cc959f994951f3dc70c60344ac7b166",
+      "preTrimNormalizedLogSha256": "e1ab1b7ef3f6048909da689e4cedd8396b580a1c68cb2d47c0d20c3cfcc659ad"
+    },
+    {
+      "name": "final-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "startedAtUTC": "2026-11-23T09:29:37.866181+00:00",
+      "finishedAtUTC": "2026-11-23T09:29:38.009993+00:00",
+      "exitCode": 0,
+      "log": "final-clippy.log",
+      "rawLogSha256": "fd3b6b2277276e5fd7152bd44f0e4ad4fd311f2ba35ea24fbdb0dd63f630beb8",
+      "normalizedLogSha256": "61ae4eadbeddbddb52a8266f87097f6ef1e14d0f8710fa3d0ad4cedc5763ee53"
+    }
+  ]
+}

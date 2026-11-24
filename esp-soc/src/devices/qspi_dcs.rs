@@ -1,0 +1,214 @@
+//! Opt-in CO5300 QSPI transport around the existing GRAM engine. The legacy
+//! Co5300 callers are unchanged. Physical pad/power/reset checks belong to the
+//! board; this layer checks every serial phase and the whole CS-delimited packet.
+//! Sources: docs/platform/waveshare-amoled143c-runtime.md.
+use crate::{board::SpiQspiPins, devices::co5300::{Co5300, Co5300DisplayState}};
+
+pub struct QspiDcsPanel {
+    memory: Co5300,
+    reference_madctl: u8,
+    pub madctl: u8,
+    pub page: u8,
+    pub inverted: bool,
+    selected: bool,
+    discard: bool,
+    header: [u8; 4],
+    header_len: usize,
+    parameter_count: usize,
+    command: u8,
+    normal_command: bool,
+    pub commands: u64,
+    pub opaque_commands: u64,
+    pub opaque_bytes: u64,
+    pub rejected: u64,
+    pub changes: u64,
+}
+impl QspiDcsPanel {
+    /// Presentation coordinates are relative to the board's fixed BSP MADCTL
+    /// orientation, not a calibrated physical glass/PCB pose. Only the supplied
+    /// visible window is stored; this is not an assertion of full silicon GRAM size.
+    pub fn co5300(width: usize, height: usize, x_gap: u16, reference_madctl: u8) -> Self {
+        Self { memory: Co5300::new(width, height, x_gap).with_display_state(),
+            reference_madctl: reference_madctl & 0xc8, madctl: 0, page: 0, inverted: false,
+            selected: false, discard: false, header: [0; 4], header_len: 0,
+            parameter_count: 0, command: 0, normal_command: false,
+            commands: 0, opaque_commands: 0, opaque_bytes: 0, rejected: 0, changes: 0 }
+    }
+    pub fn width(&self) -> usize { self.memory.width() }
+    pub fn height(&self) -> usize { self.memory.height() }
+    pub fn frames(&self) -> u64 { self.memory.frames }
+    pub fn pixels_written(&self) -> u64 { self.memory.pixels_written }
+    pub fn state(&self) -> Co5300DisplayState { self.memory.display_state().expect("CO5300 state enabled") }
+    pub fn window(&self) -> [u16; 4] { self.memory.window() }
+    pub fn version(&self) -> u64 { self.changes.wrapping_add(self.pixels_written()).wrapping_add(self.state().revision) }
+    pub fn visible(&self) -> bool { self.state().visible() && self.madctl & 0x20 == 0 }
+    pub fn frame(&self) -> Vec<u16> {
+        let (w, h) = (self.width(), self.height());
+        let mut out = vec![0; w * h];
+        if !self.visible() { return out; }
+        let orientation = self.madctl ^ self.reference_madctl;
+        for (i, &pixel) in self.memory.frame.iter().enumerate() {
+            let (mut x, mut y) = (i % w, i / w);
+            if orientation & 0x40 != 0 { x = w - 1 - x; }
+            if orientation & 0x80 != 0 { y = h - 1 - y; }
+            let mut pixel = if orientation & 8 != 0 { (pixel & 0x07e0) | (pixel >> 11) | ((pixel & 31) << 11) } else { pixel };
+            if self.inverted { pixel ^= 0xffff; }
+            out[y * w + x] = pixel;
+        }
+        out
+    }
+    fn reset_registers(&mut self) {
+        // CO5300 CASET/RASET default tables explicitly keep frame memory on
+        // both software and hardware reset. Event counters remain monotonic.
+        let frame = std::mem::take(&mut self.memory.frame);
+        let (frames, pixels) = (self.memory.frames, self.memory.pixels_written);
+        self.memory.reset(); self.memory.frame = frame;
+        self.memory.frames = frames; self.memory.pixels_written = pixels;
+        self.madctl = 0; self.page = 0; self.inverted = false; self.changes += 1;
+    }
+    pub fn reset(&mut self) { self.reset_registers(); self.deselect(); }
+    pub fn deselect(&mut self) {
+        self.selected = false; self.discard = false; self.header_len = 0;
+        self.parameter_count = 0; self.normal_command = false;
+    }
+    /// A malformed phase cannot resynchronize on accidental pixel/header bytes
+    /// before the real CS is released. The board owns the actual CS edge.
+    pub fn reject_until_deselect(&mut self) {
+        self.selected = true; self.discard = true; self.rejected += 1;
+    }
+    pub fn transfer(&mut self, p: SpiQspiPins, bytes: &[u8]) -> bool {
+        if self.discard { return false; }
+        if !self.selected {
+            self.selected = true; self.header_len = 0; self.parameter_count = 0;
+            self.memory.begin_transaction();
+        }
+        let bits = u64::from(p.command_bits) + u64::from(p.address_bits) + u64::from(p.data_bits);
+        if p.unsupported_mode || p.sio || p.full_duplex || p.dummy_cycles != 0
+            || p.clock_idle_high || p.clock_output_edge || p.read_bits != 0 || p.read_width != 0
+            || !p.command_bits.is_multiple_of(8) || !p.address_bits.is_multiple_of(8)
+            || !p.data_bits.is_multiple_of(8) || bits != bytes.len() as u64 * 8
+            || (p.command_bits == 0) != (p.command_width == 0)
+            || (p.address_bits == 0) != (p.address_width == 0)
+            || (p.data_bits == 0) != (p.data_width == 0)
+        { self.reject_until_deselect(); return false; }
+        let mut at = 0;
+        for (n, width) in [(usize::from(p.command_bits) / 8, p.command_width),
+            (usize::from(p.address_bits) / 8, p.address_width), (p.data_bits as usize / 8, p.data_width)] {
+            if n == 0 { continue; }
+            if !self.phase(&bytes[at..at + n], width) { self.reject_until_deselect(); return false; }
+            at += n;
+        }
+        true
+    }
+    fn phase(&mut self, mut bytes: &[u8], width: u8) -> bool {
+        if self.header_len < 4 {
+            if width != 1 { return false; }
+            let n = (4 - self.header_len).min(bytes.len());
+            self.header[self.header_len..self.header_len + n].copy_from_slice(&bytes[..n]);
+            self.header_len += n; bytes = &bytes[n..];
+            if self.header_len == 4 {
+                let [opcode, zero1, cmd, zero2] = self.header;
+                if !matches!(opcode, 0x02 | 0x32) || zero1 != 0 || zero2 != 0
+                    || (opcode == 0x32 && !matches!(cmd, 0x2c | 0x3c)) { return false; }
+                self.command = cmd; self.commands += 1;
+                self.normal_command = self.page == 0 && matches!(cmd,
+                    0x01 | 0x10 | 0x11 | 0x20 | 0x21 | 0x28 | 0x29 | 0x2a | 0x2b | 0x2c |
+                    0x34 | 0x35 | 0x36 | 0x3a | 0x3c | 0x44 | 0x51 | 0x53);
+                if self.normal_command {
+                    if cmd == 1 { self.reset_registers(); }
+                    else { self.memory.transaction_stream(&self.header); }
+                    if cmd == 0x20 { self.inverted = false; }
+                    if cmd == 0x21 { self.inverted = true; }
+                    self.changes += 1;
+                } else { self.opaque_commands += 1; }
+            }
+        }
+        if bytes.is_empty() { return true; }
+        if self.header_len != 4 || width != if self.header[0] == 0x32 { 4 } else { 1 } { return false; }
+        let cmd = self.command;
+        if !self.normal_command {
+            // FE selects the manufacturer register page. An unknown page must
+            // not turn an unrelated vendor register into a standard DCS command.
+            if cmd == 0xfe && self.parameter_count == 0 { self.page = bytes[0]; }
+            self.opaque_bytes += bytes.len() as u64; self.parameter_count += bytes.len();
+            return true;
+        }
+        if matches!(cmd, 0x2c | 0x3c) {
+            let [x0, x1, y0, y1] = self.memory.window();
+            if !self.state().rgb565() || self.madctl & 0x20 != 0 || x0 > x1 || y0 > y1 { return false; }
+        } else {
+            let needed = match cmd { 0x2a | 0x2b => 4, 0x44 => 2,
+                0x35 | 0x36 | 0x3a | 0x51 | 0x53 => 1, _ => 0 };
+            if self.parameter_count + bytes.len() > needed { return false; }
+            if cmd == 0x36 { self.madctl = bytes[0]; self.changes += 1; }
+        }
+        self.parameter_count += bytes.len(); self.memory.transaction_stream(bytes); true
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn pins(n: usize, width: u8) -> SpiQspiPins {
+        SpiQspiPins { data_width: width, data_bits: n as u32 * 8, ..Default::default() }
+    }
+    fn command(p: &mut QspiDcsPanel, cmd: u8, data: &[u8]) {
+        assert!(p.transfer(pins(4, 1), &[2, 0, cmd, 0]));
+        if !data.is_empty() { assert!(p.transfer(pins(data.len(), 1), data)); }
+        p.deselect();
+    }
+    fn ready() -> QspiDcsPanel {
+        let mut p = QspiDcsPanel::co5300(2, 1, 8, 0xc0);
+        command(&mut p, 0x36, &[0xc0]); command(&mut p, 0x3a, &[0x55]);
+        command(&mut p, 0x11, &[]); command(&mut p, 0x29, &[]);
+        command(&mut p, 0x53, &[0x20]); command(&mut p, 0x51, &[255]);
+        command(&mut p, 0x2a, &[0, 8, 0, 9]); command(&mut p, 0x2b, &[0, 0, 0, 0]); p
+    }
+    #[test]
+    fn split_header_quad_pixels_and_header_looking_pixel_chunks_keep_cs_identity() {
+        let mut p = ready();
+        for b in [0x32, 0, 0x2c, 0] { assert!(p.transfer(pins(1, 1), &[b])); }
+        assert!(p.transfer(pins(1, 4), &[0xf8])); assert!(p.transfer(pins(3, 4), &[0, 7, 0xe0]));
+        assert_eq!(p.frame(), [0xf800, 0x07e0]);
+        assert!(p.transfer(pins(4, 4), &[0x02, 0, 0x29, 0]));
+        assert_eq!(p.frame(), [0x0200, 0x2900]); assert_eq!(p.pixels_written(), 4);
+        p.deselect(); command(&mut p, 0x36, &[0]); assert_eq!(p.frame(), [0x2900, 0x0200]);
+        command(&mut p, 0x36, &[0xc8]); assert_eq!(p.frame()[1], 0x0105);
+    }
+    #[test]
+    fn malformed_phases_never_resynchronize_before_physical_cs_release() {
+        let mut p = ready();
+        assert!(!p.transfer(pins(4, 4), &[2, 0, 0x28, 0]));
+        assert!(!p.transfer(pins(4, 1), &[2, 0, 0x28, 0])); assert!(p.visible());
+        p.deselect(); command(&mut p, 0x28, &[]); assert!(!p.visible());
+        let mut wrong = pins(4, 1); wrong.dummy_cycles = 1;
+        assert!(!p.transfer(wrong, &[2, 0, 0x29, 0])); p.deselect();
+        command(&mut p, 0x29, &[]); assert!(p.visible());
+        assert!(!p.transfer(pins(4, 1), &[0x32, 0, 0x2a, 0])); p.deselect();
+        assert_eq!(p.window(), [8, 9, 0, 0]);
+    }
+    #[test]
+    fn formats_visibility_and_reset_keep_the_actual_gram_without_fake_pixels() {
+        let mut p = ready(); command(&mut p, 0x2c, &[0xf8, 0, 7, 0xe0]);
+        command(&mut p, 0x51, &[0]); assert_eq!(p.frame(), [0, 0]);
+        command(&mut p, 0x51, &[1]); assert_eq!(p.frame(), [0xf800, 0x07e0]);
+        command(&mut p, 0x3a, &[0x66]);
+        assert!(p.transfer(pins(4, 1), &[0x32, 0, 0x2c, 0]));
+        assert!(!p.transfer(pins(4, 4), &[0, 0, 0, 0])); assert_eq!(p.pixels_written(), 2); p.deselect();
+        command(&mut p, 0x3a, &[0xd7]); // bit7 selects VIPF=5, not IFPF=7
+        assert!(p.state().rgb565()); command(&mut p, 0x3c, &[0, 0]); assert_eq!(p.pixels_written(), 3);
+        p.reset(); assert_eq!(p.pixels_written(), 3); assert!(!p.visible());
+        command(&mut p, 0x36, &[0xc0]); command(&mut p, 0x11, &[]); command(&mut p, 0x29, &[]);
+        assert_eq!(p.frame(), [0, 0x07e0], "reset does not clear GRAM");
+    }
+    #[test]
+    fn wrong_address_windows_and_vendor_pages_cannot_mutate_visible_memory() {
+        let mut p = ready(); command(&mut p, 0x2a, &[0, 0, 0, 1]);
+        command(&mut p, 0x2c, &[0xff, 0xff, 0xff, 0xff]); assert_eq!(p.pixels_written(), 0);
+        command(&mut p, 0xfe, &[1]); command(&mut p, 0x28, &[]); assert!(p.visible());
+        command(&mut p, 0xfe, &[0]); command(&mut p, 0x28, &[]); assert!(!p.visible());
+        let malformed = SpiQspiPins { command_width: 1, command_bits: 8, address_width: 4,
+            address_bits: 24, ..Default::default() };
+        assert!(!p.transfer(malformed, &[2, 0, 0x29, 0])); assert!(!p.visible());
+    }
+}

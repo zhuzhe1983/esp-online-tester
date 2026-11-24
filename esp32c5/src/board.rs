@@ -3,6 +3,15 @@
 //! The red nCHG lamp is charger-controlled; there is no RGB or user button here.
 use esp_soc::{BoardModel, pins::PinRoutes};
 pub mod lilygo;
+pub mod waveshare_lcd147;
+pub mod waveshare_touch169;
+pub mod waveshare_touch28;
+mod waveshare_touch28_parts;
+pub mod waveshare_touch35;
+pub mod waveshare_lcd273;
+mod waveshare_ili9488;
+mod waveshare_ch32v006;
+mod waveshare_ft6336;
 pub struct StampC5 { dip: bool, leds: [[u8; 3]; 1], updates: u64 }
 impl StampC5 {
     // Generation 1 publishes the board's real initial off state to observers whose
@@ -15,6 +24,11 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
         "stamp-c5-dip" | "m5stack-s016-dip" => Some(Box::new(StampC5::new(true))),
         "lilygo-t7-c5" => Some(Box::new(lilygo::T7C5)),
         "lilygo-t-dongle-c5" => Some(Box::new(lilygo::TDongleC5::new())),
+        "waveshare-c5-lcd147" => Some(Box::new(waveshare_lcd147::Lcd147::new())),
+        "waveshare-c5-touch169" => Some(Box::new(waveshare_touch169::Touch169::new())),
+        "waveshare-c5-touch28" => Some(Box::new(waveshare_touch28::Touch28::new())),
+        "waveshare-c5-touch35" => Some(Box::new(waveshare_touch35::Touch35::new())),
+        "waveshare-c5-lcd273" => Some(Box::new(waveshare_lcd273::Lcd273::new())),
         "none" | "bare" => Some(Box::new(esp_soc::NoBoard)),
         _ => None,
     }

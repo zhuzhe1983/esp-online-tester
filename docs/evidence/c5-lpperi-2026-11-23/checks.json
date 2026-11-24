@@ -1,0 +1,58 @@
+{
+  "baseCommit": "0cc96e160136fe080443b3bfba909511373b74b4",
+  "normalization": "Only local checkout/source-cache/executable prefixes and trailing blank lines; measurements and guest output unchanged.",
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--test",
+        "guest",
+        "external_c5_actual_rom_first_unsupported_access",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_TARGET_DIR": "target-c5-rebuild",
+        "C5_ROM_ELF": "$C5_SOURCES/esp32c5_rev100_rom.elf"
+      },
+      "startedAtUTC": "2026-11-23T08:29:51.621728+00:00",
+      "finishedAtUTC": "2026-11-23T08:29:51.653570+00:00",
+      "exitCode": 0,
+      "log": "actual-rom-boundary.log",
+      "rawLogSha256": "9603de55e133975cbc9f69abef9fca62a506cda93a39f150dce5c07193c77f05",
+      "normalizedLogSha256": "b44ad7c43ac6bb8add3b2f467d7d8d985370dadf82af01eb31f8eb061c6e8e1c"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_TARGET_DIR": "target-c5-rebuild",
+        "C5_ROM_ELF": "$C5_SOURCES/esp32c5_rev100_rom.elf"
+      },
+      "startedAtUTC": "2026-11-23T08:29:51.653840+00:00",
+      "finishedAtUTC": "2026-11-23T08:29:56.856295+00:00",
+      "exitCode": 0,
+      "log": "all-target-clippy.log",
+      "rawLogSha256": "83808b0721d7fad54a9ad630536530d693e57ad462b484480277f4d88e88d5b6",
+      "normalizedLogSha256": "44152c1f308bbd9da4a9fb92a356d11c6645145ad39658e95ae0ac4f84a43f09"
+    }
+  ]
+}

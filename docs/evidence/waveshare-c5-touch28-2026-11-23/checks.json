@@ -1,0 +1,97 @@
+{
+  "baseCommit": "6c70d6470d410cb75ab08382210298116a9063bf",
+  "normalization": "Checkout/source/output/executable prefixes and trailing blank lines only.",
+  "environment": {
+    "CARGO_BUILD_JOBS": 1,
+    "CARGO_PROFILE_RELEASE_LTO": false
+  },
+  "commands": [
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "startedAtUTC": "2026-11-23T10:06:46.961491+00:00",
+      "finishedAtUTC": "2026-11-23T10:06:49.146052+00:00",
+      "exitCode": 0,
+      "log": "clippy.log",
+      "rawLogSha256": "44608fe6992d82a2896643f35f82ae234cad34775157c2f2833237558958aeb6",
+      "normalizedLogSha256": "c06e8af7e57f12a8e16b64ec017c613e36f3505cba16b940d1e411d566ff302c"
+    },
+    {
+      "name": "tests",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "startedAtUTC": "2026-11-23T10:06:49.146480+00:00",
+      "finishedAtUTC": "2026-11-23T10:07:03.619810+00:00",
+      "exitCode": 0,
+      "log": "tests.log",
+      "rawLogSha256": "055ea275044d5e729c10d8ab6a907c0b0e14193f17fa1e30aec658ee5bd64926",
+      "normalizedLogSha256": "b61e95925f900bec94ee94f20cdeae414520d8cbe3d43e7a5e57ae7d82b8891b"
+    },
+    {
+      "name": "factory",
+      "command": [
+        "cargo",
+        "run",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--example",
+        "factory_boundary",
+        "--",
+        "waveshare-c5-touch28",
+        "32",
+        "8",
+        "$C5_SOURCES/esp32c5_rev100_rom.elf",
+        "$C5_SOURCES/next-boards/ESP32-C5-Touch-LCD-2.8/source/firmware/ESP32-C5-Touch-LCD-2.8_FactoryOnly_20261024.bin",
+        "1000000"
+      ],
+      "startedAtUTC": "2026-11-23T10:07:03.620213+00:00",
+      "finishedAtUTC": "2026-11-23T10:07:03.978839+00:00",
+      "exitCode": 0,
+      "log": "factory.log",
+      "rawLogSha256": "e44b00e3af0e12a3a0e40a63dd32ff2d0f5c401415826c6bc041bc503af0922d",
+      "normalizedLogSha256": "006fb21211826ee29f804dfb9476a4bfeff75411e7f88009381dfa45025a9c90"
+    },
+    {
+      "name": "diagnostic",
+      "command": [
+        "cargo",
+        "run",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--example",
+        "touch28_probe",
+        "--",
+        "firmware/c5-touch28-probe/probe.bin",
+        "$OUTPUT"
+      ],
+      "startedAtUTC": "2026-11-23T10:07:03.979295+00:00",
+      "finishedAtUTC": "2026-11-23T10:07:12.911316+00:00",
+      "exitCode": 0,
+      "log": "diagnostic.log",
+      "rawLogSha256": "322764bc90aaf1c74aad744a003dba4a4bbdaac5132a63e114086621c8cef929",
+      "normalizedLogSha256": "518e02632d2d4c5f2eecaae1180d1fa0899cfc4bf30cb3333bf851746d32ed6d"
+    }
+  ]
+}

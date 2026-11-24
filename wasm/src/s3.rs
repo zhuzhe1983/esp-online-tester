@@ -329,7 +329,15 @@ pub unsafe extern "C" fn esp32sim_set_imu_motion(e: *mut Emu, mode: u32) -> u32 
 pub unsafe extern "C" fn esp32sim_set_imu_sample(e: *mut Emu, ax: f64, ay: f64, az: f64, gx: f64, gy: f64, gz: f64) -> u32 {
     let e = unsafe { &mut *e };
     let supported = match &mut e.m {
-        super::MachineKind::S3(m) => m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]),
+        super::MachineKind::S3(m) => {
+            // Finish work that belongs to the old stimulus before applying an
+            // input at the current guest cycle. Explicitly publish board time
+            // even when no ticks are pending or GPIO-edge delivery is disabled.
+            // Neither operation advances the guest clock or runs instructions.
+            m.bus.flush_ticks();
+            m.bus.board.advance_to(m.bus.cycles);
+            m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz])
+        }
         super::MachineKind::Esp32(m) => m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]),
         super::MachineKind::C61(m) => m.bus.board.set_imu_sample([ax, ay, az], [gx, gy, gz]),
         _ => false,
@@ -364,6 +372,77 @@ mod imu_motion_tests {
                 assert_eq!(esp32sim_set_imu_sample(e, 0.0, 1.0, 0.0, 0.0, 0.0, 90.0), u32::from(!["stopwatch", "atom-matrix", "atom-matrix-v11"].contains(&board)));
                 assert_eq!(esp32sim_set_imu_sample(e, f64::NAN, 0.0, 0.0, 0.0, 0.0, 0.0), 1);
                 assert_eq!(((*e).m.cycles(), (*e).m.insns()), before);
+                esp32sim_delete(e);
+            }
+        }
+    }
+
+    #[test]
+    fn host_sample_flushes_elapsed_device_time_without_backdating_a_qmi_conversion() {
+        use esp_periph::i2c::I2cDevice;
+        use esp_soc::{BoardModel, devices::{imu_motion::ImuMotion, qmi8658::Qmi8658}};
+        use std::{cell::RefCell, rc::Rc, sync::{Arc, atomic::Ordering::Relaxed}};
+        use xtensa_lx7::Bus;
+
+        // The ABI must publish time even for a sensor-only board that opts out
+        // of GPIO edges. The separate Waveshare integration test exercises the
+        // real board routes, I2C command FIFO and guest Xtensa loads.
+        struct SensorBoard { sensor: Rc<RefCell<Qmi8658>>, clock: Arc<ImuMotion>, edges: bool }
+        impl BoardModel for SensorBoard {
+            fn name(&self) -> &'static str { "qmi-abi-clock-test" }
+            fn uses_gpio_edges(&self) -> bool { self.edges }
+            fn advance_to(&mut self, cycle: u64) { self.clock.cycle.store(cycle, Relaxed); }
+            fn set_imu_sample(&mut self, a: [f64; 3], g: [f64; 3]) -> bool {
+                self.sensor.borrow_mut().set_host_sample(a, g)
+            }
+        }
+        fn write(sensor: &Rc<RefCell<Qmi8658>>, reg: u8, value: u8) {
+            let mut q = sensor.borrow_mut(); assert!(q.start(false));
+            assert!(q.write(reg)); assert!(q.write(value)); q.stop();
+        }
+        fn accel(sensor: &Rc<RefCell<Qmi8658>>) -> [i16; 3] {
+            let mut q = sensor.borrow_mut(); assert!(q.start(false));
+            assert!(q.write(0x35)); assert!(q.start(true));
+            let bytes: [u8; 6] = std::array::from_fn(|_| q.read()); q.stop();
+            std::array::from_fn(|i| i16::from_le_bytes([bytes[i * 2], bytes[i * 2 + 1]]))
+        }
+        const HZ: u32 = 240_000_000;
+        for edges in [true, false] {
+            // SAFETY: this test exclusively owns the newly allocated emulator
+            // and deletes it after all references have expired.
+            unsafe {
+                let e = esp32sim_new(b"none".as_ptr(), 4, 4, 2);
+                let clock = Arc::new(ImuMotion::default());
+                let sensor = Rc::new(RefCell::new(Qmi8658::new(clock.clone(), HZ.into())));
+                {
+                    let m = (*e).m.s3_mut().unwrap();
+                    m.bus.board = Box::new(SensorBoard { sensor: sensor.clone(), clock: clock.clone(), edges });
+                    m.bus.attach_board_devices(); m.bus.tick(16 * HZ / 1000);
+                }
+                assert_eq!(esp32sim_set_imu_sample(e, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0), 0);
+                for (reg, value) in [(2, 0x40), (3, 0x14), (8, 1)] { write(&sensor, reg, value); }
+                let (at, peripheral_before, insns) = {
+                    let m = (*e).m.s3_mut().unwrap();
+                    m.bus.tick(2 * HZ / 1000 - 1); m.bus.flush_ticks();
+                    m.bus.board.advance_to(m.bus.cycles);
+                    let peripheral_before = m.bus.periph.systimer.unit[0];
+                    let last_published = clock.cycle.load(Relaxed);
+                    m.bus.tick(1); // One genuine deferred cycle crosses the 500 Hz conversion boundary.
+                    assert_eq!(m.bus.periph.systimer.unit[0], peripheral_before);
+                    assert_eq!(clock.cycle.load(Relaxed), last_published);
+                    (m.bus.cycles, peripheral_before, m.insns())
+                };
+                assert_eq!(esp32sim_set_imu_sample(e, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0), 0);
+                {
+                    let m = (*e).m.s3_mut().unwrap();
+                    assert_eq!((m.bus.cycles, m.insns()), (at, insns));
+                    assert_eq!(m.bus.periph.systimer.unit[0], peripheral_before + 1, "the deferred cycle crosses a real 16 MHz timer tick");
+                    assert_eq!(clock.cycle.load(Relaxed), at, "board time must reach the input boundary");
+                    assert_eq!(accel(&sensor), [0, 0, 8192], "the conversion due at the input boundary retains the old stimulus");
+                    m.bus.tick(2 * HZ / 1000);
+                }
+                assert_eq!(esp32sim_set_imu_sample(e, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0), 0);
+                assert_eq!(accel(&sensor), [8192, 0, 0], "the next conversion uses the new held input");
                 esp32sim_delete(e);
             }
         }

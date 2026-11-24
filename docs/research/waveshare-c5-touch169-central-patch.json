@@ -1,0 +1,129 @@
+{
+  "kind": "independent-central-integration-patch",
+  "productId": "waveshare-esp32-c5-touch-lcd-1-69",
+  "name": "Waveshare ESP32-C5-Touch-LCD-1.69",
+  "chip": "esp32c5",
+  "profile": "waveshare-c5-touch169",
+  "flashMB": 16,
+  "psramMB": 8,
+  "capacityBasis": "Schematic ESP32-C5HR8 + M25QH128DHIQT; canonical16MBflash/BSP16MB; Espressif C5 datasheetv1.5 Table1-1 HR8=8MBQuadPSRAM. Diagnostic allocation does not determine physical capacity.",
+  "resolution": [
+    240,
+    280
+  ],
+  "controllers": [
+    "ST7789V2",
+    "CST816S",
+    "TCA9554",
+    "QMI8658C",
+    "PCF85063A",
+    "ES8311"
+  ],
+  "hasTfSlot": false,
+  "hasTouch": true,
+  "buttonIds": [
+    "boot"
+  ],
+  "runtimeStatus": "experimental-sram-diagnostic",
+  "runtimeEvidence": "docs/evidence/waveshare-c5-touch169-2026-11-23/inputs-and-hashes.json",
+  "runtimeDocumentation": "docs/platform/waveshare-c5-touch169.md",
+  "sourceReceipt": "docs/research/waveshare-c5-touch169-sources-2026-11-23/manifest.json",
+  "dataConflicts": [
+    "BSP comment says LCD/touch reset shared; schematic shows LCD_RST pull-up and EX1 only touch reset. Model follows schematic.",
+    "Resource page links ST7262 but product/BSP identifies ST7789V2.",
+    "Resource page links QMI8658C while schematic/BSP generic QMI8658; C variant explicit, groundedSA0=6B only.",
+    "BSP sdkconfig.defaults contains unrelated S3 cache options and single-app setting; actual factory contains two OTA apps."
+  ],
+  "projectDiagnostic": {
+    "role": "project-original-sram-diagnostic",
+    "name": "C5 Touch169 PSRAM/GDMA/touch/BOOT diagnostic",
+    "chip": "esp32c5",
+    "board": "waveshare-c5-touch169",
+    "app_direct": true,
+    "files": {
+      "app": "firmware/c5-touch169-probe/probe.bin"
+    },
+    "appOffset": 65536,
+    "appBytes": 3296,
+    "appSha256": "917711f5322ecbde4e25e6f928248dffeb85f39cf403ea3f75f00bac44830aab",
+    "flashMB": 16,
+    "psramMB": 8,
+    "nominalXtalMHz": 48,
+    "spiMHz": 24,
+    "i2cHz": 400000,
+    "verified": [
+      "native public App load with physical16F8P",
+      "guest writes/reads full8MiB PSRAM",
+      "GDMA reads framebuffer in mappedPSRAM",
+      "TCA20 config+QMI6B identity via actualI2C",
+      "CST816S touch IRQ/report causes1024pixels; release exact",
+      "BOOT28 causes44928pixels; release exact",
+      "quiet zero changed pixels; no exception/reset"
+    ],
+    "notExercised": [
+      "flash bootloader/application or factory desktop",
+      "physical PSRAM manufacturer identity",
+      "Wi-Fi/BLE/802.15.4/USB",
+      "audio PCM",
+      "battery/charger/PWR key",
+      "physical color/IRQ timing calibration"
+    ]
+  },
+  "downloadedFirmware": {
+    "captureKind": "raw-http-response",
+    "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/firmware/ESP32-C5-Touch-LCD-1.69_FactoryOnly_20260626.bin",
+    "finalUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Touch-LCD-1.69/136f2a8c68b3808ce4a9dbea218e9c3a4928212f/firmware/ESP32-C5-Touch-LCD-1.69_FactoryOnly_20260626.bin",
+    "status": "reference",
+    "mediaType": "application/octet-stream",
+    "fetchedAtUTC": "2026-11-23T08:34:45.991406+00:00",
+    "bytes": 14010352,
+    "sha256": "3306d27ffcb0ee09807c60827d254172d7206383f277aad4d5971d00857b6b2b",
+    "repository": "waveshareteam/ESP32-C5-Touch-LCD-1.69",
+    "commit": "136f2a8c68b3808ce4a9dbea218e9c3a4928212f",
+    "path": "firmware/ESP32-C5-Touch-LCD-1.69_FactoryOnly_20260626.bin",
+    "role": "factory",
+    "simulationVerified": false,
+    "loadOffset": 0,
+    "bootloaderOffset": 8192,
+    "partitionTableOffset": 32768,
+    "applicationOffsets": [
+      131072,
+      6356992
+    ],
+    "validation": {
+      "downloadHashVerified": true,
+      "imageChecksumsAndDigestsValid": true,
+      "chipId": 23,
+      "minRevision": 100,
+      "maxRevision": 199,
+      "flashMB": 16,
+      "publicLoaderAccepted": false,
+      "factoryBootPassed": false,
+      "evidence": "docs/evidence/waveshare-c5-touch169-2026-11-23/factory-validation.json",
+      "note": "Native unchangedROM6825steps \u2192read600c8004 at4002c8ec; noUART/no display. PublicC5 loader still SRAM-only."
+    }
+  },
+  "relatedFirmware": [
+    {
+      "role": "xiaozhi",
+      "status": "linked",
+      "version": "v2.6.0",
+      "releaseUrl": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+      "releasePublishedAt": "2026-11-13T19:34:49Z",
+      "assetName": "v2.6.0_waveshare-esp32-c5-touch-lcd-1.69.zip",
+      "url": "https://github.com/78/xiaozhi-esp32/releases/download/v2.6.0/v2.6.0_waveshare-esp32-c5-touch-lcd-1.69.zip",
+      "publishedBytes": 2429109,
+      "publishedDigest": "sha256:a35fd7b754fbc05d64278dd2173e55640f600b4b5c31c4841524b279fd0501c8",
+      "downloadedInThisBoardBatch": false,
+      "simulationVerified": false,
+      "metadataSource": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest"
+    }
+  ],
+  "integrationNotes": [
+    "Use the independent C5 runtime with exact16F8P; noC6 alias.",
+    "Publicworker should exercise the originalSRAMApp option separately from factoryreference.",
+    "NoSDslot: do not prepare/attach a TF card.",
+    "Touch uses hostportrait240x280, noaxis swap/mirror, through actualGPIO5 and CST816S.",
+    "Only boot is a directGPIO input; PWR is externalpowercircuitry and must not be mapped toGPIO."
+  ]
+}

@@ -13,10 +13,19 @@ function pinnedSource(source,baseUrl) {
   } catch {return null;}
 }
 
-// Only replace the exact failed, pinned remote BIN or ZIP entry. Never recover a missing ROM,
-// manifest, hash mismatch or HTTP 404 by putting a different file in its cache.
+// Only replace the exact failed, pinned remote BIN or ZIP entry. A segment may
+// come from an already verified manifest, bound to its URL and SHA-256. Never
+// recover a missing ROM, manifest, hash mismatch or HTTP 404 with other bytes.
 export function firmwareRecoverySource(error,source,baseUrl=globalThis.location?.href) {
-  const pinned=pinnedSource(source,baseUrl);
+  let candidate=source;
+  if(source?.manifestUrl) {
+    const binding=error?.details?.manifestRecovery;
+    if(!binding||!/^[a-f0-9]{64}$/i.test(source.sha256||'')||binding.manifestSha256!==source.sha256.toLowerCase()
+      ||!['bootloader','ptable','app','flash','flash_at'].includes(binding.kind))return null;
+    try {if(new URL(source.manifestUrl,baseUrl).href!==new URL(binding.manifestUrl,baseUrl).href)return null;}catch{return null;}
+    candidate=binding.artifact;
+  }
+  const pinned=pinnedSource(candidate,baseUrl);
   if(!['FETCH_FAILED','FIRMWARE_RELAY_FAILED'].includes(error?.code)||!pinned)return null;
   try {
     if(new URL(error.details?.url,baseUrl).href!==pinned.url||new URL(baseUrl).origin===new URL(pinned.url).origin)return null;

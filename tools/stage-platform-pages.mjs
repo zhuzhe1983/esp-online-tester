@@ -39,6 +39,7 @@ for await(const path of walk(source)){
 await mkdir(destination, {recursive: true});
 await cp(source, destination, {recursive: true,filter:path=>!sourceArchive(path)});
 const excluded = ['wasm/fw/demo-stopwatch.json'];
+for (const name of await readdir(join(destination, 'platform/firmware')).catch(error => { if (error.code === 'ENOENT') return []; throw error; })) if (/^waveshare-c5-.*-probe\.bin$/.test(name)) excluded.push(`platform/firmware/${name}`);
 for (const name of await readdir(join(destination, 'wasm/fw/public'))) if (name.startsWith('platform-stopwatch')) excluded.push(`wasm/fw/public/${name}`);
 for (const path of excluded) await rm(join(destination, path), {force: true});
 for (const path of excluded) {

@@ -264,6 +264,9 @@ impl SocBus {
         let old_ena = ena_port.map_or(0, |i| self.periph.uart[i].int_ena);
         let resetting = self.periph.lp.sw_reset;
         self.periph.write32(a, v);
+        if matches!(a >> 12, 0x500e0 | 0x500e1) && self.board.uses_gpio_routes() {
+            self.board.gpio_waveform_at(self.cycles, crate::periph::GPIO_PINS.routes(&self.periph.gpio.g, &self.periph.io_mux));
+        }
         // the store that asks for a software reset is where ASSIST_DEBUG finds this core
         if !resetting && self.periph.lp.sw_reset { self.reset_request = Some((self.cur_core, self.periph.misc.cur_pc)); }
         if self.periph.spi_exec { self.run_spi(); }
@@ -284,10 +287,18 @@ impl SocBus {
 
     /// Board bus numbers match the P4's hardware I2C controller numbers.
     pub fn attach_board_devices(&mut self) {
+        self.periph.sd_power_enable = if crate::board::lcd35_virtual_revision(self.board.name()).is_some() {
+            Some((45, false)) // LCD3.5 schematic Q1 AO3401: active-low TF power.
+        } else {
+            crate::board::waveshare_platform::profile(self.board.name()).and_then(|p| p.sd_power)
+        };
         for (bus, address, device) in self.board.i2c_devices() {
             match bus {0=>self.periph.i2c0.attach(address,device),1=>self.periph.i2c1.attach(address,device),_=>{}}
         }
         for (pin, level) in self.board.input_levels() { self.irq_dirty |= self.periph.gpio.g.set_input(pin, level); }
+        if self.board.uses_gpio_routes() {
+            self.board.gpio_waveform_at(self.cycles, crate::periph::GPIO_PINS.routes(&self.periph.gpio.g, &self.periph.io_mux));
+        }
     }
 
     /// I2S1's transmit DMA through the AHB-GDMA (trigger 4), paced by the frame rate: the frames

@@ -55,6 +55,21 @@ pub struct SocBus {
     board_edges: bool,
 }
 
+struct SpiDmaRam<'a>(&'a mut SocBus);
+impl SpiDmaRam<'_> {
+    fn check(&self,a:u32,n:usize)->Result<(),Fault>{if !(a as usize).is_multiple_of(n){return Err(Fault::Misaligned);}self.0.spi_dma_range(a,n).map(|_|()).ok_or(Fault::Unmapped)}
+}
+impl Bus for SpiDmaRam<'_> {
+    fn fetch(&mut self,_:u32)->Result<[u8;4],Fault>{Err(Fault::Prohibited)}
+    fn note_code_page(&mut self,_:u32){}
+    fn read8(&mut self,a:u32)->Result<u8,Fault>{self.check(a,1)?;self.0.read8(a)}
+    fn read16(&mut self,a:u32)->Result<u16,Fault>{self.check(a,2)?;self.0.read16(a)}
+    fn read32(&mut self,a:u32)->Result<u32,Fault>{self.check(a,4)?;self.0.read32(a)}
+    fn write8(&mut self,a:u32,v:u8)->Result<(),Fault>{self.check(a,1)?;self.0.write8(a,v)}
+    fn write16(&mut self,a:u32,v:u16)->Result<(),Fault>{self.check(a,2)?;self.0.write16(a,v)}
+    fn write32(&mut self,a:u32,v:u32)->Result<(),Fault>{self.check(a,4)?;self.0.write32(a,v)}
+}
+
 impl SocBus {
     /// Attach controller devices and restore inputs driven by the persistent board.
     pub fn attach_board_devices(&mut self) {
@@ -62,13 +77,22 @@ impl SocBus {
         // unchanged in v5.5.1 used by the Stamp C6LoRa protocol fixture.
         // Nesso TPX00227 and Stamp C6LoRa S012 schematic v0.2.3 page 2 use
         // QFN40 (0), external 16 MiB flash. Other boards unchanged.
-        if matches!(self.board.name(),"nesso-n1"|"stamp-c6lora") {
+        if matches!(self.board.name(),"nesso-n1"|"stamp-c6lora"|"waveshare-c6-touch-lcd169") {
             let identity=self.periph.efuse.read(0x50);self.periph.efuse.write(0x50,identity & !(7<<24));
             let flash=self.periph.efuse.read(0x54);self.periph.efuse.write(0x54,flash & !0xe7);
+        }
+        // Espressif esptool d7f1adf: QFN32 pkg1 with FLASH_CAP2 is C6FH8.
+        // Vendor identity of the embedded die is not established by the schematic.
+        if crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==8) {
+            let identity=self.periph.efuse.read(0x50);self.periph.efuse.write(0x50,(identity & !(7<<24))|(1<<24));
+            let flash=self.periph.efuse.read(0x54);self.periph.efuse.write(0x54,(flash & !0xe7)|2);
         }
         if self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::C6.routes(&self.periph.gpio, &self.periph.io_mux));
         }
+        // Opt-in phase-aware boards also consume actual GP-SPI DMA receive data.
+        // Legacy SPI boards keep their existing FIFO contract.
+        self.periph.spi2.dma_rx_divert = self.board.uses_qspi_pins();
         self.uart_pins = self.board.uses_uart_pins();
         self.board_edges = self.board.uses_gpio_edges();
         for (bus, address, device) in self.board.i2c_devices() {
@@ -411,6 +435,17 @@ impl SocBus {
         self.periph.spi2.complete_dma_tx(&data);
     }
 
+    /// IDF v5.5.4 C6 SPI_DMA_CONF.DMA_RX_ENA bit27 and GDMA peripheral0.
+    /// MISO reaches the IN descriptors before TRANS_DONE is observed; no extra
+    /// fake response is written to W0. The shared receiver owns EOF/owner/error.
+    #[cold]
+    fn spi2_dma_rx(&mut self,data:&[u8]) {
+        let Some(ch)=self.periph.gdma.gdma.in_channel_for(0) else{return};
+        let mut channel=self.periph.gdma.gdma.inp[ch];let mut irq_changed=false;
+        let _=channel.receive(&mut SpiDmaRam(self),data,Some(data.len() as u32),false,|a|!(SRAM_LOW..SRAM_HIGH).contains(&a),&mut irq_changed);
+        self.periph.gdma.gdma.inp[ch]=channel;self.irq_dirty|=irq_changed;
+    }
+
     /// AES through GDMA (peripheral 6), which is the only way ESP-IDF's driver uses the block on
     /// this chip: the OUT chain is the input, the cipher is the shared model's, the result goes
     /// into the IN chain, each descriptor written back with its length, SUC_EOF on the last and
@@ -451,7 +486,15 @@ impl SocBus {
     fn deliver_board_events(&mut self) {
         if !self.periph.gpio.changes.is_empty() { self.deliver_gpio_output(); }
         if let Some(transfer) = self.periph.spi2.take_transfer() {
-            let rx = if self.board.uses_spi_pins() {
+            let rx = if self.board.uses_qspi_pins() {
+                // IDF v5.5.4 C6 spi_reg.h: CTRL/USER/USER1/USER2/MS_DLEN/MISC
+                // offsets 08/10/14/18/1c/20 and SDR width fields match the shared decoder.
+                // gpio_sig_map.h: CLK63,D65,Q64,WP67,HD66; native function2 per io_mux_reg.h.
+                let pins = esp_soc::pins::ChipPins::C6.routes(&self.periph.gpio, &self.periph.io_mux)
+                    .spi_qspi_pins(&self.periph.spi2, [63,65,64,67,66,68,101,102,103,104,105],
+                        &[esp_soc::pins::SpiQspiNative{function:2,sclk:6,data:[7,2,5,4],cs:&[16,17,18,19,20,21]}]);
+                self.board.spi_transfer_qspi_pins(2,pins,&transfer.tx,transfer.rx_len)
+            } else if self.board.uses_spi_pins() {
                 // IDF v5.5.4 components/soc/esp32c6/include/soc/gpio_sig_map.h:115-126,197-209;
                 // register/soc/io_mux_reg.h:182-209,243-272 gives native function 2 and pins.
                 let pins = esp_soc::pins::ChipPins::C6.routes(&self.periph.gpio, &self.periph.io_mux)
@@ -461,6 +504,7 @@ impl SocBus {
                 self.board.spi_transfer(2, &transfer.tx, transfer.rx_len)
             };
             self.periph.spi2.finish_transfer(transfer, &rx);
+            if let Some(data)=self.periph.spi2.dma_rx.take(){self.spi2_dma_rx(&data);}
         }
         if !self.periph.rmt.rmt.done.is_empty() { self.deliver_rmt_frames(); }
     }

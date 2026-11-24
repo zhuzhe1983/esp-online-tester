@@ -1,0 +1,70 @@
+#!/usr/bin/env node
+// Production Three.js loader and CPU geometry/rays. No WebGL or browser claim.
+import assert from 'node:assert/strict';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {parseArgs} from 'node:util';
+import * as THREE from '../web/platform/vendor/three.module.min.js';
+import {createManufacturerModel} from '../web/platform/manufacturer-model.js';
+import {applyShellAppearance} from '../web/platform/shell-appearance.js';
+
+const root=fileURLToPath(new URL('../',import.meta.url)),assets=path.join(root,'web/platform/assets');
+const {values,positionals}=parseArgs({options:{output:{type:'string',default:path.join(root,'output/waveshare-models/loader-check.json')},dump:{type:'string'}},allowPositionals:true});
+const ids=positionals.length?positionals:['waveshare-esp32-s3-zero','waveshare-esp32-s3-pico','waveshare-esp32-s3-nano','waveshare-esp32-s3-dev-kit-n8r8','waveshare-esp32-s3-epaper-13-3e6'];
+const sha=data=>createHash('sha256').update(data).digest('hex');
+const fetchOriginal=globalThis.fetch,documentOriginal=globalThis.document,textureOriginal=THREE.TextureLoader.prototype.loadAsync;
+let current,labels=[],loadedTextures=[];
+globalThis.document={createElement(tag){assert.equal(tag,'canvas');return {width:0,height:0,getContext(){return {fillText(text){labels.push(text);}};}};}};
+globalThis.fetch=async input=>{const url=new URL(input);assert.equal(url.protocol,'file:');const file=fileURLToPath(url);assert.ok(path.resolve(file).startsWith(assets+path.sep));const bytes=await readFile(file);if(url.searchParams.has('sha256'))assert.equal(sha(bytes),url.searchParams.get('sha256'));return new Response(bytes,{status:200});};
+// Node has no DOM image decoder. Preserve actual loader UV/mesh construction,
+// independently check retained image bytes/hash, and declare this boundary.
+THREE.TextureLoader.prototype.loadAsync=async function(input){const url=new URL(input),file=fileURLToPath(url),bytes=await readFile(file),name=path.basename(file);assert.equal(sha(bytes),current.artifacts[name]);const source=current.provenance.sources.find(s=>s.file===name);assert.ok(source?.imagePixels?.length===2);loadedTextures.push({file:name,sha256:sha(bytes),imagePixels:source.imagePixels});const texture=new THREE.Texture({width:source.imagePixels[0],height:source.imagePixels[1]});texture.userData.sourceFile=name;return texture;};
+const firstHit=(model,point,direction)=>new THREE.Raycaster(point,direction,0,5000).intersectObjects(model.group.children,true).find(x=>x.object.userData.inputOccluder||x.object.userData.screen||x.object.userData.control);
+const results=[];
+try {
+ for(const id of ids){
+  const raw=await readFile(path.join(assets,id,'model.json'));current=JSON.parse(raw);labels=[];loadedTextures=[];
+  const plan=JSON.parse(await readFile(path.join(assets,id,'model-plan.json'))),validation=plan.validation||{};
+  const paper=id.endsWith('epaper-13-3e6'),nano=id.endsWith('nano'),product={id,model:{url:`./assets/${id}/model.json`},controls:validation.controls??(nano?[]:[{id:'boot',type:'button'}]),display:validation.display??(paper?{width:1600,height:1200}:undefined)};
+  const model=createManufacturerModel(product,new THREE.Texture()),metadata=await model.ready;model.group.updateMatrixWorld(true);
+  assert.equal(model.group.userData.inspectionError,undefined);
+  assert.equal(Boolean(model.screen),Boolean(product.display));
+  const shells=model.group.userData.shellMeshes||[];
+  assert.deepEqual(shells.map(o=>o.name).sort(),[...(validation.shellNames||[])].sort(),'Only explicitly sourced enclosure components are recolorable shells');
+  const bounds=new THREE.Box3().setFromObject(model.group);assert.ok(!bounds.isEmpty());assert.ok([...bounds.min.toArray(),...bounds.max.toArray()].every(Number.isFinite));
+  for(const part of metadata.parts){assert.ok(model.parts[part.name]);const g=model.parts[part.name].geometry,p=g.getAttribute('position');for(let i=0;i<p.count;i++)assert.ok([p.getX(i),p.getY(i),p.getZ(i)].every(Number.isFinite));}
+  let photoUvVertices=0;model.group.traverse(o=>{if(!o.isMesh||!o.material.map?.userData?.sourceFile)return;const uv=o.geometry.getAttribute('uv');assert.ok(uv);for(let i=0;i<uv.count;i++){assert.ok([uv.getX(i),uv.getY(i)].every(v=>Number.isFinite(v)&&v>=0&&v<=1),'Registered source pixels stay inside the retained photograph');photoUvVertices++;}});
+  const leds=model.group.userData.rgbLedMeshes||[];assert.deepEqual(Object.keys(leds).map(Number),validation.ledIndices??(paper?[]:nano?[0,1]:[0]));
+  const dimensionChecks=[];
+  for(const target of plan.dimensionTargets){const object=target.part==='screen'?model.screen:model.parts[target.part];assert.ok(object,target.part);const measured=new THREE.Box3().setFromObject(object).getSize(new THREE.Vector3()).toArray(),errors=target.sizeMm.map((v,i)=>v===null?null:Math.abs(v-measured[i]));assert.ok(errors.every(e=>e===null||e<=target.toleranceMm),id+' '+target.part+' dimensions');dimensionChecks.push({...target,measuredMm:measured,absoluteErrorsMm:errors});}
+  const screenRays=[],outsideScreenRays=[];
+  if(model.screen){const [w,h]=metadata.presentation.screen.sizeMm,tolerance=validation.screenAspectRelativeTolerance??1e-10;assert.ok(tolerance>=0&&tolerance<=.001);assert.ok(Math.abs((w/h)/(product.display.width/product.display.height)-1)<=Math.max(tolerance,1e-10),'Physical active area aspect differs from declared pixel/dimension rounding allowance');const circle=metadata.presentation.screen.shape==='circle',rounded=metadata.presentation.screen.cornerRadiusMm>0,samples=circle?[-.3,0,.3]:[-.4,0,.4];for(const u of samples)for(const v of samples){const point=model.screen.localToWorld(new THREE.Vector3(u*w,v*h,0));assert.equal(firstHit(model,point.clone().add(new THREE.Vector3(0,0,1000)),new THREE.Vector3(0,0,-1))?.object,model.screen);screenRays.push([u,v]);}if(circle||rounded)for(const u of [-.499,.499])for(const v of [-.499,.499]){const point=model.screen.localToWorld(new THREE.Vector3(u*w,v*h,0));assert.notEqual(firstHit(model,point.clone().add(new THREE.Vector3(0,0,1000)),new THREE.Vector3(0,0,-1))?.object,model.screen);outsideScreenRays.push([u,v]);}}
+  const controls=[],oppositeFaceOcclusion=[];
+  for(const button of model.buttons){const controlId=button.userData.control;assert.ok(product.controls.some(c=>c.id===controlId&&c.type==='button'),'Model input must match an explicitly declared physical button');const viewNormal=new THREE.Vector3(...(validation.controlViewNormals?.[controlId]??[0,0,1]));assert.ok(Math.abs(viewNormal.length()-1)<1e-6);const g=button.geometry,positions=g.getAttribute('position'),index=g.index,count=index?index.count:positions.count,vertices=i=>new THREE.Vector3().fromBufferAttribute(positions,index?index.getX(i):i).applyMatrix4(button.matrixWorld);let verified=false;
+   for(let at=0;at<count&&!verified;at+=3){const a=vertices(at),b=vertices(at+1),c=vertices(at+2),normal=b.clone().sub(a).cross(c.clone().sub(a));if(normal.length()<1e-8)continue;normal.normalize();if(normal.dot(viewNormal)<.8)continue;const point=a.add(b).add(c).divideScalar(3),hit=firstHit(model,point.clone().addScaledVector(normal,1000),normal.clone().negate());if(hit?.object===button){verified=true;controls.push({id:controlId,mesh:button.name,pointMm:point.toArray(),normal:normal.toArray()});}}
+   assert.ok(verified,id+' declared '+controlId+' viewing surface is not obstructed');
+   const frontPoint=new THREE.Vector3(...controls.at(-1).pointMm),backHit=firstHit(model,frontPoint.clone().addScaledVector(viewNormal,-1000),viewNormal);
+   assert.ok(backHit&&backHit.object!==button,id+' opposite geometry blocks a through-board '+controlId+' click');
+   oppositeFaceOcclusion.push({id:controlId,occluder:backHit.object.name,pointMm:backHit.point.toArray()});
+  }
+  assert.deepEqual(controls.map(c=>c.id).sort(),product.controls.filter(c=>c.type==='button').map(c=>c.id).sort(),'Every declared physical button is represented exactly once');
+  let inspection='not-declared';if(model.group.userData.inspection){const positions=model.group.children.map(o=>[o,o.position.clone()]);model.group.userData.inspection.setExpanded(true);assert.ok(positions.some(([o,p])=>!o.position.equals(p)));model.group.userData.inspection.setExpanded(false);for(const [o,p]of positions)assert.ok(o.position.equals(p));inspection='moves-and-restores-exactly';}
+  const unknownPcbInspection=[];
+  for(const check of validation.unknownPcbInspection||[]){const label=model.group.getObjectByName(check.label);assert.ok(label?.isMesh&&label.name.includes('-unknown-'));const point=label.getWorldPosition(new THREE.Vector3()),normal=new THREE.Vector3(0,0,1).transformDirection(label.matrixWorld),hit=()=>new THREE.Raycaster(point.clone().addScaledVector(normal,1000),normal.clone().negate(),0,5000).intersectObjects(model.group.children,true).find(({object})=>{let o=object;while(o){if(!o.visible)return false;o=o.parent;}return object.material?.opacity!==0;})?.object;const assembled=hit();assert.ok(assembled&&assembled!==label,'Inner UNKNOWN label must be hidden by the assembled optical stack');assert.ok(model.group.userData.inspection);model.group.userData.inspection.setExpanded(true);assert.equal(hit(),label,'Expanded optical stack exposes the UNKNOWN inner PCB label');model.group.userData.inspection.setExpanded(false);assert.equal(hit(),assembled);unknownPcbInspection.push({label:label.name,assembledOccluder:assembled.name,expanded:'geometrically-visible',restored:true});}
+  const unknown=metadata.derivedParts.some(p=>p.kind==='pcb-placeholder'||p.lines?.includes('UNKNOWN'));assert.equal(labels.includes('UNKNOWN'),unknown);
+  const unknownSurfaceRays=[];for(const part of metadata.derivedParts.filter(p=>p.kind==='printed-marking'&&p.lines?.includes('UNKNOWN'))){const mesh=model.parts[part.id],point=mesh.getWorldPosition(new THREE.Vector3()),normal=new THREE.Vector3(0,0,1).transformDirection(mesh.matrixWorld);assert.equal(firstHit(model,point.clone().addScaledVector(normal,1000),normal.clone().negate())?.object,mesh,'UNKNOWN reference marking is geometrically visible');unknownSurfaceRays.push({mesh:part.id,pointMm:point.toArray(),normal:normal.toArray()});}
+  const before=[];model.group.traverse(o=>{if(o.isMesh&&!Array.isArray(o.material))before.push([o,o.material,o.material.color?.getHexString(),o.material.opacity]);});
+  const shellRestore=new Map(shells.map(o=>[o,o.material.clone()]));
+  for(const style of [{color:'#d6ad45',opacity:1,finish:'metal'},{color:'#8054b3',opacity:.35,finish:'plastic'}]){
+   for(const shell of shells){applyShellAppearance(shell,{shell:style});assert.equal(shell.material.color.getHexString(),style.color.slice(1));assert.equal(shell.material.opacity,style.opacity);}
+   for(const [o,material,color,opacity]of before){if(shells.includes(o))continue;assert.equal(o.material,material,'Shell presets preserve every other material identity');assert.equal(o.material.color?.getHexString(),color);assert.equal(o.material.opacity,opacity);}
+  }
+  for(const [shell,material]of shellRestore){shell.material.dispose();shell.material=material;}
+  if(values.dump){await mkdir(values.dump,{recursive:true});const meshes=[];model.group.traverse(o=>{if(!o.isMesh||!o.visible||o.material.opacity===0)return;const g=o.geometry,position=g.getAttribute('position'),index=g.index,normal=g.getAttribute('normal');if(!position?.count)return;const positions=[],normals=[];for(let i=0;i<position.count;i++){const p=new THREE.Vector3().fromBufferAttribute(position,i).applyMatrix4(o.matrixWorld);positions.push(...p.toArray());if(normal){const n=new THREE.Vector3().fromBufferAttribute(normal,i).transformDirection(o.matrixWorld);normals.push(...n.toArray());}}meshes.push({name:o.name,position:positions,normal:normals,index:index?Array.from(index.array):null,color:o.material.color?.getHexString(),texture:o.material.map?.userData?.sourceFile||null,unknown:o.name.includes('-unknown-'),screen:o.userData.screen===true});});await writeFile(path.join(values.dump,id+'.json'),JSON.stringify({id,meshes}));}
+  results.push({id,modelSha256:sha(raw),parts:metadata.parts.length,fullBoundsMm:[bounds.min.toArray(),bounds.max.toArray()],dimensionChecks,ledIndices:Object.keys(leds).map(Number),visibleControls:controls,oppositeFaceOcclusion,framebufferRays:screenRays,outsideScreenRays,inspection,unknownLabelConstructed:unknown,unknownSurfaceRays,unknownPcbInspection,sourceTextures:[...new Map(loadedTextures.map(t=>[t.file,t])).values()],photoUvVertices,shellMeshes:shells.map(o=>o.name),shellMaterialIsolation:shells.length?'Declared native enclosure alone changes appearance; PCB, display, photographs and connectors preserve their material identity, color and opacity. Native shell material restored for review.':'No enclosure declared; PCB, display, photographs and connectors remain unchanged by shell presets.'});
+  model.dispose();model.group.traverse(o=>{o.geometry?.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose());});console.log(id+' pass');
+ }
+ await mkdir(path.dirname(values.output),{recursive:true});await writeFile(values.output,JSON.stringify({checkedAt:new Date().toISOString(),node:process.versions.node,scope:'Actual production Three.js loader, source image hash checks, constructed UNKNOWN label, geometry dimensions and CPU rays. Node texture objects do not decode pixels; no WebGL, DOM readability, hardware-fit or browser input acceptance claim.',results},null,2)+'\n');
+} finally {globalThis.fetch=fetchOriginal;globalThis.document=documentOriginal;THREE.TextureLoader.prototype.loadAsync=textureOriginal;}

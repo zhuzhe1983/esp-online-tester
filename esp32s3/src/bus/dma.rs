@@ -188,6 +188,8 @@ impl SocBus {
             // like a descriptor failure so firmware can issue a later CPU command.
             // A stopped channel with a descriptor remains bound and can be restarted.
             self.periph.gpspi_mut(host).fail_dma_tx();
+            let pins = if host == 2 { &mut self.spi2_pins } else { &mut self.spi3_pins };
+            if matches!(pins, Some(super::SpiRouteSnapshot::Phases(_))) { *pins = None; }
             self.irq_dirty = true;
             return;
         }
@@ -242,6 +244,8 @@ impl SocBus {
         gdma.running = false;
         gdma.int_raw |= 1 << 2;                                         // OUT_DSCR_ERR
         self.periph.gpspi_mut(host).fail_dma_tx();
+        let pins = if host == 2 { &mut self.spi2_pins } else { &mut self.spi3_pins };
+        if matches!(pins, Some(super::SpiRouteSnapshot::Phases(_))) { *pins = None; }
         self.irq_dirty = true;
     }
 
@@ -272,10 +276,10 @@ impl SocBus {
             self.periph.gpio.changes.clear();
         }
         let pins = if host == 2 { self.spi2_pins.take() } else { self.spi3_pins.take() };
-        let rx = if let Some(pins) = pins {
-            self.board.spi_transfer_pins(host, pins, &transfer.tx, transfer.rx_len)
-        } else {
-            self.board.spi_transfer(host, &transfer.tx, transfer.rx_len)
+        let rx = match pins {
+            Some(super::SpiRouteSnapshot::Phases(pins)) => self.board.spi_transfer_qspi_pins(host, pins, &transfer.tx, transfer.rx_len),
+            Some(super::SpiRouteSnapshot::Single(pins)) => self.board.spi_transfer_pins(host, pins, &transfer.tx, transfer.rx_len),
+            None => self.board.spi_transfer(host, &transfer.tx, transfer.rx_len),
         };
         if transfer.rx_len != 0 && self.periph.gpspi(host).regs.read(0x30) & (1 << 27) != 0 {
             self.complete_gpspi_rx(host, transfer.rx_len, &rx);

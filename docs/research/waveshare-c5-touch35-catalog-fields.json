@@ -1,0 +1,188 @@
+{
+  "schemaVersion": "1",
+  "productId": "waveshare-esp32-c5-touch-lcd-3-5",
+  "shortName": "C5 Touch3.5",
+  "familyName": "Waveshare ESP32-C5 3.5 英寸触摸屏",
+  "summary": "3.5 英寸 320×480 ST7796＋FT6336，32 MiB Flash、8 MiB PSRAM，16 位 CH32V006、AXP2101 和 TF 卡槽；原创诊断已原生验证，原厂启动开发中。",
+  "sourceAliases": {
+    "README.md": "readme",
+    "canonical-overview.html": "overview",
+    "canonical-resources.html": "resources",
+    "hardware/schematic/ESP32-C5-Touch-LCD-3.5.pdf": "schematic",
+    "examples/factory/components/esp32_c5_touch_lcd_3_5/esp32_c5_touch_lcd_3_5.cpp": "bsp",
+    "examples/factory/components/esp32_c5_touch_lcd_3_5/include/bsp/esp32_c5_touch_lcd_3_5.h": "bsp-pins",
+    "examples/esp-idf/06_exio/components/io_extension/io_extension.c": "expander-protocol",
+    "examples/factory/components/esp_lcd_touch_ft6336/esp_lcd_touch_ft6336.c": "touch-protocol"
+  },
+  "publicSourceIds": [
+    "overview",
+    "schematic",
+    "bsp",
+    "bsp-pins",
+    "factory"
+  ],
+  "summarySourceIds": [
+    "overview",
+    "schematic",
+    "bsp"
+  ],
+  "display": {
+    "width": 320,
+    "height": 480,
+    "type": "TFT LCD",
+    "controller": "ST7796",
+    "bus": "SPI2",
+    "diagonalInches": 3.5,
+    "touch": true
+  },
+  "controls": [
+    {
+      "id": "boot",
+      "name": "BOOT",
+      "type": "button",
+      "pin": 28,
+      "activeLow": true,
+      "defaultKeyCode": "Space"
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "micro-sd",
+      "name": "TF · SPI",
+      "type": "microSD",
+      "external": true,
+      "pins": [
+        {
+          "name": "CLK",
+          "gpio": 6
+        },
+        {
+          "name": "MOSI",
+          "gpio": 7
+        },
+        {
+          "name": "MISO",
+          "gpio": 2
+        },
+        {
+          "name": "CS",
+          "gpio": 9
+        }
+      ],
+      "sourceIds": [
+        "schematic",
+        "bsp-pins"
+      ],
+      "notes": "默认 64 MiB FAT32 空卡；原生测试仅验证块级保存／读写／恢复，未验证文件系统挂载。"
+    }
+  ],
+  "limitations": [
+    "原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止；原始 FactoryOnly 镜像独立保持 reference。",
+    "原创 SRAM 诊断已原生验证完整 8 MiB PSRAM、GDMA 出屏、FT6336 输入、BOOT 与 SD 块保存／读写／恢复；此记录不替代公开 Worker 或浏览器验收。",
+    "物理模块为 32 MiB Flash、8 MiB PSRAM；PWR 属于外部电源／CH32 电路，不映射为普通 GPIO。",
+    "CH32V006 初始方向／输出保持未知，ADC／RTC 固件命令不支持；QMI8658 物理 A/C 后缀未证实。",
+    "AXP USB 无电池数字电源场景；模拟充电、温湿度、音频、相机、无线、物理颜色／扫描／PWM 校准和 FAT 挂载尚未验收。"
+  ],
+  "factoryLimitations": [
+    "原厂 ROM 在第 6831 条指令读取 PMU 0x600b00e4 时停止；原始 FactoryOnly 镜像独立保持 reference。",
+    "物理模块为 32 MiB Flash、8 MiB PSRAM；PWR 属于外部电源／CH32 电路，不映射为普通 GPIO。"
+  ],
+  "diagnosticTitle": "C5 Touch3.5 · 项目诊断 · PSRAM／显示／触摸／BOOT／SD",
+  "diagnosticLimitations": [
+    "本项目原创 SRAM App，独立于厂商镜像。",
+    "原创 SRAM 诊断已原生验证完整 8 MiB PSRAM、GDMA 出屏、FT6336 输入、BOOT 与 SD 块保存／读写／恢复；此记录不替代公开 Worker 或浏览器验收。",
+    "完成运行会恢复原始 SD 块；中途终止不保证事务式恢复。",
+    "AXP USB 无电池数字电源场景；模拟充电、温湿度、音频、相机、无线、物理颜色／扫描／PWM 校准和 FAT 挂载尚未验收。"
+  ],
+  "collectionNotes": [
+    "Base SKU35417 无摄像头；-EN35416、-C35419、-C-EN35418 为官方列出的包装／相机差异。本 profile 不声称相机能力。",
+    "机械模型由独立资料与模型 lane 维护；此生成器保留已有 model／dimensions／model-* 项，不从电气资料推造外形。"
+  ],
+  "facts": [
+    {
+      "id": "identity",
+      "label": "SKU 与物理容量",
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic",
+        "readme"
+      ],
+      "value": {
+        "baseSku": "35417",
+        "packagingSkus": {
+          "base": "35417",
+          "batteryFreePackaging": "35416",
+          "cameraVariant": "35419",
+          "cameraBatteryFreePackaging": "35418"
+        },
+        "module": "ESP32-C5-WROOM-1U-N32R8",
+        "flashMiB": 32,
+        "psramMiB": 8,
+        "hasTfSlot": true
+      }
+    },
+    {
+      "id": "display",
+      "label": "LCD 与触摸布线",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp",
+        "bsp-pins",
+        "touch-protocol"
+      ],
+      "value": {
+        "resolution": [
+          320,
+          480
+        ],
+        "controller": "ST7796",
+        "spi": {
+          "CLK": 6,
+          "MOSI": 7,
+          "CS": 8,
+          "DC": 5,
+          "reset": "CH32 EXIO0",
+          "backlight": "CH32 PWM command05"
+        },
+        "touch": {
+          "controller": "FT6336",
+          "address": "0x38",
+          "reset": "CH32 EXIO1",
+          "irq": 3
+        },
+        "i2c": {
+          "SDA": 27,
+          "SCL": 26
+        },
+        "boot": 28
+      }
+    },
+    {
+      "id": "components",
+      "label": "物理外设及 TF 接线",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp",
+        "bsp-pins",
+        "expander-protocol"
+      ],
+      "value": {
+        "expander": "CH32V006K8U7@0x24, 16-bit LE digital IO",
+        "pmic": "AXP2101@0x34; DCDC1 supplies VCC3V3",
+        "imu": "QMI8658@0x6b; SA0=GND, physical A/C suffix unconfirmed",
+        "rtc": "PCF85063A@0x51",
+        "codec": "ES8311@0x18",
+        "sd": {
+          "CLK": 6,
+          "MOSI": 7,
+          "MISO": 2,
+          "CS": 9
+        },
+        "powerKey": "external SYS_OUT to CH32 EXIO6, not a C5 GPIO"
+      }
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "baseCommit": "760b8840c12732bf0205960076fe893516a652ed",
+  "normalization": "Only checkout/source/executable path prefixes and trailing blank lines.",
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets"
+      ],
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_TARGET_DIR": "target-c5-rebuild",
+        "C5_ROM_ELF": "$C5_SOURCES/esp32c5_rev100_rom.elf"
+      },
+      "startedAtUTC": "2026-11-23T08:38:29.523800+00:00",
+      "finishedAtUTC": "2026-11-23T08:38:31.700762+00:00",
+      "exitCode": 0,
+      "log": "all-target-tests.log",
+      "rawLogSha256": "265f9e8a5b2a0002ba666dfd16f6f9d185e43829ea0487a7827cd9c52ffad42a",
+      "normalizedLogSha256": "07f6c7f8189fc5daeebec1ff764f7e04744501128c5da5d4686beb81dd3b0cf8"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--test",
+        "guest",
+        "external_c5_actual_rom_first_unsupported_access",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_TARGET_DIR": "target-c5-rebuild",
+        "C5_ROM_ELF": "$C5_SOURCES/esp32c5_rev100_rom.elf"
+      },
+      "startedAtUTC": "2026-11-23T08:38:31.701988+00:00",
+      "finishedAtUTC": "2026-11-23T08:38:31.725565+00:00",
+      "exitCode": 0,
+      "log": "actual-rom-boundary.log",
+      "rawLogSha256": "6440b36077ba51e5b665a730d21509c4977e37dd93ab901cc37125864d5a723b",
+      "normalizedLogSha256": "c8233e7e7c4de7b1f72b69199b7ea207db124674c04cb9714090abdf33ad93dc"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32c5",
+        "--release",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_TARGET_DIR": "target-c5-rebuild",
+        "C5_ROM_ELF": "$C5_SOURCES/esp32c5_rev100_rom.elf"
+      },
+      "startedAtUTC": "2026-11-23T08:38:31.725974+00:00",
+      "finishedAtUTC": "2026-11-23T08:38:32.910453+00:00",
+      "exitCode": 0,
+      "log": "all-target-clippy.log",
+      "rawLogSha256": "99a9c1d5a32ada5403012e85db276e410c05151fa75c127ec98835fed173bc91",
+      "normalizedLogSha256": "75175bcbad5bb6253c39fa47bda349a2ae041ab62e3c736482ac78391d3d4de1"
+    },
+    {
+      "command": [
+        "$C5_SOURCES/toolchain/riscv32-esp-elf/bin/riscv32-esp-elf-objdump",
+        "-d",
+        "--start-address=0x4002c8e8",
+        "--stop-address=0x4002c8f6",
+        "$C5_SOURCES/esp32c5_rev100_rom.elf"
+      ],
+      "env": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_TARGET_DIR": "target-c5-rebuild",
+        "C5_ROM_ELF": "$C5_SOURCES/esp32c5_rev100_rom.elf"
+      },
+      "startedAtUTC": "2026-11-23T08:38:32.910780+00:00",
+      "finishedAtUTC": "2026-11-23T08:38:32.915361+00:00",
+      "exitCode": 0,
+      "log": "actual-rom-next-access.txt",
+      "rawLogSha256": "5cf16301783d7989432ee88874d7b3960f32e5ef56ce5877d6d64a704657a86a",
+      "normalizedLogSha256": "a254af73588f00414977c364139dd8eb6413620170fca3b1058659498bbe25eb"
+    }
+  ]
+}

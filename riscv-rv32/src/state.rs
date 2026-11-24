@@ -213,10 +213,12 @@ impl Cpu {
     /// with SOC_CPU_HAS_HWLOOP) are modelled; PIE (Xesppie) is not and decodes as illegal. FS is
     /// Off at reset, as on any core with F.
     pub fn new_esp32p4() -> Self { let mut c = Cpu::new(); c.misa = MISA_RV32IMAFC; c.isa_ext = crate::decode::ISA_HWLP; c.has_ext_ill = true; c.user_counters = true; c.clic = true; c }
-    /// An ESP32-P4 rev >= 3 HP core: the same, with the specification's CLIC CSRs and EXT_ILL
+    /// An ESP32-P4 rev >= 3 HP core: Zba/Zbb/Zbs, the specification's CLIC CSRs and EXT_ILL
     /// flagging every FP instruction ("The FPU_EXT_ILL bug was fixed on revision 3.0 and higher",
     /// ESP-IDF v5.5.4 riscv/vectors.S:279).
-    pub fn new_esp32p4_rev3() -> Self { let mut c = Cpu::new_esp32p4(); c.clic_std = true; c.ext_ill_all_fp = true; c }
+    /// Espressif ESP32-P4 Chip Revision v3.x User Guide v1.1 (2026-08-25), section 1.1:
+    /// rev3 adds Zb. Reuse the existing bit-manipulation decoder; no Zc/PIE is enabled here.
+    pub fn new_esp32p4_rev3() -> Self { let mut c = Cpu::new_esp32p4(); c.isa_ext |= crate::decode::ISA_ZB; c.clic_std = true; c.ext_ill_all_fp = true; c }
     /// S31's RV32IMAFC subset and standard CLIC CSRs (IDF v6.1 soc_caps.h, interrupt_reg.h).
     /// A subset of PIE (Xespv2p2, `decode::ISA_PIE`) and the hardware loops (Xesploop,
     /// `decode::ISA_HWLP`) are modelled. The SoC

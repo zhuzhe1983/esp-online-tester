@@ -51,7 +51,7 @@ WORK = ('stop', 'instructions', 'guestSeconds', 'cycles', 'exceptions', 'interru
 DEFAULT_WORKLOADS = ('hello', 'c3-hello', 'c6-hello')
 WORKLOAD_BINARIES = {
     'hello': 'esp32sim', 'c3-hello': 'esp32sim-c3', 'c6-hello': 'esp32sim-c6',
-    'classic-hello': 'esp32sim', 'p4-hello': 'esp32sim-p4',
+    'classic-hello': 'esp32sim', 'p4-hello': 'esp32sim-p4', 'pocket-tank': 'esp32sim',
 }
 
 
@@ -63,11 +63,15 @@ def main():
     parser.add_argument('--output', type=Path, required=True, help='Compact JSON receipt')
     parser.add_argument('--raw-dir', type=Path, required=True, help='Ignored output directory for stdout/stderr')
     parser.add_argument('--rounds', type=int, default=5)
+    parser.add_argument('--timeout-seconds', type=int, default=300,
+                        help='Wall-time limit per run; Pocket Tank can exceed two minutes')
+    parser.add_argument('--baseline-bin-dir', type=Path, help='Optional frozen baseline executables')
+    parser.add_argument('--candidate-bin-dir', type=Path, help='Optional frozen candidate executables')
     parser.add_argument('--build-command', default='CARGO_BUILD_JOBS=1 cargo build --release --bins',
                         help='Exact build command used for both arms; recorded only, not executed')
     parser.add_argument('--workloads', nargs='+', choices=[*WORKLOAD_BINARIES, 'all'],
                         default=list(DEFAULT_WORKLOADS),
-                        help='Ordered workloads; default: hello c3-hello c6-hello; all also runs classic-hello p4-hello')
+                        help='Ordered workloads; default: hello c3-hello c6-hello; all also runs classic-hello p4-hello pocket-tank')
     parser.add_argument('--conditions', default='Shared host; no dedicated isolation asserted', help='Known concurrent work or measurement isolation, retained verbatim')
     args = parser.parse_args()
     if args.rounds < 3:
@@ -80,6 +84,8 @@ def main():
     args.raw_dir.mkdir(parents=True, exist_ok=True)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     roots = {'baseline': args.baseline.resolve(), 'candidate': args.candidate.resolve()}
+    bin_dirs = {label: (getattr(args, label + '_bin_dir') or root / 'target/release').resolve()
+                for label, root in roots.items()}
     report = {
         'schemaVersion': 1,
         'startedAt': datetime.now(timezone.utc).isoformat(timespec='seconds'),
@@ -114,19 +120,24 @@ def main():
             manifest = json.loads((args.assets / (workload + '.json')).read_text())
         files = {role: (args.assets / path).resolve() for role, path in manifest['files'].items()}
         command = ['--boot', 'rom', '--flash-mb', str(manifest['flash_mb']), '--max-seconds', '30', '--no-dump']
-        if workload == 'hello':
+        if workload in ('hello', 'pocket-tank'):
             command += ['--board', manifest['board'], '--psram-mb', str(manifest['psram_mb'])]
         elif workload == 'classic-hello':
             command += ['--chip', 'esp32', '--board', manifest['board'],
                         '--psram-mb', str(manifest['psram_mb']), '--console', 'uart0']
         for role in ('rom', 'bootloader', 'ptable', 'app'):
             command += ['--' + role, str(files[role])]
+        for offset, path in manifest.get('flash_at', {}).items():
+            key = 'flash_at_' + offset
+            files[key] = (args.assets / path).resolve()
+            manifest['files'][key] = path
+            command += ['--flash-at', offset + '=' + str(files[key])]
         normalized = [value.replace(str(args.assets.resolve()), '{assets}') for value in command]
         row = {
             'command': '{arm}/target/release/' + binary + ' ' + ' '.join(normalized),
             'inputs': {role: {'path': manifest['files'][role], 'sha256': sha256(path.read_bytes()), 'bytes': path.stat().st_size}
                        for role, path in files.items()},
-            'binarySha256': {label: sha256((root / 'target/release' / binary).read_bytes()) for label, root in roots.items()},
+            'binarySha256': {label: sha256((bin_dirs[label] / binary).read_bytes()) for label in roots},
             'warmups': [], 'samples': [],
         }
         report['workloads'][workload] = row
@@ -137,7 +148,19 @@ def main():
                 aggregate_load = os.getloadavg()
                 before = resource.getrusage(resource.RUSAGE_CHILDREN)
                 start = time.perf_counter()
-                result = subprocess.run([str(roots[label] / 'target/release' / binary), *command], capture_output=True, timeout=120)
+                executable = bin_dirs[label] / binary
+                if sha256(executable.read_bytes()) != row['binarySha256'][label]:
+                    raise RuntimeError('Executable changed during measurement; refusing mixed builds')
+                try:
+                    result = subprocess.run([str(executable), *command], capture_output=True, timeout=args.timeout_seconds)
+                except subprocess.TimeoutExpired as error:
+                    stem = f'{workload}-{round_number}-{label}'
+                    (args.raw_dir / (stem + '.stdout')).write_bytes(error.stdout or b'')
+                    (args.raw_dir / (stem + '.stderr')).write_bytes(error.stderr or b'')
+                    row['failure'] = {'round': round_number, 'label': label, 'reason': 'wall-timeout',
+                                      'timeoutSeconds': args.timeout_seconds}
+                    save()
+                    raise
                 wall = time.perf_counter() - start
                 after = resource.getrusage(resource.RUSAGE_CHILDREN)
                 stem = f'{workload}-{round_number}-{label}'

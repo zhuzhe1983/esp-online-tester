@@ -35,6 +35,11 @@ pub const MMU_ENTRIES: usize = 512;
 pub const MMU_INVALID: u32 = 1 << 14;
 pub const MMU_SPIRAM: u32 = 1 << 15;
 pub const PAGE: u32 = 0x1_0000;
+#[derive(Clone, Copy)]
+enum SpiRouteSnapshot {
+    Single(esp_soc::board::SpiPins),
+    Phases(esp_soc::board::SpiQspiPins),
+}
 const _: () = {
     // EX173: a generated access derives its alignment from `addr - entry.lo`, so every mapping
     // this bus can build must start at least 16-byte aligned (the widest access is a PIE vector).
@@ -63,10 +68,10 @@ pub struct SocBus {
     /// Experimental register-derived SPI2 wire timing; disabled for baseline runs.
     pub spi2_timing: bool,
     spi2_scheduled: Option<(u64, Spi2DmaCompletion)>,
-    spi2_pins: Option<esp_soc::board::SpiPins>,
+    spi2_pins: Option<SpiRouteSnapshot>,
     /// SPI3's DMA descriptor fault and routes, as SPI2's above (no wire timing).
     pub spi3_dma_fault: Option<DmaDescriptorFault>,
-    spi3_pins: Option<esp_soc::board::SpiPins>,
+    spi3_pins: Option<SpiRouteSnapshot>,
     /// set by any peripheral write: interrupt lines must be re-evaluated before the next instruction
     pub irq_dirty: bool,
     /// A UART interrupt enable was written: its level is presented after the delivery latency (see `periph_write_inner`).
@@ -519,7 +524,9 @@ impl SocBus {
         let spi = matches!(a >> 12, 0x60024 | 0x60025 | 0x6003f);
         let sources = |p: &Peripherals| (p.spi2.irq(), p.spi3.irq(), esp_periph::Device::irq_sources(&p.gdma));
         let before = if spi { sources(&self.periph) } else { (false, false, 0) };
-        if a == PERIPH_BASE + 0x24_000 && v & (1 << 24) != 0 {
+        if a == PERIPH_BASE + 0x24_000 && v & (1 << 24) != 0
+            && (!self.periph.spi2.has_pending_transfer() || !matches!(self.spi2_pins, Some(SpiRouteSnapshot::Phases(_))))
+        {
             self.spi2_dma_fault = None;
             self.spi2_scheduled = None;
         }
@@ -541,6 +548,7 @@ impl SocBus {
                     if self.periph.spi2.log { eprintln!("[spi2] DMA source reset/rebound: aborting scheduled transfer"); }
                     self.spi2_scheduled = None;
                     self.periph.spi2.fail_dma_tx();
+                    if matches!(self.spi2_pins, Some(SpiRouteSnapshot::Phases(_))) { self.spi2_pins = None; }
                 }
             }
         }
@@ -550,10 +558,14 @@ impl SocBus {
         let ena_port = UART_FIFOS.iter().position(|&f| f + 0xc == a);
         let old_ena = ena_port.map_or(0, |i| self.periph.uart[i].int_ena);
         if a == PERIPH_BASE + 0x24_000 && v & (1 << 24) != 0 && !self.periph.spi2.has_pending_transfer() {
-            self.spi2_pins = self.board.uses_spi_pins().then(|| self.periph.spi2_pins());
+            self.spi2_pins = if self.board.uses_qspi_pins() {
+                Some(SpiRouteSnapshot::Phases(self.periph.spi_qspi_pins(2)))
+            } else { self.board.uses_spi_pins().then(|| SpiRouteSnapshot::Single(self.periph.spi2_pins())) };
         }
         if a == PERIPH_BASE + 0x25_000 && v & (1 << 24) != 0 && !self.periph.spi3.has_pending_transfer() {
-            self.spi3_pins = self.board.uses_spi_pins().then(|| self.periph.spi3_pins());
+            self.spi3_pins = if self.board.uses_qspi_pins() {
+                Some(SpiRouteSnapshot::Phases(self.periph.spi_qspi_pins(3)))
+            } else { self.board.uses_spi_pins().then(|| SpiRouteSnapshot::Single(self.periph.spi3_pins())) };
         }
         self.periph.write32(a, v);
         if a == 0x6000_8018 && v & (1 << 31) != 0 { self.enter_light_sleep(); }
@@ -1042,6 +1054,9 @@ mod gp_spi_board_tests;
 #[cfg(test)]
 #[path = "bus/dma_tests.rs"]
 mod dma_tests;
+#[cfg(test)]
+#[path = "bus/qspi_tests.rs"]
+mod qspi_tests;
 
 #[cfg(test)]
 #[path = "bus/memory_origin_tests.rs"]

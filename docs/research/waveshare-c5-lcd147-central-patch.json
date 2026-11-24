@@ -1,0 +1,86 @@
+{
+  "kind": "independent-central-integration-patch",
+  "productId": "waveshare-esp32-c5-lcd-1-47",
+  "name": "Waveshare ESP32-C5-LCD-1.47",
+  "chip": "esp32c5",
+  "profile": "waveshare-c5-lcd147",
+  "flashMB": 4,
+  "psramMB": 0,
+  "capacityBasis": "Official fixed HARDWARE_REFERENCE.md explicitly lists 4 MB embedded flash/no PSRAM; schematic independent of guest allocation.",
+  "resolution": [
+    172,
+    320
+  ],
+  "controllers": [
+    "ST7789"
+  ],
+  "hasTfSlot": true,
+  "hasTouch": false,
+  "buttonIds": [
+    "boot"
+  ],
+  "runtimeStatus": "experimental-sram-diagnostic",
+  "runtimeEvidence": "docs/evidence/waveshare-c5-lcd147-2026-11-23/inputs-and-hashes.json",
+  "runtimeDocumentation": "docs/platform/c5-display-transport.md",
+  "sourceReceipt": "docs/research/waveshare-c5-lcd147-sources-2026-11-23/manifest.json",
+  "dataConflicts": [
+    "Official product/reference ESP32-C5FH4 versus schematic ESP32-C5HF4 suffix spelling; unresolved.",
+    "Arduino examples use landscape rotation3 while this native framebuffer follows portrait BSP1.0.0."
+  ],
+  "projectDiagnostic": {
+    "role": "project-original-sram-diagnostic",
+    "name": "C5 LCD147 SPI/GDMA/BOOT/SD diagnostic",
+    "chip": "esp32c5",
+    "board": "waveshare-c5-lcd147",
+    "app_direct": true,
+    "files": {
+      "app": "firmware/c5-lcd147-probe/probe.bin"
+    },
+    "appOffset": 65536,
+    "appSha256": "36574c6f4a0362e7ef6f5f0a062ea8ec49bac374dadde176edd8a3853ce19f1f",
+    "appBytes": 2192,
+    "flashMB": 4,
+    "psramMB": 0,
+    "nominalXtalMHz": 48,
+    "spiMHz": 24,
+    "verified": [
+      "native actual guest rendering",
+      "BOOT pixel response and exact release",
+      "quiet control zero change",
+      "guest SD CMD0 and LBA32 512-byte write/readback"
+    ],
+    "notExercised": [
+      "flash bootloader or flash access",
+      "factory app",
+      "physical PSRAM (board has none)",
+      "USB",
+      "Wi-Fi/BLE",
+      "RGB RMT clock timing",
+      "filesystem mount",
+      "analog reset/power timing"
+    ]
+  },
+  "downloadedFirmware": {
+    "captureKind": "raw-http-response",
+    "url": "https://raw.githubusercontent.com/waveshareteam/esp32-c5-lcd-1.47/acf81d83f8cc580fb8bc4f3f13e7332ab6b1332d/firmware/ESP32-C5-LCD-1.47_FactoryOnly_20260618.bin",
+    "finalUrl": "https://raw.githubusercontent.com/waveshareteam/esp32-c5-lcd-1.47/acf81d83f8cc580fb8bc4f3f13e7332ab6b1332d/firmware/ESP32-C5-LCD-1.47_FactoryOnly_20260618.bin",
+    "status": 200,
+    "mediaType": "application/octet-stream",
+    "fetchedAtUTC": "2026-11-23T06:52:04.423274+00:00",
+    "bytes": 1388832,
+    "sha256": "6b6ef3729df2a442c94a897ac789fe9d3bcf0be72378a1138e92b5c713267724",
+    "loadOffset": 0,
+    "role": "manufacturer-factory-trial",
+    "validation": {
+      "downloadHashVerified": true,
+      "factoryBootPassed": false,
+      "note": "Not accepted by SRAM-only App/Flash loader; actual ROM currently faults before bootloader at LPPERI. No application or display success is attributed to this image."
+    }
+  },
+  "integrationNotes": [
+    "Route the exact board constructor to C5. Preserve physical4F0P, do not alias to C6.",
+    "Keep official factory trial and original project diagnostic as separate roles.",
+    "The independent 8 MiB PSRAM DMA fixture is transport evidence, not LCD147 hardware capacity.",
+    "No central catalog, CLI, WASM or runtime.js has been edited in this lane."
+  ]
+}
