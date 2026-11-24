@@ -1,0 +1,13 @@
+--- a/xtensa-lx7/src/jit/mod.rs
++++ b/xtensa-lx7/src/jit/mod.rs
+@@ -28,0 +29,2 @@
++    // Diagnostic patch only: no production timing measurements use these counters.
++    thread_local! {static FALLBACKS: std::cell::RefCell<[u64; Op::Pie as usize+1]> = const {std::cell::RefCell::new([0;Op::Pie as usize+1])};}
+@@ -45,0 +48,5 @@
++            FALLBACKS.with(|counts| {
++                for (op,n) in counts.borrow_mut().iter_mut().enumerate() {
++                    if *n!=0 {eprintln!("[native-fallback] {op}={n}");*n=0;}
++                }
++            });
+@@ -137,0 +145 @@
++        FALLBACKS.with(|counts|counts.borrow_mut()[i.insn.op as usize]+=1);
