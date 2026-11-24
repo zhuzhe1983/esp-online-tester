@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-23T18:52:31Z",
+  "scope": "Local ESP32-S31 ROM hello regression after active RMT completion forwarding. This workload keeps RMT inactive; it does not measure active RMT throughput or factory boot. Cross-chip checks are separately owned by integration.",
+  "method": "Five alternating AB/BA measured pairs, preceded by one warmup per arm. RUSAGE_CHILDREN user CPU; identical fixed2000000000 run budget; both hart instruction counts, fault fields and stdout hash must match. No rejected samples.",
+  "source": {
+    "baseline": "9e0f09c3f5507e0c50be1bb69d5653a40b42a3d4",
+    "candidate": "253c6143b40eee69395c813ed8fb271433b490ec"
+  },
+  "harnessSha256": "2f813f147178fcfeb0fade12076a5aa2a05b2af7ce933a5694be6be9642d8110",
+  "buildCommand": "CARGO_TARGET_DIR={separate-target-for-each-arm} CARGO_BUILD_JOBS=2 cargo build --release -p esp32s31 --example s31_hello",
+  "compiler": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "conditions": {
+    "os": "Linux",
+    "architecture": "x86_64",
+    "logicalCpus": 9,
+    "concurrentWork": "Shared host with serial OpenCascade conversion and independent integration work. No exclusive CPU isolation asserted.",
+    "cpuAffinity": [
+      0
+    ],
+    "qualification": "Affinity pins both arms to the same allowed logicalCPU; host resources remain shared."
+  },
+  "inputs": {
+    "esp32s31_rev0_rom.elf": {
+      "bytes": 513396,
+      "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+    },
+    "s31-hello-bootloader.bin": {
+      "bytes": 22160,
+      "sha256": "d60f6fac20b132ffe97194e3f160cb575b0fc52cea744e0a14c06658973d0b68"
+    },
+    "s31-hello-ptable.bin": {
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "s31-hello_world.bin": {
+      "bytes": 156848,
+      "sha256": "6b965db02941e8db4895d27c2ad8eea1733e22ddf9a82ccd4d6f77ae62c6335c"
+    }
+  },
+  "binarySha256": {
+    "baseline": "dc7c945ff47bcd74e054912116047ce4b7a0039a251515e7b0202bb6c9414f63",
+    "candidate": "9a0006b7b3c23594af30062db59d73ceebb982f5cc2b3fc54d6bd055716f67c4"
+  },
+  "samples": [
+    {
+      "round": 1,
+      "arm": "baseline",
+      "userSeconds": 2.7029439999999987,
+      "systemSeconds": 0.01086699999999996,
+      "wallSeconds": 2.740131411999755,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 1,
+      "arm": "candidate",
+      "userSeconds": 2.2475760000000022,
+      "systemSeconds": 0.003899000000000097,
+      "wallSeconds": 2.2801653659989825,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 2,
+      "arm": "candidate",
+      "userSeconds": 2.390276,
+      "systemSeconds": 0.019986999999999977,
+      "wallSeconds": 2.4732659389992477,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 2,
+      "arm": "baseline",
+      "userSeconds": 2.2782239999999945,
+      "systemSeconds": 0.015942000000000123,
+      "wallSeconds": 2.3110923350031953,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 3,
+      "arm": "baseline",
+      "userSeconds": 2.1956190000000007,
+      "systemSeconds": 0.016237999999999975,
+      "wallSeconds": 2.2334642089990666,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 3,
+      "arm": "candidate",
+      "userSeconds": 2.2343680000000035,
+      "systemSeconds": 0.012252999999999847,
+      "wallSeconds": 2.2808340419942397,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 4,
+      "arm": "candidate",
+      "userSeconds": 2.7285660000000007,
+      "systemSeconds": 0.004094000000000042,
+      "wallSeconds": 2.7455798810042324,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 4,
+      "arm": "baseline",
+      "userSeconds": 2.7785829999999976,
+      "systemSeconds": 0.02394699999999994,
+      "wallSeconds": 2.8739921819942538,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 5,
+      "arm": "baseline",
+      "userSeconds": 2.518847000000001,
+      "systemSeconds": 0.0241880000000001,
+      "wallSeconds": 2.586104413996509,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 5,
+      "arm": "candidate",
+      "userSeconds": 2.4394629999999964,
+      "systemSeconds": 0.02020299999999997,
+      "wallSeconds": 2.4854083740065107,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    }
+  ],
+  "warmups": [
+    {
+      "round": 0,
+      "arm": "candidate",
+      "userSeconds": 2.580279000000001,
+      "systemSeconds": 0.012245000000000061,
+      "wallSeconds": 2.641431582000223,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    },
+    {
+      "round": 0,
+      "arm": "baseline",
+      "userSeconds": 2.6349620000000016,
+      "systemSeconds": 0.008324999999999916,
+      "wallSeconds": 2.6633057709987042,
+      "pc0": "0x2f0041f6",
+      "pc1": "0x2f0041f6",
+      "hart0Instructions": 2000000000,
+      "hart1Instructions": 1998072256,
+      "fault": "None",
+      "firstFault": "None",
+      "stdoutBytes": 2915,
+      "stdoutSha256": "68f852d4117dfa4e8afca64d7268453f1c9e6be5b920f876d8949116d1b3c5ed",
+      "stderrSha256": "ad51a20b9ddce727d725970c387e066d84268472f460f546ee0623610f5e1856"
+    }
+  ],
+  "identicalGuestWorkAndOutput": true,
+  "medianUserSeconds": {
+    "baseline": 2.518847000000001,
+    "candidate": 2.390276
+  },
+  "userCpuRange": {
+    "baseline": [
+      2.1956190000000007,
+      2.7785829999999976
+    ],
+    "candidate": [
+      2.2343680000000035,
+      2.7285660000000007
+    ]
+  },
+  "candidatePercentChange": -5.104359256437596,
+  "completedAt": "2026-11-23T18:53:41+00:00",
+  "runCommand": "{isolated-arm}/s31_hello {pinned-ROM} {three-pinned-firmware-parts} 2000000000",
+  "comparisonToEarlierReport": "s31-rmt-cpu-baseline.json retains the prior +6.76% initial and +9.07% affinity recheck observations. The active-only completion loop is now in an inline(never)helper. No sample was discarded.",
+  "conclusion": "Both hart counts, PCs, faults and stdout remain identical. This outlined run does not reproduce the earlier >5% medianCPU regression; shared-host ranges are broad and the observednegativechange is not asserted as a proven speedup. Scope remains inactiveRMT hello only.",
+  "functionalCheck": {
+    "command": "CARGO_TARGET_DIR=/workspace/scratch/2c24dec2dd12/target-p4-s31 CARGO_BUILD_JOBS=2 cargo test --release -p esp32s31 waveshare",
+    "status": "passed",
+    "tests": 5,
+    "scope": "Actual guest RMT correct/wrong GPIO, RGBDMA/backlight/wrongPCLK and BOOT plus direct board protocols."
+  }
+}

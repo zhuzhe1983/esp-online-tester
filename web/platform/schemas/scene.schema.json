@@ -47,22 +47,52 @@
               ]
             },
             "archive": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "format",
-                "entry"
-              ],
-              "properties": {
-                "format": {
-                  "const": "zip"
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "format",
+                    "entry"
+                  ],
+                  "properties": {
+                    "format": {
+                      "const": "zip"
+                    },
+                    "entry": {
+                      "type": "string",
+                      "maxLength": 180,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_. -]*\\.[bB][iI][nN]$"
+                    }
+                  }
                 },
-                "entry": {
-                  "type": "string",
-                  "maxLength": 180,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_. -]*\\.[bB][iI][nN]$"
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "format",
+                    "entry",
+                    "sha256"
+                  ],
+                  "properties": {
+                    "format": {
+                      "const": "zip-bundle"
+                    },
+                    "entry": {
+                      "type": "string",
+                      "maxLength": 512,
+                      "pattern": "^[^/\\\\:\\x00-\\x1f\\x7f-\\x9f]+(?:/[^/\\\\:\\x00-\\x1f\\x7f-\\x9f]+)*\\.[bB][iI][nN]$",
+                      "not": {
+                        "pattern": "(^|/)(\\.|\\.\\.)(/|$)"
+                      }
+                    },
+                    "sha256": {
+                      "type": "string",
+                      "pattern": "^[a-fA-F0-9]{64}$"
+                    }
+                  }
                 }
-              }
+              ]
             }
           },
           "oneOf": [

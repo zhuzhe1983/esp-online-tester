@@ -13,8 +13,9 @@ import {validateFirmwareTargets} from './firmware-target.js';
 export const SCHEMA_VERSION = '1';
 export const MAX_SCENE_BYTES = 64 * 1024;
 // Release metadata grows independently of portable scenes and private imports.
-// Source-backed variants now exceed 1 MiB; retain a bounded catalog envelope.
-const catalogMaxBytes = {products: 2 * 1024 * 1024, accessories: 512 * 1024, firmwares: 2 * 1024 * 1024};
+// Source-backed product/revision profiles exceed 2 MiB. This public metadata
+// envelope is independent of the unchanged 64 KiB scene / 16 KiB import caps.
+const catalogMaxBytes = {products: 8 * 1024 * 1024, accessories: 512 * 1024, firmwares: 8 * 1024 * 1024};
 const STORAGE_KEY = 'esp-online-tester:accessories:v1';
 const unsafeKeys = new Set(['__proto__', 'prototype', 'constructor']);
 const idPattern = /^[a-z0-9][a-z0-9:-]{0,79}$/;
@@ -109,6 +110,7 @@ export function firmwareSourceMatches(left, right) {
   const kind = left.manifestUrl ? 'manifestUrl' : 'url';
   return typeof left[kind] === 'string' && left[kind].length > 0 && left[kind] === right[kind]
     && (left.archive?.format||null)===(right.archive?.format||null) && (left.archive?.entry||null)===(right.archive?.entry||null)
+    && (left.archive?.sha256?.toLowerCase()||null)===(right.archive?.sha256?.toLowerCase()||null)
     && (!left.sha256 || !right.sha256 || left.sha256.toLowerCase() === right.sha256.toLowerCase());
 }
 

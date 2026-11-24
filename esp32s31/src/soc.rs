@@ -371,6 +371,19 @@ impl SocBus {
             | (u8::from(self.inner.rmt.running()) * POLL_RMT) | (u8::from(self.inner.lcd.running()) * POLL_LCD);
     }
 
+    // Completed pixel transfers are rare relative to peripheral clock updates.
+    // Keep their pin routing and board dispatch out of the clock polling body.
+    #[inline(never)]
+    fn deliver_completed_rmt(&mut self) {
+        for (channel, bits) in self.inner.rmt.inner.done.drain(..) {
+            for pin in 0..62 {
+                if self.inner.pads.matrix_output(pin, crate::rmt::SIGNAL0 + channel as u32) {
+                    self.board.rmt_frame(pin as u8, &bits);
+                }
+            }
+        }
+    }
+
     /// EX260/EX265 follow-up: keep newly added, opt-in peripheral work out of the idle
     /// tick body. The order, time and completion/IRQ actions match the uncached path.
     #[inline(never)]
@@ -379,8 +392,9 @@ impl SocBus {
         if self.peripheral_poll & POLL_RMT != 0 {
             let before = self.inner.rmt.irq();
             self.inner.rmt.tick(u64::from(cycles), self.inner.mspi.bbpll_root_hz().map(|hz| hz / 6), self.inner.clocks.rc_fast_hz());
-            // Finite gate clocks are observed through lcd_rgb_start, not as WS2812 frames.
-            self.inner.rmt.inner.done.clear();
+            // Continuous/finite-loop gate clocks produce no completed pixel frame.
+            // Completed non-loop TX reaches only physical, uninverted GPIO-matrix routes.
+            if !self.inner.rmt.inner.done.is_empty() { self.deliver_completed_rmt(); }
             if before != self.inner.rmt.irq() { self.irq_dirty = true; }
         }
         if self.peripheral_poll & POLL_LCD != 0 {

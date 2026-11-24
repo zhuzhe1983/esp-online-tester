@@ -759,6 +759,7 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
     // Prefer the hello image's JEDEC / SFDP when flash is the default 2 MiB; larger sizes keep
     // BoardInputs unset so callers can supply their own NOR identity.
     let mut inputs = match (o.board.as_str(), flash_mb) {
+        (name, _) if esp32s31::board::waveshare_zero::inputs(name).is_some() => esp32s31::board::waveshare_zero::inputs(name),
         ("waveshare-s31-touch-lcd43c", _) => Some(esp32s31::board::waveshare_touch43c::inputs()),
         ("mosaico" | "esp-mosaico", _) => Some(esp32s31::soc::BoardInputs::mosaico_gd25q128()),
         ("metalio-ink4-plus", _) => Some(esp32s31::board::ink4_plus_inputs(o.psram_mb.unwrap_or(16) << 20)),

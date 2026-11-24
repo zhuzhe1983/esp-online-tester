@@ -231,6 +231,21 @@ try {
     await expectCode(()=>runtime.loadFirmware({...source,url:bad,sha256:'0'.repeat(64)}),'HASH_MISMATCH');
   });
 
+  await step('pinned nested manufacturer ZIP reaches the real Worker, share and member cache',async()=>{
+    const data=await readFile(new URL('web/wasm/fw/public/hello_world.bin',root)),url='https://platform.example/exact-demo-source.zip';
+    const entry='Exact-Demo/Firmwork/hello.bin',archive=firmwareZipEntries([{name:'Exact-Demo/',data:''},{name:entry,data,descriptor:true},{name:'Exact-Demo/source/main.c',data:'unselected source'}]);
+    const source={url,sha256:await sha256(data),archive:{format:'zip-bundle',entry,sha256:await sha256(archive)}};
+    responseOverrides.set(url,archive);
+    const loaded=await runtime.loadFirmware(source);assert.equal(loaded.firmware.appDirect,true);assert.deepEqual(loaded.scene.firmware.archive,source.archive);
+    await runtime.start();await waitForStats(stats=>stats.insns>0);await runtime.pause();assert.equal(workerStarts.at(-1),true);
+    const shared=decodeScene(new URLSearchParams(new URL(await api.share()).hash.slice(1)).get('scene'));assert.deepEqual(shared.firmware,{...source,bootMode:'app-direct'});
+    responseOverrides.set(url,Buffer.from('only the already verified selected member should be cached'));
+    await runtime.configure(shared);await runtime.loadFirmware();assert.equal(fetchCounts.get(url),1);
+    const badUrl='https://platform.example/mismatched-container.zip';responseOverrides.set(badUrl,archive);
+    await expectCode(()=>runtime.loadFirmware({...source,url:badUrl,archive:{...source.archive,sha256:'0'.repeat(64)}}),'HASH_MISMATCH');
+    await expectCode(()=>runtime.loadFirmware({...source,url:badUrl,sha256:'0'.repeat(64)}),'HASH_MISMATCH');
+  });
+
   await step('named ZIP manifest segments boot through ROM and retain separate cache identities',async()=>{
     const manifest=JSON.parse(await readFile(new URL('web/wasm/fw/hello.json',root),'utf8'));
     const url='https://platform.example/factory-segments.zip',manifestUrl='https://platform.example/factory-segments.json',entries=[];

@@ -1,0 +1,483 @@
+{
+  "listingId": "esp32-p4-wifi6-touch-lcd-3.4c",
+  "products": [
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-4c",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-3.4C",
+      "manufacturer": "Waveshare",
+      "sku": "31523",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "3.4 英寸 800×800 MIPI-DSI / GT9271，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-4c",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-XC"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-3-4c.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd34c",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 800,
+        "type": "IPS LCD",
+        "controller": "JD9365",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 3.4,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-XC-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-XC",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-XC-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-XC/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT9271 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器、来源哈希、尺寸和适用部分的射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Viewing circle follows manufacturer dimension photo:87.60mm for3.4C and101.52mm for4C. Native aggregate front component includes optical/carrier details and is retained intact, not split into fictitious parts.",
+        "Model: All native source geometry retained. Current PCB revision, undocumented package identity and material are not inferred from CAD.",
+        "Model: No physical button hit target is fabricated without calibration; verified BOOT and touch inputs use product controls. DSI framebuffer remains unsupported on these boards."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-xc-20261106-3-4c-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd34c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-4c",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-4C",
+      "manufacturer": "Waveshare",
+      "sku": "31522",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "4 英寸 720×720 MIPI-DSI / GT9271，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-4c",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-XC"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-4c.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd4c",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 720,
+        "height": 720,
+        "type": "IPS LCD",
+        "controller": "JD9365",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 4,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-XC-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-XC",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-XC-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-XC/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT9271 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器、来源哈希、尺寸和适用部分的射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Viewing circle follows manufacturer dimension photo:87.60mm for3.4C and101.52mm for4C. Native aggregate front component includes optical/carrier details and is retained intact, not split into fictitious parts.",
+        "Model: All native source geometry retained. Current PCB revision, undocumented package identity and material are not inferred from CAD.",
+        "Model: No physical button hit target is fabricated without calibration; verified BOOT and touch inputs use product controls. DSI framebuffer remains unsupported on these boards."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-xc-20261106-4c-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd4c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-xc-20261106-3-4c-factory",
+      "name": "ESP32-P4-WIFI6-Touch-LCD-XC · 官方出厂镜像 · FactoryOnly_20261106（未验证）",
+      "productIds": [
+        "waveshare-esp32-p4-wifi6-touch-lcd-3-4c"
+      ],
+      "version": "FactoryOnly_20261106",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/ESP32-P4-WIFI6-Touch-LCD-3.4C/ESP32-P4-WIFI6-Touch-LCD-3.4C_FactoryOnly_20261106.bin",
+        "sha256": "1b717c089bafb96b7c430d2f2d9ddbaf383663606a5f121e89f9dacaff9bbf6c",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "watchlistId": "waveshare-esp32-p4-wifi6-touch-lcd-xc-20261106-3-4c-official",
+      "sources": [
+        {
+          "title": "Official firmware README",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "ESP32-P4-WIFI6-Touch-LCD-3.4C_FactoryOnly_20261106.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/ESP32-P4-WIFI6-Touch-LCD-3.4C/ESP32-P4-WIFI6-Touch-LCD-3.4C_FactoryOnly_20261106.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Official exact model/packaging restore firmware. Silicon profiles are explicit; no factory boot verification. DSI/DPI output remains unimplemented."
+      ]
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-xc-20261106-4c-factory",
+      "name": "ESP32-P4-WIFI6-Touch-LCD-XC · 官方出厂镜像 · FactoryOnly_20261106（未验证）",
+      "productIds": [
+        "waveshare-esp32-p4-wifi6-touch-lcd-4c"
+      ],
+      "version": "FactoryOnly_20261106",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/ESP32-P4-WIFI6-Touch-LCD-4C/ESP32-P4-WIFI6-Touch-LCD-4C_FactoryOnly_20261106.bin",
+        "sha256": "de8059d216df906bb1ebde61d674da893ae5029aa3ec31c6d0e428095c9d4f08",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "watchlistId": "waveshare-esp32-p4-wifi6-touch-lcd-xc-20261106-4c-official",
+      "sources": [
+        {
+          "title": "Official firmware README",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4C_FactoryOnly_20261106.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/ESP32-P4-WIFI6-Touch-LCD-4C/ESP32-P4-WIFI6-Touch-LCD-4C_FactoryOnly_20261106.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Official exact model/packaging restore firmware. Silicon profiles are explicit; no factory boot verification. DSI/DPI output remains unimplemented."
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-xc-20261106-3-4c-official",
+      "name": "ESP32-P4-WIFI6-Touch-LCD-XC 原厂固件 FactoryOnly_20261106",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/tree/main/firmware",
+      "version": "FactoryOnly_20261106",
+      "checkedAt": "2026-11-23T17:00:23Z",
+      "assets": [
+        {
+          "name": "ESP32-P4-WIFI6-Touch-LCD-3.4C_FactoryOnly_20261106.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/ESP32-P4-WIFI6-Touch-LCD-3.4C/ESP32-P4-WIFI6-Touch-LCD-3.4C_FactoryOnly_20261106.bin",
+          "sha256": "1b717c089bafb96b7c430d2f2d9ddbaf383663606a5f121e89f9dacaff9bbf6c",
+          "bytes": 16777216,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "unverified",
+        "productIds": [
+          "waveshare-esp32-p4-wifi6-touch-lcd-3-4c"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Official exact model/packaging restore firmware. Silicon profiles are explicit; no factory boot verification. DSI/DPI output remains unimplemented."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": []
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-xc-20261106-4c-official",
+      "name": "ESP32-P4-WIFI6-Touch-LCD-XC 原厂固件 FactoryOnly_20261106",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/tree/main/firmware",
+      "version": "FactoryOnly_20261106",
+      "checkedAt": "2026-11-23T17:00:23Z",
+      "assets": [
+        {
+          "name": "ESP32-P4-WIFI6-Touch-LCD-4C_FactoryOnly_20261106.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-XC/5635f7095ca188ba00ce7690961279f2d84a7187/firmware/ESP32-P4-WIFI6-Touch-LCD-4C/ESP32-P4-WIFI6-Touch-LCD-4C_FactoryOnly_20261106.bin",
+          "sha256": "de8059d216df906bb1ebde61d674da893ae5029aa3ec31c6d0e428095c9d4f08",
+          "bytes": 16777216,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "unverified",
+        "productIds": [
+          "waveshare-esp32-p4-wifi6-touch-lcd-4c"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Official exact model/packaging restore firmware. Silicon profiles are explicit; no factory boot verification. DSI/DPI output remains unimplemented."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": []
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-p4-wifi6-touch-lcd-3-4c.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-p4-wifi6-touch-lcd-4c.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-p4-lcd34c": {
+      "chip": "esp32p4",
+      "display": false,
+      "touch": true,
+      "gpio": true,
+      "rgb": false,
+      "sdCard": true,
+      "imu": false,
+      "siliconRevision": 301
+    },
+    "waveshare-p4-lcd4c": {
+      "chip": "esp32p4",
+      "display": false,
+      "touch": true,
+      "gpio": true,
+      "rgb": false,
+      "sdCard": true,
+      "imu": false,
+      "siliconRevision": 301
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-wifi6-touch-lcd-3.4c/source-receipts.json",
+    "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-wifi6-touch-lcd-3.4c/factory-image-audit.json",
+    "web/platform/assets/waveshare-p4-lcd34c-mechanical/source-manifest.json",
+    "web/platform/assets/waveshare-p4-lcd4c-mechanical/source-manifest.json"
+  ],
+  "tests": [
+    {
+      "command": "cargo test --release -p esp32p4 waveshare_screens",
+      "status": "passed",
+      "tests": 3,
+      "scope": "Board protocol tests across15profiles: actual control addresses/coordinates/ACK/reset subset, no fabricated DSI frames. Full factory boot and WebGL unverified."
+    },
+    {
+      "kind": "model-loader",
+      "command": "node tools/check-waveshare-model-loading.mjs waveshare-p4-lcd34c-mechanical waveshare-p4-lcd4c-mechanical",
+      "status": "passed",
+      "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+    }
+  ],
+  "limitations": [
+    "MIPI-DSI/DPI output unimplemented; input/control digital subset only.",
+    "Chip revision profiles are distinct from PCB and sales variants; exact SKU count must deduplicate SKU across profiles."
+  ],
+  "integrationNotes": [
+    "Route exact names via esp32p4::board::waveshare_screens::profile(name), using its revision field as virtual silicon revision.",
+    "WASM/CLI:32MiB flash and32MiB PSRAM; root owns shared catalog/capability/selector integration."
+  ],
+  "modelIds": [
+    "waveshare-p4-lcd34c-mechanical",
+    "waveshare-p4-lcd4c-mechanical"
+  ]
+}

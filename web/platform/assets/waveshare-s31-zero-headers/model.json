@@ -1,0 +1,1233 @@
+{
+  "id": "waveshare-s31-zero-headers",
+  "dimensions": {
+    "pcbSizeMm": [
+      18,
+      28
+    ],
+    "cornerRadiusMm": 1,
+    "boardThicknessMm": {
+      "value": 1.6,
+      "basis": "estimated"
+    },
+    "sourceIds": [
+      "dimension-photo"
+    ]
+  },
+  "presentation": {},
+  "limitations": [
+    "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+    "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+    "No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+    "Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+    "Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+    "BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60."
+  ],
+  "referencePhotos": [
+    "dimension-photo",
+    "bare-photo",
+    "header-photo",
+    "component-identification"
+  ],
+  "method": "dimension-photo-reconstruction",
+  "sourceSearch": {
+    "status": "official-footprint-inspected-no-3d",
+    "repository": "waveshareteam/ESP32-S31-Zero",
+    "commit": "8feb078e9a7c958635cc77db3a61f8bb527f0156",
+    "footprintUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/hardware/footprint/ESP32%20S31%20Zero.PcbLib",
+    "footprintSha256": "a93929539adbcb5da402c3fba3859b06f4bc67d15e76487559e093be177b859c",
+    "embeddedModelBytes": 0,
+    "externalModelBytes": 0,
+    "evidence": "docs/research/waveshare-p4-s31-2026-11-24/esp32-s31-zero/footprint-model-inspection.json"
+  },
+  "photoRegistration": {
+    "review": {
+      "file": "dimension-photo.webp",
+      "pixelFromModelXY": [
+        [
+          13.277777777777779,
+          0,
+          327.5
+        ],
+        [
+          0,
+          -13.321428571428571,
+          337.5
+        ]
+      ],
+      "includeParts": [
+        "boot-button",
+        "reset-button-visual",
+        "rgb-window",
+        "usb-shell-estimate"
+      ]
+    },
+    "front": {
+      "sourceId": "dimension-photo",
+      "pcbPixelBounds": [
+        208,
+        151,
+        447,
+        524
+      ],
+      "nominalSizeMm": [
+        18,
+        28
+      ],
+      "uncertainty": "Manual board-edge registration about1px=0.075mm; packageheight and manufacturing tolerances unknown."
+    }
+  },
+  "sourceCoverage": {},
+  "schemaVersion": "1",
+  "unit": "mm",
+  "strideFloats": 6,
+  "binary": "geometry.bin.gz",
+  "binaryCompression": "gzip",
+  "parts": [
+    {
+      "name": "pcb-front-photo",
+      "role": "photo-appearance",
+      "color": "#175580",
+      "texture": {
+        "file": "dimension-photo.webp",
+        "projection": "xy",
+        "side": "front",
+        "boundsMm": [
+          -24.665271966527197,
+          -20.080428954423592,
+          47.63598326359833,
+          25.335120643431637
+        ],
+        "minNormalZ": 0.99,
+        "zPlanesMm": [
+          0.81
+        ]
+      },
+      "basis": "Unmodified source dimension-photo front PCB rectangle[208,151,447,524] maps to18×28mm; surface is clipped to board outline and mounting hole, excluding separately drawn USB, two buttons and RGB window. Photograph establishes visible appearance only; flat component heights remain unknown.",
+      "sourceIds": [
+        "dimension-photo"
+      ],
+      "byteOffset": 0,
+      "vertexCount": 318,
+      "boundsMm": [
+        [
+          -9.0,
+          -14.0,
+          0.8100000023841858
+        ],
+        [
+          9.0,
+          14.0,
+          0.8100000023841858
+        ]
+      ]
+    },
+    {
+      "name": "boot-button",
+      "role": "component",
+      "color": "#4d5053",
+      "controlId": "boot",
+      "basis": "Manufacturer labels B/Download pin61 and front photograph identify this switch. XY is measured from source board rectangle; height/radius are visual estimates.",
+      "sourceIds": [
+        "dimension-photo",
+        "component-identification"
+      ],
+      "byteOffset": 7632,
+      "vertexCount": 600,
+      "boundsMm": [
+        [
+          -6.528900146484375,
+          11.720274925231934,
+          0.800000011920929
+        ],
+        [
+          -5.369999885559082,
+          12.879724502563477,
+          1.399999976158142
+        ]
+      ]
+    },
+    {
+      "name": "reset-button-visual",
+      "role": "component",
+      "color": "#4d5053",
+      "basis": "RESET/EN location from same photograph. Visual only; not falsely wired as an ordinary GPIO.",
+      "sourceIds": [
+        "dimension-photo",
+        "component-identification"
+      ],
+      "byteOffset": 22032,
+      "vertexCount": 600,
+      "boundsMm": [
+        [
+          5.521100044250488,
+          11.720274925231934,
+          0.800000011920929
+        ],
+        [
+          6.679999828338623,
+          12.879724502563477,
+          1.399999976158142
+        ]
+      ]
+    },
+    {
+      "name": "rgb-window",
+      "role": "component",
+      "color": "#eeeece",
+      "ledIndex": 0,
+      "basis": "Manufacturer component5 is WS2812 on GPIO60. Optical location is photo-measured; package and optics dimensions remain approximate. Guest RMT output supplies actual RGB.",
+      "sourceIds": [
+        "dimension-photo",
+        "component-identification"
+      ],
+      "byteOffset": 36432,
+      "vertexCount": 36,
+      "boundsMm": [
+        [
+          5.5,
+          8.300000190734863,
+          0.8100000023841858
+        ],
+        [
+          6.900000095367432,
+          9.399999618530273,
+          1.309999942779541
+        ]
+      ]
+    },
+    {
+      "name": "usb-shell-estimate",
+      "role": "component",
+      "color": "#aab0b5",
+      "basis": "USB-C visibly open envelope from photograph.8.9×3.2 mouth/7mmdepth are visual estimates, not a specified connector model; no connection/cable acceptance.",
+      "sourceIds": [
+        "dimension-photo",
+        "bare-photo"
+      ],
+      "byteOffset": 37296,
+      "vertexCount": 96,
+      "boundsMm": [
+        [
+          -4.449999809265137,
+          8.0,
+          0.800000011920929
+        ],
+        [
+          4.449999809265137,
+          15.0,
+          4.0
+        ]
+      ]
+    },
+    {
+      "name": "pcb-reverse-support",
+      "role": "pcb",
+      "color": "#175580",
+      "sourceIds": [
+        "dimension-photo"
+      ],
+      "basis": "Reverse physical PCB surface; unknown component layout remains labeled UNKNOWN. Explicit surface also blocks through-board button rays.",
+      "byteOffset": 39600,
+      "vertexCount": 252,
+      "boundsMm": [
+        [
+          -9.0,
+          -14.0,
+          -0.800000011920929
+        ],
+        [
+          9.0,
+          14.0,
+          -0.800000011920929
+        ]
+      ]
+    }
+  ],
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "color": "#175580",
+      "geometry": {
+        "shape": "polygon",
+        "outlineMm": [
+          [
+            9.0,
+            13.0
+          ],
+          [
+            8.98078528040323,
+            13.195090322016128
+          ],
+          [
+            8.923879532511286,
+            13.38268343236509
+          ],
+          [
+            8.831469612302545,
+            13.555570233019601
+          ],
+          [
+            8.707106781186548,
+            13.707106781186548
+          ],
+          [
+            8.555570233019603,
+            13.831469612302545
+          ],
+          [
+            8.38268343236509,
+            13.923879532511286
+          ],
+          [
+            8.195090322016128,
+            13.98078528040323
+          ],
+          [
+            8.0,
+            14.0
+          ],
+          [
+            -8.0,
+            14.0
+          ],
+          [
+            -8.195090322016128,
+            13.98078528040323
+          ],
+          [
+            -8.38268343236509,
+            13.923879532511286
+          ],
+          [
+            -8.555570233019603,
+            13.831469612302545
+          ],
+          [
+            -8.707106781186548,
+            13.707106781186548
+          ],
+          [
+            -8.831469612302545,
+            13.555570233019601
+          ],
+          [
+            -8.923879532511286,
+            13.38268343236509
+          ],
+          [
+            -8.98078528040323,
+            13.195090322016128
+          ],
+          [
+            -9.0,
+            13.0
+          ],
+          [
+            -9.0,
+            -13.0
+          ],
+          [
+            -8.98078528040323,
+            -13.195090322016128
+          ],
+          [
+            -8.923879532511286,
+            -13.38268343236509
+          ],
+          [
+            -8.831469612302545,
+            -13.555570233019603
+          ],
+          [
+            -8.707106781186548,
+            -13.707106781186548
+          ],
+          [
+            -8.555570233019601,
+            -13.831469612302545
+          ],
+          [
+            -8.38268343236509,
+            -13.923879532511286
+          ],
+          [
+            -8.195090322016128,
+            -13.98078528040323
+          ],
+          [
+            -8.0,
+            -14.0
+          ],
+          [
+            8.0,
+            -14.0
+          ],
+          [
+            8.195090322016128,
+            -13.98078528040323
+          ],
+          [
+            8.38268343236509,
+            -13.923879532511286
+          ],
+          [
+            8.555570233019601,
+            -13.831469612302545
+          ],
+          [
+            8.707106781186548,
+            -13.707106781186548
+          ],
+          [
+            8.831469612302545,
+            -13.555570233019601
+          ],
+          [
+            8.923879532511286,
+            -13.38268343236509
+          ],
+          [
+            8.98078528040323,
+            -13.195090322016128
+          ],
+          [
+            9.0,
+            -13.0
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              5.45,
+              -9.45
+            ],
+            [
+              5.441017104442501,
+              -9.312947498168946
+            ],
+            [
+              5.414222117603522,
+              -9.178240002642353
+            ],
+            [
+              5.370073509136851,
+              -9.048182396016655
+            ],
+            [
+              5.309326673973661,
+              -8.924999999999999
+            ],
+            [
+              5.233021007305798,
+              -8.810800499540843
+            ],
+            [
+              5.142462120245876,
+              -8.707537879754124
+            ],
+            [
+              5.039199500459157,
+              -8.616978992694202
+            ],
+            [
+              4.925000000000001,
+              -8.540673326026338
+            ],
+            [
+              4.801817603983345,
+              -8.479926490863148
+            ],
+            [
+              4.671759997357647,
+              -8.435777882396478
+            ],
+            [
+              4.537052501831055,
+              -8.408982895557498
+            ],
+            [
+              4.4,
+              -8.399999999999999
+            ],
+            [
+              4.262947498168947,
+              -8.408982895557498
+            ],
+            [
+              4.128240002642354,
+              -8.435777882396478
+            ],
+            [
+              3.9981823960166563,
+              -8.479926490863148
+            ],
+            [
+              3.8750000000000004,
+              -8.540673326026338
+            ],
+            [
+              3.7608004995408435,
+              -8.616978992694202
+            ],
+            [
+              3.6575378797541256,
+              -8.707537879754124
+            ],
+            [
+              3.5669789926942035,
+              -8.810800499540843
+            ],
+            [
+              3.49067332602634,
+              -8.924999999999999
+            ],
+            [
+              3.4299264908631493,
+              -9.048182396016655
+            ],
+            [
+              3.3857778823964786,
+              -9.178240002642353
+            ],
+            [
+              3.3589828955574994,
+              -9.312947498168946
+            ],
+            [
+              3.3500000000000005,
+              -9.45
+            ],
+            [
+              3.3589828955574994,
+              -9.587052501831053
+            ],
+            [
+              3.3857778823964786,
+              -9.721759997357646
+            ],
+            [
+              3.4299264908631493,
+              -9.851817603983344
+            ],
+            [
+              3.4906733260263394,
+              -9.975
+            ],
+            [
+              3.5669789926942035,
+              -10.089199500459156
+            ],
+            [
+              3.657537879754125,
+              -10.192462120245875
+            ],
+            [
+              3.7608004995408435,
+              -10.283021007305797
+            ],
+            [
+              3.875,
+              -10.35932667397366
+            ],
+            [
+              3.9981823960166563,
+              -10.42007350913685
+            ],
+            [
+              4.128240002642354,
+              -10.464222117603521
+            ],
+            [
+              4.262947498168947,
+              -10.4910171044425
+            ],
+            [
+              4.4,
+              -10.5
+            ],
+            [
+              4.537052501831054,
+              -10.4910171044425
+            ],
+            [
+              4.671759997357647,
+              -10.464222117603521
+            ],
+            [
+              4.801817603983344,
+              -10.42007350913685
+            ],
+            [
+              4.925000000000001,
+              -10.35932667397366
+            ],
+            [
+              5.039199500459156,
+              -10.283021007305797
+            ],
+            [
+              5.142462120245876,
+              -10.192462120245875
+            ],
+            [
+              5.233021007305797,
+              -10.089199500459156
+            ],
+            [
+              5.30932667397366,
+              -9.975
+            ],
+            [
+              5.370073509136851,
+              -9.851817603983344
+            ],
+            [
+              5.414222117603522,
+              -9.721759997357648
+            ],
+            [
+              5.441017104442501,
+              -9.587052501831053
+            ]
+          ]
+        ],
+        "sizeMm": [
+          18,
+          28,
+          1.6
+        ],
+        "centerMm": [
+          0,
+          0,
+          0
+        ],
+        "labelSide": "back",
+        "labelSizeMm": [
+          11,
+          3
+        ],
+        "labelOffsetMm": [
+          0,
+          1
+        ]
+      },
+      "basis": "Official18×28mmR1 outline. Thickness1.6mm and mounting-hole diameter2.1/XY[4.4,-9.45] are approximate. Back remains UNKNOWN because no native board layout or component heights have been reconstructed. Front photograph does not establish electrical/layout restoration.",
+      "sourceIds": [
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-plastic--1",
+      "kind": "box",
+      "color": "#e5be37",
+      "geometry": {
+        "sizeMm": [
+          2.1,
+          22.86,
+          2.5
+        ],
+        "centerMm": [
+          -8.1,
+          2.25,
+          -2.05
+        ]
+      },
+      "basis": "Exact -M photo has9 pins per side with yellow spacer;2.54mm pitch sourced, axial lengths and spacer envelope estimated.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-0",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          12.41,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-1",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          9.870000000000001,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-2",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          7.33,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-3",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          4.79,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-4",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          2.25,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-5",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          -0.28999999999999915,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-6",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          -2.83,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-7",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          -5.370000000000001,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin--1-8",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          -8.1,
+          -7.91,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-plastic-1",
+      "kind": "box",
+      "color": "#e5be37",
+      "geometry": {
+        "sizeMm": [
+          2.1,
+          22.86,
+          2.5
+        ],
+        "centerMm": [
+          8.1,
+          2.25,
+          -2.05
+        ]
+      },
+      "basis": "Exact -M photo has9 pins per side with yellow spacer;2.54mm pitch sourced, axial lengths and spacer envelope estimated.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-0",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          12.41,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-1",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          9.870000000000001,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-2",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          7.33,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-3",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          4.79,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-4",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          2.25,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-5",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          -0.28999999999999915,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-6",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          -2.83,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-7",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          -5.370000000000001,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "header-pin-1-8",
+      "kind": "box",
+      "color": "#a7a9ab",
+      "geometry": {
+        "sizeMm": [
+          0.6,
+          0.6,
+          7
+        ],
+        "centerMm": [
+          8.1,
+          -7.91,
+          -3.6
+        ]
+      },
+      "basis": "Visible9-pin row at2.54mm pitch.0.6mm pin section and7mm total length are visualization estimates.",
+      "sourceIds": [
+        "header-photo",
+        "dimension-photo"
+      ]
+    }
+  ],
+  "artifacts": {
+    "dimension-photo.webp": "89ccb42f3e445b75ec65a9b570805009dcb33834d6592874b287aada396b1573",
+    "component-identification.webp": "95631ca661c380633255080e4d4495b80bf5cfabf01cbed00318f3afac65f3fa",
+    "bare-photo.webp": "f5fb7b840528eee261e3a6ef7eb5730e1b95624ad803127c4cb3e1d83efa0f1b",
+    "header-photo.webp": "a4f35bf175cc42b5fbbce45eefb000bac5ab4c460b0ae1a8d2c32098b95c0884",
+    "overview.html.gz": "29b97005c8f72951338950b024892f632bffe633033e81f6f904675b5087b15e",
+    "resources.html.gz": "d7e36a13724fab5e1172bb9729e9868bfca29cdf49464f69f8c0dbe390f666c9",
+    "geometry.bin.gz": "2ab3084462268895bab61c68839b2ab6a52ec29ae7bf7b29230d847f38607918",
+    "model-plan.json": "71287ad4fe70be36abc85d83336b0d63334d935ec370588ec7aed6c1755bb8eb",
+    "source-manifest.json": "88da7ce650e6b82fb81f51312664133bf810f2e79ac5c2bd691c51cdc5f69df7",
+    "SOURCE-RIGHTS.txt": "254bc1090f1e70fa1a92b15d2414e92c37035afc1c4e8987d58314c71af9a7d4"
+  },
+  "provenance": {
+    "kind": "dimension-photo-reconstruction",
+    "sources": [
+      {
+        "url": "https://docs.waveshare.com/assets/images/ESP32-S31-Zero-N16R16-details-size-c5b6219cb0444d70a0e99f90945516ce.webp",
+        "finalUrl": "https://docs.waveshare.com/assets/images/ESP32-S31-Zero-N16R16-details-size-c5b6219cb0444d70a0e99f90945516ce.webp",
+        "requestedAt": "2026-11-23T16:43:30Z",
+        "fetchedAt": "2026-11-23T16:43:36Z",
+        "status": "fetched",
+        "httpStatus": 200,
+        "mediaType": "image/webp",
+        "bytes": 55954,
+        "sha256": "89ccb42f3e445b75ec65a9b570805009dcb33834d6592874b287aada396b1573",
+        "id": "dimension-photo",
+        "file": "dimension-photo.webp",
+        "role": "reference-only",
+        "rights": "Waveshare original source rights retained; no additional licence inferred from public download.",
+        "imagePixels": [
+          960,
+          605
+        ]
+      },
+      {
+        "url": "https://docs.waveshare.com/assets/images/ESP32-S31-Zero-N16R16-details-intro-5fc5b62da8ef33b3f08075bf116f3bd1.webp",
+        "finalUrl": "https://docs.waveshare.com/assets/images/ESP32-S31-Zero-N16R16-details-intro-5fc5b62da8ef33b3f08075bf116f3bd1.webp",
+        "requestedAt": "2026-11-23T16:43:24Z",
+        "fetchedAt": "2026-11-23T16:43:30Z",
+        "status": "fetched",
+        "httpStatus": 200,
+        "mediaType": "image/webp",
+        "bytes": 49124,
+        "sha256": "95631ca661c380633255080e4d4495b80bf5cfabf01cbed00318f3afac65f3fa",
+        "id": "component-identification",
+        "file": "component-identification.webp",
+        "role": "reference-only",
+        "rights": "Waveshare original source rights retained; no additional licence inferred from public download.",
+        "imagePixels": [
+          960,
+          588
+        ]
+      },
+      {
+        "url": "https://docs.waveshare.com/assets/images/ESP32-S31-Zero-2ece34d641acdfe24f290cda9f52c130.webp",
+        "finalUrl": "https://docs.waveshare.com/assets/images/ESP32-S31-Zero-2ece34d641acdfe24f290cda9f52c130.webp",
+        "requestedAt": "2026-11-23T16:43:24Z",
+        "fetchedAt": "2026-11-23T16:43:30Z",
+        "status": "fetched",
+        "httpStatus": 200,
+        "mediaType": "image/webp",
+        "bytes": 102312,
+        "sha256": "f5fb7b840528eee261e3a6ef7eb5730e1b95624ad803127c4cb3e1d83efa0f1b",
+        "id": "bare-photo",
+        "file": "bare-photo.webp",
+        "role": "reference-only",
+        "rights": "Waveshare original source rights retained; no additional licence inferred from public download.",
+        "imagePixels": [
+          1600,
+          1200
+        ]
+      },
+      {
+        "url": "https://docs.waveshare.com/assets/images/ESP32-S31-Zero-M-4889722a9f0473824e263229bae5acda.webp",
+        "finalUrl": "https://docs.waveshare.com/assets/images/ESP32-S31-Zero-M-4889722a9f0473824e263229bae5acda.webp",
+        "requestedAt": "2026-11-23T16:43:24Z",
+        "fetchedAt": "2026-11-23T16:43:30Z",
+        "status": "fetched",
+        "httpStatus": 200,
+        "mediaType": "image/webp",
+        "bytes": 102552,
+        "sha256": "a4f35bf175cc42b5fbbce45eefb000bac5ab4c460b0ae1a8d2c32098b95c0884",
+        "id": "header-photo",
+        "file": "header-photo.webp",
+        "role": "reference-only",
+        "rights": "Waveshare original source rights retained; no additional licence inferred from public download.",
+        "imagePixels": [
+          1600,
+          1200
+        ]
+      },
+      {
+        "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+        "finalUrl": "https://docs.waveshare.com/ESP32-S31-Zero",
+        "requestedAt": "2026-11-23T16:36:24Z",
+        "fetchedAt": "2026-11-23T16:36:28Z",
+        "status": "fetched",
+        "httpStatus": 200,
+        "mediaType": "text/html; charset=utf-8",
+        "bytes": 32209,
+        "sha256": "e5954b232191b4a2fd041ac25d5cab05e30a0f8b3d1e278e0d6735edada8ebb7",
+        "id": "overview",
+        "file": "overview.html.gz",
+        "role": "reference-only",
+        "rights": "Waveshare original source rights retained; no additional licence inferred from public download.",
+        "retained": {
+          "encoding": "gzip",
+          "bytes": 9224,
+          "sha256": "29b97005c8f72951338950b024892f632bffe633033e81f6f904675b5087b15e"
+        }
+      },
+      {
+        "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+        "finalUrl": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+        "requestedAt": "2026-11-23T16:36:28Z",
+        "fetchedAt": "2026-11-23T16:36:32Z",
+        "status": "fetched",
+        "httpStatus": 200,
+        "mediaType": "text/html; charset=utf-8",
+        "bytes": 24079,
+        "sha256": "326899abb15d6563352589baad25b6ad5a300a22501db50efcc908d33ea74a31",
+        "id": "resources",
+        "file": "resources.html.gz",
+        "role": "reference-only",
+        "rights": "Waveshare original source rights retained; no additional licence inferred from public download.",
+        "retained": {
+          "encoding": "gzip",
+          "bytes": 6482,
+          "sha256": "d7e36a13724fab5e1172bb9729e9868bfca29cdf49464f69f8c0dbe390f666c9"
+        }
+      }
+    ],
+    "generator": "tools/build-waveshare-models.py",
+    "generatorSha256": "2966cc7b65cff4a819cd53b2fbb39099edee0228967004cecd290090453728d3",
+    "tessellation": {
+      "deflectionMm": 0.05,
+      "angleRadians": 0.25
+    },
+    "licenseFile": "SOURCE-RIGHTS.txt",
+    "materialBasis": "Manufacturer reference photographs guide approximate colors. Materials and undocumented package finishes are visualization only."
+  },
+  "sourceTransform": {
+    "matrixRows": [
+      [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "scale": 1,
+    "note": "Millimetres; source geometry is retained without scaling. Source revisions, omitted members and estimated reconstruction boundaries are explicit."
+  }
+}

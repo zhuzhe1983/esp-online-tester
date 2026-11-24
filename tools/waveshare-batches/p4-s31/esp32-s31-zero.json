@@ -1,0 +1,934 @@
+{
+  "listingId": "esp32-s31-zero",
+  "products": [
+    {
+      "id": "waveshare-esp32-s31-zero-n16r16",
+      "name": "Waveshare ESP32-S31-Zero-N16R16",
+      "manufacturer": "Waveshare",
+      "sku": "35879",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "ESP32-S31 Zero；16 MiB Flash/16 MiB PSRAM，GPIO60 WS2812 与 BOOT61 数字输入子集。",
+      "family": {
+        "id": "waveshare-s31-zero",
+        "name": "Waveshare S31 Zero"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-zero-n16r16.json",
+      "runtime": {
+        "board": "waveshare-s31-zero-n16r16",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Zero-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Zero-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+        "Model: Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+        "Model: Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+        "Model: BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60.",
+        "NOR JEDEC EF4018/EF4019 是按16/32MiB选择的虚拟Winbond兼容输入场景，不是实物Flash厂牌鉴定；继承的SFDP只含部分头，未捏造密度/BFPT表。高于16MiB的SPI命令地址模式仍受现有MSPI协议子集限制，MMU数组边界独立验证。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-zero-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-zero-bare/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "display": null
+    },
+    {
+      "id": "waveshare-esp32-s31-zero-n16r16-m",
+      "name": "Waveshare ESP32-S31-Zero-N16R16-M",
+      "manufacturer": "Waveshare",
+      "sku": "36165",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "ESP32-S31 Zero；16 MiB Flash/16 MiB PSRAM，GPIO60 WS2812 与 BOOT61 数字输入子集。",
+      "family": {
+        "id": "waveshare-s31-zero",
+        "name": "Waveshare S31 Zero"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-zero-n16r16-m.json",
+      "runtime": {
+        "board": "waveshare-s31-zero-n16r16",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Zero-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Zero-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+        "Model: Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+        "Model: Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+        "Model: BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60.",
+        "NOR JEDEC EF4018/EF4019 是按16/32MiB选择的虚拟Winbond兼容输入场景，不是实物Flash厂牌鉴定；继承的SFDP只含部分头，未捏造密度/BFPT表。高于16MiB的SPI命令地址模式仍受现有MSPI协议子集限制，MMU数组边界独立验证。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-zero-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-zero-headers/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "display": null
+    },
+    {
+      "id": "waveshare-esp32-s31-zero-n16r32",
+      "name": "Waveshare ESP32-S31-Zero-N16R32",
+      "manufacturer": "Waveshare",
+      "sku": "35121",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "ESP32-S31 Zero；16 MiB Flash/32 MiB PSRAM，GPIO60 WS2812 与 BOOT61 数字输入子集。",
+      "family": {
+        "id": "waveshare-s31-zero",
+        "name": "Waveshare S31 Zero"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-zero-n16r32.json",
+      "runtime": {
+        "board": "waveshare-s31-zero-n16r32",
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Zero-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Zero-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+        "Model: Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+        "Model: Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+        "Model: BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60.",
+        "NOR JEDEC EF4018/EF4019 是按16/32MiB选择的虚拟Winbond兼容输入场景，不是实物Flash厂牌鉴定；继承的SFDP只含部分头，未捏造密度/BFPT表。高于16MiB的SPI命令地址模式仍受现有MSPI协议子集限制，MMU数组边界独立验证。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-zero-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-zero-bare/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "display": null
+    },
+    {
+      "id": "waveshare-esp32-s31-zero-n16r32-m",
+      "name": "Waveshare ESP32-S31-Zero-N16R32-M",
+      "manufacturer": "Waveshare",
+      "sku": "36167",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "ESP32-S31 Zero；16 MiB Flash/32 MiB PSRAM，GPIO60 WS2812 与 BOOT61 数字输入子集。",
+      "family": {
+        "id": "waveshare-s31-zero",
+        "name": "Waveshare S31 Zero"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-zero-n16r32-m.json",
+      "runtime": {
+        "board": "waveshare-s31-zero-n16r32",
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Zero-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Zero-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+        "Model: Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+        "Model: Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+        "Model: BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60.",
+        "NOR JEDEC EF4018/EF4019 是按16/32MiB选择的虚拟Winbond兼容输入场景，不是实物Flash厂牌鉴定；继承的SFDP只含部分头，未捏造密度/BFPT表。高于16MiB的SPI命令地址模式仍受现有MSPI协议子集限制，MMU数组边界独立验证。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-zero-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-zero-headers/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "display": null
+    },
+    {
+      "id": "waveshare-esp32-s31-zero-n32r16",
+      "name": "Waveshare ESP32-S31-Zero-N32R16",
+      "manufacturer": "Waveshare",
+      "sku": "35880",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "ESP32-S31 Zero；32 MiB Flash/16 MiB PSRAM，GPIO60 WS2812 与 BOOT61 数字输入子集。",
+      "family": {
+        "id": "waveshare-s31-zero",
+        "name": "Waveshare S31 Zero"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-zero-n32r16.json",
+      "runtime": {
+        "board": "waveshare-s31-zero-n32r16",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Zero-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Zero-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+        "Model: Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+        "Model: Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+        "Model: BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60.",
+        "NOR JEDEC EF4018/EF4019 是按16/32MiB选择的虚拟Winbond兼容输入场景，不是实物Flash厂牌鉴定；继承的SFDP只含部分头，未捏造密度/BFPT表。高于16MiB的SPI命令地址模式仍受现有MSPI协议子集限制，MMU数组边界独立验证。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-zero-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-zero-bare/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "display": null
+    },
+    {
+      "id": "waveshare-esp32-s31-zero-n32r32",
+      "name": "Waveshare ESP32-S31-Zero-N32R32",
+      "manufacturer": "Waveshare",
+      "sku": "35763",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "ESP32-S31 Zero；32 MiB Flash/32 MiB PSRAM，GPIO60 WS2812 与 BOOT61 数字输入子集。",
+      "family": {
+        "id": "waveshare-s31-zero",
+        "name": "Waveshare S31 Zero"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-zero-n32r32.json",
+      "runtime": {
+        "board": "waveshare-s31-zero-n32r32",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Zero-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Zero-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+        "Model: Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+        "Model: Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+        "Model: BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60.",
+        "NOR JEDEC EF4018/EF4019 是按16/32MiB选择的虚拟Winbond兼容输入场景，不是实物Flash厂牌鉴定；继承的SFDP只含部分头，未捏造密度/BFPT表。高于16MiB的SPI命令地址模式仍受现有MSPI协议子集限制，MMU数组边界独立验证。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-zero-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-zero-bare/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "display": null
+    },
+    {
+      "id": "waveshare-esp32-s31-zero-n32r16-m",
+      "name": "Waveshare ESP32-S31-Zero-N32R16-M",
+      "manufacturer": "Waveshare",
+      "sku": "36166",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "ESP32-S31 Zero；32 MiB Flash/16 MiB PSRAM，GPIO60 WS2812 与 BOOT61 数字输入子集。",
+      "family": {
+        "id": "waveshare-s31-zero",
+        "name": "Waveshare S31 Zero"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-zero-n32r16-m.json",
+      "runtime": {
+        "board": "waveshare-s31-zero-n32r16",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Zero-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Zero-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+        "Model: Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+        "Model: Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+        "Model: BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60.",
+        "NOR JEDEC EF4018/EF4019 是按16/32MiB选择的虚拟Winbond兼容输入场景，不是实物Flash厂牌鉴定；继承的SFDP只含部分头，未捏造密度/BFPT表。高于16MiB的SPI命令地址模式仍受现有MSPI协议子集限制，MMU数组边界独立验证。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-zero-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-zero-headers/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "display": null
+    },
+    {
+      "id": "waveshare-esp32-s31-zero-n32r32-m",
+      "name": "Waveshare ESP32-S31-Zero-N32R32-M",
+      "manufacturer": "Waveshare",
+      "sku": "36168",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "ESP32-S31 Zero；32 MiB Flash/32 MiB PSRAM，GPIO60 WS2812 与 BOOT61 数字输入子集。",
+      "family": {
+        "id": "waveshare-s31-zero",
+        "name": "Waveshare S31 Zero"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-zero-n32r32-m.json",
+      "runtime": {
+        "board": "waveshare-s31-zero-n32r32",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Zero-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Zero-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: No manufacturer3D model exists in the inspected official footprint streams. Photo-faced partial PCB represents18×28mm board without inferring hidden components or traces.",
+        "Model: Only front visible appearance is photo-backed. Rear geometry, component heights, antenna stack and FPC mating cavity remain unmodeled; UNKNOWN label is visible on rear.",
+        "Model: Header-M geometry has correct nine-per-side count and2.54mm pitch but estimated lengths; bare and-M assets are separately selected.",
+        "Model: BOOT is a genuine GPIO61 hit target. RESET is visually identified but uses the platform reset action; RGB is actual guest RMT output on GPIO60.",
+        "NOR JEDEC EF4018/EF4019 是按16/32MiB选择的虚拟Winbond兼容输入场景，不是实物Flash厂牌鉴定；继承的SFDP只含部分头，未捏造密度/BFPT表。高于16MiB的SPI命令地址模式仍受现有MSPI协议子集限制，MMU数组边界独立验证。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-zero-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-zero-headers/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "display": null
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-s31-zero-factory",
+      "name": "Waveshare S31 Zero · 官方出厂恢复镜像（未验证）",
+      "productIds": [
+        "waveshare-esp32-s31-zero-n16r16",
+        "waveshare-esp32-s31-zero-n16r16-m",
+        "waveshare-esp32-s31-zero-n16r32",
+        "waveshare-esp32-s31-zero-n16r32-m",
+        "waveshare-esp32-s31-zero-n32r16",
+        "waveshare-esp32-s31-zero-n32r32",
+        "waveshare-esp32-s31-zero-n32r16-m",
+        "waveshare-esp32-s31-zero-n32r32-m"
+      ],
+      "version": "FactoryOnly_20261020",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/ESP32-S31-Zero_FactoryOnly_20261020.bin",
+        "sha256": "1654bcb86a04789e5f0167b31623b2e18c2f5f9acd0226039e229d8151d6b1f4",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "watchlistId": "waveshare-s31-zero-official",
+      "sources": [
+        {
+          "title": "Official restore README",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "ESP32-S31-Zero_FactoryOnly_20261020.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/ESP32-S31-Zero_FactoryOnly_20261020.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+        "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+        "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+        "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+        "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+        "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。",
+        "官方FactoryOnly包含外接LCD/触摸/SD测试夹具流程；公开Worker在5.14客体秒内反复Store access fault并软件复位。Zero板本体没有该屏幕/TF槽，未模拟测试夹具；这次运行不代表原厂应用通过。"
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-s31-zero-official",
+      "name": "Waveshare S31 Zero 官方原厂固件",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S31-Zero",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S31-Zero/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S31-Zero/tree/main/firmware",
+      "version": "FactoryOnly_20261020",
+      "checkedAt": "2026-11-23T16:50:37Z",
+      "assets": [
+        {
+          "name": "ESP32-S31-Zero_FactoryOnly_20261020.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Zero/8feb078e9a7c958635cc77db3a61f8bb527f0156/firmware/ESP32-S31-Zero_FactoryOnly_20261020.bin",
+          "sha256": "1654bcb86a04789e5f0167b31623b2e18c2f5f9acd0226039e229d8151d6b1f4",
+          "bytes": 1474656,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "unverified",
+        "productIds": [
+          "waveshare-esp32-s31-zero-n16r16",
+          "waveshare-esp32-s31-zero-n16r16-m",
+          "waveshare-esp32-s31-zero-n16r32",
+          "waveshare-esp32-s31-zero-n16r32-m",
+          "waveshare-esp32-s31-zero-n32r16",
+          "waveshare-esp32-s31-zero-n32r32",
+          "waveshare-esp32-s31-zero-n32r16-m",
+          "waveshare-esp32-s31-zero-n32r32-m"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Official model-wide restore firmware;16MiB layout retained for16/32MiB storage variants; factory boot not tested."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": []
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-zero-n16r16.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-zero-n16r16-m.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-zero-n16r32.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-zero-n16r32-m.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-zero-n32r16.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-zero-n32r32.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-zero-n32r16-m.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-zero-n32r32-m.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s31-zero-n16r16": {
+      "chip": "esp32s31",
+      "display": false,
+      "touch": false,
+      "gpio": true,
+      "rgb": true,
+      "sdCard": false
+    },
+    "waveshare-s31-zero-n16r32": {
+      "chip": "esp32s31",
+      "display": false,
+      "touch": false,
+      "gpio": true,
+      "rgb": true,
+      "sdCard": false
+    },
+    "waveshare-s31-zero-n32r16": {
+      "chip": "esp32s31",
+      "display": false,
+      "touch": false,
+      "gpio": true,
+      "rgb": true,
+      "sdCard": false
+    },
+    "waveshare-s31-zero-n32r32": {
+      "chip": "esp32s31",
+      "display": false,
+      "touch": false,
+      "gpio": true,
+      "rgb": true,
+      "sdCard": false
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-p4-s31-2026-11-24/esp32-s31-zero/source-receipts.json",
+    "docs/research/waveshare-p4-s31-2026-11-24/esp32-s31-zero/factory-image-audit.json",
+    "web/platform/assets/waveshare-s31-zero-bare/source-manifest.json",
+    "web/platform/assets/waveshare-s31-zero-headers/source-manifest.json"
+  ],
+  "tests": [
+    {
+      "command": "cargo test --release -p esp32s31 waveshare_",
+      "status": "passed",
+      "tests": 4,
+      "scope": "Includes actual guest instructions, RMT routing negative control and BOOT input feedback; factory and WebGL unverified."
+    },
+    {
+      "kind": "model-loader",
+      "command": "node tools/check-waveshare-model-loading.mjs waveshare-s31-zero-bare waveshare-s31-zero-headers",
+      "status": "passed",
+      "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+    },
+    {
+      "kind": "guest",
+      "command": "CARGO_TARGET_DIR=/workspace/scratch/2c24dec2dd12/target-p4-s31 CARGO_BUILD_JOBS=2 cargo test --release -p esp32s31 s31_guest_rdid_and_flash_mmu_boundaries_follow_each_zero_capacity",
+      "status": "passed",
+      "scope": "Four exactcapacityprofiles execute realS31 RISC-V instructions: SPI1 RDID, 16MiB lowerboundary, N32 secondhalf/lastword, and one-past-capacity load-accessfault withoutwrap."
+    }
+  ],
+  "limitations": [
+    "按精确 N16/N32 Flash 与 R16/R32 PSRAM 分四个运行配置，-M 仅区分排针包装；不同 SKU 的设备存储身份独立。",
+    "真实 CPU→IO_MUX/RMT→GPIO60 WS2812 GRB 已验证，并有 GPIO59 错接负对照；BOOT61 按下/释放由 guest GPIO 读取证实。RMT 位解码仅为数字高低占比子集，不声称模拟/时序物理验收。",
+    "板载没有显示屏、触摸或 TF 插槽；11_boardtest 的外部工装不自动挂入设备。USB、Wi-Fi/Bluetooth、完整原厂启动与实机未验证。",
+    "官方固件头/分区为16MiB，在32MiB包装上只使用相同低16MiB布局；不改写原始镜像。固件checksum/SHA与芯片S31已核对。",
+    "厂商公开 PcbLib 和尺寸/照片；3D外观及排针模型验收仍待补充。",
+    "UIFlow1、UIFlow2、小智：官方型号 README/资源页本轮未列精确目标镜像，上游专项目标核验未知，不将S3/C6同名Zero镜像作为替代。"
+  ],
+  "integrationNotes": [
+    "S31Zero inputs(name) returns exact16/32MiB PSRAM; use catalog flashMb for capacity.",
+    "RMT completion forwarding runs only when RMT active; ratio-only symbol decoder policy explicitly documented."
+  ],
+  "modelIds": [
+    "waveshare-s31-zero-bare",
+    "waveshare-s31-zero-headers"
+  ]
+}

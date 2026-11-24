@@ -18,6 +18,12 @@ let catalog;
 try { catalog = await loadCatalog(); } finally { globalThis.fetch = originalFetch; }
 const sceneSchema = JSON.parse(await readFile(new URL('../web/platform/schemas/scene.schema.json', import.meta.url), 'utf8'));
 const checks = [];
+// Public releases can outgrow portable scene limits, but remain bounded.
+globalThis.fetch = async url => new Response(String(url).endsWith('/products.json')
+  ? ' '.repeat(8 * 1024 * 1024 + 1) : await readFile(url, 'utf8'));
+try { await assert.rejects(loadCatalog(), {code: 'INPUT_TOO_LARGE'}); }
+finally { globalThis.fetch = originalFetch; }
+checks.push('public catalog envelope rejects documents beyond 8 MiB');
 function test(name, run) { run(); checks.push(name); }
 function has(result, code, kind = 'errors') { return result[kind].some(item => item.code === code); }
 function base() { return createDefaultScene(catalog); }
@@ -147,6 +153,10 @@ test('firmware matching does not mistake raw URLs or empty references for manife
   assert.equal(firmwareSourceMatches(a, {...a, sha256: 'b'.repeat(64)}), false);
   assert.equal(firmwareSourceMatches(a, {...a, sha256: 'A'.repeat(64)}), true);
   assert.equal(firmwareSourceMatches(a, {url: a.url}), true);
+  const bundle = {...a, archive: {format: 'zip-bundle', entry: 'vendor/firmware/factory.bin', sha256: 'b'.repeat(64)}};
+  assert.equal(firmwareSourceMatches(bundle, {...bundle, archive: {...bundle.archive, sha256: 'B'.repeat(64)}}), true);
+  assert.equal(firmwareSourceMatches(bundle, {...bundle, archive: {...bundle.archive, sha256: 'c'.repeat(64)}}), false);
+  assert.equal(firmwareSourceMatches(bundle, {...bundle, archive: {...bundle.archive, entry: 'other/factory.bin'}}), false);
 });
 
 test('malformed, unsafe, oversized, cyclic and nonfinite payloads reject', () => {

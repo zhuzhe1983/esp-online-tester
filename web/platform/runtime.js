@@ -3,7 +3,7 @@ import {parseHardwareDiagnostics} from './hardware-diagnostics.js';
 import {validServoSnapshot} from './servo-state.js';
 import {hasMotorOutput,parseMotorSnapshot,STAMPFLY_MOTORS} from './motor-state.js';
 import {selectBleProfile,loadBleProfile,verifyBleStoredPages} from './ble-profile.js';
-import {validFirmwareArchive,validFirmwareZipEntry,extractFirmwareZip,extractFirmwareZipEntry,firmwareArchiveCacheKey,MAX_FIRMWARE_ZIP_BYTES} from './firmware-archive.js';
+import {validFirmwareArchive,validFirmwareZipEntry,extractFirmwareZip,extractFirmwareZipEntry,firmwareArchiveCacheKey,firmwareArchiveDownloadLimit} from './firmware-archive.js';
 import {createNetworkSession} from './network-session.js';
 import {createAudioStream} from './audio-stream.js';
 import {motionParameter} from './motion-input.js';
@@ -538,10 +538,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       try { await checkedHash(cached.data, item.sha256); }
       catch { await firmwareCache.remove(cacheUrl, item.sha256); cached = null; }
     }
-    const containerKey=item.archive?.format==='zip-entry'?`${url}\n${item.archive.sha256.toLowerCase()}`:null;
+    const containerKey=['zip-entry','zip-bundle'].includes(item.archive?.format)?`${url}\n${item.archive.sha256.toLowerCase()}`:null;
     if(!cached&&containerKey&&archiveCache&&archiveCache.current?.key!==containerKey)archiveCache.current=null;
     let container=!cached&&containerKey&&archiveCache?.current?.key===containerKey?archiveCache.current.data:null;
-    let data = cached?.data || container || await fetchBytes(url, { fetchImpl, maxBytes:item.archive?MAX_FIRMWARE_ZIP_BYTES:maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url), sha256:item.archive?.sha256||item.sha256 });
+    let data = cached?.data || container || await fetchBytes(url, { fetchImpl, maxBytes:item.archive?firmwareArchiveDownloadLimit(item):maxBytes, signal: aborter.signal, onProgress: progress.file(kind, url), sha256:item.archive?.sha256||item.sha256 });
     if(item.archive&&!cached){if(containerKey)container=data;progress.prepare('extract',kind,url);data=await (item.archive.format==='zip-entry'?extractFirmwareZipEntry:extractFirmwareZip)(data,item,{maxBytes,signal:aborter.signal});}
     if (cached) progress.cache(kind, url, data.byteLength, cached.storage);
     progress.prepare('verify', kind, url);

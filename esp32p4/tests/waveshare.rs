@@ -75,3 +75,29 @@ fn waveshare_exact_panel_kit_guest_reads_gt9271_identity_while_bare_carrier_nack
         assert!(m.bus.board.display().is_none(),"MIPI-DSI output is not implemented by a touch attachment");
     }
 }
+
+fn codec_register(code:&mut Vec<u32>,value:Option<u8>){
+    write(code,I2C+0x18,3<<12);write(code,I2C+0x24,u32::MAX);
+    let bytes=match value{Some(v)=>vec![0x30,0x32,v],None=>vec![0x30,0x32,0x31]};
+    for b in bytes{write(code,I2C+0x1c,u32::from(b));}
+    let commands=if value.is_some(){vec![6<<11,1<<11|1<<8|3,2<<11]}else{vec![6<<11,1<<11|1<<8|2,6<<11,1<<11|1<<8|1,3<<11|1,2<<11]};
+    for(i,c)in commands.into_iter().enumerate(){write(code,I2C+0x58+4*i as u32,c);}
+    write(code,I2C+4,1<<5);wait(code);copy(code,I2C+0x20,RESULT);
+    if value.is_none(){copy(code,I2C+0x1c,RESULT+4);}
+}
+
+#[test]
+fn waveshare_all_platform_profiles_guest_observe_exact_boot_and_codec_attachment(){
+    for profile in esp32p4::board::waveshare_platform::PROFILES{
+        let mut m=machine(profile.name);let mut setup=Vec::new();route(&mut setup,7,None);run(&mut m,setup);
+        let pressed=m.bus.board.button_at(m.bus.cycles,"boot",true);assert_eq!(pressed,profile.boot.is_some(),"{} BOOT presence",profile.name);
+        let mut code=Vec::new();codec_register(&mut code,Some(0x6d));copy(&mut code,0x500e_0040,RESULT+0x80);run(&mut m,code);
+        assert_eq!(m.bus.read32(RESULT).unwrap()&(1<<10)==0,profile.codec,"{} codec address ACK",profile.name);
+        if pressed{assert_eq!(m.bus.read32(RESULT+0x80).unwrap()&8,0,"{} GPIO35 pressed",profile.name);assert!(m.bus.board.button_at(m.bus.cycles,"boot",false));}
+        let mut code=Vec::new();codec_register(&mut code,None);copy(&mut code,0x500e_0040,RESULT+0x80);run(&mut m,code);
+        assert_eq!(m.bus.read32(RESULT).unwrap()&(1<<10)==0,profile.codec,"{} codec read ACK",profile.name);
+        if profile.codec{assert_eq!(m.bus.read32(RESULT+4).unwrap(),0x6d,"{} real guest register roundtrip",profile.name);}
+        if pressed{assert_eq!(m.bus.read32(RESULT+0x80).unwrap()&8,8,"{} GPIO35 released",profile.name);}
+        assert!(m.bus.board.display().is_none(),"a physical kit touch controller is not DSI pixel output");
+    }
+}

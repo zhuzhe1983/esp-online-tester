@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-11-23T19:05:48Z",
+  "command": "CARGO_TARGET_DIR=/workspace/scratch/2c24dec2dd12/target-p4-s31 CARGO_BUILD_JOBS=2 cargo test --release -p esp32s31 s31_guest_rdid_and_flash_mmu_boundaries_follow_each_zero_capacity",
+  "status": "passed",
+  "testCases": 1,
+  "profiles": 4,
+  "guestInstructions": "RAM-loaded realRISC-V CPU stores/loads, SPI1 RDID receiveword, FLASHMMU mapping and load-accessfault; no host resultinjection.",
+  "expectations": {
+    "N16": "JEDEC0x1840ef, lowword44332211,16MiB-lastword88776655;16MiBone-pastcapacity trapsMCause5",
+    "N32": "JEDEC0x1940ef, same lowerwords,16MiBstartccbbaa99,32MiB-lastword3412eedd;32MiBone-pastcapacity trapsMCause5"
+  },
+  "inputQualification": "Manufacturer/typeEF40 is a virtual compatibleNOR scenario; only capacity follows exactSKU. This is not a measuredflashchipidentity. InheritedSFDP does not contain aBFPT densitytable. Higheraddress SPIcommand modes remain outside currentMSPI subset.",
+  "integration": "Root applies exact waveshare_zero::inputs selection in CLI/WASM and separately validates construction."
+}

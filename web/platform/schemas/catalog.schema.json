@@ -197,7 +197,10 @@
                   "description": "When present, psramMb is a simulator configuration, not a verified physical capacity. Physical memory facts remain in product knowledge."
                 },
                 "flashMbBasis": {
-                  "enum": ["simulation", "manufacturer-build-configuration"],
+                  "enum": [
+                    "simulation",
+                    "manufacturer-build-configuration"
+                  ],
                   "description": "When present, flashMb is a selected runtime or manufacturer build configuration; it is not a verified physical capacity."
                 },
                 "status": {
@@ -267,15 +270,28 @@
                   "maxItems": 8,
                   "items": {
                     "type": "object",
-                    "required": ["width", "height"],
+                    "required": [
+                      "width",
+                      "height"
+                    ],
                     "properties": {
-                      "width": {"type": "integer", "minimum": 1},
-                      "height": {"type": "integer", "minimum": 1}
+                      "width": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "height": {
+                        "type": "integer",
+                        "minimum": 1
+                      }
                     }
                   }
                 }
               },
-              "dependentRequired": {"debugLayout": ["physicalPanels"]}
+              "dependentRequired": {
+                "debugLayout": [
+                  "physicalPanels"
+                ]
+              }
             },
             "controls": {
               "type": "array",
@@ -474,15 +490,61 @@
             },
             "chronology": {
               "type": "object",
-              "required": ["date", "basis", "sourceId", "sourceUrl", "confidence", "notes"],
+              "required": [
+                "date",
+                "basis",
+                "sourceId",
+                "sourceUrl",
+                "confidence",
+                "notes"
+              ],
               "properties": {
-                "date": {"type": ["string", "null"], "format": "date"},
-                "basis": {"enum": ["hardware-release", "official-announcement", "storefront-publication", "repository-first-seen", "unknown"]},
-                "sourceId": {"type": ["string", "null"]},
-                "sourceUrl": {"type": ["string", "null"], "format": "uri"},
-                "confidence": {"enum": ["high", "medium", "low", "unknown"]},
-                "notes": {"type": "string"},
-                "hardwareRevision": {"type": ["string", "null"]}
+                "date": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date"
+                },
+                "basis": {
+                  "enum": [
+                    "hardware-release",
+                    "official-announcement",
+                    "storefront-publication",
+                    "repository-first-seen",
+                    "unknown"
+                  ]
+                },
+                "sourceId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "sourceUrl": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uri"
+                },
+                "confidence": {
+                  "enum": [
+                    "high",
+                    "medium",
+                    "low",
+                    "unknown"
+                  ]
+                },
+                "notes": {
+                  "type": "string"
+                },
+                "hardwareRevision": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
               },
               "description": "Newest-first ordering evidence. Storefront publication and repository-first-seen are explicit proxies, not confirmed launch dates. Unknown dates sort last."
             },
@@ -635,17 +697,74 @@
             "downloadAccess": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["sourceUrl", "officialUrl", "checkedAt", "status"],
+              "required": [
+                "sourceUrl",
+                "officialUrl",
+                "checkedAt",
+                "status"
+              ],
               "properties": {
-                "sourceUrl": {"type": "string", "pattern": "^https://burner\\.m5stack\\.com/api/v1/firmwares/[0-9]{1,30}/versions/[0-9]{1,30}/download$"},
-                "officialUrl": {"type": "string", "pattern": "^https://burner\\.m5stack\\.com/firmware/[0-9]{1,30}$"},
-                "checkedAt": {"type": "string", "format": "date-time"},
-                "status": {"enum": ["resolved", "verification-required", "no-public-redirect", "http-error", "unstable-or-untrusted-redirect", "cdn-unavailable", "invalid-download-response", "check-failed"]},
-                "directUrl": {"type": "string", "pattern": "^https://m5burner-cdn\\.m5stack\\.com/(firmware|community|official)/[A-Za-z0-9/_.-]+\\.bin$"},
-                "providerCode": {"type": "string", "pattern": "^[A-Z][A-Z_]{0,79}$"},
-                "httpStatus": {"type": "integer", "minimum": 100, "maximum": 599}
+                "sourceUrl": {
+                  "type": "string",
+                  "pattern": "^https://burner\\.m5stack\\.com/api/v1/firmwares/[0-9]{1,30}/versions/[0-9]{1,30}/download$"
+                },
+                "officialUrl": {
+                  "type": "string",
+                  "pattern": "^https://burner\\.m5stack\\.com/firmware/[0-9]{1,30}$"
+                },
+                "checkedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "status": {
+                  "enum": [
+                    "resolved",
+                    "verification-required",
+                    "no-public-redirect",
+                    "http-error",
+                    "unstable-or-untrusted-redirect",
+                    "cdn-unavailable",
+                    "invalid-download-response",
+                    "check-failed"
+                  ]
+                },
+                "directUrl": {
+                  "type": "string",
+                  "pattern": "^https://m5burner-cdn\\.m5stack\\.com/(firmware|community|official)/[A-Za-z0-9/_.-]+\\.bin$"
+                },
+                "providerCode": {
+                  "type": "string",
+                  "pattern": "^[A-Z][A-Z_]{0,79}$"
+                },
+                "httpStatus": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 599
+                }
               },
-              "allOf": [{"if": {"properties": {"status": {"const": "resolved"}}}, "then": {"required": ["directUrl"]}, "else": {"not": {"required": ["directUrl"]}}}]
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "status": {
+                        "const": "resolved"
+                      }
+                    }
+                  },
+                  "then": {
+                    "required": [
+                      "directUrl"
+                    ]
+                  },
+                  "else": {
+                    "not": {
+                      "required": [
+                        "directUrl"
+                      ]
+                    }
+                  }
+                }
+              ]
             },
             "source": {
               "type": [
@@ -670,22 +789,52 @@
                   ]
                 },
                 "archive": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "format",
-                    "entry"
-                  ],
-                  "properties": {
-                    "format": {
-                      "const": "zip"
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "format",
+                        "entry"
+                      ],
+                      "properties": {
+                        "format": {
+                          "const": "zip"
+                        },
+                        "entry": {
+                          "type": "string",
+                          "maxLength": 180,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9_. -]*\\.[bB][iI][nN]$"
+                        }
+                      }
                     },
-                    "entry": {
-                      "type": "string",
-                      "maxLength": 180,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9_. -]*\\.[bB][iI][nN]$"
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "format",
+                        "entry",
+                        "sha256"
+                      ],
+                      "properties": {
+                        "format": {
+                          "const": "zip-bundle"
+                        },
+                        "entry": {
+                          "type": "string",
+                          "maxLength": 512,
+                          "pattern": "^[^/\\\\:\\x00-\\x1f\\x7f-\\x9f]+(?:/[^/\\\\:\\x00-\\x1f\\x7f-\\x9f]+)*\\.[bB][iI][nN]$",
+                          "not": {
+                            "pattern": "(^|/)(\\.|\\.\\.)(/|$)"
+                          }
+                        },
+                        "sha256": {
+                          "type": "string",
+                          "pattern": "^[a-fA-F0-9]{64}$"
+                        }
+                      }
                     }
-                  }
+                  ]
                 }
               },
               "dependentRequired": {

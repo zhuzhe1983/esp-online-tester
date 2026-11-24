@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-11-23T18:25:16Z",
+  "command": "CARGO_TARGET_DIR={lane-target} CARGO_BUILD_JOBS=2 cargo test --release -p esp32p4 --test waveshare",
+  "result": {
+    "testsPassed": 3,
+    "testsFailed": 0,
+    "platformProfilesExercised": 27,
+    "profiles": [
+      "waveshare-p4-core",
+      "waveshare-p4-core-32mb",
+      "waveshare-p4-module-16mb",
+      "waveshare-p4-module-32mb",
+      "waveshare-p4-module-16mb-ipex",
+      "waveshare-p4-module-32mb-ipex",
+      "waveshare-p4-core-dev-kit",
+      "waveshare-p4-nano",
+      "waveshare-p4-module-dev-kit",
+      "waveshare-p4-wifi6-dev-kit",
+      "waveshare-p4-wifi6",
+      "waveshare-p4-eth",
+      "waveshare-p4-poe-eth",
+      "waveshare-p4-pico",
+      "waveshare-p4-wifi6-poe-eth",
+      "waveshare-p4-wifi6-db",
+      "waveshare-p4-nano-wifi6-db",
+      "waveshare-p4-wifi6-db-kit-101",
+      "waveshare-p4-nano-wifi6-db-kit-101",
+      "waveshare-p4-wifi6-poe-eth-kit-101",
+      "waveshare-p4-poe-eth-kit-101",
+      "waveshare-p4-wifi6-dev-kit-7",
+      "waveshare-p4-wifi6-dev-kit-101",
+      "waveshare-p4-wifi6-kit-101",
+      "waveshare-p4-module-dev-kit-7",
+      "waveshare-p4-module-dev-kit-101",
+      "waveshare-p4-nano-kit-101"
+    ]
+  },
+  "guestScope": "RISC-V guest instructions routeI2C0 SDA7/SCL8, write/read ES8311 control register0x32, and sample GPIO35 after actual BOOT button press/release. Host writes only guest program RAM and physical input events, then inspects result RAM. All27 platform profiles checked; module/codec absence mustNACK. Existing knob wrong-SDA control and external-panel-vs-bare identity probes remain.",
+  "limitations": [
+    "No factory binary is executed by this probe.",
+    "No DSI framebuffer, radio/Ethernet, analog audio or complete I2C codec emulation claim.",
+    "Source cache build ambiguity was resolved with package-only esp-soc clean; no production source change was needed."
+  ],
+  "sourceSha256": {
+    "test": "19560b6cd1d8e6f559af46059d384219de0f9ccd8dfd14c2bc9b074fc37d135d",
+    "platform": "e8343d9b08975d80f5e7e81f2a770a45a87e9c9afd8ae075505075be92e75be7"
+  },
+  "logSha256": "2c0b3401ae313c23b416ceb593534ae29a991012978d1c85e067b94bd9f3ea90",
+  "clippy": {
+    "command": "cargo clippy --release -p esp32p4 --all-targets -- -D warnings",
+    "status": "passed",
+    "logSha256": "4960a874dc7b800ca0c3b152444fdf773e496835574d2d94122985ea3f0c9e13"
+  }
+}

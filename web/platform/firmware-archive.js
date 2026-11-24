@@ -1,11 +1,14 @@
 // Spark distributes one BIN per ZIP. SHA-256 on the source pins that BIN, not
 // the container. Never choose an arbitrary file or guess a multi-image layout.
+import {validFirmwareBundle,extractFirmwareBundle,MAX_FIRMWARE_BUNDLE_BYTES} from './firmware-bundle-archive.js';
 export const MAX_FIRMWARE_ZIP_BYTES = 64 * 1024 * 1024;
 export const MAX_FIRMWARE_ZIP_ENTRIES = 64;
 export const MAX_FIRMWARE_ZIP_DECLARED_BYTES = 128 * 1024 * 1024;
 export const firmwareArchiveCacheKey = (source,url=source.url) => source.archive?`${url}#zip=${encodeURIComponent(source.archive.entry)}`:url;
+export const firmwareArchiveDownloadLimit = source => validFirmwareBundle(source)?MAX_FIRMWARE_BUNDLE_BYTES:MAX_FIRMWARE_ZIP_BYTES;
 const fail = message => { throw Object.assign(new Error(message), {code:'INVALID_FIRMWARE_ARCHIVE'}); };
 export function validFirmwareArchive(source) {
+  if(validFirmwareBundle(source))return true;
   const a=source?.archive;
   return !!(a && typeof a==='object' && !Array.isArray(a) && Object.keys(a).length===2 && a.format==='zip'
     && typeof a.entry==='string' && a.entry.length<=180 && /^[A-Za-z0-9][A-Za-z0-9_. -]*\.bin$/i.test(a.entry) && !a.entry.includes('..')
@@ -58,6 +61,7 @@ export async function extractFirmwareZipEntry(bytes,source,options={}) {
 const crcTable=Uint32Array.from({length:256},(_,n)=>{for(let i=0;i<8;i++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0;});
 function crc32(bytes) {let crc=0xffffffff;for(const b of bytes)crc=crcTable[(crc^b)&255]^(crc>>>8);return (crc^0xffffffff)>>>0;}
 export async function extractFirmwareZip(bytes, source, {maxBytes=MAX_FIRMWARE_ZIP_BYTES,signal}={}) {
+  if(validFirmwareBundle(source))return extractFirmwareBundle(bytes,source,{maxBytes,signal,decodeSingle:extractFirmwareZip});
   const active=()=>{if(signal?.aborted)throw Object.assign(new Error('固件解压已取消。'),{code:'FETCH_ABORTED'});};
   active();
   if(!validFirmwareArchive(source)||!(bytes instanceof Uint8Array)||bytes.length<22||bytes.length>MAX_FIRMWARE_ZIP_BYTES)fail('固件压缩包或目标 BIN 信息无效。');

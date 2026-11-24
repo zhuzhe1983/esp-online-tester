@@ -264,7 +264,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         MachineKind::C61(Box::new(m))
     } else if let Some(b) = s31_board {
         let mut m = esp32s31::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x31], flash_bytes);
-        let mut inputs = if b.name() == "waveshare-s31-touch-lcd43c" { esp32s31::board::waveshare_touch43c::inputs() } else if b.name() == "metalio-ink4-plus" { esp32s31::board::ink4_plus_inputs(psram_bytes) } else if b.name() == "mosaico" { esp32s31::soc::BoardInputs::mosaico_gd25q128() } else if flash_mb == 2 { esp32s31::soc::BoardInputs::hello_w25q16() } else { esp32s31::soc::BoardInputs::devkit_w25q128() };
+        let mut inputs = if let Some(inputs) = esp32s31::board::waveshare_zero::inputs(b.name()) { inputs } else if b.name() == "waveshare-s31-touch-lcd43c" { esp32s31::board::waveshare_touch43c::inputs() } else if b.name() == "metalio-ink4-plus" { esp32s31::board::ink4_plus_inputs(psram_bytes) } else if b.name() == "mosaico" { esp32s31::soc::BoardInputs::mosaico_gd25q128() } else if flash_mb == 2 { esp32s31::soc::BoardInputs::hello_w25q16() } else { esp32s31::soc::BoardInputs::devkit_w25q128() };
         inputs.psram_bytes = psram_bytes;
         if let Err(reason) = m.bus.set_board_inputs(inputs) {
             log(&format!("[emu] {}", reason)); return std::ptr::null_mut();
