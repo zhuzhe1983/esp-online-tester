@@ -65,14 +65,19 @@ fn stub_symbols_take_precedence_over_hexadecimal_spelling() {
 
 #[test]
 fn board_aliases_route_to_the_canonical_chip() {
-    for (board, hz) in [("bare", 240e6), ("c3", 160e6), ("c6", 160e6), ("lcd147", 160e6), ("c6-lcd147", 160e6)] {
+    for (board, hz, flash) in [("bare", 240e6, 1), ("c3", 160e6, 1), ("c6", 160e6, 1), ("lcd147", 160e6, 4), ("c6-lcd147", 160e6, 4)] {
         // SAFETY: The name is readable and the handle is uniquely owned until deletion.
         unsafe {
-            let e = esp32sim_new(board.as_ptr(), board.len(), 1, 0);
+            let e = esp32sim_new(board.as_ptr(), board.len(), flash, 0);
             assert!(!e.is_null(), "{board}");
             assert_eq!(esp32sim_cpu_hz(e), hz, "{board}");
             assert_eq!(esp32sim_set_spi2_timing(e, 1), u32::from(hz != 240e6));
             esp32sim_delete(e);
+            if flash == 4 {
+                let invalid = esp32sim_new(board.as_ptr(), board.len(), 1, 0);
+                if !invalid.is_null() { esp32sim_delete(invalid); }
+                assert!(invalid.is_null(), "{board} must retain the physical 4 MiB capacity gate");
+            }
         }
     }
 }

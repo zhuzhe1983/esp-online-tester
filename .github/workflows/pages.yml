@@ -100,7 +100,9 @@ jobs:
       - name: Stage public site without internal diagnostic firmware
         # Rust's target cache can restore a previous target/pages. Stage outside
         # that cache, with a fresh directory for every workflow attempt.
-        run: node tools/stage-platform-pages.mjs web "${{ runner.temp }}/esp-platform-pages-${{ github.run_id }}-${{ github.run_attempt }}"
+        run: |
+          node tools/stage-platform-pages.mjs web "${{ runner.temp }}/esp-platform-pages-${{ github.run_id }}-${{ github.run_attempt }}"
+          node tools/check-staged-model-assets.mjs web "${{ runner.temp }}/esp-platform-pages-${{ github.run_id }}-${{ github.run_attempt }}"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ runner.temp }}/esp-platform-pages-${{ github.run_id }}-${{ github.run_attempt }}
