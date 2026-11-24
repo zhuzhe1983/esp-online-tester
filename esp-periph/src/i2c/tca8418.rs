@@ -64,6 +64,9 @@ impl I2cDevice for Tca8418 {
     }
     fn read(&mut self)->u8 {
         let mut state=self.state.lock().expect("TCA8418 mutex poisoned");let reg=self.ptr as usize;
+        // SCPS215G §8.6.2.4: drain by repeatedly reading KEY_EVENT_A; each read shifts
+        // the FIFO. B-J observe that live shifted FIFO, not a snapshot taken before A.
+        // M5Cardputer Adafruit_TCA8418::getEvent uses one readRegister8(0x04).
         let value=match reg {3=>(state.regs[3]&0xf0)|state.fifo.len() as u8,4=>state.fifo.pop_front().unwrap_or(0),5..=0x0d=>state.fifo.get(reg-4).copied().unwrap_or(0),_=>state.regs.get(reg).copied().unwrap_or(0)};
         if state.regs[1]&0x80!=0 {self.ptr=self.ptr.wrapping_add(1);}value
     }
@@ -100,5 +103,51 @@ mod tests {
         assert_eq!(s.lock().unwrap().advance_to(50050),[(50050,false)]);
         assert_eq!(read(&mut d,4),0x81);write(&mut d,2,1);assert!(s.lock().unwrap().irq_high());
         assert_eq!(s.lock().unwrap().next_deadline(),None,"idle keyboard schedules no scans");
+    }
+    #[test]
+    fn m5_single_byte_event_reads_preserve_a_full_press_release_backlog() {
+        let (s,mut d)=setup();let mut expected=Vec::new();
+        // Five taps: each physical edge has62.5ms, longer than two25ms matrix scans.
+        // Hold all ten events until the consumer runs, exercising a genuinely full FIFO.
+        for edge in 0..10u64 {
+            let column=(edge/2) as u8;let down=edge%2==0;let at=edge*62500;
+            let mut state=s.lock().unwrap();assert!(state.key(at,0,column,down));state.advance_to(at+50000);
+            expected.push((column+1) | if down {0x80} else {0});
+        }
+        assert_eq!(read(&mut d,3),10);assert_eq!(read(&mut d,2),1,"no overflow");
+        for (n,event) in expected.into_iter().enumerate() {
+            // Exactly the getEvent/readRegister8(KEY_EVENT_A), W1C, INT_STAT sequence
+            // used by M5Cardputer's TCA8418KeyboardReader::update.
+            assert_eq!(read(&mut d,4),event,"FIFO event{n}");
+            assert_eq!(read(&mut d,3),9-n as u8);
+            write(&mut d,2,1);
+            assert_eq!(read(&mut d,2),u8::from(n!=9));
+            assert_eq!(s.lock().unwrap().irq_high(),n==9);
+        }
+        assert_eq!(read(&mut d,4),0);
+    }
+    #[test]
+    fn later_event_registers_do_not_consume_a_release_left_at_the_head() {
+        let (s,mut d)=setup();
+        for (at,down,column) in [(0,true,0),(62500,false,0),(125000,true,1),(187500,false,1)] {
+            let mut state=s.lock().unwrap();state.key(at,0,column,down);state.advance_to(at+50000);
+        }
+        assert_eq!(read(&mut d,3),4);
+        assert_eq!(read(&mut d,5),1,"B initially contains first release");
+        assert_eq!(read(&mut d,3),4,"B does not pop");
+        assert_eq!(read(&mut d,4),0x81);
+        assert_eq!(read(&mut d,5),0x82,"after A shifts, B contains the following press");
+        assert_eq!(read(&mut d,3),3);
+        assert_eq!(read(&mut d,4),1,"the release remains at A and is not lost");
+        assert_eq!(read(&mut d,4),0x82);assert_eq!(read(&mut d,4),2);assert_eq!(read(&mut d,4),0);
+    }
+    #[test]
+    fn no_auto_increment_read_repeats_event_a_instead_of_skipping_to_b() {
+        let (s,mut d)=setup();
+        s.lock().unwrap().key(0,0,0,true);s.lock().unwrap().advance_to(50000);
+        s.lock().unwrap().key(62500,0,0,false);s.lock().unwrap().advance_to(112500);
+        assert_eq!(read(&mut d,1)&0x80,0,"M5 enableInterrupts leaves AI disabled");
+        d.start(false);d.write(4);d.start(true);
+        assert_eq!([d.read(),d.read(),d.read()],[0x81,1,0]);
     }
 }
