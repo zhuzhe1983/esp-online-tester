@@ -1,0 +1,658 @@
+{
+  "listingId": "esp32-s3-epaper-3.97",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-epaper-3-97",
+      "name": "Waveshare ESP32-S3-ePaper-3.97",
+      "manufacturer": "Waveshare",
+      "sku": "33552",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，800×480 SSD1677电子纸；实现原厂16位像素X地址、黑白RAM写入和刷新、PCF85063及真实1bit SDMMC。电池与TF配件组合分别保留。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-epaper-3-97.json",
+      "family": {
+        "id": "waveshare-esp32-s3-epaper-3-97",
+        "name": "Waveshare ESP32-S3-EPAPER-3.97"
+      },
+      "runtime": {
+        "board": "waveshare-s3-epaper397",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "E-paper monochrome subset",
+        "bus": "SPI",
+        "controller": "SSD1677",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 17
+            },
+            {
+              "name": "D0",
+              "gpio": 15
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实1bit SDMMC数字接线；默认准备64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前仅黑白RAM与22+20更新子集；4级灰度波形、光学残影与温度校准未实现。刷新BUSY为明确的1ms数字模型，不冒称原厂完整刷新耗时。",
+        "原厂SSD1677的0x44/0x4E为16位像素X坐标，不能复用SSD1680字节X地址；显示层保留共享SSD1677的gate-Y反向表达，实物玻璃方向尚未校准。",
+        "原例程虽定义SD_D1/2/3，实际SD_MMC.begin以1bit启用；本次只开放CLK16/CMD17/D0 15，不冒称已实现4bit或其他音频/传感器。",
+        "型号正面99.5×60mm与AA86.4×51.84mm有来源；实际厚度、逆面器件和可选电池/TF配件几何UNKNOWN，未捏造PCB1.6mm实测厚度。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-3.97.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-3.97",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：Arduino/examples/04_I2C_SHTC3/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/04_I2C_SHTC3/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：Arduino/examples/05_SD_Test/DEV_Config.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/DEV_Config.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：Arduino/examples/05_SD_Test/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：Arduino/examples/06_QMI8658A/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/06_QMI8658A/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/user_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/user_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：Arduino/examples/05_SD_Test/EPD_3in97.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/EPD_3in97.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：Arduino/examples/05_SD_Test/EPD_3in97.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/EPD_3in97.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：Arduino/examples/05_SD_Test/05_SD_Test.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/05_SD_Test.ino",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-epaper-3-97/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-epaper-3-97-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-epaper-3-97-sku-33810",
+      "name": "Waveshare ESP32-S3-ePaper-3.97-EN",
+      "manufacturer": "Waveshare",
+      "sku": "33810",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，800×480 SSD1677电子纸；实现原厂16位像素X地址、黑白RAM写入和刷新、PCF85063及真实1bit SDMMC。电池与TF配件组合分别保留。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-epaper-3-97-sku-33810.json",
+      "family": {
+        "id": "waveshare-esp32-s3-epaper-3-97",
+        "name": "Waveshare ESP32-S3-EPAPER-3.97"
+      },
+      "runtime": {
+        "board": "waveshare-s3-epaper397",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "E-paper monochrome subset",
+        "bus": "SPI",
+        "controller": "SSD1677",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 17
+            },
+            {
+              "name": "D0",
+              "gpio": 15
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实1bit SDMMC数字接线；默认准备64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前仅黑白RAM与22+20更新子集；4级灰度波形、光学残影与温度校准未实现。刷新BUSY为明确的1ms数字模型，不冒称原厂完整刷新耗时。",
+        "原厂SSD1677的0x44/0x4E为16位像素X坐标，不能复用SSD1680字节X地址；显示层保留共享SSD1677的gate-Y反向表达，实物玻璃方向尚未校准。",
+        "原例程虽定义SD_D1/2/3，实际SD_MMC.begin以1bit启用；本次只开放CLK16/CMD17/D0 15，不冒称已实现4bit或其他音频/传感器。",
+        "型号正面99.5×60mm与AA86.4×51.84mm有来源；实际厚度、逆面器件和可选电池/TF配件几何UNKNOWN，未捏造PCB1.6mm实测厚度。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-3.97.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-3.97",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：Arduino/examples/04_I2C_SHTC3/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/04_I2C_SHTC3/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：Arduino/examples/05_SD_Test/DEV_Config.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/DEV_Config.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：Arduino/examples/05_SD_Test/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：Arduino/examples/06_QMI8658A/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/06_QMI8658A/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/user_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/user_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：Arduino/examples/05_SD_Test/EPD_3in97.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/EPD_3in97.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：Arduino/examples/05_SD_Test/EPD_3in97.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/EPD_3in97.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：Arduino/examples/05_SD_Test/05_SD_Test.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/05_SD_Test.ino",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-epaper-3-97/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-epaper-3-97-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-epaper-3-97-sku-33811",
+      "name": "Waveshare ESP32-S3-ePaper-3.97-Kit",
+      "manufacturer": "Waveshare",
+      "sku": "33811",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，800×480 SSD1677电子纸；实现原厂16位像素X地址、黑白RAM写入和刷新、PCF85063及真实1bit SDMMC。电池与TF配件组合分别保留。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-epaper-3-97-sku-33811.json",
+      "family": {
+        "id": "waveshare-esp32-s3-epaper-3-97",
+        "name": "Waveshare ESP32-S3-EPAPER-3.97"
+      },
+      "runtime": {
+        "board": "waveshare-s3-epaper397",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "E-paper monochrome subset",
+        "bus": "SPI",
+        "controller": "SSD1677",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 17
+            },
+            {
+              "name": "D0",
+              "gpio": 15
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实1bit SDMMC数字接线；默认准备64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前仅黑白RAM与22+20更新子集；4级灰度波形、光学残影与温度校准未实现。刷新BUSY为明确的1ms数字模型，不冒称原厂完整刷新耗时。",
+        "原厂SSD1677的0x44/0x4E为16位像素X坐标，不能复用SSD1680字节X地址；显示层保留共享SSD1677的gate-Y反向表达，实物玻璃方向尚未校准。",
+        "原例程虽定义SD_D1/2/3，实际SD_MMC.begin以1bit启用；本次只开放CLK16/CMD17/D0 15，不冒称已实现4bit或其他音频/传感器。",
+        "型号正面99.5×60mm与AA86.4×51.84mm有来源；实际厚度、逆面器件和可选电池/TF配件几何UNKNOWN，未捏造PCB1.6mm实测厚度。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-3.97.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-3.97",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：Arduino/examples/04_I2C_SHTC3/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/04_I2C_SHTC3/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：Arduino/examples/05_SD_Test/DEV_Config.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/DEV_Config.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：Arduino/examples/05_SD_Test/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：Arduino/examples/06_QMI8658A/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/06_QMI8658A/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：Arduino/examples/03_I2C_PCF85063/user_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/03_I2C_PCF85063/user_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：Arduino/examples/05_SD_Test/EPD_3in97.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/EPD_3in97.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：Arduino/examples/05_SD_Test/EPD_3in97.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/EPD_3in97.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：Arduino/examples/05_SD_Test/05_SD_Test.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/Arduino/examples/05_SD_Test/05_SD_Test.ino",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-epaper-3-97/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-epaper-3-97-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-epaper-3-97-factory",
+      "name": "ESP32-S3-ePaper-3.97_FactoryOnly_20260314.bin",
+      "productIds": [
+        "waveshare-esp32-s3-epaper-3-97",
+        "waveshare-esp32-s3-epaper-3-97-sku-33810",
+        "waveshare-esp32-s3-epaper-3-97-sku-33811"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/ESP32-S3-ePaper-3.97_FactoryOnly_20260314.bin",
+        "sha256": "3e3083ce729f8f3b3d299ba7999096ffccc68409a1ac2c0834b494fdd9979fa5",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-ePaper-3.97_FactoryOnly_20260314",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/ESP32-S3-ePaper-3.97_FactoryOnly_20260314.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "厂家固定提交的README将此文件明确列为原始出厂恢复镜像；原BIN已验证merged ESP32-S3布局与checksum。默认保留trial，未声称完整应用、浏览器或实机功能已通过。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-epaper-3-97-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-epaper-3-97-factory-watch",
+      "name": "ESP32-S3-ePaper-3.97_FactoryOnly_20260314.bin",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-ePaper-3.97",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-ePaper-3.97/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-ePaper-3.97/releases",
+      "version": "1ce1c42421c4690aa3a7eef7354599ce00163f59",
+      "checkedAt": "2026-11-23T16:52:53Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-ePaper-3.97_FactoryOnly_20260314.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-3.97/1ce1c42421c4690aa3a7eef7354599ce00163f59/firmware/ESP32-S3-ePaper-3.97_FactoryOnly_20260314.bin",
+          "sha256": "3e3083ce729f8f3b3d299ba7999096ffccc68409a1ac2c0834b494fdd9979fa5",
+          "bytes": 16777216,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-epaper-3-97",
+          "waveshare-esp32-s3-epaper-3-97-sku-33810",
+          "waveshare-esp32-s3-epaper-3-97-sku-33811"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-epaper-3-97.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-epaper-3-97-sku-33810.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-epaper-3-97-sku-33811.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-epaper397": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "Native: mono397_uses_pixel_x_address_and_rejects_wrong_cs PASS；SSD1677像素X8/gate1实测像素、错误CS拒绝X16写入、BUSY/RTC和1bit SD映射验证。"
+  ],
+  "limitations": [
+    "当前仅黑白RAM与22+20更新子集；4级灰度波形、光学残影与温度校准未实现。刷新BUSY为明确的1ms数字模型，不冒称原厂完整刷新耗时。",
+    "原厂SSD1677的0x44/0x4E为16位像素X坐标，不能复用SSD1680字节X地址；显示层保留共享SSD1677的gate-Y反向表达，实物玻璃方向尚未校准。",
+    "原例程虽定义SD_D1/2/3，实际SD_MMC.begin以1bit启用；本次只开放CLK16/CMD17/D0 15，不冒称已实现4bit或其他音频/传感器。",
+    "型号正面99.5×60mm与AA86.4×51.84mm有来源；实际厚度、逆面器件和可选电池/TF配件几何UNKNOWN，未捏造PCB1.6mm实测厚度。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

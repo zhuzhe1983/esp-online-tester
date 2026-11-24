@@ -1,0 +1,1040 @@
+{
+  "listingId": "esp32-s3-touch-lcd-4.3c",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-4-3c",
+      "name": "Waveshare ESP32-S3-Touch-LCD-4.3C (Without case)",
+      "manufacturer": "Waveshare",
+      "sku": "33799",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，800×480 RGB与GT911触摸；保留官方1116组件原坐标CAD，数字侧实现真实GPIO、16位扩展器协议、复位/背光/单点触摸和1bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-4-3c.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-4-3c",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-4.3C"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB",
+        "controller": "RGB timing input; controller identity unspecified",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 11
+            },
+            {
+              "name": "D0",
+              "gpio": 13
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "CLK12/CMD11/D0 13且扩展器EX4高电平；当前官方BSP以1bit SDMMC运行。"
+        }
+      ],
+      "limitations": [
+        "厂家docs/components.md保留CH422G名称与CH32V003程序协议差异；实现实际BSP的16位读写/PWM子集，不据软件名称伪造器件硅片身份。",
+        "ES8311/ES7210只实现控制寄存器，音频PCM、BQ电量计、模拟电源与GT911玻璃坐标/多点尚未验收。",
+        "1116个原厂STEP组件全部保留为裸板光学组件；3个SKU共用该已知装配，可选塑料背壳与电池几何UNKNOWN，不将裸板CAD冒称装壳模型。",
+        "厂家窗口95.54×54.36mm与800×480像素比例存在差异，保持原厂机械尺寸并明确数字图像的非方形显示比例，不缩放原厂CAD。",
+        "独立active-area有效显示边框未知；3D屏幕仅映射到有来源的optical-window可视窗口，不据此断言真实像素间距或AA长宽比。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-4.3c.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：HARDWARE_REFERENCE_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/HARDWARE_REFERENCE_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/06_touch/06_touch.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/06_touch.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/gt911.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/gt911.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/gt911.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/gt911.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/touch.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/touch.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：examples/arduino/06_touch/src/i2c/i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/i2c/i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：examples/arduino/06_touch/src/i2c/i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/i2c/i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：examples/arduino/06_touch/src/io_extension/io_extension.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/io_extension/io_extension.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：examples/arduino/06_touch/src/io_extension/io_extension.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/io_extension/io_extension.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font16.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font16.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font20.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font20.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font8.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font8.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/fonts.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/fonts.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/Debug.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/Debug.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：examples/arduino/06_touch/src/user_sd/user_sd.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/user_sd/user_sd.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：examples/arduino/06_touch/src/user_sd/user_sd.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/user_sd/user_sd.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：docs/components.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/docs/components.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-4-3c/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-4-3c-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-4-3c-sku-33630",
+      "name": "Waveshare ESP32-S3-Touch-LCD-4.3C (With plastic case)",
+      "manufacturer": "Waveshare",
+      "sku": "33630",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，800×480 RGB与GT911触摸；保留官方1116组件原坐标CAD，数字侧实现真实GPIO、16位扩展器协议、复位/背光/单点触摸和1bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-4-3c-sku-33630.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-4-3c",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-4.3C"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB",
+        "controller": "RGB timing input; controller identity unspecified",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 11
+            },
+            {
+              "name": "D0",
+              "gpio": 13
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "CLK12/CMD11/D0 13且扩展器EX4高电平；当前官方BSP以1bit SDMMC运行。"
+        }
+      ],
+      "limitations": [
+        "厂家docs/components.md保留CH422G名称与CH32V003程序协议差异；实现实际BSP的16位读写/PWM子集，不据软件名称伪造器件硅片身份。",
+        "ES8311/ES7210只实现控制寄存器，音频PCM、BQ电量计、模拟电源与GT911玻璃坐标/多点尚未验收。",
+        "1116个原厂STEP组件全部保留为裸板光学组件；3个SKU共用该已知装配，可选塑料背壳与电池几何UNKNOWN，不将裸板CAD冒称装壳模型。",
+        "厂家窗口95.54×54.36mm与800×480像素比例存在差异，保持原厂机械尺寸并明确数字图像的非方形显示比例，不缩放原厂CAD。",
+        "独立active-area有效显示边框未知；3D屏幕仅映射到有来源的optical-window可视窗口，不据此断言真实像素间距或AA长宽比。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-4.3c.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：HARDWARE_REFERENCE_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/HARDWARE_REFERENCE_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/06_touch/06_touch.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/06_touch.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/gt911.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/gt911.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/gt911.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/gt911.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/touch.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/touch.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：examples/arduino/06_touch/src/i2c/i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/i2c/i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：examples/arduino/06_touch/src/i2c/i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/i2c/i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：examples/arduino/06_touch/src/io_extension/io_extension.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/io_extension/io_extension.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：examples/arduino/06_touch/src/io_extension/io_extension.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/io_extension/io_extension.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font16.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font16.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font20.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font20.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font8.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font8.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/fonts.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/fonts.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/Debug.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/Debug.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：examples/arduino/06_touch/src/user_sd/user_sd.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/user_sd/user_sd.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：examples/arduino/06_touch/src/user_sd/user_sd.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/user_sd/user_sd.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：docs/components.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/docs/components.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-4-3c/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-4-3c-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-4-3c-sku-34350",
+      "name": "Waveshare ESP32-S3-TOUCH-LCD-4.3C · With plastic case + 3.7V Lithium Batt",
+      "manufacturer": "Waveshare",
+      "sku": "34350",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，800×480 RGB与GT911触摸；保留官方1116组件原坐标CAD，数字侧实现真实GPIO、16位扩展器协议、复位/背光/单点触摸和1bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-4-3c-sku-34350.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-4-3c",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-4.3C"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB",
+        "controller": "RGB timing input; controller identity unspecified",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 11
+            },
+            {
+              "name": "D0",
+              "gpio": 13
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "CLK12/CMD11/D0 13且扩展器EX4高电平；当前官方BSP以1bit SDMMC运行。"
+        }
+      ],
+      "limitations": [
+        "厂家docs/components.md保留CH422G名称与CH32V003程序协议差异；实现实际BSP的16位读写/PWM子集，不据软件名称伪造器件硅片身份。",
+        "ES8311/ES7210只实现控制寄存器，音频PCM、BQ电量计、模拟电源与GT911玻璃坐标/多点尚未验收。",
+        "1116个原厂STEP组件全部保留为裸板光学组件；3个SKU共用该已知装配，可选塑料背壳与电池几何UNKNOWN，不将裸板CAD冒称装壳模型。",
+        "厂家窗口95.54×54.36mm与800×480像素比例存在差异，保持原厂机械尺寸并明确数字图像的非方形显示比例，不缩放原厂CAD。",
+        "独立active-area有效显示边框未知；3D屏幕仅映射到有来源的optical-window可视窗口，不据此断言真实像素间距或AA长宽比。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-4.3c.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：HARDWARE_REFERENCE_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/HARDWARE_REFERENCE_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/06_touch/06_touch.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/06_touch.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/gt911.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/gt911.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/gt911.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/gt911.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/touch.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/touch.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：examples/arduino/06_touch/src/gt911/touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/gt911/touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：examples/arduino/06_touch/src/i2c/i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/i2c/i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：examples/arduino/06_touch/src/i2c/i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/i2c/i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：examples/arduino/06_touch/src/io_extension/io_extension.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/io_extension/io_extension.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：examples/arduino/06_touch/src/io_extension/io_extension.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/io_extension/io_extension.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font12CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font16.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font16.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font20.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font20.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font24CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48CN.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font48CN.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/font8.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/font8.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/fonts/fonts.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/fonts/fonts.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/Debug.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/Debug.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/gui_paint/gui_paint.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rgb_lcd_port/rgb_lcd_port.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/rtc_pcf85063a/rtc_pcf85063a.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：examples/arduino/06_touch/src/user_sd/user_sd.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/user_sd/user_sd.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：examples/arduino/06_touch/src/user_sd/user_sd.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/examples/arduino/06_touch/src/user_sd/user_sd.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：docs/components.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/docs/components.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-4-3c/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-4-3c-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-4-3c-factory",
+      "name": "ESP32-S3-Touch-LCD-4.3C_FactoryOnly_20260414.bin",
+      "productIds": [
+        "waveshare-esp32-s3-touch-lcd-4-3c",
+        "waveshare-esp32-s3-touch-lcd-4-3c-sku-33630",
+        "waveshare-esp32-s3-touch-lcd-4-3c-sku-34350"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/ESP32-S3-Touch-LCD-4.3C_FactoryOnly_20260414.bin",
+        "sha256": "61027f8012c3d7fc8e591faa872f765396cf43315dc268d2384d57b64321368d",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-LCD-4.3C_FactoryOnly_20260414",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/ESP32-S3-Touch-LCD-4.3C_FactoryOnly_20260414.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "厂家固定提交的README将此文件明确列为原始出厂恢复镜像；原BIN已验证merged ESP32-S3布局与checksum。默认保留trial，未声称完整应用、浏览器或实机功能已通过。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-lcd-4-3c-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-4-3c-factory-watch",
+      "name": "ESP32-S3-Touch-LCD-4.3C_FactoryOnly_20260414.bin",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-Touch-LCD-4.3C",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-LCD-4.3C/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/releases",
+      "version": "d3ad4603483d41fe08b2227ba57ebb3cb6b1e027",
+      "checkedAt": "2026-11-23T16:52:47Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-LCD-4.3C_FactoryOnly_20260414.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4.3C/d3ad4603483d41fe08b2227ba57ebb3cb6b1e027/firmware/ESP32-S3-Touch-LCD-4.3C_FactoryOnly_20260414.bin",
+          "sha256": "61027f8012c3d7fc8e591faa872f765396cf43315dc268d2384d57b64321368d",
+          "bytes": 13468509,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-lcd-4-3c",
+          "waveshare-esp32-s3-touch-lcd-4-3c-sku-33630",
+          "waveshare-esp32-s3-touch-lcd-4-3c-sku-34350"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-4-3c.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-4-3c-sku-33630.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-4-3c-sku-34350.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-touch-lcd43c": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "Native: actual_rgb_gpio_map_backlight_touch_reset_and_card_mode PASS；800×480真实红绿输出、错误GPIO/背光门控、GT911复位地址与触摸、EX4卡模式验证。"
+  ],
+  "limitations": [
+    "厂家docs/components.md保留CH422G名称与CH32V003程序协议差异；实现实际BSP的16位读写/PWM子集，不据软件名称伪造器件硅片身份。",
+    "ES8311/ES7210只实现控制寄存器，音频PCM、BQ电量计、模拟电源与GT911玻璃坐标/多点尚未验收。",
+    "1116个原厂STEP组件全部保留为裸板光学组件；3个SKU共用该已知装配，可选塑料背壳与电池几何UNKNOWN，不将裸板CAD冒称装壳模型。",
+    "厂家窗口95.54×54.36mm与800×480像素比例存在差异，保持原厂机械尺寸并明确数字图像的非方形显示比例，不缩放原厂CAD。",
+    "独立active-area有效显示边框未知；3D屏幕仅映射到有来源的optical-window可视窗口，不据此断言真实像素间距或AA长宽比。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

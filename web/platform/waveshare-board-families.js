@@ -631,5 +631,40 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "psramMb": 0,
     "sdCard": true,
     "boardButtons": []
+  },
+  "waveshare-s3-touch-lcd7c": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-epaper154g": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-epaper397": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-touch-lcd43c": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-touch-amoled175c": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 8,
+    "sdCard": false,
+    "boardButtons": []
   }
 }));

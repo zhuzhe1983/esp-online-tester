@@ -61,6 +61,8 @@ pub mod waveshare_amoled18;
 pub mod waveshare_amoled_watch;
 pub mod waveshare_cam;
 pub mod waveshare_co5300_catalog;
+mod waveshare_rgb_catalog;
+mod waveshare_epaper_catalog;
 pub mod waveshare_core;
 pub mod waveshare_epaper133;
 pub mod waveshare_qspi;
@@ -184,7 +186,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-s3-touch-lcd28b" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::TouchLcd28B))),
         "waveshare-s3-lcd28c" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::Lcd28C))),
         "waveshare-s3-touch-lcd28c" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::TouchLcd28C))),
-        _ => waveshare_co5300_catalog::make_board(name)
+        _ => waveshare_epaper_catalog::make_board(name).or_else(|| waveshare_rgb_catalog::make_board(name)).or_else(|| waveshare_co5300_catalog::make_board(name))
             .or_else(|| waveshare_spi_catalog::make_board(name))
             .or_else(|| waveshare_rgb_matrix::make_board(name))
             .or_else(|| waveshare_epaper133::make_board(name))
