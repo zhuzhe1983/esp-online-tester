@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "lane": "p4-s31",
+  "laneBatch": 4,
+  "checkedAt": "2026-11-23T19:14:24Z",
+  "listingCount": 5,
+  "exactSkuCount": 24,
+  "profileCount": 24,
+  "families": [
+    {
+      "listingId": "esp32-p4-eth",
+      "fragment": "tools/waveshare-batches/p4-s31/esp32-p4-eth.json",
+      "metadataCommit": "d6838448",
+      "mechanicalCommit": "e7f90e82",
+      "exactSkus": [
+        "32086",
+        "32087",
+        "32088",
+        "32089",
+        "32090",
+        "34247",
+        "34248",
+        "34249"
+      ],
+      "profileCount": 8,
+      "productIds": [
+        "waveshare-esp32-p4-eth",
+        "waveshare-esp32-p4-eth-m",
+        "waveshare-esp32-p4-poe-eth",
+        "waveshare-esp32-p4-poe-eth-kit-a",
+        "waveshare-esp32-p4-poe-eth-kit-b",
+        "waveshare-esp32-p4-poe-eth-nh",
+        "waveshare-esp32-p4-poe-eth-nh-kit-a",
+        "waveshare-esp32-p4-poe-eth-nh-kit-b"
+      ],
+      "modelIds": [
+        "waveshare-p4-eth-bare-mechanical",
+        "waveshare-p4-eth-headers-mechanical"
+      ],
+      "tests": [
+        {
+          "command": "cargo test --release -p esp32p4 waveshare",
+          "status": "passed",
+          "scope": "Exact carrier profile + guest route tests; no factory boot or WebGL claim.",
+          "evidence": "docs/research/waveshare-p4-s31-2026-11-24/p4-input-guest-check.json"
+        },
+        {
+          "kind": "guest-platform",
+          "command": "CARGO_TARGET_DIR={lane-target} CARGO_BUILD_JOBS=2 cargo test --release -p esp32p4 --test waveshare",
+          "status": "passed",
+          "scope": "RISC-V guest instructions routeI2C0 SDA7/SCL8, write/read ES8311 control register0x32, and sample GPIO35 after actual BOOT button press/release. Host writes only guest program RAM and physical input events, then inspects result RAM. All27 platform profiles checked; module/codec absence mustNACK. Existing knob wrong-SDA control and external-panel-vs-bare identity probes remain.",
+          "evidencePath": "docs/research/waveshare-p4-s31-2026-11-24/p4-platform-guest-check.json"
+        },
+        {
+          "kind": "model-loader",
+          "command": "node tools/check-waveshare-model-loading.mjs waveshare-p4-eth-bare-mechanical waveshare-p4-eth-headers-mechanical",
+          "status": "passed",
+          "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+        }
+      ],
+      "sourceReceiptPaths": [
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-eth/source-receipts.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-eth/storefront-package-selection.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-eth/factory-image-audits.json",
+        "web/platform/assets/waveshare-p4-eth-bare-mechanical/source-manifest.json",
+        "web/platform/assets/waveshare-p4-eth-headers-mechanical/source-manifest.json"
+      ]
+    },
+    {
+      "listingId": "esp32-p4-wifi6-dev-kit",
+      "fragment": "tools/waveshare-batches/p4-s31/esp32-p4-wifi6-dev-kit.json",
+      "metadataCommit": "4230b5d5",
+      "mechanicalCommit": "5cb41173",
+      "exactSkus": [
+        "32054",
+        "32055",
+        "32056",
+        "32057"
+      ],
+      "profileCount": 4,
+      "productIds": [
+        "waveshare-esp32-p4-wifi6-dev-kit",
+        "waveshare-esp32-p4-wifi6-dev-kit-a",
+        "waveshare-esp32-p4-wifi6-dev-kit-b",
+        "waveshare-esp32-p4-wifi6-dev-kit-c"
+      ],
+      "modelIds": [
+        "waveshare-p4-wifi6-devkit-mechanical"
+      ],
+      "tests": [
+        {
+          "command": "cargo test --release -p esp32p4 waveshare",
+          "status": "passed",
+          "scope": "Exact carrier profile + guest route tests; no factory boot or WebGL claim.",
+          "evidence": "docs/research/waveshare-p4-s31-2026-11-24/p4-input-guest-check.json"
+        },
+        {
+          "kind": "guest-platform",
+          "command": "CARGO_TARGET_DIR={lane-target} CARGO_BUILD_JOBS=2 cargo test --release -p esp32p4 --test waveshare",
+          "status": "passed",
+          "scope": "RISC-V guest instructions routeI2C0 SDA7/SCL8, write/read ES8311 control register0x32, and sample GPIO35 after actual BOOT button press/release. Host writes only guest program RAM and physical input events, then inspects result RAM. All27 platform profiles checked; module/codec absence mustNACK. Existing knob wrong-SDA control and external-panel-vs-bare identity probes remain.",
+          "evidencePath": "docs/research/waveshare-p4-s31-2026-11-24/p4-platform-guest-check.json"
+        },
+        {
+          "kind": "model-loader",
+          "command": "node tools/check-waveshare-model-loading.mjs waveshare-p4-wifi6-devkit-mechanical",
+          "status": "passed",
+          "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+        }
+      ],
+      "sourceReceiptPaths": [
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-wifi6-dev-kit/source-receipts.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-wifi6-dev-kit/storefront-package-selection.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-wifi6-dev-kit/factory-image-audits.json",
+        "web/platform/assets/waveshare-p4-wifi6-devkit-mechanical/source-manifest.json"
+      ]
+    },
+    {
+      "listingId": "esp32-p4-wifi6",
+      "fragment": "tools/waveshare-batches/p4-s31/esp32-p4-wifi6.json",
+      "metadataCommit": "0c3e81f6",
+      "mechanicalCommit": "3bd30a07",
+      "exactSkus": [
+        "31647",
+        "32020",
+        "32021",
+        "32022"
+      ],
+      "profileCount": 4,
+      "productIds": [
+        "waveshare-esp32-p4-wifi6",
+        "waveshare-esp32-p4-wifi6-m",
+        "waveshare-esp32-p4-wifi6-kit-a",
+        "waveshare-esp32-p4-wifi6-kit-b"
+      ],
+      "modelIds": [
+        "waveshare-p4-wifi6-bare-mechanical",
+        "waveshare-p4-wifi6-headers-mechanical"
+      ],
+      "tests": [
+        {
+          "command": "cargo test --release -p esp32p4 waveshare",
+          "status": "passed",
+          "scope": "Exact carrier profile + guest route tests; no factory boot or WebGL claim.",
+          "evidence": "docs/research/waveshare-p4-s31-2026-11-24/p4-input-guest-check.json"
+        },
+        {
+          "kind": "guest-platform",
+          "command": "CARGO_TARGET_DIR={lane-target} CARGO_BUILD_JOBS=2 cargo test --release -p esp32p4 --test waveshare",
+          "status": "passed",
+          "scope": "RISC-V guest instructions routeI2C0 SDA7/SCL8, write/read ES8311 control register0x32, and sample GPIO35 after actual BOOT button press/release. Host writes only guest program RAM and physical input events, then inspects result RAM. All27 platform profiles checked; module/codec absence mustNACK. Existing knob wrong-SDA control and external-panel-vs-bare identity probes remain.",
+          "evidencePath": "docs/research/waveshare-p4-s31-2026-11-24/p4-platform-guest-check.json"
+        },
+        {
+          "kind": "model-loader",
+          "command": "node tools/check-waveshare-model-loading.mjs waveshare-p4-wifi6-bare-mechanical waveshare-p4-wifi6-headers-mechanical",
+          "status": "passed",
+          "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+        }
+      ],
+      "sourceReceiptPaths": [
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-wifi6/source-receipts.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-wifi6/storefront-package-selection.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-wifi6/factory-image-audits.json",
+        "web/platform/assets/waveshare-p4-wifi6-bare-mechanical/source-manifest.json",
+        "web/platform/assets/waveshare-p4-wifi6-headers-mechanical/source-manifest.json"
+      ]
+    },
+    {
+      "listingId": "esp32-p4-module-dev-kit",
+      "fragment": "tools/waveshare-batches/p4-s31/esp32-p4-module-dev-kit.json",
+      "metadataCommit": "0794397c",
+      "mechanicalCommit": "ac246318",
+      "additionalMechanicalPrerequisite": "ea27ba93",
+      "exactSkus": [
+        "30560",
+        "30772",
+        "30843",
+        "30844"
+      ],
+      "profileCount": 4,
+      "productIds": [
+        "waveshare-esp32-p4-module-dev-kit",
+        "waveshare-esp32-p4-module-dev-kit-a",
+        "waveshare-esp32-p4-module-dev-kit-b",
+        "waveshare-esp32-p4-module-dev-kit-c"
+      ],
+      "modelIds": [
+        "waveshare-p4-module-devkit-mechanical"
+      ],
+      "tests": [
+        {
+          "command": "cargo test --release -p esp32p4 waveshare",
+          "status": "passed",
+          "scope": "Exact carrier profile + guest route tests; no factory boot or WebGL claim.",
+          "evidence": "docs/research/waveshare-p4-s31-2026-11-24/p4-input-guest-check.json"
+        },
+        {
+          "kind": "guest-platform",
+          "command": "CARGO_TARGET_DIR={lane-target} CARGO_BUILD_JOBS=2 cargo test --release -p esp32p4 --test waveshare",
+          "status": "passed",
+          "scope": "RISC-V guest instructions routeI2C0 SDA7/SCL8, write/read ES8311 control register0x32, and sample GPIO35 after actual BOOT button press/release. Host writes only guest program RAM and physical input events, then inspects result RAM. All27 platform profiles checked; module/codec absence mustNACK. Existing knob wrong-SDA control and external-panel-vs-bare identity probes remain.",
+          "evidencePath": "docs/research/waveshare-p4-s31-2026-11-24/p4-platform-guest-check.json"
+        },
+        {
+          "kind": "model-loader",
+          "command": "node tools/check-waveshare-model-loading.mjs waveshare-p4-module-devkit-mechanical",
+          "status": "passed",
+          "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+        }
+      ],
+      "sourceReceiptPaths": [
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-module-dev-kit/source-receipts.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-module-dev-kit/storefront-package-selection.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-module-dev-kit/factory-image-audits.json",
+        "web/platform/assets/waveshare-p4-module-devkit-mechanical/source-manifest.json"
+      ]
+    },
+    {
+      "listingId": "esp32-p4-module",
+      "fragment": "tools/waveshare-batches/p4-s31/esp32-p4-module.json",
+      "metadataCommit": "4ad69e8d",
+      "mechanicalCommit": "22c0f3c1",
+      "exactSkus": [
+        "28101",
+        "32604",
+        "35057",
+        "35058"
+      ],
+      "profileCount": 4,
+      "productIds": [
+        "waveshare-esp32-p4-module-16mb",
+        "waveshare-esp32-p4-module-32mb",
+        "waveshare-esp32-p4-module-16mb-ipex",
+        "waveshare-esp32-p4-module-32mb-ipex"
+      ],
+      "modelIds": [
+        "waveshare-p4-module-mechanical",
+        "waveshare-p4-module-no-ipex-mechanical"
+      ],
+      "tests": [
+        {
+          "command": "cargo test --release -p esp32p4 waveshare",
+          "status": "passed",
+          "scope": "Exact carrier profile + guest route tests; no factory boot or WebGL claim.",
+          "evidence": "docs/research/waveshare-p4-s31-2026-11-24/p4-input-guest-check.json"
+        },
+        {
+          "kind": "guest-platform",
+          "command": "CARGO_TARGET_DIR={lane-target} CARGO_BUILD_JOBS=2 cargo test --release -p esp32p4 --test waveshare",
+          "status": "passed",
+          "scope": "RISC-V guest instructions routeI2C0 SDA7/SCL8, write/read ES8311 control register0x32, and sample GPIO35 after actual BOOT button press/release. Host writes only guest program RAM and physical input events, then inspects result RAM. All27 platform profiles checked; module/codec absence mustNACK. Existing knob wrong-SDA control and external-panel-vs-bare identity probes remain.",
+          "evidencePath": "docs/research/waveshare-p4-s31-2026-11-24/p4-platform-guest-check.json"
+        },
+        {
+          "kind": "model-loader",
+          "command": "node tools/check-waveshare-model-loading.mjs waveshare-p4-module-mechanical waveshare-p4-module-no-ipex-mechanical",
+          "status": "passed",
+          "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+        }
+      ],
+      "sourceReceiptPaths": [
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-module/source-receipts.json",
+        "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-module/storefront-package-selection.json",
+        "web/platform/assets/waveshare-p4-module-mechanical/source-manifest.json",
+        "web/platform/assets/waveshare-p4-module-no-ipex-mechanical/source-manifest.json"
+      ]
+    }
+  ],
+  "sharedPrerequisites": [
+    "ce7da458",
+    "c0f96e74",
+    "5eb94a6c",
+    "82a3f0e2"
+  ],
+  "integrationOwner": "Root handles centralized catalog, routes, CLI/WASM and public Worker smoke tests. This record does not assert those integration gates passed here.",
+  "limitations": [
+    "Factory binary integrity does not establish full boot; simulationVerified remains false. Source-backed original factory trials are preserved.",
+    "Bare controller models retain native source dimensions. External display, camera, PoE, antenna cables and optional accessories absent from source CAD are not fabricated.",
+    "Module IPEX classification is photo-supported visual inference, not a connector BOM or certified revision. No-IPEX selection omits only native component 281.",
+    "Module DEV KIT carrier CAD omits its installed controller module. Separate native Module CAD is retained without scaling, with photo-estimated interassembly placement and an explicit UNKNOWN ALIGNMENT label; alignment is not a fit guarantee.",
+    "Actual P4 guest probes cover 27 platform profiles including documented BOOT and codec presence/NACK distinctions; DSI, Ethernet, radio and analog circuitry remain unsupported.",
+    "Model CPU Three checks do not establish browser WebGL, material decoding or hardware fit."
+  ]
+}

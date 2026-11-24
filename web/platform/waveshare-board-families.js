@@ -215,34 +215,46 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
   },
   "waveshare-p4-module-16mb": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": false,
+    "rgb": false,
+    "sdCard": false,
     "flashMb": 16,
     "psramMb": 32,
-    "sdCard": false,
-    "boardButtons": [],
     "virtualRevision": 301
   },
   "waveshare-p4-module-32mb": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": false,
+    "rgb": false,
+    "sdCard": false,
     "flashMb": 32,
     "psramMb": 32,
-    "sdCard": false,
-    "boardButtons": [],
     "virtualRevision": 301
   },
   "waveshare-p4-module-16mb-ipex": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": false,
+    "rgb": false,
+    "sdCard": false,
     "flashMb": 16,
     "psramMb": 32,
-    "sdCard": false,
-    "boardButtons": [],
     "virtualRevision": 301
   },
   "waveshare-p4-module-32mb-ipex": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": false,
+    "rgb": false,
+    "sdCard": false,
     "flashMb": 32,
     "psramMb": 32,
-    "sdCard": false,
-    "boardButtons": [],
     "virtualRevision": 301
   },
   "waveshare-p4-core-dev-kit": {
@@ -268,52 +280,57 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
   },
   "waveshare-p4-module-dev-kit": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
     "flashMb": 16,
     "psramMb": 32,
-    "sdCard": true,
-    "boardButtons": [
-      "boot"
-    ],
     "virtualRevision": 301
   },
   "waveshare-p4-wifi6-dev-kit": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
     "flashMb": 16,
     "psramMb": 32,
-    "sdCard": true,
-    "boardButtons": [
-      "boot"
-    ],
     "virtualRevision": 301
   },
   "waveshare-p4-wifi6": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
     "flashMb": 32,
     "psramMb": 32,
-    "sdCard": true,
-    "boardButtons": [
-      "boot"
-    ],
     "virtualRevision": 301
   },
   "waveshare-p4-eth": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
     "flashMb": 32,
     "psramMb": 32,
-    "sdCard": true,
-    "boardButtons": [
-      "boot"
-    ],
     "virtualRevision": 301
   },
   "waveshare-p4-poe-eth": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
     "flashMb": 32,
     "psramMb": 32,
-    "sdCard": true,
-    "boardButtons": [
-      "boot"
-    ],
     "virtualRevision": 301
   },
   "waveshare-p4-pico": {
@@ -1030,5 +1047,71 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "psramMb": 8,
     "sdCard": true,
     "boardButtons": []
+  },
+  "waveshare-p4-poe-eth-kit-101": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "flashMb": 32,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-p4-wifi6-dev-kit-7": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "flashMb": 16,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-p4-wifi6-dev-kit-101": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "flashMb": 16,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-p4-wifi6-kit-101": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "flashMb": 32,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-p4-module-dev-kit-7": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "flashMb": 16,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-p4-module-dev-kit-101": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "flashMb": 16,
+    "psramMb": 32,
+    "virtualRevision": 301
   }
 }));
