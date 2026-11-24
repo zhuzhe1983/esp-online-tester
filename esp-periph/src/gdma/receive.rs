@@ -65,11 +65,19 @@ impl GdmaInCh {
     /// Scatter input and publish both completion and descriptor-error interrupt changes.
     pub fn receive(&mut self, bus: &mut impl Bus, data: &[u8], eof_bytes: Option<u32>, finish: bool,
         is_periph: impl Fn(u32) -> bool, irq_changed: &mut bool) -> bool {
+        self.receive_counted(bus, data, eof_bytes, finish, is_periph, irq_changed).0
+    }
+
+    /// As `receive`, also returning payload bytes actually written, including a prefix
+    /// before a buffer/descriptor fault. Descriptor write-backs are not payload bytes.
+    pub fn receive_counted(&mut self, bus: &mut impl Bus, data: &[u8], eof_bytes: Option<u32>, finish: bool,
+        is_periph: impl Fn(u32) -> bool, irq_changed: &mut bool) -> (bool, usize) {
         let before = self.int_raw;
-        let result = self.scatter(bus, data, eof_bytes, finish, is_periph);
+        let mut written = 0;
+        let result = self.scatter_counted(bus, data, eof_bytes, finish, is_periph, &mut written);
         if !result { self.fail_receive(irq_changed); }
         *irq_changed |= self.int_raw != before;
-        result
+        (result, written)
     }
 
     /// Hand a filled or EOF-ended IN descriptor back to the CPU (its length, owner, SUC_EOF) and
@@ -85,6 +93,11 @@ impl GdmaInCh {
 
     /// Shared camera/crypto receive path. A malformed destination never reports successful EOF.
     pub fn scatter(&mut self, bus: &mut impl Bus, data: &[u8], eof_bytes: Option<u32>, finish: bool, is_periph: impl Fn(u32) -> bool) -> bool {
+        self.scatter_counted(bus, data, eof_bytes, finish, is_periph, &mut 0)
+    }
+
+    fn scatter_counted(&mut self, bus: &mut impl Bus, data: &[u8], eof_bytes: Option<u32>, finish: bool,
+        is_periph: impl Fn(u32) -> bool, written: &mut usize) -> bool {
         let mut pos = 0usize;
         let mut walk = DescriptorWalk::new(GDMA_DESCRIPTOR_STEP_BUDGET);
         while pos < data.len() || (finish && self.rx_eof_pos != 0) {
@@ -108,16 +121,16 @@ impl GdmaInCh {
             let mut i = 0;
             while i < n && (dest + i as u32) & 3 != 0 {
                 if bus.write8_unpriced(dest + i as u32, data[pos + i]).is_err() { return false; }
-                i += 1;
+                i += 1; *written += 1;
             }
             while i + 4 <= n {
                 let word = u32::from_le_bytes(data[pos + i..pos + i + 4].try_into().unwrap());
                 if bus.write32_unpriced(dest + i as u32, word).is_err() { return false; }
-                i += 4;
+                i += 4; *written += 4;
             }
             while i < n {
                 if bus.write8_unpriced(dest + i as u32, data[pos + i]).is_err() { return false; }
-                i += 1;
+                i += 1; *written += 1;
             }
             pos += n;
             r.buf_pos += n as u32;
@@ -137,6 +150,40 @@ impl GdmaInCh {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn counted_receive_keeps_exact_payload_prefix_on_fault_and_excludes_writeback() {
+        use emu_core::FlatRam;
+        // End the destination after each possible unaligned byte/word prefix.
+        for start in 0..4 {
+            for available in 0..12 {
+                let mut ram=FlatRam::new(0,0x200+start+available);
+                ram.write32(0x100,(1<<31)|16).unwrap();
+                ram.write32(0x104,0x200+start as u32).unwrap();
+                ram.write32(0x108,0).unwrap();
+                let mut channel=GdmaInCh{desc:0x100,running:true,..Default::default()};
+                let mut irq=false;let payload=[0xabu8;16];
+                let (ok,written)=channel.receive_counted(&mut ram,&payload,Some(16),false,|_|false,&mut irq);
+                assert!(!ok);assert!(!channel.running);assert!(irq);
+                let actual=ram.mem[0x200+start..].iter().take_while(|&&v|v==0xab).count();
+                assert_eq!(written,actual,"start {start}, available {available}");
+                assert_eq!(channel.int_raw&2,0,"a payload fault is not EOF");
+            }
+        }
+        let mut ram=FlatRam::new(0,0x220);
+        for (off,word) in [(0x100,(1<<31)|8),(0x104,0x200),(0x108,0)] {ram.write32(off,word).unwrap();}
+        let mut channel=GdmaInCh{desc:0x100,running:true,..Default::default()};
+        assert_eq!(channel.receive_counted(&mut ram,&[1;8],Some(8),false,|_|false,&mut false),(true,8));
+        assert_eq!(ram.read32(0x100).unwrap(),8|(8<<12)|(1<<30));
+        // A short chain writes its payload prefix, then raises EMPTY/DSCR_ERR.
+        channel=GdmaInCh{desc:0x100,running:true,..Default::default()};
+        assert_eq!(channel.receive_counted(&mut ram,&[2;12],Some(12),false,|_|false,&mut false),(false,8));
+        assert_eq!(&ram.mem[0x200..0x208],&[2;8]);
+        channel=GdmaInCh{desc:0x100,running:true,conf1:1<<12,..Default::default()};
+        assert_eq!(channel.receive_counted(&mut ram,&[3;8],Some(8),false,|_|false,&mut false),(false,0));
+        channel=GdmaInCh{desc:0x100,running:true,..Default::default()};
+        assert_eq!(channel.receive_counted(&mut ram,&[3;8],Some(8),false,|a|a>=0x200,&mut false),(false,0));
+    }
 
     #[test]
     fn walk_reads_any_word_source_and_stops_at_budget() {

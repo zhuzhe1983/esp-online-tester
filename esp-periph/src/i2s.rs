@@ -22,7 +22,8 @@ pub struct I2s {
     /// decoded left-channel samples (host sink)
     pub pcm: Vec<i16>,
     pub frames_out: u64,
-    /// RX bytes a SoC pump delivered to DMA (diagnostics; the S31 counts here).
+    /// RX payload bytes delivered to DMA (diagnostics). S3 counts successful writes,
+    /// including a prefix before a fault; descriptor write-back bytes are excluded.
     pub bytes_in: u64,
     pub tx_started_log: bool,
     /// TX or RX enabled, cached on RX_CONF/TX_CONF writes for the SoC's per-flush gate.

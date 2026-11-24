@@ -307,6 +307,15 @@ pub trait BoardModel {
     fn spi_transfer_qspi_pins(&mut self, _host: u8, _pins: SpiQspiPins, _tx: &[u8], rx_len: usize) -> Vec<u8> {
         vec![0xff; rx_len]
     }
+    /// Cold physical codec boundary, after I2S RX packing and before GDMA writes.
+    /// Default boards preserve logical PCM. Only nonempty active audio calls this.
+    /// Appended to preserve every existing hot vtable slot. sample_bytes includes
+    /// RX_24_FILL_EN padding; samples are signed and left aligned in each container.
+    fn i2s_rx_pcm(&self, _port:usize, _routes:&crate::pins::PinRoutes<'_>, _bits:u32, _sample_bytes:usize, _bytes:&mut [u8]) {}
+    /// Cold physical codec boundary after TX DMA reads, before host PCM publication.
+    /// The existing sink retains the first DMA slot as normalized signed PCM16.
+    fn i2s_tx_pcm(&self, _port:usize, _routes:&crate::pins::PinRoutes<'_>, _bits:u32, _samples:&mut [i16]) {}
+
 }
 
 pub type Board = Box<dyn BoardModel>;

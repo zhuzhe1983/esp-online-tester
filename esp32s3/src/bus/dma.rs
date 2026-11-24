@@ -402,11 +402,22 @@ impl SocBus {
         let signals = esp_periph::i2s::RxSignals { data: if port == 0 { 25 } else { 30 }, clock: if port == 0 { [26, 27] } else { [31, 32] }, input_select_bit: 7, output_mask: 0x3ff };
         let mut bank = self.periph.i2s0.take_pcm_bank();
         let i2s = if port == 0 { &mut self.periph.i2s0 } else { &mut self.periph.i2s1 };
-        let bytes = i2s.receive(cycles, self.cycles, port == 0, &self.periph.gpio, signals, bank.as_deref_mut());
+        let mut bytes = i2s.receive(cycles, self.cycles, port == 0, &self.periph.gpio, signals, bank.as_deref_mut());
         let eof = i2s.read(0x64);
+        let bits = if i2s.read(0x20) & (1 << 20) != 0 { 0 } else { ((i2s.read(0x28) >> 13) & 31) + 1 };
+        let sample_bytes = if bits == 24 && i2s.read(0x20) & (1 << 16) != 0 { 4 } else { bits.div_ceil(8) as usize };
+        if !bytes.is_empty() {
+            let routes = esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux);
+            self.board.i2s_rx_pcm(port as usize, &routes, bits, sample_bytes, &mut bytes);
+        }
         self.periph.i2s0.restore_pcm_bank(bank);
-        let _ = self.scatter_dma_in(ch, &bytes, Some(eof), false);
+        let mut channel = self.periph.gdma.inp[ch];
+        let mut irq_changed = false;
+        let (_, written) = channel.receive_counted(self, &bytes, Some(eof), false, Self::is_periph, &mut irq_changed);
+        self.irq_dirty |= irq_changed;
+        self.periph.gdma.inp[ch] = channel;
         let i2s = if port == 0 { &mut self.periph.i2s0 } else { &mut self.periph.i2s1 };
+        i2s.bytes_in = i2s.bytes_in.saturating_add(written as u64);
         i2s.recycle_rx_buffer(bytes);
     }
 
@@ -466,6 +477,12 @@ impl SocBus {
             }
             self.periph.gdma.out[ch].buf_pos += take as u32;
             need -= take;
+        }
+        if !samples.is_empty() {
+            let i2s = if which == 0 { &self.periph.i2s0 } else { &self.periph.i2s1 };
+            let bits = if i2s.tx_tdm_ctrl & 1 == 0 || i2s.read(0x24) & ((1 << 20) | (1 << 18) | (3 << 10) | (1 << 7)) != 0 { 0 } else { ((i2s.tx_conf1 >> 13) & 31) + 1 };
+            let routes = esp_soc::pins::ChipPins::S3.routes(&self.periph.gpio, &self.periph.io_mux);
+            self.board.i2s_tx_pcm(which, &routes, bits, &mut samples);
         }
         if !samples.is_empty() { let i2s = if which == 0 { &mut self.periph.i2s0 } else { &mut self.periph.i2s1 }; i2s.frames_out += samples.len() as u64; i2s.pcm.extend_from_slice(&samples); }
     }

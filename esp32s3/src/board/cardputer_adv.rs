@@ -1,16 +1,17 @@
 //! M5Stack Cardputer-Adv: ST7789V2 and TCA8418 matrix keyboard, official K132-Adv pinmap.
-//! ES8311/BMI270 initialization subsets; no physical audio/SD/RF/IR compatibility claim.
+//! Digital ES8311 PCM/control and BMI270 initialization subsets; no analog/SD/RF/IR claim.
 use std::sync::{Arc,Mutex};
-use esp_periph::i2c::{I2cDevice,Reg8Device};
+use esp_periph::i2c::I2cDevice;
+use esp_soc::devices::es8311::{Es8311,Es8311State};
 use esp_periph::i2c::bmi270::{Bmi270,Bmi270Sample};
 use esp_periph::i2c::tca8418::{Tca8418,Tca8418State};
 use esp_soc::board::{BoardModel,BoardEdge,VirtualCycle,SpiPins};
 use esp_soc::devices::i2c_bitbang::I2cBitBang;
 use super::cardputer_lcd::CardputerLcd;
 
-pub struct CardputerAdv {lcd:CardputerLcd,i2c:I2cBitBang,levels:[bool;2],keyboard:Arc<Mutex<Tca8418State>>,imu:Arc<Mutex<Bmi270Sample>>,cycle:u64,irq_high:bool,edges:Vec<BoardEdge>,gpio_events:u64}
+pub struct CardputerAdv {codec:Arc<Mutex<Es8311State>>,lcd:CardputerLcd,i2c:I2cBitBang,levels:[bool;2],keyboard:Arc<Mutex<Tca8418State>>,imu:Arc<Mutex<Bmi270Sample>>,cycle:u64,irq_high:bool,edges:Vec<BoardEdge>,gpio_events:u64}
 impl CardputerAdv {
-    pub fn new()->Self {Self{lcd:CardputerLcd::new(),i2c:I2cBitBang::new(),levels:[true,true],keyboard:Arc::new(Mutex::new(Tca8418State::new(crate::periph::CPU_HZ))),imu:Default::default(),cycle:0,irq_high:true,edges:Vec::new(),gpio_events:0}}
+    pub fn new()->Self {Self{codec:Default::default(),lcd:CardputerLcd::new(),i2c:I2cBitBang::new(),levels:[true,true],keyboard:Arc::new(Mutex::new(Tca8418State::new(crate::periph::CPU_HZ))),imu:Default::default(),cycle:0,irq_high:true,edges:Vec::new(),gpio_events:0}}
     fn sync_irq(&mut self) {let high=self.keyboard.lock().expect("Cardputer keyboard mutex poisoned").irq_high();if high!=self.irq_high {self.irq_high=high;self.edges.push(BoardEdge{cycle:self.cycle,pin:11,level:high});}}
 
 }
@@ -28,8 +29,28 @@ impl BoardModel for CardputerAdv {
     fn spi_transfer_pins(&mut self,_host:u8,pins:SpiPins,tx:&[u8],rx_len:usize)->Vec<u8> {self.lcd.spi(pins,tx,rx_len)}
     fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)> {
         self.i2c.clear();self.i2c.attach(0x34,Box::new(Tca8418::new(self.keyboard.clone())));self.i2c.attach(0x68,Box::new(Bmi270::new(self.imu.clone())));
-        self.i2c.attach(0x18,Box::new(Reg8Device::new("es8311-initialization-subset",&[(0xfd,0x83),(0xfe,0x11)])));
+        self.i2c.attach(0x18,Box::new(Es8311::with_state(self.codec.clone())));
         (0..2).flat_map(|bus|self.i2c.controller_devices(Some((8,9))).into_iter().map(move |(address,device)|(bus,address,device))).collect()
+    }
+    fn i2s_rx_pcm(&self,port:usize,routes:&esp_soc::pins::PinRoutes<'_>,bits:u32,sample_bytes:usize,bytes:&mut [u8]) {
+        // M5Stack K132-Adv Audio table: BCLK41/LRCK43/ASDOUT46. IDF v5.4.2
+        // soc/esp32s3/include/soc/gpio_sig_map.h: I2S0 RX25/26/27, I2S1 RX30/31/32.
+        let (data,bck,ws)=if port==0 {(25,26,27)}else{(30,31,32)};
+        let wired=routes.matrix_input(data)==Some(46)&&routes.matrix_output(41,bck)&&routes.matrix_output(43,ws);
+        if !wired || !(2..=4).contains(&sample_bytes) {bytes.fill(0);return;}
+        let gain=self.codec.lock().expect("ES8311 state poisoned").adc_gain(bits);
+        for sample in bytes.chunks_exact_mut(sample_bytes) {
+            let n=sample_bytes;let value=i16::from_le_bytes([sample[n-2],sample[n-1]]);
+            let scaled=(f64::from(value)*gain).round() as i16;
+            sample.fill(0);sample[n-2..].copy_from_slice(&scaled.to_le_bytes());
+        }
+    }
+    fn i2s_tx_pcm(&self,port:usize,routes:&esp_soc::pins::PinRoutes<'_>,bits:u32,samples:&mut [i16]) {
+        // DSDIN42. A full-duplex master may drive the shared wires from RX clocks.
+        let (data,clocks)=if port==0 {(25,[[22,24],[26,27]])}else{(30,[[28,29],[31,32]])};
+        let wired=routes.matrix_output(42,data)&&clocks.iter().any(|&[b,w]|routes.matrix_output(41,b)&&routes.matrix_output(43,w));
+        let gain=if wired{self.codec.lock().expect("ES8311 state poisoned").dac_gain(bits)}else{0.0};
+        for sample in samples {*sample=(f64::from(*sample)*gain).round() as i16;}
     }
     fn matrix_key_at(&mut self,cycle:VirtualCycle,row:u8,column:u8,pressed:bool)->bool {
         if row>=4 || column>=14 {return false;}
