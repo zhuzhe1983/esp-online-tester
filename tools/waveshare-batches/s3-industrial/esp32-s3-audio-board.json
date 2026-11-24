@@ -1,0 +1,590 @@
+{
+  "listingId": "esp32-s3-audio-board",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-audio-board",
+      "name": "Waveshare ESP32-S3-AUDIO-Board",
+      "manufacturer": "Waveshare",
+      "sku": "32184",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified; Audio schematic1.1 retained",
+      "summary": "16MiB Flash / 8MiB PSRAM。双麦克风、扬声器、七颗RGB；TCA9555三键与codec控制寄存器、RTC、原生SD数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-audio-board",
+        "name": "ESP32-S3-AUDIO-Board"
+      },
+      "runtime": {
+        "board": "waveshare-s3-audio-board",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key-1",
+          "name": "KEY 1 · TCA9555 P11",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit1"
+        },
+        {
+          "id": "key-2",
+          "name": "KEY 2 · TCA9555 P12",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit2"
+        },
+        {
+          "id": "key-3",
+          "name": "KEY 3 · TCA9555 P13",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit3"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · native1-bit SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 40
+            },
+            {
+              "name": "CMD",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 41
+            }
+          ],
+          "sourceIds": [
+            "bsp"
+          ],
+          "notes": "默认64MiB FAT32；已测实际客体1bit SDMMC DMA512字节读写、错路由和拔卡；不把它等同原厂完整FAT挂载。"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-audio-board-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-audio-board.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-audio-board.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-guide",
+          "title": "firmware-flashing.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board/Firmware-Flashing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-AUDIO-Board_1.1.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board_1.1.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "ESP32-S3-AUDIO-Board-Demo/ESP-IDF/factory_01/main/hardeware_driver/bsp_board.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "ES8311/ES7210 control register endpoints only; microphone capture, PCM playback, voice recognition, camera/display options and cloud services are not implemented.",
+        "Three keys are TCA9555 inputs P11/P12/P13 (linear9/10/11). Seven RGB chain positions have not been mapped to native3D parts.",
+        "SKU32184 includes native1000mAh battery. SKU32185/EN excludes it; battery/charging/RTC-backup electrical physics remain unmodeled.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Exact32184 includes1000mAh battery; exact32185/EN omits only identified native battery component2. Both retain native speaker/case/PCB. No optional screen/camera is invented.",
+        "Native PMMA/case/speaker/battery/internal topology preserved unscaled; colors and optical transparency are visualization approximations.",
+        "Seven RGB outputs and three expander buttons work in the digital runtime; native LED/button identities have not been calibrated as live3D markers or ray-hit regions.",
+        "Shared native case base label mentions TOUCH-LCD-1_85; this exact AUDIO SKU has no included display. Native mechanical source is not evidence of LCD compatibility.",
+        "Native battery component2 has a conservative analytic Y bound 0.226499mm beyond mesh vertices at three independently Clean/remeshed densities. SHA-bound 0.23mm export check exception applies only to that battery; geometry remains unscaled and every other component retains0.05mm export tolerance. This is not a hardware fit tolerance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-audio-board-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-audio-board-en",
+      "name": "Waveshare ESP32-S3-AUDIO-Board-EN",
+      "manufacturer": "Waveshare",
+      "sku": "32185",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified; Audio schematic1.1 retained",
+      "summary": "16MiB Flash / 8MiB PSRAM。双麦克风、扬声器、七颗RGB；TCA9555三键与codec控制寄存器、RTC、原生SD数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-audio-board",
+        "name": "ESP32-S3-AUDIO-Board"
+      },
+      "runtime": {
+        "board": "waveshare-s3-audio-board-en",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key-1",
+          "name": "KEY 1 · TCA9555 P11",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit1"
+        },
+        {
+          "id": "key-2",
+          "name": "KEY 2 · TCA9555 P12",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit2"
+        },
+        {
+          "id": "key-3",
+          "name": "KEY 3 · TCA9555 P13",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit3"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · native1-bit SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 40
+            },
+            {
+              "name": "CMD",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 41
+            }
+          ],
+          "sourceIds": [
+            "bsp"
+          ],
+          "notes": "默认64MiB FAT32；已测实际客体1bit SDMMC DMA512字节读写、错路由和拔卡；不把它等同原厂完整FAT挂载。"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-audio-board-en-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-audio-board-en.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-audio-board.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-guide",
+          "title": "firmware-flashing.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board/Firmware-Flashing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-AUDIO-Board_1.1.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board_1.1.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "ESP32-S3-AUDIO-Board-Demo/ESP-IDF/factory_01/main/hardeware_driver/bsp_board.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "ES8311/ES7210 control register endpoints only; microphone capture, PCM playback, voice recognition, camera/display options and cloud services are not implemented.",
+        "Three keys are TCA9555 inputs P11/P12/P13 (linear9/10/11). Seven RGB chain positions have not been mapped to native3D parts.",
+        "SKU32184 includes native1000mAh battery. SKU32185/EN excludes it; battery/charging/RTC-backup electrical physics remain unmodeled.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Exact32184 includes1000mAh battery; exact32185/EN omits only identified native battery component2. Both retain native speaker/case/PCB. No optional screen/camera is invented.",
+        "Native PMMA/case/speaker/battery/internal topology preserved unscaled; colors and optical transparency are visualization approximations.",
+        "Seven RGB outputs and three expander buttons work in the digital runtime; native LED/button identities have not been calibrated as live3D markers or ray-hit regions.",
+        "Shared native case base label mentions TOUCH-LCD-1_85; this exact AUDIO SKU has no included display. Native mechanical source is not evidence of LCD compatibility.",
+        "Native battery component2 has a conservative analytic Y bound 0.226499mm beyond mesh vertices at three independently Clean/remeshed densities. SHA-bound 0.23mm export check exception applies only to that battery; geometry remains unscaled and every other component retains0.05mm export tolerance. This is not a hardware fit tolerance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-audio-board-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-audio-board-factory",
+      "name": "ESP32-S3-AUDIO-Board · 官方原厂程序（试运行）",
+      "productIds": [
+        "waveshare-esp32-s3-audio-board",
+        "waveshare-esp32-s3-audio-board-en"
+      ],
+      "version": "manufacturer-archive-e63823469cec",
+      "status": "trial",
+      "source": {
+        "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+        "sha256": "270e442c9135299428756fa82f937799904d405b6ceb82c3c7c1d0c92e0b8f96",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "ESP32-S3-AUDIO-Board-Demo/Firmware/ESP32-S3-AUDIO-Board.bin",
+          "sha256": "e63823469cec26ac782b9e8a9f8af22d8c55015362fa8a4fb4e7212a17af149e"
+        }
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board/Firmware-Flashing",
+      "watchlistId": "waveshare-esp32-s3-audio-board-official-watch",
+      "sources": [
+        {
+          "title": "Original official image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Official ESP-IDF guide identifies01_factory as factory program; official flashing guide points to this exact Firmware directory and0x0; original app descriptor identifies factory_01.",
+        "ES8311/ES7210 control register endpoints only; microphone capture, PCM playback, voice recognition, camera/display options and cloud services are not implemented.",
+        "Three keys are TCA9555 inputs P11/P12/P13 (linear9/10/11). Seven RGB chain positions have not been mapped to native3D parts.",
+        "SKU32184 includes native1000mAh battery. SKU32185/EN excludes it; battery/charging/RTC-backup electrical physics remain unmodeled.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim."
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-audio-board-uiflow-reference",
+      "name": "ESP32-S3-AUDIO-Board · uiflow资料",
+      "productIds": [
+        "waveshare-esp32-s3-audio-board",
+        "waveshare-esp32-s3-audio-board-en"
+      ],
+      "version": "2.5.5",
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "开源项目",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unavailable",
+      "publicationUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.5",
+      "watchlistId": "waveshare-esp32-s3-audio-board-uiflow-reference-watch",
+      "sources": [
+        {
+          "title": "Fixed upstream release",
+          "url": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.5",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "No exact SKU match in inspected fixed upstream release/source inventory; generic chip binaries are not substituted."
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-audio-board-xiaozhi-v2-6-0",
+      "name": "ESP32-S3-AUDIO-Board · 小智v2.6.0（试运行）",
+      "productIds": [
+        "waveshare-esp32-s3-audio-board",
+        "waveshare-esp32-s3-audio-board-en"
+      ],
+      "version": "v2.6.0",
+      "status": "trial",
+      "source": {
+        "url": "https://github.com/78/xiaozhi-esp32/releases/download/v2.6.0/v2.6.0_waveshare-esp32-s3-audio-board.zip",
+        "sha256": "52f91c44b63025687c67285a7a5cc7a3406255420a214a90fb349a77c11fb49f",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "merged-binary.bin",
+          "sha256": "363582924604d10aa41daaaf108be904adf0abb6857d4fe9c7d0a337d8e18f40"
+        }
+      },
+      "role": "project",
+      "publisher": "78/xiaozhi-esp32",
+      "publisherGroup": "开源项目",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+      "watchlistId": "waveshare-esp32-s3-audio-board-xiaozhi-reference-watch",
+      "sources": [
+        {
+          "title": "Fixed upstream release",
+          "url": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Exact esp32-s3-audio-board upstream target andv2.6.0 release found; optional camera/display, PCM/cloud and original boot unverified."
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-audio-board-official-watch",
+      "name": "ESP32-S3-AUDIO-Board · 官方原厂程序（试运行）",
+      "category": "factory",
+      "metadataProvider": "manual",
+      "upstreamRepo": "waveshareteam/ESP32-S3-AUDIO-Board",
+      "metadataUrl": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board/Firmware-Flashing",
+      "releaseUrl": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board/Firmware-Flashing",
+      "version": "manufacturer-archive-e63823469cec",
+      "checkedAt": "2026-11-23T22:44:42Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-AUDIO-Board.bin",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "bytes": 99885975,
+          "sha256": "e63823469cec26ac782b9e8a9f8af22d8c55015362fa8a4fb4e7212a17af149e",
+          "format": "zip-bundle"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-audio-board",
+          "waveshare-esp32-s3-audio-board-en"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Exact archive/member pinned. No automatic cross-SKU update or full firmware compatibility claim."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual pinned-source review; catalogTargets remains empty until an exact release-to-SKU update contract is established."
+    },
+    {
+      "id": "waveshare-esp32-s3-audio-board-uiflow-reference-watch",
+      "name": "ESP32-S3-AUDIO-Board uiflow",
+      "category": "development",
+      "metadataProvider": "manual",
+      "upstreamRepo": "m5stack/uiflow-micropython",
+      "metadataUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.5",
+      "releaseUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.5",
+      "version": "2.5.5",
+      "checkedAt": "2026-11-23T22:44:42Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-audio-board",
+          "waveshare-esp32-s3-audio-board-en"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "No exact SKU match in inspected fixed upstream release/source inventory; generic chip binaries are not substituted."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual pinned-source review; catalogTargets remains empty until an exact release-to-SKU update contract is established."
+    },
+    {
+      "id": "waveshare-esp32-s3-audio-board-xiaozhi-reference-watch",
+      "name": "ESP32-S3-AUDIO-Board xiaozhi",
+      "category": "voice",
+      "metadataProvider": "manual",
+      "upstreamRepo": "78/xiaozhi-esp32",
+      "metadataUrl": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+      "releaseUrl": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+      "version": "v2.6.0",
+      "checkedAt": "2026-11-23T22:44:42Z",
+      "assets": [
+        {
+          "name": "v2.6.0_waveshare-esp32-s3-audio-board.zip",
+          "url": "https://github.com/78/xiaozhi-esp32/releases/download/v2.6.0/v2.6.0_waveshare-esp32-s3-audio-board.zip",
+          "bytes": 2472480,
+          "sha256": "363582924604d10aa41daaaf108be904adf0abb6857d4fe9c7d0a337d8e18f40",
+          "format": "zip-bundle"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-audio-board",
+          "waveshare-esp32-s3-audio-board-en"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Exact esp32-s3-audio-board upstream target andv2.6.0 release found; optional camera/display, PCM/cloud and original boot unverified."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual pinned-source review; catalogTargets remains empty until an exact release-to-SKU update contract is established."
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-audio-board.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-audio-board-en.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-audio-board": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "display": false,
+      "touch": false,
+      "gpio": true,
+      "rgb": true,
+      "sdCard": true,
+      "boardButtons": [
+        "boot",
+        "key-1",
+        "key-2",
+        "key-3"
+      ]
+    },
+    "waveshare-s3-audio-board-en": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "display": false,
+      "touch": false,
+      "gpio": true,
+      "rgb": true,
+      "sdCard": true,
+      "boardButtons": [
+        "boot",
+        "key-1",
+        "key-2",
+        "key-3"
+      ]
+    }
+  },
+  "modelIds": [
+    "waveshare-s3-audio-board-mechanical",
+    "waveshare-s3-audio-board-en-mechanical"
+  ],
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-audio-board/sources.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-audio-board/storefront-identity.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-audio-board/archive-members.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-audio-board/firmware-investigation.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-audio-board/firmware-image-audit.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-audio-board/runtime-verification.json"
+  ],
+  "tests": [
+    {
+      "command": "cargo test --release -p esp32s3 --test waveshare_industrial_controls",
+      "status": "passed",
+      "scope": "Real LX7 instructions: exact route/mux/address NACK, RTC time+STOP, TCA9555 keys+codec ports, actualRMT RGB bytes, Relay1 GPIO47, distinct eight-channel control, five actual guest1bit SDMMC IDMAC512-byte roundtrip/wrong-route/eject.",
+      "evidence": "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-audio-board/runtime-verification.json"
+    },
+    {
+      "command": "node tools/check-waveshare-model-loading.mjs <nine model IDs>",
+      "status": "passed",
+      "scope": "ProductionThree dimensions/source-hashes/shell-material isolation/UNKNOWN reveal-reset; noWebGL claim",
+      "evidence": "docs/research/waveshare-s3-industrial-2026-11-24/batch-02/loader-checks.json"
+    }
+  ],
+  "limitations": [
+    "ES8311/ES7210 control register endpoints only; microphone capture, PCM playback, voice recognition, camera/display options and cloud services are not implemented.",
+    "Three keys are TCA9555 inputs P11/P12/P13 (linear9/10/11). Seven RGB chain positions have not been mapped to native3D parts.",
+    "SKU32184 includes native1000mAh battery. SKU32185/EN excludes it; battery/charging/RTC-backup electrical physics remain unmodeled.",
+    "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim."
+  ],
+  "integrationNotes": [
+    "Root integrates exact16F8P board registry and five family fragments; SD card slots use actual existing nativeSDMMC transport.",
+    "No shared shell or display semantics inherited from sibling devices."
+  ]
+}

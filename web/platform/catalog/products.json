@@ -85660,6 +85660,1270 @@
         "provenance": "dimension-photo-reconstruction"
       },
       "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-2-41-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-audio-board",
+      "name": "Waveshare ESP32-S3-AUDIO-Board",
+      "manufacturer": "Waveshare",
+      "sku": "32184",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified; Audio schematic1.1 retained",
+      "summary": "16MiB Flash / 8MiB PSRAM。双麦克风、扬声器、七颗RGB；TCA9555三键与codec控制寄存器、RTC、原生SD数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-audio-board",
+        "name": "ESP32-S3-AUDIO-Board"
+      },
+      "runtime": {
+        "board": "waveshare-s3-audio-board",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key-1",
+          "name": "KEY 1 · TCA9555 P11",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit1"
+        },
+        {
+          "id": "key-2",
+          "name": "KEY 2 · TCA9555 P12",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit2"
+        },
+        {
+          "id": "key-3",
+          "name": "KEY 3 · TCA9555 P13",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit3"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · native1-bit SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 40
+            },
+            {
+              "name": "CMD",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 41
+            }
+          ],
+          "sourceIds": [
+            "bsp"
+          ],
+          "notes": "默认64MiB FAT32；已测实际客体1bit SDMMC DMA512字节读写、错路由和拔卡；不把它等同原厂完整FAT挂载。"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-audio-board-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-audio-board.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-audio-board.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-guide",
+          "title": "firmware-flashing.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board/Firmware-Flashing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-AUDIO-Board_1.1.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board_1.1.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "ESP32-S3-AUDIO-Board-Demo/ESP-IDF/factory_01/main/hardeware_driver/bsp_board.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "ES8311/ES7210 control register endpoints only; microphone capture, PCM playback, voice recognition, camera/display options and cloud services are not implemented.",
+        "Three keys are TCA9555 inputs P11/P12/P13 (linear9/10/11). Seven RGB chain positions have not been mapped to native3D parts.",
+        "SKU32184 includes native1000mAh battery. SKU32185/EN excludes it; battery/charging/RTC-backup electrical physics remain unmodeled.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Exact32184 includes1000mAh battery; exact32185/EN omits only identified native battery component2. Both retain native speaker/case/PCB. No optional screen/camera is invented.",
+        "Native PMMA/case/speaker/battery/internal topology preserved unscaled; colors and optical transparency are visualization approximations.",
+        "Seven RGB outputs and three expander buttons work in the digital runtime; native LED/button identities have not been calibrated as live3D markers or ray-hit regions.",
+        "Shared native case base label mentions TOUCH-LCD-1_85; this exact AUDIO SKU has no included display. Native mechanical source is not evidence of LCD compatibility.",
+        "Native battery component2 has a conservative analytic Y bound 0.226499mm beyond mesh vertices at three independently Clean/remeshed densities. SHA-bound 0.23mm export check exception applies only to that battery; geometry remains unscaled and every other component retains0.05mm export tolerance. This is not a hardware fit tolerance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-audio-board-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-audio-board-en",
+      "name": "Waveshare ESP32-S3-AUDIO-Board-EN",
+      "manufacturer": "Waveshare",
+      "sku": "32185",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified; Audio schematic1.1 retained",
+      "summary": "16MiB Flash / 8MiB PSRAM。双麦克风、扬声器、七颗RGB；TCA9555三键与codec控制寄存器、RTC、原生SD数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-audio-board",
+        "name": "ESP32-S3-AUDIO-Board"
+      },
+      "runtime": {
+        "board": "waveshare-s3-audio-board-en",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key-1",
+          "name": "KEY 1 · TCA9555 P11",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit1"
+        },
+        {
+          "id": "key-2",
+          "name": "KEY 2 · TCA9555 P12",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit2"
+        },
+        {
+          "id": "key-3",
+          "name": "KEY 3 · TCA9555 P13",
+          "type": "button",
+          "transport": "board",
+          "activeLow": true,
+          "defaultKeyCode": "Digit3"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · native1-bit SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 40
+            },
+            {
+              "name": "CMD",
+              "gpio": 42
+            },
+            {
+              "name": "D0",
+              "gpio": 41
+            }
+          ],
+          "sourceIds": [
+            "bsp"
+          ],
+          "notes": "默认64MiB FAT32；已测实际客体1bit SDMMC DMA512字节读写、错路由和拔卡；不把它等同原厂完整FAT挂载。"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-audio-board-en-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-audio-board-en.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-audio-board.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-guide",
+          "title": "firmware-flashing.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-AUDIO-Board/Firmware-Flashing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-AUDIO-Board_1.1.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board_1.1.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "ESP32-S3-AUDIO-Board-Demo/ESP-IDF/factory_01/main/hardeware_driver/bsp_board.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-AUDIO-Board/ESP32-S3-AUDIO-Board-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "ES8311/ES7210 control register endpoints only; microphone capture, PCM playback, voice recognition, camera/display options and cloud services are not implemented.",
+        "Three keys are TCA9555 inputs P11/P12/P13 (linear9/10/11). Seven RGB chain positions have not been mapped to native3D parts.",
+        "SKU32184 includes native1000mAh battery. SKU32185/EN excludes it; battery/charging/RTC-backup electrical physics remain unmodeled.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Exact32184 includes1000mAh battery; exact32185/EN omits only identified native battery component2. Both retain native speaker/case/PCB. No optional screen/camera is invented.",
+        "Native PMMA/case/speaker/battery/internal topology preserved unscaled; colors and optical transparency are visualization approximations.",
+        "Seven RGB outputs and three expander buttons work in the digital runtime; native LED/button identities have not been calibrated as live3D markers or ray-hit regions.",
+        "Shared native case base label mentions TOUCH-LCD-1_85; this exact AUDIO SKU has no included display. Native mechanical source is not evidence of LCD compatibility.",
+        "Native battery component2 has a conservative analytic Y bound 0.226499mm beyond mesh vertices at three independently Clean/remeshed densities. SHA-bound 0.23mm export check exception applies only to that battery; geometry remains unscaled and every other component retains0.05mm export tolerance. This is not a hardware fit tolerance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-audio-board-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-rs485-can",
+      "name": "Waveshare ESP32-S3-RS485-CAN",
+      "manufacturer": "Waveshare",
+      "sku": "32154",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash / 8MiB PSRAM。RS485/CAN通信主控，精确I2C路由与PCF85063 RTC数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-rs485-can",
+        "name": "ESP32-S3-RS485-CAN"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rs485-can",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-rs485-can-mechanical/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rs485-can.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rs485-can.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-RS485-CAN",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-RS485-CAN-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-RS485-CAN/ESP32-S3-RS485-CAN-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "Arduino/examples/MAIN_WIFI_AP/WS_GPIO.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-RS485-CAN/ESP32-S3-RS485-CAN-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-RS485-CAN/ESP32-S3-RS485-CAN-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "RS485 UART17/18 and DE21; TWAI TX15/RX16 physical facts retained. No bus peer, isolation, network or electrical transceiver behavior claimed.",
+        "RS485-CAN has no Relay1 coil output; a shared manufacturer header name does not add a relay to this SKU.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Hollow case is reconstructed from official exterior dimensions and photographs; wall thickness, unseen internal PCB/components and connector mating tolerance remain UNKNOWN.",
+        "Source printed label is restricted to its photographed rectangle. Original photo shadows/material details are not treated as exact geometry.",
+        "BOOT and other inputs remain product controls; no guessed through-case 3D hit regions or live indicator positions.",
+        "Separate terminal decks, screw bores, end apertures and hollow side/back walls are photo-informed. Exact terminal pitch, relay internals and latch mechanism are not reconstructed.",
+        "Only exact U variant includes external connector envelope; internal ceramic/radio package positions remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-rs485-can-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-rs485-can-u",
+      "name": "Waveshare ESP32-S3-RS485-CAN-U",
+      "manufacturer": "Waveshare",
+      "sku": "34781",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash / 8MiB PSRAM。RS485/CAN通信主控，精确I2C路由与PCF85063 RTC数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-rs485-can",
+        "name": "ESP32-S3-RS485-CAN"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rs485-can-u",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-rs485-can-u-mechanical/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rs485-can-u.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rs485-can.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-RS485-CAN",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-RS485-CAN-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-RS485-CAN/ESP32-S3-RS485-CAN-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "Arduino/examples/MAIN_WIFI_AP/WS_GPIO.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-RS485-CAN/ESP32-S3-RS485-CAN-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-RS485-CAN/ESP32-S3-RS485-CAN-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "RS485 UART17/18 and DE21; TWAI TX15/RX16 physical facts retained. No bus peer, isolation, network or electrical transceiver behavior claimed.",
+        "RS485-CAN has no Relay1 coil output; a shared manufacturer header name does not add a relay to this SKU.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Hollow case is reconstructed from official exterior dimensions and photographs; wall thickness, unseen internal PCB/components and connector mating tolerance remain UNKNOWN.",
+        "Source printed label is restricted to its photographed rectangle. Original photo shadows/material details are not treated as exact geometry.",
+        "BOOT and other inputs remain product controls; no guessed through-case 3D hit regions or live indicator positions.",
+        "Separate terminal decks, screw bores, end apertures and hollow side/back walls are photo-informed. Exact terminal pitch, relay internals and latch mechanism are not reconstructed.",
+        "Only exact U variant includes external connector envelope; internal ceramic/radio package positions remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-rs485-can-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-relay-1ch",
+      "name": "Waveshare ESP32-S3-Relay-1CH",
+      "manufacturer": "Waveshare",
+      "sku": "32152",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash / 8MiB PSRAM。单路继电器，GPIO47实际客体驱动状态及RTC数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-relay-1ch",
+        "name": "ESP32-S3-Relay-1CH"
+      },
+      "runtime": {
+        "board": "waveshare-s3-relay-1ch",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-relay-1ch-mechanical/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-relay-1ch.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-relay-1ch.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-Relay-1CH",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Relay-1CH-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Relay-1CH/ESP32-S3-Relay-1CH-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "Arduino/examples/MAIN_ALL/WS_GPIO.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Relay-1CH/ESP32-S3-Relay-1CH-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Relay-1CH/ESP32-S3-Relay-1CH-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Only GPIO47 coil control is observed after correct mux/direction. Contact continuity, isolation, voltage/current/load switching are not simulated.",
+        "RS485 UART17/18 and DE21 physical wiring is documented; no remote Modbus/serial peer or network is synthesized.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Hollow case is reconstructed from official exterior dimensions and photographs; wall thickness, unseen internal PCB/components and connector mating tolerance remain UNKNOWN.",
+        "Source printed label is restricted to its photographed rectangle. Original photo shadows/material details are not treated as exact geometry.",
+        "BOOT and other inputs remain product controls; no guessed through-case 3D hit regions or live indicator positions.",
+        "Separate terminal decks, screw bores, end apertures and hollow side/back walls are photo-informed. Exact terminal pitch, relay internals and latch mechanism are not reconstructed.",
+        "Only exact U variant includes external connector envelope; internal ceramic/radio package positions remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-relay-1ch-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-relay-1ch-u",
+      "name": "Waveshare ESP32-S3-Relay-1CH-U",
+      "manufacturer": "Waveshare",
+      "sku": "35086",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash / 8MiB PSRAM。单路继电器，GPIO47实际客体驱动状态及RTC数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-relay-1ch",
+        "name": "ESP32-S3-Relay-1CH"
+      },
+      "runtime": {
+        "board": "waveshare-s3-relay-1ch-u",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-relay-1ch-u-mechanical/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-relay-1ch-u.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-relay-1ch.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-Relay-1CH",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Relay-1CH-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Relay-1CH/ESP32-S3-Relay-1CH-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "Arduino/examples/MAIN_ALL/WS_GPIO.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Relay-1CH/ESP32-S3-Relay-1CH-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Relay-1CH/ESP32-S3-Relay-1CH-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Only GPIO47 coil control is observed after correct mux/direction. Contact continuity, isolation, voltage/current/load switching are not simulated.",
+        "RS485 UART17/18 and DE21 physical wiring is documented; no remote Modbus/serial peer or network is synthesized.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Hollow case is reconstructed from official exterior dimensions and photographs; wall thickness, unseen internal PCB/components and connector mating tolerance remain UNKNOWN.",
+        "Source printed label is restricted to its photographed rectangle. Original photo shadows/material details are not treated as exact geometry.",
+        "BOOT and other inputs remain product controls; no guessed through-case 3D hit regions or live indicator positions.",
+        "Separate terminal decks, screw bores, end apertures and hollow side/back walls are photo-informed. Exact terminal pitch, relay internals and latch mechanism are not reconstructed.",
+        "Only exact U variant includes external connector envelope; internal ceramic/radio package positions remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-relay-1ch-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-poe-eth-8di-8do",
+      "name": "Waveshare ESP32-S3-POE-ETH-8DI-8DO",
+      "manufacturer": "Waveshare",
+      "sku": "32108",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash / 8MiB PSRAM。八路数字输入和Darlington输出；TCA9554、RTC、原生SD及RGB数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-poe-eth-8di-8do",
+        "name": "ESP32-S3-POE-ETH-8DI-8DO"
+      },
+      "runtime": {
+        "board": "waveshare-s3-poe-eth-8di-8do",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "di1",
+          "name": "DI1 · GPIO4",
+          "type": "button",
+          "transport": "board",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "Digit1",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di2",
+          "name": "DI2 · GPIO5",
+          "type": "button",
+          "transport": "board",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "Digit2",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di3",
+          "name": "DI3 · GPIO6",
+          "type": "button",
+          "transport": "board",
+          "pin": 6,
+          "activeLow": true,
+          "defaultKeyCode": "Digit3",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di4",
+          "name": "DI4 · GPIO7",
+          "type": "button",
+          "transport": "board",
+          "pin": 7,
+          "activeLow": true,
+          "defaultKeyCode": "Digit4",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di5",
+          "name": "DI5 · GPIO8",
+          "type": "button",
+          "transport": "board",
+          "pin": 8,
+          "activeLow": true,
+          "defaultKeyCode": "Digit5",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di6",
+          "name": "DI6 · GPIO9",
+          "type": "button",
+          "transport": "board",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Digit6",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di7",
+          "name": "DI7 · GPIO10",
+          "type": "button",
+          "transport": "board",
+          "pin": 10,
+          "activeLow": true,
+          "defaultKeyCode": "Digit7",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di8",
+          "name": "DI8 · GPIO11",
+          "type": "button",
+          "transport": "board",
+          "pin": 11,
+          "activeLow": true,
+          "defaultKeyCode": "Digit8",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · native1-bit SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 48
+            },
+            {
+              "name": "CMD",
+              "gpio": 47
+            },
+            {
+              "name": "D0",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "sd-bsp"
+          ],
+          "notes": "默认64MiB FAT32；已测实际客体1bit SDMMC DMA512字节读写、错路由和拔卡；不把它等同原厂完整FAT挂载。"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-poe-eth-8di-8do-mechanical/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-poe-eth-8di-8do.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-poe-eth-8di-8do.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-POE-ETH-8DI-8DO",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "Arduino/examples/MAIN_WIFI_AP/WS_GPIO.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-POE-ETH-8DI-8DO/ESP32-S3-POE-ETH-8DI-8DO-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-POE-ETH-8DI-8DO/ESP32-S3-POE-ETH-8DI-8DO-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Eight Darlington output control bits are modeled separately from relay contacts; no load current, isolation or analog voltage simulation.",
+        "GPIO4..11 input controls inject digital pad levels. External24V optocoupler transfer is unmodeled.",
+        "W5500 Ethernet, PoE power, CAN/RS485 peers, buzzer acoustics and network services are unimplemented.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Hollow case is reconstructed from official exterior dimensions and photographs; wall thickness, unseen internal PCB/components and connector mating tolerance remain UNKNOWN.",
+        "Source printed label is restricted to its photographed rectangle. Original photo shadows/material details are not treated as exact geometry.",
+        "BOOT and other inputs remain product controls; no guessed through-case 3D hit regions or live indicator positions.",
+        "This exact family/variant source photo is used for its printed face. DO transistors and RO relay internals are not interchanged or invented.",
+        "Published175x90x40mm envelope is retained. Drawing pixel scale differs between mounting/body annotations; local holes/ports/panel positions are estimates, not precision registration.",
+        "The native PCB dimensions, Ethernet/PoE internals, relays/Darlington packages and wiring under the case are UNKNOWN; only a labeled internal PCB envelope is shown.",
+        "Open Ethernet/USB envelopes are visual approximations. Blue/green jack color follows common/PoE source photographs, not electrical/network/PoE validation."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-poe-eth-8di-8do-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-eth-8di-8ro-c",
+      "name": "Waveshare ESP32-S3-ETH-8DI-8RO-C",
+      "manufacturer": "Waveshare",
+      "sku": "31282",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash / 8MiB PSRAM。八路输入与八路SPDT继电器，TCA9554、RTC、原生SD及RGB数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-eth-8di-8ro-c",
+        "name": "ESP32-S3-ETH-8DI-8RO-C"
+      },
+      "runtime": {
+        "board": "waveshare-s3-eth-8di-8ro-c",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "di1",
+          "name": "DI1 · GPIO4",
+          "type": "button",
+          "transport": "board",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "Digit1",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di2",
+          "name": "DI2 · GPIO5",
+          "type": "button",
+          "transport": "board",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "Digit2",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di3",
+          "name": "DI3 · GPIO6",
+          "type": "button",
+          "transport": "board",
+          "pin": 6,
+          "activeLow": true,
+          "defaultKeyCode": "Digit3",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di4",
+          "name": "DI4 · GPIO7",
+          "type": "button",
+          "transport": "board",
+          "pin": 7,
+          "activeLow": true,
+          "defaultKeyCode": "Digit4",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di5",
+          "name": "DI5 · GPIO8",
+          "type": "button",
+          "transport": "board",
+          "pin": 8,
+          "activeLow": true,
+          "defaultKeyCode": "Digit5",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di6",
+          "name": "DI6 · GPIO9",
+          "type": "button",
+          "transport": "board",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Digit6",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di7",
+          "name": "DI7 · GPIO10",
+          "type": "button",
+          "transport": "board",
+          "pin": 10,
+          "activeLow": true,
+          "defaultKeyCode": "Digit7",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di8",
+          "name": "DI8 · GPIO11",
+          "type": "button",
+          "transport": "board",
+          "pin": 11,
+          "activeLow": true,
+          "defaultKeyCode": "Digit8",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · native1-bit SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 48
+            },
+            {
+              "name": "CMD",
+              "gpio": 47
+            },
+            {
+              "name": "D0",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "sd-bsp"
+          ],
+          "notes": "默认64MiB FAT32；已测实际客体1bit SDMMC DMA512字节读写、错路由和拔卡；不把它等同原厂完整FAT挂载。"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-eth-8di-8ro-c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-eth-8di-8ro-c.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-eth-8di-8ro-c.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-ETH-8DI-8RO-C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "Arduino/examples/MAIN_ALL/WS_GPIO.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-ETH-8DI-8RO-C/ESP32-S3-POE-ETH-8DI-8RO-C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-ETH-8DI-8RO-C/ESP32-S3-POE-ETH-8DI-8RO-C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Eight TCA9554 relay coil controls are observable, but contact loads, current ratings, isolation and analog switching are unmodeled.",
+        "GPIO4..11 input controls inject digital pad levels, not optocoupler voltage transfer. PoE SKU31284 remains separate from common Ethernet SKU31282.",
+        "W5500 Ethernet, PoE power, CAN/RS485 peers, buzzer acoustics and network services are unimplemented.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Hollow case is reconstructed from official exterior dimensions and photographs; wall thickness, unseen internal PCB/components and connector mating tolerance remain UNKNOWN.",
+        "Source printed label is restricted to its photographed rectangle. Original photo shadows/material details are not treated as exact geometry.",
+        "BOOT and other inputs remain product controls; no guessed through-case 3D hit regions or live indicator positions.",
+        "This exact family/variant source photo is used for its printed face. DO transistors and RO relay internals are not interchanged or invented.",
+        "Published175x90x40mm envelope is retained. Drawing pixel scale differs between mounting/body annotations; local holes/ports/panel positions are estimates, not precision registration.",
+        "The native PCB dimensions, Ethernet/PoE internals, relays/Darlington packages and wiring under the case are UNKNOWN; only a labeled internal PCB envelope is shown.",
+        "Open Ethernet/USB envelopes are visual approximations. Blue/green jack color follows common/PoE source photographs, not electrical/network/PoE validation."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-eth-8di-8ro-c-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-poe-eth-8di-8ro-c",
+      "name": "Waveshare ESP32-S3-POE-ETH-8DI-8RO-C",
+      "manufacturer": "Waveshare",
+      "sku": "31284",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash / 8MiB PSRAM。八路输入与八路SPDT继电器，TCA9554、RTC、原生SD及RGB数字子集。",
+      "family": {
+        "id": "waveshare-esp32-s3-eth-8di-8ro-c",
+        "name": "ESP32-S3-ETH-8DI-8RO-C"
+      },
+      "runtime": {
+        "board": "waveshare-s3-poe-eth-8di-8ro-c",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · GPIO0",
+          "type": "button",
+          "transport": "board",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "di1",
+          "name": "DI1 · GPIO4",
+          "type": "button",
+          "transport": "board",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "Digit1",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di2",
+          "name": "DI2 · GPIO5",
+          "type": "button",
+          "transport": "board",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "Digit2",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di3",
+          "name": "DI3 · GPIO6",
+          "type": "button",
+          "transport": "board",
+          "pin": 6,
+          "activeLow": true,
+          "defaultKeyCode": "Digit3",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di4",
+          "name": "DI4 · GPIO7",
+          "type": "button",
+          "transport": "board",
+          "pin": 7,
+          "activeLow": true,
+          "defaultKeyCode": "Digit4",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di5",
+          "name": "DI5 · GPIO8",
+          "type": "button",
+          "transport": "board",
+          "pin": 8,
+          "activeLow": true,
+          "defaultKeyCode": "Digit5",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di6",
+          "name": "DI6 · GPIO9",
+          "type": "button",
+          "transport": "board",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Digit6",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di7",
+          "name": "DI7 · GPIO10",
+          "type": "button",
+          "transport": "board",
+          "pin": 10,
+          "activeLow": true,
+          "defaultKeyCode": "Digit7",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        },
+        {
+          "id": "di8",
+          "name": "DI8 · GPIO11",
+          "type": "button",
+          "transport": "board",
+          "pin": 11,
+          "activeLow": true,
+          "defaultKeyCode": "Digit8",
+          "notes": "Virtual digital pad input; external optocoupler voltage transfer unmodeled."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · native1-bit SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 48
+            },
+            {
+              "name": "CMD",
+              "gpio": 47
+            },
+            {
+              "name": "D0",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "sd-bsp"
+          ],
+          "notes": "默认64MiB FAT32；已测实际客体1bit SDMMC DMA512字节读写、错路由和拔卡；不把它等同原厂完整FAT挂载。"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s3-poe-eth-8di-8ro-c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-poe-eth-8di-8ro-c.json",
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU table",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-eth-8di-8ro-c.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-ETH-8DI-8RO-C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp",
+          "title": "Arduino/examples/MAIN_ALL/WS_GPIO.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-ETH-8DI-8RO-C/ESP32-S3-POE-ETH-8DI-8RO-C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "manufacturer-image",
+          "title": "Exact original manufacturer image",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-ETH-8DI-8RO-C/ESP32-S3-POE-ETH-8DI-8RO-C-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Eight TCA9554 relay coil controls are observable, but contact loads, current ratings, isolation and analog switching are unmodeled.",
+        "GPIO4..11 input controls inject digital pad levels, not optocoupler voltage transfer. PoE SKU31284 remains separate from common Ethernet SKU31282.",
+        "W5500 Ethernet, PoE power, CAN/RS485 peers, buzzer acoustics and network services are unimplemented.",
+        "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim.",
+        "No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Hollow case is reconstructed from official exterior dimensions and photographs; wall thickness, unseen internal PCB/components and connector mating tolerance remain UNKNOWN.",
+        "Source printed label is restricted to its photographed rectangle. Original photo shadows/material details are not treated as exact geometry.",
+        "BOOT and other inputs remain product controls; no guessed through-case 3D hit regions or live indicator positions.",
+        "This exact family/variant source photo is used for its printed face. DO transistors and RO relay internals are not interchanged or invented.",
+        "Published175x90x40mm envelope is retained. Drawing pixel scale differs between mounting/body annotations; local holes/ports/panel positions are estimates, not precision registration.",
+        "The native PCB dimensions, Ethernet/PoE internals, relays/Darlington packages and wiring under the case are UNKNOWN; only a labeled internal PCB envelope is shown.",
+        "Open Ethernet/USB envelopes are visual approximations. Blue/green jack color follows common/PoE source photographs, not electrical/network/PoE validation."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "公开发布日期未核实；店面位置仅为处理次序，固件日期不作为硬件发布日期。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-eth-8di-8ro-c-factory"
     }
   ]
 }
