@@ -1,0 +1,115 @@
+{
+  "baseline_commit": "603bd8e842f3cdd69363a895f5cceef128cc54fe",
+  "helper_commit": "bae7f607dfbd03a262a37ca2251832006e8bcea5",
+  "tca_test_commit": "97d00ce4882f66f05fc4c93326628b8280661965",
+  "host": {
+    "cpu": "Apple M5 Max",
+    "os_version": "27.2.1",
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)"
+  },
+  "build": "cargo build --release --bins; identical stable toolchain/default opt3 fat-LTO codegen1 debug1; separate archived baseline/candidate binaries",
+  "inputs": {
+    "rom": {
+      "bytes": 949552,
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    "flash": {
+      "bytes": 8388608,
+      "sha256": "1f665abf541452103399da888c25a06af222a4f2af244ee691f35867da0d573c"
+    },
+    "baseline": {
+      "esp32sim": {
+        "bytes": 8646520,
+        "sha256": "bea3c93e3e9cfff83d14c7cdcf64078f298686e161d0bb6f7c842e0791ab5b64"
+      },
+      "esp32sim-c3": {
+        "bytes": 8646552,
+        "sha256": "0fa96a15d45a540b0d761abeff5ad1f3ad17ea26bd6dfce8a108a8f770c6ebc5"
+      },
+      "esp32sim-c6": {
+        "bytes": 8646552,
+        "sha256": "4a78585ce6b861844c310e547d1d6ec9d3f9a46a6466870d76f67923b036e52d"
+      }
+    },
+    "candidate": {
+      "esp32sim": {
+        "bytes": 8648136,
+        "sha256": "d6797eaf1d68dbf2b391056e345d6a601de615aa8b74ec018b0ba82bbd9475e8"
+      },
+      "esp32sim-c3": {
+        "bytes": 8648184,
+        "sha256": "9b3e7d999adb8e20ffcf7925f7be732b7e97d1d3e0ce57cac768878de3f19e92"
+      },
+      "esp32sim-c6": {
+        "bytes": 8648184,
+        "sha256": "871c135246c0d023b8996ad5d3b2be5c6f947ff6ad5972f5e067221dd7892b2c"
+      }
+    }
+  },
+  "checks": {
+    "test-workspace": {
+      "failed": 0,
+      "ignored": 0,
+      "test_result_summaries": 240,
+      "reported_passes_including_child_output": 2908,
+      "main_test_passes": 2907,
+      "isolated_cache_child_passes": 1
+    },
+    "test-periph-tca": {
+      "failed": 0,
+      "ignored": 0,
+      "test_result_summaries": 10,
+      "reported_passes_including_child_output": 319
+    },
+    "test-vq-native": {
+      "failed": 0,
+      "ignored": 0,
+      "test_result_summaries": 2,
+      "reported_passes_including_child_output": 44
+    },
+    "test-windows-final": {
+      "failed": 0,
+      "ignored": 0,
+      "test_result_summaries": 1,
+      "reported_passes_including_child_output": 3
+    },
+    "tca8418-tests-final": {
+      "failed": 0,
+      "ignored": 0,
+      "test_result_summaries": 9,
+      "reported_passes_including_child_output": 6
+    },
+    "full_workspace_scope": "helper commit plus final directed native tests; before the separate three TCA tests",
+    "tca_scope": "97d00ce4 changes only comments/tests; no production behavior",
+    "native_clippy": "workspace/all-targets with -D warnings, passed",
+    "wasm_clippy": "release wasm32 esp32sim-wasm jit-tests with -D warnings, passed",
+    "wasm_firmware": "handoff +13 manifests passed on actual production module",
+    "platform": "four required platform files passed after installing the built local WASM; initial run lacked ignored module and correctly returned404",
+    "production_wasm": {
+      "sha256": "bf34206f6006e6adc4698ab832f18eb7e2ec1c1e1f450e998bd3664fbeb9224b",
+      "bytes": 8514890,
+      "identical_to_previous_local_production": true,
+      "distinct_from_published_ci_hash": "260da9badff2f25931c2aba2890ce3fa55e3de9aa30cb938cea36e1cffdeceb9"
+    },
+    "hotpaths": {
+      "normalized_functions_checked": 26,
+      "identical": 26,
+      "new_helpers_call_exec_insn": false
+    },
+    "privacy": "Tracked curated evidence scanner passed; manual path/content review completed."
+  },
+  "scope": {
+    "device_access": false,
+    "app_code_or_vendor_edits": false,
+    "clock_quantum_schedule_change": false,
+    "direct_window_lowering_adopted": false,
+    "low_end_arm_performance_verified": false
+  },
+  "limitations": [
+    "Initial cohort may overlap App rebuild and is retained unmodified as contended; never pooled with quiet cohort.",
+    "C3 initial quiet result +2.07% (3/3 slower) is retained. A separate five-pair follow-up gives -0.82% (1/5 slower), its same-binary A/A control -0.81%. The slowdown is not reproduced; normalized identity of139 hot functions is not proof of zero cost.",
+    "Regression cpu_pairs.py uses os.times children_user (0.01s granularity here); Wordle uses per-child wait4 rusage. Short results do not prove a general noise floor.",
+    "Workspace pass-count sum includes isolated child-process test output; it is not a deduplicated test count.",
+    "Local production WASM hash differs from published CI artifact; only like-for-like local artifact equality is claimed."
+  ]
+}
