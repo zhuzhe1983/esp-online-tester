@@ -128,6 +128,9 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let board = unsafe { text(board, board_len) }.to_string();
     let Some(flash_bytes) = mib_bytes(flash_mb.max(1)) else { log("[emu] flash size exceeds the supported memory range"); return std::ptr::null_mut() };
     let Some(psram_bytes) = mib_bytes(psram_mb) else { log("[emu] PSRAM size exceeds the supported memory range"); return std::ptr::null_mut() };
+    if esp_soc::waveshare_profiles::memory_mib(&board).is_some_and(|expected| expected != (flash_mb as usize, psram_mb as usize)) {
+        log("[emu] This exact Waveshare board requires its documented Flash and PSRAM capacity"); return std::ptr::null_mut();
+    }
     let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
     let c5_board = if matches!(board.as_str(), "stamp-c5" | "stamp-c5-dip" | "lilygo-t7-c5" | "lilygo-t-dongle-c5" | "waveshare-c5-lcd147" | "waveshare-c5-touch169" | "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273") { esp32c5::board::make_board(&board) } else { None };
     let s2_board = if board == "esp32s2" { esp32s2::board::make_board("none") } else if matches!(board.as_str(), "lilygo-esp32-s2-woor" | "lilygo-esp32-s2" | "lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board") { esp32s2::board::make_board(&board) } else { None };

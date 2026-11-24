@@ -769,7 +769,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const semanticButton=boardButton(control);
       requireValue(semanticButton || (Number.isInteger(pin) && pin >= 0 && pin < 64), 'UNSUPPORTED_CONTROL', 'This product does not expose that button.');
       requireValue(typeof event.pressed === 'boolean', 'INVALID_INPUT', 'Button pressed must be a boolean.');
-      message = semanticButton?{t:'board-button',id:control.id,pressed:event.pressed?1:0}:{t:'btn',pin,v:event.pressed?1:0};
+      // The emulator's legacy btn wire value means drive LOW, not semantic
+      // pressed. Most boards use pull-ups; source-backed active-high keys must
+      // invert this encoding on both press and release (including paused release).
+      message = semanticButton?{t:'board-button',id:control.id,pressed:event.pressed?1:0}:{t:'btn',pin,v:(control.activeLow===false?!event.pressed:event.pressed)?1:0};
     } else if (event.type === 'encoder') {
       requireValue(product.runtime?.encoder === true && controls().some(c => c.id === event.id && c.type === 'encoder'), 'UNSUPPORTED_CONTROL', 'This product does not expose that rotary encoder.');
       requireValue(Number.isInteger(event.steps) && event.steps !== 0 && Math.abs(event.steps) <= 64, 'INVALID_INPUT', 'Encoder steps must be a nonzero integer from -64 to 64.');

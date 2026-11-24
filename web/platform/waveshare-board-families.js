@@ -1,14 +1,62 @@
 // Exact runtime profiles; memory and physical TF presence are separate from full peripheral acceptance.
 // Source and runtime limits: docs/evidence/waveshare-* and each product knowledge record.
 export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.create(null),{
-  "waveshare-s3-touch-amoled143c": {"chip":"esp32s3","flashMb":8,"psramMb":8,"sdCard":false,"boardButtons":[]},
-  "waveshare-c5-lcd273": {"chip":"esp32c5","flashMb":32,"psramMb":8,"sdCard":true,"boardButtons":[]},
-  "waveshare-c5-touch35": {"chip":"esp32c5","flashMb":32,"psramMb":8,"sdCard":true,"boardButtons":[]},
-  "waveshare-c6-lcd085": {"chip":"esp32c6","flashMb":8,"psramMb":0,"sdCard":true,"boardButtons":[]},
-  "waveshare-c6-lcd19": {"chip":"esp32c6","flashMb":8,"psramMb":0,"sdCard":true,"boardButtons":[]},
-  "waveshare-c6-touch-lcd19": {"chip":"esp32c6","flashMb":8,"psramMb":0,"sdCard":true,"boardButtons":[]},
-  "waveshare-c6-touch-lcd169": {"chip":"esp32c6","flashMb":16,"psramMb":0,"sdCard":false,"boardButtons":[]},
-  "waveshare-c6-touch-lcd147": {"chip":"esp32c6","flashMb":8,"psramMb":0,"sdCard":true,"boardButtons":[]},
+  "waveshare-s3-touch-amoled143c": {
+    "chip": "esp32s3",
+    "flashMb": 8,
+    "psramMb": 8,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c5-lcd273": {
+    "chip": "esp32c5",
+    "flashMb": 32,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c5-touch35": {
+    "chip": "esp32c5",
+    "flashMb": 32,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-lcd085": {
+    "chip": "esp32c6",
+    "flashMb": 8,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-lcd19": {
+    "chip": "esp32c6",
+    "flashMb": 8,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-lcd19": {
+    "chip": "esp32c6",
+    "flashMb": 8,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-lcd169": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-lcd147": {
+    "chip": "esp32c6",
+    "flashMb": 8,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
   "waveshare-s3-epaper133e6": {
     "chip": "esp32s3",
     "flashMb": 32,
@@ -58,12 +106,48 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "sdCard": false,
     "boardButtons": []
   },
-  "waveshare-s3-touch-lcd21": {"chip":"esp32s3","flashMb":16,"psramMb":8,"sdCard":true,"boardButtons":[]},
-  "waveshare-s3-touch-lcd21b": {"chip":"esp32s3","flashMb":16,"psramMb":8,"sdCard":true,"boardButtons":[]},
-  "waveshare-s3-lcd28b": {"chip":"esp32s3","flashMb":16,"psramMb":8,"sdCard":true,"boardButtons":[]},
-  "waveshare-s3-touch-lcd28b": {"chip":"esp32s3","flashMb":16,"psramMb":8,"sdCard":true,"boardButtons":[]},
-  "waveshare-s3-lcd28c": {"chip":"esp32s3","flashMb":16,"psramMb":8,"sdCard":true,"boardButtons":[]},
-  "waveshare-s3-touch-lcd28c": {"chip":"esp32s3","flashMb":16,"psramMb":8,"sdCard":true,"boardButtons":[]},
+  "waveshare-s3-touch-lcd21": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-touch-lcd21b": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-lcd28b": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-touch-lcd28b": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-lcd28c": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-s3-touch-lcd28c": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
   "waveshare-c5-lcd147": {
     "chip": "esp32c5",
     "flashMb": 4,
@@ -71,10 +155,40 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "sdCard": true,
     "boardButtons": []
   },
-  "waveshare-c5-touch169": {"chip":"esp32c5","flashMb":16,"psramMb":8,"sdCard":false,"boardButtons":[]},
-  "waveshare-c5-touch28": {"chip":"esp32c5","flashMb":32,"psramMb":8,"sdCard":true,"boardButtons":[]},
-  "waveshare-p4-lcd35-v13": {"chip":"esp32p4","flashMb":16,"psramMb":32,"sdCard":true,"boardButtons":["boot"],"virtualRevision":100},
-  "waveshare-p4-lcd35-v32": {"chip":"esp32p4","flashMb":16,"psramMb":32,"sdCard":true,"boardButtons":["boot"],"virtualRevision":301},
+  "waveshare-c5-touch169": {
+    "chip": "esp32c5",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c5-touch28": {
+    "chip": "esp32c5",
+    "flashMb": 32,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-p4-lcd35-v13": {
+    "chip": "esp32p4",
+    "flashMb": 16,
+    "psramMb": 32,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ],
+    "virtualRevision": 100
+  },
+  "waveshare-p4-lcd35-v32": {
+    "chip": "esp32p4",
+    "flashMb": 16,
+    "psramMb": 32,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ],
+    "virtualRevision": 301
+  },
   "waveshare-p4-core": {
     "chip": "esp32p4",
     "flashMb": 16,
@@ -232,5 +346,118 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
       "boot"
     ],
     "virtualRevision": 301
+  },
+  "waveshare-s3-rgb-matrix-p2-64x64": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-rgb-matrix-p2-64x64-b": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-rgb-matrix-p3-64x64": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-rgb-matrix-p3-64x64-f": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-rgb-matrix-p5-64x32": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-rgb-matrix-p25-64x32": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-rgb-matrix-p25-64x32-b": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-rgb-matrix-p25-96x48-f": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-lr1121-epaper29": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": [
+      "boot",
+      "key"
+    ]
+  },
+  "waveshare-s3-lr1121-oled154": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": [
+      "boot",
+      "power",
+      "menu",
+      "ptt"
+    ]
+  },
+  "waveshare-s3-touch-lcd185b": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-touch-amoled206": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 8,
+    "sdCard": true,
+    "boardButtons": [
+      "boot",
+      "power"
+    ]
   }
 }));

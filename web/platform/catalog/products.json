@@ -41705,6 +41705,2800 @@
         "provenance": "official-cad"
       },
       "visualVariantOf": "waveshare-esp32-c5-touch-lcd-2-8"
+    },
+    {
+      "id": "waveshare-esp32-s3-rgb-matrix-px",
+      "name": "Waveshare ESP32-S3-RGB-MATRIX-PX · RGB-Matrix-P2-64x64",
+      "manufacturer": "Waveshare",
+      "sku": "36212",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /16MiB PSRAM RGB Matrix主控加精确面板SKU套装。当前实现官方HUB75物理信号的标准双行单比特扫描诊断，不表示全部B/F扫描板或PWM彩色刷新已验收。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rgb-matrix-px.json",
+      "family": {
+        "id": "waveshare-esp32-s3-rgb-matrix-px",
+        "name": "Waveshare ESP32-S3-RGB-MATRIX-PX"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rgb-matrix-p2-64x64",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 64,
+        "height": 64,
+        "type": "LED matrix",
+        "bus": "HUB75 parallel",
+        "controller": "Panel driver depends on exact kit",
+        "touch": false,
+        "attachment": "included-external-panel"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "HUB75诊断只覆盖标准two-row单比特shift/latch/OE路径，PWM加权、FM6126A/FM6124/MBI5124/DP3246寄存器及B/F折叠扫描未实现。",
+        "模型精确显示50.01×42.00×1.60mm控制板照片与板厚；各套装外接面板机械装配及线材布置UNKNOWN，当前3D模型不冒充整套面板。",
+        "SHTC3、QMI8658、模拟音频和面板实际供电未实现。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rgb-matrix-px.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-RGB-Matrix",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：example/idf_v5.5.2/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-rgb-matrix/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-rgb-matrix-px-sku-36213",
+      "name": "Waveshare ESP32-S3-RGB-MATRIX-PX · RGB-Matrix-P2-64x64-B",
+      "manufacturer": "Waveshare",
+      "sku": "36213",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /16MiB PSRAM RGB Matrix主控加精确面板SKU套装。当前实现官方HUB75物理信号的标准双行单比特扫描诊断，不表示全部B/F扫描板或PWM彩色刷新已验收。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rgb-matrix-px-sku-36213.json",
+      "family": {
+        "id": "waveshare-esp32-s3-rgb-matrix-px",
+        "name": "Waveshare ESP32-S3-RGB-MATRIX-PX"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rgb-matrix-p2-64x64-b",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 64,
+        "height": 64,
+        "type": "LED matrix",
+        "bus": "HUB75 parallel",
+        "controller": "Panel driver depends on exact kit",
+        "touch": false,
+        "attachment": "included-external-panel"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "HUB75诊断只覆盖标准two-row单比特shift/latch/OE路径，PWM加权、FM6126A/FM6124/MBI5124/DP3246寄存器及B/F折叠扫描未实现。",
+        "模型精确显示50.01×42.00×1.60mm控制板照片与板厚；各套装外接面板机械装配及线材布置UNKNOWN，当前3D模型不冒充整套面板。",
+        "SHTC3、QMI8658、模拟音频和面板实际供电未实现。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rgb-matrix-px.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-RGB-Matrix",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：example/idf_v5.5.2/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-rgb-matrix/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-rgb-matrix-px-sku-36214",
+      "name": "Waveshare ESP32-S3-RGB-MATRIX-PX · RGB-Matrix-P3-64x64",
+      "manufacturer": "Waveshare",
+      "sku": "36214",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /16MiB PSRAM RGB Matrix主控加精确面板SKU套装。当前实现官方HUB75物理信号的标准双行单比特扫描诊断，不表示全部B/F扫描板或PWM彩色刷新已验收。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rgb-matrix-px-sku-36214.json",
+      "family": {
+        "id": "waveshare-esp32-s3-rgb-matrix-px",
+        "name": "Waveshare ESP32-S3-RGB-MATRIX-PX"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rgb-matrix-p3-64x64",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 64,
+        "height": 64,
+        "type": "LED matrix",
+        "bus": "HUB75 parallel",
+        "controller": "Panel driver depends on exact kit",
+        "touch": false,
+        "attachment": "included-external-panel"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "HUB75诊断只覆盖标准two-row单比特shift/latch/OE路径，PWM加权、FM6126A/FM6124/MBI5124/DP3246寄存器及B/F折叠扫描未实现。",
+        "模型精确显示50.01×42.00×1.60mm控制板照片与板厚；各套装外接面板机械装配及线材布置UNKNOWN，当前3D模型不冒充整套面板。",
+        "SHTC3、QMI8658、模拟音频和面板实际供电未实现。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rgb-matrix-px.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-RGB-Matrix",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：example/idf_v5.5.2/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-rgb-matrix/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-rgb-matrix-px-sku-36215",
+      "name": "Waveshare ESP32-S3-RGB-MATRIX-PX · RGB-Matrix-P3-64x64-F",
+      "manufacturer": "Waveshare",
+      "sku": "36215",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /16MiB PSRAM RGB Matrix主控加精确面板SKU套装。当前实现官方HUB75物理信号的标准双行单比特扫描诊断，不表示全部B/F扫描板或PWM彩色刷新已验收。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rgb-matrix-px-sku-36215.json",
+      "family": {
+        "id": "waveshare-esp32-s3-rgb-matrix-px",
+        "name": "Waveshare ESP32-S3-RGB-MATRIX-PX"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rgb-matrix-p3-64x64-f",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 64,
+        "height": 64,
+        "type": "LED matrix",
+        "bus": "HUB75 parallel",
+        "controller": "Panel driver depends on exact kit",
+        "touch": false,
+        "attachment": "included-external-panel"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "HUB75诊断只覆盖标准two-row单比特shift/latch/OE路径，PWM加权、FM6126A/FM6124/MBI5124/DP3246寄存器及B/F折叠扫描未实现。",
+        "模型精确显示50.01×42.00×1.60mm控制板照片与板厚；各套装外接面板机械装配及线材布置UNKNOWN，当前3D模型不冒充整套面板。",
+        "SHTC3、QMI8658、模拟音频和面板实际供电未实现。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rgb-matrix-px.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-RGB-Matrix",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：example/idf_v5.5.2/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-rgb-matrix/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-rgb-matrix-px-sku-36216",
+      "name": "Waveshare ESP32-S3-RGB-MATRIX-PX · RGB-Matrix-P5-64x32",
+      "manufacturer": "Waveshare",
+      "sku": "36216",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /16MiB PSRAM RGB Matrix主控加精确面板SKU套装。当前实现官方HUB75物理信号的标准双行单比特扫描诊断，不表示全部B/F扫描板或PWM彩色刷新已验收。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rgb-matrix-px-sku-36216.json",
+      "family": {
+        "id": "waveshare-esp32-s3-rgb-matrix-px",
+        "name": "Waveshare ESP32-S3-RGB-MATRIX-PX"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rgb-matrix-p5-64x32",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 64,
+        "height": 32,
+        "type": "LED matrix",
+        "bus": "HUB75 parallel",
+        "controller": "Panel driver depends on exact kit",
+        "touch": false,
+        "attachment": "included-external-panel"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "HUB75诊断只覆盖标准two-row单比特shift/latch/OE路径，PWM加权、FM6126A/FM6124/MBI5124/DP3246寄存器及B/F折叠扫描未实现。",
+        "模型精确显示50.01×42.00×1.60mm控制板照片与板厚；各套装外接面板机械装配及线材布置UNKNOWN，当前3D模型不冒充整套面板。",
+        "SHTC3、QMI8658、模拟音频和面板实际供电未实现。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rgb-matrix-px.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-RGB-Matrix",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：example/idf_v5.5.2/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-rgb-matrix/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-rgb-matrix-px-sku-36217",
+      "name": "Waveshare ESP32-S3-RGB-MATRIX-PX · RGB-Matrix-P2.5-64x32",
+      "manufacturer": "Waveshare",
+      "sku": "36217",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /16MiB PSRAM RGB Matrix主控加精确面板SKU套装。当前实现官方HUB75物理信号的标准双行单比特扫描诊断，不表示全部B/F扫描板或PWM彩色刷新已验收。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rgb-matrix-px-sku-36217.json",
+      "family": {
+        "id": "waveshare-esp32-s3-rgb-matrix-px",
+        "name": "Waveshare ESP32-S3-RGB-MATRIX-PX"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rgb-matrix-p25-64x32",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 64,
+        "height": 32,
+        "type": "LED matrix",
+        "bus": "HUB75 parallel",
+        "controller": "Panel driver depends on exact kit",
+        "touch": false,
+        "attachment": "included-external-panel"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "HUB75诊断只覆盖标准two-row单比特shift/latch/OE路径，PWM加权、FM6126A/FM6124/MBI5124/DP3246寄存器及B/F折叠扫描未实现。",
+        "模型精确显示50.01×42.00×1.60mm控制板照片与板厚；各套装外接面板机械装配及线材布置UNKNOWN，当前3D模型不冒充整套面板。",
+        "SHTC3、QMI8658、模拟音频和面板实际供电未实现。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rgb-matrix-px.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-RGB-Matrix",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：example/idf_v5.5.2/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-rgb-matrix/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-rgb-matrix-px-sku-36218",
+      "name": "Waveshare ESP32-S3-RGB-MATRIX-PX · RGB-Matrix-P2.5-64x32-B",
+      "manufacturer": "Waveshare",
+      "sku": "36218",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /16MiB PSRAM RGB Matrix主控加精确面板SKU套装。当前实现官方HUB75物理信号的标准双行单比特扫描诊断，不表示全部B/F扫描板或PWM彩色刷新已验收。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rgb-matrix-px-sku-36218.json",
+      "family": {
+        "id": "waveshare-esp32-s3-rgb-matrix-px",
+        "name": "Waveshare ESP32-S3-RGB-MATRIX-PX"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rgb-matrix-p25-64x32-b",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 64,
+        "height": 32,
+        "type": "LED matrix",
+        "bus": "HUB75 parallel",
+        "controller": "Panel driver depends on exact kit",
+        "touch": false,
+        "attachment": "included-external-panel"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "HUB75诊断只覆盖标准two-row单比特shift/latch/OE路径，PWM加权、FM6126A/FM6124/MBI5124/DP3246寄存器及B/F折叠扫描未实现。",
+        "模型精确显示50.01×42.00×1.60mm控制板照片与板厚；各套装外接面板机械装配及线材布置UNKNOWN，当前3D模型不冒充整套面板。",
+        "SHTC3、QMI8658、模拟音频和面板实际供电未实现。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rgb-matrix-px.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-RGB-Matrix",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：example/idf_v5.5.2/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-rgb-matrix/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-rgb-matrix-px-sku-36219",
+      "name": "Waveshare ESP32-S3-RGB-MATRIX-PX · RGB-Matrix-P2.5-96x48-F",
+      "manufacturer": "Waveshare",
+      "sku": "36219",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /16MiB PSRAM RGB Matrix主控加精确面板SKU套装。当前实现官方HUB75物理信号的标准双行单比特扫描诊断，不表示全部B/F扫描板或PWM彩色刷新已验收。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-rgb-matrix-px-sku-36219.json",
+      "family": {
+        "id": "waveshare-esp32-s3-rgb-matrix-px",
+        "name": "Waveshare ESP32-S3-RGB-MATRIX-PX"
+      },
+      "runtime": {
+        "board": "waveshare-s3-rgb-matrix-p25-96x48-f",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 96,
+        "height": 48,
+        "type": "LED matrix",
+        "bus": "HUB75 parallel",
+        "controller": "Panel driver depends on exact kit",
+        "touch": false,
+        "attachment": "included-external-panel"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "HUB75诊断只覆盖标准two-row单比特shift/latch/OE路径，PWM加权、FM6126A/FM6124/MBI5124/DP3246寄存器及B/F折叠扫描未实现。",
+        "模型精确显示50.01×42.00×1.60mm控制板照片与板厚；各套装外接面板机械装配及线材布置UNKNOWN，当前3D模型不冒充整套面板。",
+        "SHTC3、QMI8658、模拟音频和面板实际供电未实现。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-rgb-matrix-px.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-RGB-Matrix",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/01_SimpleTestShapes.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/arduino_v3.3.7/01_SimpleTestShapes/ESP32-HUB75-MatrixPanel-I2S-DMA.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/Kconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/hub75_bridge.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/components/bsp/esp32_s3_matrix/include/bsp/esp32_s3_matrix.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：example/idf_v5.5.2/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-RGB-Matrix/6e92fbe4f982d078150fa901fcc48e3f19b59313/example/idf_v5.5.2/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-rgb-matrix/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-epaper-2-9",
+      "name": "Waveshare ESP32-S3-LR1121-ePaper-2.9-HF",
+      "manufacturer": "Waveshare",
+      "sku": "36047",
+      "chip": "esp32s3",
+      "hardwareRevision": "Rev1.1 source wiring",
+      "summary": "16MiB Flash /8MiB PSRAM，原生128×296的2.9英寸墨水屏，官方横向规格296×128；实现共享电源GPIO38、精确SPI选片、BUSY边沿和1bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lr1121-epaper-2-9.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lr1121-epaper-2-9",
+        "name": "Waveshare ESP32-S3-LR1121-EPAPER-2.9"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lr1121-epaper29",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 296,
+        "type": "E-paper monochrome digital subset",
+        "bus": "SPI",
+        "controller": "SSD1680-compatible",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key",
+          "name": "KEY",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyK"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 11
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前仅SSD1680兼容的黑白RAM24/26与22+20刷新；官方4级灰度光学波形和真实刷新耗时未实现。",
+        "LR1121 RF不模拟；同时选中射频与EPD时拒绝显示传输。GPIO38关闭数字总线供电但保留已刷新的光学图像。",
+        "官方89.50×38.00mm正面及66.89×29.05mm有效区已建立模型；板厚、内部和反面几何UNKNOWN，未制造虚假的1.6mm板厚。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lr1121-epaper-2.9.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LR1121-ePaper-2.9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：docs/hardware-facts.zh-CN.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/docs/hardware-facts.zh-CN.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/esp-idf/03_epaper_2_9/components/esp_epaper/include/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/esp-idf/03_epaper_2_9/components/esp_epaper/include/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/esp-idf/03_epaper_2_9/components/esp_epaper/src/controllers/ssd16xx.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/esp-idf/03_epaper_2_9/components/esp_epaper/src/controllers/ssd16xx.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lr1121-epaper-2-9/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-epaper-2-9-sku-36048",
+      "name": "Waveshare ESP32-S3-LR1121-ePaper-2.9-LF",
+      "manufacturer": "Waveshare",
+      "sku": "36048",
+      "chip": "esp32s3",
+      "hardwareRevision": "Rev1.1 source wiring",
+      "summary": "16MiB Flash /8MiB PSRAM，原生128×296的2.9英寸墨水屏，官方横向规格296×128；实现共享电源GPIO38、精确SPI选片、BUSY边沿和1bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lr1121-epaper-2-9-sku-36048.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lr1121-epaper-2-9",
+        "name": "Waveshare ESP32-S3-LR1121-EPAPER-2.9"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lr1121-epaper29",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 296,
+        "type": "E-paper monochrome digital subset",
+        "bus": "SPI",
+        "controller": "SSD1680-compatible",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key",
+          "name": "KEY",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyK"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 11
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前仅SSD1680兼容的黑白RAM24/26与22+20刷新；官方4级灰度光学波形和真实刷新耗时未实现。",
+        "LR1121 RF不模拟；同时选中射频与EPD时拒绝显示传输。GPIO38关闭数字总线供电但保留已刷新的光学图像。",
+        "官方89.50×38.00mm正面及66.89×29.05mm有效区已建立模型；板厚、内部和反面几何UNKNOWN，未制造虚假的1.6mm板厚。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lr1121-epaper-2.9.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LR1121-ePaper-2.9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：docs/hardware-facts.zh-CN.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/docs/hardware-facts.zh-CN.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/esp-idf/03_epaper_2_9/components/esp_epaper/include/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/esp-idf/03_epaper_2_9/components/esp_epaper/include/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/esp-idf/03_epaper_2_9/components/esp_epaper/src/controllers/ssd16xx.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/esp-idf/03_epaper_2_9/components/esp_epaper/src/controllers/ssd16xx.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lr1121-epaper-2-9/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-oled-1-54",
+      "name": "Waveshare ESP32-S3-LR1121-OLED-1.54-HF",
+      "manufacturer": "Waveshare",
+      "sku": "35899",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，128×64 SSD1309 OLED；BOOT、PWR、MENU、PTT和1bit SDMMC具备精确数字接线。HF/LF及含电池/不含电池SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lr1121-oled-1-54.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lr1121-oled-1-54",
+        "name": "Waveshare ESP32-S3-LR1121-OLED-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lr1121-oled154",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "type": "OLED monochrome",
+        "bus": "I2C",
+        "controller": "SSD1309",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "menu",
+          "name": "MENU",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "ptt",
+          "name": "PTT",
+          "type": "button",
+          "pin": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 11
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "LR1121射频/BUSY/IRQ、BQ27220电量计、PWR长按物理断电、模拟音频及RTC闹钟未实现。",
+        "共享模型只显示55×110×14.5mm主机外廓与原厂正面照片，HF/LF天线、内部电池与PCB结构UNKNOWN；屏幕按已标注的光学开口适配，并未伪称OLED精确AA尺寸。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lr1121-oled-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LR1121-OLED-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-s3-lr1121-oled-1.54/4bc5007b471ab6ac0b25645e049ddb42b2d5e757/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-s3-lr1121-oled-1.54/4bc5007b471ab6ac0b25645e049ddb42b2d5e757/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lr1121-oled-1-54/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lr1121-oled-1-54-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-oled-1-54-sku-35898",
+      "name": "Waveshare ESP32-S3-LR1121-OLED-1.54-HF-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35898",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，128×64 SSD1309 OLED；BOOT、PWR、MENU、PTT和1bit SDMMC具备精确数字接线。HF/LF及含电池/不含电池SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lr1121-oled-1-54-sku-35898.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lr1121-oled-1-54",
+        "name": "Waveshare ESP32-S3-LR1121-OLED-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lr1121-oled154",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "type": "OLED monochrome",
+        "bus": "I2C",
+        "controller": "SSD1309",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "menu",
+          "name": "MENU",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "ptt",
+          "name": "PTT",
+          "type": "button",
+          "pin": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 11
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "LR1121射频/BUSY/IRQ、BQ27220电量计、PWR长按物理断电、模拟音频及RTC闹钟未实现。",
+        "共享模型只显示55×110×14.5mm主机外廓与原厂正面照片，HF/LF天线、内部电池与PCB结构UNKNOWN；屏幕按已标注的光学开口适配，并未伪称OLED精确AA尺寸。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lr1121-oled-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LR1121-OLED-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-s3-lr1121-oled-1.54/4bc5007b471ab6ac0b25645e049ddb42b2d5e757/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-s3-lr1121-oled-1.54/4bc5007b471ab6ac0b25645e049ddb42b2d5e757/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lr1121-oled-1-54/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lr1121-oled-1-54-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-oled-1-54-sku-35901",
+      "name": "Waveshare ESP32-S3-LR1121-OLED-1.54-LF",
+      "manufacturer": "Waveshare",
+      "sku": "35901",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，128×64 SSD1309 OLED；BOOT、PWR、MENU、PTT和1bit SDMMC具备精确数字接线。HF/LF及含电池/不含电池SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lr1121-oled-1-54-sku-35901.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lr1121-oled-1-54",
+        "name": "Waveshare ESP32-S3-LR1121-OLED-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lr1121-oled154",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "type": "OLED monochrome",
+        "bus": "I2C",
+        "controller": "SSD1309",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "menu",
+          "name": "MENU",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "ptt",
+          "name": "PTT",
+          "type": "button",
+          "pin": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 11
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "LR1121射频/BUSY/IRQ、BQ27220电量计、PWR长按物理断电、模拟音频及RTC闹钟未实现。",
+        "共享模型只显示55×110×14.5mm主机外廓与原厂正面照片，HF/LF天线、内部电池与PCB结构UNKNOWN；屏幕按已标注的光学开口适配，并未伪称OLED精确AA尺寸。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lr1121-oled-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LR1121-OLED-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-s3-lr1121-oled-1.54/4bc5007b471ab6ac0b25645e049ddb42b2d5e757/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-s3-lr1121-oled-1.54/4bc5007b471ab6ac0b25645e049ddb42b2d5e757/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lr1121-oled-1-54/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lr1121-oled-1-54-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-oled-1-54-sku-35900",
+      "name": "Waveshare ESP32-S3-LR1121-OLED-1.54-LF-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35900",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，128×64 SSD1309 OLED；BOOT、PWR、MENU、PTT和1bit SDMMC具备精确数字接线。HF/LF及含电池/不含电池SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lr1121-oled-1-54-sku-35900.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lr1121-oled-1-54",
+        "name": "Waveshare ESP32-S3-LR1121-OLED-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lr1121-oled154",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 64,
+        "type": "OLED monochrome",
+        "bus": "I2C",
+        "controller": "SSD1309",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        },
+        {
+          "id": "menu",
+          "name": "MENU",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyM"
+        },
+        {
+          "id": "ptt",
+          "name": "PTT",
+          "type": "button",
+          "pin": 6,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 11
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "LR1121射频/BUSY/IRQ、BQ27220电量计、PWR长按物理断电、模拟音频及RTC闹钟未实现。",
+        "共享模型只显示55×110×14.5mm主机外廓与原厂正面照片，HF/LF天线、内部电池与PCB结构UNKNOWN；屏幕按已标注的光学开口适配，并未伪称OLED精确AA尺寸。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lr1121-oled-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LR1121-OLED-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-s3-lr1121-oled-1.54/4bc5007b471ab6ac0b25645e049ddb42b2d5e757/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/esp32-s3-lr1121-oled-1.54/4bc5007b471ab6ac0b25645e049ddb42b2d5e757/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lr1121-oled-1-54/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lr1121-oled-1-54-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-1-85b",
+      "name": "Waveshare ESP32-S3-Touch-LCD-1.85B",
+      "manufacturer": "Waveshare",
+      "sku": "34554",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，360×360 ST77916圆屏与CST816S触控；实现精确QSPI四数据脚、RST/背光、触摸寄存器和4bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-1-85b.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-1-85b",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-1.85B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd185b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 360,
+        "height": 360,
+        "type": "LCD round",
+        "bus": "QSPI",
+        "controller": "ST77916",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 15
+            },
+            {
+              "name": "CMD",
+              "gpio": 14
+            },
+            {
+              "name": "D0",
+              "gpio": 16
+            },
+            {
+              "name": "D1",
+              "gpio": 17
+            },
+            {
+              "name": "D2",
+              "gpio": 12
+            },
+            {
+              "name": "D3",
+              "gpio": 13
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前ST77916仅RGB565 DCS命令路径；Gamma、TE、完整原厂UI未验收。CST816S身份版本寄存器未知，未伪造芯片/项目ID。",
+        "QMI8658、BQ27220燃料计、模拟音频和电池/充电电气未实现；只有源代码证实的ES8311/ES7210数字控制。",
+        "模型以61.60mm直径/14.60mm厚度和原始正面照片构建，45.68mm AA单独映射实时屏幕；内部PCB与电池、侧接口精确几何UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.85b.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.85B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/esp-idf/02_sd_card/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/02_sd_card/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/esp-idf/02_sd_card/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/02_sd_card/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/esp-idf/03_qmi8658/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/03_qmi8658/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/esp-idf/03_qmi8658/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/03_qmi8658/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/esp-idf/05_bq27220/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/05_bq27220/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/esp-idf/05_bq27220/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/05_bq27220/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/factory/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/factory/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-1-85b/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-1-85b-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-1-85b-sku-34556",
+      "name": "Waveshare ESP32-S3-Touch-LCD-1.85B-EN",
+      "manufacturer": "Waveshare",
+      "sku": "34556",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，360×360 ST77916圆屏与CST816S触控；实现精确QSPI四数据脚、RST/背光、触摸寄存器和4bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-1-85b-sku-34556.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-1-85b",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-1.85B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd185b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 360,
+        "height": 360,
+        "type": "LCD round",
+        "bus": "QSPI",
+        "controller": "ST77916",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 15
+            },
+            {
+              "name": "CMD",
+              "gpio": 14
+            },
+            {
+              "name": "D0",
+              "gpio": 16
+            },
+            {
+              "name": "D1",
+              "gpio": 17
+            },
+            {
+              "name": "D2",
+              "gpio": 12
+            },
+            {
+              "name": "D3",
+              "gpio": 13
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前ST77916仅RGB565 DCS命令路径；Gamma、TE、完整原厂UI未验收。CST816S身份版本寄存器未知，未伪造芯片/项目ID。",
+        "QMI8658、BQ27220燃料计、模拟音频和电池/充电电气未实现；只有源代码证实的ES8311/ES7210数字控制。",
+        "模型以61.60mm直径/14.60mm厚度和原始正面照片构建，45.68mm AA单独映射实时屏幕；内部PCB与电池、侧接口精确几何UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.85b.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.85B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/esp-idf/02_sd_card/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/02_sd_card/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/esp-idf/02_sd_card/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/02_sd_card/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/esp-idf/03_qmi8658/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/03_qmi8658/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/esp-idf/03_qmi8658/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/03_qmi8658/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/esp-idf/05_bq27220/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/05_bq27220/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/esp-idf/05_bq27220/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/esp-idf/05_bq27220/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/factory/components/esp32_s3_touch_lcd_1_85B/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/examples/factory/components/esp32_s3_touch_lcd_1_85B/include/bsp/esp32_s3_touch_lcd_1_85B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.85B/5a98b8da1948340c07032a408ac0d93c47ca558f/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-1-85b/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-1-85b-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-2-06",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-2.06",
+      "manufacturer": "Waveshare",
+      "sku": "31957",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /8MiB PSRAM，410×502 CO5300/FT3168手表。原版出厂BIN已通过原生ROM8秒启动、真实QSPI多色写入与无重启检查；其余能力保持partial。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-2-06.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-2-06",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-2.06"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled206",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 410,
+        "height": 502,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 10,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "FT3168为初始化与单触点数字子集；电池/充电模拟、RF、音频PCM、RTC闹钟及PWR物理关机未完成。",
+        "厂家STEP为裸板与屏幕653组件，已逐一导出并保持原尺度；50.80×42.00×13.60mm外壳与表带仅作官方尺寸参考，不强制缩放CAD匹配外壳。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-2.06.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-2.06",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/arduino/libraries/board_config/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/examples/arduino/libraries/board_config/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/factory/components/waveshare__esp32_s3_touch_amoled_2_06/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/examples/factory/components/waveshare__esp32_s3_touch_amoled_2_06/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/factory/components/waveshare__esp32_s3_touch_amoled_2_06/include/bsp/esp32_s3_touch_amoled_2_06.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/examples/factory/components/waveshare__esp32_s3_touch_amoled_2_06/include/bsp/esp32_s3_touch_amoled_2_06.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-2-06/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-2-06-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-2-06-sku-31958",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-2.06-EN",
+      "manufacturer": "Waveshare",
+      "sku": "31958",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32MiB Flash /8MiB PSRAM，410×502 CO5300/FT3168手表。原版出厂BIN已通过原生ROM8秒启动、真实QSPI多色写入与无重启检查；其余能力保持partial。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-2-06-sku-31958.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-2-06",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-2.06"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled206",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 410,
+        "height": 502,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 10,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "FT3168为初始化与单触点数字子集；电池/充电模拟、RF、音频PCM、RTC闹钟及PWR物理关机未完成。",
+        "厂家STEP为裸板与屏幕653组件，已逐一导出并保持原尺度；50.80×42.00×13.60mm外壳与表带仅作官方尺寸参考，不强制缩放CAD匹配外壳。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-2.06.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-2.06",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/arduino/libraries/board_config/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/examples/arduino/libraries/board_config/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/factory/components/waveshare__esp32_s3_touch_amoled_2_06/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/examples/factory/components/waveshare__esp32_s3_touch_amoled_2_06/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/factory/components/waveshare__esp32_s3_touch_amoled_2_06/include/bsp/esp32_s3_touch_amoled_2_06.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/examples/factory/components/waveshare__esp32_s3_touch_amoled_2_06/include/bsp/esp32_s3_touch_amoled_2_06.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.06/3de8684cc3b27a8b6aa920157ecf399287528181/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-2-06/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-2-06-factory"
     }
   ]
 }

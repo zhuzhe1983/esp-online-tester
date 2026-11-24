@@ -177,13 +177,16 @@ def main():
             'gzipFilename': filename + '.gz', 'gzipBytes': len(compressed), 'gzipSha256': sha(compressed),
             'baseCommit': parent, 'commit': commit, 'tree': tree, 'developmentSourceCommit': source,
             'listings': selection['listings'], 'productIds': selection['productIds'],
-            'listingCount': len(selection['listings']), 'skuCount': len(selection['productIds']),
-            'cumulativeListingCount': len(all_listings), 'cumulativeSkuCount': len(allowed),
+            'listingCount': len(selection['listings']), 'skuCount': len({p.get('sku', p['id']) for p in selected_products if p['id'] in selection['productIds']}),
+            'profileCount': len(selection['productIds']),
+            'cumulativeListingCount': len(all_listings), 'cumulativeSkuCount': len({p.get('sku', p['id']) for p in selected_products}),
+            'cumulativeProfileCount': len(allowed),
             'sequentialApplyVerified': True,
             'createdAt': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds'),
             'validation': selection.get('validation', []), 'limitations': selection.get('limitations', [])}
         git('update-ref', f'refs/heads/waveshare/delivery-{number:03d}', commit)
-        state.update(latestCommit=commit, productIds=sorted(allowed), listings=all_listings)
+        state.update(latestCommit=commit, productIds=sorted(allowed), listings=all_listings,
+                     skuCount=len({p.get('sku', p['id']) for p in selected_products}), profileCount=len(allowed))
         state['batches'].append(batch)
         write_json(args.state, state)
         write_json(args.output / f'waveshare-{number:03d}.json', batch)

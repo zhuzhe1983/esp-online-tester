@@ -1,0 +1,9 @@
+# Project-authored REPL commands transported to unchanged manufacturer-linked MicroPython.
+# GPIO input uses the real BOOT pin; LED data is emitted by the guest driver.
+# This image exposes its REPL on UART0; the generic USB serial path is inactive.
+2.0 uart0 import machine,neopixel
+2.2 uart0 p=machine.Pin(0,machine.Pin.IN,machine.Pin.PULL_UP)
+2.4 uart0 n=neopixel.NeoPixel(machine.Pin(38,machine.Pin.OUT),1); n.ORDER=(0,1,2,3); n[0]=(17,34,51); n.write(); print('CORE_LED_READY',p.value())
+3.0 press boot 1200
+3.5 uart0 print('CORE_BOOT_PRESSED',p.value()); n[0]=(90,30,10); n.write()
+4.5 uart0 print('CORE_BOOT_RELEASED',p.value())

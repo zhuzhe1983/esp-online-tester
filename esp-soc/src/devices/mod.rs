@@ -43,3 +43,9 @@ pub mod ssd1680;
 pub mod axp2101;
 pub mod axs5106;
 pub mod qspi_dcs;
+
+pub mod waveshare_touch_parts;
+
+pub mod waveshare_ch32v006;
+pub mod waveshare_ili9488;
+pub mod ft3168;

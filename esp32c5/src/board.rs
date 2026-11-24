@@ -3,6 +3,7 @@
 //! The red nCHG lamp is charger-controlled; there is no RGB or user button here.
 use esp_soc::{BoardModel, pins::PinRoutes};
 pub mod lilygo;
+pub mod waveshare_core;
 pub mod waveshare_lcd147;
 pub mod waveshare_touch169;
 pub mod waveshare_touch28;
@@ -30,7 +31,7 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
         "waveshare-c5-touch35" => Some(Box::new(waveshare_touch35::Touch35::new())),
         "waveshare-c5-lcd273" => Some(Box::new(waveshare_lcd273::Lcd273::new())),
         "none" | "bare" => Some(Box::new(esp_soc::NoBoard)),
-        _ => None,
+        _ => waveshare_core::CoreVariant::from_name(name).map(|variant| Box::new(waveshare_core::WaveshareCore::new(variant)) as esp_soc::Board),
     }
 }
 impl BoardModel for StampC5 {

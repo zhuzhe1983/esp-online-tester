@@ -484,10 +484,13 @@ fn setup_s3(o: &Opts) -> esp32s3::Machine {
         "waveshare-s3-epaper133e6" => (32, 16),
         "waveshare-s3-lcd128" | "waveshare-s3-touch-lcd128" => (16, 2),
         "waveshare-s3-touch-lcd21" | "waveshare-s3-touch-lcd21b" | "waveshare-s3-lcd28b" | "waveshare-s3-touch-lcd28b" | "waveshare-s3-lcd28c" | "waveshare-s3-touch-lcd28c" => (16, 8),
-        name => esp32s3::board::waveshare_core::variant(name).map(|v| v.memory_mib()).unwrap_or((8, 2)),
+        name => esp_soc::waveshare_profiles::memory_mib(name).or_else(|| esp32s3::board::waveshare_core::variant(name).map(|v| v.memory_mib())).unwrap_or((8, 2)),
     };
     let flash_mb = o.flash_mb.unwrap_or(default_flash);
     let psram_mb = o.psram_mb.unwrap_or(default_psram);
+    if esp_soc::waveshare_profiles::memory_mib(m.bus.board.name()).is_some_and(|expected| expected != (flash_mb, psram_mb)) {
+        usage_error("This exact Waveshare board requires its documented Flash and PSRAM capacity");
+    }
     if flash_mb != 8 { m.bus.set_flash_size(flash_mb << 20); }
     if psram_mb != 2 { m.bus.set_psram_size(psram_mb << 20).unwrap(); }
     if o.flash_octal { m.bus.set_flash_octal(true); }

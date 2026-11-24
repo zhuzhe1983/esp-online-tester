@@ -29,6 +29,7 @@ pub mod soc;
 pub mod uart;
 pub mod usb_host;
 pub mod web;
+pub mod waveshare_profiles;
 pub mod wifi;
 
 pub use board::{Board, BoardModel, NoBoard};

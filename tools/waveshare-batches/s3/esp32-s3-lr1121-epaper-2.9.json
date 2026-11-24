@@ -1,0 +1,512 @@
+{
+  "listingId": "esp32-s3-lr1121-epaper-2.9",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-lr1121-epaper-2-9",
+      "name": "Waveshare ESP32-S3-LR1121-ePaper-2.9-HF",
+      "manufacturer": "Waveshare",
+      "sku": "36047",
+      "chip": "esp32s3",
+      "hardwareRevision": "Rev1.1 source wiring",
+      "summary": "16MiB Flash /8MiB PSRAM，原生128×296的2.9英寸墨水屏，官方横向规格296×128；实现共享电源GPIO38、精确SPI选片、BUSY边沿和1bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lr1121-epaper-2-9.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lr1121-epaper-2-9",
+        "name": "Waveshare ESP32-S3-LR1121-EPAPER-2.9"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lr1121-epaper29",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 296,
+        "type": "E-paper monochrome digital subset",
+        "bus": "SPI",
+        "controller": "SSD1680-compatible",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key",
+          "name": "KEY",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyK"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 11
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前仅SSD1680兼容的黑白RAM24/26与22+20刷新；官方4级灰度光学波形和真实刷新耗时未实现。",
+        "LR1121 RF不模拟；同时选中射频与EPD时拒绝显示传输。GPIO38关闭数字总线供电但保留已刷新的光学图像。",
+        "官方89.50×38.00mm正面及66.89×29.05mm有效区已建立模型；板厚、内部和反面几何UNKNOWN，未制造虚假的1.6mm板厚。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lr1121-epaper-2.9.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LR1121-ePaper-2.9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：docs/hardware-facts.zh-CN.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/docs/hardware-facts.zh-CN.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/esp-idf/03_epaper_2_9/components/esp_epaper/include/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/esp-idf/03_epaper_2_9/components/esp_epaper/include/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/esp-idf/03_epaper_2_9/components/esp_epaper/src/controllers/ssd16xx.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/esp-idf/03_epaper_2_9/components/esp_epaper/src/controllers/ssd16xx.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lr1121-epaper-2-9/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-epaper-2-9-sku-36048",
+      "name": "Waveshare ESP32-S3-LR1121-ePaper-2.9-LF",
+      "manufacturer": "Waveshare",
+      "sku": "36048",
+      "chip": "esp32s3",
+      "hardwareRevision": "Rev1.1 source wiring",
+      "summary": "16MiB Flash /8MiB PSRAM，原生128×296的2.9英寸墨水屏，官方横向规格296×128；实现共享电源GPIO38、精确SPI选片、BUSY边沿和1bit SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lr1121-epaper-2-9-sku-36048.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lr1121-epaper-2-9",
+        "name": "Waveshare ESP32-S3-LR1121-EPAPER-2.9"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lr1121-epaper29",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 296,
+        "type": "E-paper monochrome digital subset",
+        "bus": "SPI",
+        "controller": "SSD1680-compatible",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "key",
+          "name": "KEY",
+          "type": "button",
+          "pin": 1,
+          "activeLow": true,
+          "defaultKeyCode": "KeyK"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 12
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 11
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此板真实SDMMC连线；默认可准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "当前仅SSD1680兼容的黑白RAM24/26与22+20刷新；官方4级灰度光学波形和真实刷新耗时未实现。",
+        "LR1121 RF不模拟；同时选中射频与EPD时拒绝显示传输。GPIO38关闭数字总线供电但保留已刷新的光学图像。",
+        "官方89.50×38.00mm正面及66.89×29.05mm有效区已建立模型；板厚、内部和反面几何UNKNOWN，未制造虚假的1.6mm板厚。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lr1121-epaper-2.9.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LR1121-ePaper-2.9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：docs/hardware-facts.zh-CN.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/docs/hardware-facts.zh-CN.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareBoard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/arduino/libraries/Waveshare_LR1121_EPaper/src/WaveshareEPaper.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/esp-idf/03_epaper_2_9/components/esp_epaper/include/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/esp-idf/03_epaper_2_9/components/esp_epaper/include/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/esp-idf/03_epaper_2_9/components/esp_epaper/src/controllers/ssd16xx.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/examples/esp-idf/03_epaper_2_9/components/esp_epaper/src/controllers/ssd16xx.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lr1121-epaper-2-9/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-lr1121-epaper-2-9-demo-esp32-s3-lr1121-epaper-2-9-hf",
+      "name": "ESP32-S3-LR1121-ePaper-2.9-HF.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lr1121-epaper-2-9"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/ESP32-S3-LR1121-ePaper-2.9-HF.bin",
+        "sha256": "db0fbe6aa6781f3b22bf16a4932df16f88745d7a2d86f8847ad5fc8dcd3c453b",
+        "bootMode": "rom"
+      },
+      "role": "official-demo",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LR1121-ePaper-2.9-HF",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/ESP32-S3-LR1121-ePaper-2.9-HF.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方README将HF/LF BIN称为supplied reference binaries，不据factory分区标签将其冒称出厂镜像。已通过原始ESP32-S3镜像与分区结构校验；未执行完整应用。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-lr1121-epaper-2-9-demo-esp32-s3-lr1121-epaper-2-9-hf-watch"
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-epaper-2-9-demo-esp32-s3-lr1121-epaper-2-9-lf",
+      "name": "ESP32-S3-LR1121-ePaper-2.9-LF.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lr1121-epaper-2-9-sku-36048"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/ESP32-S3-LR1121-ePaper-2.9-LF.bin",
+        "sha256": "9f29248a060e4097d0ee13cd59219c2fb5e3f4deddf2051530d4ee5f81e4c19d",
+        "bootMode": "rom"
+      },
+      "role": "official-demo",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LR1121-ePaper-2.9-LF",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/ESP32-S3-LR1121-ePaper-2.9-LF.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方README将HF/LF BIN称为supplied reference binaries，不据factory分区标签将其冒称出厂镜像。已通过原始ESP32-S3镜像与分区结构校验；未执行完整应用。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-lr1121-epaper-2-9-demo-esp32-s3-lr1121-epaper-2-9-lf-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-lr1121-epaper-2-9-demo-esp32-s3-lr1121-epaper-2-9-hf-watch",
+      "name": "ESP32-S3-LR1121-ePaper-2.9-HF.bin",
+      "category": "development",
+      "upstreamRepo": "waveshareteam/ESP32-S3-LR1121-ePaper-2.9",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/releases",
+      "version": "9e8ce96f332d49f63adfca2fa2273aa7cda0c073",
+      "checkedAt": "2026-11-23T16:52:07Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LR1121-ePaper-2.9-HF.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/ESP32-S3-LR1121-ePaper-2.9-HF.bin",
+          "sha256": "db0fbe6aa6781f3b22bf16a4932df16f88745d7a2d86f8847ad5fc8dcd3c453b",
+          "bytes": 1556448,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lr1121-epaper-2-9"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    },
+    {
+      "id": "waveshare-esp32-s3-lr1121-epaper-2-9-demo-esp32-s3-lr1121-epaper-2-9-lf-watch",
+      "name": "ESP32-S3-LR1121-ePaper-2.9-LF.bin",
+      "category": "development",
+      "upstreamRepo": "waveshareteam/ESP32-S3-LR1121-ePaper-2.9",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/releases",
+      "version": "9e8ce96f332d49f63adfca2fa2273aa7cda0c073",
+      "checkedAt": "2026-11-23T16:52:07Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LR1121-ePaper-2.9-LF.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LR1121-ePaper-2.9/9e8ce96f332d49f63adfca2fa2273aa7cda0c073/firmware/ESP32-S3-LR1121-ePaper-2.9-LF.bin",
+          "sha256": "9f29248a060e4097d0ee13cd59219c2fb5e3f4deddf2051530d4ee5f81e4c19d",
+          "bytes": 1556448,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lr1121-epaper-2-9-sku-36048"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lr1121-epaper-2-9.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lr1121-epaper-2-9-sku-36048.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-lr1121-epaper29": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": [
+        "boot",
+        "key"
+      ]
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "Native unit: epaper_pins_shared_selects_busy_and_supply_preserve_only_optical_image PASS；刷新后像素与BUSY边沿可见，错误时钟/MOSI/双CS/DC/断电不写入。"
+  ],
+  "limitations": [
+    "当前仅SSD1680兼容的黑白RAM24/26与22+20刷新；官方4级灰度光学波形和真实刷新耗时未实现。",
+    "LR1121 RF不模拟；同时选中射频与EPD时拒绝显示传输。GPIO38关闭数字总线供电但保留已刷新的光学图像。",
+    "官方89.50×38.00mm正面及66.89×29.05mm有效区已建立模型；板厚、内部和反面几何UNKNOWN，未制造虚假的1.6mm板厚。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

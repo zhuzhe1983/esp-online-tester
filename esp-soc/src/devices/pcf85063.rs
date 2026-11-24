@@ -1,6 +1,7 @@
 //! NXP PCF85063A calendar subset, data sheet Rev. 7 §§8.2, 8.3, 8.4.
 //! Guest-cycle clock, BCD calendar/12h, STOP, OS and one pending burst tick.
-//! No host time, calibration, alarms, timer, interrupt or CLKOUT waveforms.
+//! No host time, alarms, timer, interrupt or CLKOUT waveforms. Optional averaged
+//! offset correction is explicitly distinct from physical correction pulses.
 use esp_periph::i2c::I2cDevice;
 use std::sync::{Arc, Mutex};
 
@@ -11,13 +12,32 @@ pub struct Pcf85063State {
     next_tick: u64,
     access: bool,
     pending: bool,
+    averaged_offset: bool,
+    next_tick_scaled: u128,
 }
 impl Pcf85063State {
     pub fn new(hz: u64) -> Self {
         let hz = hz.max(1);
         let mut state = Self { registers: [0; 18], cycle: 0, hz,
-            next_tick: hz, access: false, pending: false };
+            next_tick: hz, access: false, pending: false,
+            averaged_offset: false, next_tick_scaled: 0 };
         state.reset(); state
+    }
+    /// Opt-in digital calendar-rate approximation using the published 4.34 /
+    /// 4.069 ppm per step. It does not synthesize the minute/second correction
+    /// pulse train or claim oscillator calibration. Legacy `new` stays strict.
+    pub fn with_averaged_offset(hz: u64) -> Self {
+        let mut state = Self::new(hz); state.averaged_offset = true; state
+    }
+    pub fn programmed_offset(&self) -> Option<(i8, bool)> {
+        self.averaged_offset.then(|| (((self.registers[2] << 1) as i8) >> 1, self.registers[2] & 0x80 != 0))
+    }
+    fn period_scaled(&self) -> u128 {
+        let offset = i64::from(((self.registers[2] << 1) as i8) >> 1);
+        // Fig12: positive steps reduce the clock's frequency (longer seconds).
+        // Use the published decimal ppm, not an invented exact crystal ratio.
+        let ppb = if self.registers[2] & 0x80 == 0 { 4340 } else { 4069 };
+        u128::from(self.hz) * (1_000_000_000i64 + offset * ppb) as u128
     }
     fn reset(&mut self) {
         self.registers = [0; 18];
@@ -28,11 +48,27 @@ impl Pcf85063State {
         // Table 8: Saturday, 2000-01-01 00:00:00. Crystal startup and POR
         // subsecond phase are not modeled; choose one guest second to first tick.
         self.next_tick = self.cycle.saturating_add(self.hz);
+        self.next_tick_scaled = (u128::from(self.cycle) + u128::from(self.hz)) * 1_000_000_000;
         self.access = false; self.pending = false;
     }
     pub fn advance_to(&mut self, cycle: u64) {
         if cycle <= self.cycle { return; }
         self.cycle = cycle;
+        if self.averaged_offset {
+            let target = u128::from(cycle) * 1_000_000_000;
+            if self.registers[0] & 0x20 != 0 || target < self.next_tick_scaled { return; }
+            let period = self.period_scaled();
+            let seconds = (target - self.next_tick_scaled) / period + 1;
+            self.next_tick_scaled += period * seconds;
+            if self.access { self.pending = true; }
+            else {
+                // The two-digit calendar and weekday repeat every 700 years.
+                // Reduction bounds extreme synthetic guest jumps without loss
+                // of observable calendar fields or a per-second loop.
+                self.add_seconds((seconds % (36525 * 7 * 86400)) as u64);
+            }
+            return;
+        }
         if self.registers[0] & 0x20 != 0 || cycle < self.next_tick { return; }
         let elapsed = cycle - self.next_tick;
         let seconds = elapsed / self.hz + 1;
@@ -87,6 +123,7 @@ impl Pcf85063State {
                     // rounded up to a guest cycle; no crystal jitter is implied.
                     self.next_tick = self.cycle.saturating_add(
                         ((u128::from(self.hz) * 65).div_ceil(128)).max(1) as u64);
+                    self.next_tick_scaled = u128::from(self.next_tick) * 1_000_000_000;
                 }
                 self.registers[0] = value;
             },
@@ -94,7 +131,12 @@ impl Pcf85063State {
                 if value & 0xb0 != 0 { return false; } // no AIE / MI / HMI engine
                 self.registers[1] = (value & 7) | (self.registers[1] & value & 0x48);
             },
-            2 => { if value != 0 { return false; } self.registers[2] = 0; },
+            2 => {
+                if !self.averaged_offset && value != 0 { return false; }
+                // Never rewrite an already-scheduled second when firmware
+                // changes the offset. The next complete interval uses it.
+                self.registers[2] = value;
+            },
             3 | 10 | 16 => self.registers[i] = value,
             // OS is set by oscillator failure/reset, and can be cleared by a
             // write. Writing a 1 does not invent another oscillator failure.
@@ -244,5 +286,37 @@ mod tests {
         s.lock().unwrap().advance_to(1000); assert_eq!(read(&mut d, 4, 7), [0x6a,0,0,1,0,0x13,0]);
         let (s, mut d) = setup(1); s.lock().unwrap().advance_to(36525*86400);
         assert_eq!(read(&mut d, 4, 7), [0x80,0,0,1,5,1,0]);
+    }
+    #[test]
+    fn averaged_offset_is_opt_in_and_changes_only_future_guest_calendar_periods() {
+        let (legacy, mut old) = setup(1_000_000);
+        assert!(old.start(false)); assert!(old.write(2)); assert!(!old.write(0x73)); old.stop();
+        assert_eq!(legacy.lock().unwrap().programmed_offset(), None);
+        let s = Arc::new(Mutex::new(Pcf85063State::with_averaged_offset(1_000_000)));
+        let mut d = Pcf85063::new(s.clone());
+        s.lock().unwrap().advance_to(500_000); write(&mut d, 2, &[0x73]);
+        assert_eq!(s.lock().unwrap().programmed_offset(), Some((-13, false)));
+        assert_eq!(read(&mut d, 2, 1), [0x73]);
+        s.lock().unwrap().advance_to(999_999); assert_eq!(read(&mut d, 4, 1), [0x80]);
+        s.lock().unwrap().advance_to(1_000_000); assert_eq!(read(&mut d, 4, 1), [0x81]);
+        s.lock().unwrap().advance_to(1_999_943); assert_eq!(read(&mut d, 4, 1), [0x81]);
+        s.lock().unwrap().advance_to(1_999_944); assert_eq!(read(&mut d, 4, 1), [0x82]);
+        write(&mut d, 0, &[0x58]); assert_eq!(s.lock().unwrap().programmed_offset(), Some((0, false)));
+        assert_eq!(read(&mut d, 4, 1), [0x80], "calibration never fabricates valid time / clears OS");
+        assert!(d.start(false)); assert!(d.write(0)); assert!(!d.write(4), "no correction interrupt engine"); d.stop();
+    }
+    #[test]
+    fn averaged_offset_modes_sign_and_extreme_time_are_bounded() {
+        for (reg, want_seconds) in [(0x3f, 9997u64), (0x40, 10002), (0xbf, 9997), (0xc0, 10002)] {
+            let s = Arc::new(Mutex::new(Pcf85063State::with_averaged_offset(1_000_000)));
+            let mut d = Pcf85063::new(s.clone()); write(&mut d, 2, &[reg]);
+            s.lock().unwrap().advance_to(10_000_000_000);
+            let value = read(&mut d, 4, 3);
+            let seconds = u64::from(decode(value[0] & 0x7f, 59).unwrap())
+                + u64::from(decode(value[1], 59).unwrap()) * 60
+                + u64::from(decode(value[2], 23).unwrap()) * 3600;
+            assert_eq!(seconds, want_seconds);
+            s.lock().unwrap().advance_to(u64::MAX); let _ = read(&mut d, 4, 7);
+        }
     }
 }

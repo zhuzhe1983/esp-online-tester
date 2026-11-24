@@ -58,11 +58,15 @@ mod tdeck_keyboard;
 mod cardputer_lcd;
 mod unit_pir;
 pub mod waveshare_amoled18;
+pub mod waveshare_amoled_watch;
 pub mod waveshare_cam;
 pub mod waveshare_core;
 pub mod waveshare_epaper133;
 pub mod waveshare_qspi;
 pub mod waveshare_lcd4b;
+pub mod waveshare_lr;
+pub mod waveshare_lcd185b;
+pub mod waveshare_rgb_matrix;
 pub mod waveshare_spi_legacy;
 pub mod waveshare_tca_rgb;
 
@@ -86,6 +90,9 @@ pub use waveshare_lcd4b::*;
 /// Board by name: `atech14` (default), `none`, `stopwatch` or a supported Waveshare board.
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
+        "waveshare-s3-touch-lcd185b" => Some(Box::new(waveshare_lcd185b::WaveshareLcd185b::new())),
+        "waveshare-s3-lr1121-oled154" | "waveshare-s3-lr1121-epaper29" => waveshare_lr::make_board(name),
+        "waveshare-s3-touch-amoled206" => Some(Box::new(waveshare_amoled_watch::WaveshareAmoledWatch::new(waveshare_amoled_watch::AmoledWatchVariant::TouchAmoled206))),
         "waveshare-s3-touch-amoled143c" => Some(Box::new(waveshare_qspi::WaveshareQspi::new(waveshare_qspi::QspiVariant::TouchAmoled143C))),
         "lilygo-t-keyboard-s3-pro" => Some(Box::new(lilygo_io::LilygoIo::t_keyboard_s3_pro())),
         "lilygo-t-micro32-s3" => Some(Box::new(lilygo_io::LilygoIo::t_micro32_s3())),
@@ -175,7 +182,8 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-s3-touch-lcd28b" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::TouchLcd28B))),
         "waveshare-s3-lcd28c" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::Lcd28C))),
         "waveshare-s3-touch-lcd28c" => Some(Box::new(waveshare_tca_rgb::WaveshareTcaRgb::new(waveshare_tca_rgb::TcaRgbVariant::TouchLcd28C))),
-        _ => waveshare_epaper133::make_board(name)
+        _ => waveshare_rgb_matrix::make_board(name)
+            .or_else(|| waveshare_epaper133::make_board(name))
             .or_else(|| waveshare_core::make_board(name))
             .or_else(|| lilygo_display::make_board(name))
             .or_else(|| lilygo_additional::make_board(name)),
