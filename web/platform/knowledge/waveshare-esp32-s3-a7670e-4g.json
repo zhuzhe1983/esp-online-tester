@@ -1,0 +1,1042 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-a7670e-4g",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-a7670e-4g",
+  "title": "Waveshare ESP32-S3-A7670E-4G-EN（PCBA参考，亚克力支架未建模）",
+  "summary": "A7670E 4G 套件；ESP32-S3R8，16 MiB Flash / 8 MiB PSRAM，无板载屏幕。当前适配 RGB 与 TF 数字路径；3D 为历史 PCBA 参考，亚克力支架未建模。",
+  "summarySourceIds": [
+    "overview",
+    "resources",
+    "product"
+  ],
+  "updatedAt": "2026-11-24T00:10:03Z",
+  "hardwareRevision": "V2 electrical profile; current official resources after December2025; native PCBA CAD dated2024-03-08",
+  "facts": [
+    {
+      "id": "exact-hardware",
+      "label": "精确型号、容量与 V2 接线",
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "product",
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-27",
+        "electrical-28",
+        "electrical-29",
+        "electrical-30",
+        "electrical-31"
+      ],
+      "value": {
+        "sku": "26749",
+        "partNumber": "ESP32-S3-A7670E-4G-EN",
+        "chip": "ESP32-S3R8",
+        "flashMiB": 16,
+        "psramMiB": 8,
+        "display": null,
+        "pins": {
+          "rgb": {
+            "gpio": 38,
+            "part": "WS2812B-0807",
+            "wireOrder": "GRB",
+            "bitsPerSecond": 800000
+          },
+          "tf": {
+            "transport": "native SDMMC one-bit",
+            "CLK": 5,
+            "CMD": 4,
+            "D0": 6,
+            "cardDetectGpio": null
+          },
+          "boot": {
+            "gpio": 0,
+            "activeLow": true
+          },
+          "reset": "CHIP_PU",
+          "MAX17048": {
+            "address7": 54,
+            "V2": {
+              "SDA": 15,
+              "SCL": 16
+            },
+            "V1": {
+              "SDA": 3,
+              "SCL": 2
+            },
+            "simulation": "not implemented"
+          },
+          "modemUart": {
+            "ESP_TX": 17,
+            "ESP_RX": 18,
+            "RI": 40,
+            "DTR": 45,
+            "simulation": "not implemented"
+          },
+          "usb": {
+            "DM": 19,
+            "DP": 20,
+            "simulation": "modem/hub switching not implemented"
+          },
+          "camera": {
+            "SDA": 15,
+            "SCL": 16,
+            "Y2_Y9": [
+              7,
+              8,
+              9,
+              10,
+              11,
+              12,
+              13,
+              14
+            ],
+            "V2": {
+              "XCLK": 39,
+              "VSYNC": 42,
+              "HREF": 41,
+              "PCLK": 46
+            },
+            "V1": {
+              "XCLK": 34,
+              "VSYNC": 36,
+              "HREF": 35,
+              "PCLK": 37
+            },
+            "simulation": "not implemented"
+          }
+        }
+      }
+    },
+    {
+      "id": "revision-conflicts",
+      "label": "版次、源码和原始示例限制",
+      "basis": "official",
+      "sourceIds": [
+        "resources",
+        "firmware",
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-27",
+        "electrical-28",
+        "electrical-29",
+        "electrical-30",
+        "electrical-31"
+      ],
+      "value": [
+        "Register only the current V2 electrical profile. Official resource page identifies V2 examples as after December 2025; this is a resource-version statement, not an exact SKU release date.",
+        "V1 gauge SDA3/SCL2 becomes V2 SDA15/SCL16. Camera timing pads also change; the retained V1 and V2 schematic/source files are not merged into a guessed hybrid.",
+        "Old SD_CD_PIN46 names the TF DAT3/CD signal, not a proven independent insertion switch. Current V2 schematic has a separate SD_CS net and V2 SD example removes that macro; GPIO46 is camera PCLK. No fake GPIO46 card-detect level is supplied.",
+        "V1 battery demo reads VCELL register0x02 and multiplies by5 while labeling percent; this is not accepted as an accurate battery state-of-charge formula. MAX17048 measurements/ACK are unimplemented.",
+        "Current official firmware pages warn against interchanging A7670E/SIM7670G images. Each exact-model ZIP is separately hash/layout checked; the V2 shared demo ZIP contains only the older A7670E example, not a SIM replacement.",
+        "These linked images are precompiled examples, not proven factory recovery. A7670E build is November2023; SIM7670G April2024. Both original headers declare4MiB while source hardware is16MiB; original bytes and 16MiB board capacity are preserved.",
+        "Both original examples reach usb_cdc_4g_module app_main, print modem initialization wait, and consume the5s bound without a reboot. No USB modem, PPP, network access, GNSS fix, camera capture or battery-gauge success is claimed.",
+        "The original example logs a modem reset on GPIO13; V2 camera data also uses GPIO13. This application observation is retained, not used to invent a physical reset connection or rewrite the firmware."
+      ]
+    },
+    {
+      "id": "kit-scope",
+      "label": "实际销售套件与 3D 范围",
+      "basis": "official",
+      "sourceIds": [
+        "product",
+        "dimension-photo",
+        "official-cad"
+      ],
+      "value": {
+        "package": {
+          "listingId": "esp32-s3-a7670e-4g",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-a7670e-4g.htm",
+          "source": {
+            "id": "store-product-esp32-s3-a7670e-4g",
+            "requestedUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-a7670e-4g.htm",
+            "finalUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-a7670e-4g.htm",
+            "requestedAt": "2026-11-23T16:33:43.728485Z",
+            "fetchedAt": "2026-11-23T16:33:46.580747Z",
+            "httpStatus": 200,
+            "contentType": "text/html; charset=UTF-8",
+            "bytes": 211231,
+            "sha256": "fefa7e823ea5672707bc45188be934e94dcaad2d382a536e3e7459f8b422305b"
+          },
+          "singleSku": "26749",
+          "partNumber": "ESP32-S3-A7670E-4G-EN",
+          "documentationLinks": [
+            "https://docs.waveshare.com/ESP32-S3-A7670E-4G"
+          ],
+          "captureKind": "derived-public-storefront-fields-not-original-HTTP-body",
+          "packageIncludes": [
+            "Controller board",
+            "Acrylic case and screw pack",
+            "GNSS ceramic antenna",
+            "OV5640 camera",
+            "2-pin screw terminal",
+            "40-pin straight header",
+            "USB-A to USB-C cable 1 m",
+            "FPC antenna",
+            "Screwdriver",
+            "Double-sided tape, 4 pieces",
+            "8 ohm 2 W 2030 speaker"
+          ],
+          "packageExcludes": [
+            "18650 battery",
+            "Solar panel"
+          ],
+          "packageBasis": "Exact listing public package-content and battery/solar exclusion statements; raw storefront body is not published."
+        },
+        "dimensions": {
+          "pcb": {
+            "publishedSizeMm": [
+              110,
+              30.44
+            ],
+            "nativeSizeMm": [
+              30.464394240000104,
+              110.02439514000012,
+              1.59841946
+            ],
+            "sourceIds": [
+              "dimension-photo",
+              "official-cad"
+            ]
+          },
+          "kit": {
+            "publishedSizeMm": [
+              125,
+              31.6,
+              34
+            ],
+            "rendered": false,
+            "sourceIds": [
+              "dimension-photo",
+              "product"
+            ],
+            "status": "unknown-case-not-rendered",
+            "notes": "Published outer kit envelope includes acrylic/support accessories. No matching case CAD or exact fastening geometry was found in the linked shared PCBA archive."
+          }
+        },
+        "mechanicalLimitations": [
+          "This is the shared manufacturer PCBA reference from a STEP header dated 2024-03-08; the current V2 pin assignment is independently sourced. Exact V2 layout and modem-specific mechanical/BOM differences are unknown.",
+          "SKU 26749 includes an acrylic case/support and accessories. The picker explicitly labels their absence. No full 125 x 31.6 x 34 mm kit, screw/standoff fit, battery, loose antenna, speaker or cable assembly is claimed.",
+          "The native battery is omitted because the sale kit excludes it. Battery holder and all other 741 native components, including all four open shells, remain. Source assembly bytes are preserved unchanged.",
+          "Camera reference is retained from manufacturer CAD; OV5640 is a package fact, not proof of exact lens/housing CAD identity. No camera image or USB/cellular behavior is synthesized.",
+          "Native RGB body 410 is associated with the one documented GPIO38 chain output using the original photo. Current V2 spatial placement is uncalibrated; numeric chain output is independently tested.",
+          "BOOT is available in the workbench. Switch actuator separation, unknown acrylic openings and connector mating positions are unverified, so no 3D button targets or connected cables are invented.",
+          "Native material colors are not calibrated physical color. No hardware fit, WebGL browser, physical optical or full original application acceptance claim."
+        ]
+      }
+    },
+    {
+      "id": "original-example",
+      "label": "原始示例身份、布局与有界试运行",
+      "basis": "official",
+      "sourceIds": [
+        "firmware"
+      ],
+      "value": {
+        "role": "example",
+        "factoryInvestigation": "not-found-as-factory-purpose-in-retained-scope",
+        "sha256": "1437291c3dfa9f3afa96987b97c8ba7af1f0952e7d0d87b6d407e130f97b2073",
+        "layout": {
+          "loadOffset": 0,
+          "chipId": 9,
+          "bootloaderChecksumAndDigestValid": true,
+          "partitionTableOffset": 32768,
+          "partitionTableMd5Valid": true,
+          "partitions": [
+            {
+              "type": 1,
+              "subtype": 2,
+              "offset": 36864,
+              "bytes": 24576,
+              "label": "nvs",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 1,
+              "offset": 61440,
+              "bytes": 4096,
+              "label": "phy_init",
+              "flags": 0
+            },
+            {
+              "type": 0,
+              "subtype": 0,
+              "offset": 65536,
+              "bytes": 1048576,
+              "label": "factory",
+              "flags": 0,
+              "imageChipId": 9,
+              "imageChecksumsValid": true
+            },
+            {
+              "type": 1,
+              "subtype": 130,
+              "offset": 1114112,
+              "bytes": 1048576,
+              "label": "storage",
+              "flags": 0
+            }
+          ],
+          "fitsFlashMiB": 16,
+          "headerFlashSizeCode": 2
+        },
+        "runtimeObservation": {
+          "board": "waveshare-s3-a7670e-4g-v2",
+          "guestCycles": 1200000000,
+          "guestMilliseconds": 5000,
+          "stop": "Halted",
+          "reboots": 0,
+          "width": 0,
+          "height": 0,
+          "distinctColors": 0,
+          "version": 0,
+          "frames": 0,
+          "pc": [
+            1077395098,
+            1077395098
+          ],
+          "sdCommands": 0,
+          "sdTimeouts": 0,
+          "sdBytesRead": 0,
+          "sdBytesWritten": 0,
+          "physicalValidated": false,
+          "fullApplicationValidated": false
+        },
+        "evidence": "docs/evidence/waveshare-s3-cellular-2026-11-24/native-runs.json"
+      },
+      "notes": "Image identity/layout is source-derived. RuntimeObservation is a simulator measurement, not a manufacturer compatibility statement."
+    },
+    {
+      "id": "ecosystem-investigation",
+      "label": "原厂、UIFlow、小智调查",
+      "basis": "official",
+      "sourceIds": [
+        "resources",
+        "firmware",
+        "xiaozhi-tree",
+        "uiflow-tree"
+      ],
+      "value": {
+        "factoryPurposeImage": null,
+        "officialExampleAvailable": true,
+        "xiaozhiExactAcceptedBinary": false,
+        "uiflowExactAcceptedBinary": false,
+        "scope": "Pinned exact resource pages, V1/V2 ZIP inventories and upstream board trees. Generic or neighboring 4G targets are not assigned."
+      }
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-A7670E-4G",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:58:12Z",
+      "bytes": 58227,
+      "sha256": "8c4e64bee0b1ce3e043c60a48f6909b40a3050da0dfa9a0a07ff88a5772e3ba4",
+      "archiveName": "overview.html.gz",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-s3-a7670e-4g/overview.html.gz"
+    },
+    {
+      "id": "resources",
+      "title": "resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Resources-And-Documents",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:58:31Z",
+      "bytes": 31813,
+      "sha256": "c9e47ba7cf6aebf7de391382d38ea0ed0c24874d567c3f18c261cdc948380bb5",
+      "archiveName": "resources.html.gz",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-s3-a7670e-4g/resources.html.gz"
+    },
+    {
+      "id": "product",
+      "title": "sku-selection.json",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-a7670e-4g.htm",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-a7670e-4g.htm",
+      "kind": "derived-public-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:46Z",
+      "bytes": 1397,
+      "sha256": "274244cfb321eae274e7d267ac3d5a8136569aa192074b4437d824b1d7e958cc",
+      "archiveName": "sku-selection.json",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-s3-a7670e-4g/sku-selection.json; derived public fields, not original HTTP bytes"
+    },
+    {
+      "id": "photo-0",
+      "title": "photo-0.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-inter-4f5eb3de718b965ce3942c3cca1339ab.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-inter-4f5eb3de718b965ce3942c3cca1339ab.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:58:31Z",
+      "bytes": 66236,
+      "sha256": "a302fc7bfdc7347dab8c3d7fd4886334fbba4ac17470aab33a28e447dd57bc69",
+      "archiveName": "photo-0.webp",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-s3-a7670e-4g/photo-0.webp"
+    },
+    {
+      "id": "photo-1",
+      "title": "photo-1.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-intro-01e1d792b49d9da5296aec460777ca25.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-intro-01e1d792b49d9da5296aec460777ca25.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:58:31Z",
+      "bytes": 46270,
+      "sha256": "eb0a995571d1ab448d9643e186f5710694deca71a539de00e3ecefcf18219ade",
+      "archiveName": "photo-1.webp",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-s3-a7670e-4g/photo-1.webp"
+    },
+    {
+      "id": "dimension-photo",
+      "title": "dimension-photo.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-size-fb992f79ce425baa1cd24c6a9748a2df.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-size-fb992f79ce425baa1cd24c6a9748a2df.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:58:31Z",
+      "bytes": 54810,
+      "sha256": "68b46736e71243d0092392ec8d40b6fd00da565df1fd335d1e19cbc1bbb4b338",
+      "archiveName": "dimension-photo.webp",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-s3-a7670e-4g/dimension-photo.webp"
+    },
+    {
+      "id": "cad-archive",
+      "title": "source-archive.zip",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 3244035,
+      "sha256": "cc74fb13f24571ad5f5fa63ddacb2545b0f78dbe2931ed6c2059fee0a9d0b88b",
+      "archiveName": "source-archive.zip",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-s3-a7670e-4g/source-archive.zip"
+    },
+    {
+      "id": "official-cad",
+      "title": "source.stp.gz",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 20528906,
+      "sha256": "c5b5d2a6458d01d66df2685da6e4abfff893264656d2d5ae3000014aef5a962b",
+      "archiveName": "source.stp.gz",
+      "notes": "Retained in web/platform/assets/waveshare-esp32-s3-a7670e-4g/source.stp.gz"
+    },
+    {
+      "id": "electrical-0",
+      "title": "ESP32-S3-A-SIM7670X-4G-V2.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/ESP32-S3-A-SIM7670X-4G-V2.pdf",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/ESP32-S3-A-SIM7670X-4G-V2.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 3426123,
+      "sha256": "91877a6627b21acb8e20c08a7b3667ad4879a06d9883a878be1abfced57671ca",
+      "archiveName": "ESP32-S3-A-SIM7670X-4G-V2.pdf.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-A-SIM7670X-4G-V2.pdf.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-1",
+      "title": "ESP32-S3-A-SIM7670X-4G.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X-4G.pdf",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X-4G.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:00Z",
+      "bytes": 1419750,
+      "sha256": "319fa9c75827701e9f9819ff406d34b3b3c3c2690cb51118c646b3ad31ef776e",
+      "archiveName": "ESP32-S3-A-SIM7670X-4G.pdf.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-A-SIM7670X-4G.pdf.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-2",
+      "title": "ESP32-S3-A7670E-4G-Arduino.html",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Arduino",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Arduino",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:40Z",
+      "bytes": 63677,
+      "sha256": "cfbbac4344b5358c3843d553837ff424d436bb3f31c7452d632acf76c19e2c3e",
+      "archiveName": "ESP32-S3-A7670E-4G-Arduino.html.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-A7670E-4G-Arduino.html.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-3",
+      "title": "ESP32-S3-A7670E-4G-ESP-IDF.html",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/ESP-IDF",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/ESP-IDF",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:41Z",
+      "bytes": 46850,
+      "sha256": "c1c17f30916c4eb309965133debb219ad62b89d6a189fe7b05898d7045c2fb5f",
+      "archiveName": "ESP32-S3-A7670E-4G-ESP-IDF.html.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-A7670E-4G-ESP-IDF.html.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-4",
+      "title": "ESP32-S3-A7670E-4G-Firmware.html",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Firmware",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Firmware",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:40Z",
+      "bytes": 28090,
+      "sha256": "6b7c2ab036fe07fbdc80080d4ffe00fdd30042d5690287d92c111a94fa036685",
+      "archiveName": "ESP32-S3-A7670E-4G-Firmware.html.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-A7670E-4G-Firmware.html.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-9",
+      "title": "members/ESP32-S3-A-SIM7670X-4G-V2/ESP32-S3-A-SIM7670X-4G-V2/Arduino-V3.3.4/examples/CameraWebServer/board_config.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 1455,
+      "sha256": "e3ea8e6a7d6590172ed429a575cb3b313efa01013ca857ff7638d0e7d9efda7f",
+      "archiveName": "members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_CameraWebServer_board_config.h.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_CameraWebServer_board_config.h.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-10",
+      "title": "members/ESP32-S3-A-SIM7670X-4G-V2/ESP32-S3-A-SIM7670X-4G-V2/Arduino-V3.3.4/examples/CameraWebServer/camera_pins.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 8388,
+      "sha256": "d2bd14315ca90e71a807efb84605d2bc0bf2f1d477e59f0b874a48eac9a590d8",
+      "archiveName": "members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_CameraWebServer_camera_pins.h.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_CameraWebServer_camera_pins.h.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-11",
+      "title": "members/ESP32-S3-A-SIM7670X-4G-V2/ESP32-S3-A-SIM7670X-4G-V2/Arduino-V3.3.4/examples/RGB/RGB.ino",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 684,
+      "sha256": "8d73302f362ba8366bba9db39bb8f60071a54f212304a537de9136927d35140c",
+      "archiveName": "members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_RGB_RGB.ino.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_RGB_RGB.ino.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-12",
+      "title": "members/ESP32-S3-A-SIM7670X-4G-V2/ESP32-S3-A-SIM7670X-4G-V2/Arduino-V3.3.4/examples/SD/SD.ino",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 2020,
+      "sha256": "6e5e33094cc8b70bd75a3fe1803a351c5a76bee06b40482c1921e583da050e84",
+      "archiveName": "members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_SD_SD.ino.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_SD_SD.ino.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-13",
+      "title": "members/ESP32-S3-A-SIM7670X-4G-V2/ESP32-S3-A-SIM7670X-4G-V2/Arduino-V3.3.4/examples/bat/bat.ino",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 498,
+      "sha256": "97eb40fd0f6c9e991b914d9e94515afc9ecfef845918f54add0d16fae0fbba7d",
+      "archiveName": "members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_bat_bat.ino.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_Arduino-V3.3.4_examples_bat_bat.ino.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-14",
+      "title": "members/ESP32-S3-A-SIM7670X-4G-V2/ESP32-S3-A-SIM7670X-4G-V2/ESP-IDF/ESP32-S3-XXX7670X-4G-GNSS/sdkconfig.defaults",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 240,
+      "sha256": "5bc63bc605308ff4fec989673ad469cbd556003ae5d8b1737094a599baf7a72c",
+      "archiveName": "members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_ESP-IDF_ESP32-S3-XXX7670X-4G-GNSS_sdkconfig.defaults.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_ESP-IDF_ESP32-S3-XXX7670X-4G-GNSS_sdkconfig.defaults.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-15",
+      "title": "members/ESP32-S3-A-SIM7670X-4G-V2/ESP32-S3-A-SIM7670X-4G-V2/ESP-IDF/ESP32-S3-XXX7670X-4G-HTTP/sdkconfig.defaults",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 240,
+      "sha256": "5bc63bc605308ff4fec989673ad469cbd556003ae5d8b1737094a599baf7a72c",
+      "archiveName": "members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_ESP-IDF_ESP32-S3-XXX7670X-4G-HTTP_sdkconfig.defaults.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_ESP-IDF_ESP32-S3-XXX7670X-4G-HTTP_sdkconfig.defaults.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-16",
+      "title": "members/ESP32-S3-A-SIM7670X-4G-V2/ESP32-S3-A-SIM7670X-4G-V2/ESP-IDF/ESP32-S3-XXX7670X-4G-TCP/sdkconfig.defaults",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 240,
+      "sha256": "5bc63bc605308ff4fec989673ad469cbd556003ae5d8b1737094a599baf7a72c",
+      "archiveName": "members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_ESP-IDF_ESP32-S3-XXX7670X-4G-TCP_sdkconfig.defaults.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X-4G-V2_ESP32-S3-A-SIM7670X-4G-V2_ESP-IDF_ESP32-S3-XXX7670X-4G-TCP_sdkconfig.defaults.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-20",
+      "title": "members/ESP32-S3-A-SIM7670X_4G/CameraWebServer/camera_pins.h",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:00Z",
+      "bytes": 7562,
+      "sha256": "da87e8d67e4e6a6bf302886da652c32529b5b50c38f39633b125a43c517923d3",
+      "archiveName": "members_ESP32-S3-A-SIM7670X_4G_CameraWebServer_camera_pins.h.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X_4G_CameraWebServer_camera_pins.h.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-21",
+      "title": "members/ESP32-S3-A-SIM7670X_4G/RGB/RGB.ino",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:00Z",
+      "bytes": 684,
+      "sha256": "8d73302f362ba8366bba9db39bb8f60071a54f212304a537de9136927d35140c",
+      "archiveName": "members_ESP32-S3-A-SIM7670X_4G_RGB_RGB.ino.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X_4G_RGB_RGB.ino.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-22",
+      "title": "members/ESP32-S3-A-SIM7670X_4G/SD/SD.ino",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:00Z",
+      "bytes": 2085,
+      "sha256": "e0bcb2522b335d8d42b4efba00f50016043a50a8c803a28fee72162a608af056",
+      "archiveName": "members_ESP32-S3-A-SIM7670X_4G_SD_SD.ino.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X_4G_SD_SD.ino.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-23",
+      "title": "members/ESP32-S3-A-SIM7670X_4G/bat/bat.ino",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:00Z",
+      "bytes": 519,
+      "sha256": "dc304003023afa061d5885a84cbd38a0ea738924c2d60b827efee6ecc8744a9d",
+      "archiveName": "members_ESP32-S3-A-SIM7670X_4G_bat_bat.ino.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/members_ESP32-S3-A-SIM7670X_4G_bat_bat.ino.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-27",
+      "title": "ESP32-S3-A-SIM7670X-4G-V2-inventory.json",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip",
+      "kind": "derived-public-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 40751,
+      "sha256": "f3a79d05e2b0b3c7aa33592de6838f5ec883d8758fba601d20b8ce0ce761bb30",
+      "archiveName": "ESP32-S3-A-SIM7670X-4G-V2-inventory.json.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-A-SIM7670X-4G-V2-inventory.json.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-28",
+      "title": "ESP32-S3-A-SIM7670X_4G-inventory.json",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip",
+      "kind": "derived-public-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:00Z",
+      "bytes": 3467,
+      "sha256": "879d036ef533c11edbe4ce4540c53521ec7d414769c8e18b3693d5f965ba92d3",
+      "archiveName": "ESP32-S3-A-SIM7670X_4G-inventory.json.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-A-SIM7670X_4G-inventory.json.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-29",
+      "title": "ESP32-S3-A7670E_USB_4G_CDC-inventory.json",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A7670E_USB_4G_CDC.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A7670E_USB_4G_CDC.zip",
+      "kind": "derived-public-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:26Z",
+      "bytes": 714,
+      "sha256": "b266e1770a17ebf5286f4aa7e8551c10fe4fd473785d32b8d4735b5f6c592f18",
+      "archiveName": "ESP32-S3-A7670E_USB_4G_CDC-inventory.json.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-A7670E_USB_4G_CDC-inventory.json.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-30",
+      "title": "ESP32-S3-SIM7670G_USB_4G_CDC-inventory.json",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-SIM7670G-4G/ESP32-S3-SIM7670G_USB_4G_CDC.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-SIM7670G-4G/ESP32-S3-SIM7670G_USB_4G_CDC.zip",
+      "kind": "derived-public-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:26Z",
+      "bytes": 733,
+      "sha256": "95493f9e37885f497feccd1b8eeb18ff0891f24695aa4b533d3c714a2afdc400",
+      "archiveName": "ESP32-S3-SIM7670G_USB_4G_CDC-inventory.json.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/ESP32-S3-SIM7670G_USB_4G_CDC-inventory.json.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "electrical-31",
+      "title": "esp32-s3-a-sim7670x-4g-pcba-inventory.json",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip",
+      "kind": "derived-public-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:34:54Z",
+      "bytes": 739,
+      "sha256": "1bc83a20f690f8a70efb1b9b09c091cc4180933b89192e45638804c1b302852a",
+      "archiveName": "esp32-s3-a-sim7670x-4g-pcba-inventory.json.gz",
+      "notes": "docs/platform/research/waveshare-s3-cellular-sources/esp32-s3-a-sim7670x-4g-pcba-inventory.json.gz; original member/container identities retained in manifest."
+    },
+    {
+      "id": "firmware",
+      "title": "ESP32-S3-A7670E_USB_4G_CDC.bin",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A7670E_USB_4G_CDC.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A7670E_USB_4G_CDC.zip",
+      "kind": "manufacturer-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:35:26Z",
+      "bytes": 2162688,
+      "sha256": "1437291c3dfa9f3afa96987b97c8ba7af1f0952e7d0d87b6d407e130f97b2073",
+      "archiveName": "ESP32-S3-A7670E_USB_4G_CDC.bin",
+      "notes": "Exact-model original example member in hash-pinned ZIP; remote-only. Current docs link it, but V2 complete application compatibility is unverified."
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "78/xiaozhi-esp32 pinned exact-target investigation",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Pinned source receipt at docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json. Similar 4G boards are not this product."
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "m5stack/uiflow-micropython pinned exact-target investigation",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Pinned source receipt at docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json. Similar 4G boards are not this product."
+    }
+  ],
+  "assets": [
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Resources-And-Documents"
+    },
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-a7670e-4g.htm"
+    },
+    {
+      "id": "photo-0",
+      "sourceId": "photo-0",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-inter-4f5eb3de718b965ce3942c3cca1339ab.webp"
+    },
+    {
+      "id": "photo-1",
+      "sourceId": "photo-1",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-intro-01e1d792b49d9da5296aec460777ca25.webp"
+    },
+    {
+      "id": "dimension-photo",
+      "sourceId": "dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-A7670E-4G-details-size-fb992f79ce425baa1cd24c6a9748a2df.webp"
+    },
+    {
+      "id": "cad-archive",
+      "sourceId": "cad-archive",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip"
+    },
+    {
+      "id": "official-cad",
+      "sourceId": "official-cad",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip"
+    },
+    {
+      "id": "electrical-0",
+      "sourceId": "electrical-0",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/ESP32-S3-A-SIM7670X-4G-V2.pdf"
+    },
+    {
+      "id": "electrical-1",
+      "sourceId": "electrical-1",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X-4G.pdf"
+    },
+    {
+      "id": "electrical-2",
+      "sourceId": "electrical-2",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Arduino"
+    },
+    {
+      "id": "electrical-3",
+      "sourceId": "electrical-3",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/ESP-IDF"
+    },
+    {
+      "id": "electrical-4",
+      "sourceId": "electrical-4",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-A7670E-4G/Firmware"
+    },
+    {
+      "id": "electrical-9",
+      "sourceId": "electrical-9",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-10",
+      "sourceId": "electrical-10",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-11",
+      "sourceId": "electrical-11",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-12",
+      "sourceId": "electrical-12",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-13",
+      "sourceId": "electrical-13",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-14",
+      "sourceId": "electrical-14",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-15",
+      "sourceId": "electrical-15",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-16",
+      "sourceId": "electrical-16",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-20",
+      "sourceId": "electrical-20",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip"
+    },
+    {
+      "id": "electrical-21",
+      "sourceId": "electrical-21",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip"
+    },
+    {
+      "id": "electrical-22",
+      "sourceId": "electrical-22",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip"
+    },
+    {
+      "id": "electrical-23",
+      "sourceId": "electrical-23",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip"
+    },
+    {
+      "id": "electrical-27",
+      "sourceId": "electrical-27",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/Demo/ESP32-S3-A-SIM7670X-4G-V2.zip"
+    },
+    {
+      "id": "electrical-28",
+      "sourceId": "electrical-28",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A-SIM7670X_4G.zip"
+    },
+    {
+      "id": "electrical-29",
+      "sourceId": "electrical-29",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A7670E_USB_4G_CDC.zip"
+    },
+    {
+      "id": "electrical-30",
+      "sourceId": "electrical-30",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-SIM7670G-4G/ESP32-S3-SIM7670G_USB_4G_CDC.zip"
+    },
+    {
+      "id": "electrical-31",
+      "sourceId": "electrical-31",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A-SIM7670X-4G-HAT/3D/esp32-s3-a-sim7670x-4g-pcba.zip"
+    },
+    {
+      "id": "firmware",
+      "sourceId": "firmware",
+      "role": "firmware-download",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-A7670E-4G/ESP32-S3-A7670E_USB_4G_CDC.zip"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "sourceId": "xiaozhi-tree",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+    },
+    {
+      "id": "uiflow-tree",
+      "sourceId": "uiflow-tree",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "exact-release-date",
+      "label": "准确硬件发布日期",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "product",
+        "resources"
+      ]
+    },
+    {
+      "id": "v2-mechanical-layout",
+      "label": "V2 精确 PCB/亚克力装配尺寸与接口锚点",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "official-cad",
+        "dimension-photo"
+      ]
+    },
+    {
+      "id": "factory-recovery",
+      "label": "明确标为出厂恢复的完整镜像",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "resources",
+        "firmware"
+      ]
+    },
+    {
+      "id": "full-acceptance",
+      "label": "完整应用和实物验收",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "firmware"
+      ]
+    }
+  ],
+  "collectionNotes": [
+    "部分适配：已实现 GPIO38 RGB、原生一位 TF 总线和 BOOT0。蜂窝网络、USB 调制解调器、GNSS、摄像头、电量计与模拟电源尚未模拟。",
+    "销售套件含亚克力支架；3D 当前仅厂家历史 PCBA 参考，支架、螺柱、线缆及天线装配未建模。未实机验证。",
+    "Register only the current V2 electrical profile. Official resource page identifies V2 examples as after December 2025; this is a resource-version statement, not an exact SKU release date.",
+    "V1 gauge SDA3/SCL2 becomes V2 SDA15/SCL16. Camera timing pads also change; the retained V1 and V2 schematic/source files are not merged into a guessed hybrid.",
+    "Old SD_CD_PIN46 names the TF DAT3/CD signal, not a proven independent insertion switch. Current V2 schematic has a separate SD_CS net and V2 SD example removes that macro; GPIO46 is camera PCLK. No fake GPIO46 card-detect level is supplied.",
+    "V1 battery demo reads VCELL register0x02 and multiplies by5 while labeling percent; this is not accepted as an accurate battery state-of-charge formula. MAX17048 measurements/ACK are unimplemented.",
+    "Current official firmware pages warn against interchanging A7670E/SIM7670G images. Each exact-model ZIP is separately hash/layout checked; the V2 shared demo ZIP contains only the older A7670E example, not a SIM replacement.",
+    "These linked images are precompiled examples, not proven factory recovery. A7670E build is November2023; SIM7670G April2024. Both original headers declare4MiB while source hardware is16MiB; original bytes and 16MiB board capacity are preserved.",
+    "Both original examples reach usb_cdc_4g_module app_main, print modem initialization wait, and consume the5s bound without a reboot. No USB modem, PPP, network access, GNSS fix, camera capture or battery-gauge success is claimed.",
+    "The original example logs a modem reset on GPIO13; V2 camera data also uses GPIO13. This application observation is retained, not used to invent a physical reset connection or rewrite the firmware.",
+    "This is the shared manufacturer PCBA reference from a STEP header dated 2024-03-08; the current V2 pin assignment is independently sourced. Exact V2 layout and modem-specific mechanical/BOM differences are unknown.",
+    "SKU 26749 includes an acrylic case/support and accessories. The picker explicitly labels their absence. No full 125 x 31.6 x 34 mm kit, screw/standoff fit, battery, loose antenna, speaker or cable assembly is claimed.",
+    "The native battery is omitted because the sale kit excludes it. Battery holder and all other 741 native components, including all four open shells, remain. Source assembly bytes are preserved unchanged.",
+    "Camera reference is retained from manufacturer CAD; OV5640 is a package fact, not proof of exact lens/housing CAD identity. No camera image or USB/cellular behavior is synthesized.",
+    "Native RGB body 410 is associated with the one documented GPIO38 chain output using the original photo. Current V2 spatial placement is uncalibrated; numeric chain output is independently tested.",
+    "BOOT is available in the workbench. Switch actuator separation, unknown acrylic openings and connector mating positions are unverified, so no 3D button targets or connected cables are invented.",
+    "Native material colors are not calibrated physical color. No hardware fit, WebGL browser, physical optical or full original application acceptance claim."
+  ]
+}

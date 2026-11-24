@@ -1,0 +1,319 @@
+{
+  "listingId": "esp32-s3-sim7670g-4g",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-sim7670g-4g",
+      "name": "Waveshare ESP32-S3-SIM7670G-4G-EN（PCBA参考，亚克力支架未建模）",
+      "manufacturer": "Waveshare",
+      "sku": "26750",
+      "chip": "esp32s3",
+      "hardwareRevision": "V2 electrical profile; current official resources after December2025; native PCBA CAD dated2024-03-08",
+      "summary": "SIM7670G 4G 套件；ESP32-S3R8，16 MiB Flash / 8 MiB PSRAM，无板载屏幕。当前适配 RGB 与 TF 数字路径；3D 为历史 PCBA 参考，亚克力支架未建模。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-sim7670g-4g.json",
+      "family": {
+        "id": "esp32-s3-sim7670g-4g",
+        "name": "Waveshare ESP32-S3-SIM7670G-4G-EN"
+      },
+      "runtime": {
+        "board": "waveshare-s3-sim7670g-4g-v2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 5
+            },
+            {
+              "name": "CMD",
+              "gpio": 4
+            },
+            {
+              "name": "D0",
+              "gpio": 6
+            }
+          ],
+          "notes": "Default64MiB FAT32 card; exact one-bit SDMMC and sector DMA tested with actual LX7 instructions. No independent detect GPIO. Four-bit mode is rejected."
+        },
+        {
+          "id": "usb",
+          "name": "USB-C / switched USB hub and modem",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "notes": "Native manufacturer connector reference only. Port-to-hub switch position and individual connector contact mapping are unverified; modem CDC/USB hub routing and physical cable mating are not implemented."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-S3-SIM7670G-4G",
+          "checkedAt": "2026-11-24"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-S3-SIM7670G-4G/Resources-And-Documents",
+          "checkedAt": "2026-11-24"
+        },
+        {
+          "id": "product",
+          "title": "sku-selection.json",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-sim7670g-4g.htm",
+          "checkedAt": "2026-11-24"
+        }
+      ],
+      "limitations": [
+        "部分适配：已实现 GPIO38 RGB、原生一位 TF 总线和 BOOT0。蜂窝网络、USB 调制解调器、GNSS、摄像头、电量计与模拟电源尚未模拟。",
+        "销售套件含亚克力支架；3D 当前仅厂家历史 PCBA 参考，支架、螺柱、线缆及天线装配未建模。未实机验证。",
+        "Register only the current V2 electrical profile. Official resource page identifies V2 examples as after December 2025; this is a resource-version statement, not an exact SKU release date.",
+        "V1 gauge SDA3/SCL2 becomes V2 SDA15/SCL16. Camera timing pads also change; the retained V1 and V2 schematic/source files are not merged into a guessed hybrid.",
+        "Old SD_CD_PIN46 names the TF DAT3/CD signal, not a proven independent insertion switch. Current V2 schematic has a separate SD_CS net and V2 SD example removes that macro; GPIO46 is camera PCLK. No fake GPIO46 card-detect level is supplied.",
+        "V1 battery demo reads VCELL register0x02 and multiplies by5 while labeling percent; this is not accepted as an accurate battery state-of-charge formula. MAX17048 measurements/ACK are unimplemented.",
+        "Current official firmware pages warn against interchanging A7670E/SIM7670G images. Each exact-model ZIP is separately hash/layout checked; the V2 shared demo ZIP contains only the older A7670E example, not a SIM replacement.",
+        "These linked images are precompiled examples, not proven factory recovery. A7670E build is November2023; SIM7670G April2024. Both original headers declare4MiB while source hardware is16MiB; original bytes and 16MiB board capacity are preserved.",
+        "Both original examples reach usb_cdc_4g_module app_main, print modem initialization wait, and consume the5s bound without a reboot. No USB modem, PPP, network access, GNSS fix, camera capture or battery-gauge success is claimed.",
+        "The original example logs a modem reset on GPIO13; V2 camera data also uses GPIO13. This application observation is retained, not used to invent a physical reset connection or rewrite the firmware.",
+        "This is the shared manufacturer PCBA reference from a STEP header dated 2024-03-08; the current V2 pin assignment is independently sourced. Exact V2 layout and modem-specific mechanical/BOM differences are unknown.",
+        "SKU 26750 includes an acrylic case/support and accessories. The picker explicitly labels their absence. No full 125 x 31.6 x 34 mm kit, screw/standoff fit, battery, loose antenna, speaker or cable assembly is claimed.",
+        "The native battery is omitted because the sale kit excludes it. Battery holder and all other 741 native components, including all four open shells, remain. Source assembly bytes are preserved unchanged.",
+        "Camera reference is retained from manufacturer CAD; OV5640 is a package fact, not proof of exact lens/housing CAD identity. No camera image or USB/cellular behavior is synthesized.",
+        "Native RGB body 410 is associated with the one documented GPIO38 chain output using the original photo. Current V2 spatial placement is uncalibrated; numeric chain output is independently tested.",
+        "BOOT is available in the workbench. Switch actuator separation, unknown acrylic openings and connector mating positions are unverified, so no 3D button targets or connected cables are invented.",
+        "Native material colors are not calibrated physical color. No hardware fit, WebGL browser, physical optical or full original application acceptance claim."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "V2 example chronology afterDecember2025 is recorded separately; no exact product release date inferred."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-sim7670g-4g/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-s3-sim7670g-4g-official-example"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-s3-sim7670g-4g-official-example",
+      "name": "ESP32-S3-SIM7670G-4G-EN 官方 USB 4G 示例（验证中）",
+      "productIds": [
+        "waveshare-esp32-s3-sim7670g-4g"
+      ],
+      "version": "ESP32-S3-SIM7670G_USB_4G_CDC_240422",
+      "status": "trial",
+      "source": {
+        "url": "https://files.waveshare.com/wiki/ESP32-S3-SIM7670G-4G/ESP32-S3-SIM7670G_USB_4G_CDC.zip",
+        "sha256": "d95d5742ddd43f2f7994ff4ef3c5fe70d5f9669738597944db4fdbfcbb82c459",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "ESP32-S3-SIM7670G_USB_4G_CDC_240422.bin",
+          "sha256": "1ef3bd1ceb0d9a8be843c3af3c231cbb3a251b25947728042398b47a7e086d6f"
+        }
+      },
+      "role": "example",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Exact modem-specific official precompiled example",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-SIM7670G-4G/ESP32-S3-SIM7670G_USB_4G_CDC.zip",
+          "checkedAt": "2026-11-24"
+        }
+      ],
+      "limitations": [
+        "Register only the current V2 electrical profile. Official resource page identifies V2 examples as after December 2025; this is a resource-version statement, not an exact SKU release date.",
+        "V1 gauge SDA3/SCL2 becomes V2 SDA15/SCL16. Camera timing pads also change; the retained V1 and V2 schematic/source files are not merged into a guessed hybrid.",
+        "Old SD_CD_PIN46 names the TF DAT3/CD signal, not a proven independent insertion switch. Current V2 schematic has a separate SD_CS net and V2 SD example removes that macro; GPIO46 is camera PCLK. No fake GPIO46 card-detect level is supplied.",
+        "V1 battery demo reads VCELL register0x02 and multiplies by5 while labeling percent; this is not accepted as an accurate battery state-of-charge formula. MAX17048 measurements/ACK are unimplemented.",
+        "Current official firmware pages warn against interchanging A7670E/SIM7670G images. Each exact-model ZIP is separately hash/layout checked; the V2 shared demo ZIP contains only the older A7670E example, not a SIM replacement.",
+        "These linked images are precompiled examples, not proven factory recovery. A7670E build is November2023; SIM7670G April2024. Both original headers declare4MiB while source hardware is16MiB; original bytes and 16MiB board capacity are preserved.",
+        "Both original examples reach usb_cdc_4g_module app_main, print modem initialization wait, and consume the5s bound without a reboot. No USB modem, PPP, network access, GNSS fix, camera capture or battery-gauge success is claimed.",
+        "The original example logs a modem reset on GPIO13; V2 camera data also uses GPIO13. This application observation is retained, not used to invent a physical reset connection or rewrite the firmware.",
+        "No complete factory image was identified as factory-purpose in the inspected official pages/archives. This default remains an example."
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-s3-sim7670g-4g-official-example-watch",
+      "name": "ESP32-S3-SIM7670G-4G-EN 官方 USB 4G 示例（验证中）",
+      "category": "development",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-SIM7670G-4G-EN",
+      "metadataProvider": "manual",
+      "metadataUrl": "https://docs.waveshare.com/ESP32-S3-SIM7670G-4G/Firmware",
+      "releaseUrl": "https://files.waveshare.com/wiki/ESP32-S3-SIM7670G-4G/ESP32-S3-SIM7670G_USB_4G_CDC.zip",
+      "version": "ESP32-S3-SIM7670G_USB_4G_CDC_240422",
+      "checkedAt": "2026-11-24T00:10:03Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-SIM7670G_USB_4G_CDC_240422.bin",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-SIM7670G-4G/ESP32-S3-SIM7670G_USB_4G_CDC.zip",
+          "bytes": 648287,
+          "sha256": "1ef3bd1ceb0d9a8be843c3af3c231cbb3a251b25947728042398b47a7e086d6f",
+          "format": "zip-bundle",
+          "archiveMember": "ESP32-S3-SIM7670G_USB_4G_CDC_240422.bin",
+          "memberBytes": 1027600,
+          "memberSha256": "d95d5742ddd43f2f7994ff4ef3c5fe70d5f9669738597944db4fdbfcbb82c459"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-sim7670g-4g"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Exact-model source/layout and5s native observation only. Modem remains unavailable; future versions must be independently reviewed."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Keep example identity; no source labels this exact image as factory recovery. Do not interchange A7670E/SIM7670G."
+    },
+    {
+      "id": "esp32-s3-sim7670g-4g-factory-investigation",
+      "name": "ESP32-S3-SIM7670G-4G-EN factory-purpose investigation",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-SIM7670G-4G-EN",
+      "metadataProvider": "manual",
+      "metadataUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-sim7670g-4g.htm",
+      "releaseUrl": "https://docs.waveshare.com/ESP32-S3-SIM7670G-4G/Resources-And-Documents",
+      "version": "no-factory-purpose-image-found",
+      "checkedAt": "2026-11-24T00:10:03Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-sim7670g-4g"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Official example available; exact factory-purpose binary absent from retained scope."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual exact-model source investigation; no automatic firmware acceptance or neighboring-board substitution."
+    },
+    {
+      "id": "esp32-s3-sim7670g-4g-xiaozhi-investigation",
+      "name": "ESP32-S3-SIM7670G-4G-EN xiaozhi exact-target investigation",
+      "category": "voice",
+      "upstreamRepo": "78/xiaozhi-esp32",
+      "metadataProvider": "manual",
+      "metadataUrl": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "releaseUrl": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "version": "92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "checkedAt": "2026-11-24T00:10:03Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-sim7670g-4g"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Exact source paths []. No exact-model accepted complete binary; neighboring4G targets are not substituted."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual exact-model source investigation; no automatic firmware acceptance or neighboring-board substitution."
+    },
+    {
+      "id": "esp32-s3-sim7670g-4g-uiflow-investigation",
+      "name": "ESP32-S3-SIM7670G-4G-EN uiflow exact-target investigation",
+      "category": "development",
+      "upstreamRepo": "m5stack/uiflow-micropython",
+      "metadataProvider": "manual",
+      "metadataUrl": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "releaseUrl": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "version": "a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "checkedAt": "2026-11-24T00:10:03Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-sim7670g-4g"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Exact source paths []. No exact-model accepted complete binary; neighboring4G targets are not substituted."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual exact-model source investigation; no automatic firmware acceptance or neighboring-board substitution."
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-sim7670g-4g.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-sim7670g-4g-v2": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/platform/research/waveshare-s3-cellular-sources/manifest.json",
+    "web/platform/assets/waveshare-esp32-s3-sim7670g-4g/source-manifest.json"
+  ],
+  "tests": [
+    "cargo test -p esp32s3 --lib waveshare_s3_cellular",
+    "cargo test -p esp32s3 --test waveshare_cellular_guest",
+    "docs/evidence/waveshare-s3-cellular-2026-11-24/native-runs.json",
+    "docs/evidence/waveshare-s3-cellular-2026-11-24/model-loader-check.json"
+  ],
+  "limitations": [
+    "部分适配：已实现 GPIO38 RGB、原生一位 TF 总线和 BOOT0。蜂窝网络、USB 调制解调器、GNSS、摄像头、电量计与模拟电源尚未模拟。",
+    "销售套件含亚克力支架；3D 当前仅厂家历史 PCBA 参考，支架、螺柱、线缆及天线装配未建模。未实机验证。",
+    "Register only the current V2 electrical profile. Official resource page identifies V2 examples as after December 2025; this is a resource-version statement, not an exact SKU release date.",
+    "V1 gauge SDA3/SCL2 becomes V2 SDA15/SCL16. Camera timing pads also change; the retained V1 and V2 schematic/source files are not merged into a guessed hybrid.",
+    "Old SD_CD_PIN46 names the TF DAT3/CD signal, not a proven independent insertion switch. Current V2 schematic has a separate SD_CS net and V2 SD example removes that macro; GPIO46 is camera PCLK. No fake GPIO46 card-detect level is supplied.",
+    "V1 battery demo reads VCELL register0x02 and multiplies by5 while labeling percent; this is not accepted as an accurate battery state-of-charge formula. MAX17048 measurements/ACK are unimplemented.",
+    "Current official firmware pages warn against interchanging A7670E/SIM7670G images. Each exact-model ZIP is separately hash/layout checked; the V2 shared demo ZIP contains only the older A7670E example, not a SIM replacement.",
+    "These linked images are precompiled examples, not proven factory recovery. A7670E build is November2023; SIM7670G April2024. Both original headers declare4MiB while source hardware is16MiB; original bytes and 16MiB board capacity are preserved.",
+    "Both original examples reach usb_cdc_4g_module app_main, print modem initialization wait, and consume the5s bound without a reboot. No USB modem, PPP, network access, GNSS fix, camera capture or battery-gauge success is claimed.",
+    "The original example logs a modem reset on GPIO13; V2 camera data also uses GPIO13. This application observation is retained, not used to invent a physical reset connection or rewrite the firmware.",
+    "This is the shared manufacturer PCBA reference from a STEP header dated 2024-03-08; the current V2 pin assignment is independently sourced. Exact V2 layout and modem-specific mechanical/BOM differences are unknown.",
+    "SKU 26750 includes an acrylic case/support and accessories. The picker explicitly labels their absence. No full 125 x 31.6 x 34 mm kit, screw/standoff fit, battery, loose antenna, speaker or cable assembly is claimed.",
+    "The native battery is omitted because the sale kit excludes it. Battery holder and all other 741 native components, including all four open shells, remain. Source assembly bytes are preserved unchanged.",
+    "Camera reference is retained from manufacturer CAD; OV5640 is a package fact, not proof of exact lens/housing CAD identity. No camera image or USB/cellular behavior is synthesized.",
+    "Native RGB body 410 is associated with the one documented GPIO38 chain output using the original photo. Current V2 spatial placement is uncalibrated; numeric chain output is independently tested.",
+    "BOOT is available in the workbench. Switch actuator separation, unknown acrylic openings and connector mating positions are unverified, so no 3D button targets or connected cables are invented.",
+    "Native material colors are not calibrated physical color. No hardware fit, WebGL browser, physical optical or full original application acceptance claim."
+  ]
+}

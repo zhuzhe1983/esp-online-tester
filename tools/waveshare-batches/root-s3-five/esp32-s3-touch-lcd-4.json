@@ -1,0 +1,498 @@
+{
+  "listingId": "esp32-s3-touch-lcd-4",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-4",
+      "name": "Waveshare ESP32-S3-Touch-LCD-4 · V4",
+      "manufacturer": "Waveshare",
+      "sku": "28154",
+      "chip": "esp32s3",
+      "hardwareRevision": "V4.0",
+      "summary": "480×480 触控RGB屏，16MiB Flash / 8MiB PSRAM；按精确SKU提供数字子集与有来源的部分机械模型。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-4.json",
+      "family": {
+        "id": "esp32-s3-touch-lcd-4",
+        "name": "ESP32-S3-Touch-LCD-4"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd4-v4",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB",
+        "diagonalInches": 4,
+        "controller": "ST7701S",
+        "touch": true,
+        "shape": "rectangle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C供电/下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "doc-6"
+          ]
+        },
+        {
+          "id": "tf",
+          "name": "microSD / TF",
+          "type": "microSD",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "doc-6"
+          ]
+        },
+        {
+          "id": "rs485",
+          "name": "RS485端子（电气对端未模拟）",
+          "type": "RS485",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "doc-6"
+          ]
+        },
+        {
+          "id": "can",
+          "name": "CAN端子（收发器未模拟）",
+          "type": "CAN",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "doc-6"
+          ]
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-4/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "sources": [
+        {
+          "id": "product",
+          "title": "esp32-s3-touch-lcd-4.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-4.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-0",
+          "title": "docs-cn.html",
+          "url": "https://docs.waveshare.net/ESP32-S3-Touch-LCD-4/",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-3",
+          "title": "firmware__README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-6",
+          "title": "hardware__schematics__ESP32-S3-Touch-LCD-4 V4.0.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/hardware/schematics/ESP32-S3-Touch-LCD-4%20V4.0.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "数字协议、真实固件输出、模型来源与实机验收分别记录；全部镜像保持trial，未完成原厂应用全流程或浏览器WebGL验收。",
+        "CAN/TWAI、RS485对端、USB、无线、模拟供电/充电、隔离输入输出电压及蜂鸣器声音未实现。",
+        "带TF卡槽默认准备64MiB FAT32；客体挂载依赖本板真实总线实现，不把镜像准备当作读写证明。",
+        "Manufacturer CAD retains original millimetres, source transforms, solids and open shells; no enclosure or invisible circuitry invented. Unversioned CAD is a mechanical family reference, not proof of current electrical revision or complete physical BOM.",
+        "Physical optical area is labelled VA, not independently measured active pixel area. The live framebuffer fits inside VA with square digital pixels; no calibrated pixel pitch, viewing angle, glass refraction, brightness or colour claim.",
+        "BOOT interaction follows the sourced button. RESET, analog battery latch, USB and terminal geometry remain visual where not implemented; connector mating depth and exact line sequence are not certified.",
+        "Exact official assembly was found in the Chinese resource page; it is unversioned and does not establish currentV4 CH32 component identity or placement. The runtime separately follows the pinnedV4 electrical schematic.",
+        "Touch glass84.2 square; native source includes separate LCD/FPC and all documented physical pieces.",
+        "V4使用CH32V003而非旧TCA9554；EX2为GT911中断，GPIO16属于SYS_OUT电源控制网，未暴露普通GPIO电源键。旧原理图另存，未混用版本。",
+        "两个官方FactoryOnly恢复镜像的触控/非触控身份由固定README区分；完整应用兼容性仍未验证。",
+        "两份原厂V4镜像各运行5秒并返回app_main：触控236个RGB帧、非触控239帧且实际挂载/卸载FAT32（28条SD命令、2次超时、读取1616字节）；两者均未写CH32 PWM，背光初态未知，保留黑屏，未证实可见原厂界面。证据：docs/evidence/waveshare-touch4-v4-runtime-2026-11-24。"
+      ],
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-4-factory",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "未从资料日期、SKU序号或抓取时间推算硬件上市日。"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-4",
+      "name": "Waveshare ESP32-S3-LCD-4 · V4",
+      "manufacturer": "Waveshare",
+      "sku": "30871",
+      "chip": "esp32s3",
+      "hardwareRevision": "V4.0",
+      "summary": "480×480 非触控RGB屏，16MiB Flash / 8MiB PSRAM；按精确SKU提供数字子集与有来源的部分机械模型。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-4.json",
+      "family": {
+        "id": "esp32-s3-touch-lcd-4",
+        "name": "ESP32-S3-Touch-LCD-4"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd4-v4",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB",
+        "diagonalInches": 4,
+        "controller": "ST7701S",
+        "touch": false,
+        "shape": "rectangle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C供电/下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "doc-6"
+          ]
+        },
+        {
+          "id": "tf",
+          "name": "microSD / TF",
+          "type": "microSD",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "doc-6"
+          ]
+        },
+        {
+          "id": "rs485",
+          "name": "RS485端子（电气对端未模拟）",
+          "type": "RS485",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "doc-6"
+          ]
+        },
+        {
+          "id": "can",
+          "name": "CAN端子（收发器未模拟）",
+          "type": "CAN",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "doc-6"
+          ]
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-4/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "sources": [
+        {
+          "id": "product",
+          "title": "esp32-s3-touch-lcd-4.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-4.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-0",
+          "title": "docs-cn.html",
+          "url": "https://docs.waveshare.net/ESP32-S3-Touch-LCD-4/",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-3",
+          "title": "firmware__README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-6",
+          "title": "hardware__schematics__ESP32-S3-Touch-LCD-4 V4.0.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/hardware/schematics/ESP32-S3-Touch-LCD-4%20V4.0.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "数字协议、真实固件输出、模型来源与实机验收分别记录；全部镜像保持trial，未完成原厂应用全流程或浏览器WebGL验收。",
+        "CAN/TWAI、RS485对端、USB、无线、模拟供电/充电、隔离输入输出电压及蜂鸣器声音未实现。",
+        "带TF卡槽默认准备64MiB FAT32；客体挂载依赖本板真实总线实现，不把镜像准备当作读写证明。",
+        "Manufacturer CAD retains original millimetres, source transforms, solids and open shells; no enclosure or invisible circuitry invented. Unversioned CAD is a mechanical family reference, not proof of current electrical revision or complete physical BOM.",
+        "Physical optical area is labelled VA, not independently measured active pixel area. The live framebuffer fits inside VA with square digital pixels; no calibrated pixel pitch, viewing angle, glass refraction, brightness or colour claim.",
+        "BOOT interaction follows the sourced button. RESET, analog battery latch, USB and terminal geometry remain visual where not implemented; connector mating depth and exact line sequence are not certified.",
+        "Exact official assembly was found in the Chinese resource page; it is unversioned and does not establish currentV4 CH32 component identity or placement. The runtime separately follows the pinnedV4 electrical schematic.",
+        "Non-touch derivative omits the touch cover/FPC component0. Current non-touch outer dimensions76.54x74.66 differ from the historical inner LCD source72.34x75.34; remaining enclosure/optical BOM correspondence is explicitly unverified.",
+        "V4使用CH32V003而非旧TCA9554；EX2为GT911中断，GPIO16属于SYS_OUT电源控制网，未暴露普通GPIO电源键。旧原理图另存，未混用版本。",
+        "两个官方FactoryOnly恢复镜像的触控/非触控身份由固定README区分；完整应用兼容性仍未验证。",
+        "两份原厂V4镜像各运行5秒并返回app_main：触控236个RGB帧、非触控239帧且实际挂载/卸载FAT32（28条SD命令、2次超时、读取1616字节）；两者均未写CH32 PWM，背光初态未知，保留黑屏，未证实可见原厂界面。证据：docs/evidence/waveshare-touch4-v4-runtime-2026-11-24。"
+      ],
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-4-factory",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "未从资料日期、SKU序号或抓取时间推算硬件上市日。"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-4-factory",
+      "name": "ESP32-S3-Touch-LCD-4 官方出厂恢复（trial）",
+      "productIds": [
+        "waveshare-esp32-s3-touch-lcd-4"
+      ],
+      "version": "20251122",
+      "status": "trial",
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/README.md",
+      "sources": [
+        {
+          "id": "product",
+          "title": "esp32-s3-touch-lcd-4.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-4.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-0",
+          "title": "docs-cn.html",
+          "url": "https://docs.waveshare.net/ESP32-S3-Touch-LCD-4/",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-3",
+          "title": "firmware__README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-6",
+          "title": "hardware__schematics__ESP32-S3-Touch-LCD-4 V4.0.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/hardware/schematics/ESP32-S3-Touch-LCD-4%20V4.0.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "数字协议、真实固件输出、模型来源与实机验收分别记录；全部镜像保持trial，未完成原厂应用全流程或浏览器WebGL验收。",
+        "CAN/TWAI、RS485对端、USB、无线、模拟供电/充电、隔离输入输出电压及蜂鸣器声音未实现。",
+        "带TF卡槽默认准备64MiB FAT32；客体挂载依赖本板真实总线实现，不把镜像准备当作读写证明。",
+        "Manufacturer CAD retains original millimetres, source transforms, solids and open shells; no enclosure or invisible circuitry invented. Unversioned CAD is a mechanical family reference, not proof of current electrical revision or complete physical BOM.",
+        "Physical optical area is labelled VA, not independently measured active pixel area. The live framebuffer fits inside VA with square digital pixels; no calibrated pixel pitch, viewing angle, glass refraction, brightness or colour claim.",
+        "BOOT interaction follows the sourced button. RESET, analog battery latch, USB and terminal geometry remain visual where not implemented; connector mating depth and exact line sequence are not certified.",
+        "Exact official assembly was found in the Chinese resource page; it is unversioned and does not establish currentV4 CH32 component identity or placement. The runtime separately follows the pinnedV4 electrical schematic.",
+        "Touch glass84.2 square; native source includes separate LCD/FPC and all documented physical pieces.",
+        "V4使用CH32V003而非旧TCA9554；EX2为GT911中断，GPIO16属于SYS_OUT电源控制网，未暴露普通GPIO电源键。旧原理图另存，未混用版本。",
+        "两个官方FactoryOnly恢复镜像的触控/非触控身份由固定README区分；完整应用兼容性仍未验证。",
+        "两份原厂V4镜像各运行5秒并返回app_main：触控236个RGB帧、非触控239帧且实际挂载/卸载FAT32（28条SD命令、2次超时、读取1616字节）；两者均未写CH32 PWM，背光初态未知，保留黑屏，未证实可见原厂界面。证据：docs/evidence/waveshare-touch4-v4-runtime-2026-11-24。"
+      ],
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/ESP32-S3-Touch-LCD-4_FactoryOnly_20251122.bin",
+        "sha256": "5db7ee79f1063465d8114cea3a4675c8c87bdf303c2a3edaf6a55414c8634706",
+        "bootMode": "rom"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-4-factory",
+      "name": "ESP32-S3-LCD-4 官方出厂恢复（trial）",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-4"
+      ],
+      "version": "20251218",
+      "status": "trial",
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/README.md",
+      "sources": [
+        {
+          "id": "product",
+          "title": "esp32-s3-touch-lcd-4.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-4.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-0",
+          "title": "docs-cn.html",
+          "url": "https://docs.waveshare.net/ESP32-S3-Touch-LCD-4/",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-3",
+          "title": "firmware__README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "doc-6",
+          "title": "hardware__schematics__ESP32-S3-Touch-LCD-4 V4.0.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/hardware/schematics/ESP32-S3-Touch-LCD-4%20V4.0.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "数字协议、真实固件输出、模型来源与实机验收分别记录；全部镜像保持trial，未完成原厂应用全流程或浏览器WebGL验收。",
+        "CAN/TWAI、RS485对端、USB、无线、模拟供电/充电、隔离输入输出电压及蜂鸣器声音未实现。",
+        "带TF卡槽默认准备64MiB FAT32；客体挂载依赖本板真实总线实现，不把镜像准备当作读写证明。",
+        "Manufacturer CAD retains original millimetres, source transforms, solids and open shells; no enclosure or invisible circuitry invented. Unversioned CAD is a mechanical family reference, not proof of current electrical revision or complete physical BOM.",
+        "Physical optical area is labelled VA, not independently measured active pixel area. The live framebuffer fits inside VA with square digital pixels; no calibrated pixel pitch, viewing angle, glass refraction, brightness or colour claim.",
+        "BOOT interaction follows the sourced button. RESET, analog battery latch, USB and terminal geometry remain visual where not implemented; connector mating depth and exact line sequence are not certified.",
+        "Exact official assembly was found in the Chinese resource page; it is unversioned and does not establish currentV4 CH32 component identity or placement. The runtime separately follows the pinnedV4 electrical schematic.",
+        "Non-touch derivative omits the touch cover/FPC component0. Current non-touch outer dimensions76.54x74.66 differ from the historical inner LCD source72.34x75.34; remaining enclosure/optical BOM correspondence is explicitly unverified.",
+        "V4使用CH32V003而非旧TCA9554；EX2为GT911中断，GPIO16属于SYS_OUT电源控制网，未暴露普通GPIO电源键。旧原理图另存，未混用版本。",
+        "两个官方FactoryOnly恢复镜像的触控/非触控身份由固定README区分；完整应用兼容性仍未验证。",
+        "两份原厂V4镜像各运行5秒并返回app_main：触控236个RGB帧、非触控239帧且实际挂载/卸载FAT32（28条SD命令、2次超时、读取1616字节）；两者均未写CH32 PWM，背光初态未知，保留黑屏，未证实可见原厂界面。证据：docs/evidence/waveshare-touch4-v4-runtime-2026-11-24。"
+      ],
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/ESP32-S3-LCD-4_FactoryOnly_20251218.bin",
+        "sha256": "7af2ca6b44d970c65dabef06e05659596eed9156873526893b0617cf0796ba76",
+        "bootMode": "rom"
+      }
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-4-factory-watch",
+      "name": "ESP32-S3-Touch-LCD-4 官方出厂恢复（trial） · 人工复核",
+      "category": "factory",
+      "metadataProvider": "manual",
+      "upstreamRepo": "waveshareteam/ESP32-S3-Touch-LCD-4",
+      "metadataUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/README.md",
+      "releaseUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/ESP32-S3-Touch-LCD-4_FactoryOnly_20251122.bin",
+      "version": "20251122",
+      "checkedAt": "2026-11-24T00:30:03Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-LCD-4_FactoryOnly_20251122.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/ESP32-S3-Touch-LCD-4_FactoryOnly_20251122.bin",
+          "sha256": "5db7ee79f1063465d8114cea3a4675c8c87bdf303c2a3edaf6a55414c8634706",
+          "format": "bin"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-lcd-4"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Exact pinned source/model mapping only. Requalify any changed firmware and preserve trial."
+      },
+      "catalogTargets": [],
+      "storage": "remote-links-only",
+      "monitoringNote": "Manual check of exact SKU, source branch, original member hash and factory/example purpose; never infer target mapping from file spelling alone."
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-4-factory-watch",
+      "name": "ESP32-S3-LCD-4 官方出厂恢复（trial） · 人工复核",
+      "category": "factory",
+      "metadataProvider": "manual",
+      "upstreamRepo": "waveshareteam/ESP32-S3-Touch-LCD-4",
+      "metadataUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/README.md",
+      "releaseUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/ESP32-S3-LCD-4_FactoryOnly_20251218.bin",
+      "version": "20251218",
+      "checkedAt": "2026-11-24T00:30:03Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LCD-4_FactoryOnly_20251218.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-4/390aaba10e80f1ef08506cb8d7db5e41cea09273/firmware/ESP32-S3-LCD-4_FactoryOnly_20251218.bin",
+          "sha256": "7af2ca6b44d970c65dabef06e05659596eed9156873526893b0617cf0796ba76",
+          "format": "bin"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-4"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Exact pinned source/model mapping only. Requalify any changed firmware and preserve trial."
+      },
+      "catalogTargets": [],
+      "storage": "remote-links-only",
+      "monitoringNote": "Manual check of exact SKU, source branch, original member hash and factory/example purpose; never infer target mapping from file spelling alone."
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-4.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-4.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-touch-lcd4-v4": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-lcd4-v4": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/platform/research/waveshare-s3-large-20261124/esp32-s3-touch-lcd-4/source-manifest.json",
+    "docs/platform/research/waveshare-s3-large-20261124/esp32-s3-touch-lcd-4/original-image-audit.json"
+  ],
+  "limitations": [
+    "All product/firmware/mechanical acceptance remains explicitly partial."
+  ]
+}
