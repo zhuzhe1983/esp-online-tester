@@ -2,7 +2,7 @@ import {firmwareBoardMatches} from './board-compatibility.js';
 import {validFirmwareZipEntry,extractFirmwareZipEntry,firmwareArchiveCacheKey,MAX_FIRMWARE_ZIP_BYTES} from './firmware-archive.js';
 import {MAX_FIRMWARE_FILE_BYTES as MAX_FILE, MAX_FIRMWARE_BUNDLE_BYTES as MAX_TOTAL} from './firmware-limits.js';
 // Hardware writes are available only from a user's Web Serial chooser gesture.
-import { fetchBytes, resolveFirmwareUrl, sha256, validateMergedImage } from './runtime.js';
+import { fetchBytes, resolveFirmwareUrl, sha256, mergedImageLayout } from './runtime.js';
 import { validateScene } from './catalog.js';
 import { loadWatchlist } from './watchlist.js';
 import { firmwareCache } from './firmware-cache.js';
@@ -104,10 +104,10 @@ async function flashBuild(source, product, signal) {
     const data=new Uint8Array(await file.arrayBuffer());if(signal?.aborted)throw cancelled();
     check(data.length===file.size,'INVALID_FILE','Firmware file size changed while reading.');
     try {
-      validateMergedImage(data,board,flashBytes);
+      const detected=mergedImageLayout(data,board,flashBytes);
       check(!layout.chip || layout.chip===board,'CHIP_MISMATCH','Build metadata targets a different chip.');
       check(!layout.flashSizeBytes || layout.flashSizeBytes<=flashBytes,'FLASH_OVERFLOW','Build metadata exceeds the product flash capacity.');
-      return {data,partitionTableOffset:0x8000,segments:[{data,offset:0}],format:'merged'};
+      return {data,partitionTableOffset:detected.partitionTableOffset,segments:[{data,offset:0}],format:'merged'};
     } catch(error) {if(error.code!=='INCOMPLETE_IMAGE')throw error;}
   }
   return {...await assembleLocalFirmware(source,{board,flashBytes,signal}),format:'segments'};
@@ -126,7 +126,7 @@ function appPartition(table, flashBytes) {
   return factory[0] || apps[0];
 }
 
-export function validateFlashLayout(files, product, {partitionTableOffset = 0x8000} = {}) {
+function checkedFlashLayout(files, product, {partitionTableOffset} = {}) {
   const flashBytes = product.runtime.flashMb * MIB;
   check(Number.isSafeInteger(flashBytes) && flashBytes > 0 && flashBytes <= MAX_FLASH, 'FLASH_LAYOUT', 'Invalid product flash capacity.');
   check(files.length > 0 && files.length <= 32, 'FLASH_LAYOUT', 'Flash plan needs 1–32 images.');
@@ -141,9 +141,11 @@ export function validateFlashLayout(files, product, {partitionTableOffset = 0x80
   const merged = new Uint8Array(length).fill(255);
   for (const file of sorted) merged.set(file.data, file.address);
   // Hardware image IDs follow the chip, independent of an emulator board alias.
-  validateMergedImage(merged, normalizedChip(product.chip), flashBytes, {partitionTableOffset});
-  return sorted;
+  const layout=mergedImageLayout(merged, normalizedChip(product.chip), flashBytes, {partitionTableOffset});
+  return {files:sorted,...layout};
 }
+
+export function validateFlashLayout(files,product,options) { return checkedFlashLayout(files,product,options).files; }
 
 // The runtime's bounded, no-store fetch/SHA/image validators are reused. Only bytes
 // actually destined for flash are loaded: no emulator ROM, ELF, script or picture.
@@ -182,7 +184,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
   };
   const files = [], receipt = [];
   const add = (artifact, address, kind) => { files.push({ data: artifact.data, address }); receipt.push({ kind, address, bytes: artifact.data.length, url: artifact.url || null, sha256: artifact.sha256, ...(artifact.archive?{archive:artifact.archive}:{}) }); };
-  let manifestHash = null, partitionTableOffset = 0x8000, format = 'merged';
+  let manifestHash = null, partitionTableOffset, format = 'merged';
   if (source.manifestUrl) {
     const url = resolveFirmwareUrl(source.manifestUrl, baseUrl), artifact = await read({ url, sha256: source.sha256 }, baseUrl);
     manifestHash = artifact.sha256;
@@ -209,6 +211,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
         check(values.bootloader && values.ptable, 'FLASH_LAYOUT', 'Hardware flashing requires a bootloader and partition table.');
         add(values.bootloader, normalizedChip(product.chip) === 'esp32' ? 0x1000 : 0, 'bootloader');
         add(values.ptable, 0x8000, 'ptable');
+        partitionTableOffset=0x8000;
         if (values.app) {
           const partition = appPartition(values.ptable.data, product.runtime.flashMb * MIB);
           check(values.app.data.length <= partition.size, 'FLASH_LAYOUT', 'The app is larger than its declared partition.');
@@ -239,7 +242,7 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
       check(!source.sha256 || actual === source.sha256.toLowerCase(), 'HASH_MISMATCH', 'Local firmware SHA-256 does not match.');
       artifact = { data, sha256: actual };
     } else artifact = await read(source, baseUrl);
-    try { validateMergedImage(artifact.data,normalizedChip(product.chip),product.runtime.flashMb*MIB); }
+    try { partitionTableOffset=mergedImageLayout(artifact.data,normalizedChip(product.chip),product.runtime.flashMb*MIB).partitionTableOffset; }
     catch(error) {
       if(error.code!=='INCOMPLETE_IMAGE')throw error;
       try { await validateAppImage(artifact.data,normalizedChip(product.chip),product.runtime.flashMb*MIB); }
@@ -248,7 +251,8 @@ export async function prepareFlashPlan({ scene, catalog, source = scene?.firmwar
     }
     add(artifact, 0, 'flash');
   }
-  const plan={ product: clone(product), files: validateFlashLayout(files, product, {partitionTableOffset}), receipt: { productId: product.id, chip: product.chip, flashBytes: product.runtime.flashMb * MIB, format, manifestHash, partitionTableOffset, artifacts: receipt, hardwareValidated: false, persistence: 'user-browser-cache-for-pinned-remote-artifacts' } };
+  const layout=checkedFlashLayout(files,product,{partitionTableOffset});
+  const plan={ product: clone(product), files: layout.files, receipt: { productId: product.id, chip: product.chip, flashBytes: product.runtime.flashMb * MIB, format, manifestHash, partitionTableOffset:layout.partitionTableOffset, artifacts: receipt, hardwareValidated: false, persistence: 'user-browser-cache-for-pinned-remote-artifacts' } };
   plan.receipt.configurationFormats=inspectFlashConfiguration(plan);
   return plan;
 }

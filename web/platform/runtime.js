@@ -152,13 +152,28 @@ export function decodeFramebuffer(data) {
   return { width, height, pixels };
 }
 
+function mergedPartitions(bytes, flashBytes, partitionTableOffset) {
+  requireValue(Number.isSafeInteger(partitionTableOffset) && partitionTableOffset >= 0x8000 && partitionTableOffset % 0x1000 === 0 && partitionTableOffset + 0x1000 <= flashBytes, 'INVALID_PARTITION_TABLE', 'Partition-table offset is outside flash or not sector aligned.');
+  const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),partitions=[];
+  for(let offset=partitionTableOffset;offset+32<=Math.min(bytes.length,partitionTableOffset+0x1000);offset+=32){
+    if(view.getUint16(offset,true)!==0x50aa)break;
+    const at=view.getUint32(offset+4,true),size=view.getUint32(offset+8,true),type=bytes[offset+2];
+    requireValue(size>0&&at>=partitionTableOffset+0x1000&&at+size<=flashBytes,'FLASH_OVERFLOW','Partition table contains a partition outside product flash.');
+    requireValue(at%0x1000===0,'INVALID_PARTITION_TABLE','Partition is not sector aligned.');
+    requireValue(!partitions.some(p=>at<p.at+p.size&&p.at<at+size),'PARTITION_OVERLAP','Partition table contains overlapping partitions.');
+    partitions.push({at,size,type});
+  }
+  requireValue(partitions.some(p=>p.type===0),'INCOMPLETE_IMAGE','Partition table contains no app partition.');
+  return partitions;
+}
+
 // A URL ending in .bin does not establish that it contains a bootable flash image.
-export function validateMergedImage(data, board, flashBytes, {partitionTableOffset = 0x8000} = {}) {
+function validateMergedImageAt(data, board, flashBytes, partitionTableOffset) {
   const bytes = bytesOf(data), bootOffset = [0,2].includes(chipIdForBoard(board)) ? 0x1000 : [18,32].includes(chipIdForBoard(board)) ? 0x2000 : 0;
   requireValue(Number.isSafeInteger(partitionTableOffset) && partitionTableOffset >= 0x8000 && partitionTableOffset % 0x1000 === 0 && partitionTableOffset + 0x1000 <= flashBytes, 'INVALID_PARTITION_TABLE', 'Partition-table offset is outside flash or not sector aligned.');
   requireValue(bytes.length <= flashBytes, 'FLASH_OVERFLOW', 'Merged firmware exceeds the selected product flash size.');
   requireValue(bytes.length > partitionTableOffset + 32 && bytes[bootOffset] === 0xe9 && bytes[partitionTableOffset] === 0xaa && bytes[partitionTableOffset + 1] === 0x50,
-    'INCOMPLETE_IMAGE', 'A raw BIN must be a merged flash image starting at offset 0, containing a bootloader and partition table at 0x8000. Use a manifest for separate app, bootloader and partition images.');
+    'INCOMPLETE_IMAGE', 'A raw BIN must contain a complete bootloader, partition table and app at their flash offsets. Use a manifest for separate images.');
   // ESP-IDF image header chip IDs: ESP32=0, S2=2, S3=9, C3=5, C6=13, P4=18.
   const chipId = bytes[bootOffset + 12] | bytes[bootOffset + 13] << 8;
   const expected = chipIdForBoard(board);
@@ -178,14 +193,32 @@ export function validateMergedImage(data, board, flashBytes, {partitionTableOffs
   };
   completeImage(bootOffset, Math.min(bytes.length, partitionTableOffset));
   let apps = 0;
-  for (let offset = partitionTableOffset; offset + 32 <= Math.min(bytes.length, partitionTableOffset + 0x1000); offset += 32) {
-    if (view.getUint16(offset, true) !== 0x50aa) break;
-    const at = view.getUint32(offset + 4, true), size = view.getUint32(offset + 8, true);
-    requireValue(size > 0 && at >= partitionTableOffset + 0x1000 && at + size <= flashBytes, 'FLASH_OVERFLOW', 'Partition table contains a partition outside product flash.');
-    if (bytes[offset + 2] === 0 && at < bytes.length && bytes[at] === 0xe9) { completeImage(at, Math.min(bytes.length, at + size)); apps++; }
+  for (const {at,size,type} of mergedPartitions(bytes,flashBytes,partitionTableOffset)) {
+    if (type === 0 && at < bytes.length && bytes[at] === 0xe9) { completeImage(at, Math.min(bytes.length, at + size)); apps++; }
   }
   requireValue(apps > 0, 'INCOMPLETE_IMAGE', 'Merged firmware contains no complete app image at a declared partition offset.');
   return true;
+}
+
+export function mergedImageLayout(data,board,flashBytes,{partitionTableOffset}={}) {
+  const bytes=bytesOf(data),bootloaderOffset=[0,2].includes(chipIdForBoard(board))?0x1000:[18,32].includes(chipIdForBoard(board))?0x2000:0;
+  requireValue(bytes.length<=flashBytes,'FLASH_OVERFLOW','Merged firmware exceeds the selected product flash size.');
+  if(partitionTableOffset===undefined){
+    const candidates=[];
+    for(let at=0x8000;at+32<=Math.min(bytes.length,flashBytes);at+=0x1000){
+      if(bytes[at]!==0xaa||bytes[at+1]!==0x50)continue;
+      try{mergedPartitions(bytes,flashBytes,at);candidates.push(at);}catch{ /* A magic value inside data is not a valid table. */ }
+      if(candidates.length>1)break;
+    }
+    requireValue(candidates.length<=1,'AMBIGUOUS_FLASH_LAYOUT','Multiple valid partition tables found; provide an explicit flash layout.');
+    partitionTableOffset=candidates[0]??0x8000;
+  }
+  validateMergedImageAt(bytes,board,flashBytes,partitionTableOffset);
+  return {bootloaderOffset,partitionTableOffset};
+}
+
+export function validateMergedImage(data,board,flashBytes,options) {
+  mergedImageLayout(data,board,flashBytes,options);return true;
 }
 
 const romFor = board => isP4Rev3Board(board)?'esp32p4_rev300_rom.elf':({esp32:'esp32_rev300_rom.elf',esp32c3:'esp32c3_rev3_rom.elf',esp32s3:'esp32s3_rev0_rom.elf',esp32c6:'esp32c6_rev0_rom.elf',esp32p4:'esp32p4_rev0_rom.elf',esp32c61:'esp32c61_rev100_rom.elf',esp32s31:'esp32s31_rev0_rom.elf',esp32c5:null,esp32s2:null,esp32h2:null})[chipForBoard(board)];
@@ -573,7 +606,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       files.push({ kind, data: artifact.data, ...(at === undefined ? {} : { at }) });
       receipts.push({ kind, url: artifact.url, sha256: artifact.sha256, bytes: artifact.data.length, ...(artifact.archive?{archive:artifact.archive}:{}), ...(at === undefined ? {} : { at }) });
     };
-    let manifest = null, manifestUrl = null, manifestHash = null, localLayout = null, sramApp = null;
+    let manifest = null, manifestUrl = null, manifestHash = null, localLayout = null, flashLayout = null, sramApp = null;
     if (source.manifestUrl) {
       manifestUrl = resolveFirmwareUrl(source.manifestUrl, baseUrl);
       const artifact = await loadArtifact({ url: manifestUrl, sha256: source.sha256 }, baseUrl, 'manifest');
@@ -652,7 +685,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       } else if(source.bootMode==='app-direct') {
         await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);cfg.appDirect=true;
       } else {
-        try {validateMergedImage(artifact.data,cfg.board,cfg.flash_mb*MIB);}
+        try {flashLayout=mergedImageLayout(artifact.data,cfg.board,cfg.flash_mb*MIB);}
         catch(cause) {
           if(cause.code!=='INCOMPLETE_IMAGE'||source.file||source.format==='merged'||source.bootMode==='rom')throw cause;
           // Inspect the same downloaded bytes before initializing any worker.
@@ -664,9 +697,13 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       }
       add(cfg.appDirect?'app':'flash', artifact);
     }
+    if(!cfg.appDirect&&!flashLayout&&!localLayout){
+      const images=files.filter(file=>file.kind==='flash');
+      if(images.length===1&&(images[0].at??0)===0&&!files.some(file=>['bootloader','ptable','app'].includes(file.kind)))flashLayout=mergedImageLayout(images[0].data,cfg.board,cfg.flash_mb*MIB);
+    }
     if (!sramOnly && (!cfg.appDirect || !manifest) && !files.some(f => f.kind === 'rom')) add('rom', await loadArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, 'rom'));
     if(isC61Board(cfg.board)||isS31Board(cfg.board))cfg.jit=false;
-    return { cfg, files, receipt: { manifestUrl, manifestHash, metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), ...(sramApp?{sramApp,bootMode:'app-direct',resetMode:'reload-same-sram-image'}:{}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
+    return { cfg, files, receipt: { manifestUrl, manifestHash, metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), ...(flashLayout?{flashLayout}:{}), ...(sramApp?{sramApp,bootMode:'app-direct',resetMode:'reload-same-sram-image'}:{}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
   };
   const initialize = async (bundle, progress) => {
     stopWorker();
@@ -882,7 +919,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       try {
         const result=await flashAsk('flash-snapshot');
         requireValue(session===storageSession&&!session.closed,'SESSION_REPLACED','The device changed while inspecting its Flash.');
-        const bytes=new Uint8Array(result.data),options={flashBytes:loaded.cfg.flash_mb*MIB,partitionTableOffset:loaded.receipt.localLayout?.partitionTableOffset??0x8000,appDirect:loaded.cfg.appDirect};
+        const bytes=new Uint8Array(result.data),options={flashBytes:loaded.cfg.flash_mb*MIB,partitionTableOffset:loaded.receipt.flashLayout?.partitionTableOffset??loaded.receipt.localLayout?.partitionTableOffset??0x8000,appDirect:loaded.cfg.appDirect};
         virtualConfigurationPlan(bytes,options);
         validateMergedImage(bytes,loaded.cfg.board,options.flashBytes,options);
         return {available:true,type:'uiflow2',partition:clone(UIFLOW2_PARTITION),replacesPartition:true,sessionId:session.id,lastWrite:configurationReceipt()};
@@ -898,7 +935,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         if(status==='running'){await ask('stopped',{op:'stop'});active();setStatus('paused');}
         await preserveStorage();active();
         const result=await flashAsk('flash-snapshot');active();
-        const bytes=new Uint8Array(result.data),options={flashBytes:bundle.cfg.flash_mb*MIB,partitionTableOffset:bundle.receipt.localLayout?.partitionTableOffset??0x8000,appDirect:bundle.cfg.appDirect};
+        const bytes=new Uint8Array(result.data),options={flashBytes:bundle.cfg.flash_mb*MIB,partitionTableOffset:bundle.receipt.flashLayout?.partitionTableOffset??bundle.receipt.localLayout?.partitionTableOffset??0x8000,appDirect:bundle.cfg.appDirect};
         const plan=virtualConfigurationPlan(bytes,options);validateMergedImage(bytes,bundle.cfg.board,options.flashBytes,options);
         const configuration=encodeVirtualConfiguration(plan,value),pages=replaceConfigurationPages(session.baseline,session.pages,configuration);
         active();

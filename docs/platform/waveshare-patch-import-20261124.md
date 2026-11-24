@@ -32,3 +32,7 @@
 Cloudzao 已先独立推送并完成 [Pages 部署](https://github.com/zhuzhe1983/esp-online-tester/actions/runs/45318986272)，其发布主分支 `d148ef4e` 已成为 Waveshare 集成分支的祖先。下载网站未修改。当前发布目标为 `origin/main` 和 [GitHub Pages](https://zhuzhe1983.github.io/esp-online-tester/platform/)。
 
 模拟器与目录通过检查不代表每个原厂固件或实物均已验证。保留各产品现有的 `trial`、`simulationVerified: false` 与已知限制。
+
+## 导入后的完整镜像兼容修复
+
+已修正加载器默认只接受 `0x8000` 分区表的限制。Waveshare P4 LCD3.5 两个原厂完整镜像实际使用 `0x9000`，现能保持原始字节并经 ROM 启动。525 项平台检查通过，并以两个默认原厂固件验证浏览器下载、启动和真实画面；C6 无线初始化导致的后续异常仍保留为部分适配限制。详见[布局识别记录](evidence/waveshare-merged-layout-20261124/README.md)。此修复位于集成主分支；下一批仍从精确交付分支的第 029 批续接。

@@ -79,6 +79,7 @@ const errorMessages = {
   FETCH_FAILED: '固件下载失败：网络或上游跨域限制。可下载原始文件后通过“本地文件”加载；本站无法修改上游 CORS 设置。',
   FIRMWARE_RELAY_FAILED: '固件下载中继暂时不可用，可稍后重试，或下载原文件后校验导入。',
   INCOMPLETE_IMAGE: '需要从地址 0 开始的完整 Flash 镜像。单独 app.bin 请改用包含启动镜像的清单。',
+  AMBIGUOUS_FLASH_LAYOUT: '镜像中发现多个有效分区表，请提供带明确烧录地址的构建清单。',
   C5_SRAM_REQUIRED: 'C5 当前只支持 SRAM 应用直启。请选择专为 SRAM 编译的单个 .bin；官方 UIFlow、普通 IDF 和合并镜像尚不能运行。',
   C5_APP_DIRECT_REQUIRED: '此 C5 裸机镜像需要明确选择“C5 SRAM 应用直启”地址类型，或在 API 中指定 bootMode:"app-direct"。',
   C5_SRAM_SEGMENT_INVALID: 'C5 应用段必须非空，地址和长度均须按 4 字节对齐。请重新生成 SRAM 应用镜像。',
