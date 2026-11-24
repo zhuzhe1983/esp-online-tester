@@ -45,6 +45,11 @@ def main():
     firmwares = read(ROOT / 'web/platform/catalog/firmwares.json')
     watch = read(ROOT / 'web/platform/catalog/firmware-watchlist.json')
     index = read(ROOT / 'web/platform/knowledge/index.json')
+    # An explicitly shared upstream example may target several existing exact
+    # families. Preserve those reviewed relationships instead of shrinking the
+    # firmware record each time one family is integrated.
+    known_product_ids = {p['id'] for p in products['items']} | {
+        p['id'] for fragment in fragments for p in fragment['products']}
     capability_path = ROOT / 'web/platform/waveshare-board-families.js'
     header, body = capability_path.read_text().split('Object.create(null),', 1)
     capabilities = json.loads(body.rsplit('));', 1)[0])
@@ -89,7 +94,7 @@ def main():
                               'url': './' + k['id'] + '.json', 'updatedAt': k['updatedAt']})
         assert ids == {k['catalogId'] for k in knowledge}, 'Each SKU/revision needs its knowledge record'
         for f in fragment.get('firmwares', []):
-            assert set(f.get('productIds', [])) <= ids
+            assert set(f.get('productIds', [])) <= known_product_ids
             assert not f.get('simulationVerified'), 'Verified firmware needs a separate final acceptance review'
         upsert(products['items'], rows)
         upsert(firmwares['items'], fragment.get('firmwares', []))
