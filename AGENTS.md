@@ -15,6 +15,8 @@
 
 # Checks before a pull request
 
+- Waveshare 批量补丁续接：先读 `docs/platform/waveshare-patch-import-20261124.md` 及同名 JSON。001–029 已导入，后续从记录的下一批继续；先导入本轮全部新增批次，再统一测试，不逐批运行测试。下载地址、校验值、精确交付 tree 与本地提交均见该记录。
+
 - Run what CI runs, with the newest stable Rust (`rustup update stable`): CI lints and tests with it, so an older local toolchain can pass where CI fails. [CONTRIBUTING.md](CONTRIBUTING.md) lists the commands; [.github/workflows/ci.yml](.github/workflows/ci.yml) is the full set.
 - Both Clippy steps must pass with warnings denied: `cargo clippy --workspace --all-targets -- -D warnings` and `cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings`. Clippy runs before the tests in CI, so a lint failure hides every test result.
 - Run the tests as CI does, ignored tests included: `ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_`.

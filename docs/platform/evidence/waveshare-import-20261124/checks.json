@@ -1,0 +1,583 @@
+{
+  "schemaVersion": 1,
+  "scope": "Combined verification after importing all Waveshare batches 001-029 and merging published Cloudzao main; no per-batch test suites.",
+  "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+  "sourceNote": "The final Rust test fixes and publication implementation are committed at sourceCommit. Initial test commands ran on 5008b922 with those test fixes; detailed commands preserve their recorded source parents. The final publication transport files and their test inputs were unchanged when committed.",
+  "publishedCloudzaoAncestor": "d148ef4e85aced5b18a69e03a539d77d74bc7df4",
+  "deliveryCommit": "78ac0278f7418556f4afa3327b5b6ce28ae453c9",
+  "deliveryTree": "0487e31cf6605f3adc0a060afa54c699804fa175",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "node": "v26.13.0",
+  "checks": [
+    {
+      "name": "clippy-native",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "4d9c68b1093ae3998c01ee14aa7d59e94d2f4aa9",
+      "elapsedSeconds": 1.746,
+      "completedAt": "2026-11-24T03:07:56.202847+00:00",
+      "logSha256": "ac7f7bbec8741dd79cf266e340c630ba5d48af26229d38d6154725b7379e9065"
+    },
+    {
+      "name": "clippy-wasm",
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "-p",
+        "esp32sim-wasm",
+        "--features",
+        "jit-tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "4d9c68b1093ae3998c01ee14aa7d59e94d2f4aa9",
+      "elapsedSeconds": 1.649,
+      "completedAt": "2026-11-24T03:07:57.851858+00:00",
+      "logSha256": "f10d062ca3bfef7f89405912eb81d3798cc9e25e187b05264d8e87500fff0ab4"
+    },
+    {
+      "name": "release-build",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--workspace"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "4d9c68b1093ae3998c01ee14aa7d59e94d2f4aa9",
+      "elapsedSeconds": 56.363,
+      "completedAt": "2026-11-24T03:08:54.214982+00:00",
+      "logSha256": "33e8a0f72de3f43522dfb39156e902cb45afe00d8fb992ba4d17de894d9ad490"
+    },
+    {
+      "name": "rust-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--workspace",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 104.153,
+      "completedAt": "2026-11-24T03:57:15.408139+00:00",
+      "logSha256": "9f39eff1405c420d58a5682d38e66bb538f657e3cdb6076fbe7f7de67edcb494"
+    },
+    {
+      "name": "wasm-build",
+      "command": [
+        "tools/wasm-build.sh"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 32.622,
+      "completedAt": "2026-11-24T03:57:48.030641+00:00",
+      "logSha256": "a2c47393adafffba8f3a4b4320756f13f36bb4243b68b7f44b1be630679d0ca6"
+    },
+    {
+      "name": "wasm-sections",
+      "command": [
+        "node",
+        "tools/check-wasm-sections.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 0.096,
+      "completedAt": "2026-11-24T03:57:48.126434+00:00",
+      "logSha256": "5b2c7b31da5c6623532b60ced77774109e555cdedb3a02244e8d0baec5f85ad0"
+    },
+    {
+      "name": "wasm-demos",
+      "command": [
+        "node",
+        "tools/wasm-test.mjs",
+        "hello",
+        "c3-hello",
+        "c6-hello",
+        "c6-xiao",
+        "p4-hello",
+        "p4-c6-hosted",
+        "p4-lcd35-synth",
+        "c6-energy-scan",
+        "c6-contiki",
+        "c6-contiki-net",
+        "c6-rpl-net",
+        "panel",
+        "tdisplay-prices",
+        "tdisplay-schematik",
+        "demo-stopwatch"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 47.712,
+      "completedAt": "2026-11-24T03:58:35.838360+00:00",
+      "logSha256": "25788e8d84cb009fa578089715742fe9a94fbc4ac2a9ce8b0b8368a5ce94ae5c"
+    },
+    {
+      "name": "platform-tests",
+      "command": [
+        "node",
+        "--test",
+        "tools/platform-*-test.mjs"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 7.209076667,
+      "note": "Latest final run after Pages transport corrections: 520 passed, 0 failed; no skipped/cancelled tests.",
+      "logSha256": "4886ad359edb3358adee90431d0199a99b5e53f4f6bb56bda6d0520a474e4cc3",
+      "sourceOverlayCommit": "738dac99e1915aa9674fbc4799188ec13406d332"
+    },
+    {
+      "name": "recording-real",
+      "command": [
+        "node",
+        "tools/platform-recording-test.mjs",
+        "--real"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 4.256,
+      "completedAt": "2026-11-24T03:58:47.019892+00:00",
+      "logSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d"
+    },
+    {
+      "name": "worker-pacing",
+      "command": [
+        "node",
+        "tools/worker-pacing-test.mjs"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 0.091,
+      "completedAt": "2026-11-24T03:58:47.111710+00:00",
+      "logSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+    },
+    {
+      "name": "worker-channel",
+      "command": [
+        "node",
+        "tools/worker-channel-test.mjs"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 0.159,
+      "completedAt": "2026-11-24T03:58:47.270773+00:00",
+      "logSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6"
+    },
+    {
+      "name": "touch-ui",
+      "command": [
+        "node",
+        "--test",
+        "tools/touch-input-test.mjs",
+        "tools/stopwatch-ui-test.mjs"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 0.182,
+      "completedAt": "2026-11-24T03:58:47.452946+00:00",
+      "logSha256": "1b7b70751c45e157ceafda437cdb3e62051e03e87ba054359f450565bd252368"
+    },
+    {
+      "name": "wasm-jit",
+      "command": [
+        "tools/wasm-jit-test.sh"
+      ],
+      "exitCode": 0,
+      "sourceCommit": "5008b922cb8d15511de81046661452fd80d3fc31",
+      "elapsedSeconds": 58.732,
+      "completedAt": "2026-11-24T03:59:46.185562+00:00",
+      "logSha256": "84ec7e08766adc4825de030f51994ab3e1ad0e875ddee049abb57f1b4ca58a96"
+    },
+    {
+      "name": "x5-current-tests",
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.203,
+      "completedAt": "2026-11-24T04:33:14.142918+00:00",
+      "logSha256": "6db70cb4975019ab04a2db708d0938e7ab9520f590583368c4a3889750526cd6"
+    },
+    {
+      "name": "x5-current-verify",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/verify-results.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.087,
+      "completedAt": "2026-11-24T04:33:14.230557+00:00",
+      "logSha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+    },
+    {
+      "name": "x5-m1-tests",
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.192,
+      "completedAt": "2026-11-24T04:33:14.422707+00:00",
+      "logSha256": "da87a255c4e622113ba9129b3406fdfa84757af9ce08604a81df0dcb82ccde16"
+    },
+    {
+      "name": "x5-m1-verify",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.086,
+      "completedAt": "2026-11-24T04:33:14.509044+00:00",
+      "logSha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+    },
+    {
+      "name": "x5-historical-tests",
+      "command": [
+        "node",
+        "--test",
+        "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.192,
+      "completedAt": "2026-11-24T04:33:14.701178+00:00",
+      "logSha256": "2dd24654e4429415c608e895a636b7ffaa4469a0bf87cc46683023ece82d863e"
+    },
+    {
+      "name": "x5-historical-verify",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.088,
+      "completedAt": "2026-11-24T04:33:14.789627+00:00",
+      "logSha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+    },
+    {
+      "name": "network-helper",
+      "command": [
+        "node",
+        "tools/network-helper-test.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 1.073,
+      "completedAt": "2026-11-24T04:33:15.862711+00:00",
+      "logSha256": "18dc4bc02cb5191c5c981adbc373a5a80eccdb7fbd861240f4f329ba91023c30"
+    },
+    {
+      "name": "network-relay",
+      "command": [
+        "node",
+        "--test",
+        "tools/network-relay-test.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.421,
+      "completedAt": "2026-11-24T04:33:16.284167+00:00",
+      "logSha256": "5f5bcf6d7789cbc857ba1e20dbd5dda5ac26c6798828f8bd929791e132aca6a1"
+    },
+    {
+      "name": "native-virtual-quantum",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp32s3",
+        "--test",
+        "machine",
+        "--test",
+        "virtual_stops"
+      ],
+      "extraEnvironment": {
+        "ESP32SIM_VQ_NATIVE": "1"
+      },
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 13.446,
+      "completedAt": "2026-11-24T04:33:29.730749+00:00",
+      "logSha256": "6ea4c5f1dfc812a5a1395393d4f64ab7c07c804805abd7d1f88542dc952d27e0"
+    },
+    {
+      "name": "stopwatch-hardware-diagnostics",
+      "command": [
+        "node",
+        "tools/probe-hardware-diagnostics.mjs",
+        "tools/fixtures/stopwatch-hardware-checks.json",
+        "target/waveshare-integration/stopwatch-hardware-checks.json"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 8.24,
+      "completedAt": "2026-11-24T04:33:37.970655+00:00",
+      "logSha256": "5fbad15c761bd2c614b1707bb466e4703c9946363806d0f2b3d8f25cacafbd8f"
+    },
+    {
+      "name": "wasm-timing-api",
+      "command": [
+        "node",
+        "wasm/tests/timing-api.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.11,
+      "completedAt": "2026-11-24T04:33:38.081488+00:00",
+      "logSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+    },
+    {
+      "name": "wasm-ble-api",
+      "command": [
+        "node",
+        "wasm/tests/ble-api.mjs",
+        "web/wasm/esp32sim.wasm",
+        "web/wasm/fw/public",
+        "roms/esp32c3_rev3_rom.elf"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.686,
+      "completedAt": "2026-11-24T04:33:38.767358+00:00",
+      "logSha256": "a275a17c86f8ff3adaa9b32d8e34926a8ba0c7244337ed69add8c8e63343be90"
+    },
+    {
+      "name": "wasm-ble-connection",
+      "command": [
+        "node",
+        "wasm/tests/ble-connection.mjs",
+        "web/wasm/esp32sim.wasm",
+        "web/wasm/fw/public",
+        "roms/esp32c3_rev3_rom.elf"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 2.086,
+      "completedAt": "2026-11-24T04:33:40.853934+00:00",
+      "logSha256": "710a0951c6bdbe81162a3f2b771b46dcd1d618ba9c9381ec488912afdc92d6cb"
+    },
+    {
+      "name": "wasm-build-policy",
+      "command": [
+        "node",
+        "--test",
+        "tools/wasm-build-policy.test.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.192,
+      "completedAt": "2026-11-24T04:33:41.046245+00:00",
+      "logSha256": "93d8f097b7599b2b3a1dd5b7e67565cb548b118c14cc348486ed89aa1c6924fa"
+    },
+    {
+      "name": "browser-benchmark-node",
+      "command": [
+        "node",
+        "--test",
+        "tools/browser-benchmark/battery-failure.test.mjs",
+        "tools/browser-benchmark/battery-workload.test.mjs",
+        "tools/browser-benchmark/experiments.test.mjs",
+        "tools/browser-benchmark/verdict.test.mjs"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.186,
+      "completedAt": "2026-11-24T04:33:41.232497+00:00",
+      "logSha256": "cabc64a9f18316d6e025ec88486131c01b8694fd0536954a1225e06a78e7359c"
+    },
+    {
+      "name": "browser-benchmark-python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/browser-benchmark",
+        "-p",
+        "test_*.py"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.116,
+      "completedAt": "2026-11-24T04:33:41.348402+00:00",
+      "logSha256": "b565133ab43eb843485dd8441615b1c2f89b21ce2bae650170287548bd6b07bf"
+    },
+    {
+      "name": "wasm-profile-build",
+      "command": [
+        "bash",
+        "-c",
+        ". ./tools/wasm-rustflags.sh\ncargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 31.855,
+      "completedAt": "2026-11-24T04:34:13.203565+00:00",
+      "logSha256": "f355ac8fd91d32613b4b188aa55b5ebaf52403e75fdb0c7f67e481907f75e096"
+    },
+    {
+      "name": "catalog-schema",
+      "command": [
+        "python3",
+        "tools/validate-platform-catalog.py"
+      ],
+      "extraEnvironment": {},
+      "sourceCommit": "738dac99e1915aa9674fbc4799188ec13406d332",
+      "exitCode": 0,
+      "elapsedSeconds": 0.84,
+      "completedAt": "2026-11-24T04:34:14.043588+00:00",
+      "logSha256": "e40cd5cd403269e51f42f47fc6aeeed76d30a354c95c2f1089ada01dac2c107f"
+    }
+  ],
+  "rust": {
+    "passed": 2895,
+    "failed": 0,
+    "resultGroups": 237,
+    "goldenOutputsRegenerated": false
+  },
+  "platform": {
+    "passed": 520,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0
+  },
+  "wasm": {
+    "bytes": 8507306,
+    "sha256": "6152aa4ca567a6e1efa5d846fdf7d902d80c9431f35c8c0f4f59d57a37c7ae25",
+    "scope": "Local production artifact, not a byte-identity claim for another OS build."
+  },
+  "pagesStaging": {
+    "localPublishedBytes": 775521924,
+    "byteLimit": 1000000000,
+    "sourceArchiveBytesRetainedInGit": 1475779242,
+    "repackedGeometryFiles": 465,
+    "compressionCounts": {
+      "gzip-xor-shuffle-24": 68,
+      "gzip-split-indexed-12": 334,
+      "gzip": 63
+    },
+    "sharedReferencePhotoAliases": 100,
+    "integrity": {
+      "models": 522,
+      "textures": 233,
+      "references": 1260,
+      "allDecodedGeometryBytesIdentical": true,
+      "metadataAndProvenancePreserved": true,
+      "sourceAndPublishedManifestSha256": "fc540f8745153cf9ffe14c1a379ae182dbcf3587b205f6fa217d8fb74a34b9b5",
+      "source": "web",
+      "published": "target/pages-packed-final"
+    },
+    "scope": "Full local staged web with production WASM, ROMs and pinned Linux image; hosted build also copies the published agent skills."
+  },
+  "browserModels": {
+    "scope": "Real headless Chromium under repository subpath; model rendering and view/embedding only, not firmware execution; repeated with packaged geometry and cache-versioned modules before publication",
+    "modelIds": [
+      "waveshare-esp32-c5-lcd-1-47",
+      "waveshare-esp32-c6-zero",
+      "waveshare-esp32-c3-lcd-0-71",
+      "waveshare-esp32-s3-touch-lcd-5",
+      "waveshare-esp32-dev-kit-wroom-32e-n4",
+      "waveshare-esp32-s2-pico",
+      "waveshare-esp32-h2-zero",
+      "waveshare-esp32-s31-zero-n16r16",
+      "waveshare-esp32-p4-core"
+    ],
+    "allModelStatus": "ready",
+    "pageErrors": [],
+    "failedResponses": [],
+    "viewModeRoundTrip": true,
+    "mobileEmbed": {
+      "width": 390,
+      "productId": "waveshare-esp32-p4-core",
+      "horizontalOverflow": false
+    },
+    "screenshotSha256": {
+      "waveshare-embed-mobile.png": "558470f759ed6ef81519bc84e201273364a355d897d82c6e4941d2504eaba25a",
+      "waveshare-esp32-c6-zero.png": "9f29c22f2fbec3c3d7af2d61c00ccfba18d683194e89492ffbdd243e5fb2c403",
+      "waveshare-esp32-c5-lcd-1-47.png": "dedc88c9554ed4d300fd296d8d64b47e29277d240f906283723c64358ef5f9ab",
+      "waveshare-esp32-c3-lcd-0-71.png": "821fe962ca918e077a3fbf89c935fe07ede8312f024bc7210ff631b030387806"
+    }
+  },
+  "packedC5Guest": {
+    "productId": "waveshare-esp32-c5-lcd-1-47",
+    "width": 172,
+    "height": 320,
+    "initialSha256": "e842dce32d95bd65a067db58e1b1afca0260533ca17e76f878f016ee8c5a8a14",
+    "pressedSha256": "dc0690014df7a3d6d75f5992068260f976d2983b03cf7fe6cb354e7c728cf027",
+    "releasedSha256": "e842dce32d95bd65a067db58e1b1afca0260533ca17e76f878f016ee8c5a8a14",
+    "changedPixels": 35840,
+    "releaseRestoredExactly": true,
+    "guestSdBlockRestoreMarker": true,
+    "factoryFirmwareVerified": false,
+    "firmwareSha256": "89bb4d4c0c38c165c341fab0f3dcacce051a524641066de5a06d03443b99a754",
+    "helperSha256": "27f1d772dfa6351548fc8cb48472d26c0e064da74166b6023a336a17cbcffcb9",
+    "scope": "Actual original first-party SRAM diagnostic through packaged runtime, public Worker/WASM, UART and framebuffer; not official factory compatibility."
+  },
+  "negativeResults": [
+    {
+      "check": "initial Rust workspace attempts",
+      "failedAttempts": 3,
+      "reason": "Incoming classic ESP32 2/8 MiB support and physical LCD147 4 MiB gate made old rejection/alias test assumptions stale. Corrected tests; physical guards remain strict. Final full workspace run passed."
+    },
+    {
+      "check": "initial staging",
+      "result": "Blocked publication above the 1 GB budget. Runtime geometry was losslessly packed and rebuild-only source inputs retained in Git."
+    },
+    {
+      "check": "geometry metadata round-trip",
+      "result": "Early JSON serialization normalized negative zero. Fixed signed-zero preservation and validated every staged model byte and metadata field."
+    }
+  ],
+  "limits": [
+    "Catalog/model checks do not establish all factory firmware compatibility, hardware fit, analog/RF accuracy or physical transport coverage.",
+    "Keep product-specific trial/simulationVerified flags and existing partial support limits.",
+    "Screenshots, raw model output and console logs stay in ignored local output; compact hashes and reproducible harnesses are retained here."
+  ]
+}
