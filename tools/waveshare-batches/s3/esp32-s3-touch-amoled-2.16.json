@@ -1,0 +1,452 @@
+{
+  "listingId": "esp32-s3-touch-amoled-2.16",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-2-16",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-2.16",
+      "manufacturer": "Waveshare",
+      "sku": "33969",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，480×480 CO5300与CST9220；实现精确四线QSPI、触点报告和PMIC数字供电门控，保留38.99mm光学窗口/46×46×22.5mm外形证据。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-2-16.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-2-16",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-2.16"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled216",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "厂家BSP2.0.1原始组件ZIP和原理图已复核：原生1bit SDMMC CLK2/CMD1/D0=3，D1..3未连接原生数据总线；VCC3V3供电门控。"
+        }
+      ],
+      "limitations": [
+        "TF卡实现厂家BSP2.0.1明确的1bit SDMMC2/1/3，与原理图一致；不照搬AMOLED2.06的GPIO17模式门控（本板GPIO17为QMI_INT1）。",
+        "QMI8658、音频PCM、电池充电电气和PMU长按电源键尚未实现；CST触点IRQ为pending数字边沿，不宣称物理扫描周期。",
+        "CST9220家族ID来自厂家源码固定常量；项目号、固件号、校验、每台校准数据未知，不随机生成。",
+        "内部PCB、电池及细部外壳结构UNKNOWN；屏幕角半径5mm为照片估计±1mm，并非官方标注值。",
+        "正方形CO5300按厂家BSP的MADCTL行列交换和镜像作数字画面变换；datasheet位5措辞冲突保留，玻璃/PCB物理姿态未标定。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-2.16.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-2.16",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/libraries/SensorLib/src/touch/TouchDrvCST92xx.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/SensorLib/src/touch/TouchDrvCST92xx.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/arduino/libraries/SensorLib/src/touch/TouchDrvCST92xx.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/SensorLib/src/touch/TouchDrvCST92xx.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/arduino/libraries/SensorLib/src/REG/CST9xxConstants.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/SensorLib/src/REG/CST9xxConstants.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：component-registry/esp32_s3_touch_amoled_2_16/2.0.1/source.zip",
+          "url": "https://components-file.espressif.com/components/waveshare/esp32_s3_touch_amoled_2_16/2.0.1/download/5d9f8afb-20f0-4234-9870-48f9e281425f.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：schematic/ESP32-S3-Touch-AMOLED-2.16-Schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/schematic/ESP32-S3-Touch-AMOLED-2.16-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-2-16/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-2-16-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-2-16-sku-33970",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-2.16-EN",
+      "manufacturer": "Waveshare",
+      "sku": "33970",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，480×480 CO5300与CST9220；实现精确四线QSPI、触点报告和PMIC数字供电门控，保留38.99mm光学窗口/46×46×22.5mm外形证据。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-2-16-sku-33970.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-2-16",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-2.16"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled216",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "厂家BSP2.0.1原始组件ZIP和原理图已复核：原生1bit SDMMC CLK2/CMD1/D0=3，D1..3未连接原生数据总线；VCC3V3供电门控。"
+        }
+      ],
+      "limitations": [
+        "TF卡实现厂家BSP2.0.1明确的1bit SDMMC2/1/3，与原理图一致；不照搬AMOLED2.06的GPIO17模式门控（本板GPIO17为QMI_INT1）。",
+        "QMI8658、音频PCM、电池充电电气和PMU长按电源键尚未实现；CST触点IRQ为pending数字边沿，不宣称物理扫描周期。",
+        "CST9220家族ID来自厂家源码固定常量；项目号、固件号、校验、每台校准数据未知，不随机生成。",
+        "内部PCB、电池及细部外壳结构UNKNOWN；屏幕角半径5mm为照片估计±1mm，并非官方标注值。",
+        "正方形CO5300按厂家BSP的MADCTL行列交换和镜像作数字画面变换；datasheet位5措辞冲突保留，玻璃/PCB物理姿态未标定。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-2.16.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-2.16",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/arduino/libraries/SensorLib/src/touch/TouchDrvCST92xx.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/SensorLib/src/touch/TouchDrvCST92xx.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：examples/arduino/libraries/SensorLib/src/touch/TouchDrvCST92xx.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/SensorLib/src/touch/TouchDrvCST92xx.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：examples/arduino/libraries/SensorLib/src/REG/CST9xxConstants.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/examples/arduino/libraries/SensorLib/src/REG/CST9xxConstants.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：component-registry/esp32_s3_touch_amoled_2_16/2.0.1/source.zip",
+          "url": "https://components-file.espressif.com/components/waveshare/esp32_s3_touch_amoled_2_16/2.0.1/download/5d9f8afb-20f0-4234-9870-48f9e281425f.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：schematic/ESP32-S3-Touch-AMOLED-2.16-Schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/schematic/ESP32-S3-Touch-AMOLED-2.16-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-2-16/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-2-16-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-2-16-factory",
+      "name": "ESP32-S3-Touch-AMOLED-2.16_FactoryOnly_20261030.bin",
+      "productIds": [
+        "waveshare-esp32-s3-touch-amoled-2-16",
+        "waveshare-esp32-s3-touch-amoled-2-16-sku-33970"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/firmware/ESP32-S3-Touch-AMOLED-2.16_FactoryOnly_20261030.bin",
+        "sha256": "9cde9793955cb26dcc1d92c83b3090afc5f15f75ee8dcd077e2d0ecd481cd5ac",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-AMOLED-2.16_FactoryOnly_20261030",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/firmware/ESP32-S3-Touch-AMOLED-2.16_FactoryOnly_20261030.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "厂家原始20261030 FactoryOnly BIN保持原始字节，完整S3镜像/分区检查通过；尚未完成原版应用启动与所有外设验收。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-amoled-2-16-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-2-16-factory-watch",
+      "name": "ESP32-S3-Touch-AMOLED-2.16_FactoryOnly_20261030.bin",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-Touch-AMOLED-2.16",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/releases",
+      "version": "e8e5d132978b768cce18901602b89fdb318ad41a",
+      "checkedAt": "2026-11-23T16:52:30Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-AMOLED-2.16_FactoryOnly_20261030.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-2.16/e8e5d132978b768cce18901602b89fdb318ad41a/firmware/ESP32-S3-Touch-AMOLED-2.16_FactoryOnly_20261030.bin",
+          "sha256": "9cde9793955cb26dcc1d92c83b3090afc5f15f75ee8dcd077e2d0ecd481cd5ac",
+          "bytes": 16777216,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-amoled-2-16",
+          "waveshare-esp32-s3-touch-amoled-2-16-sku-33970"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-amoled-2-16.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-amoled-2-16-sku-33970.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-touch-amoled216": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "Native CO5300/catalog: exact QSPI pixels, fixed-BSP MADCTL0xA0 exchange/mirror output, wrong-lane rejection; manufacturer CST92xx coordinate decoding; independently sourced SDMMC1bit mapping and card presence.",
+    "Native shared CST92xx:2tests PASS；真实坐标解码、AB ACK不丢新触点、sleep/reset、未知升级接口拒绝。",
+    "Production Three loader: four new optical/outer dimension models PASS."
+  ],
+  "limitations": [
+    "TF卡实现厂家BSP2.0.1明确的1bit SDMMC2/1/3，与原理图一致；不照搬AMOLED2.06的GPIO17模式门控（本板GPIO17为QMI_INT1）。",
+    "QMI8658、音频PCM、电池充电电气和PMU长按电源键尚未实现；CST触点IRQ为pending数字边沿，不宣称物理扫描周期。",
+    "CST9220家族ID来自厂家源码固定常量；项目号、固件号、校验、每台校准数据未知，不随机生成。",
+    "内部PCB、电池及细部外壳结构UNKNOWN；屏幕角半径5mm为照片估计±1mm，并非官方标注值。",
+    "正方形CO5300按厂家BSP的MADCTL行列交换和镜像作数字画面变换；datasheet位5措辞冲突保留，玻璃/PCB物理姿态未标定。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

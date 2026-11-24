@@ -1,0 +1,323 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-touch-amoled-1-43c",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-touch-amoled-1-43c",
+  "title": "Waveshare ESP32-S3-Touch-AMOLED-1.43C",
+  "summary": "1.43 英寸 466×466 圆形 AMOLED，8 MiB Flash / 8 MiB Octal PSRAM；原生原厂桌面、画线与 BOOT 返回已验证。",
+  "summarySourceIds": [
+    "overview",
+    "schematic"
+  ],
+  "updatedAt": "2026-11-23T17:42:15Z",
+  "hardwareRevision": "unspecified",
+  "facts": [
+    {
+      "id": "identity",
+      "label": "精确型号、包装和存储",
+      "value": {
+        "sku": "34383",
+        "model": "ESP32-S3-Touch-AMOLED-1.43C",
+        "mcu": "ESP32-S3-PICO-1-N8R8",
+        "flashMiB": 8,
+        "psramMiB": 8,
+        "psramBus": "octal",
+        "batteryIncluded": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic"
+      ]
+    },
+    {
+      "id": "display",
+      "label": "屏幕与触摸",
+      "value": {
+        "width": 466,
+        "height": 466,
+        "shape": "round",
+        "controller": "CO5300",
+        "touchController": "CST820",
+        "bus": "QSPI",
+        "runtimePixelFormat": "RGB565"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "lcd-driver",
+        "touch-driver"
+      ]
+    },
+    {
+      "id": "pins",
+      "label": "精确板载信号",
+      "value": {
+        "lcd": {
+          "sclk": 14,
+          "io0": 9,
+          "io1": 10,
+          "io2": 11,
+          "io3": 12,
+          "cs": 15,
+          "reset": 13,
+          "te": 8
+        },
+        "i2c": {
+          "sda": 47,
+          "scl": 48,
+          "sharedControllers": [
+            0,
+            1
+          ]
+        },
+        "touch": {
+          "address7bit": "0x15",
+          "reset": 16,
+          "irq": 17
+        },
+        "codec": {
+          "addresses7bit": [
+            "0x18",
+            "0x40"
+          ],
+          "enable": 18,
+          "enableFloating": "high due schematic R18 10k pull-up"
+        },
+        "boot": 0
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "bsp-header"
+      ]
+    },
+    {
+      "id": "tf-slot",
+      "label": "物理 TF 卡槽",
+      "value": false,
+      "basis": "official",
+      "sourceIds": [
+        "schematic"
+      ],
+      "notes": "原理图及 PCB 正反面没有 TF 插座；不要向此板自动配置 SD 卡。"
+    },
+    {
+      "id": "codec-power",
+      "label": "音频数字电源",
+      "value": {
+        "enableGpio": 18,
+        "pullUpOhms": 10000,
+        "pullUpReference": "R18",
+        "ldo": "RT9193 U4"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic"
+      ]
+    },
+    {
+      "id": "factory",
+      "label": "原始出厂镜像",
+      "value": {
+        "name": "ESP32-S3-Touch-AMOLED-1.43C_FactoryOnly_20261027.bin",
+        "bytes": 7631074,
+        "sha256": "522d14b3a2079733ac4c6481f3e36716428e96ef4cc5502505dde608c61366cc",
+        "offset": 0,
+        "repositoryCommit": "8cea11ddae6167dd591d1f5465fd7b615080360f"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory-readme",
+        "factory-binary"
+      ],
+      "notes": "日期表示固件文件来源，不能作为硬件发布日期。"
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "官方精确型号、SKU 与包装关系",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.43C",
+      "kind": "official-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.43C",
+      "fetchedAt": "2026-11-23T08:04:36Z",
+      "bytes": 66553,
+      "sha256": "969c39c7425080a95993c5d1ca126be34ad8993bfec3478c4b5a1250615e1d7f",
+      "archiveName": "overview.html",
+      "notes": "原始响应保留于 docs/research/waveshare-amoled143c-sources/canonical/overview.html.gz；bytes/SHA-256 对应解压后的原始字节，不是 gzip 包装。"
+    },
+    {
+      "id": "resources",
+      "title": "官方资源目录",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.43C/Resources-And-Documents",
+      "kind": "official-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.43C/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T08:04:36Z",
+      "bytes": 58730,
+      "sha256": "2612ad6d1c0eb9b246dfbefb9e3810e5c747996faff8c9d1107a0d0037709ce1",
+      "archiveName": "resources.html",
+      "notes": "原始响应保留于 docs/research/waveshare-amoled143c-sources/canonical/resources.html.gz；bytes/SHA-256 对应解压后的原始字节，不是 gzip 包装。"
+    },
+    {
+      "id": "schematic",
+      "title": "精确板电路及 PCB 正反面",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/hardware/schematic/ESP32-S3-Touch-AMOLED-1.43C-Schematic.pdf",
+      "kind": "official-schematic",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/hardware/schematic/ESP32-S3-Touch-AMOLED-1.43C-Schematic.pdf",
+      "fetchedAt": "2026-11-23T09:50:24Z",
+      "bytes": 1497903,
+      "sha256": "0fb3b7c99b432e603402b1a624b8a694b1ac002b17311fe258f3591e9eac9a74",
+      "archiveName": "ESP32-S3-Touch-AMOLED-1.43C-Schematic.pdf",
+      "notes": "原始响应保留于 docs/research/waveshare-amoled143c-sources/ESP32-S3-Touch-AMOLED-1.43C/hardware/schematic/ESP32-S3-Touch-AMOLED-1.43C-Schematic.pdf.gz；bytes/SHA-256 对应解压后的原始字节，不是 gzip 包装。"
+    },
+    {
+      "id": "bsp-header",
+      "title": "官方 QSPI、I2C 和按键引脚",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/examples/factory/components/esp32_s3_touch_amoled_1_43c/include/bsp/esp32_s3_touch_amoled_1_43c.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/examples/factory/components/esp32_s3_touch_amoled_1_43c/include/bsp/esp32_s3_touch_amoled_1_43c.h",
+      "fetchedAt": "2026-11-23T09:50:11Z",
+      "bytes": 4030,
+      "sha256": "f33430372481fd884a7872358d17a930d715f0704a38805c831b92ba3a1bf05c",
+      "archiveName": "esp32_s3_touch_amoled_1_43c.h",
+      "notes": "原始响应保留于 docs/research/waveshare-amoled143c-sources/ESP32-S3-Touch-AMOLED-1.43C/examples/factory/components/esp32_s3_touch_amoled_1_43c/include/bsp/esp32_s3_touch_amoled_1_43c.h.gz；bytes/SHA-256 对应解压后的原始字节，不是 gzip 包装。"
+    },
+    {
+      "id": "lcd-driver",
+      "title": "官方显示窗口、方向与启动亮度",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/examples/factory/components/esp32_s3_touch_amoled_1_43c/esp32_s3_touch_amoled_1_43c.cpp",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/examples/factory/components/esp32_s3_touch_amoled_1_43c/esp32_s3_touch_amoled_1_43c.cpp",
+      "fetchedAt": "2026-11-23T09:49:57Z",
+      "bytes": 20700,
+      "sha256": "121bbe7022b833c8da95e9da6a90247664eb06457289ac6f03178aa0e3987adc",
+      "archiveName": "esp32_s3_touch_amoled_1_43c.cpp",
+      "notes": "原始响应保留于 docs/research/waveshare-amoled143c-sources/ESP32-S3-Touch-AMOLED-1.43C/examples/factory/components/esp32_s3_touch_amoled_1_43c/esp32_s3_touch_amoled_1_43c.cpp.gz；bytes/SHA-256 对应解压后的原始字节，不是 gzip 包装。"
+    },
+    {
+      "id": "touch-driver",
+      "title": "CST820 原厂报告解析与复位",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/examples/factory/components/esp32_s3_touch_amoled_1_43c/esp_lcd_touch_cst820.cpp",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/examples/factory/components/esp32_s3_touch_amoled_1_43c/esp_lcd_touch_cst820.cpp",
+      "fetchedAt": "2026-11-23T09:49:57Z",
+      "bytes": 4287,
+      "sha256": "7bd465cc326e72d63a14c5c2d0a4246fa5391e4d842cce87fba201bce3514741",
+      "archiveName": "esp_lcd_touch_cst820.cpp",
+      "notes": "原始响应保留于 docs/research/waveshare-amoled143c-sources/ESP32-S3-Touch-AMOLED-1.43C/examples/factory/components/esp32_s3_touch_amoled_1_43c/esp_lcd_touch_cst820.cpp.gz；bytes/SHA-256 对应解压后的原始字节，不是 gzip 包装。"
+    },
+    {
+      "id": "factory-guide",
+      "title": "原厂九应用操作与 BOOT 退出说明",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/examples/factory/README.md",
+      "kind": "official-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/examples/factory/README.md",
+      "fetchedAt": "2026-11-23T10:25:33Z",
+      "bytes": 2678,
+      "sha256": "8255a0376927e16d6b56924df5ce1ffbe5af5c0aa9162c330586a2f66aab6c68",
+      "archiveName": "README.md",
+      "notes": "原始响应保留于 docs/research/waveshare-amoled143c-sources/ESP32-S3-Touch-AMOLED-1.43C/examples/factory/README.md.gz；bytes/SHA-256 对应解压后的原始字节，不是 gzip 包装。"
+    },
+    {
+      "id": "factory-readme",
+      "title": "原始出厂恢复镜像与地址",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/firmware/README.md",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/firmware/README.md",
+      "fetchedAt": "2026-11-23T09:50:24Z",
+      "bytes": 1480,
+      "sha256": "039acda1a02e04c79fcf7f9c183e328e936e9c8d5f046632380e220c9b65a91e",
+      "archiveName": "README.md",
+      "notes": "原始响应保留于 docs/research/waveshare-amoled143c-sources/ESP32-S3-Touch-AMOLED-1.43C/firmware/README.md.gz；bytes/SHA-256 对应解压后的原始字节，不是 gzip 包装。"
+    },
+    {
+      "id": "factory-binary",
+      "title": "固定提交的未修改原厂镜像",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/firmware/ESP32-S3-Touch-AMOLED-1.43C_FactoryOnly_20261027.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/firmware/ESP32-S3-Touch-AMOLED-1.43C_FactoryOnly_20261027.bin",
+      "fetchedAt": "2026-11-23T09:50:18Z",
+      "bytes": 7631074,
+      "sha256": "522d14b3a2079733ac4c6481f3e36716428e96ef4cc5502505dde608c61366cc",
+      "archiveName": "ESP32-S3-Touch-AMOLED-1.43C_FactoryOnly_20261027.bin",
+      "notes": "原始 BIN 仅用于本地验收并保留下载收据；仓库采用 remote-links-only，不含此 BIN。完整合并镜像从 0x0 经原始 ROM 启动。"
+    }
+  ],
+  "assets": [
+    {
+      "id": "schematic",
+      "sourceId": "schematic",
+      "role": "schematic",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.43C/8cea11ddae6167dd591d1f5465fd7b615080360f/hardware/schematic/ESP32-S3-Touch-AMOLED-1.43C-Schematic.pdf"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview"
+      ],
+      "notes": "20260420 和 20261027 是官方固件文件名日期；不是硬件发布日期，也不以仓库创建时间代替发布日期。"
+    },
+    {
+      "id": "pcb-revision",
+      "label": "当前量产 PCB 版次",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "schematic"
+      ],
+      "notes": "已按精确命名原理图接线；未将 PDF 生成日期认证为量产版次。"
+    },
+    {
+      "id": "physical-alignment",
+      "label": "实物光学与 USB 方位校准",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "lcd-driver",
+        "schematic"
+      ],
+      "notes": "已使用 BSP 数字方向，不声称实物坐标已标定。"
+    },
+    {
+      "id": "mechanical-model",
+      "label": "详细机械模型交付",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "resources"
+      ],
+      "notes": "本批仅交执行配置；未把未调查完整的官方 CAD 宣称为不存在。"
+    }
+  ],
+  "collectionNotes": [
+    "原生原厂验证：466×466 九应用桌面、CST820 实际画线与 BOOT 退出；11.22 guest 秒零重启、零 QSPI reject。",
+    "同时间无绘图对照：画线新增 2493 红像素／总差 2710；BOOT 退出恢复原桌面差 0；静止桌面差 0。",
+    "公开 Worker／生产 WASM、浏览器 WebGL 和实物验收尚未完成，原生通过不等于这些环节通过。",
+    "保留原厂 Wi-Fi 校准与未连接告警；无线网络、Xiaozhi 在线服务、音频 PCM 和模拟电气未验收。",
+    "ES8311／ES7210 仅数字控制子集；GPIO18 浮空按原理图 R18 上拉供电，模拟电源、充电与电池状态未实现。",
+    "显示与触摸采用官方 BSP 数字坐标；USB 相对文字方位、光学颜色、触摸扫描周期未实物标定。",
+    "TE 引脚已记载但没有生成波形；QPI、四线地址、SPI 读回和 MADCTL 位 5 坐标交换未实现。",
+    "当前详细机械模型未在本批交付，默认只显示已知分辨率的屏幕调试视图。",
+    "包装包含锂电池；执行模型采用明确的 USB 供电数字场景。",
+    "本次原生结果及逐文件原始 capture 哈希：docs/evidence/waveshare-amoled143c-2026-11-23/result.json 与 artifacts.json。",
+    "原始 UART/PNG/RGB565 留 ignored output 归档；公开 Worker 验收未在此记录中发生。",
+    "官方同一页面明确区分 34383 与 34384-EN 的电池包装；两者共享本板数字执行配置，不代表电池功能已模拟。",
+    "本轮新增/复核来源模型 waveshare-esp32-s3-touch-amoled-1-43c；只声明model-plan.json列出的几何范围，保留原数字外设与原厂验收记录。"
+  ]
+}

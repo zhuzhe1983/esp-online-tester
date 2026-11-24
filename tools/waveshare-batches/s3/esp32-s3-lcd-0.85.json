@@ -1,0 +1,456 @@
+{
+  "listingId": "esp32-s3-lcd-0.85",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-lcd-0-85",
+      "name": "Waveshare ESP32-S3-LCD-0.85",
+      "manufacturer": "Waveshare",
+      "sku": "33878",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "8MiB Flash /8MiB PSRAM，128×128 0.85英寸LCD；使用来源SPI38/39/21、DC45/RST40/BL46及128×128可见窗口(2,1)。当前文档与历史机械照片控制器标注冲突已保留。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-0-85.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-0-85",
+        "name": "Waveshare ESP32-S3-LCD-0.85"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd085",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 128,
+        "type": "LCD",
+        "bus": "SPI",
+        "controller": "GC9107 / historical ST7735 source distinction",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "volume-up",
+          "name": "VOLUME-UP",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 13
+            },
+            {
+              "name": "D3",
+              "gpio": 14
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此SDMMC接线；可默认准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "实现数字DCS、背光、SDMMC与音频控制寄存器；电池ADC、充电、PWR物理锁存、模拟音频PCM与完整原厂应用尚未验收。",
+        "模型为46×46×22.5mm厂家尺寸包络和原始照片，内板/电池/精确侧接口UNKNOWN；触/非触型号共用外观不表示数字触控存在性相同。",
+        "当前官方overview写GC9107，而官方尺寸照片背标写ST7735。实现只声明两来源共用的DCS写入子集与命令坐标窗口，不伪造芯片ID，不把132×162的裁剪画布称为实测硅片GRAM容量。",
+        "板载8颗WS2812尚未实现（不是一个替代灯）；RGB光学结构未虚构。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-0.85.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-0.85",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_i2c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_sdcard.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-0-85/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-0-85-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-0-85-sku-33877",
+      "name": "Waveshare ESP32-S3-LCD-0.85-EN",
+      "manufacturer": "Waveshare",
+      "sku": "33877",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "8MiB Flash /8MiB PSRAM，128×128 0.85英寸LCD；使用来源SPI38/39/21、DC45/RST40/BL46及128×128可见窗口(2,1)。当前文档与历史机械照片控制器标注冲突已保留。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-0-85-sku-33877.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-0-85",
+        "name": "Waveshare ESP32-S3-LCD-0.85"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd085",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 128,
+        "height": 128,
+        "type": "LCD",
+        "bus": "SPI",
+        "controller": "GC9107 / historical ST7735 source distinction",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "volume-up",
+          "name": "VOLUME-UP",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 13
+            },
+            {
+              "name": "D3",
+              "gpio": 14
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此SDMMC接线；可默认准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "实现数字DCS、背光、SDMMC与音频控制寄存器；电池ADC、充电、PWR物理锁存、模拟音频PCM与完整原厂应用尚未验收。",
+        "模型为46×46×22.5mm厂家尺寸包络和原始照片，内板/电池/精确侧接口UNKNOWN；触/非触型号共用外观不表示数字触控存在性相同。",
+        "当前官方overview写GC9107，而官方尺寸照片背标写ST7735。实现只声明两来源共用的DCS写入子集与命令坐标窗口，不伪造芯片ID，不把132×162的裁剪画布称为实测硅片GRAM容量。",
+        "板载8颗WS2812尚未实现（不是一个替代灯）；RGB光学结构未虚构。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-0.85.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-0.85",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_i2c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_sdcard.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/example/ESP-IDF-5.5.1/01_factory/ESP32-S3-LCD-0.85/components/esp_bsp/bsp_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-0-85/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-0-85-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-lcd-0-85-factory",
+      "name": "ESP32-S3-LCD-0.85_FactoryOnly_20260320.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-0-85",
+        "waveshare-esp32-s3-lcd-0-85-sku-33877"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/firmware/ESP32-S3-LCD-0.85_FactoryOnly_20260320.bin",
+        "sha256": "5221f67c0609a5600860f9f2cd45f5c970a954860d83c087fa6057d57b177531",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LCD-0.85_FactoryOnly_20260320",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/firmware/ESP32-S3-LCD-0.85_FactoryOnly_20260320.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "厂家原始FactoryOnly BIN完整S3布局校验通过；未执行完整原厂应用。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-lcd-0-85-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-lcd-0-85-factory-watch",
+      "name": "ESP32-S3-LCD-0.85_FactoryOnly_20260320.bin",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-LCD-0.85",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-LCD-0.85/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-LCD-0.85/releases",
+      "version": "6fc190a0d5e89e4f4d5d5069c331311337f40f2e",
+      "checkedAt": "2026-11-23T16:52:02Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LCD-0.85_FactoryOnly_20260320.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-0.85/6fc190a0d5e89e4f4d5d5069c331311337f40f2e/firmware/ESP32-S3-LCD-0.85_FactoryOnly_20260320.bin",
+          "sha256": "5221f67c0609a5600860f9f2cd45f5c970a954860d83c087fa6057d57b177531",
+          "bytes": 1272432,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-0-85",
+          "waveshare-esp32-s3-lcd-0-85-sku-33877"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-0-85.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-0-85-sku-33877.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-lcd085": {
+      "chip": "esp32s3",
+      "flashMb": 8,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "Native: each_glass_writes_real_corner_pixels_and_rejects_wrong_pins PASS；分别确认源窗口角像素、错误选片不写入、复位黑屏及触摸芯片是否存在。",
+    "Production Three loader: official photo SHA/UV, optical dimensions, live framebuffer rays and visible UNKNOWN backside PASS."
+  ],
+  "limitations": [
+    "实现数字DCS、背光、SDMMC与音频控制寄存器；电池ADC、充电、PWR物理锁存、模拟音频PCM与完整原厂应用尚未验收。",
+    "模型为46×46×22.5mm厂家尺寸包络和原始照片，内板/电池/精确侧接口UNKNOWN；触/非触型号共用外观不表示数字触控存在性相同。",
+    "当前官方overview写GC9107，而官方尺寸照片背标写ST7735。实现只声明两来源共用的DCS写入子集与命令坐标窗口，不伪造芯片ID，不把132×162的裁剪画布称为实测硅片GRAM容量。",
+    "板载8颗WS2812尚未实现（不是一个替代灯）；RGB光学结构未虚构。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

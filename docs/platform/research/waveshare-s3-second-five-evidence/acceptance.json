@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-23",
+  "scope": "Exact SKU catalog and manufacturer-sourced digital subsets. No complete factory-app, browser-worker, physical or electrical acceptance claim.",
+  "listings": [
+    "esp32-s3-touch-amoled-1.43c",
+    "esp32-s3-epaper-13.3e6",
+    "esp32-s3-touch-amoled-2.16",
+    "esp32-s3-lcd-1.54",
+    "esp32-s3-lcd-0.85"
+  ],
+  "skuCount": 11,
+  "schema": {
+    "products": "PASS",
+    "firmwares": "PASS",
+    "knowledge": "29 cumulative records PASS JSON Schema and production validateKnowledge"
+  },
+  "native": [
+    "waveshare_spi_catalog::tests: 1 PASS, 3 exact board variants, RGB565 output, wrong-CS rejection, reset/blackout and touch distinction",
+    "waveshare_co5300_catalog::tests: final code PASS, exact QSPI RGB565 pixels, official BSP MADCTL0xA0 transposed/mirrored pixel position, wrong-lane rejection, manufacturer CST92xx coordinate decode, 2.16 SDMMC1bit mapping/presence and 1.75C unresolved card transport absence.",
+    "shared cst92xx: 2 PASS in commit 234928f4; source-referenced coordinate reporting and acknowledgement boundaries"
+  ],
+  "models": "4 new models and preserved ePaper13.3E6: actual production Three loading, source image SHA256, bounds, screen visibility and UNKNOWN surface rays PASS. Node check does not prove browser rendering.",
+  "limits": [
+    "SPI0.85 official photograph labels ST7735 while current documentation names GC9107; only their sourced common DCS path is declared.",
+    "Manufacturer2.16 BSP initial MADCTL0xA0 uses square rotation presentation policy. Glass-to-PCB physical orientation is not calibrated.",
+    "Factory binary layout/hash checks grant trial only. Preserved1.43C/ePaper13.3E6 records keep their original runtime findings.",
+    "Exact target SKU filtering separates LCD1.54 non-touch firmware from TouchLCD1.54 firmware.",
+    "Source timestamps normalized to UTC seconds without changing source hashes; shared git-tree investigations remain generated inspection records."
+  ],
+  "nativeCommands": [
+    "cargo test --release -p esp32s3 waveshare_spi_catalog -- --nocapture",
+    "cargo test --release -p esp32s3 waveshare_co5300_catalog -- --nocapture"
+  ]
+}

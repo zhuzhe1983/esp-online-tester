@@ -1,0 +1,922 @@
+{
+  "listingId": "esp32-s3-lcd-1.54",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-54",
+      "name": "Waveshare ESP32-S3-LCD-1.54",
+      "manufacturer": "Waveshare",
+      "sku": "33867",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，240×240 ST7789。四个精确SKU分别登记触/非触与电池选项，触控版本单独接入CST816报告，不给非触版虚构触摸器件。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-54.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-54",
+        "name": "Waveshare ESP32-S3-LCD-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd154",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 240,
+        "type": "LCD",
+        "bus": "SPI",
+        "controller": "ST7789",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "volume-up",
+          "name": "VOLUME-UP",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 13
+            },
+            {
+              "name": "D3",
+              "gpio": 14
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此SDMMC接线；可默认准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "实现数字DCS、背光、SDMMC与音频控制寄存器；电池ADC、充电、PWR物理锁存、模拟音频PCM与完整原厂应用尚未验收。",
+        "模型为46×46×22.5mm厂家尺寸包络和原始照片，内板/电池/精确侧接口UNKNOWN；触/非触型号共用外观不表示数字触控存在性相同。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/esp32_s3_touch_lcd_1_54.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/esp32_s3_touch_lcd_1_54.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-54/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-1-54-factory-esp32-s3-lcd-1-54-factoryonly-20260319"
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-54-sku-33866",
+      "name": "Waveshare ESP32-S3-LCD-1.54-EN",
+      "manufacturer": "Waveshare",
+      "sku": "33866",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，240×240 ST7789。四个精确SKU分别登记触/非触与电池选项，触控版本单独接入CST816报告，不给非触版虚构触摸器件。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-54-sku-33866.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-54",
+        "name": "Waveshare ESP32-S3-LCD-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd154",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 240,
+        "type": "LCD",
+        "bus": "SPI",
+        "controller": "ST7789",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "volume-up",
+          "name": "VOLUME-UP",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 13
+            },
+            {
+              "name": "D3",
+              "gpio": 14
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此SDMMC接线；可默认准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "实现数字DCS、背光、SDMMC与音频控制寄存器；电池ADC、充电、PWR物理锁存、模拟音频PCM与完整原厂应用尚未验收。",
+        "模型为46×46×22.5mm厂家尺寸包络和原始照片，内板/电池/精确侧接口UNKNOWN；触/非触型号共用外观不表示数字触控存在性相同。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/esp32_s3_touch_lcd_1_54.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/esp32_s3_touch_lcd_1_54.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-54/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-1-54-factory-esp32-s3-lcd-1-54-factoryonly-20260319"
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-54-sku-33868",
+      "name": "Waveshare ESP32-S3-Touch-LCD-1.54-EN",
+      "manufacturer": "Waveshare",
+      "sku": "33868",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，240×240 ST7789。四个精确SKU分别登记触/非触与电池选项，触控版本单独接入CST816报告，不给非触版虚构触摸器件。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-54-sku-33868.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-54",
+        "name": "Waveshare ESP32-S3-LCD-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd154",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 240,
+        "type": "LCD",
+        "bus": "SPI",
+        "controller": "ST7789",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "volume-up",
+          "name": "VOLUME-UP",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 13
+            },
+            {
+              "name": "D3",
+              "gpio": 14
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此SDMMC接线；可默认准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "实现数字DCS、背光、SDMMC与音频控制寄存器；电池ADC、充电、PWR物理锁存、模拟音频PCM与完整原厂应用尚未验收。",
+        "模型为46×46×22.5mm厂家尺寸包络和原始照片，内板/电池/精确侧接口UNKNOWN；触/非触型号共用外观不表示数字触控存在性相同。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/esp32_s3_touch_lcd_1_54.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/esp32_s3_touch_lcd_1_54.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-54/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-1-54-factory-2-s3-touch-lcd-1-54-factoryonly-20260319"
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-54-sku-33869",
+      "name": "Waveshare ESP32-S3-Touch-LCD-1.54",
+      "manufacturer": "Waveshare",
+      "sku": "33869",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，240×240 ST7789。四个精确SKU分别登记触/非触与电池选项，触控版本单独接入CST816报告，不给非触版虚构触摸器件。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-54-sku-33869.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-54",
+        "name": "Waveshare ESP32-S3-LCD-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd154",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 240,
+        "type": "LCD",
+        "bus": "SPI",
+        "controller": "ST7789",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "volume-up",
+          "name": "VOLUME-UP",
+          "type": "button",
+          "pin": 4,
+          "activeLow": true,
+          "defaultKeyCode": "KeyV"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 5,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 13
+            },
+            {
+              "name": "D3",
+              "gpio": 14
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现此SDMMC接线；可默认准备空白64MiB FAT32虚拟卡。"
+        }
+      ],
+      "limitations": [
+        "实现数字DCS、背光、SDMMC与音频控制寄存器；电池ADC、充电、PWR物理锁存、模拟音频PCM与完整原厂应用尚未验收。",
+        "模型为46×46×22.5mm厂家尺寸包络和原始照片，内板/电池/精确侧接口UNKNOWN；触/非触型号共用外观不表示数字触控存在性相同。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-LCD-1.54-demo/ESP-IDF-5.5.1/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/esp32_s3_touch_lcd_1_54.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/examples/ESP32-S3-Touch-LCD-1.54-demo/ESP-IDF-5.5.1/06_esp-brookesia/components/esp32_s3_touch_lcd_1_54/include/bsp/esp32_s3_touch_lcd_1_54.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-54/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-1-54-factory-2-s3-touch-lcd-1-54-factoryonly-20260319"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-54-factory-esp32-s3-lcd-1-54-factoryonly-20260319",
+      "name": "ESP32-S3-LCD-1.54_FactoryOnly_20260319.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-1-54",
+        "waveshare-esp32-s3-lcd-1-54-sku-33866"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/ESP32-S3-LCD-1.54_FactoryOnly_20260319.bin",
+        "sha256": "5d8ac232da18c7779d4060361b6e09dd9fbe6979b83088a79760566d7f65a8c5",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LCD-1.54_FactoryOnly_20260319",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/ESP32-S3-LCD-1.54_FactoryOnly_20260319.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "厂家分别发布Non-Touch与Touch原厂BIN；SKU映射分别绑定，均从原始BIN校验完整S3布局。完整应用未执行。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-lcd-1-54-factory-esp32-s3-lcd-1-54-factoryonly-20260319-watch"
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-54-factory-2-s3-touch-lcd-1-54-factoryonly-20260319",
+      "name": "ESP32-S3-Touch-LCD-1.54_FactoryOnly_20260319.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-1-54-sku-33868",
+        "waveshare-esp32-s3-lcd-1-54-sku-33869"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/ESP32-S3-Touch-LCD-1.54_FactoryOnly_20260319.bin",
+        "sha256": "dbc177ca6aa69889a7d7b5c6874c193d327e3f34ad9a5f1d6a2c912aa92b14bb",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-LCD-1.54_FactoryOnly_20260319",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/ESP32-S3-Touch-LCD-1.54_FactoryOnly_20260319.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "厂家分别发布Non-Touch与Touch原厂BIN；SKU映射分别绑定，均从原始BIN校验完整S3布局。完整应用未执行。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-lcd-1-54-factory-2-s3-touch-lcd-1-54-factoryonly-20260319-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-54-factory-esp32-s3-lcd-1-54-factoryonly-20260319-watch",
+      "name": "ESP32-S3-LCD-1.54_FactoryOnly_20260319.bin",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-Touch-LCD-1.54",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-LCD-1.54/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/releases",
+      "version": "cf676aa6351b7580c79f6d50a1a296a68e149273",
+      "checkedAt": "2026-11-23T16:52:29Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LCD-1.54_FactoryOnly_20260319.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/ESP32-S3-LCD-1.54_FactoryOnly_20260319.bin",
+          "sha256": "5d8ac232da18c7779d4060361b6e09dd9fbe6979b83088a79760566d7f65a8c5",
+          "bytes": 1270304,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-1-54",
+          "waveshare-esp32-s3-lcd-1-54-sku-33866"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-54-factory-2-s3-touch-lcd-1-54-factoryonly-20260319-watch",
+      "name": "ESP32-S3-Touch-LCD-1.54_FactoryOnly_20260319.bin",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-Touch-LCD-1.54",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-LCD-1.54/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/releases",
+      "version": "cf676aa6351b7580c79f6d50a1a296a68e149273",
+      "checkedAt": "2026-11-23T16:52:31Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-LCD-1.54_FactoryOnly_20260319.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.54/cf676aa6351b7580c79f6d50a1a296a68e149273/firmware/ESP32-S3-Touch-LCD-1.54_FactoryOnly_20260319.bin",
+          "sha256": "dbc177ca6aa69889a7d7b5c6874c193d327e3f34ad9a5f1d6a2c912aa92b14bb",
+          "bytes": 12537043,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-1-54-sku-33868",
+          "waveshare-esp32-s3-lcd-1-54-sku-33869"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-1-54.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-1-54-sku-33866.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-1-54-sku-33868.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-1-54-sku-33869.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-lcd154": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-touch-lcd154": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "Native: each_glass_writes_real_corner_pixels_and_rejects_wrong_pins PASS；分别确认源窗口角像素、错误选片不写入、复位黑屏及触摸芯片是否存在。",
+    "Production Three loader: official photo SHA/UV, optical dimensions, live framebuffer rays and visible UNKNOWN backside PASS."
+  ],
+  "limitations": [
+    "实现数字DCS、背光、SDMMC与音频控制寄存器；电池ADC、充电、PWR物理锁存、模拟音频PCM与完整原厂应用尚未验收。",
+    "模型为46×46×22.5mm厂家尺寸包络和原始照片，内板/电池/精确侧接口UNKNOWN；触/非触型号共用外观不表示数字触控存在性相同。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

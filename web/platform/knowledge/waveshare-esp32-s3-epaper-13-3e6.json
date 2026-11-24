@@ -1,0 +1,688 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-epaper-13-3e6",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-epaper-13-3e6",
+  "title": "Waveshare ESP32-S3-ePaper-13.3E6",
+  "summary": "32 MiB Flash / 16 MiB PSRAM 的 60PIN 墨水屏驱动板。当前配置连接 13.3 英寸 1600×1200 六色玻璃；支持 BOOT 模式切换与 SDMMC。",
+  "summarySourceIds": [
+    "official-overview",
+    "schematic",
+    "glass-manual"
+  ],
+  "updatedAt": "2026-11-23T17:42:15Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "sku": "34349",
+    "runtimeConfiguration": "driver-board-with-optional-13.3E6-panel"
+  },
+  "facts": [
+    {
+      "id": "identity",
+      "label": "驱动板身份",
+      "value": {
+        "sku": "34349",
+        "module": "ESP32-S3-WROOM-2-N32R16V"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview",
+        "schematic"
+      ]
+    },
+    {
+      "id": "memory",
+      "label": "物理存储容量",
+      "value": {
+        "flashMiB": 32,
+        "psramMiB": 16
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "official-overview"
+      ],
+      "notes": "概览后半段 N16R8 描述与该板原理图冲突；采用精确原理图与出厂镜像配置，不扩展到其他型号。"
+    },
+    {
+      "id": "panel",
+      "label": "选配玻璃与模拟视图",
+      "value": {
+        "pixels": [
+          1600,
+          1200
+        ],
+        "nativePixels": [
+          1200,
+          1600
+        ],
+        "diagonalInches": 13.3,
+        "colors": 6,
+        "touch": false,
+        "external": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "glass-manual",
+        "panel-driver",
+        "official-overview"
+      ]
+    },
+    {
+      "id": "panel-wiring",
+      "label": "屏幕控制与 SPI 引脚",
+      "value": {
+        "sclk": 9,
+        "mosi": 46,
+        "masterCs": 10,
+        "slaveCs": 3,
+        "dc": 11,
+        "reset": 2,
+        "busy": 12,
+        "power": 1
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "panel-driver"
+      ]
+    },
+    {
+      "id": "full-refresh",
+      "label": "标称全刷时间",
+      "value": 19000,
+      "basis": "official",
+      "sourceIds": [
+        "glass-product"
+      ],
+      "notes": "单位 ms；不表示测得实物光学响应。"
+    },
+    {
+      "id": "boot-button",
+      "label": "BOOT 按键",
+      "value": {
+        "gpio": 0,
+        "activeLow": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "button-driver"
+      ]
+    },
+    {
+      "id": "tf-slot",
+      "label": "TF 卡 SDMMC",
+      "value": {
+        "clk": 6,
+        "cmd": 7,
+        "d0": 5,
+        "d1": 4,
+        "d2": 16,
+        "d3": 15
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "sd-driver"
+      ]
+    },
+    {
+      "id": "audio-control",
+      "label": "音频控制总线",
+      "value": {
+        "sda": 41,
+        "scl": 42,
+        "es8311": 24,
+        "es7210": 64
+      },
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "codec-config"
+      ],
+      "notes": "地址以十进制保存；本平台只实现已记录的寄存器子集，未模拟音频 PCM。"
+    },
+    {
+      "id": "factory",
+      "label": "官方出厂固件身份",
+      "value": {
+        "path": "Firmware/01_factory.bin",
+        "sha256": "cc3af5a5a3a29f62a32e339754561de57229d383f1da6fa73342ee1493ec48a2",
+        "bytes": 6025696,
+        "offset": 0
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-repository",
+        "factory-binary"
+      ]
+    },
+    {
+      "id": "xiaozhi",
+      "label": "该型号官方小智实现",
+      "value": {
+        "source": "example/ESP-IDF-5.5.1/06_xiaozhi-esp32",
+        "embeddedProject": "xiaozhi",
+        "embeddedVersion": "2.0.1"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "codec-config",
+        "factory-binary"
+      ],
+      "notes": "原厂多模式镜像含小智功能；不是独立完成验收的小智云端会话。"
+    },
+    {
+      "id": "basic-workflow",
+      "label": "原厂离线模式操作",
+      "value": {
+        "longPress": "进入/确认模式菜单并触发源码定义的软件重启",
+        "shortPress": "模式选择或 Basic 图片刷新",
+        "requiredStorage": "FAT32 /img/*.bmp"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "button-driver",
+        "mode-selection",
+        "basic-mode"
+      ]
+    },
+    {
+      "id": "model-dimensions",
+      "label": "3D 模型尺寸与来源",
+      "value": {
+        "driverBoard": {
+          "sizeMm": [
+            75.5,
+            25.4,
+            null
+          ],
+          "nominalVisualThicknessMm": 1.6,
+          "sourceIds": [
+            "dimension-photo"
+          ],
+          "thicknessStatus": "unknown"
+        },
+        "optionalGlass": {
+          "sizeMm": [
+            284.7,
+            208.8,
+            0.85
+          ],
+          "activeMm": [
+            270.4,
+            202.8
+          ],
+          "sourceIds": [
+            "glass-manual",
+            "glass-product"
+          ],
+          "includedInSku": false
+        },
+        "layout": "Separate external glass above the driver, 133 mm center offset, chosen for debug viewing only"
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "model-resources",
+        "model-product",
+        "model-github-tree",
+        "model-glass-manual",
+        "model-glass-product",
+        "model-dimension-photo",
+        "model-component-photo",
+        "model-front-photo",
+        "model-angle-front",
+        "model-connected-example"
+      ],
+      "method": "Manufacturer dimensioned board outline plus registered front/back source photographs; measured values and visual estimates stay separate.",
+      "notes": "SKU34349 is the ESP32-S3 60PIN driver board. The 13.3E6 glass is a separately connected optional display, not an onboard packaged screen or an included part claim. Driver board thickness, package heights and precise corner-hole positions are estimates. A visible UNKNOWN mark remains on the unmodeled reverse face. Major driver components are photo-derived simplified shapes; PCB layer stack, fine solder geometry and hidden component details are unknown. Glass outline and active area are official dimensions. The active-area center offset is a photo estimate; glass-to-board position is a debugging layout only. The pictured intermediate 60PIN adapter, ribbon routing, screws, spacers and optional speaker/battery are omitted because exact mounting/dimensions are not established. Their absence is explicit, not proof they do not exist. A static source picture is never placed on the active display. The 1600x1200 surface receives only the emulator framebuffer. No calibrated manufacturing fit, WebGL/browser visual acceptance or physical hardware verification is claimed by this model build.",
+      "uncertainty": "Documented outline dimensions are retained. Unknown PCB thickness, package heights and placement estimates are not manufacturing measurements; explicit unknown fields and debug-only layout are preserved."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "official-repository",
+      "title": "官方固定版本仓库与出厂用途",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/README.md",
+      "kind": "official-repository",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/README.md",
+      "fetchedAt": "2026-11-23T06:52:02Z",
+      "sha256": "ad923f2137a632683032aa05f4a98cb9f5910026255ad548772347bd69a742c7",
+      "bytes": 2028,
+      "mediaType": "text/plain",
+      "archiveName": "waveshare-epaper133-official-repository.md"
+    },
+    {
+      "id": "factory-binary",
+      "title": "官方出厂合并镜像",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/Firmware/01_factory.bin",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/Firmware/01_factory.bin",
+      "fetchedAt": "2026-11-23T06:52:02Z",
+      "sha256": "cc3af5a5a3a29f62a32e339754561de57229d383f1da6fa73342ee1493ec48a2",
+      "bytes": 6025696,
+      "mediaType": "application/octet-stream",
+      "archiveName": "waveshare-epaper133-factory-binary.bin"
+    },
+    {
+      "id": "panel-driver",
+      "title": "原厂双控制器显示驱动",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/port_bsp/display_bsp.cpp",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/port_bsp/display_bsp.cpp",
+      "fetchedAt": "2026-11-23T06:52:09Z",
+      "sha256": "f00820cbf1c8999d0c0ea910b7ff3a5a2bbf96a8ba287ec1dccfe0b10dfba06c",
+      "bytes": 68590,
+      "mediaType": "text/plain",
+      "archiveName": "waveshare-epaper133-panel-driver.cpp"
+    },
+    {
+      "id": "button-driver",
+      "title": "原厂 BOOT 输入逻辑",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/port_bsp/button_bsp.c",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/port_bsp/button_bsp.c",
+      "fetchedAt": "2026-11-23T06:52:09Z",
+      "sha256": "5a78a531fb404dead5741b7d3681557b9a6c0bbe7aa4652814a710b774a6058d",
+      "bytes": 3476,
+      "mediaType": "text/plain",
+      "archiveName": "waveshare-epaper133-button-driver.c"
+    },
+    {
+      "id": "sd-driver",
+      "title": "原厂 SDMMC 与 FAT32 路径",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/port_bsp/sdcard_bsp.cpp",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/port_bsp/sdcard_bsp.cpp",
+      "fetchedAt": "2026-11-23T06:52:15Z",
+      "sha256": "8d1f41221ce1c3d9825a2f00fda581e31c407647ab0379f218064d3755c15ab6",
+      "bytes": 8238,
+      "mediaType": "text/plain",
+      "archiveName": "waveshare-epaper133-sd-driver.cpp"
+    },
+    {
+      "id": "mode-selection",
+      "title": "原厂模式选择程序",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/user_app_bsp/mode_src/Mode_Selection.cpp",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/user_app_bsp/mode_src/Mode_Selection.cpp",
+      "fetchedAt": "2026-11-23T06:52:28Z",
+      "sha256": "bcbfab321b21662ff3c01f90ebcebd96a9f4d93a230074bc195e2c81cadf2456",
+      "bytes": 5494,
+      "mediaType": "text/plain",
+      "archiveName": "waveshare-epaper133-mode-selection.cpp"
+    },
+    {
+      "id": "basic-mode",
+      "title": "原厂 Basic 模式图像读取",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/user_app_bsp/mode_src/Basic_mode.cpp",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/user_app_bsp/mode_src/Basic_mode.cpp",
+      "fetchedAt": "2026-11-23T06:52:28Z",
+      "sha256": "9e7738e48bd9ce48424335e4bc89efce5a468403f6c3eeb54b4c933f1a0e4441",
+      "bytes": 4952,
+      "mediaType": "text/plain",
+      "archiveName": "waveshare-epaper133-basic-mode.cpp"
+    },
+    {
+      "id": "codec-config",
+      "title": "精确型号音频控制引脚",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/main/boards/waveshare-s3-ePaper-13.3E6/config.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/main/boards/waveshare-s3-ePaper-13.3E6/config.h",
+      "fetchedAt": "2026-11-23T06:52:34Z",
+      "sha256": "44aa26e46bf89384a0736dca71196e8b666db341c3f69811c2f915e4267b3673",
+      "bytes": 915,
+      "mediaType": "text/plain",
+      "archiveName": "waveshare-epaper133-codec-config.h"
+    },
+    {
+      "id": "schematic",
+      "title": "官方驱动板原理图",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-Driver-Board.pdf",
+      "kind": "official-schematic",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-Driver-Board.pdf",
+      "fetchedAt": "2026-11-23T06:52:39Z",
+      "sha256": "4d5962d9b617bcf90653feb2a974bd66241a5bc27c2ee62951c226a7f9cb4f4d",
+      "bytes": 1376649,
+      "mediaType": "application/pdf",
+      "archiveName": "waveshare-epaper133-schematic.pdf"
+    },
+    {
+      "id": "glass-manual",
+      "title": "13.3 英寸 E6 玻璃手册",
+      "url": "https://files.waveshare.com/wiki/13.3inch%20e-Paper%20HAT%2B/13.3inch_e-Paper_(E)_user_manual.pdf",
+      "kind": "official-datasheet",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/13.3inch%20e-Paper%20HAT%2B/13.3inch_e-Paper_(E)_user_manual.pdf",
+      "fetchedAt": "2026-11-23T06:52:44Z",
+      "sha256": "743093db56148fc953ceb62d984dc99d1fca6abbf4949e6490aa0d0e7e7c81e1",
+      "bytes": 1913219,
+      "mediaType": "application/pdf",
+      "archiveName": "waveshare-epaper133-glass-manual.pdf"
+    },
+    {
+      "id": "glass-product",
+      "title": "官方可选玻璃规格",
+      "url": "https://www.waveshare.com/13.3inch-e-paper-hat-plus-e.htm",
+      "kind": "official-product-page",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/13.3inch-e-paper-hat-plus-e.htm",
+      "fetchedAt": "2026-11-23T06:52:47Z",
+      "sha256": "bec9d6ee53c6625622eaf0c865ff3d98ee83fbef198c19859b96ba46adbbb637",
+      "bytes": 233525,
+      "mediaType": "text/html",
+      "archiveName": "waveshare-epaper133-glass-product.html"
+    },
+    {
+      "id": "official-overview",
+      "title": "官方型号、SKU 与硬件介绍",
+      "url": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6",
+      "fetchedAt": "2026-11-23T06:52:44Z",
+      "sha256": "af4d956724fe1e6686a6e98796f9eaeb28f32487425d26c13200f0b17e8e6af4",
+      "bytes": 64683,
+      "mediaType": "text/html",
+      "archiveName": "waveshare-epaper133-official-overview.html"
+    },
+    {
+      "id": "official-resources",
+      "title": "官方资源目录",
+      "url": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6/Resources-And-Documents",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T06:52:44Z",
+      "sha256": "f771872d1f0ba0c9b0428da5c817c16c303f7ed3b95bb118bd1b07c44d05a98f",
+      "bytes": 63807,
+      "mediaType": "text/html",
+      "archiveName": "waveshare-epaper133-official-resources.html"
+    },
+    {
+      "id": "model-resources",
+      "title": "resources",
+      "url": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6/Resources-And-Documents",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T06:52:44Z",
+      "bytes": 63807,
+      "sha256": "f771872d1f0ba0c9b0428da5c817c16c303f7ed3b95bb118bd1b07c44d05a98f",
+      "archiveName": "resources.html",
+      "mediaType": "text/html",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/resources.html.gz; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-product",
+      "title": "product",
+      "url": "https://www.waveshare.com/esp32-s3-epaper-13.3e6.htm",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/esp32-s3-epaper-13.3e6.htm",
+      "fetchedAt": "2026-11-23T07:12:29Z",
+      "bytes": 204855,
+      "sha256": "4ba42e39d4c04dccd7635e2e525338b4b1a023eb66cbdfc9e2ac78c9a7aaad19",
+      "archiveName": "product.html",
+      "mediaType": "application/octet-stream",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/product.html.gz; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-github-tree",
+      "title": "github-tree",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-ePaper-13.3E6/git/trees/f8e9456bd1ca520f638786142fc17a74154f4e05?recursive=1",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-ePaper-13.3E6/git/trees/f8e9456bd1ca520f638786142fc17a74154f4e05?recursive=1",
+      "fetchedAt": "2026-11-23T07:12:32Z",
+      "bytes": 490987,
+      "sha256": "a851fb1498b6ae966fe97c73c8b683c506badb305fac36b582f8e9a3371be0c7",
+      "archiveName": "github-tree.json",
+      "mediaType": "application/octet-stream",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/github-tree.json.gz; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-glass-manual",
+      "title": "glass-manual",
+      "url": "https://files.waveshare.com/wiki/13.3inch%20e-Paper%20HAT%2B/13.3inch_e-Paper_(E)_user_manual.pdf",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/13.3inch%20e-Paper%20HAT%2B/13.3inch_e-Paper_(E)_user_manual.pdf",
+      "fetchedAt": "2026-11-23T06:52:44Z",
+      "bytes": 1913219,
+      "sha256": "743093db56148fc953ceb62d984dc99d1fca6abbf4949e6490aa0d0e7e7c81e1",
+      "archiveName": "glass-manual.pdf",
+      "mediaType": "application/pdf",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/glass-manual.pdf; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-glass-product",
+      "title": "glass-product",
+      "url": "https://www.waveshare.com/13.3inch-e-paper-hat-plus-e.htm",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/13.3inch-e-paper-hat-plus-e.htm",
+      "fetchedAt": "2026-11-23T06:52:47Z",
+      "bytes": 233525,
+      "sha256": "bec9d6ee53c6625622eaf0c865ff3d98ee83fbef198c19859b96ba46adbbb637",
+      "archiveName": "glass-product.html",
+      "mediaType": "text/html",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/glass-product.html.gz; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-dimension-photo",
+      "title": "dimension-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-13.3E6-details-size.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-13.3E6-details-size.jpg",
+      "fetchedAt": "2026-11-23T07:17:25Z",
+      "bytes": 178681,
+      "sha256": "ed2d8c6e8d84691cdbccb5bf78ae5e039a8b90f5a5464b6075939bf974b7ec66",
+      "archiveName": "dimension-photo.jpg",
+      "mediaType": "application/octet-stream",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/dimension-photo.jpg; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-component-photo",
+      "title": "component-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-13.3E6-details-intro.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-13.3E6-details-intro.jpg",
+      "fetchedAt": "2026-11-23T07:17:25Z",
+      "bytes": 330113,
+      "sha256": "993e4a22db80da58600812b7250a4bf3ef76fa39363086d297610a11b4779dae",
+      "archiveName": "component-photo.jpg",
+      "mediaType": "application/octet-stream",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/component-photo.jpg; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-front-photo",
+      "title": "front-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-2.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-2.jpg",
+      "fetchedAt": "2026-11-23T07:17:19Z",
+      "bytes": 69067,
+      "sha256": "6fe5bbb52609b59e80c1aea9967eb044268df355eba91d23d74c48a9f357d097",
+      "archiveName": "front-photo.jpg",
+      "mediaType": "application/octet-stream",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/front-photo.jpg; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-angle-front",
+      "title": "angle-front",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-5.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-5.jpg",
+      "fetchedAt": "2026-11-23T07:17:25Z",
+      "bytes": 58548,
+      "sha256": "e63c70a10ec589eaed2fb04129c82173e36a72ae042383f5f52f5de13d606e81",
+      "archiveName": "angle-front.jpg",
+      "mediaType": "application/octet-stream",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/angle-front.jpg; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "model-connected-example",
+      "title": "connected-example",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-1.jpg",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-1.jpg",
+      "fetchedAt": "2026-11-23T07:17:19Z",
+      "bytes": 85752,
+      "sha256": "bf47f58e9b931735b9f1ca22c2c7c1df83f96a175186615a012b31c23f9662a7",
+      "archiveName": "connected-example.jpg",
+      "mediaType": "application/octet-stream",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-epaper-13-3e6/connected-example.jpg; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    }
+  ],
+  "assets": [
+    {
+      "id": "schematic-pdf",
+      "sourceId": "schematic",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-Driver-Board.pdf",
+      "role": "schematic"
+    },
+    {
+      "id": "glass-manual-pdf",
+      "sourceId": "glass-manual",
+      "url": "https://files.waveshare.com/wiki/13.3inch%20e-Paper%20HAT%2B/13.3inch_e-Paper_(E)_user_manual.pdf",
+      "role": "manual"
+    },
+    {
+      "id": "model-resources",
+      "sourceId": "model-resources",
+      "role": "reference-only",
+      "url": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6/Resources-And-Documents",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/resources.html.gz"
+    },
+    {
+      "id": "model-product",
+      "sourceId": "model-product",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/esp32-s3-epaper-13.3e6.htm",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/product.html.gz"
+    },
+    {
+      "id": "model-github-tree",
+      "sourceId": "model-github-tree",
+      "role": "reference-only",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-ePaper-13.3E6/git/trees/f8e9456bd1ca520f638786142fc17a74154f4e05?recursive=1",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/github-tree.json.gz"
+    },
+    {
+      "id": "model-glass-manual",
+      "sourceId": "model-glass-manual",
+      "role": "reference-only",
+      "url": "https://files.waveshare.com/wiki/13.3inch%20e-Paper%20HAT%2B/13.3inch_e-Paper_(E)_user_manual.pdf",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/glass-manual.pdf"
+    },
+    {
+      "id": "model-glass-product",
+      "sourceId": "model-glass-product",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/13.3inch-e-paper-hat-plus-e.htm",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/glass-product.html.gz"
+    },
+    {
+      "id": "model-dimension-photo",
+      "sourceId": "model-dimension-photo",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-13.3E6-details-size.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/dimension-photo.jpg"
+    },
+    {
+      "id": "model-component-photo",
+      "sourceId": "model-component-photo",
+      "role": "runtime-texture",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-13.3E6-details-intro.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/component-photo.jpg"
+    },
+    {
+      "id": "model-front-photo",
+      "sourceId": "model-front-photo",
+      "role": "runtime-texture",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-2.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/front-photo.jpg"
+    },
+    {
+      "id": "model-angle-front",
+      "sourceId": "model-angle-front",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-5.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/angle-front.jpg"
+    },
+    {
+      "id": "model-connected-example",
+      "sourceId": "model-connected-example",
+      "role": "reference-only",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-s3-epaper-13.3e6-1.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-epaper-13-3e6/connected-example.jpg"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "本轮未找到可核验官方发布日期；编译日期不作替代。"
+    },
+    {
+      "id": "controller-part",
+      "label": "显示控制器具体料号",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "glass-manual"
+      ],
+      "notes": "公开手册不足以确认，未套用其他控制器名称。"
+    },
+    {
+      "id": "uiflow",
+      "label": "精确型号官方 UIFlow 固件",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-resources"
+      ],
+      "notes": "本轮检查官方资源页、仓库，并检索 M5Stack 官方文档和 uiflow-micropython；未找到精确目标，不表示永远不存在。"
+    },
+    {
+      "id": "physical-orientation",
+      "label": "相对实物 USB 的显示朝向",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "panel-driver"
+      ],
+      "notes": "当前按原厂坐标变换呈现，实物校准尚未完成。"
+    }
+  ],
+  "collectionNotes": [
+    "产品尺寸与 3D 资产单独按模型资料核验；驱动板与选配玻璃不合并成虚构单一尺寸。",
+    "出厂固件优先且默认；固定原厂合并镜像保留为 trial，不用诊断程序替代。",
+    "本次原厂 Basic 路径产生 1600×1200 完整帧；默认联网路径白屏记录为负例。验收记录：docs/evidence/waveshare-s3-epaper133-2026-11-23/README.md。",
+    "出厂 Basic 验收使用项目生成、无凭据的 64 MiB FAT32 测试卡；界面默认仍为空卡。按键脚本与制卡脚本同上。",
+    "来源原文（不含固件二进制）以 gzip 存于 docs/research/waveshare-epaper133-sources；原始字节 SHA-256 由本记录保留。",
+    "3D 来源：官方尺寸与照片重建。 已通过生产 Three.js 加载器的几何、输入射线和素材校验；尚无浏览器 WebGL 或实物装配验收。",
+    "本轮新增/复核来源模型 waveshare-esp32-s3-epaper-13-3e6；只声明model-plan.json列出的几何范围，保留原数字外设与原厂验收记录。"
+  ]
+}

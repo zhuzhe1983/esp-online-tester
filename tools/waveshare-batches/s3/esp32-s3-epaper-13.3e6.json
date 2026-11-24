@@ -1,0 +1,282 @@
+{
+  "listingId": "esp32-s3-epaper-13.3e6",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-epaper-13-3e6",
+      "name": "Waveshare ESP32-S3-ePaper-13.3E6",
+      "manufacturer": "Waveshare",
+      "sku": "34349",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s3",
+      "summary": "32 MiB Flash / 16 MiB PSRAM 的 60PIN 墨水屏驱动板。当前配置连接 13.3 英寸 1600×1200 六色玻璃；支持 BOOT 模式切换与 SDMMC。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-epaper-13-3e6.json",
+      "family": {
+        "id": "waveshare-s3-epaper",
+        "name": "Waveshare ESP32-S3 e-Paper"
+      },
+      "runtime": {
+        "board": "waveshare-s3-epaper133e6",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 1600,
+        "height": 1200,
+        "type": "E Ink Spectra 6",
+        "bus": "SPI3",
+        "diagonalInches": 13.3,
+        "touch": false,
+        "attachment": "optional-external-panel",
+        "controller": "双控制器命令子集；具体芯片型号待确认"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT · 原厂模式选择",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 编程 / 电源",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "official-overview"
+          ]
+        },
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 6
+            },
+            {
+              "name": "CMD",
+              "gpio": 7
+            },
+            {
+              "name": "D0",
+              "gpio": 5
+            },
+            {
+              "name": "D1",
+              "gpio": 4
+            },
+            {
+              "name": "D2",
+              "gpio": 16
+            },
+            {
+              "name": "D3",
+              "gpio": 15
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "sd-driver"
+          ],
+          "notes": "默认准备 64 MiB FAT32 空卡；真实 SDMMC 路径已完成原厂固件读取验收。用户图像不会被自动替换。"
+        },
+        {
+          "id": "epaper-60pin",
+          "name": "选配 13.3E6 玻璃接口",
+          "type": "FPC-60",
+          "external": true,
+          "pins": [
+            {
+              "name": "SCLK",
+              "gpio": 9
+            },
+            {
+              "name": "MOSI",
+              "gpio": 46
+            },
+            {
+              "name": "CS_MASTER",
+              "gpio": 10
+            },
+            {
+              "name": "CS_SLAVE",
+              "gpio": 3
+            },
+            {
+              "name": "DC",
+              "gpio": 11
+            },
+            {
+              "name": "RESET",
+              "gpio": 2
+            },
+            {
+              "name": "BUSY",
+              "gpio": 12
+            },
+            {
+              "name": "POWER_ENABLE",
+              "gpio": 1
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "panel-driver"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "official-repository",
+          "title": "官方固定版本仓库与出厂用途",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "panel-driver",
+          "title": "原厂双控制器显示驱动",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/components/port_bsp/display_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "官方驱动板原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-ePaper-13.3E6/ESP32-S3-ePaper-Driver-Board.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "glass-manual",
+          "title": "13.3 英寸 E6 玻璃手册",
+          "url": "https://files.waveshare.com/wiki/13.3inch%20e-Paper%20HAT%2B/13.3inch_e-Paper_(E)_user_manual.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "glass-product",
+          "title": "官方可选玻璃规格",
+          "url": "https://www.waveshare.com/13.3inch-e-paper-hat-plus-e.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、SKU 与硬件介绍",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-resources",
+          "title": "官方资源目录",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-13.3e6.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-13.3E6",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-1",
+          "title": "固定提交：example/Arduino-3.2.0/examples/03_E-Paper_Example/DEV_Config.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/Arduino-3.2.0/examples/03_E-Paper_Example/DEV_Config.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-2",
+          "title": "固定提交：example/Arduino-3.2.0/examples/03_E-Paper_Example/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/Arduino-3.2.0/examples/03_E-Paper_Example/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-3",
+          "title": "固定提交：example/Arduino-3.2.0/examples/04_SD_Test/DEV_Config.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/Arduino-3.2.0/examples/04_SD_Test/DEV_Config.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-4",
+          "title": "固定提交：example/Arduino-3.2.0/examples/04_SD_Test/DEV_Config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/Arduino-3.2.0/examples/04_SD_Test/DEV_Config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "current-board-source-5",
+          "title": "固定提交：example/ESP-IDF-5.5.1/06_xiaozhi-esp32/main/display/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-13.3E6/f8e9456bd1ca520f638786142fc17a74154f4e05/example/ESP-IDF-5.5.1/06_xiaozhi-esp32/main/display/display.h",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "SKU 34349 为 60PIN 驱动板；此模拟配置明确连接选配的 13.3 英寸 E6 玻璃，不表示玻璃随驱动板附送。",
+        "原厂默认进入联网模式，初始白屏不是显示验收；切换 Basic 模式并在 TF 卡提供图像后可刷新。操作与测试卡说明见产品知识。",
+        "已验证原厂 ROM 启动、BOOT 模式切换、SDMMC 读写及六色刷新；音频仅实现控制寄存器，联网、模拟电气、光学色彩与全部外设未完成。",
+        "19 秒为官方标称全刷时长；控制器具体型号与实物 USB 方位尚未校准。",
+        "依据官方尺寸和照片重建；未知板厚、器件高度等采用明确标注的视觉估计，不能用于制造。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "固件内嵌编译日期不是产品发布日期；不据此宣称最近发布。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-epaper-13-3e6-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-epaper-13-3e6/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    }
+  ],
+  "firmwares": [],
+  "watchlist": [],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-epaper-13-3e6.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-epaper133e6": {
+      "chip": "esp32s3",
+      "flashMb": 32,
+      "psramMb": 16,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "保留既有原厂ROM、BOOT模式切换、SDMMC读取与六色刷新证据；来源模型已在既有批次保留。"
+  ],
+  "limitations": [
+    "SKU34349为驱动板，13.3E6玻璃为明确选配场景，不能称为板载或套装赠送。",
+    "完整网络应用/真实E-Ink光学时序/模拟音频未验收。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}
