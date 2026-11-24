@@ -1,4 +1,4 @@
-//! Original 800x480 Waveshare 7-inch board (not 7B/7C).
+//! Original 800x480 Waveshare 7-inch and4.3-inch boards (not B/C).
 //! CH422G is the multi-address device in the pinned manufacturer driver:
 //! WR_SET24, WR_OC23, WR_IO38, RD_IO26; one data byte, no register prefix.
 //! Exact official demo sources are retained in waveshare-s3-tail-sources.
@@ -9,7 +9,7 @@ use esp_soc::{board::{Board,BoardModel,BoardEdge,LcdRgbPins,SpiQspiPins},pins::P
 const HZ:u64=240_000_000;const RGB:[u8;16]=[14,38,18,17,10,39,0,45,48,47,21,1,2,42,41,40];
 struct TouchPort{inner:Gt911,io:Arc<Mutex<Io>>,at:u8,address:Arc<Mutex<u8>>}
 impl I2cDevice for TouchPort{fn start(&mut self,r:bool)->bool{self.io.lock().expect("CH422G").level(1)==Some(true)&&*self.address.lock().expect("GT address")==self.at&&self.inner.start(r)}fn write(&mut self,v:u8)->bool{self.io.lock().expect("CH422G").level(1)==Some(true)&&self.inner.write(v)}fn read(&mut self)->u8{if self.io.lock().expect("CH422G").level(1)==Some(true){self.inner.read()}else{255}}}
-pub fn make_board(name:&str)->Option<Board>{let(name,touch)=match name{"waveshare-s3-touch-lcd7"=>("waveshare-s3-touch-lcd7",true),"waveshare-s3-lcd7"=>("waveshare-s3-lcd7",false),"waveshare-s3-touch-lcd7-external"=>("waveshare-s3-touch-lcd7-external",true),_=>return None};Some(Box::new(WaveshareCh422Rgb::new(name,touch)))}
+pub fn make_board(name:&str)->Option<Board>{let(name,touch)=match name{"waveshare-s3-touch-lcd7"=>("waveshare-s3-touch-lcd7",true),"waveshare-s3-lcd7"=>("waveshare-s3-lcd7",false),"waveshare-s3-touch-lcd7-external"=>("waveshare-s3-touch-lcd7-external",true),"waveshare-s3-touch-lcd43"=>("waveshare-s3-touch-lcd43",true),"waveshare-s3-lcd43"=>("waveshare-s3-lcd43",false),_=>return None};Some(Box::new(WaveshareCh422Rgb::new(name,touch)))}
 struct WaveshareCh422Rgb{name:&'static str,touch_enabled:bool,io:Arc<Mutex<Io>>,touch:Arc<Mutex<Gt911State>>,address:Arc<Mutex<u8>>,i2c:I2cBitBang,attached:bool,cycle:u64,levels:[bool;3],edges:Vec<BoardEdge>,reset_high:bool,reset_falls:u64,irq_drive:Option<bool>,frame:Vec<u16>,mapping:Option<[u8;16]>,frames:u64,version:u64,sd:Option<SpiSdCard>,present:bool,rejected_sd:u64}
 impl WaveshareCh422Rgb{
  fn new(name:&'static str,touch_enabled:bool)->Self{Self{name,touch_enabled,io:Arc::new(Mutex::new(Io::new())),touch:Arc::new(Mutex::new(Gt911State::new(800,480,HZ/100))),address:Arc::new(Mutex::new(0x5d)),i2c:I2cBitBang::new(),attached:false,cycle:0,levels:[true;3],edges:Vec::new(),reset_high:false,reset_falls:0,irq_drive:None,frame:vec![0;800*480],mapping:None,frames:0,version:0,sd:None,present:false,rejected_sd:0}}
@@ -37,7 +37,7 @@ impl BoardModel for WaveshareCh422Rgb{
  fn display(&self)->Option<(u32,u32,Vec<u16>,u64)>{Some((800,480,if self.visible(){self.frame.clone()}else{vec![0;self.frame.len()]},self.display_version()))}
  fn display_version(&self)->u64{self.version.wrapping_add(self.io.lock().expect("CH422G").writes)}
  fn display_frames(&self)->u64{self.frames}
- fn report(&self)->String{format!("{} 800x480 exact RGB565 pin map; actual CH422G byte/address24/23/38/26 control subset; EX2 backlight EX1 GT911reset/IRQ4, strap5D/14 touch={}; SPI TFCLK12/MOSI11/MISO13 externalEX4 active-low; frames={} SDreject={}. No CH32 MCU alias, nativeSDMMC, CH422 scan/sleep/input calibration, CAN/USB mux electrical effect, RS485, RF/antenna or complete factory/hardware acceptance.",self.name,self.touch_enabled,self.frames,self.rejected_sd)}
+ fn report(&self)->String{format!("{} 800x480 exact RGB565 pin map; actual CH422G byte/address24/23/38/26 control subset; EX2 backlight EX1 GT911reset/IRQ4, strap5D/14 touch={}; SPI TFCLK12/MOSI11/MISO13 externalEX4 active-low; frames={} SDreject={}. EX3 LCD_RST series R20/R112 is NC/100R in retained schematics; optional link population and reset effect unverified. No CH32 MCU alias, nativeSDMMC, CH422 scan/sleep/input calibration, CAN/USB mux electrical effect, RS485, RF/antenna or complete factory/hardware acceptance.",self.name,self.touch_enabled,self.frames,self.rejected_sd)}
 }
 #[cfg(test)]mod tests{use super::*;
  fn write(d:&mut dyn I2cDevice,v:u8){assert!(d.start(false));assert!(d.write(v));assert!(!d.write(v));d.stop();}

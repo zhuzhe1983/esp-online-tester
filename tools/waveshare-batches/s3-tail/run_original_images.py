@@ -13,6 +13,8 @@ FIRST = [
     ('waveshare-s3-touch-lcd128', 'touch128', 2, False),
 ]
 
+SECOND = [("waveshare-s3-lcd128", "lcd128", 2, False), ("waveshare-s3-touch-lcd128", "touch128", 2, False), ("waveshare-s3-geek", "geek", 2, True), ("waveshare-s3-touch-lcd43", "touch43", 8, True), ("waveshare-s3-lcd43", "lcd43", 8, True)]
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -20,6 +22,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     for name in ('sources', 'binary', 'rom', 'sd', 'evidence'):
         ap.add_argument('--'+name, type=Path, required=True)
+    ap.add_argument('--group', choices=['first', 'second'], default='first')
     ap.add_argument('--guest-ms', type=int, default=5000)
     a = ap.parse_args()
     source = a.sources / 's3-tail-sources'
@@ -34,7 +37,7 @@ def main():
     }
     (a.evidence / 'native-run-inputs.json').write_text(json.dumps(provenance, indent=2)+'\n')
     runs = []
-    for board, key, psram, has_sd in FIRST:
+    for board, key, psram, has_sd in (FIRST if a.group == "first" else SECOND):
         r = rows[key]
         firmware = source / r['repo'] / 'files' / r['path']
         assert digest(firmware) == r['sha256'], firmware

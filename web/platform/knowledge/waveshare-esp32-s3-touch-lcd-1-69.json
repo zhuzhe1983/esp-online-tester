@@ -1,0 +1,856 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-touch-lcd-1-69",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-touch-lcd-1-69",
+  "title": "Waveshare ESP32-S3-Touch-LCD-1.69",
+  "summary": "1.69 英寸 240×280；16 MiB Flash / 8 MiB PSRAM。",
+  "summarySourceIds": [
+    "overview",
+    "resources",
+    "electrical-10",
+    "electrical-11",
+    "electrical-12",
+    "electrical-13",
+    "electrical-14",
+    "electrical-15",
+    "electrical-16",
+    "electrical-17",
+    "electrical-18",
+    "electrical-19",
+    "electrical-20",
+    "electrical-21",
+    "electrical-22",
+    "electrical-23",
+    "electrical-24"
+  ],
+  "updatedAt": "2026-11-23T23:07:08Z",
+  "hardwareRevision": "V2.1 schematic; CAD revision unspecified",
+  "facts": [
+    {
+      "id": "exact-hardware",
+      "label": "精确SKU、容量与接线",
+      "value": {
+        "sku": "27350",
+        "hardwareRevision": "V2.1 schematic; CAD revision unspecified",
+        "flashMiB": 16,
+        "psramMiB": 8,
+        "display": {
+          "width": 240,
+          "height": 280,
+          "type": "TFT LCD",
+          "controller": "ST7789V2",
+          "bus": "SPI",
+          "diagonalInches": 1.69,
+          "touch": true
+        },
+        "SPI": {
+          "CLK": 6,
+          "MOSI": 7,
+          "CS": 5,
+          "DC": 4,
+          "RST": 8,
+          "BL": 15
+        },
+        "I2C": {
+          "main": [
+            11,
+            10
+          ]
+        },
+        "SD": null,
+        "components": [
+          "ESP32-S3R8 with8MiB PSRAM and16MiBFlash",
+          "CST816T common one-contact protocol@15,RST13 IRQ14",
+          "QMI8658C@6B andPCF85063@51",
+          "BOOT0,PWR40 digitalinput only",
+          "NoTF slot declared by exact product sources"
+        ],
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 0,
+            "activeLow": true,
+            "defaultKeyCode": "Space"
+          },
+          {
+            "id": "power",
+            "name": "PWR digital input",
+            "type": "button",
+            "pin": 40,
+            "activeLow": true,
+            "defaultKeyCode": "KeyP"
+          },
+          {
+            "id": "touch",
+            "name": "Touch input",
+            "type": "touch"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-17",
+        "electrical-18",
+        "electrical-19",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-24"
+      ]
+    },
+    {
+      "id": "source-conflicts",
+      "label": "版次、来源冲突与范围",
+      "value": [
+        "CurrentV2.1 schematic and earlier schematic both retained; unmarked CAD revision is not promoted to V2.1 PCB placement evidence.",
+        "Original factory reachesSetup done and discovers15/51/6B; at5s it emits10 RAMWR commands and1929 finalRGB565 colors. Espressif mode3 idleHigh=true,outEdge=false is independently tested; full application/input acceptance remains unverified.",
+        "ST7789V2 actualGRAM is240×320 with manufacturerY20 offset. Fixed portrait reference uses factoryMADCTL00; LCMCTRL XMX/XMY scan is separate from hostMADCTL. Physical orientation/color/gamma and LCM XBGR/XMV/XINV remain uncalibrated."
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-17",
+        "electrical-18",
+        "electrical-19",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-24"
+      ]
+    },
+    {
+      "id": "mechanical",
+      "label": "机械来源与未知项",
+      "value": {
+        "method": "manufacturer-cad",
+        "dimensions": {
+          "display": {
+            "sizeMm": [
+              27.972,
+              32.634
+            ],
+            "sourceIds": [
+              "dimension-photo",
+              "official-cad"
+            ]
+          },
+          "pcb": {
+            "nativeSizeMm": [
+              29.850867400000006,
+              37.14090108000001,
+              1.0000000000000004
+            ],
+            "sourceIds": [
+              "official-cad"
+            ]
+          }
+        },
+        "limitations": [
+          "All native source topology preserved without scale fitting. Native materials are not calibrated hardware color.",
+          "Physical3D switch/connector calibration is not established; no guessed button targets or connected cables. Workbench inputs remain separately available.",
+          "No hardware fit, optical alignment, browser WebGL or full factory application acceptance claim.",
+          "Source native33.13×41.13 cover agrees with publishedXY. Active center is registered to source origin; independent optical calibration is not established. V2.1 schematic source is retained independently from CAD revision."
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-photo",
+        "resources",
+        "official-cad"
+      ]
+    },
+    {
+      "id": "ecosystem-investigation",
+      "label": "原厂、小智、UIFlow调查",
+      "value": {
+        "factory": "touch169",
+        "xiaozhiExactTargetPaths": [],
+        "xiaozhiAcceptedBinary": false,
+        "uiflowExactWaveshareNamedPaths": [],
+        "uiflowAcceptedBinary": false,
+        "scope": "Exact retained official resource pages and pinned upstreamboardtrees. No generic platformimage assigned; source support does not provebinary compatibility."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "resources",
+        "xiaozhi-tree",
+        "uiflow-tree"
+      ]
+    },
+    {
+      "id": "factory-layout",
+      "label": "原始镜像布局与实际运行",
+      "value": {
+        "sha256": "9b814b123ea0347ce81093c2d6b91d07e214f801fe5d0da312d5309b321db36c",
+        "bytes": 708720,
+        "role": "factory",
+        "layout": {
+          "loadOffset": 0,
+          "chipId": 9,
+          "bootloaderChecksumAndDigestValid": true,
+          "partitionTableOffset": 32768,
+          "partitionTableMd5Valid": true,
+          "partitions": [
+            {
+              "type": 1,
+              "subtype": 2,
+              "offset": 36864,
+              "bytes": 20480,
+              "label": "nvs",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 0,
+              "offset": 57344,
+              "bytes": 8192,
+              "label": "otadata",
+              "flags": 0
+            },
+            {
+              "type": 0,
+              "subtype": 16,
+              "offset": 65536,
+              "bytes": 1310720,
+              "label": "app0",
+              "flags": 0,
+              "imageChipId": 9,
+              "imageChecksumsValid": true
+            },
+            {
+              "type": 0,
+              "subtype": 17,
+              "offset": 1376256,
+              "bytes": 1310720,
+              "label": "app1",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 130,
+              "offset": 2686976,
+              "bytes": 1441792,
+              "label": "spiffs",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 3,
+              "offset": 4128768,
+              "bytes": 65536,
+              "label": "coredump",
+              "flags": 0
+            }
+          ],
+          "fitsFlashMiB": 16,
+          "headerFlashSizeCode": 2
+        },
+        "observed": {
+          "board": "waveshare-s3-touch-lcd169",
+          "guestCycles": 1200000000,
+          "guestMilliseconds": 5000,
+          "stop": "Halted",
+          "reboots": 0,
+          "width": 240,
+          "height": 280,
+          "distinctColors": 1929,
+          "version": 2237,
+          "frames": 10,
+          "pc": [
+            1107649290,
+            1107649290
+          ],
+          "sdCommands": 0,
+          "sdTimeouts": 0,
+          "sdBytesRead": 0,
+          "sdBytesWritten": 0,
+          "physicalValidated": false,
+          "fullApplicationValidated": false
+        },
+        "evidence": "docs/evidence/waveshare-s3-tail-first-five-2026-11-23/native-runs.json"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "firmware"
+      ],
+      "notes": "Runtimeobservation is simulator-derived, not manufacturercompatibility assurance."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.69",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:34Z",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.69",
+      "bytes": 71221,
+      "sha256": "c1e583d6b28263d39b8fdf5fc59e009b832660a8453b22b9283b8d9e0c57bddb",
+      "archiveName": "overview.html.gz",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/overview.html.gz"
+    },
+    {
+      "id": "resources",
+      "title": "resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.69/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:19:12Z",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.69/Resources-And-Documents",
+      "bytes": 66770,
+      "sha256": "fb2c7b037ad0064bc1c2c9416ab3ddd006ae844d98ca2bb1c8a59f88b50aa2da",
+      "archiveName": "resources.html.gz",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/resources.html.gz"
+    },
+    {
+      "id": "repository-tree",
+      "title": "repository-tree.json.gz",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-LCD-1.69/git/trees/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6?recursive=1",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:20:20Z",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-LCD-1.69/git/trees/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6?recursive=1",
+      "bytes": 420652,
+      "sha256": "2c7d6ffa5a050dae15c0592b33561cab356fcd33aaaf4cc6b1490eb3671a2ba4",
+      "archiveName": "repository-tree.json.gz",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/repository-tree.json.gz"
+    },
+    {
+      "id": "dimension-photo",
+      "title": "dimension-photo.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-Size-fe23433152821925ce45df66b3caa8c7.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:11Z",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-Size-fe23433152821925ce45df66b3caa8c7.webp",
+      "bytes": 41262,
+      "sha256": "4a5e1a41028c57f00e928919b0690607aea985e3060de022325f5e88d86682f5",
+      "archiveName": "dimension-photo.webp",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/dimension-photo.webp"
+    },
+    {
+      "id": "photo-0",
+      "title": "photo-0.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-HW-Intro1-c76d4e958a92a29a9ca1d5f99bb4ccd5.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:08Z",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-HW-Intro1-c76d4e958a92a29a9ca1d5f99bb4ccd5.webp",
+      "bytes": 43462,
+      "sha256": "baea0393766d9ab12d5cf5cc340d2a31004c9c8c95f8ffaa43a80cc36ed5cbc4",
+      "archiveName": "photo-0.webp",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/photo-0.webp"
+    },
+    {
+      "id": "photo-1",
+      "title": "photo-1.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-Pinout-9eb7123eddd52dc51577bba392a34e65.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:08Z",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-Pinout-9eb7123eddd52dc51577bba392a34e65.webp",
+      "bytes": 32546,
+      "sha256": "bc1aa52d0d24ca30228a1b4579732972ba14520999900a94416be64e8ec10442",
+      "archiveName": "photo-1.webp",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/photo-1.webp"
+    },
+    {
+      "id": "photo-3",
+      "title": "photo-3.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-details-1-37f4207b24628a107d256c4bee148a81.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:08Z",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-details-1-37f4207b24628a107d256c4bee148a81.webp",
+      "bytes": 10092,
+      "sha256": "1f1b4ec81f3760e31d12985a755b950f8b2ef129ec2f97c08b2ff1dd1fcdab1e",
+      "archiveName": "photo-3.webp",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/photo-3.webp"
+    },
+    {
+      "id": "cad-archive",
+      "title": "source-archive.zip",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.69/ESP32-S3-Touch-LCD-1_69.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:21:08Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.69/ESP32-S3-Touch-LCD-1_69.zip",
+      "bytes": 2116246,
+      "sha256": "89aba11ac0eb048ad1c99d18f5f29353562d391b8561cd7e2a612ff187985186",
+      "archiveName": "source-archive.zip",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/source-archive.zip"
+    },
+    {
+      "id": "official-cad",
+      "title": "source.stp.gz",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.69/ESP32-S3-Touch-LCD-1_69.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:21:08Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.69/ESP32-S3-Touch-LCD-1_69.zip",
+      "bytes": 11082778,
+      "sha256": "e9f1555b02edee55548239b96e9a6610e9e49dbd6bb9bf6b85617b33687cb314",
+      "archiveName": "source.stp.gz",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-s3-touch-lcd-1-69/source.stp.gz"
+    },
+    {
+      "id": "product",
+      "title": "Exact officialSKU/options",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.69.htm",
+      "kind": "manufacturer-product",
+      "status": "linked",
+      "notes": "PublicSKU fields retained as derived selection; rawstorefrontbody is not published."
+    },
+    {
+      "id": "electrical-10",
+      "title": "ESP32-S3-Touch-LCD-1.69/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:20:32Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/README.md",
+      "bytes": 5690,
+      "sha256": "158db4a48fa1a5eb202ddd8202469a8d668fc5c1c798f02c1bf6239a6110d739",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_README.md.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_README.md.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-11",
+      "title": "ESP32-S3-Touch-LCD-1.69/examples/arduino/examples/02_Drawing_board/02_Drawing_board.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/02_Drawing_board/02_Drawing_board.ino",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:33:53Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/02_Drawing_board/02_Drawing_board.ino",
+      "bytes": 4161,
+      "sha256": "9c44026d698863a3d843694764d6b32bbd718b2316cf82d08c40be35141df2cb",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_examples_arduino_examples_02_Drawing_board_02_Drawing_board.ino.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_examples_arduino_examples_02_Drawing_board_02_Drawing_board.ino.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-12",
+      "title": "ESP32-S3-Touch-LCD-1.69/examples/arduino/examples/09_LVGL_Keys_Bee/09_LVGL_Keys_Bee.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/09_LVGL_Keys_Bee/09_LVGL_Keys_Bee.ino",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:33:53Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/09_LVGL_Keys_Bee/09_LVGL_Keys_Bee.ino",
+      "bytes": 6750,
+      "sha256": "57c4b1cfa682efe2b89aae54a63ac16a268445c296abeef708102a1cb1b58abd",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_examples_arduino_examples_09_LVGL_Keys_Bee_09_LVGL_Keys_Bee.ino.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_examples_arduino_examples_09_LVGL_Keys_Bee_09_LVGL_Keys_Bee.ino.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-13",
+      "title": "ESP32-S3-Touch-LCD-1.69/examples/arduino/examples/11_LVGL_Arduino/11_LVGL_Arduino.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/11_LVGL_Arduino/11_LVGL_Arduino.ino",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:33:53Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/11_LVGL_Arduino/11_LVGL_Arduino.ino",
+      "bytes": 5523,
+      "sha256": "fe4f75cdeed0b0d3ed9637b740d37ef8439e9d0826769949999c4b57cf76632c",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_examples_arduino_examples_11_LVGL_Arduino_11_LVGL_Arduino.ino.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_examples_arduino_examples_11_LVGL_Arduino_11_LVGL_Arduino.ino.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-14",
+      "title": "ESP32-S3-Touch-LCD-1.69/examples/arduino/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:33:57Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp",
+      "bytes": 6886,
+      "sha256": "d0cf2d5ada6489940eff80db1d2cdb6a8ae9d6a9982a97a179d0b9056ab9d13b",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_examples_arduino_libraries_Arduino_DriveBus_src_touch_chip_Arduino_CST816x.cpp.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_examples_arduino_libraries_Arduino_DriveBus_src_touch_chip_Arduino_CST816x.cpp.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-15",
+      "title": "ESP32-S3-Touch-LCD-1.69/examples/arduino/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:33:58Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h",
+      "bytes": 3256,
+      "sha256": "3d06f553068d065c8d12fd08a016d8a4ee18ab1a9f63c0bff4c326b48ab3ea4f",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_examples_arduino_libraries_Arduino_DriveBus_src_touch_chip_Arduino_CST816x.h.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_examples_arduino_libraries_Arduino_DriveBus_src_touch_chip_Arduino_CST816x.h.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-16",
+      "title": "ESP32-S3-Touch-LCD-1.69/examples/arduino/libraries/board_config/pin_config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/board_config/pin_config.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:33:58Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/board_config/pin_config.h",
+      "bytes": 827,
+      "sha256": "5caf9eaeeb791a797c5ea89d9a95954520f77f0577c748babd41996530409b48",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_examples_arduino_libraries_board_config_pin_config.h.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_examples_arduino_libraries_board_config_pin_config.h.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-17",
+      "title": "ESP32-S3-Touch-LCD-1.69/examples/esp-idf/02_ESP_IDF_ST7789_LVGL/main/main.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/esp-idf/02_ESP_IDF_ST7789_LVGL/main/main.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:04Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/esp-idf/02_ESP_IDF_ST7789_LVGL/main/main.c",
+      "bytes": 9747,
+      "sha256": "fc4bcd5a919615c85872e4404c839e95b596f9f00b0ac462bd02d5f683e1ca1b",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_examples_esp-idf_02_ESP_IDF_ST7789_LVGL_main_main.c.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_examples_esp-idf_02_ESP_IDF_ST7789_LVGL_main_main.c.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-18",
+      "title": "ESP32-S3-Touch-LCD-1.69/firmware/ESP32-S3-LCD-1.69/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-LCD-1.69/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:08Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-LCD-1.69/README.md",
+      "bytes": 1070,
+      "sha256": "9a6b65bdc301af3d7ca6aec39dc8a77d27d5222c87c01142d531624e6168542b",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_firmware_ESP32-S3-LCD-1.69_README.md.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_firmware_ESP32-S3-LCD-1.69_README.md.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-19",
+      "title": "ESP32-S3-Touch-LCD-1.69/firmware/ESP32-S3-LCD-1.69/README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-LCD-1.69/README_ZH.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:08Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-LCD-1.69/README_ZH.md",
+      "bytes": 1023,
+      "sha256": "1daf357a062628cc47b3c770b4afaa29c14566ebc1d7d52ee4d2abc16c841daa",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_firmware_ESP32-S3-LCD-1.69_README_ZH.md.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_firmware_ESP32-S3-LCD-1.69_README_ZH.md.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-20",
+      "title": "ESP32-S3-Touch-LCD-1.69/firmware/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:20:38Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/README.md",
+      "bytes": 694,
+      "sha256": "1591ca27610f46532fbde9ed0b2a63f0da126c019b974eeeed997e4716624a1c",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_firmware_README.md.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_firmware_README.md.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-21",
+      "title": "ESP32-S3-Touch-LCD-1.69/firmware/README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/README_ZH.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:14Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/README_ZH.md",
+      "bytes": 692,
+      "sha256": "c9f85f4ba28b64cb27888d8ff8550508c57e6e8187c6bef39b9a7c10e9b3e713",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_firmware_README_ZH.md.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_firmware_README_ZH.md.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-22",
+      "title": "ESP32-S3-Touch-LCD-1.69/hardware/schematic/ESP32-S3-Touch-LCD-1.69.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/hardware/schematic/ESP32-S3-Touch-LCD-1.69.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:20Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/hardware/schematic/ESP32-S3-Touch-LCD-1.69.pdf",
+      "bytes": 619831,
+      "sha256": "474d5b4ea07537e61d230596fc786329f9040d691521b19f4e36d24c97c3240a",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_hardware_schematic_ESP32-S3-Touch-LCD-1.69.pdf.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_hardware_schematic_ESP32-S3-Touch-LCD-1.69.pdf.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-23",
+      "title": "ESP32-S3-Touch-LCD-1.69/hardware/schematic/ESP32-S3-Touch-LCD-1.69_V2.1.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/hardware/schematic/ESP32-S3-Touch-LCD-1.69_V2.1.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:20Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/hardware/schematic/ESP32-S3-Touch-LCD-1.69_V2.1.pdf",
+      "bytes": 621027,
+      "sha256": "3380a0b00f763cb47ad0b9331e815f7b7911556927c1738bd5d93859dc28c6a8",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_hardware_schematic_ESP32-S3-Touch-LCD-1.69_V2.1.pdf.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_hardware_schematic_ESP32-S3-Touch-LCD-1.69_V2.1.pdf.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "electrical-24",
+      "title": "ESP32-S3-Touch-LCD-1.69/official-resources/ST7789V2.pdf",
+      "url": "https://files.waveshare.com/wiki/common/ST7789V2.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T23:03:40Z",
+      "resolvedUrl": "https://files.waveshare.com/wiki/common/ST7789V2.pdf",
+      "bytes": 3216854,
+      "sha256": "8937678475e20598c8deb17c3cdd41403da6317a3b6518f86144b8a609de9f46",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_files_official-resources_ST7789V2.pdf.gz",
+      "notes": "Original bytes: docs/platform/research/waveshare-s3-tail-first-five-sources/ESP32-S3-Touch-LCD-1.69_files_official-resources_ST7789V2.pdf.gz; ZIPmember and container provenance in manifest."
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "78/xiaozhi-esp32 pinned device-tree investigation",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Receipt retained at docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json. Source target existence is not binary acceptance."
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "m5stack/uiflow-micropython pinned device-tree investigation",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Receipt retained at docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json. Source target existence is not binary acceptance."
+    },
+    {
+      "id": "firmware",
+      "title": "firmware/ESP32-S3-Touch-LCD-1.69_FactoryOnly_20230612.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-Touch-LCD-1.69_FactoryOnly_20230612.bin",
+      "kind": "manufacturer-firmware",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T22:34:08Z",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-Touch-LCD-1.69_FactoryOnly_20230612.bin",
+      "bytes": 708720,
+      "sha256": "9b814b123ea0347ce81093c2d6b91d07e214f801fe5d0da312d5309b321db36c",
+      "archiveName": "ESP32-S3-Touch-LCD-1.69_FactoryOnly_20230612.bin",
+      "notes": "Originalcomplete image verified; remote-onlydistribution. No fullapplication orphysicalacceptance."
+    }
+  ],
+  "assets": [
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.69"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.69/Resources-And-Documents"
+    },
+    {
+      "id": "repository-tree",
+      "sourceId": "repository-tree",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-LCD-1.69/git/trees/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6?recursive=1"
+    },
+    {
+      "id": "dimension-photo",
+      "sourceId": "dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-Size-fe23433152821925ce45df66b3caa8c7.webp"
+    },
+    {
+      "id": "photo-0",
+      "sourceId": "photo-0",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-HW-Intro1-c76d4e958a92a29a9ca1d5f99bb4ccd5.webp"
+    },
+    {
+      "id": "photo-1",
+      "sourceId": "photo-1",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-Pinout-9eb7123eddd52dc51577bba392a34e65.webp"
+    },
+    {
+      "id": "photo-3",
+      "sourceId": "photo-3",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Touch-LCD-1.69-details-1-37f4207b24628a107d256c4bee148a81.webp"
+    },
+    {
+      "id": "cad-archive",
+      "sourceId": "cad-archive",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.69/ESP32-S3-Touch-LCD-1_69.zip"
+    },
+    {
+      "id": "official-cad",
+      "sourceId": "official-cad",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.69/ESP32-S3-Touch-LCD-1_69.zip"
+    },
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.69.htm"
+    },
+    {
+      "id": "electrical-10",
+      "sourceId": "electrical-10",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/README.md"
+    },
+    {
+      "id": "electrical-11",
+      "sourceId": "electrical-11",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/02_Drawing_board/02_Drawing_board.ino"
+    },
+    {
+      "id": "electrical-12",
+      "sourceId": "electrical-12",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/09_LVGL_Keys_Bee/09_LVGL_Keys_Bee.ino"
+    },
+    {
+      "id": "electrical-13",
+      "sourceId": "electrical-13",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/examples/11_LVGL_Arduino/11_LVGL_Arduino.ino"
+    },
+    {
+      "id": "electrical-14",
+      "sourceId": "electrical-14",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.cpp"
+    },
+    {
+      "id": "electrical-15",
+      "sourceId": "electrical-15",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/Arduino_DriveBus/src/touch_chip/Arduino_CST816x.h"
+    },
+    {
+      "id": "electrical-16",
+      "sourceId": "electrical-16",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/arduino/libraries/board_config/pin_config.h"
+    },
+    {
+      "id": "electrical-17",
+      "sourceId": "electrical-17",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/examples/esp-idf/02_ESP_IDF_ST7789_LVGL/main/main.c"
+    },
+    {
+      "id": "electrical-18",
+      "sourceId": "electrical-18",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-LCD-1.69/README.md"
+    },
+    {
+      "id": "electrical-19",
+      "sourceId": "electrical-19",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-LCD-1.69/README_ZH.md"
+    },
+    {
+      "id": "electrical-20",
+      "sourceId": "electrical-20",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/README.md"
+    },
+    {
+      "id": "electrical-21",
+      "sourceId": "electrical-21",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/README_ZH.md"
+    },
+    {
+      "id": "electrical-22",
+      "sourceId": "electrical-22",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/hardware/schematic/ESP32-S3-Touch-LCD-1.69.pdf"
+    },
+    {
+      "id": "electrical-23",
+      "sourceId": "electrical-23",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/hardware/schematic/ESP32-S3-Touch-LCD-1.69_V2.1.pdf"
+    },
+    {
+      "id": "electrical-24",
+      "sourceId": "electrical-24",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/common/ST7789V2.pdf"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "sourceId": "xiaozhi-tree",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+    },
+    {
+      "id": "uiflow-tree",
+      "sourceId": "uiflow-tree",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+    },
+    {
+      "id": "firmware",
+      "sourceId": "firmware",
+      "role": "firmware-download",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-1.69/f24f10d53d4cff5c2e2ac47a2e23da39a82454a6/firmware/ESP32-S3-Touch-LCD-1.69_FactoryOnly_20230612.bin"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "真实硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "product",
+        "overview"
+      ]
+    },
+    {
+      "id": "full-acceptance",
+      "label": "完整应用与实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "resources"
+      ]
+    }
+  ],
+  "collectionNotes": [
+    "部分适配：真实ESP32-S3数字板级路径，完整应用、无线、模拟电源和实物未验收。",
+    "厂家资料、CAD和原始固件校验可追溯；未知版次、机械偏差与实际运行失败均保留。",
+    "CurrentV2.1 schematic and earlier schematic both retained; unmarked CAD revision is not promoted to V2.1 PCB placement evidence.",
+    "Original factory reachesSetup done and discovers15/51/6B; at5s it emits10 RAMWR commands and1929 finalRGB565 colors. Espressif mode3 idleHigh=true,outEdge=false is independently tested; full application/input acceptance remains unverified.",
+    "ST7789V2 actualGRAM is240×320 with manufacturerY20 offset. Fixed portrait reference uses factoryMADCTL00; LCMCTRL XMX/XMY scan is separate from hostMADCTL. Physical orientation/color/gamma and LCM XBGR/XMV/XINV remain uncalibrated.",
+    "All native source topology preserved without scale fitting. Native materials are not calibrated hardware color.",
+    "Physical3D switch/connector calibration is not established; no guessed button targets or connected cables. Workbench inputs remain separately available.",
+    "No hardware fit, optical alignment, browser WebGL or full factory application acceptance claim.",
+    "Source native33.13×41.13 cover agrees with publishedXY. Active center is registered to source origin; independent optical calibration is not established. V2.1 schematic source is retained independently from CAD revision.",
+    "原始BIN 5秒有界观测：{\"board\":\"waveshare-s3-touch-lcd169\",\"guestCycles\":1200000000,\"guestMilliseconds\":5000,\"stop\":\"Halted\",\"reboots\":0,\"width\":240,\"height\":280,\"distinctColors\":1929,\"version\":2237,\"frames\":10,\"pc\":[1107649290,1107649290],\"sdCommands\":0,\"sdTimeouts\":0,\"sdBytesRead\":0,\"sdBytesWritten\":0,\"physicalValidated\":false,\"fullApplicationValidated\":false}"
+  ]
+}

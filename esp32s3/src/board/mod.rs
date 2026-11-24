@@ -82,6 +82,7 @@ pub mod waveshare_industrial_controls;
 pub mod waveshare_rgb_matrix;
 pub mod waveshare_thermal;
 mod waveshare_tail_spi;
+mod waveshare_s3_geek;
 mod waveshare_matrix8;
 mod waveshare_ch422_rgb;
 pub mod waveshare_epaper133;
@@ -223,6 +224,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-s3-touch-lcd4b" => Some(Box::new(waveshare_serial_rgb::WaveshareSerialRgb::new(waveshare_serial_rgb::Variant::Lcd4b))),
         "waveshare-s3-knob-touch-lcd18" => Some(Box::new(waveshare_knob18::WaveshareKnob18::new())),
         "waveshare-s3-lcd316" => Some(Box::new(waveshare_serial_rgb::WaveshareSerialRgb::new(waveshare_serial_rgb::Variant::Lcd316))),
+        "waveshare-s3-geek" => Some(Box::new(waveshare_s3_geek::WaveshareS3Geek::new())),
         _ => waveshare_tail_spi::make_board(name).or_else(|| waveshare_ch422_rgb::make_board(name)).or_else(|| waveshare_epaper_catalog::make_board(name)).or_else(|| waveshare_rgb_catalog::make_board(name)).or_else(|| waveshare_co5300_catalog::make_board(name))
             .or_else(|| waveshare_spi_catalog::make_board(name))
             .or_else(|| waveshare_rgb_matrix::make_board(name))

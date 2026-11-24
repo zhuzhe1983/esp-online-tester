@@ -10,7 +10,10 @@ choices=[
  ('touch7','ESP32-S3-Touch-LCD-7','firmware/ESP32-S3-Touch-LCD-7_FactoryOnly_20260625.bin','factory'),
  ('lcd7','ESP32-S3-Touch-LCD-7','firmware/lvgl_Porting_No_Touch.bin','example'),
  ('touch128','ESP32-S3-Touch-LCD-1.28','firmware/ESP32-S3-Touch-LCD-1.28_FactoryOnly_20251120.bin','factory'),
- ('lcd128','ESP32-S3-LCD-1.28','firmware/ESP32-S3-LCD-1.28_FactoryOnly_20250909.bin','factory')]
+ ('lcd128','ESP32-S3-LCD-1.28','firmware/ESP32-S3-LCD-1.28_FactoryOnly_20250909.bin','factory'),
+ ('geek','ESP32-S3-GEEK','firmware/ESP32-S3-GEEK_FactoryOnly_20260409.bin','factory'),
+ ('touch43','ESP32-S3-Touch-LCD-4.3','firmware/ESP32-S3-Touch-LCD-4.3_FactoryOnly_20260224.bin','factory'),
+ ('lcd43','ESP32-S3-Touch-LCD-4.3','firmware/ESP32-S3-LCD-4.3_FactoryOnly_20260223.bin','factory')]
 results=[]
 for key,repo,name,role in choices:
  p=S/repo/'files'/name;b=p.read_bytes();r=json.loads(Path(str(p)+'.receipt.json').read_text());assert len(b)==r['bytes']and hashlib.sha256(b).hexdigest()==r['sha256'];assert audit.image(b,0)==9;parts=[];md5=False

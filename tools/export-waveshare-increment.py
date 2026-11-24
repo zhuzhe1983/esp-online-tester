@@ -132,7 +132,7 @@ def main():
         if path in ['docs/platform/waveshare-progress-2026-11-23.md',
                     'docs/platform/research/waveshare-progress-2026-11-23.json']:
             return False
-        batch_evidence = re.match(r'docs/platform/evidence/waveshare-batch(\d+)-', path)
+        batch_evidence = re.match(r'docs/platform/evidence/waveshare-batch-?(\d+)-', path)
         if batch_evidence:
             # Root acceptance evidence is named by delivery batch, not chip.
             # Carry earlier receipts forward without rewriting immutable patches.
