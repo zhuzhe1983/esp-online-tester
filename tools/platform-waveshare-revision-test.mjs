@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validateBoardRevision,isS31Board,chipIdForBoard} from '../web/platform/app-image.js';
+import {validateBoardRevision,isS31Board,isC3Board,chipIdForBoard} from '../web/platform/app-image.js';
 import {WAVESHARE_BOARD_CAPABILITIES} from '../web/platform/waveshare-board-families.js';
 
 function header(minimum,maximum=0){const bytes=new Uint8Array(24),view=new DataView(bytes.buffer);view.setUint16(15,minimum,true);view.setUint16(17,maximum,true);return bytes;}
@@ -19,4 +19,10 @@ test('Waveshare S31 headers retain the S31 chip ID and rev0 boundary',()=>{
   assert.equal(isS31Board(board),true);assert.equal(chipIdForBoard(board),32);
   assert.doesNotThrow(()=>validateBoardRevision(header(0),board));
   assert.throws(()=>validateBoardRevision(header(1),board),{code:'CHIP_REVISION_UNSUPPORTED'});
+});
+test('Waveshare C3 profiles use the C3 classifier and image chip ID',()=>{
+  for(const [board,cap] of Object.entries(WAVESHARE_BOARD_CAPABILITIES)){
+    if(cap.chip!=='esp32c3')continue;
+    assert.equal(isC3Board(board),true,board);assert.equal(chipIdForBoard(board),5,board);
+  }
 });

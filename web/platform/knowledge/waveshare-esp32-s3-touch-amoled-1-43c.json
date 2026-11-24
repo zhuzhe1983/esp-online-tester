@@ -98,9 +98,10 @@
       "value": false,
       "basis": "official",
       "sourceIds": [
-        "schematic"
+        "schematic",
+        "bsp-header"
       ],
-      "notes": "原理图及 PCB 正反面没有 TF 插座；不要向此板自动配置 SD 卡。"
+      "notes": "原理图及PCB正反面没有TF插座；固定厂家BSP的BSP_CAPS_SDCARD=0再次确认。此板不自动配置SD卡，不存在已实现SD传输或验收。"
     },
     {
       "id": "codec-power",
@@ -318,6 +319,7 @@
     "本次原生结果及逐文件原始 capture 哈希：docs/evidence/waveshare-amoled143c-2026-11-23/result.json 与 artifacts.json。",
     "原始 UART/PNG/RGB565 留 ignored output 归档；公开 Worker 验收未在此记录中发生。",
     "官方同一页面明确区分 34383 与 34384-EN 的电池包装；两者共享本板数字执行配置，不代表电池功能已模拟。",
-    "本轮新增/复核来源模型 waveshare-esp32-s3-touch-amoled-1-43c；只声明model-plan.json列出的几何范围，保留原数字外设与原厂验收记录。"
+    "本轮新增/复核来源模型 waveshare-esp32-s3-touch-amoled-1-43c；只声明model-plan.json列出的几何范围，保留原数字外设与原厂验收记录。",
+    "2026-11-23目录能力修正：此前增量fragment误把sdCard置为true，与本知识既有tf-slot=false矛盾；现恢复false。显示/触摸/音频原生证据不包含SD。"
   ]
 }

@@ -615,11 +615,14 @@ fn setup_c5(o: &Opts) -> esp32c5::Machine {
 }
 
 fn setup_c3(o: &Opts) -> esp32c3::Machine {
-    let mut m = esp32c3::machine(o.mac.unwrap_or([0x60, 0x55, 0xf9, 0x00, 0x11, 0x22]), o.flash_mb.unwrap_or(4) << 20);
+    let exact = esp_soc::waveshare_profiles::memory_mib(&o.board);
+    let flash_mb = o.flash_mb.unwrap_or_else(|| exact.map_or(4, |v| v.0));
+    if exact.is_some_and(|v| flash_mb != v.0) { usage_error("Waveshare C3 profile requires its exact documented Flash capacity"); }
+    let mut m = esp32c3::machine(o.mac.unwrap_or([0x60, 0x55, 0xf9, 0x00, 0x11, 0x22]), flash_mb << 20);
     let board=if o.board=="atech14" {"none"}else{&o.board};
     m.bus.board=esp32c3::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown C3 board '{board}' (none, bare, stampc3, stampc3u)")));
     m.bus.attach_board_devices();
-    m.bus.set_flash_size(o.flash_mb.unwrap_or(4) << 20);   // the JEDEC capacity follows the size
+    m.bus.set_flash_size(flash_mb << 20);   // the JEDEC capacity follows the size
     if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
     if o.ble_full {
         m.bus.enable_ble_full(o.ble_observe).unwrap_or_else(|e| usage_error(&e));

@@ -5,6 +5,7 @@ pub use stampc3::StampC3;
 pub mod stampc3u;
 pub use stampc3u::StampC3U;
 pub mod lilygo_additional;
+pub mod waveshare_lcd147;
 
 pub fn make_board(name:&str)->Option<Board> {
     match name {
@@ -14,6 +15,7 @@ pub fn make_board(name:&str)->Option<Board> {
         "lilygo-watch-keyboard-c3-v1-0"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::watch_keyboard_c3())),
         "lilygo-t-01c3"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::t01_c3())),
         "lilygo-t-zigbee"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::t_zigbee())),
+        "waveshare-c3-lcd147"=>Some(Box::new(waveshare_lcd147::Lcd147::new())),
         _=>None,
     }
 }

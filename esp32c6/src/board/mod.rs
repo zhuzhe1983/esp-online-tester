@@ -14,6 +14,8 @@ pub mod waveshare_lcd147;
 pub mod waveshare_lcd_family;
 pub mod waveshare_touch28;
 pub mod waveshare_lcd273;
+pub mod waveshare_epaper154;
+pub mod waveshare_amoled;
 pub mod xiao;
 pub mod nanoc6;
 pub mod nesso_n1;
@@ -33,6 +35,9 @@ pub fn make_board(name: &str) -> Option<Board> {
     if let Some(variant)=waveshare_lcd_family::LcdVariant::from_name(name) { return Some(Box::new(waveshare_lcd_family::WaveshareLcd::new(variant))); }
     match name {
         "waveshare-c6-lcd273" => Some(Box::new(waveshare_lcd273::Lcd273::new())),
+        "waveshare-c6-epaper154" => Some(Box::new(waveshare_epaper154::Epaper154::new())),
+        "waveshare-c6-touch-amoled216" => Some(Box::new(waveshare_amoled::WaveshareAmoled::new(waveshare_amoled::AmoledVariant::Touch216))),
+        "waveshare-c6-touch-amoled164" => Some(Box::new(waveshare_amoled::WaveshareAmoled::new(waveshare_amoled::AmoledVariant::Touch164))),
         "waveshare-c6-touch28" => Some(Box::new(waveshare_touch28::Touch28::new())),
         "lilygo-t7-c6" => Some(Box::new(lilygo::LilygoC6::t7_c6())),
         "lilygo-t-knob" => Some(Box::new(lilygo::LilygoC6::t_knob())),

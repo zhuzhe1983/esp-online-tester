@@ -20,7 +20,18 @@ test('every delivered Waveshare SKU constructs with its exact chip and memory; w
     new Uint8Array(wasm.memory.buffer).set(bytes,ptr);
     try{
       logs.length=0;const emulator=wasm.esp32sim_new(ptr,bytes.length,profile.flashMb,profile.psramMb);
-      assert(emulator,product.id+': '+logs.join('\n'));wasm.esp32sim_delete(emulator);
+      assert(emulator,product.id+': '+logs.join('\n'));
+      try{
+        if(hasSdCard(profile.board)){
+          const size=1<<20,media=wasm.esp32sim_alloc(size);
+          try{
+            new Uint8Array(wasm.memory.buffer,media,size).fill(0x5a);
+            assert.equal(wasm.esp32sim_load(emulator,8,media,size),0,product.id+' advertised SD transport must reach the board through the public ABI: '+logs.join('\n'));
+            assert.equal(wasm.esp32sim_sd_len(emulator),size);
+            assert.equal(new Uint8Array(wasm.memory.buffer,wasm.esp32sim_sd_ptr(emulator),size)[512],0x5a);
+          }finally{wasm.esp32sim_free(media,size);}
+        }
+      }finally{wasm.esp32sim_delete(emulator);}
       assert.equal(chipForBoard(profile.board),product.chip,product.id);
       if(hasSdCard(profile.board))assert(hasTfSlot(product),product.id+' SD transport needs its physical slot');
       if(WAVESHARE_BOARD_CAPABILITIES[profile.board]){

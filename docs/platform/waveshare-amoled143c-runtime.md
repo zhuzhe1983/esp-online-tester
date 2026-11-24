@@ -33,7 +33,7 @@ Central registration tuple:
 | Display | CO5300, QSPI, 466 × 466 RGB565, nominal round aperture |
 | Touch | CST820, one contact |
 | Host button | `boot`, GPIO0, active low |
-| Physical TF slot | None in this board schematic and board layouts |
+| Physical TF slot | None in this board schematic and board layouts; pinned BSP header line 68 explicitly sets `BSP_CAPS_SDCARD 0` |
 | IMU / host pose | None |
 
 The opt-in `QspiDcsPanel` wraps the existing CO5300 GRAM/display-state engine;
@@ -165,3 +165,14 @@ Seventeen existing CO5300 tests pass without changes to that shared engine.
 `cargo clippy -p esp-soc -p esp32s3 --all-targets -- -D warnings` is the scoped
 static check. The two ignored original-image tests are opt-in because they
 require the caller's downloaded factory image and original S3 mask ROM.
+
+## SD registration correction
+
+The later S3 listing fragment incorrectly advertised `sdCard: true`. The exact
+manufacturer header at the revision above explicitly defines `BSP_CAPS_SDCARD 0`;
+the retained schematic and both PCB layout pages show no TF socket. Both exact
+SKU knowledge records already stated `tf-slot: false`, and neither product has
+a TF interface or a default card declaration. The fragment and generator profile
+now agree with that physical evidence and with the board model, which provides
+neither an SDMMC socket nor an SPI SD attachment. No SD operation was part of the
+factory validation described here.

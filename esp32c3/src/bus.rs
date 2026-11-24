@@ -222,6 +222,7 @@ impl SocBus {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::C3.routes(&self.periph.gpio, &self.periph.io_mux));
         }
         self.uart_pins = self.board.uses_uart_pins();
+        self.periph.spi2.dma_rx_divert = self.board.uses_qspi_pins();
         self.board_edges = self.board.uses_gpio_edges();
         self.pins_active = self.pins_active();
         for (bus, address, device) in self.board.i2c_devices() {
@@ -244,12 +245,24 @@ impl SocBus {
 
     fn deliver_spi2_transfer(&mut self) {
         let Some(transfer) = self.periph.spi2.take_transfer() else { return };
-        let rx = if self.board.uses_spi_pins() {
+        let rx = if self.board.uses_qspi_pins() {
+            self.board.spi_transfer_qspi_pins(2, self.periph.spi2_phase_pins(), &transfer.tx, transfer.rx_len)
+        } else if self.board.uses_spi_pins() {
             self.board.spi_transfer_pins(2, self.periph.spi2_pins(), &transfer.tx, transfer.rx_len)
         } else {
             self.board.spi_transfer(2, &transfer.tx, transfer.rx_len)
         };
         self.periph.spi2.finish_transfer(transfer, &rx);
+        if let Some(data) = self.periph.spi2.dma_rx.take() {
+            // C3 SPI_DMA_CONF.DMA_RX_ENA bit27, GDMA peripheral0. The shared
+            // receiver keeps descriptor bounds, owner and EOF/error semantics.
+            if let Some(ch) = self.periph.gdma.gdma.in_channel_for(0) {
+                let mut channel = self.periph.gdma.gdma.inp[ch];
+                let mut changed = false;
+                let _ = channel.receive(self, &data, Some(data.len() as u32), false, Self::is_periph, &mut changed);
+                self.periph.gdma.gdma.inp[ch] = channel;
+            }
+        }
         self.irq_dirty = true;
     }
 

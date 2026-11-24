@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-11-23T18:09:09.144280+00:00",
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c3",
+        "-p",
+        "esp32c6",
+        "waveshare",
+        "--lib"
+      ],
+      "exitCode": 0,
+      "log": "rust-gate-1.log",
+      "sha256": "c4ef55baa74594ef273d6b88eab985bf20ec5ea58c56353cb0715374ea3b67e1"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "esp32c3",
+        "--test",
+        "waveshare_lcd147",
+        "--test",
+        "spi2_dma"
+      ],
+      "exitCode": 0,
+      "log": "rust-gate-2.log",
+      "sha256": "0b6f8512f5de3d37f1790dd4f24b0c80223d9af41d1cca65abd3a9df0fb9bfa8"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "esp32c3",
+        "-p",
+        "esp32c6",
+        "--lib",
+        "--test",
+        "waveshare_lcd147",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "log": "rust-gate-3.log",
+      "sha256": "a237e06ffa5b000e978e3e1d3e17669daccdfd95182828a01e1925f2368514c1"
+    }
+  ]
+}

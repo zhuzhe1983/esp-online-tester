@@ -55,3 +55,24 @@ fn waveshare_s31_factory_keeps_rgb_bus_pins_free_of_devkit_identity() {
         esp32sim_delete(e);
     }
 }
+
+#[test]
+fn waveshare_c3_public_sd_loader_routes_to_the_physical_board_slot() {
+    // SAFETY: each handle and image buffer is owned only by this test.
+    unsafe {
+        let image = vec![0x5a; 1 << 20];
+        for (name, accepted) in [("waveshare-c3-lcd147", true), ("esp32c3", false)] {
+            let e = esp32sim_new(name.as_ptr(), name.len(), 4, 0);
+            assert!(!e.is_null());
+            assert_eq!(crate::storage::load_sd(&mut *e, &image), u32::from(!accepted));
+            assert_eq!(crate::storage::esp32sim_sd_len(e), if accepted { image.len() } else { 0 });
+            if accepted {
+                let MachineKind::C3(m) = &mut (*e).m else { panic!("C3 machine required"); };
+                m.reboot();
+                assert_eq!(crate::storage::esp32sim_sd_len(e), image.len());
+                assert_eq!(*crate::storage::esp32sim_sd_ptr(e).add(512), 0x5a);
+            }
+            esp32sim_delete(e);
+        }
+    }
+}

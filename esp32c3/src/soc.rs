@@ -32,6 +32,9 @@ impl Soc for C3 {
 }
 
 impl esp_soc::SocBus for SocBus {
+    fn attach_sd_card(&mut self, image: Box<dyn esp_periph::sdmmc::SdStore>, config: esp_periph::sdmmc::SdCardConfig) -> Result<String, String> {
+        self.board.attach_spi_sd_card(image, config)
+    }
     fn enable_ble(&mut self, elf: &esp_soc::elf::Elf) -> Result<(), String> {
         if self.periph.ble_lc.enabled() { return Err("HCI BLE and full BLE are mutually exclusive".into()) }
         self.ble.enable(&elf.by_name, elf.symbol_sizes.get("esp_bt_controller_init").copied().unwrap_or(0), &<Self as esp_soc::ble::vhci::VhciBus>::abi()) }
@@ -76,7 +79,7 @@ impl esp_soc::SocBus for SocBus {
     }
     fn cycles(&self) -> u64 { self.cycles }
     fn report(&self) -> String {
-        self.periph.wifi.link.report()
+        [self.periph.wifi.link.report(), self.board.report()].into_iter().filter(|s| !s.is_empty()).collect::<Vec<_>>().join("\n")
     }
     fn next_deadline(&self) -> Option<u64> {
         let timer = if self.pins_active { self.pin_deadline() } else {

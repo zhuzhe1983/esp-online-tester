@@ -209,7 +209,8 @@
         "显示与触摸采用官方 BSP 数字坐标；USB 相对文字方位、光学颜色、触摸扫描周期未实物标定。",
         "TE 引脚已记载但没有生成波形；QPI、四线地址、SPI 读回和 MADCTL 位 5 坐标交换未实现。",
         "当前详细机械模型未在本批交付，默认只显示已知分辨率的屏幕调试视图。",
-        "包装包含锂电池；执行模型采用明确的 USB 供电数字场景。"
+        "包装包含锂电池；执行模型采用明确的 USB 供电数字场景。",
+        "固定厂家BSP明确BSP_CAPS_SDCARD=0，原理图及正反面无TF卡槽；不自动配置卡镜像，不宣称SD传输或验收。"
       ],
       "chronology": {
         "date": null,
@@ -435,7 +436,8 @@
         "显示与触摸采用官方 BSP 数字坐标；USB 相对文字方位、光学颜色、触摸扫描周期未实物标定。",
         "TE 引脚已记载但没有生成波形；QPI、四线地址、SPI 读回和 MADCTL 位 5 坐标交换未实现。",
         "当前详细机械模型未在本批交付，默认只显示已知分辨率的屏幕调试视图。",
-        "-EN 包装不含锂电池；执行模型采用明确的 USB 供电数字场景。"
+        "-EN 包装不含锂电池；执行模型采用明确的 USB 供电数字场景。",
+        "固定厂家BSP明确BSP_CAPS_SDCARD=0，原理图及正反面无TF卡槽；不自动配置卡镜像，不宣称SD传输或验收。"
       ],
       "chronology": {
         "date": null,
@@ -470,7 +472,7 @@
       "chip": "esp32s3",
       "flashMb": 8,
       "psramMb": 8,
-      "sdCard": true,
+      "sdCard": false,
       "boardButtons": []
     }
   },
@@ -479,11 +481,13 @@
     "docs/research/waveshare-s3-20261123/firmware-manifest.json"
   ],
   "tests": [
-    "既有waveshare_qspi原厂与协议回归保持；本轮新增模型已通过生产Three加载、源照片SHA/UV、圆形屏幕与UNKNOWN反面射线。"
+    "既有waveshare_qspi原厂与协议回归保持；本轮新增模型已通过生产Three加载、源照片SHA/UV、圆形屏幕与UNKNOWN反面射线。",
+    "SD契约纠正：精确BSP第68行BSP_CAPS_SDCARD=0；两SKU知识已声明tf-slot=false，目录无TF接口和默认卡，运行板无SDMMC/SPI卡路由。"
   ],
   "limitations": [
     "精确内存为8/8，不继承其他AMOLED1.43的16/8。",
-    "内部板卡/电池、侧面按键几何和充电物理未建模；来源外壳模型不代表厂家CAD。"
+    "内部板卡/电池、侧面按键几何和充电物理未建模；来源外壳模型不代表厂家CAD。",
+    "固定厂家BSP明确BSP_CAPS_SDCARD=0，原理图及正反面无TF卡槽；不自动配置卡镜像，不宣称SD传输或验收。"
   ],
   "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
 }
