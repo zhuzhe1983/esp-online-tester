@@ -1,0 +1,484 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-h2-dev-kit-n4-m",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-h2-dev-kit-n4-m",
+  "title": "Waveshare ESP32-H2-DEV-KIT-N4-M",
+  "summary": "无板载显示屏；4 MiB Flash，无PSRAM；BOOT GPIO9、RGB GPIO8。",
+  "summarySourceIds": [
+    "overview",
+    "resources",
+    "electrical-0"
+  ],
+  "updatedAt": "2026-11-23T21:43:23Z",
+  "hardwareRevision": "retained ESP32-H2-MINI-1-N4/4MiB schematic; sale revision unspecified",
+  "facts": [
+    {
+      "id": "hardware",
+      "label": "精确SKU、容量资料版本和接线",
+      "value": {
+        "sku": "26508",
+        "options": {
+          "Select version": "Standard Ver. with pinheader"
+        },
+        "chip": "esp32h2",
+        "flashMiB": 4,
+        "psramMiB": 0,
+        "revision": "retained ESP32-H2-MINI-1-N4/4MiB schematic; sale revision unspecified",
+        "i2c": null,
+        "components": [
+          "TrueESP32-H2-MINI-1-N4,4MiB flash;chipID16,notC6",
+          "RV32IMAC96MHz;320KiB SRAM;128KiB ROM address range;4KiB LPmemory",
+          "BOOT GPIO9;RESET CHIP_PU;WS2812 GPIO8",
+          "Bluetooth/IEEE802.15.4 hardware;noWiFi",
+          "CH343P UART bridge and CH334F USB hub;physical USB transport unmodelled"
+        ],
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true,
+            "defaultKeyCode": "Space"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "electrical-0"
+      ]
+    },
+    {
+      "id": "source-conflicts",
+      "label": "来源冲突和采用依据",
+      "value": [
+        "IndependentH2 minimum runtime is explicit SRAM app-direct,GPIO/BOOT,UART and finite RMT RGB only. It does not alias the C6SoC or acceptC6images.",
+        "Complete original H2 bootloader/flash-cache images are not accepted as SRAM-linked apps. ROM boot,flash MMU,interrupt routing,wireless and full application remain unavailable in this bounded runtime.",
+        "Manufacturer photo alt text incorrectly saysH2Zero, but heading,exactSKUtable,schematic and dimension diagram identifyH2DEVKITN4. The actual board identity is retained.",
+        "Published25.4×51.6mm XY and22.86mm header row spacing retained. Schematic shows15positions/row;2.54mm pitch/longitudinal placement are explicitly photo-derived estimates. Unmeasured PCB/component heights remain visibly UNKNOWN."
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "electrical-0"
+      ]
+    },
+    {
+      "id": "model-scope",
+      "label": "机械模型范围",
+      "value": {
+        "model": "waveshare-esp32-h2-dev-kit-n4-m",
+        "method": "dimension-photo-reconstruction",
+        "dimensions": {
+          "pcb": {
+            "publishedXYMm": [
+              25.4,
+              51.6
+            ],
+            "thicknessMm": null,
+            "illustrativeThicknessMm": 1.6,
+            "sourceIds": [
+              "dimension-photo"
+            ]
+          },
+          "headers": {
+            "pinsPerRow": 15,
+            "rowSpacingMm": 22.86,
+            "pitchMm": 2.54,
+            "basis": "Published22.86mm row spacing and schematic15-pin rows.2.54mm pitch and longitudinal registration are photo-derived estimates (pitch uncertainty±0.05mm, registration±0.4mm).",
+            "sourceIds": [
+              "dimension-photo",
+              "resources"
+            ]
+          }
+        },
+        "limitations": [
+          "This model is a dimension/photo reconstruction, not manufacturer CAD.",
+          "Unmeasured depths, corner radii and connector contact geometry are explicit illustrative estimates; no fit, drop-in enclosure or hardware acceptance claim.",
+          "Source photographs are unchanged. Any display artwork shown in them is reference only; the live screen receives the simulator framebuffer.",
+          "No matching native solid assembly was found in the retained canonical resource scope. This is an explicit partial photo/dimension reconstruction, not a claim that CAD does not exist elsewhere.",
+          "Only the approximate open USB envelope and optional illustrative headers surround a visibly UNKNOWN PCB. Physical switch/LED registration and component heights are not invented.",
+          "Front+Z,USB toward+Y is the model orientation. Source diagrams/photographs remain unmodified independent references.",
+          "Header body/pin dimensions are explicit unmeasured estimates. Source pin count/spacing or photo registration does not establish an exact mechanical fit."
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-photo",
+        "resources"
+      ]
+    },
+    {
+      "id": "ecosystems",
+      "label": "原厂、小智与UIFlow调查",
+      "value": {
+        "relatedOfficialRepository": null,
+        "xiaozhiExactBoardPaths": [],
+        "xiaozhiBinaryAccepted": false,
+        "uiflowExactWaveshareNamedPaths": [],
+        "uiflowBinaryAccepted": false,
+        "factoryCandidate": "No matching full ESP image accepted in the retained official scope. Related Basic Kit source target is not firmware acceptance; any rejected binary identity is recorded above."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "resources",
+        "xiaozhi-tree",
+        "uiflow-tree"
+      ]
+    },
+    {
+      "id": "h2-silicon-map",
+      "label": "H2 独立芯片内存和时钟来源",
+      "value": {
+        "chipId": 16,
+        "hpSram": {
+          "start": "0x40800000",
+          "endExclusive": "0x40850000",
+          "bytes": 327680
+        },
+        "lpSram": {
+          "start": "0x50000000",
+          "endExclusive": "0x50001000",
+          "bytes": 4096
+        },
+        "maximumCpuHz": 96000000,
+        "boardCrystalHz": 32000000,
+        "rmtBase": "0x60007000",
+        "gpioBase": "0x60091000",
+        "ioMuxBase": "0x60090000",
+        "physicalPads": "GPIO0–5,8–14,22–27;19pads across28register positions",
+        "romBytes": 131072
+      },
+      "basis": "official",
+      "sourceIds": [
+        "h2-silicon-0",
+        "h2-silicon-1",
+        "h2-silicon-2",
+        "h2-silicon-3",
+        "h2-silicon-4"
+      ],
+      "notes": "Hardware facts from retained Espressif sources. Implemented/tested subset is described separately in collection notes and docs/evidence/waveshare-h2-sram-2026-11-23/README.md; source identity alone is not execution acceptance."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-H2-DEV-KIT-N4",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-h2-dev-kit-n4/overview.html.gz",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-H2-DEV-KIT-N4",
+      "fetchedAt": "2026-11-23T16:32:23Z",
+      "bytes": 26248,
+      "sha256": "beb362e7dbc7c27a39a293b695377880c82f1e33e7752e097f04d21496f6d756",
+      "archiveName": "overview.html.gz"
+    },
+    {
+      "id": "resources",
+      "title": "resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-H2-DEV-KIT-N4/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-h2-dev-kit-n4/resources.html.gz",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-H2-DEV-KIT-N4/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T16:39:32Z",
+      "bytes": 23376,
+      "sha256": "ed38a851325cf4f2c041ce57a93918ceb1414a5180040776ddf139a4e3f995f0",
+      "archiveName": "resources.html.gz"
+    },
+    {
+      "id": "dimension-photo",
+      "title": "dimension-photo.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4_Diagram_4-34405b093f43de73950b6c300d41e910.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-h2-dev-kit-n4/dimension-photo.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4_Diagram_4-34405b093f43de73950b6c300d41e910.webp",
+      "fetchedAt": "2026-11-23T19:19:50Z",
+      "bytes": 39984,
+      "sha256": "48058651a81c8fb263b93e981e3a8e0113a9c450a5ef1714ee88c120aa440150",
+      "archiveName": "dimension-photo.webp"
+    },
+    {
+      "id": "photo-0",
+      "title": "photo-0.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-1-01dbdb9ffadfc824091ea354e3570bbd.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-h2-dev-kit-n4/photo-0.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-1-01dbdb9ffadfc824091ea354e3570bbd.webp",
+      "fetchedAt": "2026-11-23T19:19:46Z",
+      "bytes": 81980,
+      "sha256": "e8714c2fd3ce66317de2e5d417157f74bbb31e02d3fc179f75b7db2021e43383",
+      "archiveName": "photo-0.webp"
+    },
+    {
+      "id": "photo-1",
+      "title": "photo-1.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-M-1-f328c7555b0c8a918a6187c0ab742ce1.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-h2-dev-kit-n4/photo-1.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-M-1-f328c7555b0c8a918a6187c0ab742ce1.webp",
+      "fetchedAt": "2026-11-23T19:19:46Z",
+      "bytes": 97952,
+      "sha256": "9ffbbdda969cd986655241cac410ceb4c45d2fe017cd3ef6070d0219f692a21d",
+      "archiveName": "photo-1.webp"
+    },
+    {
+      "id": "photo-2",
+      "title": "photo-2.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-details-11-e3ec6c337b806edb583d9b047a7daa32.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-h2-dev-kit-n4/photo-2.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-details-11-e3ec6c337b806edb583d9b047a7daa32.webp",
+      "fetchedAt": "2026-11-23T19:19:50Z",
+      "bytes": 80378,
+      "sha256": "0c76edafc66e124aeda02175fe5dadc3779d77a2c28b8943f8d73ef8a9a1b184",
+      "archiveName": "photo-2.webp"
+    },
+    {
+      "id": "photo-3",
+      "title": "photo-3.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-details-9-e5fd344a07aeb81eed3ff5408d47a43a.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-h2-dev-kit-n4/photo-3.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-details-9-e5fd344a07aeb81eed3ff5408d47a43a.webp",
+      "fetchedAt": "2026-11-23T19:19:46Z",
+      "bytes": 23060,
+      "sha256": "8e465ed1f0532dc129d9625885b54d0d3294ce6a7d506d61f2b8574f098a1ee9",
+      "archiveName": "photo-3.webp"
+    },
+    {
+      "id": "photo-4",
+      "title": "photo-4.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4_Diagram_4-34405b093f43de73950b6c300d41e910.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-h2-dev-kit-n4/photo-4.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4_Diagram_4-34405b093f43de73950b6c300d41e910.webp",
+      "fetchedAt": "2026-11-23T19:19:50Z",
+      "bytes": 39984,
+      "sha256": "48058651a81c8fb263b93e981e3a8e0113a9c450a5ef1714ee88c120aa440150",
+      "archiveName": "photo-4.webp"
+    },
+    {
+      "id": "product",
+      "title": "Exact official SKU/options",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-h2-dev-kit-n4.htm",
+      "kind": "manufacturer-product",
+      "status": "linked",
+      "notes": "Selected public SKU fields are retained as derived data; source HTTP receipt is separate."
+    },
+    {
+      "id": "electrical-0",
+      "title": "ESP32-H2-DEV-KIT-N4/official-resources/ESP32-H2-DEV-KIT-N4.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-H2-DEV-KIT-N4/ESP32-H2-DEV-KIT-N4.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-H2-DEV-KIT-N4/ESP32-H2-DEV-KIT-N4.pdf",
+      "fetchedAt": "2026-11-23T19:19:50Z",
+      "bytes": 146607,
+      "sha256": "85a72de7c1a031b29d0b6e3692368562a4d2d561334da87a9e74de4d9247b0b0",
+      "archiveName": "ESP32-H2-DEV-KIT-N4_official-resources_ESP32-H2-DEV-KIT-N4.pdf.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-H2-DEV-KIT-N4_official-resources_ESP32-H2-DEV-KIT-N4.pdf.gz."
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "78/xiaozhi-esp32 pinned board-tree investigation",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Shared raw/derived receipt: docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json"
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "m5stack/uiflow-micropython pinned board-tree investigation",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Shared raw/derived receipt: docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json"
+    },
+    {
+      "id": "h2-silicon-0",
+      "title": "esp32-h2_datasheet_en.pdf",
+      "url": "https://documentation.espressif.com/esp32-h2_datasheet_en.pdf",
+      "kind": "silicon-primary-source",
+      "status": "fetched",
+      "resolvedUrl": "https://documentation.espressif.com/esp32-h2_datasheet_en.pdf",
+      "fetchedAt": "2026-11-23T20:23:26Z",
+      "bytes": 784226,
+      "sha256": "c93da18527f397cdd2553c072a37f13bb8fba91950bd1cebc18a1be3361b8c9a",
+      "archiveName": "esp32-h2_datasheet_en.pdf.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-h2-runtime-sources/esp32-h2_datasheet_en.pdf.gz"
+    },
+    {
+      "id": "h2-silicon-1",
+      "title": "esp32-h2_technical_reference_manual_en.pdf",
+      "url": "https://documentation.espressif.com/esp32-h2_technical_reference_manual_en.pdf",
+      "kind": "silicon-primary-source",
+      "status": "fetched",
+      "resolvedUrl": "https://documentation.espressif.com/esp32-h2_technical_reference_manual_en.pdf",
+      "fetchedAt": "2026-11-23T20:23:28Z",
+      "bytes": 11877864,
+      "sha256": "d4e5fcd191308c27107e8737c03514753f1f72564eedecb79d589b73be8d5325",
+      "archiveName": "esp32-h2_technical_reference_manual_en.pdf.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-h2-runtime-sources/esp32-h2_technical_reference_manual_en.pdf.gz"
+    },
+    {
+      "id": "h2-silicon-2",
+      "title": "files/components/bootloader_support/include/esp_app_format.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fcae32885b0296b32044cb99ecbdc50d98dddb83/components/bootloader_support/include/esp_app_format.h",
+      "kind": "silicon-primary-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fcae32885b0296b32044cb99ecbdc50d98dddb83/components/bootloader_support/include/esp_app_format.h",
+      "fetchedAt": "2026-11-23T21:34:33Z",
+      "bytes": 5861,
+      "sha256": "34657b34c7408443186c2d4007edc0c6dc0ca1afc8f7b31e730266c56e249661",
+      "archiveName": "files_components_bootloader_support_include_esp_app_format.h.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-h2-runtime-sources/files_components_bootloader_support_include_esp_app_format.h.gz"
+    },
+    {
+      "id": "h2-silicon-3",
+      "title": "files/components/bootloader_support/src/bootloader_common_loader.c",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fcae32885b0296b32044cb99ecbdc50d98dddb83/components/bootloader_support/src/bootloader_common_loader.c",
+      "kind": "silicon-primary-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fcae32885b0296b32044cb99ecbdc50d98dddb83/components/bootloader_support/src/bootloader_common_loader.c",
+      "fetchedAt": "2026-11-23T21:34:38Z",
+      "bytes": 9895,
+      "sha256": "32a906e51f7c8c56de95cab09f6891b71ddceef7e470d746d42d2cb5b0b4296a",
+      "archiveName": "files_components_bootloader_support_src_bootloader_common_loader.c.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-h2-runtime-sources/files_components_bootloader_support_src_bootloader_common_loader.c.gz"
+    },
+    {
+      "id": "h2-silicon-4",
+      "title": "files/components/hal/esp32h2/include/hal/rmt_ll.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/fcae32885b0296b32044cb99ecbdc50d98dddb83/components/hal/esp32h2/include/hal/rmt_ll.h",
+      "kind": "silicon-primary-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/fcae32885b0296b32044cb99ecbdc50d98dddb83/components/hal/esp32h2/include/hal/rmt_ll.h",
+      "fetchedAt": "2026-11-23T21:18:10Z",
+      "bytes": 27121,
+      "sha256": "f7c0aef427a454c475a4a08c0d653bd7c89b37fa71ccbc9647e4d529ed8dfcce",
+      "archiveName": "files_components_hal_esp32h2_include_hal_rmt_ll.h.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-h2-runtime-sources/files_components_hal_esp32h2_include_hal_rmt_ll.h.gz"
+    }
+  ],
+  "assets": [
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-H2-DEV-KIT-N4"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-H2-DEV-KIT-N4/Resources-And-Documents"
+    },
+    {
+      "id": "dimension-photo",
+      "sourceId": "dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4_Diagram_4-34405b093f43de73950b6c300d41e910.webp"
+    },
+    {
+      "id": "photo-0",
+      "sourceId": "photo-0",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-1-01dbdb9ffadfc824091ea354e3570bbd.webp"
+    },
+    {
+      "id": "photo-1",
+      "sourceId": "photo-1",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-M-1-f328c7555b0c8a918a6187c0ab742ce1.webp"
+    },
+    {
+      "id": "photo-2",
+      "sourceId": "photo-2",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-details-11-e3ec6c337b806edb583d9b047a7daa32.webp"
+    },
+    {
+      "id": "photo-3",
+      "sourceId": "photo-3",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4-details-9-e5fd344a07aeb81eed3ff5408d47a43a.webp"
+    },
+    {
+      "id": "photo-4",
+      "sourceId": "photo-4",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-H2-DEV-KIT-N4_Diagram_4-34405b093f43de73950b6c300d41e910.webp"
+    },
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-h2-dev-kit-n4.htm"
+    },
+    {
+      "id": "electrical-0",
+      "sourceId": "electrical-0",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-H2-DEV-KIT-N4/ESP32-H2-DEV-KIT-N4.pdf"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "sourceId": "xiaozhi-tree",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+    },
+    {
+      "id": "uiflow-tree",
+      "sourceId": "uiflow-tree",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "真实硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview",
+        "product"
+      ]
+    },
+    {
+      "id": "full-acceptance",
+      "label": "完整应用和实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "resources"
+      ],
+      "notes": "Native digital board regressions do not establish original full application or physical acceptance."
+    }
+  ],
+  "collectionNotes": [
+    "部分适配：独立 ESP32-H2 SRAM 运行时已经原生验证 BOOT GPIO9、UART0 和 GPIO8 的 RMT RGB；完整原厂应用尚未通过。",
+    "Only explicit SRAM app-direct loading is supported. ROM, flash-cache/MMU, interrupt routing, USB, Bluetooth and IEEE802.15.4 remain unimplemented. No C6 SoC/ROM alias.",
+    "Hardware flash remains4MiB with noPSRAM. Header capacities1/2/4MiB fit; larger headers fail. Wafer revision is unverified, so full min=0 and max=0/65535 are required; deprecated byte14 is ignored.",
+    "Native evidence: docs/evidence/waveshare-h2-sram-2026-11-23/native-execution.ndjson and native-tests.log. Authored fixture is diagnostic only, never manufacturer firmware or a default public catalogue image.",
+    "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+    "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+    "IndependentH2 minimum runtime is explicit SRAM app-direct,GPIO/BOOT,UART and finite RMT RGB only. It does not alias the C6SoC or acceptC6images.",
+    "Complete original H2 bootloader/flash-cache images are not accepted as SRAM-linked apps. ROM boot,flash MMU,interrupt routing,wireless and full application remain unavailable in this bounded runtime.",
+    "Manufacturer photo alt text incorrectly saysH2Zero, but heading,exactSKUtable,schematic and dimension diagram identifyH2DEVKITN4. The actual board identity is retained.",
+    "Published25.4×51.6mm XY and22.86mm header row spacing retained. Schematic shows15positions/row;2.54mm pitch/longitudinal placement are explicitly photo-derived estimates. Unmeasured PCB/component heights remain visibly UNKNOWN."
+  ]
+}

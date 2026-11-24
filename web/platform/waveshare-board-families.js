@@ -1482,5 +1482,47 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "boardButtons": [
       "boot"
     ]
+  },
+  "waveshare-c6-pico": {
+    "chip": "esp32c6",
+    "flashMb": 4,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c6-dev-kit-n8": {
+    "chip": "esp32c6",
+    "flashMb": 8,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c6-dev-kit-n16": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c3-zero": {
+    "chip": "esp32c3",
+    "flashMb": 4,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-h2-zero": {
+    "chip": "esp32h2",
+    "flashMb": 4,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-h2-dev-kit-n4": {
+    "chip": "esp32h2",
+    "flashMb": 4,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
   }
 }));

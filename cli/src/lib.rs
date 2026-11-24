@@ -1,4 +1,4 @@
-//! esp32sim — the command line, one front end for every chip (`--chip esp32|s3|c3|c5|c6|c61|p4|s31`; the `esp32sim-c3`,
+//! esp32sim — the command line, one front end for every chip (`--chip esp32|s2|s3|c3|c5|c6|c61|h2|p4|s31`; the `esp32sim-c3`,
 //! `esp32sim-c6`, `esp32sim-p4` and `esp32sim-s31` binaries are `--chip c3` / `--chip c6` / `--chip p4` / `--chip s31`). Parsing and everything a run does are chip-agnostic over
 //! `Machine<S>`; the few flags a chip owns (board, WiFi, camera, PSRAM, register presets) live in
 //! its setup function.
@@ -16,7 +16,7 @@ fn usage(chip: &str) -> ! { help(chip, 2) }
 
 /// `--help` prints this and exits 0; a usage error prints it and exits 2.
 fn help(chip: &str, code: i32) -> ! {
-    eprintln!("usage: esp32sim [--chip esp32|s2|s3|c3|c5|c6|c61|p4|s31] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
+    eprintln!("usage: esp32sim [--chip esp32|s2|s3|c3|c5|c6|c61|h2|p4|s31] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
     eprintln!("       esp32sim --flash-image flash.bin --boot rom [options]            (a whole flash dump instead of the three images)");
     eprintln!("       default chip here: {}; esp32sim-c3/c6/p4/s31 are --chip c3 / c6 / p4 / s31", chip);
     eprintln!();
@@ -298,12 +298,13 @@ pub fn run_cli(default_chip: &str) {
         "s3" | "esp32s3" => { let m = setup_s3(&o); run(m, &o) }
         "c3" | "esp32c3" => { let m = setup_c3(&o); run(m, &o) }
         "c5" | "esp32c5" => { let m = setup_c5(&o); run(m, &o) }
+        "h2" | "esp32h2" => { let m = setup_h2(&o); run(m, &o) }
         "c61" | "esp32c61" => { let m = setup_c61(&o); run(m, &o) }
         "c6" | "esp32c6" => { let m = setup_c6(&o); run(m, &o) }
         "p4" | "esp32p4" if p4_rev3(&o) => { let m = setup_p4::<esp32p4::RevGe3>(&o); run(m, &o) }
         "p4" | "esp32p4" => { let m = setup_p4::<esp32p4::RevLt3>(&o); run(m, &o) }
         "s31" | "esp32s31" => { let m = setup_s31(&o); run(m, &o) }
-        c => { eprintln!("--chip {}: esp32, s2, s3, c3, c5, c6, c61, p4 or s31", c); std::process::exit(2) }
+        c => { eprintln!("--chip {}: esp32, s2, s3, c3, c5, c6, c61, h2, p4 or s31", c); std::process::exit(2) }
     }
 }
 
@@ -614,6 +615,23 @@ fn setup_c5(o: &Opts) -> esp32c5::Machine {
     m.bus.set_psram_size(psram_mb << 20).unwrap_or_else(|e| usage_error(&e));
     m.bus.board = esp32c5::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown C5 board '{board}' (stamp-c5, stamp-c5-dip, waveshare-c5-lcd147, waveshare-c5-touch169, waveshare-c5-touch28)")));
     m.bus.attach_board_devices();
+    if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
+    m
+}
+
+fn setup_h2(o: &Opts) -> esp32h2::Machine {
+    let board = if o.board == "atech14" { "none" } else { &o.board };
+    if o.flash_mb.is_some_and(|n| n != 4) || o.psram_mb.is_some_and(|n| n != 0) {
+        usage_error("H2 exact profiles require 4 MiB Flash and no PSRAM");
+    }
+    if o.boot.as_deref().is_some_and(|boot| boot != "app") || o.rom.is_some() || o.app.is_none() || o.bootloader.is_some() || o.ptable.is_some() || o.flash_image.is_some() || !o.flash_at.is_empty() {
+        usage_error("H2 requires --boot app --app SRAM.bin; mask ROM, mapped Flash and full ESP-IDF startup are not implemented");
+    }
+    for (flag, on) in [("--wifi", !o.wifi.is_empty()), ("--wifi-nearby", !o.wifi_nearby.is_empty()), ("--ble", o.ble || o.ble_full || !o.ble_nearby.is_empty()), ("--cam-image", o.cam_image.is_some()), ("--cam-stream", o.cam_stream.is_some()), ("--sd", o.sd.is_some()), ("--usb-host", o.usb_host.is_some()), ("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
+        if on { usage_error(&format!("{flag} is not implemented by the H2 SRAM runtime")); }
+    }
+    let mut m = esp32h2::machine(o.mac.unwrap_or([0x30, 0xed, 0xa0, 0, 0x11, 0x16]), 4 << 20);
+    m.bus.attach_board(esp32h2::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown H2 board '{board}'"))));
     if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
     m
 }
@@ -974,7 +992,7 @@ fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
     m.bus.misc().log_unknown = o.log_periph;
     if !o.breaks.is_empty() { m.add_observer(Box::new(Breakpoints { pcs: o.breaks.clone() })); }
     if o.trace { m.add_observer(Box::new(Trace { from: o.trace_from })); }
-    let rom = if S::NAME == "esp32s2" || (S::NAME == "esp32c5" && boot == "app") { None } else { o.rom.clone().or_else(|| find_rom(S::ROM_ELF)) };
+    let rom = if matches!(S::NAME, "esp32s2" | "esp32h2") || (S::NAME == "esp32c5" && boot == "app") { None } else { o.rom.clone().or_else(|| find_rom(S::ROM_ELF)) };
     match &rom {
         Some(r) => match std::fs::read(r) { Ok(d) => { m.load_rom(&d).expect("rom"); eprintln!("[emu] ROM loaded from {}", r.display()); } Err(e) => eprintln!("[emu] no ROM ({}): {}", r.display(), e) },
         None if boot == "rom" => { eprintln!("[emu] no {} mask ROM ELF found (pass --rom, or use --boot app)", S::NAME); std::process::exit(2) }

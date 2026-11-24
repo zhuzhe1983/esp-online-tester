@@ -7,6 +7,7 @@ pub use stampc3u::StampC3U;
 pub mod lilygo_additional;
 pub mod waveshare_lcd147;
 pub mod waveshare_lcd071;
+pub mod waveshare_zero;
 
 pub fn make_board(name:&str)->Option<Board> {
     match name {
@@ -18,6 +19,7 @@ pub fn make_board(name:&str)->Option<Board> {
         "lilygo-t-zigbee"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::t_zigbee())),
         "waveshare-c3-lcd147"=>Some(Box::new(waveshare_lcd147::Lcd147::new())),
         "waveshare-c3-lcd071"=>Some(Box::new(waveshare_lcd071::Lcd071::new())),
+        "waveshare-c3-zero"=>Some(Box::new(waveshare_zero::Zero::new())),
         _=>None,
     }
 }
