@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1",
+  "reviewedAt": "2026-11-22T17:33:58.016643+00:00",
+  "scope": "Read-only independent review of CloudZao branding, chronology, firmware source identities, release snapshots and update policy. Main tree was not modified. Review observed an actively edited tree.",
+  "baseline": "4d8f3d892e9171a61e8ff0008a029db6aea0e4bf",
+  "findings": [
+    {
+      "id": "github-watchlist-metadata-url",
+      "priority": "blocking",
+      "files": [
+        "web/platform/catalog/firmware-watchlist.json",
+        "web/platform/watchlist.js",
+        "tools/firmware-release-source.mjs"
+      ],
+      "observed": "Both new GitHub watch entries use /releases as metadataUrl. Current validator and releaseRequest require /releases/latest. Calling updateFirmwareCatalog throws Invalid GitHub metadata source before updates can be evaluated.",
+      "suggestedFix": "Use /releases/latest as the configured metadataUrl; releaseHistoryLimit already requests /releases?per_page=20. Retain the exact fetched source URL in historical snapshot evidence.",
+      "verifiedRemedy": "Without writing files, replaced those two values in an in-memory object. updateFirmwareCatalog then retained all five CloudZao selected firmware entries and returned unchanged catalog."
+    },
+    {
+      "id": "watchlist-static-audit-description",
+      "priority": "accuracy",
+      "files": [
+        "web/platform/catalog/firmware-watchlist.json"
+      ],
+      "observed": "The two Claw compatibility notes still state only release metadata was checked and firmware bodies were not inspected. The selected catalog assets now have a successful RAM-only static audit.",
+      "suggestedFix": "State that selected digest-pinned artifacts passed static integrity/layout checks, without startup/function/hardware verification; future candidates do not inherit that audit."
+    },
+    {
+      "id": "ink-manufacturer-cad-evidence",
+      "priority": "accuracy",
+      "files": [
+        "docs/platform/evidence/cloudzao-20261123/inventory-and-firmware-audit.json"
+      ],
+      "observed": "INK4 and INK4 Plus CAD search objects say officialMechanicalModelFound:false although the existing catalog has manufacturer MakerWorld STL/STEP with preserved license and byte receipts. The scoped repository search is valid but broad field naming can be misread as global absence.",
+      "suggestedFix": "Name the negative field repositoryMechanicalModelFound and add knownExistingManufacturerCad references to the existing official MakerWorld CAD, or mark officialMechanicalModelFound:true for those two models."
+    },
+    {
+      "id": "github-immutability-wording",
+      "priority": "accuracy",
+      "files": [
+        "web/platform/catalog/firmware-watchlist.json"
+      ],
+      "observed": "Claw4 selected asset has sourcePolicy:immutable-pinned. Original public GitHub release response has immutable:false for v2.0.5.1 as well as the other releases. The version tag and hash pin the accepted content, but do not make the upstream release immutable.",
+      "suggestedFix": "Use mutable-pinned with the existing SHA256 and retain the precise version-tag-and-sha256-pinned identity description already in firmwares.json."
+    },
+    {
+      "id": "evidence-phase-label",
+      "priority": "nonblocking-clarity",
+      "files": [
+        "docs/platform/evidence/cloudzao-20261123/official-firmware-sources.json",
+        "docs/platform/evidence/cloudzao-20261123/inventory-and-firmware-audit.json"
+      ],
+      "observed": "These snapshots were generated at 17:18 before the 17:20 RAM audit and correctly describe that earlier observation. Without an explicit phase label, their binaryFetched:false and no-bodies-downloaded storagePolicy look contradictory beside the later report.",
+      "suggestedFix": "Label them pre-download metadata snapshots and point to the later memory audit; keep their original check times and source metadata unchanged."
+    }
+  ],
+  "verified": [
+    "Existing metalio-ink4 and metalio-ink4-plus IDs, runtime objects and defaultFirmwareIds are byte-equivalent JSON values to baseline. All three existing INK source URLs, SHA256, versions, status, verification flags, catalogUpdate and history remain unchanged.",
+    "All four current product manufacturers are CloudZao. Searching CloudZao, Metalio, Nologo or the prior Chinese brand finds all four. Order is Claw 1.54, INK4 Plus, INK4, Claw4.",
+    "Chronology dates match earliest reachable commits and remain explicitly low-confidence repository proxies rather than sale dates.",
+    "Selected Claw URLs, expected sizes, SHA256, release IDs, asset IDs and tag identities match the independent release metadata and RAM-only audit. Claw4 release v2.0.5.1 separately preserves actual app descriptor 2.0.5; Claw 1.54 preserves mutable latest/datefilename/hash identity.",
+    "Both selected Claw firmwares remain trial, role:official, simulationVerified:false and hardwareValidated:false. No proof of factory-preinstalled version is claimed.",
+    "Claw4 product has board:null/unavailable and display implemented:false. Firmware documentation separately states unavailable P4 MIPI board runtime and online flasher policy.",
+    "Both Claw watch entries have catalogTargets:[], which causes no-explicit-device-targets and leaves selected files unchanged after the URL configuration remedy.",
+    "INK4 2.0.79 and Plus 2.0.83 candidates have no publisher SHA256; the pure update function returns candidate-missing-sha256 and retains earlier selected artifacts and verification.",
+    "Release snapshot assets match upstream metadata; Claw4 latest August snapshot is correctly distinct from the July version-tag default. No raw uploader/account fields were introduced in public evidence.",
+    "57 path-addressable source receipts and the Burner registry HTML have matching original byte lengths and SHA256 in local research cache. Burner official API raw bytes were intentionally discarded after a white-listed representation; its original receipt remains explicit about that distinction.",
+    "Copied tools/audit-cloudzao-firmware.py matches the audit report reproducer SHA256 c408a90cf235c7167a11c1935187116d47d9140ea3985009f163f060edc7f81e."
+  ],
+  "runtimeLimit": "No additional official firmware download, execution, hardware test or browser CORS test was performed during this review.",
+  "fileFingerprintsAtReport": {
+    "web/platform/catalog-selection.js": "020ac82c18c02af1821ddd97414ea56e93e0195305303525985455e35a893120",
+    "web/platform/catalog/products.json": "2fd6237df94f435b4fc6b87535bbec9c8a2f4c2eaa789ae138879595ec5d65fd",
+    "web/platform/catalog/firmwares.json": "3534fac5e3dc38f2cac1cb279c17ae28f0871f510ea5bd28fa1392a626840b1f",
+    "web/platform/catalog/firmware-watchlist.json": "4a5ab46296a96ecda11448577f7f98b8e154d1995fc5b8a74c1b82fa0bb0be79",
+    "web/platform/catalog/firmware-release-snapshot.json": "3db740390355ed96b75c3b1072af2b0b2a7a9713fcf4b42c7a06a52d50c8b39b"
+  },
+  "integrationResolution": {
+    "checkedAt": "2026-11-22T17:38:59Z",
+    "githubAdapter": "Both Claw metadata URLs now use /releases/latest; releaseHistoryLimit=5 preserves history discovery. Original snapshot sourceUrl retains the actual list URL fetched.",
+    "staticAuditWording": "Catalog/watchlist distinguish static integrity, bounded official boot and full functionality.",
+    "mutableRelease": "Both watch assets use mutable-pinned with SHA-256; fixed version tag is not a GitHub immutable release claim.",
+    "existingCad": "INK entries name retained manufacturer MakerWorld CAD and original attribution.",
+    "stageNote": "Discovery snapshot is explicitly dated before the subsequent audit/probe."
+  }
+}

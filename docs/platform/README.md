@@ -28,7 +28,9 @@ CoreMatrix C158 已增加独立 ESP32-C61 运行器、16×16 白色 LED 矩阵�
 
 ESP-Mosaico V1.2 已接入独立 ESP32-S31 WASM 运行器、480×480 AMOLED、CST9220 触控和 AI/BOOT 按键。默认官方 Vibe Mode 0.3.0 恢复包已验证浏览器直连、中文选择和主界面；完整 Hello 0.1.3 另已验证语言选择与 AI 键待机/唤醒，其完整镜像及小智仍需从原始来源下载后导入。官方外壳 3MF 来源与许可已记录，内部板级 CAD 仍未知；完整边界见 [Mosaico 运行报告](mosaico-runtime.md)。
 
-Metalio INK4 Plus 已接入独立 S31 板型：LCD RGB/AXI DMA/RMT 驱动 684×1216 黑白电子纸、FT6336U 触控与盖板键、TCA9555 侧键和 SDMMC。官方固件已实际启动并响应触控；16 MiB PSRAM 是模拟配置，音频处理器、4G 和灰度光学响应仍有限制，见 [INK4 Plus 运行报告](ink4-plus-runtime.md)。
+CloudZao（原 Metalio）INK4 Plus 已接入独立 S31 板型：LCD RGB/AXI DMA/RMT 驱动 684×1216 黑白电子纸、FT6336U 触控与盖板键、TCA9555 侧键和 SDMMC。官方固件已实际启动并响应触控；16 MiB PSRAM 是模拟配置，音频处理器、4G 和灰度光学响应仍有限制，见 [INK4 Plus 运行报告](ink4-plus-runtime.md)。
+
+2026-11-23 的 [CloudZao 批量适配](cloudzao-adaptation-20261123.md) 统一四款设备的品牌与旧名搜索，按官方仓库最早可达记录倒序排列（上市日期未知）。Claw 1.54 新增独立 ESP32-S3 显示/触摸/按键板型及来源可追溯模型；Claw4 提供 ESP32-P4 硬件资料与模型预览，MIPI-DSI 板级运行尚未实现。两款 INK 的旧产品 ID、已有 CAD 与运行链路保留。
 
 ## Current scope
 
