@@ -1,0 +1,753 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-c6-zero-fh4",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-c6-zero-fh4",
+  "title": "Waveshare ESP32-C6-Zero · FH4原理图版本",
+  "summary": "无板载显示屏；4 MiB Flash，无PSRAM；BOOT GPIO9、RGB GPIO8。",
+  "summarySourceIds": [
+    "overview",
+    "resources",
+    "electrical-0",
+    "electrical-1",
+    "electrical-2",
+    "electrical-3",
+    "electrical-4",
+    "electrical-5",
+    "electrical-6",
+    "electrical-7",
+    "electrical-8",
+    "electrical-9",
+    "electrical-10",
+    "electrical-11"
+  ],
+  "updatedAt": "2026-11-23T20:46:58Z",
+  "hardwareRevision": "retained official schematic: ESP32-C6FH4/4MiB; sale revision unspecified",
+  "facts": [
+    {
+      "id": "hardware",
+      "label": "精确SKU、容量资料版本和接线",
+      "value": {
+        "sku": "27035",
+        "options": {
+          "Version Options": "without header"
+        },
+        "chip": "esp32c6",
+        "flashMiB": 4,
+        "psramMiB": 0,
+        "revision": "retained official schematic: ESP32-C6FH4/4MiB; sale revision unspecified",
+        "i2c": null,
+        "components": [
+          "Current overviewESP32-C6FH8/8MiB; retained schematicESP32-C6FH4/4MiB",
+          "WS2812 RGB onGPIO8;GPIO8/9 pullups",
+          "BOOT GPIO9;RESET CHIP_PU",
+          "No GPIO7 RF switch on this Zero board",
+          "No display, touch, TF socket, external I2C device or PSRAM"
+        ],
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true,
+            "defaultKeyCode": "Space"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11"
+      ]
+    },
+    {
+      "id": "source-conflicts",
+      "label": "来源冲突和采用依据",
+      "value": [
+        "Current official overview explicitly statesESP32-C6FH8 and8MiB. The retained official schematic explicitly statesESP32-C6FH4 and4MiB. Both source-backed capacity profiles are exposed; there is no proven V1/V2 sale designation or release date.",
+        "The two exact sale SKUs27035/26976 are counted once each. Four product profiles distinguish two documented capacities and two header options, without inventing extra SKUs.",
+        "All original native116/118 CAD components remain unscaled. Exact electrical revision/CAD match is unverified; native package geometry does not establish embedded flash capacity.",
+        "Fixed official Basic Kit repository has noBIN file; linkedBLEAssist is an Android APK. No full ESP image/default has been fabricated. Digital native regressions are not official application acceptance."
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11"
+      ]
+    },
+    {
+      "id": "model-scope",
+      "label": "机械模型范围",
+      "value": {
+        "model": "waveshare-esp32-c6-zero",
+        "method": "manufacturer-cad",
+        "dimensions": {
+          "pcb": {
+            "publishedSizeMm": [
+              18,
+              23.5
+            ],
+            "nativeSizeMm": [
+              18.017256320000076,
+              23.517258020000064,
+              1.6
+            ],
+            "sourceIds": [
+              "official-cad",
+              "dimension-photo"
+            ]
+          },
+          "header": {
+            "pitchMm": 2.54,
+            "rowSpacingMm": 15.24,
+            "pinsPerRow": 9,
+            "nativeAssembly": false,
+            "sourceIds": [
+              "official-cad",
+              "dimension-photo"
+            ]
+          },
+          "hardwareRevision": {
+            "currentOverview": "C6FH8 integrated8MiB",
+            "retainedSchematic": "C6FH4 integrated4MiB",
+            "CADRevisionMatch": "unverified; native MCU geometry does not establish embedded flash capacity"
+          }
+        },
+        "limitations": [
+          "Native component dimensions and original material distinctions are preserved without scaling. Colors are not calibrated measurements.",
+          "No physical fit, browser WebGL, connector contact simulation or hardware acceptance is claimed.",
+          "BOOT/RESET workbench controls and RGB state do not establish physical actuator/LED registration. No guessed3D click target or LED position.",
+          "Current official overview statesESP32-C6FH8/8MiB; the retained schematic statesESP32-C6FH4/4MiB. Both source profiles use this unscaled mechanical source, but exact electrical revision/CAD correspondence remains UNVERIFIED. No undocumented V1/V2 sale name is invented.",
+          "Published18×23.5-mm PCB dimensions differ from native18.0173×23.5173-mm source envelope by approximately0.0173mm. The native source is retained without forced resizing."
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-photo",
+        "resources",
+        "official-cad"
+      ]
+    },
+    {
+      "id": "ecosystems",
+      "label": "原厂、小智与UIFlow调查",
+      "value": {
+        "relatedOfficialRepository": {
+          "repository": "https://github.com/waveshareteam/ESP32-C6-Zero-Basic-Kit",
+          "commit": "067435640535d90ce9c1fe0c046ba36a12886974",
+          "fetchedAt": "2026-11-23T20:45:08.834904Z",
+          "treeEntries": 353,
+          "selectedPaths": [
+            "Arduino/03-Digital-IO/LEDBlink/LEDBlink.ino",
+            "ESP-IDF/02-Run-Example/blink/README.md",
+            "ESP-IDF/02-Run-Example/blink/main/blink_example_main.c",
+            "ESP-IDF/02-Run-Example/hello_world/README.md",
+            "ESP-IDF/03-Create-Project/blinky/main/main.c",
+            "ESP-IDF/09-BLE/README.md",
+            "MicroPython/README.md",
+            "README.md"
+          ],
+          "binaryCandidates": [],
+          "mechanicalCandidates": []
+        },
+        "xiaozhiExactBoardPaths": [],
+        "xiaozhiBinaryAccepted": false,
+        "uiflowExactWaveshareNamedPaths": [],
+        "uiflowBinaryAccepted": false,
+        "factoryCandidate": "No matching full ESP image in the retained official scope. Related Basic Kit source target is not a firmware acceptance."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "resources",
+        "xiaozhi-tree",
+        "uiflow-tree",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11"
+      ]
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-C6-Zero",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/overview.html.gz",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Zero",
+      "fetchedAt": "2026-11-23T16:32:18Z",
+      "bytes": 39677,
+      "sha256": "b845789f7631bc8a565f12ae4654ae61384f98358b0426fea9f1d72db7aff85c",
+      "archiveName": "overview.html.gz"
+    },
+    {
+      "id": "resources",
+      "title": "resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/resources.html.gz",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T16:39:33Z",
+      "bytes": 38503,
+      "sha256": "80fd2811cbb34029cd70ca7733586dd77d49036246fe6fe7bfd47463d108d2d1",
+      "archiveName": "resources.html.gz"
+    },
+    {
+      "id": "archive-inventory",
+      "title": "archive-inventory.json",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/archive-inventory.json; explicitly derived inventory, not original HTTP body",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 3030,
+      "sha256": "50b97cbe0ba619544b2a96e407f150deaf50f1a475c60df94fa940cb76822bc0",
+      "archiveName": "archive-inventory.json"
+    },
+    {
+      "id": "dimension-photo",
+      "title": "dimension-photo.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Dimensions-dd6e377288d20c723b60a44551a0b944.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/dimension-photo.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Dimensions-dd6e377288d20c723b60a44551a0b944.webp",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 54596,
+      "sha256": "9b2963f893a77c3ae340b7fea39ab40bc520d6bc3c48ec7c9814b90a9a6d8e9a",
+      "archiveName": "dimension-photo.webp"
+    },
+    {
+      "id": "photo-0",
+      "title": "photo-0.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-0eb8e8f58576f1b1a5ad55de5d63e24e.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/photo-0.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-0eb8e8f58576f1b1a5ad55de5d63e24e.webp",
+      "fetchedAt": "2026-11-23T19:19:32Z",
+      "bytes": 15538,
+      "sha256": "e1a4beaa4f7f820ecc198f2208964efcc4aa1344b0c34c87361e88807e45fa18",
+      "archiveName": "photo-0.webp"
+    },
+    {
+      "id": "photo-1",
+      "title": "photo-1.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Basic-Kit-5e9e9c3aa9a60c87730a3db7146952cb.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/photo-1.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Basic-Kit-5e9e9c3aa9a60c87730a3db7146952cb.webp",
+      "fetchedAt": "2026-11-23T19:19:32Z",
+      "bytes": 46776,
+      "sha256": "4f8e80cf13bcfe4580c4c111571234a13934e9f2b22f3c03420d2957758da930",
+      "archiveName": "photo-1.webp"
+    },
+    {
+      "id": "photo-2",
+      "title": "photo-2.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Block-Diagram-a5b1b8b1d8720e8d9374ee6029c1a0b6.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/photo-2.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Block-Diagram-a5b1b8b1d8720e8d9374ee6029c1a0b6.webp",
+      "fetchedAt": "2026-11-23T19:19:32Z",
+      "bytes": 19296,
+      "sha256": "7ecf17a5527366a7be247446438ca1342b4c59b37055d195c6c35a52d84dae45",
+      "archiveName": "photo-2.webp"
+    },
+    {
+      "id": "photo-3",
+      "title": "photo-3.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Dimensions-dd6e377288d20c723b60a44551a0b944.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/photo-3.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Dimensions-dd6e377288d20c723b60a44551a0b944.webp",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 54596,
+      "sha256": "9b2963f893a77c3ae340b7fea39ab40bc520d6bc3c48ec7c9814b90a9a6d8e9a",
+      "archiveName": "photo-3.webp"
+    },
+    {
+      "id": "photo-4",
+      "title": "photo-4.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-M-6147af692a7fa8b2903f5a3c311ed94d.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/photo-4.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-M-6147af692a7fa8b2903f5a3c311ed94d.webp",
+      "fetchedAt": "2026-11-23T19:19:32Z",
+      "bytes": 15694,
+      "sha256": "61535e86299e77a89899032d293f61f8fed41843ef3413fdfea5cbf07a749bb7",
+      "archiveName": "photo-4.webp"
+    },
+    {
+      "id": "photo-5",
+      "title": "photo-5.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Overview-57a3f494ea95a61118e18699ae321ecf.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/photo-5.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Overview-57a3f494ea95a61118e18699ae321ecf.webp",
+      "fetchedAt": "2026-11-23T19:19:32Z",
+      "bytes": 53440,
+      "sha256": "6c85413b1b84039eb94cac3ca83c66d1170148b952c3954f7ae4f612f275a7ed",
+      "archiveName": "photo-5.webp"
+    },
+    {
+      "id": "photo-6",
+      "title": "photo-6.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Pinout-41ae7de71386ab087c63bd6775b38a81.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/photo-6.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Pinout-41ae7de71386ab087c63bd6775b38a81.webp",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 71174,
+      "sha256": "742c0e7db04f0779bbd5a10320448e027d7bce0c3757e79820e7fa9532d2a551",
+      "archiveName": "photo-6.webp"
+    },
+    {
+      "id": "official-archive",
+      "title": "source-archive.zip",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-3D.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/source-archive.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-3D.zip",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 2555812,
+      "sha256": "930ab0672fdf5faacd00328a72d0eea5a8cf9a296232aef0cb8e6c647ee68afd",
+      "archiveName": "source-archive.zip"
+    },
+    {
+      "id": "official-cad",
+      "title": "source.stp.gz",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-3D.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-zero/source.stp.gz",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-3D.zip",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 6649380,
+      "sha256": "4e6c267c7e2f3baaa9f4478e9bb8f4ffb54630a38e7ea49c2e5b9150f3a6ce00",
+      "archiveName": "source.stp.gz"
+    },
+    {
+      "id": "product",
+      "title": "Exact official SKU/options",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero.htm",
+      "kind": "manufacturer-product",
+      "status": "linked",
+      "notes": "Selected public SKU fields are retained as derived data; source HTTP receipt is separate."
+    },
+    {
+      "id": "electrical-0",
+      "title": "ESP32-C6-Zero/archive-members/ESP32-C6-Zero/ESP32-C6-Zero-20250528.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 36901,
+      "sha256": "a3d93d2bda4ea5dfd7199e3b36e9d8e2fbbea75c8cd9a95dafba36c85fcfa88f",
+      "archiveName": "ESP32-C6-Zero_archive-members_ESP32-C6-Zero_ESP32-C6-Zero-20250528.pdf.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero_archive-members_ESP32-C6-Zero_ESP32-C6-Zero-20250528.pdf.gz."
+    },
+    {
+      "id": "electrical-1",
+      "title": "ESP32-C6-Zero/archive-members/ESP32-C6-Zero-M/ESP32-C6-Zero-M-20250528.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 38837,
+      "sha256": "b259baa00a87cf200ddb66100fb8d7e337d3a025fba22740721bfdf064de74f2",
+      "archiveName": "ESP32-C6-Zero_archive-members_ESP32-C6-Zero-M_ESP32-C6-Zero-M-20250528.pdf.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero_archive-members_ESP32-C6-Zero-M_ESP32-C6-Zero-M-20250528.pdf.gz."
+    },
+    {
+      "id": "electrical-2",
+      "title": "ESP32-C6-Zero/official-resources/ESP32-C6-Zero.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero.pdf",
+      "fetchedAt": "2026-11-23T19:19:36Z",
+      "bytes": 110894,
+      "sha256": "b6234fb7e8e4af6d369fb6f20470b8f65c1d0165c7c290c8bb82671be78dd780",
+      "archiveName": "ESP32-C6-Zero_official-resources_ESP32-C6-Zero.pdf.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero_official-resources_ESP32-C6-Zero.pdf.gz."
+    },
+    {
+      "id": "electrical-3",
+      "title": "ESP32-C6-Zero-Basic-Kit/tree.json",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1",
+      "fetchedAt": "2026-11-23T20:44:43Z",
+      "bytes": 95058,
+      "sha256": "17f93fcdac74d23a3ec5428e9f1c8cbec9a8a98c85004e14ddc7bf8c9978be4e",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_tree.json.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_tree.json.gz."
+    },
+    {
+      "id": "electrical-4",
+      "title": "ESP32-C6-Zero-Basic-Kit/files/Arduino/03-Digital-IO/LEDBlink/LEDBlink.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/Arduino/03-Digital-IO/LEDBlink/LEDBlink.ino",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/Arduino/03-Digital-IO/LEDBlink/LEDBlink.ino",
+      "fetchedAt": "2026-11-23T20:44:48Z",
+      "bytes": 779,
+      "sha256": "a4bbc298f374b70dabdb7043521427b53193a0bd587e35a3f1fef43acedccf51",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_files_Arduino_03-Digital-IO_LEDBlink_LEDBlink.ino.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_files_Arduino_03-Digital-IO_LEDBlink_LEDBlink.ino.gz."
+    },
+    {
+      "id": "electrical-5",
+      "title": "ESP32-C6-Zero-Basic-Kit/files/ESP-IDF/02-Run-Example/blink/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/blink/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/blink/README.md",
+      "fetchedAt": "2026-11-23T20:44:52Z",
+      "bytes": 3282,
+      "sha256": "60b8d5ab27d07bf4bb0936bb112863094fa87f6cb222b9c32936eae54ec679a0",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_02-Run-Example_blink_README.md.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_02-Run-Example_blink_README.md.gz."
+    },
+    {
+      "id": "electrical-6",
+      "title": "ESP32-C6-Zero-Basic-Kit/files/ESP-IDF/02-Run-Example/blink/main/blink_example_main.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/blink/main/blink_example_main.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/blink/main/blink_example_main.c",
+      "fetchedAt": "2026-11-23T20:44:56Z",
+      "bytes": 2959,
+      "sha256": "f22a5003ceb215227be9213da746cd383b15225c6c12899d1c0ffa6add0684b8",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_02-Run-Example_blink_main_blink_example_main.c.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_02-Run-Example_blink_main_blink_example_main.c.gz."
+    },
+    {
+      "id": "electrical-7",
+      "title": "ESP32-C6-Zero-Basic-Kit/files/ESP-IDF/02-Run-Example/hello_world/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/hello_world/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/hello_world/README.md",
+      "fetchedAt": "2026-11-23T20:45:00Z",
+      "bytes": 2513,
+      "sha256": "ff3d88ffac063e7e90e6cca9acaef101da29b2c22a60687b1af87b3d4cf8342b",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_02-Run-Example_hello_world_README.md.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_02-Run-Example_hello_world_README.md.gz."
+    },
+    {
+      "id": "electrical-8",
+      "title": "ESP32-C6-Zero-Basic-Kit/files/ESP-IDF/03-Create-Project/blinky/main/main.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/03-Create-Project/blinky/main/main.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/03-Create-Project/blinky/main/main.c",
+      "fetchedAt": "2026-11-23T20:45:05Z",
+      "bytes": 788,
+      "sha256": "1ae8e7af22f777e2e1f661336b0de6dbb34f0dead258290f3ca8dc91fd2c9270",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_03-Create-Project_blinky_main_main.c.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_03-Create-Project_blinky_main_main.c.gz."
+    },
+    {
+      "id": "electrical-9",
+      "title": "ESP32-C6-Zero-Basic-Kit/files/ESP-IDF/09-BLE/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/09-BLE/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/09-BLE/README.md",
+      "fetchedAt": "2026-11-23T20:45:08Z",
+      "bytes": 369,
+      "sha256": "76b6d735ec1080f18a0ff88c7d34bc6bd53138fc0c11d337abd19e8c0cdf7bbc",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_09-BLE_README.md.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_files_ESP-IDF_09-BLE_README.md.gz."
+    },
+    {
+      "id": "electrical-10",
+      "title": "ESP32-C6-Zero-Basic-Kit/files/MicroPython/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/MicroPython/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/MicroPython/README.md",
+      "fetchedAt": "2026-11-23T16:52:02Z",
+      "bytes": 679,
+      "sha256": "d23c03a374d9bb763caad95ffe8c9cdc1e2a59b104568b4f505d9a97d60a9697",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_files_MicroPython_README.md.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_files_MicroPython_README.md.gz."
+    },
+    {
+      "id": "electrical-11",
+      "title": "ESP32-C6-Zero-Basic-Kit/files/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/README.md",
+      "fetchedAt": "2026-11-23T16:52:02Z",
+      "bytes": 885,
+      "sha256": "939482c0de5e6159019d806512194e4a1a48a1327741b751cc5608dfea0f12e9",
+      "archiveName": "ESP32-C6-Zero-Basic-Kit_files_README.md.gz",
+      "notes": "Original bytes retained asgzip at docs/platform/research/waveshare-c6-final-basic-sources/ESP32-C6-Zero-Basic-Kit_files_README.md.gz."
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "78/xiaozhi-esp32 pinned board-tree investigation",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Shared raw/derived receipt: docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json"
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "m5stack/uiflow-micropython pinned board-tree investigation",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Shared raw/derived receipt: docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json"
+    }
+  ],
+  "assets": [
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-Zero"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents"
+    },
+    {
+      "id": "archive-inventory",
+      "sourceId": "archive-inventory",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip"
+    },
+    {
+      "id": "dimension-photo",
+      "sourceId": "dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Dimensions-dd6e377288d20c723b60a44551a0b944.webp"
+    },
+    {
+      "id": "photo-0",
+      "sourceId": "photo-0",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-0eb8e8f58576f1b1a5ad55de5d63e24e.webp"
+    },
+    {
+      "id": "photo-1",
+      "sourceId": "photo-1",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Basic-Kit-5e9e9c3aa9a60c87730a3db7146952cb.webp"
+    },
+    {
+      "id": "photo-2",
+      "sourceId": "photo-2",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Block-Diagram-a5b1b8b1d8720e8d9374ee6029c1a0b6.webp"
+    },
+    {
+      "id": "photo-3",
+      "sourceId": "photo-3",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Dimensions-dd6e377288d20c723b60a44551a0b944.webp"
+    },
+    {
+      "id": "photo-4",
+      "sourceId": "photo-4",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-M-6147af692a7fa8b2903f5a3c311ed94d.webp"
+    },
+    {
+      "id": "photo-5",
+      "sourceId": "photo-5",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Overview-57a3f494ea95a61118e18699ae321ecf.webp"
+    },
+    {
+      "id": "photo-6",
+      "sourceId": "photo-6",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Zero-Pinout-41ae7de71386ab087c63bd6775b38a81.webp"
+    },
+    {
+      "id": "official-archive",
+      "sourceId": "official-archive",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-3D.zip"
+    },
+    {
+      "id": "official-cad",
+      "sourceId": "official-cad",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-3D.zip"
+    },
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero.htm"
+    },
+    {
+      "id": "electrical-0",
+      "sourceId": "electrical-0",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip"
+    },
+    {
+      "id": "electrical-1",
+      "sourceId": "electrical-1",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero-2D.zip"
+    },
+    {
+      "id": "electrical-2",
+      "sourceId": "electrical-2",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Zero/ESP32-C6-Zero.pdf"
+    },
+    {
+      "id": "electrical-3",
+      "sourceId": "electrical-3",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1"
+    },
+    {
+      "id": "electrical-4",
+      "sourceId": "electrical-4",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/Arduino/03-Digital-IO/LEDBlink/LEDBlink.ino"
+    },
+    {
+      "id": "electrical-5",
+      "sourceId": "electrical-5",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/blink/README.md"
+    },
+    {
+      "id": "electrical-6",
+      "sourceId": "electrical-6",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/blink/main/blink_example_main.c"
+    },
+    {
+      "id": "electrical-7",
+      "sourceId": "electrical-7",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/02-Run-Example/hello_world/README.md"
+    },
+    {
+      "id": "electrical-8",
+      "sourceId": "electrical-8",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/03-Create-Project/blinky/main/main.c"
+    },
+    {
+      "id": "electrical-9",
+      "sourceId": "electrical-9",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/ESP-IDF/09-BLE/README.md"
+    },
+    {
+      "id": "electrical-10",
+      "sourceId": "electrical-10",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/MicroPython/README.md"
+    },
+    {
+      "id": "electrical-11",
+      "sourceId": "electrical-11",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Zero-Basic-Kit/067435640535d90ce9c1fe0c046ba36a12886974/README.md"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "sourceId": "xiaozhi-tree",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+    },
+    {
+      "id": "uiflow-tree",
+      "sourceId": "uiflow-tree",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "真实硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview",
+        "product"
+      ]
+    },
+    {
+      "id": "full-acceptance",
+      "label": "完整应用和实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "resources"
+      ],
+      "notes": "Native digital board regressions do not establish original full application or physical acceptance."
+    }
+  ],
+  "collectionNotes": [
+    "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+    "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+    "Current official overview explicitly statesESP32-C6FH8 and8MiB. The retained official schematic explicitly statesESP32-C6FH4 and4MiB. Both source-backed capacity profiles are exposed; there is no proven V1/V2 sale designation or release date.",
+    "The two exact sale SKUs27035/26976 are counted once each. Four product profiles distinguish two documented capacities and two header options, without inventing extra SKUs.",
+    "All original native116/118 CAD components remain unscaled. Exact electrical revision/CAD match is unverified; native package geometry does not establish embedded flash capacity.",
+    "Fixed official Basic Kit repository has noBIN file; linkedBLEAssist is an Android APK. No full ESP image/default has been fabricated. Digital native regressions are not official application acceptance."
+  ]
+}

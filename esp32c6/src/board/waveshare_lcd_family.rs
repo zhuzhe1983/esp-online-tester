@@ -1,6 +1,7 @@
 //! Exact C6 LCD boards, wired from the individually retained official schematics.
 //! See docs/platform/waveshare-c6-lcd-family.md for pinned BSPs, conflicts and scope.
-//! SPI is opt-in and phase/route checked; legacy waveshare-c6-lcd147 is unchanged.
+//! SPI is opt-in and phase/route checked. The public LCD1.47 name uses exact routes;
+//! its older direct-event helper remains available to existing bring-up tests.
 use esp_soc::{BoardModel,board::{BoardEdge,SpiQspiPins},pins::PinRoutes,devices::{
     DcsPanel,Ws2812Chain,axs5106::{Axs5106,Axs5106State},imu_motion::ImuMotion,
     qmi8658::Qmi8658,pcf85063::{Pcf85063,Pcf85063State},es8311::Es8311,es7210::Es7210,
@@ -9,7 +10,7 @@ use esp_periph::{i2c::{I2cDevice,cst816s::{Cst816s,Cst816State}},sdmmc::{SdCardC
 use std::{cell::RefCell,rc::Rc,sync::{Arc,Mutex,atomic::Ordering}};
 
 #[derive(Clone,Copy,Debug,PartialEq,Eq)]
-pub enum LcdVariant {Lcd085,Lcd19,Touch19,Touch169,Lcd169,Touch147,Lcd128,Touch128,Lcd154,Touch154,GeekV1,GeekV2,Lcd13,Touch183}
+pub enum LcdVariant {Lcd085,Lcd19,Touch19,Touch169,Lcd169,Touch147,Lcd147,Lcd128,Touch128,Lcd154,Touch154,GeekV1,GeekV2,Lcd13,Touch183}
 #[derive(Clone,Copy)]
 struct Wiring {name:&'static str,flash:usize,width:usize,height:usize,gap:(usize,usize),sclk:u8,mosi:u8,cs:u8,dc:u8,rst:u8,reset_pullup:bool,bl:u8,bl_low:bool,i2c:(u8,u8),sd:Option<(u8,u8)>,touch_reset:Option<u8>,touch_irq:Option<u8>}
 impl LcdVariant {
@@ -18,6 +19,7 @@ impl LcdVariant {
         Self::Lcd19|Self::Touch19=>Wiring{name:if self==Self::Lcd19{"waveshare-c6-lcd19"}else{"waveshare-c6-touch-lcd19"},flash:8,width:170,height:320,gap:(35,0),sclk:5,mosi:4,cs:7,dc:6,rst:14,reset_pullup:false,bl:15,bl_low:true,i2c:(18,8),sd:Some((19,20)),touch_reset:None,touch_irq:None},
         Self::Touch169=>Wiring{name:"waveshare-c6-touch-lcd169",flash:16,width:240,height:280,gap:(0,20),sclk:1,mosi:2,cs:5,dc:3,rst:4,reset_pullup:true,bl:6,bl_low:false,i2c:(8,7),sd:None,touch_reset:Some(4),touch_irq:Some(11)},
         Self::Lcd169=>Wiring{name:"waveshare-c6-lcd169",flash:16,width:240,height:280,gap:(0,20),sclk:1,mosi:2,cs:5,dc:3,rst:4,reset_pullup:true,bl:6,bl_low:false,i2c:(8,7),sd:None,touch_reset:None,touch_irq:None},
+        Self::Lcd147=>Wiring{name:"waveshare-c6-lcd147",flash:4,width:172,height:320,gap:(34,0),sclk:7,mosi:6,cs:14,dc:15,rst:21,reset_pullup:false,bl:22,bl_low:false,i2c:(0,0),sd:Some((5,4)),touch_reset:None,touch_irq:None},
         Self::Touch147=>Wiring{name:"waveshare-c6-touch-lcd147",flash:8,width:172,height:320,gap:(34,0),sclk:1,mosi:2,cs:14,dc:15,rst:22,reset_pullup:false,bl:23,bl_low:false,i2c:(18,19),sd:Some((3,4)),touch_reset:Some(20),touch_irq:Some(21)},
         Self::Lcd128|Self::Touch128=>Wiring{name:if self==Self::Lcd128{"waveshare-c6-lcd128"}else{"waveshare-c6-touch-lcd128"},flash:16,width:240,height:240,gap:(0,0),sclk:11,mosi:21,cs:10,dc:19,rst:20,reset_pullup:false,bl:7,bl_low:false,i2c:(18,8),sd:Some((22,15)),touch_reset:if self==Self::Touch128{Some(23)}else{None},touch_irq:if self==Self::Touch128{Some(4)}else{None}},
         Self::Lcd154|Self::Touch154=>Wiring{name:if self==Self::Lcd154{"waveshare-c6-lcd154"}else{"waveshare-c6-touch-lcd154"},flash:16,width:240,height:240,gap:(0,0),sclk:1,mosi:2,cs:11,dc:3,rst:4,reset_pullup:false,bl:6,bl_low:false,i2c:(8,7),sd:Some((16,17)),touch_reset:if self==Self::Touch154{Some(4)}else{None},touch_irq:if self==Self::Touch154{Some(5)}else{None}},
@@ -25,7 +27,7 @@ impl LcdVariant {
         Self::Lcd13=>Wiring{name:"waveshare-c6-lcd13",flash:4,width:240,height:240,gap:(0,0),sclk:7,mosi:6,cs:14,dc:15,rst:21,reset_pullup:false,bl:22,bl_low:false,i2c:(0,0),sd:Some((5,4)),touch_reset:None,touch_irq:None},
         Self::Touch183=>Wiring{name:"waveshare-c6-touch-lcd183",flash:16,width:240,height:284,gap:(0,0),sclk:1,mosi:2,cs:5,dc:3,rst:4,reset_pullup:false,bl:6,bl_low:false,i2c:(7,8),sd:Some((16,17)),touch_reset:Some(4),touch_irq:Some(11)},
     }}
-    pub fn from_name(name:&str)->Option<Self> {match name {"waveshare-c6-geek"=>Some(Self::GeekV2),"waveshare-c6-geek-v1"=>Some(Self::GeekV1),"waveshare-c6-lcd13"=>Some(Self::Lcd13),"waveshare-c6-touch-lcd183"=>Some(Self::Touch183),"waveshare-c6-lcd128"=>Some(Self::Lcd128),"waveshare-c6-touch-lcd128"=>Some(Self::Touch128),"waveshare-c6-lcd154"=>Some(Self::Lcd154),"waveshare-c6-touch-lcd154"=>Some(Self::Touch154),"waveshare-c6-lcd085"=>Some(Self::Lcd085),"waveshare-c6-lcd19"=>Some(Self::Lcd19),"waveshare-c6-touch-lcd19"=>Some(Self::Touch19),"waveshare-c6-touch-lcd169"=>Some(Self::Touch169),"waveshare-c6-lcd169"=>Some(Self::Lcd169),"waveshare-c6-touch-lcd147"=>Some(Self::Touch147),_=>None}}
+    pub fn from_name(name:&str)->Option<Self> {match name {"waveshare-c6-lcd147"|"c6-lcd147"|"lcd147"=>Some(Self::Lcd147),"waveshare-c6-geek"=>Some(Self::GeekV2),"waveshare-c6-geek-v1"=>Some(Self::GeekV1),"waveshare-c6-lcd13"=>Some(Self::Lcd13),"waveshare-c6-touch-lcd183"=>Some(Self::Touch183),"waveshare-c6-lcd128"=>Some(Self::Lcd128),"waveshare-c6-touch-lcd128"=>Some(Self::Touch128),"waveshare-c6-lcd154"=>Some(Self::Lcd154),"waveshare-c6-touch-lcd154"=>Some(Self::Touch154),"waveshare-c6-lcd085"=>Some(Self::Lcd085),"waveshare-c6-lcd19"=>Some(Self::Lcd19),"waveshare-c6-touch-lcd19"=>Some(Self::Touch19),"waveshare-c6-touch-lcd169"=>Some(Self::Touch169),"waveshare-c6-lcd169"=>Some(Self::Lcd169),"waveshare-c6-touch-lcd147"=>Some(Self::Touch147),_=>None}}
     pub fn flash_mb(self)->usize {self.wiring().flash}
 }
 type PersistentDevice=Rc<RefCell<Box<dyn I2cDevice>>>;
@@ -63,7 +65,7 @@ impl WaveshareLcd {
         if let Some(s)=&cst{parts.push((0x15,Box::new(CstReport::new(s.clone()))));}
         let axs=(variant==LcdVariant::Touch147).then(||Arc::new(Mutex::new(Axs5106State::default())));
         if let Some(s)=&axs{parts.push((0x63,Box::new(Axs5106::new(s.clone()))));}
-        let motion=(!matches!(variant,LcdVariant::Lcd085|LcdVariant::GeekV1|LcdVariant::GeekV2|LcdVariant::Lcd13)).then(||Arc::new(ImuMotion::default()));
+        let motion=(!matches!(variant,LcdVariant::Lcd085|LcdVariant::GeekV1|LcdVariant::GeekV2|LcdVariant::Lcd13|LcdVariant::Lcd147)).then(||Arc::new(ImuMotion::default()));
         if let Some(m)=&motion{parts.push((0x6b,Box::new(if matches!(variant,LcdVariant::Lcd19|LcdVariant::Touch19|LcdVariant::Lcd154|LcdVariant::Touch154|LcdVariant::Touch183){Qmi8658::new_c(m.clone(),crate::periph::CPU_HZ)}else{Qmi8658::new(m.clone(),crate::periph::CPU_HZ)})));}
         if matches!(variant,LcdVariant::Lcd19|LcdVariant::Touch19){parts.push((0x20,Box::new(Tca9554::new(Arc::new(Mutex::new(Tca9554State::default()))))));}
         let rtc=matches!(variant,LcdVariant::Touch183|LcdVariant::Touch169|LcdVariant::Lcd169|LcdVariant::Lcd128|LcdVariant::Touch128).then(||Arc::new(Mutex::new(Pcf85063State::new(crate::periph::CPU_HZ))));
@@ -76,7 +78,7 @@ impl WaveshareLcd {
         let panel=match variant{LcdVariant::Lcd128|LcdVariant::Touch128=>DcsPanel::new(240,240),LcdVariant::Lcd085=>DcsPanel::st7735(),LcdVariant::Touch147=>DcsPanel::new(240,320),_=>DcsPanel::st7789()};
         Self{variant,w,panel,power,power_ok:true,dc:None,reset_high:w.reset_pullup,backlight:0,command:0,generation:1,rejected:0,
             devices:parts.into_iter().map(|(a,d)|(a,Rc::new(RefCell::new(d)))).collect(),cst,axs,motion,rtc,
-            led:match variant{LcdVariant::Lcd085=>Some(Ws2812Chain::new(8)),LcdVariant::Lcd13=>Some(Ws2812Chain::new(1)),_=>None},sd:None,cycle:0,irq_high:true}
+            led:match variant{LcdVariant::Lcd085=>Some(Ws2812Chain::new(8)),LcdVariant::Lcd13|LcdVariant::Lcd147|LcdVariant::Lcd19=>Some(Ws2812Chain::new(1)),_=>None},sd:None,cycle:0,irq_high:true}
     }
     fn touch_level(&self)->bool{if let Some(s)=&self.cst{s.lock().expect("CST816 state").irq_high()}else if let Some(s)=&self.axs{s.lock().expect("AXS5106 state").irq_high()}else{true}}
     fn set_backlight(&mut self,duty:u8){if self.backlight!=duty{self.backlight=duty;self.generation=self.generation.wrapping_add(1);}}
@@ -148,12 +150,12 @@ impl BoardModel for WaveshareLcd {
         }floating
     }
     fn attach_spi_sd_card(&mut self,image:Box<dyn SdStore>,config:SdCardConfig)->Result<String,String>{if self.w.sd.is_none(){return Err("this exact board has no TF socket".into());}let sd=SpiSdCard::new(image,config)?;let description=sd.describe();self.sd=Some(sd);Ok(description)}
-    fn rmt_frame(&mut self,pin:u8,bits:&[bool]){if pin==if self.variant==LcdVariant::Lcd13{8}else{14}{if let Some(led)=&mut self.led{led.from_bits(bits);}}}
+    fn rmt_frame(&mut self,pin:u8,bits:&[bool]){if pin==match self.variant{LcdVariant::Lcd13|LcdVariant::Lcd147=>8,LcdVariant::Lcd19=>3,_=>14}{if let Some(led)=&mut self.led{led.from_bits(bits);}}}
     fn leds(&self)->Option<(&[[u8;3]],u64)>{self.led.as_ref().map(|led|(led.leds.as_slice(),led.updates))}
     fn display(&self)->Option<(u32,u32,Vec<u16>,u64)>{
         let p=&self.panel;let visible=self.power_ok&&self.reset_high&&self.backlight!=0&&p.on&&!p.sleeping;let mut pixels=Vec::with_capacity(self.w.width*self.w.height);
-        for y in 0..self.w.height{for x in 0..self.w.width{let mut value=if visible{p.gram[(y+self.w.gap.1)*p.cols+if self.variant==LcdVariant::Lcd13{239-x}else{x+self.w.gap.0}]}else{0};
-            if p.madctl&8!=0{value=(value&0x7e0)|((value&0xf800)>>11)|((value&31)<<11);}
+        for y in 0..self.w.height{for x in 0..self.w.width{let mut value=if visible{p.gram[(y+self.w.gap.1)*p.cols+if matches!(self.variant,LcdVariant::Lcd13|LcdVariant::Lcd147){239-x-self.w.gap.0}else{x+self.w.gap.0}]}else{0};
+            if (p.madctl&8!=0)^(self.variant==LcdVariant::Lcd147){value=(value&0x7e0)|((value&0xf800)>>11)|((value&31)<<11);}
             // Linear virtual brightness only; LCD polarity/gamma are not calibrated.
             let d=u32::from(self.backlight);value=(((u32::from(value>>11)*d/255)<<11)|((u32::from((value>>5)&63)*d/255)<<5)|(u32::from(value&31)*d/255))as u16;pixels.push(value);}}
         Some((self.w.width as u32,self.w.height as u32,pixels,self.generation))
@@ -222,7 +224,7 @@ mod tests {
         ]{
             let mut b=WaveshareLcd::new(variant);let devices=b.i2c_devices();assert_eq!(devices.iter().map(|(_,a,_)|*a).collect::<Vec<_>>(),addresses);
             assert!(devices.iter().all(|(_,_,d)|d.pins()==Some(b.w.i2c)));assert_eq!(b.named_pin("boot"),Some(9));assert_eq!((b.w.width,b.w.height),size);assert_eq!(b.w.sd.is_some(),sd);
-            assert_eq!(b.led.is_some(),variant==LcdVariant::Lcd085,"do not invent IMU or LED parts from copied example files");
+            assert_eq!(b.led.is_some(),matches!(variant,LcdVariant::Lcd085|LcdVariant::Lcd19),"do not invent IMU or LED parts from copied example files");
         }
     }
     #[test]
@@ -258,5 +260,18 @@ mod tests {
         assert!(b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),SdCardConfig::default()).is_err());
         assert_eq!(LcdVariant::Lcd169.flash_mb(),16);
         assert_eq!(WaveshareLcd::new(LcdVariant::Touch169).named_pin("power"),Some(18));
+    }
+    #[test]
+    fn waveshare_lcd147_uses_original_rgb565_byte_order_physical_sd_and_rgb_pins(){
+        use esp_periph::sdmmc::card::MemStore;
+        let mut b=WaveshareLcd::new(LcdVariant::Lcd147);assert!(b.i2c_devices().is_empty());assert_eq!(LcdVariant::Lcd147.flash_mb(),4);
+        let(mut g,mut m)=activate(&mut b);command(&mut b,&mut g,&mut m,0x11,&[]);command(&mut b,&mut g,&mut m,0x29,&[]);command(&mut b,&mut g,&mut m,0x3a,&[0x55]);command(&mut b,&mut g,&mut m,0x36,&[0x48]);command(&mut b,&mut g,&mut m,0xb0,&[0,0xe8]);command(&mut b,&mut g,&mut m,0x2a,&[0,34,0,34]);command(&mut b,&mut g,&mut m,0x2b,&[0,0,0,0]);command(&mut b,&mut g,&mut m,0x2c,&[0,0xf8]);assert_eq!(b.display().unwrap().2[0],0xf800);
+        b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),SdCardConfig::default()).unwrap();
+        let p=SpiQspiPins{sclk:1<<7,data:[1<<6,0,0,0],input:[None,Some(5),None,None],data_width:1,read_width:1,full_duplex:true,..Default::default()};b.spi_transfer_qspi_pins(2,SpiQspiPins{data_bits:80,read_bits:80,..p},&[255;10],10);
+        let card=SpiQspiPins{cs:1<<4,software_cs:1<<4,data_bits:48,read_bits:48,..p};b.spi_transfer_qspi_pins(2,card,&[0x40,0,0,0,0,0x95],6);let rx=b.spi_transfer_qspi_pins(2,SpiQspiPins{data_bits:64,read_bits:64,..card},&[255;8],8);assert!(rx.contains(&1));
+        let wrong=b.spi_transfer_qspi_pins(2,SpiQspiPins{input:[None,Some(6),None,None],data_bits:64,read_bits:64,..card},&[255;8],8);assert!(wrong.iter().all(|v|*v==255));
+        let before=b.panel.pixels_written;b.spi_transfer_qspi_pins(2,SpiQspiPins{cs:(1<<4)|(1<<14),..card},&[0,31],0);assert_eq!(b.panel.pixels_written,before);
+        let bits=[0x12u8,0x34,0x56].into_iter().flat_map(|byte|(0..8).rev().map(move|i|byte&(1<<i)!=0)).collect::<Vec<_>>();b.rmt_frame(7,&bits);assert_eq!(b.leds().unwrap().1,0);b.rmt_frame(8,&bits);assert_eq!(b.leds().unwrap().0,[[0x34,0x12,0x56]]);
+        let mut plain=WaveshareLcd::new(LcdVariant::Lcd19);plain.rmt_frame(8,&bits);assert_eq!(plain.leds().unwrap().1,0);plain.rmt_frame(3,&bits);assert_eq!(plain.leds().unwrap().1,1);assert!(WaveshareLcd::new(LcdVariant::Touch19).leds().is_none());
     }
 }

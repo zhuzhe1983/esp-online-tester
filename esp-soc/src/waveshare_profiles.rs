@@ -2,6 +2,7 @@
 //! No aliases, hardware-version inference, or full-device compatibility claim.
 pub fn memory_mib(board: &str) -> Option<(usize, usize)> {
     match board {
+        "waveshare-c3-lcd071" => Some((4, 0)),
         "waveshare-c3-lcd147" => Some((4, 0)),
         "waveshare-c5-lcd147" => Some((4, 0)),
         "waveshare-c5-lcd273" => Some((32, 8)),
@@ -19,6 +20,7 @@ pub fn memory_mib(board: &str) -> Option<(usize, usize)> {
         "waveshare-c6-lcd085" => Some((8, 0)),
         "waveshare-c6-lcd128" => Some((16, 0)),
         "waveshare-c6-lcd13" => Some((4, 0)),
+        "waveshare-c6-lcd147" => Some((4, 0)),
         "waveshare-c6-lcd154" => Some((16, 0)),
         "waveshare-c6-lcd169" => Some((16, 0)),
         "waveshare-c6-lcd19" => Some((8, 0)),
@@ -37,6 +39,9 @@ pub fn memory_mib(board: &str) -> Option<(usize, usize)> {
         "waveshare-c6-touch-lcd183" => Some((16, 0)),
         "waveshare-c6-touch-lcd19" => Some((8, 0)),
         "waveshare-c6-touch28" => Some((16, 0)),
+        "waveshare-c6-zero" => Some((8, 0)),
+        "waveshare-c6-zero-b" => Some((8, 0)),
+        "waveshare-c6-zero-fh4" => Some((4, 0)),
         "waveshare-epaper-esp32-driver-v3" => Some((4, 0)),
         "waveshare-esp32-devkit-wroom-32e-n4" => Some((4, 0)),
         "waveshare-esp32-devkit-wroom-32ue-n16" => Some((16, 0)),

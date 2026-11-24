@@ -83,12 +83,12 @@ impl SocBus {
         }
         // Espressif esptool d7f1adf: QFN32 pkg1 with FLASH_CAP2 is C6FH8.
         // Vendor identity of the embedded die is not established by the schematic.
-        if crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==8) {
+        if crate::board::waveshare_dev::DevVariant::from_name(self.board.name()).and_then(|v|v.integrated_flash_mb())==Some(8)||crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==8) {
             let identity=self.periph.efuse.read(0x50);self.periph.efuse.write(0x50,(identity & !(7<<24))|(1<<24));
             let flash=self.periph.efuse.read(0x54);self.periph.efuse.write(0x54,(flash & !0xe7)|2);
         }
         // C6FH4 QFN32 with embedded4MiB (LCD1.3); preserve unknown die vendor.
-        if crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==4) {
+        if crate::board::waveshare_dev::DevVariant::from_name(self.board.name()).and_then(|v|v.integrated_flash_mb())==Some(4)||crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==4) {
             let identity=self.periph.efuse.read(0x50);self.periph.efuse.write(0x50,(identity & !(7<<24))|(1<<24));
             let flash=self.periph.efuse.read(0x54);self.periph.efuse.write(0x54,(flash & !0xe7)|1);
         }

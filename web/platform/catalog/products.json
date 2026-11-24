@@ -43766,6 +43766,246 @@
       }
     },
     {
+      "id": "waveshare-esp32-c6-lcd-1-9",
+      "name": "Waveshare ESP32-C6-LCD-1.9",
+      "manufacturer": "Waveshare",
+      "sku": "30937",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+      "summary": "1.9 英寸 170×320 ST7789V2；8 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-lcd-1-9.json",
+      "family": {
+        "id": "esp32-c6-lcd-1-9",
+        "name": "Waveshare ESP32-C6-LCD-1.9"
+      },
+      "runtime": {
+        "board": "waveshare-c6-lcd19",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 170,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ST7789V2",
+        "bus": "SPI2",
+        "diagonalInches": 1.9,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 5
+            },
+            {
+              "name": "MOSI",
+              "gpio": 4
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "CS",
+              "gpio": 20
+            }
+          ],
+          "notes": "Exact shared SPI physical routes; original image with64MiB FAT32 card observed in native evidence."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-lcd-1.9.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware",
+          "title": "firmware/ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：精确esp32c6数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+        "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+        "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+        "原厂完整镜像5秒0异常；有/无TF均停在LCD创建后，0RAMWR和单色黑屏，不构成整机通过。",
+        "64MiB FAT32插卡实际17命令/3读块；无触摸SKU不存在CST816，未虚构触摸响应以推进固件。",
+        "Exact current firmware README explicitly documents the factory recovery image and offset0. The same unmodified source image attempts CST816 discovery; no touch device is invented for non-touch SKU30937.",
+        "Backlight GPIO15 is low-active; TFT source window is X35/Y0. Non-touch SKU has GPIO3 RGB LED, while touch SKU does not.",
+        "Official C6 mechanical downloads contain S3-named native STEP files. All native components and source dimensions are preserved, but C6 electrical-layout/revision identity remains unverified.",
+        "With and without64MiB TF card: non-touch original image reaches LCD creation but has noRAMWR at5s; touch image renders6 RAMWR then reaches originalBLE encryption assertion. Full application acceptance is not claimed."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-lcd-1-9/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-c6-lcd-19-factory"
+    },
+    {
+      "id": "waveshare-esp32-c6-touch-lcd-1-9",
+      "name": "Waveshare ESP32-C6-Touch-LCD-1.9",
+      "manufacturer": "Waveshare",
+      "sku": "30941",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+      "summary": "1.9 英寸 170×320 ST7789V2；8 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-touch-lcd-1-9.json",
+      "family": {
+        "id": "esp32-c6-lcd-1-9",
+        "name": "Waveshare ESP32-C6-LCD-1.9"
+      },
+      "runtime": {
+        "board": "waveshare-c6-touch-lcd19",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": true,
+        "status": "partial"
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 170,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ST7789V2",
+        "bus": "SPI2",
+        "diagonalInches": 1.9,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 5
+            },
+            {
+              "name": "MOSI",
+              "gpio": 4
+            },
+            {
+              "name": "MISO",
+              "gpio": 19
+            },
+            {
+              "name": "CS",
+              "gpio": 20
+            }
+          ],
+          "notes": "Exact shared SPI physical routes; original image with64MiB FAT32 card observed in native evidence."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-lcd-1.9.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware",
+          "title": "firmware/ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：精确esp32c6数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+        "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+        "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+        "原厂完整镜像有TF时1.089秒进入BLEencrypt断言并复位；6RAMWR/163200像素，最终单色，不构成整机通过。",
+        "64MiB FAT32实际17命令/3读块；无线异常和QMI日志保留。",
+        "Exact current firmware README explicitly documents the factory recovery image and offset0. The same unmodified source image attempts CST816 discovery; no touch device is invented for non-touch SKU30937.",
+        "Backlight GPIO15 is low-active; TFT source window is X35/Y0. Non-touch SKU has GPIO3 RGB LED, while touch SKU does not.",
+        "Official C6 mechanical downloads contain S3-named native STEP files. All native components and source dimensions are preserved, but C6 electrical-layout/revision identity remains unverified.",
+        "With and without64MiB TF card: non-touch original image reaches LCD creation but has noRAMWR at5s; touch image renders6 RAMWR then reaches originalBLE encryption assertion. Full application acceptance is not claimed."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-touch-lcd-1-9/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-c6-lcd-19-factory"
+    },
+    {
       "id": "waveshare-esp32-c6-touch-lcd-1-69",
       "name": "Waveshare ESP32-C6-Touch-LCD-1.69",
       "manufacturer": "Waveshare",
@@ -75754,6 +75994,894 @@
         "url": "./assets/waveshare-epaper-esp32-driver-v3-mechanical/model.json",
         "status": "partial",
         "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c3-lcd-0-71",
+      "name": "Waveshare ESP32-C3-LCD-0.71",
+      "manufacturer": "Waveshare",
+      "sku": "29327",
+      "chip": "esp32c3",
+      "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+      "summary": "0.71 英寸 160×160 GC9D01；4 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c3-lcd-0-71.json",
+      "family": {
+        "id": "esp32-c3-lcd-0-71",
+        "name": "Waveshare ESP32-C3-LCD-0.71"
+      },
+      "runtime": {
+        "board": "waveshare-c3-lcd071",
+        "flashMb": 4,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 160,
+        "height": 160,
+        "type": "TFT LCD",
+        "controller": "GC9D01",
+        "bus": "SPI2",
+        "diagonalInches": 0.71,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C3-LCD-0.71",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C3-LCD-0.71/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c3-lcd-0.71.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware",
+          "title": "archive-members/ESP32-C3-LCD-0.71-Demo/Firmware/ESP32-C3-LCD-0.71-factory.bin",
+          "url": "https://files.waveshare.com/wiki/ESP32-C3-LCD-0.71/ESP32-C3-LCD-0.71-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：精确esp32c3数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+        "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+        "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+        "原厂完整示例5秒0CPU异常，901RAMWR/14752768像素/1623色；眼球图像为窄条快照，完整可视帧仍未验收。",
+        "真实C3 ROM和4MiB芯片路径，无TF/触摸/IMU/RGB。",
+        "Exact manufacturer TFT_eSPI sources define GC9D01 MAD_BGR=0 and MAD_RGB=8; this source-specific DCS565 subset does not borrow ST7789 identity or private gamma behavior.",
+        "Original complete image is named factory.bin, but retained prose does not explicitly establish shipping/recovery purpose. It remains an official example trial.",
+        "At5s original image produced901 RAMWR and14752768 pixels/1623 framebuffer colors without CPU exception. Eye output appears as a narrow strip in this capture; full optical/frame acceptance remains unresolved.",
+        "Native29-component exact board CAD retains18-mm active circular face. Protective-case SKU29512 has no retained case solid/dimensions and explicitly previews the bare assembly inside an UNKNOWN case.",
+        "Native29-component assembly omits several rear IC/packages visible in the current official photograph. Missing source geometry is not filled in or represented as a complete production PCB layout."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c3-lcd-0-71/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-c3-lcd-071-example"
+    },
+    {
+      "id": "waveshare-esp32-c3-lcd-0-71-case",
+      "name": "Waveshare ESP32-C3-LCD-0.71 with protective case",
+      "manufacturer": "Waveshare",
+      "sku": "29512",
+      "chip": "esp32c3",
+      "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+      "summary": "0.71 英寸 160×160 GC9D01；4 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c3-lcd-0-71-case.json",
+      "family": {
+        "id": "esp32-c3-lcd-0-71",
+        "name": "Waveshare ESP32-C3-LCD-0.71"
+      },
+      "runtime": {
+        "board": "waveshare-c3-lcd071",
+        "flashMb": 4,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 160,
+        "height": 160,
+        "type": "TFT LCD",
+        "controller": "GC9D01",
+        "bus": "SPI2",
+        "diagonalInches": 0.71,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C3-LCD-0.71",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C3-LCD-0.71/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c3-lcd-0.71.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware",
+          "title": "archive-members/ESP32-C3-LCD-0.71-Demo/Firmware/ESP32-C3-LCD-0.71-factory.bin",
+          "url": "https://files.waveshare.com/wiki/ESP32-C3-LCD-0.71/ESP32-C3-LCD-0.71-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：精确esp32c3数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+        "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+        "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+        "原厂完整示例5秒0CPU异常，901RAMWR/14752768像素/1623色；眼球图像为窄条快照，完整可视帧仍未验收。",
+        "真实C3 ROM和4MiB芯片路径，无TF/触摸/IMU/RGB。",
+        "Exact manufacturer TFT_eSPI sources define GC9D01 MAD_BGR=0 and MAD_RGB=8; this source-specific DCS565 subset does not borrow ST7789 identity or private gamma behavior.",
+        "Original complete image is named factory.bin, but retained prose does not explicitly establish shipping/recovery purpose. It remains an official example trial.",
+        "At5s original image produced901 RAMWR and14752768 pixels/1623 framebuffer colors without CPU exception. Eye output appears as a narrow strip in this capture; full optical/frame acceptance remains unresolved.",
+        "Native29-component exact board CAD retains18-mm active circular face. Protective-case SKU29512 has no retained case solid/dimensions and explicitly previews the bare assembly inside an UNKNOWN case.",
+        "Native29-component assembly omits several rear IC/packages visible in the current official photograph. Missing source geometry is not filled in or represented as a complete production PCB layout."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c3-lcd-0-71-case/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-c3-lcd-071-example"
+    },
+    {
+      "id": "waveshare-esp32-c6-lcd-1-47",
+      "name": "Waveshare ESP32-C6-LCD-1.47",
+      "manufacturer": "Waveshare",
+      "sku": "28563",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+      "summary": "1.47 英寸 172×320 ST7789；4 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-lcd-1-47.json",
+      "family": {
+        "id": "esp32-c6-lcd-1-47",
+        "name": "Waveshare ESP32-C6-LCD-1.47"
+      },
+      "runtime": {
+        "board": "waveshare-c6-lcd147",
+        "flashMb": 4,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ST7789",
+        "bus": "SPI2",
+        "diagonalInches": 1.47,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 7
+            },
+            {
+              "name": "MOSI",
+              "gpio": 6
+            },
+            {
+              "name": "MISO",
+              "gpio": 5
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
+          "notes": "Exact shared SPI physical routes; original image with64MiB FAT32 card observed in native evidence."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.47/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-lcd-1.47.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware",
+          "title": "archive-members/Firmware/ESP32-C6-LCD-1.47-Test.bin",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.47/ESP32-C6-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：精确esp32c6数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+        "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+        "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+        "原厂完整4MiB示例插64MiB FAT32卡后报告SD初始化成功，16命令/4读块。",
+        "原程序其后1.082秒BLEencrypt断言复位，0RAMWR、最终黑屏；原始程序未修改。",
+        "Canonical LCD147 board now uses phase-checked physical GPIO routing, source4MiB capacity and exact shared SPI TF pins; legacy bring-up helper is preserved without routing public products to it.",
+        "Official Test.bin is the complete4MiB example image. No retained prose explicitly establishes shipping-recovery purpose; source/example role is retained.",
+        "With64MiB FAT32 card, original image reports successful SD initialization and4 read blocks, then originalBLE encryption assertion before anyRAMWR. A black final frame is retained, not substituted.",
+        "All184 native components and17.39×32.35-mm active face are preserved. M headers use source9-pin/pitch geometry plus explicit unmeasured body/pin estimates."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-lcd-1-47/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-c6-lcd-147-example"
+    },
+    {
+      "id": "waveshare-esp32-c6-lcd-1-47-m",
+      "name": "Waveshare ESP32-C6-LCD-1.47-M",
+      "manufacturer": "Waveshare",
+      "sku": "30381",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+      "summary": "1.47 英寸 172×320 ST7789；4 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-lcd-1-47-m.json",
+      "family": {
+        "id": "esp32-c6-lcd-1-47",
+        "name": "Waveshare ESP32-C6-LCD-1.47"
+      },
+      "runtime": {
+        "board": "waveshare-c6-lcd147",
+        "flashMb": 4,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "ST7789",
+        "bus": "SPI2",
+        "diagonalInches": 1.47,
+        "touch": false
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 7
+            },
+            {
+              "name": "MOSI",
+              "gpio": 6
+            },
+            {
+              "name": "MISO",
+              "gpio": 5
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
+          "notes": "Exact shared SPI physical routes; original image with64MiB FAT32 card observed in native evidence."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.47/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-lcd-1.47.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware",
+          "title": "archive-members/Firmware/ESP32-C6-LCD-1.47-Test.bin",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.47/ESP32-C6-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：精确esp32c6数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+        "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+        "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+        "原厂完整4MiB示例插64MiB FAT32卡后报告SD初始化成功，16命令/4读块。",
+        "原程序其后1.082秒BLEencrypt断言复位，0RAMWR、最终黑屏；原始程序未修改。",
+        "Canonical LCD147 board now uses phase-checked physical GPIO routing, source4MiB capacity and exact shared SPI TF pins; legacy bring-up helper is preserved without routing public products to it.",
+        "Official Test.bin is the complete4MiB example image. No retained prose explicitly establishes shipping-recovery purpose; source/example role is retained.",
+        "With64MiB FAT32 card, original image reports successful SD initialization and4 read blocks, then originalBLE encryption assertion before anyRAMWR. A black final frame is retained, not substituted.",
+        "All184 native components and17.39×32.35-mm active face are preserved. M headers use source9-pin/pitch geometry plus explicit unmeasured body/pin estimates."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-lcd-1-47-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-c6-lcd-147-example"
+    },
+    {
+      "id": "waveshare-esp32-c6-zero-b",
+      "name": "Waveshare ESP32-C6-Zero-B",
+      "manufacturer": "Waveshare",
+      "sku": "34981",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+      "summary": "无板载显示屏；8 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-zero-b.json",
+      "family": {
+        "id": "esp32-c6-zero-b",
+        "name": "Waveshare ESP32-C6-Zero-B"
+      },
+      "runtime": {
+        "board": "waveshare-c6-zero-b",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero-B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero-B/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero-b.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：精确esp32c6数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+        "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+        "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+        "精确GPIO/BOOT/RGB/RF控制数字子集已源驱动测试；官方BLEAssist包只有AndroidAPK，未提供虚构默认固件。",
+        "Current8MiB FH8 overview and exact schematic agree. GPIO7 digital switch output is modelled only as a real routed digital control; no RF link performance is inferred.",
+        "Official linked ESP32-C6_TO_BLEAssist.zip was fetched and enumerated: one BLEAssist.apk Android application, not an ESP image. No firmware default is fabricated.",
+        "No matching solid assembly in retained resource scope. Published18×25-mm XY and header pitch are preserved; USB envelope is an explicit photo estimate and PCB internals visibly UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-zero-b/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c6-zero-b-m",
+      "name": "Waveshare ESP32-C6-Zero-B-M",
+      "manufacturer": "Waveshare",
+      "sku": "34919",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+      "summary": "无板载显示屏；8 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-zero-b-m.json",
+      "family": {
+        "id": "esp32-c6-zero-b",
+        "name": "Waveshare ESP32-C6-Zero-B"
+      },
+      "runtime": {
+        "board": "waveshare-c6-zero-b",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero-B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero-B/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero-b.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：精确esp32c6数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+        "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+        "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+        "精确GPIO/BOOT/RGB/RF控制数字子集已源驱动测试；官方BLEAssist包只有AndroidAPK，未提供虚构默认固件。",
+        "Current8MiB FH8 overview and exact schematic agree. GPIO7 digital switch output is modelled only as a real routed digital control; no RF link performance is inferred.",
+        "Official linked ESP32-C6_TO_BLEAssist.zip was fetched and enumerated: one BLEAssist.apk Android application, not an ESP image. No firmware default is fabricated.",
+        "No matching solid assembly in retained resource scope. Published18×25-mm XY and header pitch are preserved; USB envelope is an explicit photo estimate and PCB internals visibly UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-zero-b-m/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c6-zero",
+      "name": "Waveshare ESP32-C6-Zero",
+      "manufacturer": "Waveshare",
+      "sku": "27035",
+      "chip": "esp32c6",
+      "hardwareRevision": "current official overview: ESP32-C6FH8/8MiB; sale revision unspecified",
+      "summary": "无板载显示屏；8 MiB Flash，无PSRAM；BOOT GPIO9、RGB GPIO8。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-zero.json",
+      "family": {
+        "id": "esp32-c6-zero",
+        "name": "Waveshare ESP32-C6-Zero"
+      },
+      "runtime": {
+        "board": "waveshare-c6-zero",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+        "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+        "Current official overview explicitly statesESP32-C6FH8 and8MiB. The retained official schematic explicitly statesESP32-C6FH4 and4MiB. Both source-backed capacity profiles are exposed; there is no proven V1/V2 sale designation or release date.",
+        "The two exact sale SKUs27035/26976 are counted once each. Four product profiles distinguish two documented capacities and two header options, without inventing extra SKUs.",
+        "All original native116/118 CAD components remain unscaled. Exact electrical revision/CAD match is unverified; native package geometry does not establish embedded flash capacity.",
+        "Fixed official Basic Kit repository has noBIN file; linkedBLEAssist is an Android APK. No full ESP image/default has been fabricated. Digital native regressions are not official application acceptance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Current catalog Position is only a listing-order proxy; no proven hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-zero/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c6-zero-m",
+      "name": "Waveshare ESP32-C6-Zero-M",
+      "manufacturer": "Waveshare",
+      "sku": "26976",
+      "chip": "esp32c6",
+      "hardwareRevision": "current official overview: ESP32-C6FH8/8MiB; sale revision unspecified",
+      "summary": "无板载显示屏；8 MiB Flash，无PSRAM；BOOT GPIO9、RGB GPIO8。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-zero-m.json",
+      "family": {
+        "id": "esp32-c6-zero",
+        "name": "Waveshare ESP32-C6-Zero"
+      },
+      "runtime": {
+        "board": "waveshare-c6-zero",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+        "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+        "Current official overview explicitly statesESP32-C6FH8 and8MiB. The retained official schematic explicitly statesESP32-C6FH4 and4MiB. Both source-backed capacity profiles are exposed; there is no proven V1/V2 sale designation or release date.",
+        "The two exact sale SKUs27035/26976 are counted once each. Four product profiles distinguish two documented capacities and two header options, without inventing extra SKUs.",
+        "All original native116/118 CAD components remain unscaled. Exact electrical revision/CAD match is unverified; native package geometry does not establish embedded flash capacity.",
+        "Fixed official Basic Kit repository has noBIN file; linkedBLEAssist is an Android APK. No full ESP image/default has been fabricated. Digital native regressions are not official application acceptance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Current catalog Position is only a listing-order proxy; no proven hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-zero-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c6-zero-fh4",
+      "name": "Waveshare ESP32-C6-Zero · FH4原理图版本",
+      "manufacturer": "Waveshare",
+      "sku": "27035",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained official schematic: ESP32-C6FH4/4MiB; sale revision unspecified",
+      "summary": "无板载显示屏；4 MiB Flash，无PSRAM；BOOT GPIO9、RGB GPIO8。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-zero-fh4.json",
+      "family": {
+        "id": "esp32-c6-zero",
+        "name": "Waveshare ESP32-C6-Zero"
+      },
+      "runtime": {
+        "board": "waveshare-c6-zero-fh4",
+        "flashMb": 4,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+        "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+        "Current official overview explicitly statesESP32-C6FH8 and8MiB. The retained official schematic explicitly statesESP32-C6FH4 and4MiB. Both source-backed capacity profiles are exposed; there is no proven V1/V2 sale designation or release date.",
+        "The two exact sale SKUs27035/26976 are counted once each. Four product profiles distinguish two documented capacities and two header options, without inventing extra SKUs.",
+        "All original native116/118 CAD components remain unscaled. Exact electrical revision/CAD match is unverified; native package geometry does not establish embedded flash capacity.",
+        "Fixed official Basic Kit repository has noBIN file; linkedBLEAssist is an Android APK. No full ESP image/default has been fabricated. Digital native regressions are not official application acceptance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Current catalog Position is only a listing-order proxy; no proven hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-zero/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c6-zero-m-fh4",
+      "name": "Waveshare ESP32-C6-Zero-M · FH4原理图版本",
+      "manufacturer": "Waveshare",
+      "sku": "26976",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained official schematic: ESP32-C6FH4/4MiB; sale revision unspecified",
+      "summary": "无板载显示屏；4 MiB Flash，无PSRAM；BOOT GPIO9、RGB GPIO8。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-zero-m-fh4.json",
+      "family": {
+        "id": "esp32-c6-zero",
+        "name": "Waveshare ESP32-C6-Zero"
+      },
+      "runtime": {
+        "board": "waveshare-c6-zero-fh4",
+        "flashMb": 4,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+        "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+        "Current official overview explicitly statesESP32-C6FH8 and8MiB. The retained official schematic explicitly statesESP32-C6FH4 and4MiB. Both source-backed capacity profiles are exposed; there is no proven V1/V2 sale designation or release date.",
+        "The two exact sale SKUs27035/26976 are counted once each. Four product profiles distinguish two documented capacities and two header options, without inventing extra SKUs.",
+        "All original native116/118 CAD components remain unscaled. Exact electrical revision/CAD match is unverified; native package geometry does not establish embedded flash capacity.",
+        "Fixed official Basic Kit repository has noBIN file; linkedBLEAssist is an Android APK. No full ESP image/default has been fabricated. Digital native regressions are not official application acceptance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "Current catalog Position is only a listing-order proxy; no proven hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-zero-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
       }
     }
   ]

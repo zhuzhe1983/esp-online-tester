@@ -1,0 +1,101 @@
+"""Export exact fifth five listing groups without editing shared catalogues."""
+from pathlib import Path
+import argparse,datetime,gzip,hashlib,json,re
+
+ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('--sources',type=Path,required=True);args=ap.parse_args()
+R=args.sources;S=R/'c6-sources';ROOT=Path(__file__).resolve().parents[3];OUT=ROOT/'tools/waveshare-batches/c6'
+ARCH=ROOT/'docs/platform/research/waveshare-c6-fifth-five-sources';ARCH.mkdir(parents=True,exist_ok=True)
+EVID=ROOT/'docs/evidence/waveshare-c6-fifth-five-2026-11-23';EVID.mkdir(parents=True,exist_ok=True)
+NOW=datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def save(p,d):p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+def utc(s):return datetime.datetime.fromisoformat(s.replace('Z','+00:00')).astimezone(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00','Z')
+factories=json.loads((S/'factory-fifth-five-verified.json').read_text());save(EVID/'factory-image-verification.json',factories)
+stops=json.loads((EVID/'native-stop-summaries.json').read_text())
+ecos={n:json.loads((ROOT/'docs/platform/research/waveshare-shared-ecosystem-sources'/n).read_text())for n in ['xiaozhi-esp32-board-tree.json','uiflow-micropython-board-tree.json']}
+profiles=[
+ {'repo':'ESP32-C6-LCD-1.9','chip':'esp32c6','flash':8,'inch':1.9,'size':[170,320],'controller':'ST7789V2','role':'factory',
+  'spi':{'CLK':5,'MOSI':4,'CS':7,'DC':6,'RST':14,'BL':15,'BL_ACTIVE_LOW':True},'i2c':{'SDA':18,'SCL':8},'sd':{'CLK':5,'MOSI':4,'MISO':19,'CS':20},
+  'parts':['ESP32-C6FH8 integrated8MiB','QMI8658C@0x6b','TCA9554@0x20 external expansion','CST816@0x15 only touch option; polled, no invented MCU reset/IRQ','RGB GPIO3 only non-touch option','BOOT GPIO9; RESET CHIP_PU'],
+  'variants':[('30937','ESP32-C6-LCD-1.9','waveshare-c6-lcd19','waveshare-esp32-c6-lcd-1-9',False),('30941','ESP32-C6-Touch-LCD-1.9','waveshare-c6-touch-lcd19','waveshare-esp32-c6-touch-lcd-1-9',True)],
+  'conflicts':['Exact current firmware README explicitly documents the factory recovery image and offset0. The same unmodified source image attempts CST816 discovery; no touch device is invented for non-touch SKU30937.','Backlight GPIO15 is low-active; TFT source window is X35/Y0. Non-touch SKU has GPIO3 RGB LED, while touch SKU does not.','Official C6 mechanical downloads contain S3-named native STEP files. All native components and source dimensions are preserved, but C6 electrical-layout/revision identity remains unverified.','With and without64MiB TF card: non-touch original image reaches LCD creation but has noRAMWR at5s; touch image renders6 RAMWR then reaches originalBLE encryption assertion. Full application acceptance is not claimed.']},
+ {'repo':'ESP32-C3-LCD-0.71','chip':'esp32c3','flash':4,'inch':.71,'size':[160,160],'controller':'GC9D01','role':'example',
+  'spi':{'CLK':6,'MOSI':7,'CS':5,'DC':4,'RST':8,'BL':'fixed3V3/GND resistor'},'i2c':None,'sd':None,
+  'parts':['ESP32-C3FH4 integrated4MiB','GC9D01160×160 circularLCD','BOOT GPIO9; RESET CHIP_PU','GPIO1 battery divider and PL4054 charger are analogue, unmodelled','No touch, TF, IMU or RGB LED'],
+  'variants':[('29327','ESP32-C3-LCD-0.71','waveshare-c3-lcd071','waveshare-esp32-c3-lcd-0-71',False),('29512','ESP32-C3-LCD-0.71 with protective case','waveshare-c3-lcd071','waveshare-esp32-c3-lcd-0-71-case',False)],
+  'conflicts':['Exact manufacturer TFT_eSPI sources define GC9D01 MAD_BGR=0 and MAD_RGB=8; this source-specific DCS565 subset does not borrow ST7789 identity or private gamma behavior.','Original complete image is named factory.bin, but retained prose does not explicitly establish shipping/recovery purpose. It remains an official example trial.','At5s original image produced901 RAMWR and14752768 pixels/1623 framebuffer colors without CPU exception. Eye output appears as a narrow strip in this capture; full optical/frame acceptance remains unresolved.','Native29-component exact board CAD retains18-mm active circular face. Protective-case SKU29512 has no retained case solid/dimensions and explicitly previews the bare assembly inside an UNKNOWN case.']},
+ {'repo':'ESP32-C6-LCD-1.47','chip':'esp32c6','flash':4,'inch':1.47,'size':[172,320],'controller':'ST7789','role':'example',
+  'spi':{'CLK':7,'MOSI':6,'CS':14,'DC':15,'RST':21,'BL':22},'i2c':None,'sd':{'CLK':7,'MOSI':6,'MISO':5,'CS':4},
+  'parts':['ESP32-C6FH4 integrated4MiB','ST7789 GRAM240×320;172×320 active sourcewindow X34/Y0','Source BGR color order, mirrorX and RAMCTRL00E8','WS2812 GPIO8','BOOT GPIO9; RESET CHIP_PU','No touch, IMU or invented I2C devices'],
+  'variants':[('28563','ESP32-C6-LCD-1.47','waveshare-c6-lcd147','waveshare-esp32-c6-lcd-1-47',False),('30381','ESP32-C6-LCD-1.47-M','waveshare-c6-lcd147','waveshare-esp32-c6-lcd-1-47-m',False)],
+  'conflicts':['Canonical LCD147 board now uses phase-checked physical GPIO routing, source4MiB capacity and exact shared SPI TF pins; legacy bring-up helper is preserved without routing public products to it.','Official Test.bin is the complete4MiB example image. No retained prose explicitly establishes shipping-recovery purpose; source/example role is retained.','With64MiB FAT32 card, original image reports successful SD initialization and4 read blocks, then originalBLE encryption assertion before anyRAMWR. A black final frame is retained, not substituted.','All184 native components and17.39×32.35-mm active face are preserved. M headers use source9-pin/pitch geometry plus explicit unmeasured body/pin estimates.']},
+ {'repo':'ESP32-C6-Zero-B','chip':'esp32c6','flash':8,'size':None,'controller':None,'role':None,'spi':None,'i2c':None,'sd':None,
+  'parts':['ESP32-C6FH8 integrated8MiB','WS2812B-1010 GPIO8; sourceGPIO8/9 pullups','BOOT GPIO9; RESET CHIP_PU','GPIO7 RF switch digital control only','SY8301 regulator and RF analogue behavior unmodelled','No display, touch or TF'],
+  'variants':[('34981','ESP32-C6-Zero-B','waveshare-c6-zero-b','waveshare-esp32-c6-zero-b',False),('34919','ESP32-C6-Zero-B-M','waveshare-c6-zero-b','waveshare-esp32-c6-zero-b-m',False)],
+  'conflicts':['Current8MiB FH8 overview and exact schematic agree. GPIO7 digital switch output is modelled only as a real routed digital control; no RF link performance is inferred.','Official linked ESP32-C6_TO_BLEAssist.zip was fetched and enumerated: one BLEAssist.apk Android application, not an ESP image. No firmware default is fabricated.','No matching solid assembly in retained resource scope. Published18×25-mm XY and header pitch are preserved; USB envelope is an explicit photo estimate and PCB internals visibly UNKNOWN.']},
+ {'repo':'ESP32-H2-Zero','chip':'esp32h2','flash':4,'size':None,'controller':None,'role':'example','spi':None,'i2c':None,'sd':None,
+  'parts':['ESP32-H2FH4S integrated4MiB','RV32IMAC96MHz;320KiB SRAM;128KiB ROM','Bluetooth/IEEE802.15.4; no WiFi','WS2812 GPIO8','BOOT GPIO9; RESET CHIP_PU','No display, touch or TF'],
+  'variants':[('32261','ESP32-H2-Zero',None,'waveshare-esp32-h2-zero',False),('32260','ESP32-H2-Zero-M',None,'waveshare-esp32-h2-zero-m',False)],
+  'conflicts':['True esp32h2 identity and complete representative image chipID16 retained. No C6 board alias or C6 ROM is assigned.','Initial batch runtime is unavailable; this listing is source/model coverage, not a runtime-adapted completion. Independent H2 minimal SRAM/GPIO/UART work is tracked separately.','All18 official example images are hash-pinned references. Representative ESP-IDF blink merged image has valid bootloader/app checksums and partition MD5; this is layout verification, not execution.','Published18×23.5-mm XY and2.54-mm header pitch retained. No matching solid CAD in recorded scope; PCB layout/height remain UNKNOWN and the USB envelope explicitly estimated.']}
+]
+all_receipts=[]
+def retain(repo,f,rec):
+    b=f.read_bytes();assert len(b)==rec['bytes']and sha(b)==rec['sha256'];name=re.sub('[^a-zA-Z0-9._-]','_',str(f.relative_to(S)))
+    row={**rec,'repo':repo,'path':str(f.relative_to(S/repo/'files'))};row['url']=rec.get('url',rec.get('requestedUrl'));row['resolvedUrl']=rec.get('resolvedUrl',row['url']);row.pop('containerFile',None)
+    if f.suffix.lower()!='.bin':
+        data=gzip.compress(b,mtime=0);row.update(archive=name+'.gz',archiveSha256=sha(data));(ARCH/row['archive']).write_bytes(data)
+    all_receipts.append(row);return row
+
+for q in profiles:
+    listing=q['repo'].lower();base=q['variants'][0][3];store=json.loads((R/'products'/(listing+'.json')).read_text());plan=json.loads((ROOT/'web/platform/assets'/base/'model-plan.json').read_text());retained=[]
+    for p in sorted((S/q['repo']/'files').rglob('*.receipt.json')):
+        f=Path(str(p).removesuffix('.receipt.json'));low=str(f).lower()
+        if f.suffix.lower()in['.c','.cpp','.h','.ino','.yml','.csv','.md','.txt','.html','.pdf','.bin']and f.stat().st_size<20*1024*1024:
+            retained.append(retain(q['repo'],f,json.loads(p.read_text())))
+    electrical=[]
+    for r in retained:
+        if 'archive'not in r:continue
+        electrical.append({'id':'electrical-'+str(len(electrical)),'title':r['path'],'url':r['url'],'kind':'primary-electrical-source','status':'fetched','resolvedUrl':r['resolvedUrl'],'fetchedAt':utc(r['fetchedAt']),'bytes':r['bytes'],'sha256':r['sha256'],'archiveName':r['archive'],'notes':'Original source/member bytes retained at '+str(ARCH.relative_to(ROOT))+'/'+r['archive']+'. Container and member identities remain separate in the source manifest.'})
+    common=[]
+    for s in plan['sources']:
+        if s['id']=='product':continue
+        stamp=s.get('fetchedAt');v={'id':s['id'],'title':s['file'],'url':s['url'],'kind':'manufacturer-source','status':'fetched'if stamp else'linked','notes':'Retained at web/platform/assets/'+base+'/'+s['file']+('; explicitly derived inventory, not original HTTP bytes'if s.get('captureKind')else'')}
+        if stamp:v.update(resolvedUrl=s.get('resolvedUrl',s['url']),fetchedAt=utc(stamp),bytes=s['bytes'],sha256=s['sha256'],archiveName=s['file'])
+        common.append(v)
+    common.append({'id':'product','title':'Exact official SKU/options','url':store['url'],'kind':'manufacturer-product','status':'linked','notes':'Selected public fields are retained as explicitly derived SKU selection, not original storefront HTTP bytes.'})
+    common+=electrical
+    for key,e in ecos.items():common.append({'id':'xiaozhi-tree'if key.startswith('xiaozhi')else'uiflow-tree','title':e['repository']+' pinned board-tree investigation','url':e['url'],'kind':'upstream-source-tree','status':'linked','notes':'Shared original/derived source receipt: docs/platform/research/waveshare-shared-ecosystem-sources/'+key})
+    fw=next((f for f in factories if f['name']==q['repo']),None)
+    if fw:common.append({'id':'firmware','title':fw['path'],'url':fw['url'],'kind':'manufacturer-firmware','status':'fetched','resolvedUrl':fw['resolvedUrl'],'fetchedAt':utc(fw['fetchedAt']),'bytes':fw['bytes'],'sha256':fw['sha256'],'archiveName':Path(fw['path']).name,'notes':'Original complete image/member bytes hashed and layout checked; remote-only distribution. Source role and execution limits are explicit.'})
+    products=[];knowledge=[];caps={};compatible=[];fid='waveshare-'+listing.replace('esp32-','').replace('.','')+('-factory'if q['role']=='factory'else'-example')
+    for sku,name,board,model,touch in q['variants']:
+        pid=model;mp=json.loads((ROOT/'web/platform/assets'/model/'model-plan.json').read_text());runtime=board is not None
+        status='partial'if runtime else'unavailable';notes=stops.get(board,[])if board else['No H2 image executed. True chip16 source/layout only.']
+        controls=[{'id':'boot','name':'BOOT','type':'button','pin':9,'activeLow':True,'defaultKeyCode':'Space'}]
+        display=({'width':q['size'][0],'height':q['size'][1],'type':'TFT LCD','controller':q['controller'],'bus':'SPI2','diagonalInches':q['inch'],'touch':touch}if q['size']else None)
+        limits=[('部分适配：精确'+q['chip']+'数字板级接口；完整应用、无线、模拟电源及实物验收未完成。'if runtime else'运行时尚不可用：真实ESP32-H2，当前仅来源、型号、镜像布局和模型覆盖；不能计作可运行适配。'),'厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。','3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。']+notes+q['conflicts']
+        product={'id':pid,'name':'Waveshare '+name,'manufacturer':'Waveshare','sku':sku,'chip':q['chip'],'hardwareRevision':'retained schematic/CAD revision; sale revision unspecified','summary':(f"{q['inch']} 英寸 {q['size'][0]}×{q['size'][1]} {q['controller']}；"if display else'无板载显示屏；')+f"{q['flash']} MiB Flash，无PSRAM。",'knowledgeUrl':'./knowledge/'+pid+'.json','family':{'id':listing.replace('.','-'),'name':'Waveshare '+q['repo']},'runtime':{'board':board,'flashMb':q['flash'],'psramMb':0,'touch':touch,'status':status},'displayStatus':'known'if display else'none','display':display,'controls':controls,'interfaces':[],'sources':[{'id':s['id'],'title':s['title'],'url':s['url'],'checkedAt':'2026-11-23'}for s in common if s['id']in['overview','resources','product','firmware']],'limitations':limits,'chronology':{'date':None,'basis':'unknown','confidence':'unknown','sourceId':None,'sourceUrl':None,'notes':'Category Position ordering is only a current-listing proxy. Image/firmware timestamps do not establish hardware release date.'},'model':{'type':'manufacturer-cad','url':'./assets/'+model+'/model.json','status':'partial','provenance':'official-cad'if mp['method']=='manufacturer-cad'else'dimension-photo-reconstruction'}}
+        if board:caps[board]={'chip':q['chip'],'flashMb':q['flash'],'psramMb':0,'sdCard':q['sd']is not None,'boardButtons':[]}
+        if fw and runtime:product['defaultFirmwareId']=fid;compatible.append(pid)
+        if q['sd']:product['interfaces'].append({'id':'tf','name':'TF / microSD','type':'microSD','external':True,'pins':[{'name':k,'gpio':v}for k,v in q['sd'].items()],'notes':'Exact shared SPI physical routes; original image with64MiB FAT32 card observed in native evidence.'})
+        selection=next(v for v in store['variants']if v['sku']==sku);refs=['overview','resources']+[v['id']for v in electrical]
+        facts=[{'id':'hardware','label':'精确SKU、芯片、容量与接线','value':{'sku':sku,'options':dict(zip(store['optionLabels'],selection['attributes'])),'chip':q['chip'],'flashMiB':q['flash'],'psramMiB':0,'display':display,'spi':q['spi'],'i2c':q['i2c'],'sd':q['sd'],'components':q['parts'],'controls':controls},'basis':'official','sourceIds':refs},
+          {'id':'source-conflicts','label':'来源冲突和采用依据','value':q['conflicts'],'basis':'official','sourceIds':refs},
+          {'id':'model-scope','label':'机械模型范围','value':{'model':model,'method':mp['method'],'dimensions':mp['dimensions'],'limitations':mp['limitations']},'basis':'official','sourceIds':['dimension-photo','resources']+(['official-cad']if mp['method']=='manufacturer-cad'else[])},
+          {'id':'ecosystems','label':'原厂、小智与UIFlow调查','value':{'xiaozhiExactBoardPaths':[p for p in ecos['xiaozhi-esp32-board-tree.json']['waveshareBoardPaths']if '/'+listing+'/'in p],'xiaozhiBinaryAccepted':False,'uiflowExactWaveshareNamedPaths':[],'uiflowBinaryAccepted':False,'sourceScope':'Exact retained source trees/resources; source target is not firmware acceptance.','factoryCandidate':'verified original image below'if fw else'No complete ESP image found in retained official scope; BLEAssist is Android APK only.'},'basis':'official','sourceIds':['resources','xiaozhi-tree','uiflow-tree']}]
+        if fw:facts.append({'id':'firmware-layout','label':'原厂镜像字节与真实芯片布局','value':{'bytes':fw['bytes'],'sha256':fw['sha256'],'archiveMember':fw.get('archiveMember'),'containerSha256':fw.get('containerSha256'),'containerBytes':fw.get('containerByteLength'),'layout':fw['layout'],'role':q['role'],'publicTrialAssigned':runtime},'basis':'official','sourceIds':['firmware'],'notes':'Native outcome is independently recorded in docs/evidence/waveshare-c6-fifth-five-2026-11-23; this official source identity does not establish runtime success.'})
+        knowledge.append({'schemaVersion':'1','id':pid,'kind':'product','catalogId':pid,'title':product['name'],'summary':product['summary'],'summarySourceIds':refs,'updatedAt':NOW,'hardwareRevision':product['hardwareRevision'],'facts':facts,'revisions':[],'sources':common,'assets':[{'id':s['id'],'sourceId':s['id'],'role':'firmware-download'if s['id']=='firmware'else'source-document','url':s['url']}for s in common],'unknowns':[{'id':'release-date','label':'真实硬件发布日期','value':None,'basis':'unknown','sourceIds':['overview','product']},{'id':'full-acceptance','label':'完整应用和实物验收','value':None,'basis':'unknown','sourceIds':['resources'],'notes':'Native observations: '+'; '.join(notes)}],'collectionNotes':limits});products.append(product)
+    fws=[]
+    if fw:
+        fs={'url':fw['url'],'sha256':fw['sha256'],'bootMode':'rom'}
+        if fw.get('derivedExtraction'):fs['archive']={'format':'zip-bundle','entry':fw['archiveMember'],'sha256':fw['containerSha256']}
+        fws=[{'id':fid,'name':q['repo']+(' · 官方出厂镜像（验证中）'if q['role']=='factory'else' · 官方示例（验证中）'if compatible else' · 官方示例（仅参考，H2运行时未接入）'),'productIds':compatible or[p['id']for p in products],'version':Path(fw['path']).stem,'status':'trial'if compatible else'reference','source':fs if compatible else None,'role':q['role'],'publisher':'Waveshare','publisherGroup':'官方','simulationVerified':False,'hardwareValidated':False,'sources':[{'title':'Original exact manufacturer image/member','url':fw['url'],'checkedAt':'2026-11-23'}],'limitations':['原始完整镜像芯片、分区和校验已核对；原程序实际故障或未执行状态均保留。','未验证无线、完整应用、所有SKU及实物；H2参考镜像没有执行入口。']}]
+    assets=[]
+    for r in retained:
+        if not r['path'].lower().endswith('.bin'):continue
+        assets.append({'name':r['path'],'url':r['url'],'bytes':r.get('containerByteLength',r['bytes']),'sha256':r.get('containerSha256',r['sha256']),'format':'zip-bundle'if r.get('derivedExtraction')else'merged','archiveMember':r.get('archiveMember'),'memberBytes':r['bytes'],'memberSha256':r['sha256']})
+    watch={'id':fid+'-watch','name':q['repo']+' official sources','category':'factory'if q['role']=='factory'else'development','upstreamRepo':'manufacturer:Waveshare/'+q['repo'],'metadataProvider':'manual','metadataUrl':store['url'],'releaseUrl':fw['url']if fw else'https://www.waveshare.com/docs/'+q['repo']+'/Resources-And-Documents','version':Path(fw['path']).stem if fw else'no-complete-ESP-image-in-recorded-scope','checkedAt':NOW,'assets':assets,'compatibility':{'status':'reference-only','productIds':[p['id']for p in products],'simulationVerified':False,'hardwareValidated':False,'note':'Original source hashes and precise SKU identity retained. No source target, APK or H2 image is promoted to accepted execution.'},'storage':'remote-links-only','catalogTargets':[],'monitoringNote':'Monitor retained exact official resource pages and original image/member hashes. Firmware timestamps do not prove hardware release dates.'}
+    for record in knowledge:save(ROOT/'web/platform/knowledge'/(record['id']+'.json'),record)
+    save(OUT/(listing+'.json'),{'listingId':listing,'products':products,'firmwares':fws,'watchlist':[watch],'knowledge':knowledge,'boardCapabilities':caps,'sourceReceiptPaths':[str(ARCH.relative_to(ROOT))+'/manifest.json']+['web/platform/assets/'+v[3]+'/source-manifest.json'for v in q['variants']],'tests':['cargo test -p esp32c6 -p esp32c3 waveshare --lib','docs/evidence/waveshare-c6-fifth-five-2026-11-23/native-runs.json','docs/evidence/waveshare-c6-fifth-five-2026-11-23/with-sd/native-runs.json','docs/evidence/waveshare-c6-fifth-five-2026-11-23/model-loader-check.json'],'limitations':['Four listing groups have partial true C6/C3 runtimes; H2 group is explicitly unavailable and must not count as runtime-adapted.','Exact current official sources, all sale options, native model/source conflicts and original image failures are retained.']})
+save(ARCH/'manifest.json',{'schemaVersion':'1','createdAt':NOW,'scope':'Original primary source bytes retained as gzip; complete binaries remain remote-only. Archive container/member identities are distinct.','sources':all_receipts})
+print('5 listings;10 exact sale SKUs;10 products;5 C6/C3 boards;H2 runtime unavailable;',len(all_receipts),'source receipts')

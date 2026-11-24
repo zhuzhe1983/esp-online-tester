@@ -4,13 +4,14 @@
 //!
 //! - `WaveshareC6Lcd147` — the Waveshare ESP32-C6-LCD-1.47: an ST7789 172×320 panel on SPI2, a
 //!   WS2812 on GPIO 8 (RMT), a BOOT button on GPIO 9 and a TF card slot on the same SPI bus
-//!   (not modelled)
+//!   (phase-checked digital transport)
 //! - `XiaoEsp32C6` — the Seeed Studio XIAO ESP32-C6: a low-active user LED on GPIO 15, the BOOT
 //!   button on GPIO 9 and the RF switch on GPIO 3 and GPIO 14
 //! - `NoBoard` — a bare module: nothing on the pins (any ESP32-C6 firmware, console only)
 pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 
 pub mod waveshare_lcd147;
+pub mod waveshare_dev;
 pub mod waveshare_lcd_family;
 pub mod waveshare_touch28;
 pub mod waveshare_lcd273;
@@ -34,6 +35,7 @@ pub use xiao::XiaoEsp32C6;
 /// Board by name: `none` (a bare module), `waveshare-c6-lcd147` or `xiao-esp32c6`.
 pub fn make_board(name: &str) -> Option<Board> {
     if let Some(variant)=waveshare_lcd_family::LcdVariant::from_name(name) { return Some(Box::new(waveshare_lcd_family::WaveshareLcd::new(variant))); }
+    if let Some(variant)=waveshare_dev::DevVariant::from_name(name) { return Some(Box::new(waveshare_dev::WaveshareDev::new(variant))); }
     match name {
         "waveshare-c6-touch-amoled18" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch18V2))),
         "waveshare-c6-touch-amoled18-v1" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch18V1))),
@@ -54,7 +56,6 @@ pub fn make_board(name: &str) -> Option<Board> {
         "nesso-n1" | "m5stack-dk001" => Some(Box::new(nesso_n1::NessoN1::new())),
         "nanoc6" | "m5stack-c125" => Some(Box::new(nanoc6::NanoC6::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
-        "waveshare-c6-lcd147" | "c6-lcd147" | "lcd147" => Some(Box::new(WaveshareC6Lcd147::new())),
         "xiao-esp32c6" | "xiao-c6" | "xiao" => Some(Box::new(XiaoEsp32C6::new())),
         _ => None,
     }

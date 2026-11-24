@@ -1,0 +1,2082 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-c6-lcd-1-9",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-c6-lcd-1-9",
+  "title": "Waveshare ESP32-C6-LCD-1.9",
+  "summary": "1.9 英寸 170×320 ST7789V2；8 MiB Flash，无PSRAM。",
+  "summarySourceIds": [
+    "overview",
+    "resources",
+    "electrical-0",
+    "electrical-1",
+    "electrical-2",
+    "electrical-3",
+    "electrical-4",
+    "electrical-5",
+    "electrical-6",
+    "electrical-7",
+    "electrical-8",
+    "electrical-9",
+    "electrical-10",
+    "electrical-11",
+    "electrical-12",
+    "electrical-13",
+    "electrical-14",
+    "electrical-15",
+    "electrical-16",
+    "electrical-17",
+    "electrical-18",
+    "electrical-19",
+    "electrical-20",
+    "electrical-21",
+    "electrical-22",
+    "electrical-23",
+    "electrical-24",
+    "electrical-25",
+    "electrical-26",
+    "electrical-27",
+    "electrical-28",
+    "electrical-29",
+    "electrical-30",
+    "electrical-31",
+    "electrical-32",
+    "electrical-33",
+    "electrical-34",
+    "electrical-35",
+    "electrical-36",
+    "electrical-37",
+    "electrical-38",
+    "electrical-39",
+    "electrical-40",
+    "electrical-41",
+    "electrical-42",
+    "electrical-43",
+    "electrical-44",
+    "electrical-45",
+    "electrical-46",
+    "electrical-47",
+    "electrical-48",
+    "electrical-49",
+    "electrical-50",
+    "electrical-51",
+    "electrical-52",
+    "electrical-53",
+    "electrical-54",
+    "electrical-55",
+    "electrical-56",
+    "electrical-57",
+    "electrical-58",
+    "electrical-59",
+    "electrical-60",
+    "electrical-61",
+    "electrical-62",
+    "electrical-63",
+    "electrical-64",
+    "electrical-65",
+    "electrical-66",
+    "electrical-67",
+    "electrical-68",
+    "electrical-69",
+    "electrical-70"
+  ],
+  "updatedAt": "2026-11-23T20:30:09Z",
+  "hardwareRevision": "retained schematic/CAD revision; sale revision unspecified",
+  "facts": [
+    {
+      "id": "hardware",
+      "label": "精确SKU、芯片、容量与接线",
+      "value": {
+        "sku": "30937",
+        "options": {
+          "Version Options": "Without Touch Function"
+        },
+        "chip": "esp32c6",
+        "flashMiB": 8,
+        "psramMiB": 0,
+        "display": {
+          "width": 170,
+          "height": 320,
+          "type": "TFT LCD",
+          "controller": "ST7789V2",
+          "bus": "SPI2",
+          "diagonalInches": 1.9,
+          "touch": false
+        },
+        "spi": {
+          "CLK": 5,
+          "MOSI": 4,
+          "CS": 7,
+          "DC": 6,
+          "RST": 14,
+          "BL": 15,
+          "BL_ACTIVE_LOW": true
+        },
+        "i2c": {
+          "SDA": 18,
+          "SCL": 8
+        },
+        "sd": {
+          "CLK": 5,
+          "MOSI": 4,
+          "MISO": 19,
+          "CS": 20
+        },
+        "components": [
+          "ESP32-C6FH8 integrated8MiB",
+          "QMI8658C@0x6b",
+          "TCA9554@0x20 external expansion",
+          "CST816@0x15 only touch option; polled, no invented MCU reset/IRQ",
+          "RGB GPIO3 only non-touch option",
+          "BOOT GPIO9; RESET CHIP_PU"
+        ],
+        "controls": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true,
+            "defaultKeyCode": "Space"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-17",
+        "electrical-18",
+        "electrical-19",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-24",
+        "electrical-25",
+        "electrical-26",
+        "electrical-27",
+        "electrical-28",
+        "electrical-29",
+        "electrical-30",
+        "electrical-31",
+        "electrical-32",
+        "electrical-33",
+        "electrical-34",
+        "electrical-35",
+        "electrical-36",
+        "electrical-37",
+        "electrical-38",
+        "electrical-39",
+        "electrical-40",
+        "electrical-41",
+        "electrical-42",
+        "electrical-43",
+        "electrical-44",
+        "electrical-45",
+        "electrical-46",
+        "electrical-47",
+        "electrical-48",
+        "electrical-49",
+        "electrical-50",
+        "electrical-51",
+        "electrical-52",
+        "electrical-53",
+        "electrical-54",
+        "electrical-55",
+        "electrical-56",
+        "electrical-57",
+        "electrical-58",
+        "electrical-59",
+        "electrical-60",
+        "electrical-61",
+        "electrical-62",
+        "electrical-63",
+        "electrical-64",
+        "electrical-65",
+        "electrical-66",
+        "electrical-67",
+        "electrical-68",
+        "electrical-69",
+        "electrical-70"
+      ]
+    },
+    {
+      "id": "source-conflicts",
+      "label": "来源冲突和采用依据",
+      "value": [
+        "Exact current firmware README explicitly documents the factory recovery image and offset0. The same unmodified source image attempts CST816 discovery; no touch device is invented for non-touch SKU30937.",
+        "Backlight GPIO15 is low-active; TFT source window is X35/Y0. Non-touch SKU has GPIO3 RGB LED, while touch SKU does not.",
+        "Official C6 mechanical downloads contain S3-named native STEP files. All native components and source dimensions are preserved, but C6 electrical-layout/revision identity remains unverified.",
+        "With and without64MiB TF card: non-touch original image reaches LCD creation but has noRAMWR at5s; touch image renders6 RAMWR then reaches originalBLE encryption assertion. Full application acceptance is not claimed."
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "resources",
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-17",
+        "electrical-18",
+        "electrical-19",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-24",
+        "electrical-25",
+        "electrical-26",
+        "electrical-27",
+        "electrical-28",
+        "electrical-29",
+        "electrical-30",
+        "electrical-31",
+        "electrical-32",
+        "electrical-33",
+        "electrical-34",
+        "electrical-35",
+        "electrical-36",
+        "electrical-37",
+        "electrical-38",
+        "electrical-39",
+        "electrical-40",
+        "electrical-41",
+        "electrical-42",
+        "electrical-43",
+        "electrical-44",
+        "electrical-45",
+        "electrical-46",
+        "electrical-47",
+        "electrical-48",
+        "electrical-49",
+        "electrical-50",
+        "electrical-51",
+        "electrical-52",
+        "electrical-53",
+        "electrical-54",
+        "electrical-55",
+        "electrical-56",
+        "electrical-57",
+        "electrical-58",
+        "electrical-59",
+        "electrical-60",
+        "electrical-61",
+        "electrical-62",
+        "electrical-63",
+        "electrical-64",
+        "electrical-65",
+        "electrical-66",
+        "electrical-67",
+        "electrical-68",
+        "electrical-69",
+        "electrical-70"
+      ]
+    },
+    {
+      "id": "model-scope",
+      "label": "机械模型范围",
+      "value": {
+        "model": "waveshare-esp32-c6-lcd-1-9",
+        "method": "manufacturer-cad",
+        "dimensions": {
+          "display": {
+            "activeAreaMm": [
+              22.7,
+              42.72
+            ],
+            "activeFace": {
+              "component": 276,
+              "face": 11,
+              "nativeBoundsMm": [
+                [
+                  -11.35,
+                  2.6,
+                  -21.36
+                ],
+                [
+                  11.35,
+                  2.6,
+                  21.36
+                ]
+              ]
+            },
+            "coverViewingWindowMm": [
+              22.7,
+              42.72
+            ],
+            "sourceIds": [
+              "official-cad",
+              "dimension-photo"
+            ]
+          },
+          "pcb": {
+            "nativeSizeMm": [
+              26.00864242,
+              1.1999976,
+              51.017284299999986
+            ],
+            "sourceIds": [
+              "official-cad"
+            ]
+          }
+        },
+        "limitations": [
+          "Every native source component is preserved at original millimetre scale. Native material colors are not calibrated hardware color measurements.",
+          "No physical fit, enclosure clearance, optical calibration, touch registration or browser WebGL acceptance is claimed.",
+          "Known workbench GPIO controls are independent of unverified physical actuator registration; no guessed3D click targets.",
+          "Official C6 resources link an archive whose native STEP filename identifies ESP32-S3. Published C6 dimensions match the retained major mechanical envelope; exact electrical revision/layout identity is UNVERIFIED. Do not infer C6 electronics from the S3-named assembly.",
+          "Native front backing total50 mm and cover49.72 mm are distinct source geometries. Published26×51 mm PCB is approximately matched; no replacement scale is fitted."
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-photo",
+        "resources",
+        "official-cad"
+      ]
+    },
+    {
+      "id": "ecosystems",
+      "label": "原厂、小智与UIFlow调查",
+      "value": {
+        "xiaozhiExactBoardPaths": [],
+        "xiaozhiBinaryAccepted": false,
+        "uiflowExactWaveshareNamedPaths": [],
+        "uiflowBinaryAccepted": false,
+        "sourceScope": "Exact retained source trees/resources; source target is not firmware acceptance.",
+        "factoryCandidate": "verified original image below"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "resources",
+        "xiaozhi-tree",
+        "uiflow-tree"
+      ]
+    },
+    {
+      "id": "firmware-layout",
+      "label": "原厂镜像字节与真实芯片布局",
+      "value": {
+        "bytes": 2445920,
+        "sha256": "05fb34541c5fbf5c38398561850e4f88a8f9999c3cc7db3fd919ae7f5997d690",
+        "archiveMember": null,
+        "containerSha256": null,
+        "containerBytes": null,
+        "layout": {
+          "loadOffset": 0,
+          "chipId": 13,
+          "bootloaderChecksumAndDigestValid": true,
+          "partitionTableOffset": 32768,
+          "partitionTableMd5Valid": true,
+          "partitions": [
+            {
+              "type": 1,
+              "subtype": 2,
+              "offset": 36864,
+              "bytes": 24576,
+              "label": "nvs",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 1,
+              "offset": 61440,
+              "bytes": 4096,
+              "label": "phy_init",
+              "flags": 0
+            },
+            {
+              "type": 0,
+              "subtype": 0,
+              "offset": 65536,
+              "bytes": 3145728,
+              "label": "factory",
+              "flags": 0,
+              "imageChipId": 13,
+              "imageChecksumsValid": true
+            }
+          ],
+          "fitsFlashMiB": 8,
+          "headerFlashSizeCode": 3
+        },
+        "role": "factory",
+        "publicTrialAssigned": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "firmware"
+      ],
+      "notes": "Native outcome is independently recorded in docs/evidence/waveshare-c6-fifth-five-2026-11-23; this official source identity does not establish runtime success."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/overview.html.gz",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-LCD-1.9",
+      "fetchedAt": "2026-11-23T16:32:01Z",
+      "bytes": 42290,
+      "sha256": "c25cd674cfc162ee30bb67e5f22c4b9a5271e8860d1633109f79af5f11d0708d",
+      "archiveName": "overview.html.gz"
+    },
+    {
+      "id": "resources",
+      "title": "resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/resources.html.gz",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-LCD-1.9/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T16:39:28Z",
+      "bytes": 34395,
+      "sha256": "e4a54f02b3c4405a15411e2dd2a18c2823bdf025bf35f4d2d37d4e3dfa4f94d8",
+      "archiveName": "resources.html.gz"
+    },
+    {
+      "id": "repository-tree",
+      "title": "repository-tree.json.gz",
+      "url": "https://github.com/waveshareteam/ESP32-C6-LCD-1.9/tree/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/repository-tree.json.gz; explicitly derived inventory, not original HTTP bytes",
+      "resolvedUrl": "https://github.com/waveshareteam/ESP32-C6-LCD-1.9/tree/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855",
+      "fetchedAt": "2026-11-23T16:46:37Z",
+      "bytes": 532004,
+      "sha256": "5f195611bdaf7689b54960435612845d80cfdbde4c469406cbfcb1728d7ff60e",
+      "archiveName": "repository-tree.json.gz"
+    },
+    {
+      "id": "dimension-photo",
+      "title": "dimension-photo.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-ProductSize-1-e0d2c6f6c2edae76b0413e984d267f12.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/dimension-photo.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-ProductSize-1-e0d2c6f6c2edae76b0413e984d267f12.webp",
+      "fetchedAt": "2026-11-23T19:18:38Z",
+      "bytes": 46068,
+      "sha256": "595e8e8e41ca3ccc73924dd401e8abf38f7d32d6b8237eb6d9a36588c7de9b66",
+      "archiveName": "dimension-photo.webp"
+    },
+    {
+      "id": "photo-0",
+      "title": "photo-0.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-DocHeader-1-322b3a4a473d2265280aa792c88b5d75.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/photo-0.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-DocHeader-1-322b3a4a473d2265280aa792c88b5d75.webp",
+      "fetchedAt": "2026-11-23T19:18:38Z",
+      "bytes": 66160,
+      "sha256": "c4738073225154c9d3a926b6c899a1ebfc19dbc4c46838d5d0b2f90b7865b2ae",
+      "archiveName": "photo-0.webp"
+    },
+    {
+      "id": "photo-1",
+      "title": "photo-1.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-DocHeader-2-46182a1671c8872ec509b786aaf97abf.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/photo-1.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-DocHeader-2-46182a1671c8872ec509b786aaf97abf.webp",
+      "fetchedAt": "2026-11-23T19:18:37Z",
+      "bytes": 43322,
+      "sha256": "74236618e5a9938fbb5c46a56ed9946562a17f1888b7b4c89c0db0d2a6b6bc01",
+      "archiveName": "photo-1.webp"
+    },
+    {
+      "id": "photo-2",
+      "title": "photo-2.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-HW-e3e7fcf2d0bc71ae6190d4a333ff1b50.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/photo-2.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-HW-e3e7fcf2d0bc71ae6190d4a333ff1b50.webp",
+      "fetchedAt": "2026-11-23T19:18:37Z",
+      "bytes": 38478,
+      "sha256": "5883ca8263862446aba65c132a4fa7cfb96dfff9341332ac8097c7be74214ee0",
+      "archiveName": "photo-2.webp"
+    },
+    {
+      "id": "photo-3",
+      "title": "photo-3.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-IntfIntro-a6ac0248a0f901e6b3a04883807765e4.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/photo-3.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-IntfIntro-a6ac0248a0f901e6b3a04883807765e4.webp",
+      "fetchedAt": "2026-11-23T19:18:37Z",
+      "bytes": 62462,
+      "sha256": "fc70846142a7c59915546b774db9f9407a17e9420322ef37587be6f9820b2722",
+      "archiveName": "photo-3.webp"
+    },
+    {
+      "id": "official-archive",
+      "title": "source-archive.rar",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/source-archive.rar",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar",
+      "fetchedAt": "2026-11-23T19:18:42Z",
+      "bytes": 2927685,
+      "sha256": "021c3f9e8cc78ff087ad930632853110b08220d3f39831e838506754e00e01b7",
+      "archiveName": "source-archive.rar"
+    },
+    {
+      "id": "official-cad",
+      "title": "source.stp.gz",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-lcd-1-9/source.stp.gz",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar",
+      "fetchedAt": "2026-11-23T19:18:42Z",
+      "bytes": 15610718,
+      "sha256": "d8e6a892123ef0cc8a77eb7d769c82be9030875dac297845c5c524c7178bea9f",
+      "archiveName": "source.stp.gz"
+    },
+    {
+      "id": "product",
+      "title": "Exact official SKU/options",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-lcd-1.9.htm",
+      "kind": "manufacturer-product",
+      "status": "linked",
+      "notes": "Selected public fields are retained as explicitly derived SKU selection, not original storefront HTTP bytes."
+    },
+    {
+      "id": "electrical-0",
+      "title": "01_Arduino_Libraries/GFX_Library_for_Arduino/examples/ArduinoVNC/keyboard.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/examples/ArduinoVNC/keyboard.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/examples/ArduinoVNC/keyboard.h",
+      "fetchedAt": "2026-11-23T19:17:33Z",
+      "bytes": 1851,
+      "sha256": "ed153787fd4e1455196024aea03f062c6d3e455d648bd3043a0f0afb238e06c8",
+      "archiveName": "ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_examples_ArduinoVNC_keyboard.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_examples_ArduinoVNC_keyboard.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-1",
+      "title": "01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.cpp",
+      "fetchedAt": "2026-11-23T19:17:33Z",
+      "bytes": 4449,
+      "sha256": "936b1dd6f87e25e4cc7dfdd58aab66cef3f09d540ab08a0294911d2d946ec3cf",
+      "archiveName": "ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_src_display_Arduino_CO5300.cpp.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_src_display_Arduino_CO5300.cpp.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-2",
+      "title": "01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+      "fetchedAt": "2026-11-23T19:17:33Z",
+      "bytes": 7214,
+      "sha256": "26462d61cf254f3b7d3614841f4783f9775e8736afbe7a961b5b3dd05e1b7430",
+      "archiveName": "ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_src_display_Arduino_CO5300.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_src_display_Arduino_CO5300.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-3",
+      "title": "01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.cpp",
+      "fetchedAt": "2026-11-23T19:17:33Z",
+      "bytes": 2904,
+      "sha256": "19c6fe624ee73c0ccc480b1b8fa721a142020ad21a04ba47e2712e8c8c83fbf0",
+      "archiveName": "ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_src_display_Arduino_ST7789.cpp.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_src_display_Arduino_ST7789.cpp.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-4",
+      "title": "01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.h",
+      "fetchedAt": "2026-11-23T19:17:33Z",
+      "bytes": 4967,
+      "sha256": "69be4345f6a6a920b8483c6ccf7081c624a90f733e2f2b2cba8bc08e7ea5100a",
+      "archiveName": "ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_src_display_Arduino_ST7789.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_01_Arduino_Libraries_GFX_Library_for_Arduino_src_display_Arduino_ST7789.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-5",
+      "title": "02_Example/Arduino/01_ADC_Test/adc_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/01_ADC_Test/adc_bsp.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/01_ADC_Test/adc_bsp.cpp",
+      "fetchedAt": "2026-11-23T19:17:37Z",
+      "bytes": 1694,
+      "sha256": "44727fcdbf110e8f02e1bb42b83f2adad951517d5715610a2540c4b3119c7b5c",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_01_ADC_Test_adc_bsp.cpp.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_01_ADC_Test_adc_bsp.cpp.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-6",
+      "title": "02_Example/Arduino/01_ADC_Test/adc_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/01_ADC_Test/adc_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/01_ADC_Test/adc_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:37Z",
+      "bytes": 145,
+      "sha256": "57c36df628968f7c68bcb386db7c217ff560787c4362921fff418d5082fe6ca6",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_01_ADC_Test_adc_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_01_ADC_Test_adc_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-7",
+      "title": "02_Example/Arduino/02_I2C_QMI8658/i2c_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/02_I2C_QMI8658/i2c_bsp.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/02_I2C_QMI8658/i2c_bsp.cpp",
+      "fetchedAt": "2026-11-23T19:17:37Z",
+      "bytes": 1641,
+      "sha256": "13733014108d976586ff4c55803c40320b2482744b0f1b37e1c22edef9d83331",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_02_I2C_QMI8658_i2c_bsp.cpp.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_02_I2C_QMI8658_i2c_bsp.cpp.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-8",
+      "title": "02_Example/Arduino/02_I2C_QMI8658/i2c_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/02_I2C_QMI8658/i2c_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/02_I2C_QMI8658/i2c_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:37Z",
+      "bytes": 365,
+      "sha256": "3db5f1ed9e192fa4a9d43719f75c5cfdaa06f4b1a8ff92ebd6bb43c6636eaa0b",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_02_I2C_QMI8658_i2c_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_02_I2C_QMI8658_i2c_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-9",
+      "title": "02_Example/Arduino/03_SD_Card/sd_card_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/03_SD_Card/sd_card_bsp.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/03_SD_Card/sd_card_bsp.cpp",
+      "fetchedAt": "2026-11-23T19:17:37Z",
+      "bytes": 3177,
+      "sha256": "c981209e29c9019d111272435c1ab9e0ec49cbd4c73dfa022200ad3e256f4651",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_03_SD_Card_sd_card_bsp.cpp.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_03_SD_Card_sd_card_bsp.cpp.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-10",
+      "title": "02_Example/Arduino/03_SD_Card/sd_card_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/03_SD_Card/sd_card_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/03_SD_Card/sd_card_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:43Z",
+      "bytes": 216,
+      "sha256": "21db37ee1f94fbaf8c62b30348c230e2cd5c8e303e4f85d40cae6e0749bff4fb",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_03_SD_Card_sd_card_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_03_SD_Card_sd_card_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-11",
+      "title": "02_Example/Arduino/08_LVGL_Test/esp_lcd_sh8601.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/esp_lcd_sh8601.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/esp_lcd_sh8601.c",
+      "fetchedAt": "2026-11-23T19:17:43Z",
+      "bytes": 12362,
+      "sha256": "e4754b57e4b39f4cab5d33cebc3965382fbb4315dae2b807ce0c9acb711f1dc0",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_esp_lcd_sh8601.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_esp_lcd_sh8601.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-12",
+      "title": "02_Example/Arduino/08_LVGL_Test/esp_lcd_sh8601.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/esp_lcd_sh8601.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/esp_lcd_sh8601.h",
+      "fetchedAt": "2026-11-23T19:17:43Z",
+      "bytes": 4951,
+      "sha256": "f965079ea6224079904f0df804ba65bd57785a75a2f90685752b16cbb876f77c",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_esp_lcd_sh8601.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_esp_lcd_sh8601.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-13",
+      "title": "02_Example/Arduino/08_LVGL_Test/lcd_bl_pwm_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bl_pwm_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bl_pwm_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:43Z",
+      "bytes": 2078,
+      "sha256": "e2b103392e5c7c1f0b6018c808d33dd9eb0e2cc19a38098e3d5f6de52873b05d",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_lcd_bl_pwm_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_lcd_bl_pwm_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-14",
+      "title": "02_Example/Arduino/08_LVGL_Test/lcd_bl_pwm_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bl_pwm_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bl_pwm_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:43Z",
+      "bytes": 712,
+      "sha256": "1336269c95304a2eda3d2f9767ae125009575f2780eae3daae24dbc856ae68ae",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_lcd_bl_pwm_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_lcd_bl_pwm_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-15",
+      "title": "02_Example/Arduino/08_LVGL_Test/lcd_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:48Z",
+      "bytes": 10166,
+      "sha256": "2724a24460debb8a787878ef7501a6a2203f477d39eddd645719b4e0f4ebe9de",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_lcd_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_lcd_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-16",
+      "title": "02_Example/Arduino/08_LVGL_Test/lcd_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:48Z",
+      "bytes": 1135,
+      "sha256": "b520c1740f159d7d71ec0bb00a46dc1ecf755ad84d9f0c1482dba8fd7858fe8e",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_lcd_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_Arduino_08_LVGL_Test_lcd_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-17",
+      "title": "02_Example/ESP-IDF/01_ADC_Test/components/adc_bsp/adc_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/01_ADC_Test/components/adc_bsp/adc_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/01_ADC_Test/components/adc_bsp/adc_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:48Z",
+      "bytes": 1693,
+      "sha256": "e5571182cba2b93a268c6600efc8039f8ff37c3884794f5561f1b9768ba0e37d",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_01_ADC_Test_components_adc_bsp_adc_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_01_ADC_Test_components_adc_bsp_adc_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-18",
+      "title": "02_Example/ESP-IDF/01_ADC_Test/components/adc_bsp/adc_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/01_ADC_Test/components/adc_bsp/adc_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/01_ADC_Test/components/adc_bsp/adc_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:48Z",
+      "bytes": 145,
+      "sha256": "57c36df628968f7c68bcb386db7c217ff560787c4362921fff418d5082fe6ca6",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_01_ADC_Test_components_adc_bsp_adc_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_01_ADC_Test_components_adc_bsp_adc_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-19",
+      "title": "02_Example/ESP-IDF/02_I2C_QMI8658/components/i2c_bsp/i2c_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/02_I2C_QMI8658/components/i2c_bsp/i2c_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/02_I2C_QMI8658/components/i2c_bsp/i2c_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:48Z",
+      "bytes": 1623,
+      "sha256": "24e6fe4957c52bcfb56e0dca7e6dafa725e66e9f43e56bcd6ae4d5b6e89de3d7",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_02_I2C_QMI8658_components_i2c_bsp_i2c_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_02_I2C_QMI8658_components_i2c_bsp_i2c_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-20",
+      "title": "02_Example/ESP-IDF/02_I2C_QMI8658/components/i2c_bsp/i2c_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/02_I2C_QMI8658/components/i2c_bsp/i2c_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/02_I2C_QMI8658/components/i2c_bsp/i2c_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:52Z",
+      "bytes": 365,
+      "sha256": "3db5f1ed9e192fa4a9d43719f75c5cfdaa06f4b1a8ff92ebd6bb43c6636eaa0b",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_02_I2C_QMI8658_components_i2c_bsp_i2c_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_02_I2C_QMI8658_components_i2c_bsp_i2c_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-21",
+      "title": "02_Example/ESP-IDF/03_SD_Card/components/sd_card_bsp/sd_card_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/03_SD_Card/components/sd_card_bsp/sd_card_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/03_SD_Card/components/sd_card_bsp/sd_card_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:52Z",
+      "bytes": 3142,
+      "sha256": "c1b8cadb084d439c9bce79a504c2b989abfd018754c252a240cb76b2ae312f00",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_03_SD_Card_components_sd_card_bsp_sd_card_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_03_SD_Card_components_sd_card_bsp_sd_card_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-22",
+      "title": "02_Example/ESP-IDF/03_SD_Card/components/sd_card_bsp/sd_card_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/03_SD_Card/components/sd_card_bsp/sd_card_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/03_SD_Card/components/sd_card_bsp/sd_card_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:52Z",
+      "bytes": 205,
+      "sha256": "94fcb23abc8bcc68fb8ec057920cfc378aa7a193b40948a0c743aa6b1314a99d",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_03_SD_Card_components_sd_card_bsp_sd_card_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_03_SD_Card_components_sd_card_bsp_sd_card_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-23",
+      "title": "02_Example/ESP-IDF/04_WS2812_Test/components/ws2812_bsp/ws2812_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/04_WS2812_Test/components/ws2812_bsp/ws2812_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/04_WS2812_Test/components/ws2812_bsp/ws2812_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:52Z",
+      "bytes": 1725,
+      "sha256": "e71493e468743215ab4cbf84d91325617ca7f89e78acaaf3c4e10d124ff69075",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_04_WS2812_Test_components_ws2812_bsp_ws2812_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_04_WS2812_Test_components_ws2812_bsp_ws2812_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-24",
+      "title": "02_Example/ESP-IDF/04_WS2812_Test/components/ws2812_bsp/ws2812_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/04_WS2812_Test/components/ws2812_bsp/ws2812_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/04_WS2812_Test/components/ws2812_bsp/ws2812_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:52Z",
+      "bytes": 225,
+      "sha256": "807c566eb324970922b157431bdcf39a29e9de43946cdaab52511f1c4c9153ad",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_04_WS2812_Test_components_ws2812_bsp_ws2812_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_04_WS2812_Test_components_ws2812_bsp_ws2812_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-25",
+      "title": "02_Example/ESP-IDF/06_WIFI_STA/components/esp_wifi_bsp/esp_wifi_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/06_WIFI_STA/components/esp_wifi_bsp/esp_wifi_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/06_WIFI_STA/components/esp_wifi_bsp/esp_wifi_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:56Z",
+      "bytes": 2172,
+      "sha256": "1747fe60f0721c91ec95e9d3ef94d776b1fafd5694983e1f5f7e8e639d1c53f4",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_06_WIFI_STA_components_esp_wifi_bsp_esp_wifi_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_06_WIFI_STA_components_esp_wifi_bsp_esp_wifi_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-26",
+      "title": "02_Example/ESP-IDF/06_WIFI_STA/components/esp_wifi_bsp/esp_wifi_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/06_WIFI_STA/components/esp_wifi_bsp/esp_wifi_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/06_WIFI_STA/components/esp_wifi_bsp/esp_wifi_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:56Z",
+      "bytes": 196,
+      "sha256": "3c323d9259d8bb4c456c53791206f365f2046cc55d8461e95623324ac083c8fc",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_06_WIFI_STA_components_esp_wifi_bsp_esp_wifi_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_06_WIFI_STA_components_esp_wifi_bsp_esp_wifi_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-27",
+      "title": "02_Example/ESP-IDF/07_LVGL_Test/components/esp_touch/touch_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/esp_touch/touch_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/esp_touch/touch_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:56Z",
+      "bytes": 559,
+      "sha256": "e7a71dcb77d804326a57098304b760b7a15cdb1c6e6ad1c4abf1eb80e29eaf57",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_07_LVGL_Test_components_esp_touch_touch_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_07_LVGL_Test_components_esp_touch_touch_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-28",
+      "title": "02_Example/ESP-IDF/07_LVGL_Test/components/esp_touch/touch_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/esp_touch/touch_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/esp_touch/touch_bsp.h",
+      "fetchedAt": "2026-11-23T19:17:56Z",
+      "bytes": 182,
+      "sha256": "91d6119b3ccd2d304f821d6d40e04d1d9f7256049331e78cd98be77aa96480df",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_07_LVGL_Test_components_esp_touch_touch_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_07_LVGL_Test_components_esp_touch_touch_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-29",
+      "title": "02_Example/ESP-IDF/07_LVGL_Test/components/i2c_bsp/i2c_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/i2c_bsp/i2c_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/i2c_bsp/i2c_bsp.c",
+      "fetchedAt": "2026-11-23T19:17:56Z",
+      "bytes": 2372,
+      "sha256": "2f66e65500b81a8afd4089424bdaa278152be4eba507e529a409309e82b3f393",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_07_LVGL_Test_components_i2c_bsp_i2c_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_07_LVGL_Test_components_i2c_bsp_i2c_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-30",
+      "title": "02_Example/ESP-IDF/07_LVGL_Test/components/i2c_bsp/i2c_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/i2c_bsp/i2c_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/i2c_bsp/i2c_bsp.h",
+      "fetchedAt": "2026-11-23T19:18:02Z",
+      "bytes": 385,
+      "sha256": "2018c5f8b42f84282b837ac5872189f4572d2e75db0bd474024a046ca341e6c2",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_07_LVGL_Test_components_i2c_bsp_i2c_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_07_LVGL_Test_components_i2c_bsp_i2c_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-31",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.c",
+      "fetchedAt": "2026-11-23T19:18:02Z",
+      "bytes": 1740,
+      "sha256": "370657102f4f18bd205464f96a16a6fddda07f7761b5fd0a322469ab260d937c",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_adc_bsp_adc_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_adc_bsp_adc_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-32",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.h",
+      "fetchedAt": "2026-11-23T19:18:02Z",
+      "bytes": 146,
+      "sha256": "11075dfd974f9cf5de881a0312c362a40271b69d7c0c00780ad2d45491307356",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_adc_bsp_adc_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_adc_bsp_adc_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-33",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.c",
+      "fetchedAt": "2026-11-23T19:18:02Z",
+      "bytes": 10942,
+      "sha256": "abf3200e9f9038428b8c4276fffa81004c32c016b271f5bdaeb4b0bac619a1f9",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ble_scan_bsp_ble_scan_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ble_scan_bsp_ble_scan_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-34",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.h",
+      "fetchedAt": "2026-11-23T19:18:02Z",
+      "bytes": 463,
+      "sha256": "b4723b671bbec79ab117ae6da82bcaa704881d308df48634b3349b4870ec819b",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ble_scan_bsp_ble_scan_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ble_scan_bsp_ble_scan_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-35",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.c",
+      "fetchedAt": "2026-11-23T19:18:06Z",
+      "bytes": 3081,
+      "sha256": "7c907e66cd60aa4fcacbe7bad37306f78ae71fd16bf716f602c042f66c878e4c",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_button_bsp_button_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_button_bsp_button_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-36",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.h",
+      "fetchedAt": "2026-11-23T19:18:07Z",
+      "bytes": 205,
+      "sha256": "1c68393277f69032d1155a6eef1026e8c0b491df13c8442a1fc6c64b5f57bc7a",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_button_bsp_button_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_button_bsp_button_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-37",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.c",
+      "fetchedAt": "2026-11-23T19:18:06Z",
+      "bytes": 5388,
+      "sha256": "d6da9c446faf4173e2c13718a4c0f75b1378707081546ac8ff1447dd17d4124c",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_button_bsp_multi_button.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_button_bsp_multi_button.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-38",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.h",
+      "fetchedAt": "2026-11-23T19:18:07Z",
+      "bytes": 1358,
+      "sha256": "cc23058be945db3a252b89461fcefd688ad2d8f7078564811cb68a51f838af9c",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_button_bsp_multi_button.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_button_bsp_multi_button.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-39",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.c",
+      "fetchedAt": "2026-11-23T19:18:06Z",
+      "bytes": 807,
+      "sha256": "89b5a83a35cac00d60d7bfb2b800d455a49ed04551a4488415d07619fdb52788",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_esp_touch_touch_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_esp_touch_touch_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-40",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.h",
+      "fetchedAt": "2026-11-23T19:18:11Z",
+      "bytes": 208,
+      "sha256": "16fbcbfdbbfc781be773dc9e9c2ce670de4af0a6b6b497a6c257a70775065792",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_esp_touch_touch_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_esp_touch_touch_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-41",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+      "fetchedAt": "2026-11-23T19:18:11Z",
+      "bytes": 2377,
+      "sha256": "8a25fea5a1857a172abbd3eebe62425daf22d4e0b30f68a5b1127fc267575f65",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_esp_wifi_bsp_esp_wifi_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_esp_wifi_bsp_esp_wifi_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-42",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+      "fetchedAt": "2026-11-23T19:18:11Z",
+      "bytes": 248,
+      "sha256": "f674f7f4062424fb3a67d8acd2457f5ba6242ff1ce5961c7b03bf41577e7de2a",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_esp_wifi_bsp_esp_wifi_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_esp_wifi_bsp_esp_wifi_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-43",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+      "fetchedAt": "2026-11-23T19:18:11Z",
+      "bytes": 2372,
+      "sha256": "2f66e65500b81a8afd4089424bdaa278152be4eba507e529a409309e82b3f393",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_i2c_bsp_i2c_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_i2c_bsp_i2c_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-44",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+      "fetchedAt": "2026-11-23T19:18:11Z",
+      "bytes": 385,
+      "sha256": "2018c5f8b42f84282b837ac5872189f4572d2e75db0bd474024a046ca341e6c2",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_i2c_bsp_i2c_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_i2c_bsp_i2c_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-45",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+      "fetchedAt": "2026-11-23T19:18:15Z",
+      "bytes": 5217,
+      "sha256": "28eb56c1a793011373dc9d47ac3656baf463ef8a24a2dd02cc4b437c4b7cee05",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_lcd_bl_pwm_bsp_lcd_bl_pwm_bsp.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_lcd_bl_pwm_bsp_lcd_bl_pwm_bsp.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-46",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+      "fetchedAt": "2026-11-23T19:18:15Z",
+      "bytes": 923,
+      "sha256": "1b95f05d60633e27e7cbe057ae21697b8501690781af6efdf3396070d5943ee7",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_lcd_bl_pwm_bsp_lcd_bl_pwm_bsp.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_lcd_bl_pwm_bsp_lcd_bl_pwm_bsp.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-47",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/custom.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/custom.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/custom.c",
+      "fetchedAt": "2026-11-23T19:18:15Z",
+      "bytes": 1038,
+      "sha256": "c202213a1ce736a4f43deffa3568bbbfa147c43ba55aea50624b6e36866cc734",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_custom_custom.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_custom_custom.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-48",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/custom.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/custom.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/custom.h",
+      "fetchedAt": "2026-11-23T19:18:15Z",
+      "bytes": 728,
+      "sha256": "af9c450a3910560c018811e08efb811b9b4a3e2dc1c8b6795a7fb48037437f20",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_custom_custom.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_custom_custom.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-49",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/lv_conf_ext.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/lv_conf_ext.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/lv_conf_ext.h",
+      "fetchedAt": "2026-11-23T19:18:15Z",
+      "bytes": 985,
+      "sha256": "0e5b8ffa5d5de260d21f796c4c9fa85e496054a8d5c46c8a5c6dbcf106d61b6a",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_custom_lv_conf_ext.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_custom_lv_conf_ext.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-50",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/events_init.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/events_init.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/events_init.c",
+      "fetchedAt": "2026-11-23T19:18:22Z",
+      "bytes": 726,
+      "sha256": "ec7b626ee60eb3dba5ca256fd3ecaacc9edc01afe578bd72b309517bbba2e37c",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_events_init.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_events_init.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-51",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/events_init.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/events_init.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/events_init.h",
+      "fetchedAt": "2026-11-23T19:18:22Z",
+      "bytes": 736,
+      "sha256": "d69f1d83361e38db87c405f6a9f1ba629c72dc7784aa2fc27026dc9da96ca8e6",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_events_init.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_events_init.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-52",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/gui_guider.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/gui_guider.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/gui_guider.c",
+      "fetchedAt": "2026-11-23T19:18:22Z",
+      "bytes": 2849,
+      "sha256": "c0defd68338989b3bdbf58985350573c0d08d0bc579422191bb5a7e1c0679523",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_gui_guider.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_gui_guider.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-53",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/gui_guider.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/gui_guider.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/gui_guider.h",
+      "fetchedAt": "2026-11-23T19:18:22Z",
+      "bytes": 2760,
+      "sha256": "70abcb4aa98da1cb34dd0ba9de7f2f6298195c3ab90c8e6f5c5a619a48044a30",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_gui_guider.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_gui_guider.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-54",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_customer_fonts/guider_customer_fonts.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_customer_fonts/guider_customer_fonts.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_customer_fonts/guider_customer_fonts.h",
+      "fetchedAt": "2026-11-23T19:18:22Z",
+      "bytes": 700,
+      "sha256": "26b4600e0eb911cdb4715a6f50ca6be00712dc42f419e3c165a3dff34f25f524",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_guider_customer_fonts_guider_customer_fonts.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_guider_customer_fonts_guider_customer_fonts.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-55",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_12.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_12.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_12.c",
+      "fetchedAt": "2026-11-23T19:18:26Z",
+      "bytes": 75245,
+      "sha256": "59614ca29d4d6a16534be2a427c0d7b360ef54ffb2fc76b703180469aaf85ab3",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_guider_fonts_lv_font_montserratMedium_12.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_guider_fonts_lv_font_montserratMedium_12.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-56",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_16.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_16.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_16.c",
+      "fetchedAt": "2026-11-23T19:18:26Z",
+      "bytes": 102153,
+      "sha256": "9b49c00a3f261a386700de776e762457c7aec8f7ca24e08aa43c01f585919ac3",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_guider_fonts_lv_font_montserratMedium_16.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_guider_fonts_lv_font_montserratMedium_16.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-57",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_18.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_18.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_18.c",
+      "fetchedAt": "2026-11-23T19:18:26Z",
+      "bytes": 121319,
+      "sha256": "d3fd7808d0b0b2fe0b692150c6e96217053cc972305fa03229961070f22caa8e",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_guider_fonts_lv_font_montserratMedium_18.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_guider_fonts_lv_font_montserratMedium_18.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-58",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/setup_scr_screen.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/setup_scr_screen.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/setup_scr_screen.c",
+      "fetchedAt": "2026-11-23T19:18:26Z",
+      "bytes": 38241,
+      "sha256": "c555b67e39ce8398d3c13f9da6b3017055585170649237172c85193909028420",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_setup_scr_screen.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_setup_scr_screen.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-59",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/widgets_init.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/widgets_init.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/widgets_init.c",
+      "fetchedAt": "2026-11-23T19:18:26Z",
+      "bytes": 2154,
+      "sha256": "c5bda7ce1fbdf3d7cfc6aa207027b1fa08781869fb4178eebbd6da28a43eb340",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_widgets_init.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_widgets_init.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-60",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/widgets_init.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/widgets_init.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/widgets_init.h",
+      "fetchedAt": "2026-11-23T19:18:31Z",
+      "bytes": 903,
+      "sha256": "34797b7e8c8e089b201ec1bc68fd828a323fdc2152200b9c391e0f768c90c236",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_widgets_init.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_components_ui_bsp_generated_widgets_init.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-61",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/main/main.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/main/main.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/main/main.c",
+      "fetchedAt": "2026-11-23T20:06:26Z",
+      "bytes": 11134,
+      "sha256": "4cbc9092074122d6a89e3b549ff32e83d32975b804bcf242240d7cafcbf39e33",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_main_main.c.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_main_main.c.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-62",
+      "title": "02_Example/ESP-IDF/08_FactoryProgram/main/user_config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/main/user_config.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/main/user_config.h",
+      "fetchedAt": "2026-11-23T20:06:26Z",
+      "bytes": 250,
+      "sha256": "6e2aa4f4ee0c354d7227f41519e96531e615deee0c59bcd7c67c59ba6de96b74",
+      "archiveName": "ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_main_user_config.h.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_02_Example_ESP-IDF_08_FactoryProgram_main_user_config.h.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-63",
+      "title": "README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/README.md",
+      "fetchedAt": "2026-11-23T19:18:31Z",
+      "bytes": 830,
+      "sha256": "a0315a3a93ceaad4e0697ed038a7703d8385f167e945cec6a096bab882d6996f",
+      "archiveName": "ESP32-C6-LCD-1.9_files_README.md.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_README.md.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-64",
+      "title": "archive-members/ESP32-C6-LCD-1.9-DAD/ESP32-S3-LCD-1.9-20250411.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar",
+      "fetchedAt": "2026-11-23T19:18:42Z",
+      "bytes": 71931,
+      "sha256": "a36d5d99fe2a5ea25f143f042e0d05bbfb63d2454cae4db641a78b24ab7246bb",
+      "archiveName": "ESP32-C6-LCD-1.9_files_archive-members_ESP32-C6-LCD-1.9-DAD_ESP32-S3-LCD-1.9-20250411.pdf.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_archive-members_ESP32-C6-LCD-1.9-DAD_ESP32-S3-LCD-1.9-20250411.pdf.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-65",
+      "title": "archive-members/ESP32-C6-Touch-LCD-1.9-DAD/ESP32-S3-Touch-LCD-1.9-20250411.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-Touch-LCD-1.9-DAD.rar",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-Touch-LCD-1.9-DAD.rar",
+      "fetchedAt": "2026-11-23T19:18:42Z",
+      "bytes": 75454,
+      "sha256": "cccc8dbe33f7445a8d22d181227356f1b5e30d4a6ce585b5136e72d785a884ee",
+      "archiveName": "ESP32-C6-LCD-1.9_files_archive-members_ESP32-C6-Touch-LCD-1.9-DAD_ESP32-S3-Touch-LCD-1.9-20250411.pdf.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_archive-members_ESP32-C6-Touch-LCD-1.9-DAD_ESP32-S3-Touch-LCD-1.9-20250411.pdf.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-66",
+      "title": "documentation/ESP-IDF.html",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9/ESP-IDF",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-LCD-1.9/ESP-IDF",
+      "fetchedAt": "2026-11-23T20:06:31Z",
+      "bytes": 68590,
+      "sha256": "64b6401689e337e8d354769a6cf6688c601fbac5b3b4c83ac4b01f79db60b153",
+      "archiveName": "ESP32-C6-LCD-1.9_files_documentation_ESP-IDF.html.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_documentation_ESP-IDF.html.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-67",
+      "title": "firmware/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/README.md",
+      "fetchedAt": "2026-11-23T19:18:31Z",
+      "bytes": 880,
+      "sha256": "e7b7edf90fe9dabfa99af1f418e6df44fc9bb6a7424c93b480546b13a2656b75",
+      "archiveName": "ESP32-C6-LCD-1.9_files_firmware_README.md.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_firmware_README.md.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-68",
+      "title": "firmware/README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/README_ZH.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/README_ZH.md",
+      "fetchedAt": "2026-11-23T19:18:31Z",
+      "bytes": 809,
+      "sha256": "cd7a0d5d77fc24c7cb7ea117ce4f5c0801d445d39cd883e66fd17ea818e2db3f",
+      "archiveName": "ESP32-C6-LCD-1.9_files_firmware_README_ZH.md.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_firmware_README_ZH.md.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-69",
+      "title": "official-resources/ESP32-C6-LCD-1.9-Schematic.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-Schematic.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-Schematic.pdf",
+      "fetchedAt": "2026-11-23T19:18:42Z",
+      "bytes": 619390,
+      "sha256": "5b6dbc9404d251d0fbd526f438f9df547962164bd3a0174a74fa9c51e6111358",
+      "archiveName": "ESP32-C6-LCD-1.9_files_official-resources_ESP32-C6-LCD-1.9-Schematic.pdf.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_official-resources_ESP32-C6-LCD-1.9-Schematic.pdf.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "electrical-70",
+      "title": "official-resources/ESP32-C6-Touch-LCD-1.9-Schematic.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-Touch-LCD-1.9-Schematic.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-Touch-LCD-1.9-Schematic.pdf",
+      "fetchedAt": "2026-11-23T19:18:42Z",
+      "bytes": 628926,
+      "sha256": "78c700b201a83221f7909c7099a0aa02f663bdf5331bfc0b7bab2fc8272c83ab",
+      "archiveName": "ESP32-C6-LCD-1.9_files_official-resources_ESP32-C6-Touch-LCD-1.9-Schematic.pdf.gz",
+      "notes": "Original source/member bytes retained at docs/platform/research/waveshare-c6-fifth-five-sources/ESP32-C6-LCD-1.9_files_official-resources_ESP32-C6-Touch-LCD-1.9-Schematic.pdf.gz. Container and member identities remain separate in the source manifest."
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "78/xiaozhi-esp32 pinned board-tree investigation",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Shared original/derived source receipt: docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json"
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "m5stack/uiflow-micropython pinned board-tree investigation",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Shared original/derived source receipt: docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json"
+    },
+    {
+      "id": "firmware",
+      "title": "firmware/ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin",
+      "kind": "manufacturer-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin",
+      "fetchedAt": "2026-11-23T19:18:31Z",
+      "bytes": 2445920,
+      "sha256": "05fb34541c5fbf5c38398561850e4f88a8f9999c3cc7db3fd919ae7f5997d690",
+      "archiveName": "ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin",
+      "notes": "Original complete image/member bytes hashed and layout checked; remote-only distribution. Source role and execution limits are explicit."
+    }
+  ],
+  "assets": [
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9/Resources-And-Documents"
+    },
+    {
+      "id": "repository-tree",
+      "sourceId": "repository-tree",
+      "role": "source-document",
+      "url": "https://github.com/waveshareteam/ESP32-C6-LCD-1.9/tree/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855"
+    },
+    {
+      "id": "dimension-photo",
+      "sourceId": "dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-ProductSize-1-e0d2c6f6c2edae76b0413e984d267f12.webp"
+    },
+    {
+      "id": "photo-0",
+      "sourceId": "photo-0",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-DocHeader-1-322b3a4a473d2265280aa792c88b5d75.webp"
+    },
+    {
+      "id": "photo-1",
+      "sourceId": "photo-1",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-DocHeader-2-46182a1671c8872ec509b786aaf97abf.webp"
+    },
+    {
+      "id": "photo-2",
+      "sourceId": "photo-2",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-HW-e3e7fcf2d0bc71ae6190d4a333ff1b50.webp"
+    },
+    {
+      "id": "photo-3",
+      "sourceId": "photo-3",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-LCD-1.9-IntfIntro-a6ac0248a0f901e6b3a04883807765e4.webp"
+    },
+    {
+      "id": "official-archive",
+      "sourceId": "official-archive",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar"
+    },
+    {
+      "id": "official-cad",
+      "sourceId": "official-cad",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar"
+    },
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-lcd-1.9.htm"
+    },
+    {
+      "id": "electrical-0",
+      "sourceId": "electrical-0",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/examples/ArduinoVNC/keyboard.h"
+    },
+    {
+      "id": "electrical-1",
+      "sourceId": "electrical-1",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.cpp"
+    },
+    {
+      "id": "electrical-2",
+      "sourceId": "electrical-2",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h"
+    },
+    {
+      "id": "electrical-3",
+      "sourceId": "electrical-3",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.cpp"
+    },
+    {
+      "id": "electrical-4",
+      "sourceId": "electrical-4",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/01_Arduino_Libraries/GFX_Library_for_Arduino/src/display/Arduino_ST7789.h"
+    },
+    {
+      "id": "electrical-5",
+      "sourceId": "electrical-5",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/01_ADC_Test/adc_bsp.cpp"
+    },
+    {
+      "id": "electrical-6",
+      "sourceId": "electrical-6",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/01_ADC_Test/adc_bsp.h"
+    },
+    {
+      "id": "electrical-7",
+      "sourceId": "electrical-7",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/02_I2C_QMI8658/i2c_bsp.cpp"
+    },
+    {
+      "id": "electrical-8",
+      "sourceId": "electrical-8",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/02_I2C_QMI8658/i2c_bsp.h"
+    },
+    {
+      "id": "electrical-9",
+      "sourceId": "electrical-9",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/03_SD_Card/sd_card_bsp.cpp"
+    },
+    {
+      "id": "electrical-10",
+      "sourceId": "electrical-10",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/03_SD_Card/sd_card_bsp.h"
+    },
+    {
+      "id": "electrical-11",
+      "sourceId": "electrical-11",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/esp_lcd_sh8601.c"
+    },
+    {
+      "id": "electrical-12",
+      "sourceId": "electrical-12",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/esp_lcd_sh8601.h"
+    },
+    {
+      "id": "electrical-13",
+      "sourceId": "electrical-13",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bl_pwm_bsp.c"
+    },
+    {
+      "id": "electrical-14",
+      "sourceId": "electrical-14",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bl_pwm_bsp.h"
+    },
+    {
+      "id": "electrical-15",
+      "sourceId": "electrical-15",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bsp.c"
+    },
+    {
+      "id": "electrical-16",
+      "sourceId": "electrical-16",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/Arduino/08_LVGL_Test/lcd_bsp.h"
+    },
+    {
+      "id": "electrical-17",
+      "sourceId": "electrical-17",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/01_ADC_Test/components/adc_bsp/adc_bsp.c"
+    },
+    {
+      "id": "electrical-18",
+      "sourceId": "electrical-18",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/01_ADC_Test/components/adc_bsp/adc_bsp.h"
+    },
+    {
+      "id": "electrical-19",
+      "sourceId": "electrical-19",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/02_I2C_QMI8658/components/i2c_bsp/i2c_bsp.c"
+    },
+    {
+      "id": "electrical-20",
+      "sourceId": "electrical-20",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/02_I2C_QMI8658/components/i2c_bsp/i2c_bsp.h"
+    },
+    {
+      "id": "electrical-21",
+      "sourceId": "electrical-21",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/03_SD_Card/components/sd_card_bsp/sd_card_bsp.c"
+    },
+    {
+      "id": "electrical-22",
+      "sourceId": "electrical-22",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/03_SD_Card/components/sd_card_bsp/sd_card_bsp.h"
+    },
+    {
+      "id": "electrical-23",
+      "sourceId": "electrical-23",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/04_WS2812_Test/components/ws2812_bsp/ws2812_bsp.c"
+    },
+    {
+      "id": "electrical-24",
+      "sourceId": "electrical-24",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/04_WS2812_Test/components/ws2812_bsp/ws2812_bsp.h"
+    },
+    {
+      "id": "electrical-25",
+      "sourceId": "electrical-25",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/06_WIFI_STA/components/esp_wifi_bsp/esp_wifi_bsp.c"
+    },
+    {
+      "id": "electrical-26",
+      "sourceId": "electrical-26",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/06_WIFI_STA/components/esp_wifi_bsp/esp_wifi_bsp.h"
+    },
+    {
+      "id": "electrical-27",
+      "sourceId": "electrical-27",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/esp_touch/touch_bsp.c"
+    },
+    {
+      "id": "electrical-28",
+      "sourceId": "electrical-28",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/esp_touch/touch_bsp.h"
+    },
+    {
+      "id": "electrical-29",
+      "sourceId": "electrical-29",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/i2c_bsp/i2c_bsp.c"
+    },
+    {
+      "id": "electrical-30",
+      "sourceId": "electrical-30",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/07_LVGL_Test/components/i2c_bsp/i2c_bsp.h"
+    },
+    {
+      "id": "electrical-31",
+      "sourceId": "electrical-31",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.c"
+    },
+    {
+      "id": "electrical-32",
+      "sourceId": "electrical-32",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.h"
+    },
+    {
+      "id": "electrical-33",
+      "sourceId": "electrical-33",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.c"
+    },
+    {
+      "id": "electrical-34",
+      "sourceId": "electrical-34",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.h"
+    },
+    {
+      "id": "electrical-35",
+      "sourceId": "electrical-35",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.c"
+    },
+    {
+      "id": "electrical-36",
+      "sourceId": "electrical-36",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.h"
+    },
+    {
+      "id": "electrical-37",
+      "sourceId": "electrical-37",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.c"
+    },
+    {
+      "id": "electrical-38",
+      "sourceId": "electrical-38",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.h"
+    },
+    {
+      "id": "electrical-39",
+      "sourceId": "electrical-39",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.c"
+    },
+    {
+      "id": "electrical-40",
+      "sourceId": "electrical-40",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.h"
+    },
+    {
+      "id": "electrical-41",
+      "sourceId": "electrical-41",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c"
+    },
+    {
+      "id": "electrical-42",
+      "sourceId": "electrical-42",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h"
+    },
+    {
+      "id": "electrical-43",
+      "sourceId": "electrical-43",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.c"
+    },
+    {
+      "id": "electrical-44",
+      "sourceId": "electrical-44",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.h"
+    },
+    {
+      "id": "electrical-45",
+      "sourceId": "electrical-45",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c"
+    },
+    {
+      "id": "electrical-46",
+      "sourceId": "electrical-46",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h"
+    },
+    {
+      "id": "electrical-47",
+      "sourceId": "electrical-47",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/custom.c"
+    },
+    {
+      "id": "electrical-48",
+      "sourceId": "electrical-48",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/custom.h"
+    },
+    {
+      "id": "electrical-49",
+      "sourceId": "electrical-49",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/custom/lv_conf_ext.h"
+    },
+    {
+      "id": "electrical-50",
+      "sourceId": "electrical-50",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/events_init.c"
+    },
+    {
+      "id": "electrical-51",
+      "sourceId": "electrical-51",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/events_init.h"
+    },
+    {
+      "id": "electrical-52",
+      "sourceId": "electrical-52",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/gui_guider.c"
+    },
+    {
+      "id": "electrical-53",
+      "sourceId": "electrical-53",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/gui_guider.h"
+    },
+    {
+      "id": "electrical-54",
+      "sourceId": "electrical-54",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_customer_fonts/guider_customer_fonts.h"
+    },
+    {
+      "id": "electrical-55",
+      "sourceId": "electrical-55",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_12.c"
+    },
+    {
+      "id": "electrical-56",
+      "sourceId": "electrical-56",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_16.c"
+    },
+    {
+      "id": "electrical-57",
+      "sourceId": "electrical-57",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/guider_fonts/lv_font_montserratMedium_18.c"
+    },
+    {
+      "id": "electrical-58",
+      "sourceId": "electrical-58",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/setup_scr_screen.c"
+    },
+    {
+      "id": "electrical-59",
+      "sourceId": "electrical-59",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/widgets_init.c"
+    },
+    {
+      "id": "electrical-60",
+      "sourceId": "electrical-60",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/components/ui_bsp/generated/widgets_init.h"
+    },
+    {
+      "id": "electrical-61",
+      "sourceId": "electrical-61",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/main/main.c"
+    },
+    {
+      "id": "electrical-62",
+      "sourceId": "electrical-62",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/02_Example/ESP-IDF/08_FactoryProgram/main/user_config.h"
+    },
+    {
+      "id": "electrical-63",
+      "sourceId": "electrical-63",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/README.md"
+    },
+    {
+      "id": "electrical-64",
+      "sourceId": "electrical-64",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-DAD.rar"
+    },
+    {
+      "id": "electrical-65",
+      "sourceId": "electrical-65",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-Touch-LCD-1.9-DAD.rar"
+    },
+    {
+      "id": "electrical-66",
+      "sourceId": "electrical-66",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.9/ESP-IDF"
+    },
+    {
+      "id": "electrical-67",
+      "sourceId": "electrical-67",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/README.md"
+    },
+    {
+      "id": "electrical-68",
+      "sourceId": "electrical-68",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/README_ZH.md"
+    },
+    {
+      "id": "electrical-69",
+      "sourceId": "electrical-69",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-LCD-1.9-Schematic.pdf"
+    },
+    {
+      "id": "electrical-70",
+      "sourceId": "electrical-70",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.9/ESP32-C6-Touch-LCD-1.9-Schematic.pdf"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "sourceId": "xiaozhi-tree",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+    },
+    {
+      "id": "uiflow-tree",
+      "sourceId": "uiflow-tree",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+    },
+    {
+      "id": "firmware",
+      "sourceId": "firmware",
+      "role": "firmware-download",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-LCD-1.9/8456bf0c4ee7f55d9589f7ea30be9ded2ed4d855/firmware/ESP32-C6-LCD-1.9_FactoryOnly_20260312.bin"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "真实硬件发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview",
+        "product"
+      ]
+    },
+    {
+      "id": "full-acceptance",
+      "label": "完整应用和实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "resources"
+      ],
+      "notes": "Native observations: 原厂完整镜像5秒0异常；有/无TF均停在LCD创建后，0RAMWR和单色黑屏，不构成整机通过。; 64MiB FAT32插卡实际17命令/3读块；无触摸SKU不存在CST816，未虚构触摸响应以推进固件。"
+    }
+  ],
+  "collectionNotes": [
+    "部分适配：精确esp32c6数字板级接口；完整应用、无线、模拟电源及实物验收未完成。",
+    "厂家原始图像与固件保持原字节；来源冲突、实际失败与UNKNOWN结构均明确保留。",
+    "3D为保留厂家CAD或明确尺寸/照片估计，不能据此声称装配尺寸、浏览器WebGL或物理校准通过。",
+    "原厂完整镜像5秒0异常；有/无TF均停在LCD创建后，0RAMWR和单色黑屏，不构成整机通过。",
+    "64MiB FAT32插卡实际17命令/3读块；无触摸SKU不存在CST816，未虚构触摸响应以推进固件。",
+    "Exact current firmware README explicitly documents the factory recovery image and offset0. The same unmodified source image attempts CST816 discovery; no touch device is invented for non-touch SKU30937.",
+    "Backlight GPIO15 is low-active; TFT source window is X35/Y0. Non-touch SKU has GPIO3 RGB LED, while touch SKU does not.",
+    "Official C6 mechanical downloads contain S3-named native STEP files. All native components and source dimensions are preserved, but C6 electrical-layout/revision identity remains unverified.",
+    "With and without64MiB TF card: non-touch original image reaches LCD creation but has noRAMWR at5s; touch image renders6 RAMWR then reaches originalBLE encryption assertion. Full application acceptance is not claimed."
+  ]
+}

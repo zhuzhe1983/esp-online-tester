@@ -143,10 +143,10 @@ def review(path, output):
         reg = plan['photoRegistration']['review']
         filename = reg['file']
         affine = np.asarray(reg['pixelFromModelXY'])
-    elif product_id.endswith('zero'):
+    elif product_id == 'waveshare-esp32-s3-zero':
         filename = 'dimension-photo.webp'
         affine = np.array([[528/18, 0, 478], [0, -685/23.5, 505.5]])
-    elif product_id.endswith('dev-kit-n8r8'):
+    elif product_id == 'waveshare-esp32-s3-dev-kit-n8r8':
         filename = 'dimension-photo.webp'
         affine = np.array([[0, -614/63.3, 437], [-247/25.4, 0, 322.5]])
     else:
