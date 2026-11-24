@@ -1,0 +1,573 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-c5-zero-m",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-c5-zero-m",
+  "title": "Waveshare ESP32-C5-Zero-M",
+  "summary": "4 MiB Flash / 0 MiB PSRAM；BOOT GPIO28，GPIO27 WS2812（GRB线序）；精确SKU 34598。",
+  "summarySourceIds": [
+    "overview",
+    "schematic",
+    "rgb-example"
+  ],
+  "updatedAt": "2026-11-23T20:13:37Z",
+  "hardwareRevision": "unspecified",
+  "facts": [
+    {
+      "id": "identity",
+      "label": "精确SKU与版本",
+      "basis": "official",
+      "sourceIds": [
+        "overview"
+      ],
+      "value": {
+        "sku": "34598",
+        "name": "ESP32-C5-Zero-M",
+        "options": {
+          "Version Options": "with pre-soldered header"
+        }
+      }
+    },
+    {
+      "id": "memory",
+      "label": "芯片和实际存储容量",
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic"
+      ],
+      "value": {
+        "chip": "ESP32-C5",
+        "flashMiB": 4,
+        "psramMiB": 0
+      }
+    },
+    {
+      "id": "boot",
+      "label": "BOOT输入",
+      "basis": "official",
+      "sourceIds": [
+        "schematic"
+      ],
+      "value": {
+        "gpio": 28,
+        "activeLow": true
+      }
+    },
+    {
+      "id": "rgb",
+      "label": "板载WS2812数字路径",
+      "basis": "official",
+      "sourceIds": [
+        "schematic",
+        "rgb-example"
+      ],
+      "value": {
+        "gpio": 27,
+        "count": 1,
+        "order": "GRB"
+      }
+    },
+    {
+      "id": "model-sources",
+      "label": "外观建模依据与边界",
+      "basis": "official",
+      "sourceIds": [
+        "model-0",
+        "model-1",
+        "model-2"
+      ],
+      "value": {
+        "method": "official-cad",
+        "limitations": [
+          "All manufacturer solids and open surfaces are retained at their original millimetre scale. Only the documented rigid centering/rotation is applied.",
+          "CAD/photo colours are approximate display choices; no measured optical material or hardware fit validation is asserted.",
+          "Header-installed, IPEX-antenna and memory SKU variants retain independent product identities but this model shows the documented base PCB; their mechanical differences are not separately rendered.",
+          "USB geometry is retained from manufacturer CAD; no cable anchor or electrical connection is exposed without a verified pin-side orientation.",
+          "The current source photo includes a large RF shield absent from this published STEP. Its height and mounting were not supplied; the missing shield is a recorded CAD/photo deviation, not silently invented geometry."
+        ]
+      },
+      "notes": "此条说明取得的厂家资料及重建方法，不把重建结果当作官方新尺寸。"
+    },
+    {
+      "id": "official-test-image",
+      "label": "TestCode原镜像布局校验",
+      "basis": "official",
+      "sourceIds": [
+        "test-image"
+      ],
+      "value": {
+        "bytes": 1432320,
+        "sha256": "edd4d3e1322ddda55ccf44094daca5a850fe5c7ad35b31e3c933e5588748cda0",
+        "images": [
+          {
+            "offset": 8192,
+            "chipId": 23,
+            "minimumRevision": 0,
+            "maximumRevision": 65535,
+            "flashSizeNibble": 2,
+            "checksum": "pass",
+            "digestPresent": true
+          },
+          {
+            "offset": 65536,
+            "chipId": 23,
+            "minimumRevision": 0,
+            "maximumRevision": 65535,
+            "flashSizeNibble": 2,
+            "checksum": "pass",
+            "digestPresent": true
+          }
+        ],
+        "partitions": [
+          {
+            "type": 1,
+            "subtype": 2,
+            "offset": 36864,
+            "size": 20480,
+            "label": "nvs"
+          },
+          {
+            "type": 1,
+            "subtype": 0,
+            "offset": 57344,
+            "size": 8192,
+            "label": "otadata"
+          },
+          {
+            "type": 0,
+            "subtype": 16,
+            "offset": 65536,
+            "size": 2031616,
+            "label": "app0"
+          },
+          {
+            "type": 0,
+            "subtype": 17,
+            "offset": 2097152,
+            "size": 2031616,
+            "label": "app1"
+          },
+          {
+            "type": 1,
+            "subtype": 3,
+            "offset": 4128768,
+            "size": 65536,
+            "label": "coredump"
+          }
+        ],
+        "partitionMd5Valid": true,
+        "partitionTableOffset": 32768
+      },
+      "notes": "完整测试镜像，未宣称FactoryOnly出厂恢复身份；checksum/digest/MD5通过不等于原厂应用成功。"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "产品发布日期",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "overview"
+      ]
+    },
+    {
+      "id": "exact-uiflow",
+      "label": "精确板型UIFlow恢复镜像",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "resources"
+      ],
+      "notes": "共享UIFlow/Xiaozhi官方目标树调查位于docs/platform/research/waveshare-shared-ecosystem-sources；未据通用C5支持推断该板已适配。"
+    },
+    {
+      "id": "hardware-acceptance",
+      "label": "真实硬件验收",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": []
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "Exact official overview and SKU table",
+      "url": "https://docs.waveshare.com/ESP32-C5-Zero",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-Zero",
+      "fetchedAt": "2026-11-23T16:31:51Z",
+      "bytes": 38761,
+      "sha256": "683e4c5b9d0c359e45c65f7f45f6a21459ad419b4f958b1f669ef85b1a4f2afe",
+      "archiveName": "esp32-c5-zero--ESP32-C5-Zero.html",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/ESP32-C5-Zero.html.gz"
+    },
+    {
+      "id": "reference-0",
+      "title": "ESP32-C5-Zero-01-8990bf4d0d6a76153237fb3ced667e9f.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-01-8990bf4d0d6a76153237fb3ced667e9f.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-01-8990bf4d0d6a76153237fb3ced667e9f.webp",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 159332,
+      "sha256": "5f99b7305389ae3575000ea51922ebed487e90fb810dc0046a9371054ccd7ce8",
+      "archiveName": "esp32-c5-zero--ESP32-C5-Zero-01-8990bf4d0d6a76153237fb3ced667e9f.webp",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/ESP32-C5-Zero-01-8990bf4d0d6a76153237fb3ced667e9f.webp.gz"
+    },
+    {
+      "id": "reference-1",
+      "title": "ESP32-C5-Zero-M-afc18ae88a6f8fb085cec7eb91d91501.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-M-afc18ae88a6f8fb085cec7eb91d91501.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-M-afc18ae88a6f8fb085cec7eb91d91501.webp",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 162274,
+      "sha256": "c0d07051db4ca25a0e9d7eae44ed71c44e6032df30935231a4f7301980b2dc30",
+      "archiveName": "esp32-c5-zero--ESP32-C5-Zero-M-afc18ae88a6f8fb085cec7eb91d91501.webp",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/ESP32-C5-Zero-M-afc18ae88a6f8fb085cec7eb91d91501.webp.gz"
+    },
+    {
+      "id": "reference-2",
+      "title": "ESP32-C5-Zero-Pin-29de88588448da0be2af9f7e851e5adb.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Pin-29de88588448da0be2af9f7e851e5adb.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Pin-29de88588448da0be2af9f7e851e5adb.webp",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 40840,
+      "sha256": "d17be96139e6424ef97b44d473fb7e11f6339b087dcf929097e26172f967dfb0",
+      "archiveName": "esp32-c5-zero--ESP32-C5-Zero-Pin-29de88588448da0be2af9f7e851e5adb.webp",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/ESP32-C5-Zero-Pin-29de88588448da0be2af9f7e851e5adb.webp.gz"
+    },
+    {
+      "id": "reference-3",
+      "title": "ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 27708,
+      "sha256": "a5addf35f0fe1d6e87eb217bdb010e87f731e40acbbbba32f976e9e7266e2b86",
+      "archiveName": "esp32-c5-zero--ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp.gz"
+    },
+    {
+      "id": "reference-4",
+      "title": "ESP32-C5-Zero-Source-7f69e49f4ec264544e91ea2749dba96a.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Source-7f69e49f4ec264544e91ea2749dba96a.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Source-7f69e49f4ec264544e91ea2749dba96a.webp",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 36546,
+      "sha256": "e138f8809c5f3f955ee1188fdfb72a5c9bab66f42cdc84480dea4004d6130d38",
+      "archiveName": "esp32-c5-zero--ESP32-C5-Zero-Source-7f69e49f4ec264544e91ea2749dba96a.webp",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/ESP32-C5-Zero-Source-7f69e49f4ec264544e91ea2749dba96a.webp.gz"
+    },
+    {
+      "id": "reference-5",
+      "title": "ESP32-C5-Zero-wireless-Switch-4cceedf913204c06ca2e140d9ba7d379.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-wireless-Switch-4cceedf913204c06ca2e140d9ba7d379.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-wireless-Switch-4cceedf913204c06ca2e140d9ba7d379.webp",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 36300,
+      "sha256": "a2773d9a68bb5133b2adeee22bdc390bbc7438384e87b0bff08c268d3c717eb9",
+      "archiveName": "esp32-c5-zero--ESP32-C5-Zero-wireless-Switch-4cceedf913204c06ca2e140d9ba7d379.webp",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/ESP32-C5-Zero-wireless-Switch-4cceedf913204c06ca2e140d9ba7d379.webp.gz"
+    },
+    {
+      "id": "reference-6",
+      "title": "README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/README.md",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 2256,
+      "sha256": "2e47caff2f0283ea1c3d226c790dc27147f3f6a8c3a3904833dbaf14e8883b2b",
+      "archiveName": "esp32-c5-zero--README.md",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/README.md.gz"
+    },
+    {
+      "id": "rgb-example",
+      "title": "example__Ardunio__02_BlinkRGB__02_BlinkRGB.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/example/Ardunio/02_BlinkRGB/02_BlinkRGB.ino",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/example/Ardunio/02_BlinkRGB/02_BlinkRGB.ino",
+      "fetchedAt": "2026-11-23T16:52:31Z",
+      "bytes": 1472,
+      "sha256": "5f468e0ae3ad6f4bbf56684d411a62b45686edab3773bc8057c5548fb49e3af5",
+      "archiveName": "esp32-c5-zero--example__Ardunio__02_BlinkRGB__02_BlinkRGB.ino",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/example__Ardunio__02_BlinkRGB__02_BlinkRGB.ino.gz"
+    },
+    {
+      "id": "reference-9",
+      "title": "example__ESP-IDF__02_BlinkRGB__main__main.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/example/ESP-IDF/02_BlinkRGB/main/main.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/example/ESP-IDF/02_BlinkRGB/main/main.c",
+      "fetchedAt": "2026-11-23T16:52:31Z",
+      "bytes": 2170,
+      "sha256": "48eb08616d7370dcef4906ff094ec8ebeb1cfd8da9c9643965246c58f4663cdb",
+      "archiveName": "esp32-c5-zero--example__ESP-IDF__02_BlinkRGB__main__main.c",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/example__ESP-IDF__02_BlinkRGB__main__main.c.gz"
+    },
+    {
+      "id": "test-image",
+      "title": "factory-test-code.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/firmware/ESP32-C5-Zero-TestCode.bin",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/firmware/ESP32-C5-Zero-TestCode.bin",
+      "fetchedAt": "2026-11-23T18:03:19Z",
+      "bytes": 1432320,
+      "sha256": "edd4d3e1322ddda55ccf44094daca5a850fe5c7ad35b31e3c933e5588748cda0",
+      "archiveName": "esp32-c5-zero--factory-test-code.bin",
+      "notes": "Original downloaded bytes retained locally; only the URL, hash and review are redistributed. No complete application acceptance is implied."
+    },
+    {
+      "id": "reference-12",
+      "title": "hardware__dimensions__esp32-c5-Zero-3D.stp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-Zero-3D.stp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-Zero-3D.stp",
+      "fetchedAt": "2026-11-23T16:52:31Z",
+      "bytes": 11844536,
+      "sha256": "739d8200d813dd4a14b79210ce230759a77c6f13a6d8720ee271aee1874d9855",
+      "archiveName": "esp32-c5-zero--hardware__dimensions__esp32-c5-Zero-3D.stp",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/hardware__dimensions__esp32-c5-Zero-3D.stp.gz"
+    },
+    {
+      "id": "reference-13",
+      "title": "hardware__dimensions__esp32-c5-zero-Size.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-zero-Size.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-zero-Size.pdf",
+      "fetchedAt": "2026-11-23T16:52:31Z",
+      "bytes": 63321,
+      "sha256": "013c4b91622a273a085ab6046cb5692adc79cdd45a103150bde63c1fb384fd9d",
+      "archiveName": "esp32-c5-zero--hardware__dimensions__esp32-c5-zero-Size.pdf",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/hardware__dimensions__esp32-c5-zero-Size.pdf.gz"
+    },
+    {
+      "id": "schematic",
+      "title": "hardware__schematics__ESP32-C5-Zero.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/schematics/ESP32-C5-Zero.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/schematics/ESP32-C5-Zero.pdf",
+      "fetchedAt": "2026-11-23T16:52:31Z",
+      "bytes": 136375,
+      "sha256": "b8fdb1aaa9ba8ad5bfaebbdbe7a721fe66acef1b3e6c7fadb148ae9b94003613",
+      "archiveName": "esp32-c5-zero--hardware__schematics__ESP32-C5-Zero.pdf",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/hardware__schematics__ESP32-C5-Zero.pdf.gz"
+    },
+    {
+      "id": "resources",
+      "title": "resources.html",
+      "url": "https://docs.waveshare.com/ESP32-C5-Zero/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-Zero/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 31881,
+      "sha256": "acad9118520b477943efb9d660685d381ee3a629cace08a7d805150a21c78a9a",
+      "archiveName": "esp32-c5-zero--resources.html",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/resources.html.gz"
+    },
+    {
+      "id": "repository-tree",
+      "title": "tree.json",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-Zero/git/trees/main?recursive=1",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C5-Zero/git/trees/main?recursive=1",
+      "fetchedAt": "2026-11-23T16:44:26Z",
+      "bytes": 33815,
+      "sha256": "003a270def97e568468b47703a60e6719aa43bf28f03d197e22085d0187f9bee",
+      "archiveName": "esp32-c5-zero--tree.json",
+      "notes": "Original bytes retained at docs/platform/research/waveshare-c5-core-20261124/esp32-c5-zero/tree.json.gz"
+    },
+    {
+      "id": "model-0",
+      "title": "Official dimension photograph",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 27708,
+      "sha256": "a5addf35f0fe1d6e87eb217bdb010e87f731e40acbbbba32f976e9e7266e2b86",
+      "archiveName": "waveshare-esp32-c5-zero--dimension-photo.webp",
+      "notes": "Retained model source and compression receipt: web/platform/assets/waveshare-esp32-c5-zero/source-manifest.json"
+    },
+    {
+      "id": "model-1",
+      "title": "Official resources and documents",
+      "url": "https://docs.waveshare.com/ESP32-C5-Zero/Resources-And-Documents",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C5-Zero/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T16:52:24Z",
+      "bytes": 31881,
+      "sha256": "acad9118520b477943efb9d660685d381ee3a629cace08a7d805150a21c78a9a",
+      "archiveName": "waveshare-esp32-c5-zero--resources.html.gz",
+      "notes": "Retained model source and compression receipt: web/platform/assets/waveshare-esp32-c5-zero/source-manifest.json"
+    },
+    {
+      "id": "model-2",
+      "title": "Manufacturer C5 Zero STEP at pinned repository revision",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-Zero-3D.stp",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-Zero-3D.stp",
+      "fetchedAt": "2026-11-23T16:52:31Z",
+      "bytes": 11844536,
+      "sha256": "739d8200d813dd4a14b79210ce230759a77c6f13a6d8720ee271aee1874d9855",
+      "archiveName": "waveshare-esp32-c5-zero--source.stp.gz",
+      "notes": "Retained model source and compression receipt: web/platform/assets/waveshare-esp32-c5-zero/source-manifest.json"
+    }
+  ],
+  "assets": [
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C5-Zero"
+    },
+    {
+      "id": "reference-0",
+      "sourceId": "reference-0",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-01-8990bf4d0d6a76153237fb3ced667e9f.webp"
+    },
+    {
+      "id": "reference-1",
+      "sourceId": "reference-1",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-M-afc18ae88a6f8fb085cec7eb91d91501.webp"
+    },
+    {
+      "id": "reference-2",
+      "sourceId": "reference-2",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Pin-29de88588448da0be2af9f7e851e5adb.webp"
+    },
+    {
+      "id": "reference-3",
+      "sourceId": "reference-3",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp"
+    },
+    {
+      "id": "reference-4",
+      "sourceId": "reference-4",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Source-7f69e49f4ec264544e91ea2749dba96a.webp"
+    },
+    {
+      "id": "reference-5",
+      "sourceId": "reference-5",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-wireless-Switch-4cceedf913204c06ca2e140d9ba7d379.webp"
+    },
+    {
+      "id": "reference-6",
+      "sourceId": "reference-6",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/README.md"
+    },
+    {
+      "id": "rgb-example",
+      "sourceId": "rgb-example",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/example/Ardunio/02_BlinkRGB/02_BlinkRGB.ino"
+    },
+    {
+      "id": "reference-9",
+      "sourceId": "reference-9",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/example/ESP-IDF/02_BlinkRGB/main/main.c"
+    },
+    {
+      "id": "test-image",
+      "sourceId": "test-image",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/firmware/ESP32-C5-Zero-TestCode.bin"
+    },
+    {
+      "id": "reference-12",
+      "sourceId": "reference-12",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-Zero-3D.stp"
+    },
+    {
+      "id": "reference-13",
+      "sourceId": "reference-13",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-zero-Size.pdf"
+    },
+    {
+      "id": "schematic",
+      "sourceId": "schematic",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/schematics/ESP32-C5-Zero.pdf"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C5-Zero/Resources-And-Documents"
+    },
+    {
+      "id": "repository-tree",
+      "sourceId": "repository-tree",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C5-Zero/git/trees/main?recursive=1"
+    },
+    {
+      "id": "model-0",
+      "sourceId": "model-0",
+      "role": "model-reference",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C5-Zero-Size-185bd1fc954dd73384ea9fec937347fc.webp"
+    },
+    {
+      "id": "model-1",
+      "sourceId": "model-1",
+      "role": "model-reference",
+      "url": "https://docs.waveshare.com/ESP32-C5-Zero/Resources-And-Documents"
+    },
+    {
+      "id": "model-2",
+      "sourceId": "model-2",
+      "role": "model-reference",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/dimensions/esp32-c5-Zero-3D.stp"
+    }
+  ],
+  "collectionNotes": [
+    "仅实现有依据的BOOT GPIO28和GPIO27 WS2812数字RMT输出；USB、射频、充电模拟电气和整机功耗没有实机验收。",
+    "当前C5公开运行时仅支持SRAM直启；完整ROM/Flash镜像保持trial尝试入口并明确返回C5_SRAM_REQUIRED，不把内部诊断程序上架。",
+    "预焊排针和外接天线SKU分别标识；共用主板外观模型不表示已还原各SKU的排针、电池、FPC天线附件。",
+    "机械检查是生产Three加载器的尺寸/来源/射线检查；没有浏览器WebGL或实物装配验收。",
+    "官方TestCode文件是完整测试镜像，原目录未明确称FactoryOnly恢复包，保留test-image身份，不虚构出厂版本。",
+    "厂家STEP与当前照片中的RF屏蔽结构存在差异；不凭空补上未知屏蔽高度。",
+    "All manufacturer solids and open surfaces are retained at their original millimetre scale. Only the documented rigid centering/rotation is applied.",
+    "CAD/photo colours are approximate display choices; no measured optical material or hardware fit validation is asserted.",
+    "Header-installed, IPEX-antenna and memory SKU variants retain independent product identities but this model shows the documented base PCB; their mechanical differences are not separately rendered.",
+    "USB geometry is retained from manufacturer CAD; no cable anchor or electrical connection is exposed without a verified pin-side orientation.",
+    "The current source photo includes a large RF shield absent from this published STEP. Its height and mounting were not supplied; the missing shield is a recorded CAD/photo deviation, not silently invented geometry.",
+    "原始官方TestCode完整镜像SHA核验后，经公开运行时被C5_SRAM_REQUIRED明确拒绝；没有执行ROM或把诊断程序替换为原厂镜像。"
+  ]
+}

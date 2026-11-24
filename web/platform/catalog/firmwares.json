@@ -22012,6 +22012,44 @@
       ]
     },
     {
+      "id": "waveshare-esp32-p4-nano-factory",
+      "name": "ESP32-P4-NANO · 官方原厂 7-DSI（试运行）",
+      "productIds": [
+        "waveshare-esp32-p4-nano",
+        "waveshare-esp32-p4-nano-kit-a",
+        "waveshare-esp32-p4-nano-kit-b",
+        "waveshare-esp32-p4-nano-kit-c"
+      ],
+      "version": "FactoryOnly_20261118",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Platform/c943ea11a74024ca46ee57d413a7d271760d2a37/firmware/wifi-eth-16/ESP32-P4-Platform-7-DSI-TOUCH-A-wifi-eth-16-rev3-x_FactoryOnly_20261118.bin",
+        "sha256": "304d2c981426a6c858a9bf166bcdabd125a0e54045840fb54064d1da52bbdef5",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "watchlistId": "waveshare-esp32-p4-nano-factory-official",
+      "sources": [
+        {
+          "title": "Manufacturer firmware README",
+          "url": "https://github.com/waveshareteam/ESP32-P4-Platform/tree/main/firmware",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方固定原厂恢复镜像；此文件要求所标注的外接 7 英寸 DSI 显示器，只有明确含屏套件才附加对应触摸器件。",
+        "镜像原样校验芯片、完整布局、XOR checksum 与 appended SHA；不表示原厂启动或硬件功能通过。",
+        "P4 MIPI-DSI、CSI、无线从机、以太网、模拟电源与完整音频未模拟；原厂应用尚不可作为完整体验验收。",
+        "7寸与10.1寸两套未修改原厂完整镜像，经公开Worker各运行3.00客体秒；UART到达SPIFFS、codec控制初始化、LVGL adapter及MIPI DSI PHY Powered on，均未产生帧。DSI、以太网、协处理器射频和音频PCM尚未验收。"
+      ]
+    },
+    {
       "id": "waveshare-esp32-p4-module-dev-kit-factory",
       "name": "ESP32-P4-MODULE-DEV-KIT · 官方原厂 7-DSI（试运行）",
       "productIds": [
@@ -25171,6 +25209,270 @@
         "官方固定原厂恢复镜像；此文件要求所标注的外接 10.1 英寸 DSI 显示器，只有明确含屏套件才附加对应触摸器件。",
         "镜像原样校验芯片、完整布局、XOR checksum 与 appended SHA；不表示原厂启动或硬件功能通过。",
         "P4 MIPI-DSI、CSI、无线从机、以太网、模拟电源与完整音频未模拟；原厂应用尚不可作为完整体验验收。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-c5-mini-kit-official-reference",
+      "name": "ESP32-C5-MINI-KIT · 官方示例源码资料",
+      "productIds": [
+        "waveshare-esp32-c5-mini-kit",
+        "waveshare-esp32-c5-mini-kit-m",
+        "waveshare-esp32-c5-mini-kit-u",
+        "waveshare-esp32-c5-mini-kit-um"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "example",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "version": "source-reference",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-C5-MINI-KIT/Resources-And-Documents",
+      "sources": [
+        {
+          "id": "overview",
+          "title": "Exact official overview and SKU table",
+          "url": "https://docs.waveshare.com/ESP32-C5-MINI-KIT",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "rgb-example",
+          "title": "examples__Arduino__examples__01_WS2812_RGB__01_WS2812_RGB.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-MINI-KIT/9eb18f4282e2e464b34b911ed6ba63cf28f22c9f/examples/Arduino/examples/01_WS2812_RGB/01_WS2812_RGB.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-MINI-KIT/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "reference-11",
+          "title": "schematic__ESP32-C5-MINI-KIT.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-MINI-KIT/9eb18f4282e2e464b34b911ed6ba63cf28f22c9f/schematic/ESP32-C5-MINI-KIT.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "仅实现有依据的BOOT GPIO28和GPIO27 WS2812数字RMT输出；USB、射频、充电模拟电气和整机功耗没有实机验收。",
+        "当前C5公开运行时仅支持SRAM直启；完整ROM/Flash镜像保持trial尝试入口并明确返回C5_SRAM_REQUIRED，不把内部诊断程序上架。",
+        "预焊排针和外接天线SKU分别标识；共用主板外观模型不表示已还原各SKU的排针、电池、FPC天线附件。",
+        "机械检查是生产Three加载器的尺寸/来源/射线检查；没有浏览器WebGL或实物装配验收。",
+        "本次原厂资源和精确仓库调查未发现完整可启动镜像；仅源码参考，不把资源位图或编译探测bin当固件。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-c5-pico-official-reference",
+      "name": "ESP32-C5-Pico · 官方示例源码资料",
+      "productIds": [
+        "waveshare-esp32-c5-pico",
+        "waveshare-esp32-c5-pico-m",
+        "waveshare-esp32-c5-pico-u",
+        "waveshare-esp32-c5-pico-um"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "example",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "version": "source-reference",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-C5-Pico/Resources-And-Documents",
+      "sources": [
+        {
+          "id": "overview",
+          "title": "Exact official overview and SKU table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Pico",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "rgb-example",
+          "title": "examples__Arduino__examples__01_WS2812_RGB__01_WS2812_RGB.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Pico/cd413f3b76723516c8c264034f462381fe0ac0ac/examples/Arduino/examples/01_WS2812_RGB/01_WS2812_RGB.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Pico/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic__ESP32-C5-Pico.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Pico/cd413f3b76723516c8c264034f462381fe0ac0ac/schematic/ESP32-C5-Pico.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "仅实现有依据的BOOT GPIO28和GPIO27 WS2812数字RMT输出；USB、射频、充电模拟电气和整机功耗没有实机验收。",
+        "当前C5公开运行时仅支持SRAM直启；完整ROM/Flash镜像保持trial尝试入口并明确返回C5_SRAM_REQUIRED，不把内部诊断程序上架。",
+        "预焊排针和外接天线SKU分别标识；共用主板外观模型不表示已还原各SKU的排针、电池、FPC天线附件。",
+        "机械检查是生产Three加载器的尺寸/来源/射线检查；没有浏览器WebGL或实物装配验收。",
+        "TCA9554@0x20仅在SDA23/SCL24路由；芯片8端口与排针引出数量分开。官方overview写7个扩展IO，官方示例仅暴露EXTIO1..6，冲突保留。",
+        "TCA9554 INT未接入MCU；BAT ADC6及200k/100k分压、ETA6098充电电路未建模。",
+        "本次原厂资源和精确仓库调查未发现完整可启动镜像；仅源码参考，不把资源位图或编译探测bin当固件。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-c5-zero-testcode",
+      "name": "ESP32-C5-Zero · 官方TestCode完整测试镜像（trial）",
+      "productIds": [
+        "waveshare-esp32-c5-zero",
+        "waveshare-esp32-c5-zero-m"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/firmware/ESP32-C5-Zero-TestCode.bin",
+        "sha256": "edd4d3e1322ddda55ccf44094daca5a850fe5c7ad35b31e3c933e5588748cda0",
+        "bootMode": "rom"
+      },
+      "role": "example",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "version": "pinned-official-test-image",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-C5-Zero/Resources-And-Documents",
+      "sources": [
+        {
+          "id": "overview",
+          "title": "Exact official overview and SKU table",
+          "url": "https://docs.waveshare.com/ESP32-C5-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "rgb-example",
+          "title": "example__Ardunio__02_BlinkRGB__02_BlinkRGB.ino",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/example/Ardunio/02_BlinkRGB/02_BlinkRGB.ino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "test-image",
+          "title": "factory-test-code.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/firmware/ESP32-C5-Zero-TestCode.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "hardware__schematics__ESP32-C5-Zero.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-Zero/0dc2567a87741639be311ff0d4a60f588f63b58f/hardware/schematics/ESP32-C5-Zero.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "仅实现有依据的BOOT GPIO28和GPIO27 WS2812数字RMT输出；USB、射频、充电模拟电气和整机功耗没有实机验收。",
+        "当前C5公开运行时仅支持SRAM直启；完整ROM/Flash镜像保持trial尝试入口并明确返回C5_SRAM_REQUIRED，不把内部诊断程序上架。",
+        "预焊排针和外接天线SKU分别标识；共用主板外观模型不表示已还原各SKU的排针、电池、FPC天线附件。",
+        "机械检查是生产Three加载器的尺寸/来源/射线检查；没有浏览器WebGL或实物装配验收。",
+        "官方TestCode文件是完整测试镜像，原目录未明确称FactoryOnly恢复包，保留test-image身份，不虚构出厂版本。",
+        "厂家STEP与当前照片中的RF屏蔽结构存在差异；不凭空补上未知屏蔽高度。",
+        "原始官方TestCode完整镜像SHA核验后，经公开运行时被C5_SRAM_REQUIRED明确拒绝；没有执行ROM或把诊断程序替换为原厂镜像。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-c5-wifi6-kit-official-reference",
+      "name": "ESP32-C5-WIFI6-KIT · 官方示例源码资料",
+      "productIds": [
+        "waveshare-esp32-c5-wifi6-kit-n16r8",
+        "waveshare-esp32-c5-wifi6-kit-n16r8-m",
+        "waveshare-esp32-c5-wifi6-kit-n32r8",
+        "waveshare-esp32-c5-wifi6-kit-n32r8-m",
+        "waveshare-esp32-c5-wifi6-kit-n32r8-u",
+        "waveshare-esp32-c5-wifi6-kit-n32r8-um"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "example",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "version": "source-reference",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-C5-WIFI6-KIT/Resources-And-Documents",
+      "sources": [
+        {
+          "id": "overview",
+          "title": "Exact official overview and SKU table",
+          "url": "https://docs.waveshare.com/ESP32-C5-WIFI6-KIT",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "demo-archive",
+          "title": "ESP32-C5-WIFI6-KIT-NXRX-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/ESP32-C5-WIFI6-KIT-NXRX/ESP32-C5-WIFI6-KIT-NXRX-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-C5-WIFI6-KIT-NXRX-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-C5-WIFI6-KIT-NXRX/ESP32-C5-WIFI6-KIT-NXRX-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-C5-WIFI6-KIT/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "仅实现有依据的BOOT GPIO28和GPIO27 WS2812数字RMT输出；USB、射频、充电模拟电气和整机功耗没有实机验收。",
+        "当前C5公开运行时仅支持SRAM直启；完整ROM/Flash镜像保持trial尝试入口并明确返回C5_SRAM_REQUIRED，不把内部诊断程序上架。",
+        "预焊排针和外接天线SKU分别标识；共用主板外观模型不表示已还原各SKU的排针、电池、FPC天线附件。",
+        "机械检查是生产Three加载器的尺寸/来源/射线检查；没有浏览器WebGL或实物装配验收。",
+        "商品URL仍含N16R4，但当前官方SKU表为N16R8/N32R8；不据URL生成不存在的4MiB PSRAM条目。",
+        "GPIO27灯序GRB依据原厂IDF led_strip默认初始化；没有把名称为BlinkRGB但只切换数字GPIO的Arduino示例当作RGB时序证据。",
+        "此原厂STEP的RGB器件位置尚未可靠对应，几何不虚构LED交互定位；数字RGB输出仍可观察。",
+        "本次原厂资源和精确仓库调查未发现完整可启动镜像；仅源码参考，不把资源位图或编译探测bin当固件。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-p4-nano-factory-101",
+      "name": "ESP32-P4-NANO · 官方原厂 10.1-DSI（试运行）",
+      "productIds": [
+        "waveshare-esp32-p4-nano-kit-d"
+      ],
+      "version": "Factory_20261118",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Platform/c943ea11a74024ca46ee57d413a7d271760d2a37/firmware/wifi-eth-16/ESP32-P4-Platform-10.1-DSI-TOUCH-A-wifi-eth-16-rev3-x_Factory_20261118.bin",
+        "sha256": "c2870b964896cb7e573323295a560a94abf38dcb6c79bb110743410fd16c627d",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "watchlistId": "waveshare-esp32-p4-nano-factory-101-official",
+      "sources": [
+        {
+          "title": "Manufacturer firmware README",
+          "url": "https://github.com/waveshareteam/ESP32-P4-Platform/tree/main/firmware",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方固定原厂恢复镜像；此文件要求所标注的外接 10.1 英寸 DSI 显示器，只有明确含屏套件才附加对应触摸器件。",
+        "镜像原样校验芯片、完整布局、XOR checksum 与 appended SHA；不表示原厂启动或硬件功能通过。",
+        "P4 MIPI-DSI、CSI、无线从机、以太网、模拟电源与完整音频未模拟；原厂应用尚不可作为完整体验验收。",
+        "7寸与10.1寸两套未修改原厂完整镜像，经公开Worker各运行3.00客体秒；UART到达SPIFFS、codec控制初始化、LVGL adapter及MIPI DSI PHY Powered on，均未产生帧。DSI、以太网、协处理器射频和音频PCM尚未验收。"
       ]
     }
   ]

@@ -270,12 +270,13 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
   },
   "waveshare-p4-nano": {
     "chip": "esp32p4",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
     "flashMb": 16,
     "psramMb": 32,
-    "sdCard": true,
-    "boardButtons": [
-      "boot"
-    ],
     "virtualRevision": 301
   },
   "waveshare-p4-module-dev-kit": {
@@ -1104,6 +1105,52 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "virtualRevision": 301
   },
   "waveshare-p4-module-dev-kit-101": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "flashMb": 16,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-c5-mini-kit": {
+    "chip": "esp32c5",
+    "flashMb": 4,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c5-pico": {
+    "chip": "esp32c5",
+    "flashMb": 4,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c5-zero": {
+    "chip": "esp32c5",
+    "flashMb": 4,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c5-wifi6-n16r8": {
+    "chip": "esp32c5",
+    "flashMb": 16,
+    "psramMb": 8,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c5-wifi6-n32r8": {
+    "chip": "esp32c5",
+    "flashMb": 32,
+    "psramMb": 8,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-p4-nano-kit-101": {
     "chip": "esp32p4",
     "display": false,
     "touch": true,

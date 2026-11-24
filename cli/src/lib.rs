@@ -593,12 +593,14 @@ fn attach_wifi<B: SocBus>(bus: &mut B, o: &Opts, net_log: bool) {
 
 fn setup_c5(o: &Opts) -> esp32c5::Machine {
     let board = if o.board == "atech14" { "stamp-c5" } else { &o.board };
-    let (flash_mb, psram_mb) = match board {
+    let (flash_mb, psram_mb) = esp_soc::waveshare_profiles::memory_mib(board)
+        .or_else(|| esp32c5::board::waveshare_core::CoreVariant::from_name(board).map(|v| v.memory_mib()))
+        .unwrap_or_else(|| match board {
         "waveshare-c5-touch169" => (16, 8),
         "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8),
         "lilygo-t-dongle-c5" => (16, 0),
         _ => (4, 0),
-    };
+    });
     if o.flash_mb.unwrap_or(flash_mb) != flash_mb || o.psram_mb.unwrap_or(psram_mb) != psram_mb { usage_error("C5 board requires its documented Flash and PSRAM capacity"); }
     if o.boot.as_deref().is_some_and(|boot| boot != "app") || o.rom.is_some() || o.app.is_none() || o.bootloader.is_some() || o.ptable.is_some() || o.flash_image.is_some() || !o.flash_at.is_empty() {
         usage_error("C5 currently requires --boot app --app SRAM.bin; ROM/Flash boot and ESP-IDF images are not supported");
