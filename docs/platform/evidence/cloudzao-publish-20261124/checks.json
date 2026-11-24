@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "scope": "Standalone CloudZao import on origin/main; no Waveshare batch changes",
+  "baseCommit": "9e0f09c3f5507e0c50be1bb69d5653a40b42a3d4",
+  "sourceCommit": "fa323de036b8a04377eaf873b83b9ca65c5a4477",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "checks": [
+    {
+      "name": "clippy-native",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 6.081,
+      "completedAt": "2026-11-24T03:13:34.129753+00:00"
+    },
+    {
+      "name": "clippy-wasm",
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "-p",
+        "esp32sim-wasm",
+        "--features",
+        "jit-tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 2.444,
+      "completedAt": "2026-11-24T03:13:36.573776+00:00"
+    },
+    {
+      "name": "claw-rust-guest",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp32s3",
+        "--test",
+        "cloudzao_claw154"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 15.353,
+      "completedAt": "2026-11-24T03:13:51.926730+00:00"
+    },
+    {
+      "name": "claw-rust-board",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp32s3",
+        "--lib",
+        "cloudzao_claw154::tests"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 22.356,
+      "completedAt": "2026-11-24T03:14:14.282858+00:00"
+    },
+    {
+      "name": "wasm-build",
+      "command": [
+        "tools/wasm-build.sh"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 27.173,
+      "completedAt": "2026-11-24T03:14:41.456413+00:00"
+    },
+    {
+      "name": "platform-tests",
+      "command": [
+        "node",
+        "--test",
+        "tools/platform-*-test.mjs"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 6.052,
+      "completedAt": "2026-11-24T03:14:47.509148+00:00"
+    },
+    {
+      "name": "recording-real",
+      "command": [
+        "node",
+        "tools/platform-recording-test.mjs",
+        "--real"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 4.225,
+      "completedAt": "2026-11-24T03:14:51.734638+00:00"
+    },
+    {
+      "name": "wasm-sections",
+      "command": [
+        "node",
+        "tools/check-wasm-sections.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 0.082,
+      "completedAt": "2026-11-24T03:14:51.817413+00:00"
+    },
+    {
+      "name": "public-stage",
+      "command": [
+        "node",
+        "tools/stage-platform-pages.mjs",
+        "web",
+        "target/pages-cloudzao-publish"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 1.096,
+      "completedAt": "2026-11-24T03:14:52.914205+00:00"
+    }
+  ],
+  "rustGuestTestsPassed": 3,
+  "rustBoardTestsPassed": 2,
+  "platformTestsPassed": 490,
+  "platformTestsFailed": 0,
+  "wasm": {
+    "bytes": 6938554,
+    "sha256": "fe4beb351ca7e77c6c85602eb373726182cdb10b6665dca59dbbcfdd91431be2"
+  },
+  "publicSiteBytes": 766742796,
+  "browser": {
+    "execution": "Real headless Chromium, production Worker/WASM and original first-party SRAM diagnostic",
+    "productId": "cloudzao-claw-154",
+    "diagnosticSha256": "666d7b2e553d6788aafc48282ebfec1fb121b76849295437d098b8f55d4ca4f8",
+    "rgbaDimensions": [
+      240,
+      240
+    ],
+    "initialRedSha256": "cc40d55026f12316159581fd48d75c081dde83cf310b5d3d94b1748e37837f29",
+    "pressedGreenSha256": "8dccabd567e35d3ec43e8f903dfd49500937939dfec4e3d87ff8769926d15637",
+    "releasedSha256": "cc40d55026f12316159581fd48d75c081dde83cf310b5d3d94b1748e37837f29",
+    "freshUartMarkers": [
+      "BUTTON DOWN",
+      "FRAME COMPLETE",
+      "BUTTON UP",
+      "FRAME COMPLETE"
+    ],
+    "mobileEmbedWidth": 390,
+    "mobileHorizontalOverflow": false,
+    "pageErrors": [],
+    "claw4": {
+      "geometrySource": "image-measurement",
+      "screenSizeMm": [
+        70.94402335644631,
+        70.94402335644631
+      ],
+      "inspectionRestored": true,
+      "fixedMaterialsPreserved": true,
+      "unknownPcbLabel": "UNKNOWN",
+      "firmwareExecuted": false
+    }
+  },
+  "harnesses": {
+    "tools/fixtures/cloudzao-claw154-browser-check.js": "3e9b1677b8c8aa9d0600f9bdd7f98b08093d1b031fc89c045ba55f8677427d41",
+    "tools/fixtures/cloudzao-claw4-model-check.js": "12bc47f37eebe8e9b90b5a88ac1e3131260e9c1f0ac7f9e6f5692d640f35f558"
+  },
+  "limits": [
+    "First-party diagnostic results do not establish official firmware compatibility or physical hardware acceptance.",
+    "Claw4 keeps runtime.board=null and unavailable.",
+    "The loopback preview cannot use the configured production Internet relay because of its Origin policy; no network claim.",
+    "Screenshots and raw logs are retained only in ignored local output, not committed."
+  ]
+}
