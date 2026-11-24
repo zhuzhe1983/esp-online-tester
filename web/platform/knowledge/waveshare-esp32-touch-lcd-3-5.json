@@ -1,0 +1,808 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-touch-lcd-3-5",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-touch-lcd-3-5",
+  "title": "Waveshare ESP32-Touch-LCD-3.5 · 含电池",
+  "summary": "经典ESP32，16MiB Flash/2MiB PSRAM；320×480 ST7796、FT6336触摸，SKU 32870",
+  "summarySourceIds": [
+    "overview",
+    "schematic-v12"
+  ],
+  "updatedAt": "2026-11-23T22:27:53Z",
+  "hardwareRevision": "V1.2 source schematic; retail revision unspecified",
+  "facts": [
+    {
+      "id": "identity",
+      "label": "精确型号/库存选项",
+      "value": {
+        "sku": "32870",
+        "options": {
+          "3.7V Lithium battery": "Included"
+        },
+        "chip": "ESP32-D0WDR2-V3",
+        "flashMiB": 16,
+        "psramMiB": 2
+      },
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "schematic-v12"
+      ]
+    },
+    {
+      "id": "electrical",
+      "label": "官方原理图及BSP接线",
+      "value": {
+        "lcd": {
+          "controller": "ST7796",
+          "pixels": [
+            320,
+            480
+          ],
+          "host": "SPI2",
+          "clock": 18,
+          "mosi": 23,
+          "miso": 19,
+          "cs": 5,
+          "dc": 27,
+          "backlight": 25,
+          "reset": "TCA9554 EX0"
+        },
+        "touch": {
+          "controller": "FT6336",
+          "address": "0x38",
+          "irq": 37,
+          "reset": "TCA9554 EX1"
+        },
+        "i2c": {
+          "sda": 21,
+          "scl": 22,
+          "devices": {
+            "0x20": "TCA9554",
+            "0x51": "PCF85063",
+            "0x18": "ES8311",
+            "0x34": "AXP2101"
+          }
+        },
+        "boot": 0,
+        "sysOut": 36,
+        "sd": {
+          "clock": 18,
+          "mosi": 23,
+          "miso": 19,
+          "cs": 15
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "bsp-pins",
+        "schematic-v12"
+      ]
+    },
+    {
+      "id": "original-image",
+      "label": "原厂完整镜像审计",
+      "value": {
+        "bytes": 8745186,
+        "sha256": "27b419a5388c9ff2d7045b87abc10514e45c5c519204c50f0b0b07a886f58cc8",
+        "bootloaderOffset": 4096,
+        "chipId": 0,
+        "partitionTableOffset": 32768,
+        "flashMiB": 16,
+        "audit": "docs/platform/research/waveshare-classic-touch35-catalog-20261124/factory-layout-audit.json"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory",
+        "firmware-readme"
+      ]
+    },
+    {
+      "id": "mechanical",
+      "label": "来源可核验的外观模型",
+      "value": {
+        "modelSha256": "a91909c1fae9eb51dca0061941adfac60e29d265a73fc6258daa0d595e473fe3",
+        "outerMm": [
+          63.67,
+          95.11,
+          13.5
+        ],
+        "activeAreaMm": [
+          48.96,
+          73.44
+        ],
+        "feetTotalDepthMm": 14.1,
+        "method": "dimension-photo-reconstruction",
+        "unknowns": [
+          "No exact official CAD, KiCad PCB, embedded footprint STEP or Gerber exists in the inspected pinned product repository tree; this is a bounded dimension/photo reconstruction.",
+          "Outer dimensions, front lip and display active area are manufacturer annotations. Internal wall, back radius, PCB thickness/position, keys, USB and hidden details are explicit estimates.",
+          "The C-shaped blue board belongs to the classic ESP32 Touch LCD3.5. No C5, S3 or P4 PCB has been borrowed.",
+          "Only the observed rear PCB face is photographed. The opposite face and actual component heights remain UNKNOWN; a photograph is not an electrical layout.",
+          "The live framebuffer occupies an open front aperture; no factory screenshot or decorative artwork covers it.",
+          "Battery/no-battery SKUs share the documented case. The battery, speaker cavity, internal fasteners and interconnects are not reconstructed.",
+          "Physical PWR and RESET caps are visual references. BOOT is the sole clickable cap; no simulated power-off is inferred from a GPIO animation.",
+          "No browser WebGL, physical fitting, exact optical material, connector mating, or real hardware validation is asserted."
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "model-0",
+        "model-1",
+        "model-2",
+        "model-3",
+        "model-4",
+        "model-5",
+        "model-6"
+      ],
+      "method": "Use manufacturer dimension labels and the declared original-photo registration; rebuild with prepare_classic_touch35_model.py and the production loader.",
+      "uncertainty": "Annotated outer/active-area dimensions retained at published precision. Wall, PCB and key depths are explicit estimates; hidden geometry remains UNKNOWN, without fit tolerance or hardware acceptance."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "readme",
+      "title": "README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/README.md",
+      "fetchedAt": "2026-11-23T18:33:26Z",
+      "bytes": 6889,
+      "sha256": "8fbc4997444aae7b501b5caf8e7c13933fa753ff85be533818bca41e93c73ccf",
+      "archiveName": "readme--README.md",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/readme--README.md.gz"
+    },
+    {
+      "id": "source-1",
+      "title": "examples__arduino__examples__03_button_example__03_button_example.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/03_button_example/03_button_example.ino",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/03_button_example/03_button_example.ino",
+      "fetchedAt": "2026-11-23T18:33:26Z",
+      "bytes": 2658,
+      "sha256": "802d5261f19488b200da14d5eee5e774a0e6c010f5fcf51841fbfa4c3de81c5f",
+      "archiveName": "source-1--examples__arduino__examples__03_button_example__03_button_example.ino",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-1--examples__arduino__examples__03_button_example__03_button_example.ino.gz"
+    },
+    {
+      "id": "source-2",
+      "title": "examples__arduino__examples__06_tca9554_example__06_tca9554_example.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/06_tca9554_example/06_tca9554_example.ino",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/06_tca9554_example/06_tca9554_example.ino",
+      "fetchedAt": "2026-11-23T18:33:26Z",
+      "bytes": 798,
+      "sha256": "d57d902d45ff33bb6fa7cf623327d711c5a0a45e7f237bb23fbf34de65e5f4c9",
+      "archiveName": "source-2--examples__arduino__examples__06_tca9554_example__06_tca9554_example.ino",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-2--examples__arduino__examples__06_tca9554_example__06_tca9554_example.ino.gz"
+    },
+    {
+      "id": "source-3",
+      "title": "examples__arduino__examples__07_sd_card_test__07_sd_card_test.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/07_sd_card_test/07_sd_card_test.ino",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/07_sd_card_test/07_sd_card_test.ino",
+      "fetchedAt": "2026-11-23T18:33:26Z",
+      "bytes": 4992,
+      "sha256": "122b5dd570a9082ab1750e1a8e8d65a2d8d25286c62506860868048787d3e2b9",
+      "archiveName": "source-3--examples__arduino__examples__07_sd_card_test__07_sd_card_test.ino",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-3--examples__arduino__examples__07_sd_card_test__07_sd_card_test.ino.gz"
+    },
+    {
+      "id": "source-4",
+      "title": "examples__arduino__examples__08_gfx_helloworld__08_gfx_helloworld.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/08_gfx_helloworld/08_gfx_helloworld.ino",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/08_gfx_helloworld/08_gfx_helloworld.ino",
+      "fetchedAt": "2026-11-23T18:33:31Z",
+      "bytes": 1381,
+      "sha256": "917d355dd037a33442b7259eee7c821e2621c9b0da9faec16af6461053ce791a",
+      "archiveName": "source-4--examples__arduino__examples__08_gfx_helloworld__08_gfx_helloworld.ino",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-4--examples__arduino__examples__08_gfx_helloworld__08_gfx_helloworld.ino.gz"
+    },
+    {
+      "id": "source-5",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__bsp_board.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/bsp_board.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/bsp_board.cpp",
+      "fetchedAt": "2026-11-23T18:37:09Z",
+      "bytes": 18399,
+      "sha256": "bbb1d31c27f722b11fdd2fab634f1b95f00029eac3524937eeba0d31c694672a",
+      "archiveName": "source-5--examples__factory__components__esp32_touch_lcd_3_5__bsp_board.cpp",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-5--examples__factory__components__esp32_touch_lcd_3_5__bsp_board.cpp.gz"
+    },
+    {
+      "id": "source-6",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__esp32_touch_lcd_3_5.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/esp32_touch_lcd_3_5.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/esp32_touch_lcd_3_5.cpp",
+      "fetchedAt": "2026-11-23T18:37:09Z",
+      "bytes": 29739,
+      "sha256": "7bbd4e8519f867ff8e8385c0efbcf0619c3c5d82e8db132ed67acfa03f9f8a71",
+      "archiveName": "source-6--examples__factory__components__esp32_touch_lcd_3_5__esp32_touch_lcd_3_5.cpp",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-6--examples__factory__components__esp32_touch_lcd_3_5__esp32_touch_lcd_3_5.cpp.gz"
+    },
+    {
+      "id": "source-7",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/idf_component.yml",
+      "fetchedAt": "2026-11-23T18:33:31Z",
+      "bytes": 244,
+      "sha256": "2602ca6f54874eef36e2388b37b9c83344d679768ef54c1d98f0d72229baeec8",
+      "archiveName": "source-7--examples__factory__components__esp32_touch_lcd_3_5__idf_component.yml",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-7--examples__factory__components__esp32_touch_lcd_3_5__idf_component.yml.gz"
+    },
+    {
+      "id": "source-8",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__include__bsp__board.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/board.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/board.h",
+      "fetchedAt": "2026-11-23T18:33:31Z",
+      "bytes": 2267,
+      "sha256": "7039eb288f865660c9640fc4188ff5f820487c7e4b6010f955ca5195340d896a",
+      "archiveName": "source-8--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__board.h",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-8--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__board.h.gz"
+    },
+    {
+      "id": "bsp-pins",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__include__bsp__config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/config.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/config.h",
+      "fetchedAt": "2026-11-23T18:33:31Z",
+      "bytes": 575,
+      "sha256": "9c2b3229543db1cebb75cdc9a1411f24480543b410cc12a6263553dcbfcc9dec",
+      "archiveName": "bsp-pins--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__config.h",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/bsp-pins--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__config.h.gz"
+    },
+    {
+      "id": "source-10",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__include__bsp__display.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/display.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/display.h",
+      "fetchedAt": "2026-11-23T18:33:39Z",
+      "bytes": 4002,
+      "sha256": "31d13a63bfd519edcc625aae0f3eb207cc52daf38b5b0f35f769f1b8beb9778c",
+      "archiveName": "source-10--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__display.h",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-10--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__display.h.gz"
+    },
+    {
+      "id": "source-11",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__include__bsp__esp-bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/esp-bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/esp-bsp.h",
+      "fetchedAt": "2026-11-23T18:33:39Z",
+      "bytes": 52,
+      "sha256": "f1f258f30d0039c5b3ef6c9206a1a2f228ffbd4dafc4b8e450bcfa537b85e09f",
+      "archiveName": "source-11--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__esp-bsp.h",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-11--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__esp-bsp.h.gz"
+    },
+    {
+      "id": "source-12",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__include__bsp__esp32_touch_lcd_3_5.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/esp32_touch_lcd_3_5.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/esp32_touch_lcd_3_5.h",
+      "fetchedAt": "2026-11-23T18:33:39Z",
+      "bytes": 4621,
+      "sha256": "6aaa985bfb4f4fa24cd9544bd73dd10083dac67662c44dc0bf2a822a97dd7a96",
+      "archiveName": "source-12--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__esp32_touch_lcd_3_5.h",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-12--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__esp32_touch_lcd_3_5.h.gz"
+    },
+    {
+      "id": "source-13",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__include__bsp__touch.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/touch.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/touch.h",
+      "fetchedAt": "2026-11-23T18:33:39Z",
+      "bytes": 2303,
+      "sha256": "2da8c9ebbce82db3dc84df7ddc21ed95201cdbd8e1d39e2becb880a8aa659021",
+      "archiveName": "source-13--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__touch.h",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-13--examples__factory__components__esp32_touch_lcd_3_5__include__bsp__touch.h.gz"
+    },
+    {
+      "id": "source-14",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__priv_include__bsp_board_internal.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/priv_include/bsp_board_internal.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/priv_include/bsp_board_internal.h",
+      "fetchedAt": "2026-11-23T18:33:44Z",
+      "bytes": 153,
+      "sha256": "cfcb66ce6c71a620d6a82a3d3724f4c978516fcfb15dd396d04e4d220c7f4425",
+      "archiveName": "source-14--examples__factory__components__esp32_touch_lcd_3_5__priv_include__bsp_board_internal.h",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-14--examples__factory__components__esp32_touch_lcd_3_5__priv_include__bsp_board_internal.h.gz"
+    },
+    {
+      "id": "source-15",
+      "title": "examples__factory__components__esp32_touch_lcd_3_5__priv_include__bsp_err_check.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/priv_include/bsp_err_check.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/priv_include/bsp_err_check.h",
+      "fetchedAt": "2026-11-23T18:33:44Z",
+      "bytes": 1502,
+      "sha256": "63599e8d8623716579e7cda929e0656fe71e9d8640025140fa3c8c85d37f5c97",
+      "archiveName": "source-15--examples__factory__components__esp32_touch_lcd_3_5__priv_include__bsp_err_check.h",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-15--examples__factory__components__esp32_touch_lcd_3_5__priv_include__bsp_err_check.h.gz"
+    },
+    {
+      "id": "source-16",
+      "title": "examples__factory__components__esp_lcd_st7796__esp_lcd_st7796.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp_lcd_st7796/esp_lcd_st7796.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp_lcd_st7796/esp_lcd_st7796.c",
+      "fetchedAt": "2026-11-23T19:18:03Z",
+      "bytes": 15920,
+      "sha256": "3aa0e46f9e536a69a4f047c837a837d08d3c180bd69d598ce3980ac0326c5e94",
+      "archiveName": "source-16--examples__factory__components__esp_lcd_st7796__esp_lcd_st7796.c",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-16--examples__factory__components__esp_lcd_st7796__esp_lcd_st7796.c.gz"
+    },
+    {
+      "id": "source-17",
+      "title": "examples__factory__components__esp_lcd_touch_ft6336__esp_lcd_touch_ft6336.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp_lcd_touch_ft6336/esp_lcd_touch_ft6336.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp_lcd_touch_ft6336/esp_lcd_touch_ft6336.c",
+      "fetchedAt": "2026-11-23T19:18:03Z",
+      "bytes": 9875,
+      "sha256": "5540b7b57f5b344f00ca94362b5066d48ac5d14878d5ac015f75c3beb6408c44",
+      "archiveName": "source-17--examples__factory__components__esp_lcd_touch_ft6336__esp_lcd_touch_ft6336.c",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-17--examples__factory__components__esp_lcd_touch_ft6336__esp_lcd_touch_ft6336.c.gz"
+    },
+    {
+      "id": "factory",
+      "title": "firmware__ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+      "fetchedAt": "2026-11-23T18:33:44Z",
+      "bytes": 8745186,
+      "sha256": "27b419a5388c9ff2d7045b87abc10514e45c5c519204c50f0b0b07a886f58cc8",
+      "archiveName": "factory--firmware__ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin"
+    },
+    {
+      "id": "firmware-readme",
+      "title": "firmware__README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/README.md",
+      "fetchedAt": "2026-11-23T18:33:44Z",
+      "bytes": 944,
+      "sha256": "975d5cafb18c29faaf718ceb03cf8d097014319486d24047ae325a72ec6d2226",
+      "archiveName": "firmware-readme--firmware__README.md",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/firmware-readme--firmware__README.md.gz"
+    },
+    {
+      "id": "source-20",
+      "title": "firmware__README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/README_ZH.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/README_ZH.md",
+      "fetchedAt": "2026-11-23T18:33:51Z",
+      "bytes": 907,
+      "sha256": "2bb0a0e07d40ed832ed762707dfa9ddb4f69bddea6ccc4aa6ce249c9c7260509",
+      "archiveName": "source-20--firmware__README_ZH.md",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-20--firmware__README_ZH.md.gz"
+    },
+    {
+      "id": "source-21",
+      "title": "hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-Legacy.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-Legacy.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-Legacy.pdf",
+      "fetchedAt": "2026-11-23T18:33:51Z",
+      "bytes": 238985,
+      "sha256": "44e89b7bbe346489cdd78c2d3b17524ecf040f9379b744c1d49c1740d92cb19e",
+      "archiveName": "source-21--hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-Legacy.pdf",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-21--hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-Legacy.pdf.gz"
+    },
+    {
+      "id": "source-22",
+      "title": "hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-V1.1.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.1.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.1.pdf",
+      "fetchedAt": "2026-11-23T18:33:51Z",
+      "bytes": 238986,
+      "sha256": "6d6971e9163572c8c5f3b87ee9269d065670c2a1513c6511d1fe65f4619dcfa7",
+      "archiveName": "source-22--hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-V1.1.pdf",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/source-22--hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-V1.1.pdf.gz"
+    },
+    {
+      "id": "schematic-v12",
+      "title": "hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+      "fetchedAt": "2026-11-23T18:33:51Z",
+      "bytes": 173578,
+      "sha256": "e4ca5ceb4eecef88a1f53ae5fc51199df0d4d046dcb49949beaa7d1cde692b81",
+      "archiveName": "schematic-v12--hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/schematic-v12--hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf.gz"
+    },
+    {
+      "id": "tree",
+      "title": "tree.json",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-Touch-LCD-3.5/git/trees/main?recursive=1",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-Touch-LCD-3.5/git/trees/main?recursive=1",
+      "fetchedAt": "2026-11-23T18:22:30Z",
+      "bytes": 1031757,
+      "sha256": "cb3c07a445056378e955de94181c215b7a290db24f5fb0a01a1bd5eee5aaf501",
+      "archiveName": "tree--tree.json",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/tree--tree.json.gz"
+    },
+    {
+      "id": "overview",
+      "title": "overview.html",
+      "url": "https://www.waveshare.com/wiki/ESP32-Touch-LCD-3.5",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/wiki/ESP32-Touch-LCD-3.5",
+      "fetchedAt": "2026-11-23T18:18:10Z",
+      "bytes": 128903,
+      "sha256": "8f9a83dcfbc27e58571a0abdc914d5d158754632b946343c566bfaea54a25796",
+      "archiveName": "overview--overview.html",
+      "notes": "Original bytes: docs/platform/research/waveshare-classic-touch35-catalog-20261124/overview--overview.html.gz"
+    },
+    {
+      "id": "model-0",
+      "title": "dimension-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-size.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-size.jpg",
+      "fetchedAt": "2026-11-23T18:41:25Z",
+      "bytes": 203621,
+      "sha256": "382f1f7e546f87996907b2e12773abe959f920cfecaa8340c1a7f721bcabfcaf",
+      "archiveName": "waveshare-esp32-touch-lcd-3-5--dimension-photo.jpg",
+      "notes": "Unchanged source/retention hashes in web/platform/assets/waveshare-esp32-touch-lcd-3-5/source-manifest.json"
+    },
+    {
+      "id": "model-1",
+      "title": "assembled-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-1.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-1.jpg",
+      "fetchedAt": "2026-11-23T18:41:20Z",
+      "bytes": 229800,
+      "sha256": "a21e62ab6a2f791c4926b576a6098685e6a54a14b2304a677e5101571c8d354b",
+      "archiveName": "waveshare-esp32-touch-lcd-3-5--assembled-photo.jpg",
+      "notes": "Unchanged source/retention hashes in web/platform/assets/waveshare-esp32-touch-lcd-3-5/source-manifest.json"
+    },
+    {
+      "id": "model-2",
+      "title": "pcb-photo",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-inter-1.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-inter-1.jpg",
+      "fetchedAt": "2026-11-23T18:41:20Z",
+      "bytes": 199114,
+      "sha256": "3e42d13d081a8ebb1f671eac5f959ddeac80e39b015ab1cfd047d0c272501d84",
+      "archiveName": "waveshare-esp32-touch-lcd-3-5--pcb-photo.jpg",
+      "notes": "Unchanged source/retention hashes in web/platform/assets/waveshare-esp32-touch-lcd-3-5/source-manifest.json"
+    },
+    {
+      "id": "model-3",
+      "title": "overview",
+      "url": "https://www.waveshare.com/wiki/ESP32-Touch-LCD-3.5",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/wiki/ESP32-Touch-LCD-3.5",
+      "fetchedAt": "2026-11-23T18:18:10Z",
+      "bytes": 128903,
+      "sha256": "8f9a83dcfbc27e58571a0abdc914d5d158754632b946343c566bfaea54a25796",
+      "archiveName": "waveshare-esp32-touch-lcd-3-5--overview.html.gz",
+      "notes": "Unchanged source/retention hashes in web/platform/assets/waveshare-esp32-touch-lcd-3-5/source-manifest.json"
+    },
+    {
+      "id": "model-4",
+      "title": "repository-tree",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-Touch-LCD-3.5/git/trees/main?recursive=1",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-Touch-LCD-3.5/git/trees/main?recursive=1",
+      "fetchedAt": "2026-11-23T18:22:30Z",
+      "bytes": 1031757,
+      "sha256": "cb3c07a445056378e955de94181c215b7a290db24f5fb0a01a1bd5eee5aaf501",
+      "archiveName": "waveshare-esp32-touch-lcd-3-5--repository-tree.json.gz",
+      "notes": "Unchanged source/retention hashes in web/platform/assets/waveshare-esp32-touch-lcd-3-5/source-manifest.json"
+    },
+    {
+      "id": "model-5",
+      "title": "repository-readme",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/README.md",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/README.md",
+      "fetchedAt": "2026-11-23T18:33:26Z",
+      "bytes": 6889,
+      "sha256": "8fbc4997444aae7b501b5caf8e7c13933fa753ff85be533818bca41e93c73ccf",
+      "archiveName": "waveshare-esp32-touch-lcd-3-5--README.md.gz",
+      "notes": "Unchanged source/retention hashes in web/platform/assets/waveshare-esp32-touch-lcd-3-5/source-manifest.json"
+    },
+    {
+      "id": "model-6",
+      "title": "schematic-v1-2",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+      "fetchedAt": "2026-11-23T18:33:51Z",
+      "bytes": 173578,
+      "sha256": "e4ca5ceb4eecef88a1f53ae5fc51199df0d4d046dcb49949beaa7d1cde692b81",
+      "archiveName": "waveshare-esp32-touch-lcd-3-5--schematic-v1-2.pdf.gz",
+      "notes": "Unchanged source/retention hashes in web/platform/assets/waveshare-esp32-touch-lcd-3-5/source-manifest.json"
+    }
+  ],
+  "assets": [
+    {
+      "id": "readme",
+      "sourceId": "readme",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/README.md"
+    },
+    {
+      "id": "source-1",
+      "sourceId": "source-1",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/03_button_example/03_button_example.ino"
+    },
+    {
+      "id": "source-2",
+      "sourceId": "source-2",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/06_tca9554_example/06_tca9554_example.ino"
+    },
+    {
+      "id": "source-3",
+      "sourceId": "source-3",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/07_sd_card_test/07_sd_card_test.ino"
+    },
+    {
+      "id": "source-4",
+      "sourceId": "source-4",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/arduino/examples/08_gfx_helloworld/08_gfx_helloworld.ino"
+    },
+    {
+      "id": "source-5",
+      "sourceId": "source-5",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/bsp_board.cpp"
+    },
+    {
+      "id": "source-6",
+      "sourceId": "source-6",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/esp32_touch_lcd_3_5.cpp"
+    },
+    {
+      "id": "source-7",
+      "sourceId": "source-7",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/idf_component.yml"
+    },
+    {
+      "id": "source-8",
+      "sourceId": "source-8",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/board.h"
+    },
+    {
+      "id": "bsp-pins",
+      "sourceId": "bsp-pins",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/config.h"
+    },
+    {
+      "id": "source-10",
+      "sourceId": "source-10",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/display.h"
+    },
+    {
+      "id": "source-11",
+      "sourceId": "source-11",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/esp-bsp.h"
+    },
+    {
+      "id": "source-12",
+      "sourceId": "source-12",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/esp32_touch_lcd_3_5.h"
+    },
+    {
+      "id": "source-13",
+      "sourceId": "source-13",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/touch.h"
+    },
+    {
+      "id": "source-14",
+      "sourceId": "source-14",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/priv_include/bsp_board_internal.h"
+    },
+    {
+      "id": "source-15",
+      "sourceId": "source-15",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/priv_include/bsp_err_check.h"
+    },
+    {
+      "id": "source-16",
+      "sourceId": "source-16",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp_lcd_st7796/esp_lcd_st7796.c"
+    },
+    {
+      "id": "source-17",
+      "sourceId": "source-17",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp_lcd_touch_ft6336/esp_lcd_touch_ft6336.c"
+    },
+    {
+      "id": "factory",
+      "sourceId": "factory",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin"
+    },
+    {
+      "id": "firmware-readme",
+      "sourceId": "firmware-readme",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/README.md"
+    },
+    {
+      "id": "source-20",
+      "sourceId": "source-20",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/README_ZH.md"
+    },
+    {
+      "id": "source-21",
+      "sourceId": "source-21",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-Legacy.pdf"
+    },
+    {
+      "id": "source-22",
+      "sourceId": "source-22",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.1.pdf"
+    },
+    {
+      "id": "schematic-v12",
+      "sourceId": "schematic-v12",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf"
+    },
+    {
+      "id": "tree",
+      "sourceId": "tree",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-Touch-LCD-3.5/git/trees/main?recursive=1"
+    },
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/wiki/ESP32-Touch-LCD-3.5"
+    },
+    {
+      "id": "model-0",
+      "sourceId": "model-0",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-size.jpg"
+    },
+    {
+      "id": "model-1",
+      "sourceId": "model-1",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-1.jpg"
+    },
+    {
+      "id": "model-2",
+      "sourceId": "model-2",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-Touch-LCD-3.5/ESP32-Touch-LCD-3.5-details-inter-1.jpg"
+    },
+    {
+      "id": "model-3",
+      "sourceId": "model-3",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/wiki/ESP32-Touch-LCD-3.5"
+    },
+    {
+      "id": "model-4",
+      "sourceId": "model-4",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-Touch-LCD-3.5/git/trees/main?recursive=1"
+    },
+    {
+      "id": "model-5",
+      "sourceId": "model-5",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/README.md"
+    },
+    {
+      "id": "model-6",
+      "sourceId": "model-6",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "产品发布日期",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "overview"
+      ]
+    },
+    {
+      "id": "hardware-acceptance",
+      "label": "实物/整机验收",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": []
+    },
+    {
+      "id": "exact-thirdparty",
+      "label": "精确UIFlow/Xiaozhi兼容恢复包",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "tree"
+      ],
+      "notes": "仅监视官方生态，未由通用ESP32支持推导此板能运行。"
+    }
+  ],
+  "collectionNotes": [
+    "经典ESP32-D0WDR2-V3的16MiB Flash/2MiB PSRAM配置，不能替换成同尺寸S3/C5板。",
+    "SPI RGB565、FT6336单点、TCA9554复位、RTC、codec控制寄存器和SPI TF为数字子集；音频PCM、PMIC到MCU系统断电、充电、电池模拟和触摸手势未验收。",
+    "仅BOOT GPIO0作为物理按键输入；PWR/RESET外形保留，但不把SYS_OUT36状态脚冒充电源键。",
+    "厂家完整原固件原字节通过芯片/分区/校验审计；实际5s运行已过16MiB Flash/2MiB PSRAM启动与内存测试，进入app_main后PMU配置报ESP_ERR_INVALID_STATE，屏幕仍黑/0更新；保持trial，完整应用、WebGL与实物未验收。",
+    "精确PCB没有公开CAD；尺寸/照片重建的外壳墙厚、PCB尺寸/高度、按钮深度和内部连接仍为显式估计/UNKNOWN；只使用本款经典ESP32照片。"
+  ]
+}

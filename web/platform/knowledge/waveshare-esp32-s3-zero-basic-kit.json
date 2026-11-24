@@ -1,0 +1,655 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-zero-basic-kit",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-zero-basic-kit",
+  "title": "Waveshare ESP32-S3-Zero-Basic-Kit",
+  "summary": "套件含ESP32-S3-Zero主控；4MiB Flash/2MiB PSRAM。外接OLED及其他松散外设未预接线。",
+  "summarySourceIds": [
+    "kit-product",
+    "kit-s3-docs"
+  ],
+  "updatedAt": "2026-11-23T22:37:27Z",
+  "hardwareRevision": "unspecified",
+  "facts": [
+    {
+      "id": "kit-sku",
+      "label": "精确含主控套件SKU",
+      "basis": "official",
+      "sourceIds": [
+        "kit-product",
+        "kit-wiki",
+        "kit-s3-docs"
+      ],
+      "value": {
+        "sku": "33356",
+        "controllerProductId": "waveshare-esp32-s3-zero",
+        "controllerName": "ESP32-S3-Zero",
+        "runtime": {
+          "board": "waveshare-s3-zero",
+          "flashMb": 4,
+          "psramMb": 2,
+          "status": "partial",
+          "touch": false
+        },
+        "controllerOnlyModel": true
+      }
+    },
+    {
+      "id": "loose-accessories",
+      "label": "独立外设和配件，非板载显示",
+      "basis": "official",
+      "sourceIds": [
+        "kit-product"
+      ],
+      "value": {
+        "items": [
+          "1.5inch SSD1327 OLED module",
+          "PIR motion sensor",
+          "active buzzer",
+          "8-bit WS2812 RGB module",
+          "10k potentiometer",
+          "3 pushbuttons",
+          "3 discrete LEDs",
+          "10x330ohm resistors",
+          "830-point breadboard",
+          "USB-A/USB-C cable",
+          "jumper wires",
+          "40-pin header",
+          "storage box"
+        ],
+        "prewired": false,
+        "onboardDisplay": false,
+        "accessoryOnlySkuExcluded": "33355"
+      }
+    },
+    {
+      "id": "tutorial-source",
+      "label": "完整固定官方教程目录",
+      "basis": "official",
+      "sourceIds": [
+        "kit-s3-tree"
+      ],
+      "value": {
+        "repository": "waveshareteam/ESP32-S3-Zero-Basic-Kit",
+        "commit": "17304b9271a7ae91e5d8f37de09c18796f6f4b91",
+        "binaryCandidates": [],
+        "factoryFirmwareEstablished": false
+      }
+    },
+    {
+      "id": "controller-identity",
+      "label": "随附主控板 · 精确型号与存储",
+      "value": {
+        "sku": "25081",
+        "flashMiB": 4,
+        "psramMiB": 2,
+        "runtimeBoard": "waveshare-s3-zero"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "controller-overview",
+        "controller-schematic"
+      ]
+    },
+    {
+      "id": "controller-buttons",
+      "label": "随附主控板 · 物理按键",
+      "value": {
+        "bootGpio": 0,
+        "reset": "hardware-reset"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "controller-overview",
+        "controller-schematic"
+      ]
+    },
+    {
+      "id": "controller-led",
+      "label": "随附主控板 · 板载 LED 与线序",
+      "value": {
+        "kind": "addressable",
+        "gpio": 21,
+        "wireOrder": "GRB"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "controller-schematic",
+        "controller-led-example"
+      ],
+      "notes": "按官方示例驱动的数字颜色顺序；不是光学亮度校准。"
+    },
+    {
+      "id": "controller-firmware-layout",
+      "label": "随附主控板 · 原始固件分段与哈希",
+      "value": {
+        "role": "official-example",
+        "segments": [
+          {
+            "path": "firmware/zero-0.bin",
+            "offset": 0,
+            "bytes": 15088,
+            "sha256": "8c77157632c9c8d9f93aaba9b92e4e6ce7c3de1f6861aa83d20d43f38e06c206",
+            "archive": {
+              "format": "zip",
+              "entry": "BlinkRGB/flash_download_tool_3.9.4/bin/BlinkRGB.ino.bootloader.bin",
+              "containerSha256": "936c4fc4e155a2042f7124f4730ea42047ee3d59d9d9ef87be7e959acda82550",
+              "containerBytes": 35731967
+            },
+            "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip"
+          },
+          {
+            "path": "firmware/zero-8000.bin",
+            "offset": 32768,
+            "bytes": 3072,
+            "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+            "archive": {
+              "format": "zip",
+              "entry": "BlinkRGB/flash_download_tool_3.9.4/bin/BlinkRGB.ino.partitions.bin",
+              "containerSha256": "936c4fc4e155a2042f7124f4730ea42047ee3d59d9d9ef87be7e959acda82550",
+              "containerBytes": 35731967
+            },
+            "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip"
+          },
+          {
+            "path": "firmware/zero-10000.bin",
+            "offset": 65536,
+            "bytes": 246544,
+            "sha256": "be45f5c427d65453fb9a0d350b7049c0cc172f5bb9c1b07c03770e3b51195039",
+            "archive": {
+              "format": "zip",
+              "entry": "BlinkRGB/flash_download_tool_3.9.4/bin/BlinkRGB.ino.bin",
+              "containerSha256": "936c4fc4e155a2042f7124f4730ea42047ee3d59d9d9ef87be7e959acda82550",
+              "containerBytes": 35731967
+            },
+            "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "controller-resources",
+        "controller-firmware-archive"
+      ]
+    },
+    {
+      "id": "controller-model-dimensions",
+      "label": "随附主控板 · 3D 模型尺寸与来源",
+      "value": {
+        "pcb": {
+          "sizeMm": [
+            18,
+            23.5,
+            1.59999934
+          ],
+          "basis": [
+            "dimension-photo",
+            "official-cad"
+          ],
+          "thicknessBasis": "CAD"
+        },
+        "overallCadMm": [
+          18.01734268,
+          24.74264786,
+          4.85037417
+        ]
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "controller-model-official-cad",
+        "controller-model-resources",
+        "controller-model-dimension-photo",
+        "controller-model-component-photo"
+      ],
+      "method": "Original official CAD tessellation and source dimension comparison.",
+      "notes": "CAD is the manufacturer linked base Zero mechanical file. Do not apply its FH4R2 identity to the independently sold N8R8 option. No editable PCB stack, RF behaviour or production fit certification is implied. PCB photograph is registered to the nominal 18 x 23.5 mm board rectangle; slight perspective and photo/CAD differences remain. Native chip and USB geometry is not stretched to fit it. BOOT and RGB body locations are matched to the official component photograph; RESET is geometry only and uses the platform reset action. CAD materials and dimensions are retained with explicitly photo-based color overrides; no measured optical material is claimed."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "kit-product",
+      "title": "esp32-xx-basic-kit.html",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-xx-basic-kit.htm",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-xx-basic-kit.htm",
+      "fetchedAt": "2026-11-23T16:32:28Z",
+      "bytes": 197372,
+      "sha256": "349ba16543eb25ec21b56cbfcae8a51da30f54d9a21323a3e3f9bc234e6d9aec",
+      "archiveName": "kit-product--esp32-xx-basic-kit.html"
+    },
+    {
+      "id": "kit-wiki",
+      "title": "overview.html",
+      "url": "https://www.waveshare.com/wiki/ESP32-XX-Basic-Kit-Acce",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/wiki/ESP32-XX-Basic-Kit-Acce",
+      "fetchedAt": "2026-11-23T18:18:10Z",
+      "bytes": 15419,
+      "sha256": "e92a7985c9acbd1bbad3c9933c33460350ad15c7cda66df0b93f3d999380619c",
+      "archiveName": "kit-wiki--overview.html"
+    },
+    {
+      "id": "kit-s3-docs",
+      "title": "s3-overview.html",
+      "url": "https://docs.waveshare.com/ESP32-S3-Zero/?variant=ESP32-S3-Zero-Basic-Kit",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Zero?variant=ESP32-S3-Zero-Basic-Kit",
+      "fetchedAt": "2026-11-23T22:23:27Z",
+      "bytes": 67468,
+      "sha256": "09469fa74b11c0fff0d8f30648f13ac0899a6f9cfb141b2f64e3dc971c6e19ad",
+      "archiveName": "kit-s3-docs--s3-overview.html"
+    },
+    {
+      "id": "kit-c6-docs",
+      "title": "c6-overview.html",
+      "url": "https://docs.waveshare.com/ESP32-C6-Zero/?variant=ESP32-C6-Zero-Basic-Kit",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Zero?variant=ESP32-C6-Zero-Basic-Kit",
+      "fetchedAt": "2026-11-23T22:23:27Z",
+      "bytes": 39677,
+      "sha256": "b845789f7631bc8a565f12ae4654ae61384f98358b0426fea9f1d72db7aff85c",
+      "archiveName": "kit-c6-docs--c6-overview.html"
+    },
+    {
+      "id": "kit-c3-docs",
+      "title": "c3-overview.html",
+      "url": "https://docs.waveshare.com/ESP32-C3-Zero/?variant=ESP32-C3-Zero-Basic-Kit",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C3-Zero?variant=ESP32-C3-Zero-Basic-Kit",
+      "fetchedAt": "2026-11-23T22:23:27Z",
+      "bytes": 43196,
+      "sha256": "355f835ee1ecadc37cb25437f73f28788a976b3ef34470017033b524207d6195",
+      "archiveName": "kit-c3-docs--c3-overview.html"
+    },
+    {
+      "id": "kit-s3-tree",
+      "title": "s3-tree.json",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-Zero-Basic-Kit/git/trees/17304b9271a7ae91e5d8f37de09c18796f6f4b91?recursive=1",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-Zero-Basic-Kit/git/trees/17304b9271a7ae91e5d8f37de09c18796f6f4b91?recursive=1",
+      "fetchedAt": "2026-11-23T22:25:04Z",
+      "bytes": 98044,
+      "sha256": "1a63d2a34c45baf4120d5aa9aae02cb6c229ca27a703a726f010245e5f9e0a23",
+      "archiveName": "kit-s3-tree--s3-tree.json"
+    },
+    {
+      "id": "kit-c6-tree",
+      "title": "tree.json",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1",
+      "fetchedAt": "2026-11-23T20:44:43Z",
+      "bytes": 95058,
+      "sha256": "17f93fcdac74d23a3ec5428e9f1c8cbec9a8a98c85004e14ddc7bf8c9978be4e",
+      "archiveName": "kit-c6-tree--tree.json"
+    },
+    {
+      "id": "kit-c3-tree",
+      "title": "tree.json",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C3-Zero-Basic-Kit/git/trees/4db4202faa251964321f79b39efb232d6ca7bef5?recursive=1",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/waveshareteam/ESP32-C3-Zero-Basic-Kit/git/trees/4db4202faa251964321f79b39efb232d6ca7bef5?recursive=1",
+      "fetchedAt": "2026-11-23T20:44:43Z",
+      "bytes": 100789,
+      "sha256": "c9f18cf25ec34c32d0349ddd3d0acc7df3309cca01e5d0ed6805683d888b3b39",
+      "archiveName": "kit-c3-tree--tree.json"
+    },
+    {
+      "id": "kit-image-13",
+      "title": "controller-13.jpg.failed.json",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-XX-Basic-Kit/ESP32-XX-Basic-Kit-Acce-details-13.jpg",
+      "kind": "manufacturer-photo",
+      "status": "failed",
+      "attemptedAt": "2026-11-23T22:23:27Z",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "id": "kit-image-19",
+      "title": "controller-19.jpg.failed.json",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-XX-Basic-Kit/ESP32-XX-Basic-Kit-Acce-details-19.jpg",
+      "kind": "manufacturer-photo",
+      "status": "failed",
+      "attemptedAt": "2026-11-23T22:23:27Z",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "id": "kit-image-7",
+      "title": "controller-7.jpg.failed.json",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-XX-Basic-Kit/ESP32-XX-Basic-Kit-Acce-details-7.jpg",
+      "kind": "manufacturer-photo",
+      "status": "failed",
+      "attemptedAt": "2026-11-23T22:23:27Z",
+      "error": "HTTP Error 403: Forbidden"
+    },
+    {
+      "id": "controller-overview",
+      "title": "官方产品说明与 SKU",
+      "url": "https://docs.waveshare.com/ESP32-S3-Zero",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Zero",
+      "fetchedAt": "2026-11-23T07:01:33Z",
+      "sha256": "ee602a5bd987dca8dbdbf298b9d6cee6694c88eac322dc098d56332aceabd41d",
+      "bytes": 67468,
+      "archiveName": "zero-overview.html",
+      "mediaType": "text/html"
+    },
+    {
+      "id": "controller-resources",
+      "title": "官方资源目录",
+      "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T07:01:33Z",
+      "sha256": "c82f97476ea6253f7c3674f964cc6927133e37e51b9b42f769c63c88080f02f8",
+      "bytes": 63973,
+      "archiveName": "zero-resources.html",
+      "mediaType": "text/html"
+    },
+    {
+      "id": "controller-schematic",
+      "title": "精确型号原理图",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf",
+      "kind": "official-schematic",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf",
+      "fetchedAt": "2026-11-23T07:02:46Z",
+      "sha256": "4bbdae93cde588eb87e20d7cda5b38fb729444d55cae0b579b329f23f0d69503",
+      "bytes": 299106,
+      "archiveName": "zero-schematic.pdf",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "controller-led-example",
+      "title": "官方 LED 程序与线序",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+      "fetchedAt": "2026-11-23T07:02:47Z",
+      "sha256": "58fb4198afcd9bfbc294505e3f5bb90e396dc4402059b1f5ac67c1813ef341ad",
+      "bytes": 1354,
+      "archiveName": "zero-led-example.ino",
+      "notes": "Exact ZIP member BlinkRGB/BlinkRGB.ino; container SHA-256 936c4fc4e155a2042f7124f4730ea42047ee3d59d9d9ef87be7e959acda82550. Hash and bytes identify the extracted member, not a separate HTTP response."
+    },
+    {
+      "id": "controller-firmware-archive",
+      "title": "厂家链接的原始固件 ZIP",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+      "kind": "official-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+      "fetchedAt": "2026-11-23T07:02:47Z",
+      "sha256": "936c4fc4e155a2042f7124f4730ea42047ee3d59d9d9ef87be7e959acda82550",
+      "bytes": 35731967,
+      "archiveName": "zero-firmware-archive.zip",
+      "mediaType": "application/zip"
+    },
+    {
+      "id": "controller-uiflow-upstream",
+      "title": "官方 UIFlow 项目调查入口",
+      "url": "https://github.com/m5stack/uiflow-micropython",
+      "kind": "official-repository",
+      "status": "linked"
+    },
+    {
+      "id": "controller-xiaozhi-upstream",
+      "title": "小智项目精确板型调查入口",
+      "url": "https://github.com/78/xiaozhi-esp32",
+      "kind": "official-repository",
+      "status": "linked"
+    },
+    {
+      "id": "controller-model-official-cad",
+      "title": "ESP32-S3-Zero 3D Model",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero_v2-138eb3753cf14afa3252058c380ca416.stp",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero_v2-138eb3753cf14afa3252058c380ca416.stp",
+      "fetchedAt": "2026-11-23T07:02:47Z",
+      "bytes": 3191521,
+      "sha256": "1eb1a41173dad5238624b8c2e7ab529890d60431e895dc3d2bb4191fa31fd9b4",
+      "archiveName": "source.stp",
+      "mediaType": "application/octet-stream",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-zero/source.stp.gz; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "controller-model-resources",
+      "title": "resources",
+      "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T07:01:33Z",
+      "bytes": 63973,
+      "sha256": "c82f97476ea6253f7c3674f964cc6927133e37e51b9b42f769c63c88080f02f8",
+      "archiveName": "resources.html",
+      "mediaType": "text/html",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-zero/resources.html.gz; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "controller-model-dimension-photo",
+      "title": "dimension-photo",
+      "url": "https://docs.waveshare.com/assets/images/Esp32-S3-Zero-Size-b56afa84e292cd9d532df8b52376fcb2.webp",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/Esp32-S3-Zero-Size-b56afa84e292cd9d532df8b52376fcb2.webp",
+      "fetchedAt": "2026-11-23T07:03:55Z",
+      "bytes": 77730,
+      "sha256": "36f7e6052a823dd51b31d19adb3a20339345222ba16bf675a1e4c44dbf6c34b2",
+      "archiveName": "dimension-photo.webp",
+      "mediaType": "image/webp",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-zero/dimension-photo.webp; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    },
+    {
+      "id": "controller-model-component-photo",
+      "title": "component-photo",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Zero-details-intro-68b42f5b97375cfbcc968728848c48e3.webp",
+      "kind": "official-visual-reference",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-S3-Zero-details-intro-68b42f5b97375cfbcc968728848c48e3.webp",
+      "fetchedAt": "2026-11-23T07:03:55Z",
+      "bytes": 49062,
+      "sha256": "9fd9070d20bb31a1d6ac37bfe5eb18201de6c04398f41bf5c814bcd060f17c53",
+      "archiveName": "component-photo.webp",
+      "mediaType": "image/webp",
+      "notes": "Original response retained in assets/waveshare-esp32-s3-zero/component-photo.webp; hash and size identify decompressed original bytes. Waveshare source rights retained; no separate redistribution licence found in this resource."
+    }
+  ],
+  "assets": [
+    {
+      "id": "kit-product",
+      "sourceId": "kit-product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-xx-basic-kit.htm"
+    },
+    {
+      "id": "kit-wiki",
+      "sourceId": "kit-wiki",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/wiki/ESP32-XX-Basic-Kit-Acce"
+    },
+    {
+      "id": "kit-s3-docs",
+      "sourceId": "kit-s3-docs",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-Zero/?variant=ESP32-S3-Zero-Basic-Kit"
+    },
+    {
+      "id": "kit-c6-docs",
+      "sourceId": "kit-c6-docs",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-Zero/?variant=ESP32-C6-Zero-Basic-Kit"
+    },
+    {
+      "id": "kit-c3-docs",
+      "sourceId": "kit-c3-docs",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C3-Zero/?variant=ESP32-C3-Zero-Basic-Kit"
+    },
+    {
+      "id": "kit-s3-tree",
+      "sourceId": "kit-s3-tree",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-Zero-Basic-Kit/git/trees/17304b9271a7ae91e5d8f37de09c18796f6f4b91?recursive=1"
+    },
+    {
+      "id": "kit-c6-tree",
+      "sourceId": "kit-c6-tree",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1"
+    },
+    {
+      "id": "kit-c3-tree",
+      "sourceId": "kit-c3-tree",
+      "role": "source-document",
+      "url": "https://api.github.com/repos/waveshareteam/ESP32-C3-Zero-Basic-Kit/git/trees/4db4202faa251964321f79b39efb232d6ca7bef5?recursive=1"
+    },
+    {
+      "id": "kit-image-13",
+      "sourceId": "kit-image-13",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-XX-Basic-Kit/ESP32-XX-Basic-Kit-Acce-details-13.jpg"
+    },
+    {
+      "id": "kit-image-19",
+      "sourceId": "kit-image-19",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-XX-Basic-Kit/ESP32-XX-Basic-Kit-Acce-details-19.jpg"
+    },
+    {
+      "id": "kit-image-7",
+      "sourceId": "kit-image-7",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-XX-Basic-Kit/ESP32-XX-Basic-Kit-Acce-details-7.jpg"
+    },
+    {
+      "id": "controller-overview",
+      "sourceId": "controller-overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-Zero"
+    },
+    {
+      "id": "controller-resources",
+      "sourceId": "controller-resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents"
+    },
+    {
+      "id": "controller-schematic",
+      "sourceId": "controller-schematic",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf"
+    },
+    {
+      "id": "controller-led-example",
+      "sourceId": "controller-led-example",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip"
+    },
+    {
+      "id": "controller-firmware-archive",
+      "sourceId": "controller-firmware-archive",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip"
+    },
+    {
+      "id": "controller-uiflow-upstream",
+      "sourceId": "controller-uiflow-upstream",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython"
+    },
+    {
+      "id": "controller-xiaozhi-upstream",
+      "sourceId": "controller-xiaozhi-upstream",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32"
+    },
+    {
+      "id": "controller-model-official-cad",
+      "sourceId": "controller-model-official-cad",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero_v2-138eb3753cf14afa3252058c380ca416.stp"
+    },
+    {
+      "id": "controller-model-resources",
+      "sourceId": "controller-model-resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents"
+    },
+    {
+      "id": "controller-model-dimension-photo",
+      "sourceId": "controller-model-dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/Esp32-S3-Zero-Size-b56afa84e292cd9d532df8b52376fcb2.webp"
+    },
+    {
+      "id": "controller-model-component-photo",
+      "sourceId": "controller-model-component-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-S3-Zero-details-intro-68b42f5b97375cfbcc968728848c48e3.webp"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "硬件/套件发布日期",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "kit-product"
+      ]
+    },
+    {
+      "id": "shipping-revision",
+      "label": "当前套件实际附板版次",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "kit-product"
+      ]
+    },
+    {
+      "id": "full-kit",
+      "label": "全套教程和外设接线验收",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "kit-product"
+      ]
+    },
+    {
+      "id": "physical",
+      "label": "实物验收",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "kit-product"
+      ]
+    }
+  ],
+  "collectionNotes": [
+    "本条目适配套件内精确Zero主控板；1.5英寸SSD1327 OLED、PIR、蜂鸣器、8位RGB及面包板是松散外设，未自动接线或冒充板载功能。",
+    "SKU33355只有配件，不含ESP32主控，从本次主控设备统计中排除。33356/33357/33358三个含板SKU各计一次。",
+    "C6当前套件链接说明8MiB FH8，但旧原理图/教材对应4MiB FH4；同一套件SKU提供两个明确容量profile，交付批次/销售版次未经证实。",
+    "模型仅表示官方明确随附的主控板，复用同款原厂CAD或照片模型；未虚构三套新PCB、预焊排针、箱内布局或整套配件3D结构。",
+    "S3/C6固定教程仓库没有完整BIN；C3仓库中的候选BIN实际为S3芯片，已拒绝用于C3。没有把教程目录或自编诊断标成出厂恢复固件。",
+    "真实指令的板级数字子集不等于整套教程、无线、MicroPython全功能、浏览器WebGL或实物验收。",
+    "本轮未确认该精确型号的独立出厂恢复镜像；保留已核验来源的官方示例、测试程序或文档链接的 MicroPython，不把它们标成出厂固件。",
+    "原生 ROM 启动与板载 LED 路径已验证；USB HUB/桥接芯片、无线网络、模拟电气行为和完整实机兼容性未验证。",
+    "当前条目为无预焊排针的指定容量版本，不覆盖其他容量、天线或附属套件。",
+    "原始示例 ZIP 的 combine/target.bin 实为 ESP32-C3 镜像，已拒绝；默认清单使用其中三段有效 S3 文件。",
+    "官方 CAD 派生模型；几何和交互射线已校验，未进行实物装配或浏览器视觉验收。"
+  ]
+}

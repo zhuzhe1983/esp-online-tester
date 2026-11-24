@@ -1,0 +1,43 @@
+    Checking emu-core v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/emu-core)
+    Checking esp-periph v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp-periph)
+    Checking esp-soc v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp-soc)
+    Checking riscv-rv32 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/riscv-rv32)
+    Checking xtensa-lx7 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/xtensa-lx7)
+    Checking esp32s3 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32s3)
+    Checking esp32 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32)
+    Checking esp32c6 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32c6)
+    Checking esp32c5 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32c5)
+    Checking esp32c3 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32c3)
+    Checking esp32c61 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32c61)
+    Checking esp32p4 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32p4)
+    Checking esp32s31 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32s31)
+    Checking esp32s2 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32s2)
+    Checking esp32h2 v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/esp32h2)
+    Checking esp32sim v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/cli)
+error: unnecessary closure used to substitute value for `Option::None`
+   --> cli/src/lib.rs:599:32
+    |
+599 |       let (flash_mb, psram_mb) = esp_soc::waveshare_profiles::memory_mib(board)
+    |  ________________________________^
+600 | |         .or_else(|| esp32c5::board::waveshare_core::CoreVariant::from_name(board).map(|v| v.memory_mib()))
+601 | |         .unwrap_or_else(|| match board {
+602 | |         "waveshare-c5-touch169" => (16, 8),
+...   |
+605 | |         _ => (4, 0),
+606 | |     });
+    | |______^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.100.0/index.html#unnecessary_lazy_evaluations
+    = note: `-D clippy::unnecessary-lazy-evaluations` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::unnecessary_lazy_evaluations)]`
+help: use `unwrap_or` instead
+    |
+601 ~         .unwrap_or(match board {
+602 +         "waveshare-c5-touch169" => (16, 8),
+603 +         "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8),
+604 +         "lilygo-t-dongle-c5" => (16, 0),
+605 +         _ => (4, 0),
+606 ~     });
+    |
+
+error: could not compile `esp32sim` (lib) due to 1 previous error

@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-11-23T22:38:23.172513+00:00",
+  "policy": "Minimize identity information in derived evidence; original manufacturer firmware and source file hashes are unchanged.",
+  "removedRedundantCommitResponse": {
+    "path": "docs/platform/research/waveshare-basic-kit-20261124/kit-s3-commit--s3-commit.json.gz",
+    "originalCompressedSha256": "3ce67d2bf011d55c91ed4a1e47fad53772030d32ed44dd064ff6d0c9ff201dd3",
+    "effect": "Removed redundant commit API response with author identity/email fields. Full pinned repository tree and audit retain the exact commit; source code, firmware identification and timestamps used by the adaptation are unchanged."
+  },
+  "normalizedInventories": [
+    {
+      "path": "docs/platform/research/waveshare-thermal-20261124/Thermal-ESP32-Web-Demo.zip.members.json.gz",
+      "scope": "Derived ZIP inventory member names only; normalize personal home-directory label to alice. Member count, suffixes, file sizes and archive/firmware bytes are unchanged.",
+      "replacedPrefixes": 44,
+      "originalCompressedSha256": "8b5a6bba2c777076e2e9c43bfd1f4e5157dfd142a922c75346e51da0ee74e566",
+      "originalDecodedSha256": "1bf68d604dd56b929e4397bcbc97445d1d40d9f60c04a15877beb292056d6ff4",
+      "normalizedCompressedSha256": "6a59134de7870f38c09f3f918e86278368ff227347e8b0a5ce72fc1bb5c838fc",
+      "normalizedDecodedSha256": "4b6553f27cdcfa6290e76fc127152e7dabef0936a5a5269494cd7746fabe3355",
+      "effect": "Personal build-directory prefixes are no longer exact archive member names. Factory firmware entries and CAD suffix classification are unaffected."
+    },
+    {
+      "path": "docs/platform/research/waveshare-thermal-20261124/Thermal-ESP32-Demo.zip.members.json.gz",
+      "scope": "Derived ZIP inventory member names only; normalize personal home-directory label to alice. Member count, suffixes, file sizes and archive/firmware bytes are unchanged.",
+      "replacedPrefixes": 45,
+      "originalCompressedSha256": "4300858a200a58b782771b336675bbbfabc2543f7b15770d1d92be25a736b21f",
+      "originalDecodedSha256": "f1c7599412ed066b0af54a575e9d6555a1c3b1c971f2552853fb36d37802a2d6",
+      "normalizedCompressedSha256": "af608256fcf7f909f5e58aa159192e822843228a8a31a43cbeb4e0a018168dbc",
+      "normalizedDecodedSha256": "a0be1f8a31e94331dbf7f3fef4219d96fb4d8fa5301dfd8c7c7b571dd9945977",
+      "effect": "Personal build-directory prefixes are no longer exact archive member names. Factory firmware entries and CAD suffix classification are unaffected."
+    }
+  ],
+  "privacyCommand": [
+    "node",
+    "tools/check-evidence-privacy.mjs",
+    "docs/platform/evidence/waveshare-root-extras-20261124",
+    "docs/platform/research/waveshare-basic-kit-20261124",
+    "docs/platform/research/waveshare-classic-touch35-catalog-20261124",
+    "docs/platform/research/waveshare-thermal-20261124"
+  ],
+  "privacyResult": "PASS: 104 tracked evidence files, 50 compressed artifacts, no configured patterns; source and derived metadata manually reviewed."
+}

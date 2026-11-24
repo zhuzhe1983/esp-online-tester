@@ -1,0 +1,490 @@
+{
+  "listingId": "esp32-s3-touch-lcd-2.1",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-1",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2.1",
+      "manufacturer": "Waveshare",
+      "sku": "28169",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "2.1 英寸 480×480 圆屏，16 MiB Flash / 8 MiB Octal PSRAM；原厂界面已出屏，后续 BLE 测试阶段仍受限。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-2-1.json",
+      "family": {
+        "id": "esp32-s3-touch-lcd-2-1",
+        "name": "ESP32-S3-Touch-LCD-2.1 / 2.1B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd21",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB565",
+        "diagonalInches": 2.1,
+        "touch": true,
+        "controller": "ST7701S",
+        "shape": "circle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC 单线",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "sd-driver"
+          ],
+          "notes": "原厂使用 SDMMC 单线；DAT3 经 TCA9554 P3 拉高选择模式，不是第四根数据线或电源脚。原生 FAT32 挂载已验证。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方型号、SKU 与硬件说明",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "精确来源原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "lcd-driver",
+          "title": "官方 LCD 初始化与 RGB 引脚",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sd-driver",
+          "title": "官方 TF 连接",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "官方原厂恢复镜像说明",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "固定提交的原始官方出厂镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+        "原生测试已验证早期滑动与相同时刻无输入对照存在差异；后续触摸响应尚未通过。",
+        "原厂程序已通过真实 SDMMC 1-bit 路径挂载默认 64 MiB FAT32 卡；此前按 SPI 解释接线的失败已定位并修正，历史失败记录保留。",
+        "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+        "独立 3D 模型已接入；真实 IMU 板坐标与实物朝向标定仍未完成；无线、USB、模拟电池和全部外设未验收。",
+        "Grounded QMI SA0 selects 0x6B according to primary QST documentation; old opposite-address inference is withdrawn.",
+        "CST820 identity values are unknown zero in the digital subset, not borrowed from a CST816S.",
+        "Factory console retains I2C write failures. Reserved-bit writes in public driver are not enough to attribute every binary failure without a byte trace.",
+        "已通过公开 runtime → production Worker → WASM 的实际原厂加载、出屏与输入投递检查；浏览器/WebGL 尚未验收。",
+        "IMU 数字输入：支持虚拟传感器轴；物理朝向和原厂程序的动作响应尚未验收。",
+        "Separate exact flat and curved manufacturer CAD files are used; all native solids/free shells/faces and original millimetre transforms remain intact.",
+        "Flat source CAD visible window is53.88mm; the retained exact official dimensioned photograph labels53.28mm display area. The live framebuffer uses53.28mm and does not fill the larger VA. Native CAD lacks the upper rear square IC body visible in the family photo; source-component completeness does not certify a complete physical BOM.",
+        "No inferred external case, antenna behaviour, battery chemistry, power-switch electronics or connector mating calibration. Uncolored native components remain neutral grey. Photographic PCB comparison is a visible mechanical reference, not proof of every electrical revision."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Factory filename dates are firmware artifact dates, not product release dates. Shared image date does not establish the B device release."
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-2-1-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-2-1/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-1b",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2.1B",
+      "manufacturer": "Waveshare",
+      "sku": "30697",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "2.1 英寸 480×480 圆屏，16 MiB Flash / 8 MiB Octal PSRAM；原厂界面已出屏，后续 BLE 测试阶段仍受限。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-2-1b.json",
+      "family": {
+        "id": "esp32-s3-touch-lcd-2-1",
+        "name": "ESP32-S3-Touch-LCD-2.1 / 2.1B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd21b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB565",
+        "diagonalInches": 2.1,
+        "touch": true,
+        "controller": "ST7701S",
+        "shape": "circle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC 单线",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "sd-driver"
+          ],
+          "notes": "原厂使用 SDMMC 单线；DAT3 经 TCA9554 P3 拉高选择模式，不是第四根数据线或电源脚。原生 FAT32 挂载已验证。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方型号、SKU 与硬件说明",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "精确来源原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "lcd-driver",
+          "title": "官方 LCD 初始化与 RGB 引脚",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sd-driver",
+          "title": "官方 TF 连接",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "官方原厂恢复镜像说明",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "固定提交的原始官方出厂镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+        "原生测试已验证早期滑动与相同时刻无输入对照存在差异；后续触摸响应尚未通过。",
+        "原厂程序已通过真实 SDMMC 1-bit 路径挂载默认 64 MiB FAT32 卡；此前按 SPI 解释接线的失败已定位并修正，历史失败记录保留。",
+        "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+        "独立 3D 模型已接入；真实 IMU 板坐标与实物朝向标定仍未完成；无线、USB、模拟电池和全部外设未验收。",
+        "Grounded QMI SA0 selects 0x6B according to primary QST documentation; old opposite-address inference is withdrawn.",
+        "CST820 identity values are unknown zero in the digital subset, not borrowed from a CST816S.",
+        "Factory console retains I2C write failures. Reserved-bit writes in public driver are not enough to attribute every binary failure without a byte trace.",
+        "已通过公开 runtime → production Worker → WASM 的实际原厂加载、出屏与输入投递检查；浏览器/WebGL 尚未验收。",
+        "IMU 数字输入：支持虚拟传感器轴；物理朝向和原厂程序的动作响应尚未验收。",
+        "Separate exact flat and curved manufacturer CAD files are used; all native solids/free shells/faces and original millimetre transforms remain intact.",
+        "Curved cover geometry comes from the actual2.1B STEP. Its flat framebuffer projection is an explicitly uncalibrated optical approximation, not curved lens refraction or per-pixel surface calibration.",
+        "No inferred external case, antenna behaviour, battery chemistry, power-switch electronics or connector mating calibration. Uncolored native components remain neutral grey. Photographic PCB comparison is a visible mechanical reference, not proof of every electrical revision."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Factory filename dates are firmware artifact dates, not product release dates. Shared image date does not establish the B device release."
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-2-1b-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-2-1b/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-1-factory",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2.1 · 官方出厂固件",
+      "productIds": [
+        "waveshare-esp32-s3-touch-lcd-2-1"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+        "sha256": "b67bbd9c40151e86a609304443c20316c2d589f15475015c36e6007fcb2b61ed",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/README.md",
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方型号、SKU 与硬件说明",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "精确来源原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "lcd-driver",
+          "title": "官方 LCD 初始化与 RGB 引脚",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sd-driver",
+          "title": "官方 TF 连接",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "官方原厂恢复镜像说明",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "固定提交的原始官方出厂镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+        "原生测试已验证早期滑动与相同时刻无输入对照存在差异；后续触摸响应尚未通过。",
+        "原厂程序已通过真实 SDMMC 1-bit 路径挂载默认 64 MiB FAT32 卡；此前按 SPI 解释接线的失败已定位并修正，历史失败记录保留。",
+        "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+        "目前使用屏幕调试视图，独立 3D 模型与实物朝向校准尚未完成；无线、USB、模拟电池和全部外设未验收。",
+        "Grounded QMI SA0 selects 0x6B according to primary QST documentation; old opposite-address inference is withdrawn.",
+        "CST820 identity values are unknown zero in the digital subset, not borrowed from a CST816S.",
+        "Factory console retains I2C write failures. Reserved-bit writes in public driver are not enough to attribute every binary failure without a byte trace.",
+        "已通过公开 runtime → production Worker → WASM 的实际原厂加载、出屏与输入投递检查；浏览器/WebGL 尚未验收。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-lcd-2-1-official"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-1b-factory",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2.1B · 官方出厂固件",
+      "productIds": [
+        "waveshare-esp32-s3-touch-lcd-2-1b"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+        "sha256": "b67bbd9c40151e86a609304443c20316c2d589f15475015c36e6007fcb2b61ed",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/README.md",
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方型号、SKU 与硬件说明",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "精确来源原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "lcd-driver",
+          "title": "官方 LCD 初始化与 RGB 引脚",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sd-driver",
+          "title": "官方 TF 连接",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "官方原厂恢复镜像说明",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "固定提交的原始官方出厂镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+        "原生测试已验证早期滑动与相同时刻无输入对照存在差异；后续触摸响应尚未通过。",
+        "原厂程序已通过真实 SDMMC 1-bit 路径挂载默认 64 MiB FAT32 卡；此前按 SPI 解释接线的失败已定位并修正，历史失败记录保留。",
+        "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+        "目前使用屏幕调试视图，独立 3D 模型与实物朝向校准尚未完成；无线、USB、模拟电池和全部外设未验收。",
+        "Grounded QMI SA0 selects 0x6B according to primary QST documentation; old opposite-address inference is withdrawn.",
+        "CST820 identity values are unknown zero in the digital subset, not borrowed from a CST816S.",
+        "Factory console retains I2C write failures. Reserved-bit writes in public driver are not enough to attribute every binary failure without a byte trace.",
+        "已通过公开 runtime → production Worker → WASM 的实际原厂加载、出屏与输入投递检查；浏览器/WebGL 尚未验收。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-lcd-2-1-official"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-1-official",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2.1 官方出厂固件",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-Touch-LCD-2.1",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-LCD-2.1/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/releases",
+      "version": "ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224",
+      "checkedAt": "2026-11-23T09:07:07Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+          "sha256": "b67bbd9c40151e86a609304443c20316c2d589f15475015c36e6007fcb2b61ed",
+          "bytes": 1840784,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-lcd-2-1",
+          "waveshare-esp32-s3-touch-lcd-2-1b"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "原厂出屏与早期交互已有原生证据，后续 BLE 阶段仍受限。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "保留已下载校验的固定仓库出厂镜像；新的 Release 资产仍须逐一核验精确型号和出厂角色。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-2-1.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-lcd-2-1b.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-touch-lcd21": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-touch-lcd21b": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-tca-rgb-sources/manifest.json",
+    "docs/research/waveshare-tca-rgb-sources/firmwares.json"
+  ],
+  "limitations": [
+    "Existing original image/early touch/SDMMC evidence retained; later BLE stage and physical hardware remain unverified."
+  ]
+}

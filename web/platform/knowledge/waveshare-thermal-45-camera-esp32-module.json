@@ -1,0 +1,685 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-thermal-45-camera-esp32-module",
+  "kind": "product",
+  "catalogId": "waveshare-thermal-45-camera-esp32-module",
+  "title": "Waveshare Thermal-45 Camera ESP32 Module",
+  "summary": "45°热成像传感器选项；S3 16MiB Flash/8MiB PSRAM，无板载屏幕；数字子集部分适配。",
+  "summarySourceIds": [
+    "product",
+    "overview"
+  ],
+  "updatedAt": "2026-11-23T22:27:53Z",
+  "hardwareRevision": "SDK S3MINI_C; retail PCB revision unspecified",
+  "facts": [
+    {
+      "id": "identity",
+      "label": "精确销售选项和内存",
+      "basis": "official",
+      "sourceIds": [
+        "product",
+        "overview"
+      ],
+      "value": {
+        "sku": "30136",
+        "fovDegrees": 45,
+        "chip": "ESP32-S3-WROOM-1",
+        "flashMiB": 16,
+        "psramMiB": 8
+      }
+    },
+    {
+      "id": "sensor",
+      "label": "传感器规格，非显示屏",
+      "basis": "official",
+      "sourceIds": [
+        "overview"
+      ],
+      "value": {
+        "sensorPixels": [
+          80,
+          62
+        ],
+        "onboardDisplay": false,
+        "physicalFovDegrees": [
+          56,
+          45,
+          34
+        ],
+        "runtimeThermalSimulation": false
+      }
+    },
+    {
+      "id": "electrical",
+      "label": "公开原始SDK接线",
+      "basis": "official",
+      "sourceIds": [
+        "sdk-0",
+        "sdk-1",
+        "sdk-2",
+        "sdk-3",
+        "sdk-4",
+        "sdk-5",
+        "sdk-6",
+        "sdk-7",
+        "sdk-8",
+        "sdk-9",
+        "sdk-10"
+      ],
+      "value": {
+        "configuration": "CONFIG_ESPMODEL_S3MINI_C",
+        "boot": 0,
+        "rgb": {
+          "kind": "discrete-active-low",
+          "red": 1,
+          "green": 38,
+          "blue": 2
+        },
+        "spi": {
+          "host": 2,
+          "clock": 6,
+          "miso": 7,
+          "mosi": 15,
+          "sensorCs": 16,
+          "calibrationCs": 5,
+          "reset": 17,
+          "powerDown": 3,
+          "dataAvailable": 4
+        },
+        "sensorResponse": "unsupported; SPI returns0xff, no fabricated successful identity"
+      }
+    },
+    {
+      "id": "original-firmware",
+      "label": "官方完整镜像原字节审计",
+      "basis": "official",
+      "sourceIds": [
+        "overview",
+        "desktop-factory",
+        "web-factory"
+      ],
+      "value": [
+        {
+          "id": "desktop-factory",
+          "entry": "Thermal-ESP32-Demo-main/firmware/senxorESP32S3_merged.bin",
+          "bytes": 1493920,
+          "sha256": "adefe16804a7172fa9a3b4509c9ba19ae7726eb8348c7b5e64377e6c44ea6fdd",
+          "chipId": 9
+        },
+        {
+          "id": "web-factory",
+          "entry": "Thermal-ESP32-Web-Demo-main/firmware/factory.bin",
+          "bytes": 1431904,
+          "sha256": "dbc66d49c8db7ccc4b4a79b87e81530a1cfbb9df43b0bf390c32ec6b8d55c9c9",
+          "chipId": 9
+        }
+      ]
+    },
+    {
+      "id": "mechanical",
+      "label": "尺寸/照片模型及显式估计",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "model-45-dimension-photo",
+        "model-45-reverse-photo",
+        "model-45-optics-photo"
+      ],
+      "value": {
+        "modelSha256": "8f550c233f545df6a31e2f9d7b32c6a0962e24931048ba9188a9c3fc6fbd22c4",
+        "carrierMm": [
+          29,
+          29
+        ],
+        "observedHoles": 3,
+        "sourceImagesUnchanged": true,
+        "limits": [
+          "Only29 x29mm carrier size and26 x26mm hole spacing are manufacturer dimension labels; thickness, module, sensor, optics and connector geometry are approximate photo envelopes.",
+          "The carrier is L-shaped with three observed holes; the separate WROOM PCB antenna occupies the cut-out. No fourth mounting hole or filled rectangular carrier is invented.",
+          "No native CAD, PCB layout or Gerber was found in either complete linked ZIP inventory. SDK object files are not mechanical CAD.",
+          "The linked MI0802 PDF is marked confidential/NDA. It is not redistributed or used to manufacture undocumented sensor internals.",
+          "Sensor daughterboard underside, flex path, spacers, hidden solder, lens thread, standoff and optical stack depth remain UNKNOWN/unmodeled.",
+          "45 and90 degree optics differ in the photographed aperture; aperture diameters are estimates, not focal or field-of-view calibration.",
+          "There is no screen. The thermal sensor does not receive a fabricated framebuffer, temperature, ID or ready interrupt.",
+          "BOOT is an actual input and the discrete RGB has three active-low channels; RESET geometry is visual only.",
+          "Source geometry and CPU rays are separate from browser WebGL, hardware fit, radiometric calibration and physical acceptance."
+        ]
+      },
+      "method": "Use the original29mm drawing registration and observed L-shaped carrier, separate module and sensor parts; rebuild with prepare_thermal_models.py and production loader.",
+      "uncertainty": "Published XY envelope is retained; hole diameter, carrier thickness, daughterboard, barrel, aperture and all Z dimensions are explicitly estimated. No fit, optical or radiometric calibration."
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "product",
+      "title": "thermal-45-camera-esp32-module.html",
+      "url": "https://www.waveshare.com/product/esp32-related/thermal-45-camera-esp32-module.htm",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/thermal-45-camera-esp32-module.htm",
+      "fetchedAt": "2026-11-23T16:33:20Z",
+      "bytes": 200842,
+      "sha256": "c717e3660ff97f62588426a86be64698ed3affdd870b67cdb477f4ff5cecfbec",
+      "archiveName": "product--thermal-45-camera-esp32-module.html"
+    },
+    {
+      "id": "overview",
+      "title": "overview.html",
+      "url": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module",
+      "fetchedAt": "2026-11-23T18:18:10Z",
+      "bytes": 54726,
+      "sha256": "d7f8d63ca0513ce8b607094b8f07ff7bd6b517b6d4e5164d010fadbcdd8f05e9",
+      "archiveName": "overview--overview.html"
+    },
+    {
+      "id": "desktop-factory",
+      "title": "Thermal-ESP32-Demo.zip",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 69229150,
+      "sha256": "753a59bfce764a32cada65526537ec4df4e25c831285d314496b4a384088cb85",
+      "archiveName": "desktop-factory--Thermal-ESP32-Demo.zip"
+    },
+    {
+      "id": "web-factory",
+      "title": "Thermal-ESP32-Web-Demo.zip",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 65281239,
+      "sha256": "8e9ef523298218f14e61c9b7a1e4becdbcaf8a72bcadc2ff63f4087ed39def51",
+      "archiveName": "web-factory--Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-0",
+      "title": "Thermal-ESP32-Web-Demo-main/components/Applications/src/Senxor_Capturedata.c",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 2025,
+      "sha256": "4f2356639f702de44925b4f2ece8d432fedbd794ada86e01aef2f33bf7930393",
+      "archiveName": "components__Applications__src__Senxor_Capturedata.c",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/Applications/src/Senxor_Capturedata.c",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-1",
+      "title": "Thermal-ESP32-Web-Demo-main/components/SenXorLib/SenXorLib.h",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 2529,
+      "sha256": "1fb2482988a9869265de66b8dd3ef319e9e745744ad3c820c7cba5c2b827a762",
+      "archiveName": "components__SenXorLib__SenXorLib.h",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/SenXorLib/SenXorLib.h",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-2",
+      "title": "Thermal-ESP32-Web-Demo-main/components/SenXorLib/include/defines.h",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 698,
+      "sha256": "381c26e07aaf735be093bed646f892b510a221295a5601b6bf7e45c19d109e4d",
+      "archiveName": "components__SenXorLib__include__defines.h",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/SenXorLib/include/defines.h",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-3",
+      "title": "Thermal-ESP32-Web-Demo-main/components/drivers/include/DrvGPIO.h",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 5030,
+      "sha256": "377c099c35490c8a051de8359ece06bc76c100607cb74d3ee53d0e8e6c146d56",
+      "archiveName": "components__drivers__include__DrvGPIO.h",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/drivers/include/DrvGPIO.h",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-4",
+      "title": "Thermal-ESP32-Web-Demo-main/components/drivers/include/DrvLED.h",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 3504,
+      "sha256": "872ab4af4c834922979c4b5b8f01202f1ac5662045a9d6aba54b840d05779df4",
+      "archiveName": "components__drivers__include__DrvLED.h",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/drivers/include/DrvLED.h",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-5",
+      "title": "Thermal-ESP32-Web-Demo-main/components/drivers/include/DrvSPIHost.h",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 3835,
+      "sha256": "7523642721db7c6070a402eca2122a48090a05bb27ad44e1ef56fe0b30e49558",
+      "archiveName": "components__drivers__include__DrvSPIHost.h",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/drivers/include/DrvSPIHost.h",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-6",
+      "title": "Thermal-ESP32-Web-Demo-main/components/drivers/src/DrvGPIO.c",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 7300,
+      "sha256": "fed2e958d9748a1385bf976a288906155a3a402490c66bdc18f52e566e19f598",
+      "archiveName": "components__drivers__src__DrvGPIO.c",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/drivers/src/DrvGPIO.c",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-7",
+      "title": "Thermal-ESP32-Web-Demo-main/components/drivers/src/DrvLED.c",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 9673,
+      "sha256": "f49bd99d45e57ea383ea5f2e998c8500735b55503876e3218bf84d502ad0540c",
+      "archiveName": "components__drivers__src__DrvLED.c",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/drivers/src/DrvLED.c",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-8",
+      "title": "Thermal-ESP32-Web-Demo-main/components/drivers/src/DrvSPIHost.c",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 17601,
+      "sha256": "259e3828364791946a4dfc765c8c1edb29d93699fc0b51ac326b26d7972cafd6",
+      "archiveName": "components__drivers__src__DrvSPIHost.c",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/components/drivers/src/DrvSPIHost.c",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-9",
+      "title": "Thermal-ESP32-Web-Demo-main/main/senxorTask.c",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 6905,
+      "sha256": "602a72001eccd8bdd7550d11ea9d5c0a1c7c3258530b80e542b731661448f895",
+      "archiveName": "main__senxorTask.c",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/main/senxorTask.c",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "sdk-10",
+      "title": "Thermal-ESP32-Web-Demo-main/sdkconfig",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "kind": "manufacturer-archive-member",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+      "fetchedAt": "2026-11-23T18:19:39Z",
+      "bytes": 86909,
+      "sha256": "5585811238ef2098adf5bb4bee84ca9299d51155a540020b94d3aa8c3c3e632e",
+      "archiveName": "sdkconfig",
+      "archiveMember": "Thermal-ESP32-Web-Demo-main/sdkconfig",
+      "notes": "Exact original member; archive URL/hash and retained compressed identity in source-manifest.json."
+    },
+    {
+      "id": "model-45-dimension-photo",
+      "title": "dimension-photo",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-size.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-size.jpg",
+      "fetchedAt": "2026-11-23T18:41:30Z",
+      "bytes": 137060,
+      "sha256": "631ac296345c0000a8bb4ef9ffb68f11fb004da901bd3d3d2103d0e80b3c5c0c",
+      "archiveName": "waveshare-thermal-45-camera-esp32-module--dimension-photo.jpg",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-45-reverse-photo",
+      "title": "reverse-photo",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-intro.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-intro.jpg",
+      "fetchedAt": "2026-11-23T18:41:31Z",
+      "bytes": 136545,
+      "sha256": "9c8f72fa259a920bd53f940b512a10e1e2fb8504b7da59290167b57e7b8b8bae",
+      "archiveName": "waveshare-thermal-45-camera-esp32-module--reverse-photo.jpg",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-45-optics-photo",
+      "title": "optics-photo",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-1.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-1.jpg",
+      "fetchedAt": "2026-11-23T18:41:29Z",
+      "bytes": 155330,
+      "sha256": "2bd60619bd00a3bce1a922c45498d7a0cc64f7d67f0310cb95d7c54a38cd581f",
+      "archiveName": "waveshare-thermal-45-camera-esp32-module--optics-photo.jpg",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-45-assembly-photo",
+      "title": "assembly-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/560x560/9df78eab33525d08d6e5fb8d27136e95/t/h/thermal-45-camera-esp32-module-1.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/560x560/9df78eab33525d08d6e5fb8d27136e95/t/h/thermal-45-camera-esp32-module-1.jpg",
+      "fetchedAt": "2026-11-23T18:41:26Z",
+      "bytes": 35689,
+      "sha256": "433ba48e4803ea0c5c701e6d32e4f5140049e9bdb78bed79f3c4ae1923b06344",
+      "archiveName": "waveshare-thermal-45-camera-esp32-module--assembly-photo.jpg",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-45-overview",
+      "title": "overview",
+      "url": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module",
+      "fetchedAt": "2026-11-23T18:18:10Z",
+      "bytes": 54726,
+      "sha256": "d7f8d63ca0513ce8b607094b8f07ff7bd6b517b6d4e5164d010fadbcdd8f05e9",
+      "archiveName": "waveshare-thermal-45-camera-esp32-module--overview.html.gz",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-90-dimension-photo",
+      "title": "dimension-photo",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-size.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-size.jpg",
+      "fetchedAt": "2026-11-23T18:41:30Z",
+      "bytes": 137060,
+      "sha256": "631ac296345c0000a8bb4ef9ffb68f11fb004da901bd3d3d2103d0e80b3c5c0c",
+      "archiveName": "waveshare-thermal-90-camera-esp32-module--dimension-photo.jpg",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-90-reverse-photo",
+      "title": "reverse-photo",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-intro.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-intro.jpg",
+      "fetchedAt": "2026-11-23T18:41:31Z",
+      "bytes": 136545,
+      "sha256": "9c8f72fa259a920bd53f940b512a10e1e2fb8504b7da59290167b57e7b8b8bae",
+      "archiveName": "waveshare-thermal-90-camera-esp32-module--reverse-photo.jpg",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-90-optics-photo",
+      "title": "optics-photo",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-1.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-1.jpg",
+      "fetchedAt": "2026-11-23T18:41:29Z",
+      "bytes": 155330,
+      "sha256": "2bd60619bd00a3bce1a922c45498d7a0cc64f7d67f0310cb95d7c54a38cd581f",
+      "archiveName": "waveshare-thermal-90-camera-esp32-module--optics-photo.jpg",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-90-assembly-photo",
+      "title": "assembly-photo",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/560x560/9df78eab33525d08d6e5fb8d27136e95/t/h/thermal-45-camera-esp32-module-1.jpg",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/560x560/9df78eab33525d08d6e5fb8d27136e95/t/h/thermal-45-camera-esp32-module-1.jpg",
+      "fetchedAt": "2026-11-23T18:41:26Z",
+      "bytes": 35689,
+      "sha256": "433ba48e4803ea0c5c701e6d32e4f5140049e9bdb78bed79f3c4ae1923b06344",
+      "archiveName": "waveshare-thermal-90-camera-esp32-module--assembly-photo.jpg",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    },
+    {
+      "id": "model-90-overview",
+      "title": "overview",
+      "url": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module",
+      "kind": "manufacturer-mechanical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module",
+      "fetchedAt": "2026-11-23T18:18:10Z",
+      "bytes": 54726,
+      "sha256": "d7f8d63ca0513ce8b607094b8f07ff7bd6b517b6d4e5164d010fadbcdd8f05e9",
+      "archiveName": "waveshare-thermal-90-camera-esp32-module--overview.html.gz",
+      "notes": "Unchanged source hash/retention in the model source-manifest.json."
+    }
+  ],
+  "assets": [
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/thermal-45-camera-esp32-module.htm"
+    },
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module"
+    },
+    {
+      "id": "desktop-factory",
+      "sourceId": "desktop-factory",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Demo.zip"
+    },
+    {
+      "id": "web-factory",
+      "sourceId": "web-factory",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-0",
+      "sourceId": "sdk-0",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-1",
+      "sourceId": "sdk-1",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-2",
+      "sourceId": "sdk-2",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-3",
+      "sourceId": "sdk-3",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-4",
+      "sourceId": "sdk-4",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-5",
+      "sourceId": "sdk-5",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-6",
+      "sourceId": "sdk-6",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-7",
+      "sourceId": "sdk-7",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-8",
+      "sourceId": "sdk-8",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-9",
+      "sourceId": "sdk-9",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "sdk-10",
+      "sourceId": "sdk-10",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip"
+    },
+    {
+      "id": "model-45-dimension-photo",
+      "sourceId": "model-45-dimension-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-size.jpg"
+    },
+    {
+      "id": "model-45-reverse-photo",
+      "sourceId": "model-45-reverse-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-intro.jpg"
+    },
+    {
+      "id": "model-45-optics-photo",
+      "sourceId": "model-45-optics-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-1.jpg"
+    },
+    {
+      "id": "model-45-assembly-photo",
+      "sourceId": "model-45-assembly-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/560x560/9df78eab33525d08d6e5fb8d27136e95/t/h/thermal-45-camera-esp32-module-1.jpg"
+    },
+    {
+      "id": "model-45-overview",
+      "sourceId": "model-45-overview",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module"
+    },
+    {
+      "id": "model-90-dimension-photo",
+      "sourceId": "model-90-dimension-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-size.jpg"
+    },
+    {
+      "id": "model-90-reverse-photo",
+      "sourceId": "model-90-reverse-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-intro.jpg"
+    },
+    {
+      "id": "model-90-optics-photo",
+      "sourceId": "model-90-optics-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/img/devkit/accBoard/Thermal-45-Camera-ESP32-Module/Thermal-45-Camera-ESP32-Module-details-1.jpg"
+    },
+    {
+      "id": "model-90-assembly-photo",
+      "sourceId": "model-90-assembly-photo",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/560x560/9df78eab33525d08d6e5fb8d27136e95/t/h/thermal-45-camera-esp32-module-1.jpg"
+    },
+    {
+      "id": "model-90-overview",
+      "sourceId": "model-90-overview",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "硬件发布日期",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "overview"
+      ]
+    },
+    {
+      "id": "full-factory",
+      "label": "完整原厂应用验收",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "overview"
+      ]
+    },
+    {
+      "id": "physical",
+      "label": "真实硬件/测温标定",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "overview"
+      ]
+    },
+    {
+      "id": "third-party",
+      "label": "精确UIFlow或小智恢复包",
+      "basis": "unknown",
+      "value": null,
+      "sourceIds": [
+        "overview"
+      ]
+    }
+  ],
+  "collectionNotes": [
+    "ESP32-S3-WROOM-1的16MiB Flash/8MiB PSRAM；45°与90°为光学选项，共用主控接线。",
+    "真实LX7 GPIO数字子集覆盖BOOT0和分立低有效RGB1/38/2；SPI2路由/片选/复位/掉电仅观察。",
+    "MI0802寄存器、校准存储、DATA_AV4中断和热辐射测温未实现；不会生成虚构设备ID、温度或热图。",
+    "没有板载显示屏、TF插槽或虚拟摄像头帧；80×62是传感器像素，不能用作显示分辨率。",
+    "两份原厂ZIP原字节的芯片/分区/XOR及已声明附加SHA通过审计；Web版原镜像未声明附加SHA，ROM实际打印SHA比较警告后继续。桌面版头声明2MiB但物理板为16MiB，均保持原字节。",
+    "原厂两个版本均实跑到app_main与GPIO/RGB/SPI初始化，随后SenXor初始化失败；完整传感器/无线/原厂应用/实物未验收。",
+    "精确CAD未找到；29×29mm载板与3孔轮廓有尺寸/照片来源，镜筒、子板、USB高度及内部结构为估计/UNKNOWN。"
+  ]
+}

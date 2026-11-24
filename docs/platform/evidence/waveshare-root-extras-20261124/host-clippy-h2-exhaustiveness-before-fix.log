@@ -1,0 +1,25 @@
+    Checking esp32sim v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/cli)
+   Compiling esp32sim-wasm v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/wasm)
+    Checking esp32sim-wasm-jit v0.3.0 (/workspace/scratch/2c24dec2dd12/esp-online-tester/wasm-jit)
+error[E0004]: non-exhaustive patterns: `&mut machine::MachineKind::H2(_)` not covered
+   --> wasm/src/storage.rs:83:23
+    |
+ 83 | ...   match &mut (*e).m { MachineKind::S3(m) => { m.reboot(); }, MachineKind::S2(m) => { m.reboot(); }, MachineKind::Esp32(m) => { ...
+    |             ^^^^^^^^^^^ pattern `&mut machine::MachineKind::H2(_)` not covered
+    |
+note: `machine::MachineKind` defined here
+   --> wasm/src/machine.rs:149:17
+    |
+149 | pub(super) enum MachineKind {
+    |                 ^^^^^^^^^^^
+...
+154 |     H2(Box<esp32h2::Machine>),
+    |     -- not covered
+    = note: the matched value is of type `&mut machine::MachineKind`
+help: ensure that all possible cases are being handled by adding a match arm with a wildcard pattern or an explicit pattern as shown
+    |
+ 84 |                     MachineKind::C61(m) => { m.reboot(); }, MachineKind::S31(m) => { m.reboot(); }, MachineKind::P4Rev3(m) => { m.reboot(); }, MachineKind::P4C6(m) => { m.p4.reboot(); }, MachineKind::P4Rev3C6(m) => { m.p4.reboot(); }, &mut machine::MachineKind::H2(_) => todo!() }
+    |                                                                                                                                                                                                                                          +++++++++++++++++++++++++++++++++++++++++++++
+
+For more information about this error, try `rustc --explain E0004`.
+error: could not compile `esp32sim-wasm` (lib test) due to 1 previous error

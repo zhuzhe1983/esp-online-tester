@@ -40760,6 +40760,280 @@
       }
     },
     {
+      "id": "waveshare-esp32-s3-touch-lcd-2-1",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2.1",
+      "manufacturer": "Waveshare",
+      "sku": "28169",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "2.1 英寸 480×480 圆屏，16 MiB Flash / 8 MiB Octal PSRAM；原厂界面已出屏，后续 BLE 测试阶段仍受限。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-2-1.json",
+      "family": {
+        "id": "esp32-s3-touch-lcd-2-1",
+        "name": "ESP32-S3-Touch-LCD-2.1 / 2.1B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd21",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB565",
+        "diagonalInches": 2.1,
+        "touch": true,
+        "controller": "ST7701S",
+        "shape": "circle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC 单线",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "sd-driver"
+          ],
+          "notes": "原厂使用 SDMMC 单线；DAT3 经 TCA9554 P3 拉高选择模式，不是第四根数据线或电源脚。原生 FAT32 挂载已验证。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方型号、SKU 与硬件说明",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "精确来源原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "lcd-driver",
+          "title": "官方 LCD 初始化与 RGB 引脚",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sd-driver",
+          "title": "官方 TF 连接",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "官方原厂恢复镜像说明",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "固定提交的原始官方出厂镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+        "原生测试已验证早期滑动与相同时刻无输入对照存在差异；后续触摸响应尚未通过。",
+        "原厂程序已通过真实 SDMMC 1-bit 路径挂载默认 64 MiB FAT32 卡；此前按 SPI 解释接线的失败已定位并修正，历史失败记录保留。",
+        "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+        "独立 3D 模型已接入；真实 IMU 板坐标与实物朝向标定仍未完成；无线、USB、模拟电池和全部外设未验收。",
+        "Grounded QMI SA0 selects 0x6B according to primary QST documentation; old opposite-address inference is withdrawn.",
+        "CST820 identity values are unknown zero in the digital subset, not borrowed from a CST816S.",
+        "Factory console retains I2C write failures. Reserved-bit writes in public driver are not enough to attribute every binary failure without a byte trace.",
+        "已通过公开 runtime → production Worker → WASM 的实际原厂加载、出屏与输入投递检查；浏览器/WebGL 尚未验收。",
+        "IMU 数字输入：支持虚拟传感器轴；物理朝向和原厂程序的动作响应尚未验收。",
+        "Separate exact flat and curved manufacturer CAD files are used; all native solids/free shells/faces and original millimetre transforms remain intact.",
+        "Flat source CAD visible window is53.88mm; the retained exact official dimensioned photograph labels53.28mm display area. The live framebuffer uses53.28mm and does not fill the larger VA. Native CAD lacks the upper rear square IC body visible in the family photo; source-component completeness does not certify a complete physical BOM.",
+        "No inferred external case, antenna behaviour, battery chemistry, power-switch electronics or connector mating calibration. Uncolored native components remain neutral grey. Photographic PCB comparison is a visible mechanical reference, not proof of every electrical revision."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Factory filename dates are firmware artifact dates, not product release dates. Shared image date does not establish the B device release."
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-2-1-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-2-1/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-2-1b",
+      "name": "Waveshare ESP32-S3-Touch-LCD-2.1B",
+      "manufacturer": "Waveshare",
+      "sku": "30697",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "2.1 英寸 480×480 圆屏，16 MiB Flash / 8 MiB Octal PSRAM；原厂界面已出屏，后续 BLE 测试阶段仍受限。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-2-1b.json",
+      "family": {
+        "id": "esp32-s3-touch-lcd-2-1",
+        "name": "ESP32-S3-Touch-LCD-2.1 / 2.1B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd21b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "RGB565",
+        "diagonalInches": 2.1,
+        "touch": true,
+        "controller": "ST7701S",
+        "shape": "circle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC 单线",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "schematic",
+            "sd-driver"
+          ],
+          "notes": "原厂使用 SDMMC 单线；DAT3 经 TCA9554 P3 拉高选择模式，不是第四根数据线或电源脚。原生 FAT32 挂载已验证。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "官方型号、SKU 与硬件说明",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-2.1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "精确来源原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "lcd-driver",
+          "title": "官方 LCD 初始化与 RGB 引脚",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "sd-driver",
+          "title": "官方 TF 连接",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-2.1/ESP32-S3-Touch-LCD-2.1-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "官方原厂恢复镜像说明",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "固定提交的原始官方出厂镜像",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-2.1/e1e8d14a5116c0e1901292632fcc2b02ee8c658c/firmware/ESP32-S3-Touch-LCD-2.1_FactoryOnly_20250224.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始官方出厂程序已运行至 Onboard 页面；约 8 秒后的输入无画面响应，最后串口标记为 BLE Test，阻塞原因尚未完成定位。",
+        "原生测试已验证早期滑动与相同时刻无输入对照存在差异；后续触摸响应尚未通过。",
+        "原厂程序已通过真实 SDMMC 1-bit 路径挂载默认 64 MiB FAT32 卡；此前按 SPI 解释接线的失败已定位并修正，历史失败记录保留。",
+        "原厂日志仍有 I2C 写入失败，保留未支持／保留位的 NACK；QMI 数字轴已接入，物理安装朝向未标定。",
+        "独立 3D 模型已接入；真实 IMU 板坐标与实物朝向标定仍未完成；无线、USB、模拟电池和全部外设未验收。",
+        "Grounded QMI SA0 selects 0x6B according to primary QST documentation; old opposite-address inference is withdrawn.",
+        "CST820 identity values are unknown zero in the digital subset, not borrowed from a CST816S.",
+        "Factory console retains I2C write failures. Reserved-bit writes in public driver are not enough to attribute every binary failure without a byte trace.",
+        "已通过公开 runtime → production Worker → WASM 的实际原厂加载、出屏与输入投递检查；浏览器/WebGL 尚未验收。",
+        "IMU 数字输入：支持虚拟传感器轴；物理朝向和原厂程序的动作响应尚未验收。",
+        "Separate exact flat and curved manufacturer CAD files are used; all native solids/free shells/faces and original millimetre transforms remain intact.",
+        "Curved cover geometry comes from the actual2.1B STEP. Its flat framebuffer projection is an explicitly uncalibrated optical approximation, not curved lens refraction or per-pixel surface calibration.",
+        "No inferred external case, antenna behaviour, battery chemistry, power-switch electronics or connector mating calibration. Uncolored native components remain neutral grey. Photographic PCB comparison is a visible mechanical reference, not proof of every electrical revision."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Factory filename dates are firmware artifact dates, not product release dates. Shared image date does not establish the B device release."
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-2-1b-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-2-1b/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
       "id": "waveshare-esp32-p4-core",
       "name": "Waveshare ESP32-P4-Core",
       "manufacturer": "Waveshare",
@@ -82101,6 +82375,1015 @@
       }
     },
     {
+      "id": "waveshare-esp32-touch-lcd-3-5",
+      "name": "Waveshare ESP32-Touch-LCD-3.5 · 含电池",
+      "manufacturer": "Waveshare",
+      "sku": "32870",
+      "hardwareRevision": "V1.2 source schematic; retail revision unspecified",
+      "chip": "esp32",
+      "summary": "经典ESP32，16MiB Flash/2MiB PSRAM；320×480 ST7796、FT6336触摸，SKU 32870",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-touch-lcd-3-5.json",
+      "family": {
+        "id": "waveshare-esp32-touch-lcd-3-5",
+        "name": "ESP32-Touch-LCD-3.5"
+      },
+      "runtime": {
+        "board": "waveshare-esp32-touch35",
+        "flashMb": 16,
+        "psramMb": 2,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "diagonalInches": 3.5,
+        "type": "TFT LCD",
+        "controller": "ST7796",
+        "bus": "SPI",
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 编程/供电",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview"
+          ]
+        },
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "pin": 18
+            },
+            {
+              "name": "MOSI",
+              "pin": 23
+            },
+            {
+              "name": "MISO",
+              "pin": 19
+            },
+            {
+              "name": "CS",
+              "pin": 15
+            }
+          ],
+          "sourceIds": [
+            "bsp-pins",
+            "schematic-v12"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "examples__factory__components__esp32_touch_lcd_3_5__include__bsp__config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "firmware__ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-readme",
+          "title": "firmware__README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic-v12",
+          "title": "hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "经典ESP32-D0WDR2-V3的16MiB Flash/2MiB PSRAM配置，不能替换成同尺寸S3/C5板。",
+        "SPI RGB565、FT6336单点、TCA9554复位、RTC、codec控制寄存器和SPI TF为数字子集；音频PCM、PMIC到MCU系统断电、充电、电池模拟和触摸手势未验收。",
+        "仅BOOT GPIO0作为物理按键输入；PWR/RESET外形保留，但不把SYS_OUT36状态脚冒充电源键。",
+        "厂家完整原固件原字节通过芯片/分区/校验审计；实际5s运行已过16MiB Flash/2MiB PSRAM启动与内存测试，进入app_main后PMU配置报ESP_ERR_INVALID_STATE，屏幕仍黑/0更新；保持trial，完整应用、WebGL与实物未验收。",
+        "精确PCB没有公开CAD；尺寸/照片重建的外壳墙厚、PCB尺寸/高度、按钮深度和内部连接仍为显式估计/UNKNOWN；只使用本款经典ESP32照片。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "官方固件时间不是硬件发布日期。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-touch-lcd-3-5/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-touch-lcd-3-5-factory-20261021"
+    },
+    {
+      "id": "waveshare-esp32-touch-lcd-3-5-no-battery",
+      "name": "Waveshare ESP32-Touch-LCD-3.5 · 不含电池",
+      "manufacturer": "Waveshare",
+      "sku": "32871",
+      "hardwareRevision": "V1.2 source schematic; retail revision unspecified",
+      "chip": "esp32",
+      "summary": "经典ESP32，16MiB Flash/2MiB PSRAM；320×480 ST7796、FT6336触摸，SKU 32871",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-touch-lcd-3-5-no-battery.json",
+      "family": {
+        "id": "waveshare-esp32-touch-lcd-3-5",
+        "name": "ESP32-Touch-LCD-3.5"
+      },
+      "runtime": {
+        "board": "waveshare-esp32-touch35",
+        "flashMb": 16,
+        "psramMb": 2,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "diagonalInches": 3.5,
+        "type": "TFT LCD",
+        "controller": "ST7796",
+        "bus": "SPI",
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 编程/供电",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview"
+          ]
+        },
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "pin": 18
+            },
+            {
+              "name": "MOSI",
+              "pin": 23
+            },
+            {
+              "name": "MISO",
+              "pin": 19
+            },
+            {
+              "name": "CS",
+              "pin": 15
+            }
+          ],
+          "sourceIds": [
+            "bsp-pins",
+            "schematic-v12"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "bsp-pins",
+          "title": "examples__factory__components__esp32_touch_lcd_3_5__include__bsp__config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/examples/factory/components/esp32_touch_lcd_3_5/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "firmware__ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/ESP32-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-readme",
+          "title": "firmware__README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic-v12",
+          "title": "hardware__schematic__ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-Touch-LCD-3.5/51f354d2aeb2245fd7b748c9f3ea93cea1c527ae/hardware/schematic/ESP32-Touch-LCD-3.5-Schematic-V1.2.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "经典ESP32-D0WDR2-V3的16MiB Flash/2MiB PSRAM配置，不能替换成同尺寸S3/C5板。",
+        "SPI RGB565、FT6336单点、TCA9554复位、RTC、codec控制寄存器和SPI TF为数字子集；音频PCM、PMIC到MCU系统断电、充电、电池模拟和触摸手势未验收。",
+        "仅BOOT GPIO0作为物理按键输入；PWR/RESET外形保留，但不把SYS_OUT36状态脚冒充电源键。",
+        "厂家完整原固件原字节通过芯片/分区/校验审计；实际5s运行已过16MiB Flash/2MiB PSRAM启动与内存测试，进入app_main后PMU配置报ESP_ERR_INVALID_STATE，屏幕仍黑/0更新；保持trial，完整应用、WebGL与实物未验收。",
+        "精确PCB没有公开CAD；尺寸/照片重建的外壳墙厚、PCB尺寸/高度、按钮深度和内部连接仍为显式估计/UNKNOWN；只使用本款经典ESP32照片。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "官方固件时间不是硬件发布日期。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-touch-lcd-3-5/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-touch-lcd-3-5-factory-20261021"
+    },
+    {
+      "id": "waveshare-thermal-45-camera-esp32-module",
+      "name": "Waveshare Thermal-45 Camera ESP32 Module",
+      "manufacturer": "Waveshare",
+      "sku": "30136",
+      "chip": "esp32s3",
+      "hardwareRevision": "SDK S3MINI_C; retail PCB revision unspecified",
+      "summary": "45°热成像传感器选项；S3 16MiB Flash/8MiB PSRAM，无板载屏幕；数字子集部分适配。",
+      "knowledgeUrl": "./knowledge/waveshare-thermal-45-camera-esp32-module.json",
+      "family": {
+        "id": "thermal-45-camera-esp32-module",
+        "name": "Thermal Camera ESP32 Module"
+      },
+      "runtime": {
+        "board": "waveshare-s3-thermal-camera",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 编程/供电",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "product",
+          "title": "thermal-45-camera-esp32-module.html",
+          "url": "https://www.waveshare.com/product/esp32-related/thermal-45-camera-esp32-module.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "desktop-factory",
+          "title": "Thermal-ESP32-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "web-factory",
+          "title": "Thermal-ESP32-Web-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "ESP32-S3-WROOM-1的16MiB Flash/8MiB PSRAM；45°与90°为光学选项，共用主控接线。",
+        "真实LX7 GPIO数字子集覆盖BOOT0和分立低有效RGB1/38/2；SPI2路由/片选/复位/掉电仅观察。",
+        "MI0802寄存器、校准存储、DATA_AV4中断和热辐射测温未实现；不会生成虚构设备ID、温度或热图。",
+        "没有板载显示屏、TF插槽或虚拟摄像头帧；80×62是传感器像素，不能用作显示分辨率。",
+        "两份原厂ZIP原字节的芯片/分区/XOR及已声明附加SHA通过审计；Web版原镜像未声明附加SHA，ROM实际打印SHA比较警告后继续。桌面版头声明2MiB但物理板为16MiB，均保持原字节。",
+        "原厂两个版本均实跑到app_main与GPIO/RGB/SPI初始化，随后SenXor初始化失败；完整传感器/无线/原厂应用/实物未验收。",
+        "精确CAD未找到；29×29mm载板与3孔轮廓有尺寸/照片来源，镜筒、子板、USB高度及内部结构为估计/UNKNOWN。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "未建立硬件发布日期；ZIP/SDK时间不等同发布日。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-thermal-45-camera-esp32-module/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-thermal-web-factory"
+    },
+    {
+      "id": "waveshare-thermal-90-camera-esp32-module",
+      "name": "Waveshare Thermal-90 Camera ESP32 Module",
+      "manufacturer": "Waveshare",
+      "sku": "30139",
+      "chip": "esp32s3",
+      "hardwareRevision": "SDK S3MINI_C; retail PCB revision unspecified",
+      "summary": "90°热成像传感器选项；S3 16MiB Flash/8MiB PSRAM，无板载屏幕；数字子集部分适配。",
+      "knowledgeUrl": "./knowledge/waveshare-thermal-90-camera-esp32-module.json",
+      "family": {
+        "id": "thermal-45-camera-esp32-module",
+        "name": "Thermal Camera ESP32 Module"
+      },
+      "runtime": {
+        "board": "waveshare-s3-thermal-camera",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 编程/供电",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "product",
+          "title": "thermal-45-camera-esp32-module.html",
+          "url": "https://www.waveshare.com/product/esp32-related/thermal-45-camera-esp32-module.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/Thermal-Camera-ESP32-Module",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "desktop-factory",
+          "title": "Thermal-ESP32-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "web-factory",
+          "title": "Thermal-ESP32-Web-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/Thermal-Camera-ESP32-Module/Thermal-ESP32-Web-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "ESP32-S3-WROOM-1的16MiB Flash/8MiB PSRAM；45°与90°为光学选项，共用主控接线。",
+        "真实LX7 GPIO数字子集覆盖BOOT0和分立低有效RGB1/38/2；SPI2路由/片选/复位/掉电仅观察。",
+        "MI0802寄存器、校准存储、DATA_AV4中断和热辐射测温未实现；不会生成虚构设备ID、温度或热图。",
+        "没有板载显示屏、TF插槽或虚拟摄像头帧；80×62是传感器像素，不能用作显示分辨率。",
+        "两份原厂ZIP原字节的芯片/分区/XOR及已声明附加SHA通过审计；Web版原镜像未声明附加SHA，ROM实际打印SHA比较警告后继续。桌面版头声明2MiB但物理板为16MiB，均保持原字节。",
+        "原厂两个版本均实跑到app_main与GPIO/RGB/SPI初始化，随后SenXor初始化失败；完整传感器/无线/原厂应用/实物未验收。",
+        "精确CAD未找到；29×29mm载板与3孔轮廓有尺寸/照片来源，镜筒、子板、USB高度及内部结构为估计/UNKNOWN。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "未建立硬件发布日期；ZIP/SDK时间不等同发布日。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-thermal-90-camera-esp32-module/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-thermal-web-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-zero-basic-kit",
+      "name": "Waveshare ESP32-S3-Zero-Basic-Kit",
+      "manufacturer": "Waveshare",
+      "sku": "33356",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "套件含ESP32-S3-Zero主控；4MiB Flash/2MiB PSRAM。外接OLED及其他松散外设未预接线。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-zero-basic-kit.json",
+      "family": {
+        "id": "esp32-xx-basic-kit",
+        "name": "ESP32-XX Basic Kit"
+      },
+      "runtime": {
+        "board": "waveshare-s3-zero",
+        "flashMb": 4,
+        "psramMb": 2,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C 编程 / 电源",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "controller-overview",
+            "controller-schematic"
+          ]
+        }
+      ],
+      "sources": [
+        {
+          "id": "kit-product",
+          "title": "esp32-xx-basic-kit.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-xx-basic-kit.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-wiki",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-XX-Basic-Kit-Acce",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-s3-docs",
+          "title": "s3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/?variant=ESP32-S3-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c6-docs",
+          "title": "c6-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/?variant=ESP32-C6-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c3-docs",
+          "title": "c3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C3-Zero/?variant=ESP32-C3-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-s3-tree",
+          "title": "s3-tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-Zero-Basic-Kit/git/trees/17304b9271a7ae91e5d8f37de09c18796f6f4b91?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c6-tree",
+          "title": "tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c3-tree",
+          "title": "tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C3-Zero-Basic-Kit/git/trees/4db4202faa251964321f79b39efb232d6ca7bef5?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-overview",
+          "title": "官方产品说明与 SKU",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-resources",
+          "title": "官方资源目录",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-schematic",
+          "title": "精确型号原理图",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "本条目适配套件内精确Zero主控板；1.5英寸SSD1327 OLED、PIR、蜂鸣器、8位RGB及面包板是松散外设，未自动接线或冒充板载功能。",
+        "SKU33355只有配件，不含ESP32主控，从本次主控设备统计中排除。33356/33357/33358三个含板SKU各计一次。",
+        "C6当前套件链接说明8MiB FH8，但旧原理图/教材对应4MiB FH4；同一套件SKU提供两个明确容量profile，交付批次/销售版次未经证实。",
+        "模型仅表示官方明确随附的主控板，复用同款原厂CAD或照片模型；未虚构三套新PCB、预焊排针、箱内布局或整套配件3D结构。",
+        "S3/C6固定教程仓库没有完整BIN；C3仓库中的候选BIN实际为S3芯片，已拒绝用于C3。没有把教程目录或自编诊断标成出厂恢复固件。",
+        "真实指令的板级数字子集不等于整套教程、无线、MicroPython全功能、浏览器WebGL或实物验收。",
+        "本轮未确认该精确型号的独立出厂恢复镜像；保留已核验来源的官方示例、测试程序或文档链接的 MicroPython，不把它们标成出厂固件。",
+        "原生 ROM 启动与板载 LED 路径已验证；USB HUB/桥接芯片、无线网络、模拟电气行为和完整实机兼容性未验证。",
+        "当前条目为无预焊排针的指定容量版本，不覆盖其他容量、天线或附属套件。",
+        "原始示例 ZIP 的 combine/target.bin 实为 ESP32-C3 镜像，已拒绝；默认清单使用其中三段有效 S3 文件。",
+        "官方 CAD 派生模型；几何和交互射线已校验，未进行实物装配或浏览器视觉验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "官方SKU/文档/仓库日期不构成硬件发布时间。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-zero/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c6-zero-basic-kit",
+      "name": "Waveshare ESP32-C6-Zero-Basic-Kit",
+      "manufacturer": "Waveshare",
+      "sku": "33357",
+      "chip": "esp32c6",
+      "hardwareRevision": "current official overview: ESP32-C6FH8/8MiB; sale revision unspecified",
+      "summary": "套件含ESP32-C6-Zero主控；8MiB Flash/0MiB PSRAM。外接OLED及其他松散外设未预接线。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-zero-basic-kit.json",
+      "family": {
+        "id": "esp32-xx-basic-kit",
+        "name": "ESP32-XX Basic Kit"
+      },
+      "runtime": {
+        "board": "waveshare-c6-zero",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "kit-product",
+          "title": "esp32-xx-basic-kit.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-xx-basic-kit.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-wiki",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-XX-Basic-Kit-Acce",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-s3-docs",
+          "title": "s3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/?variant=ESP32-S3-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c6-docs",
+          "title": "c6-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/?variant=ESP32-C6-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c3-docs",
+          "title": "c3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C3-Zero/?variant=ESP32-C3-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-s3-tree",
+          "title": "s3-tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-Zero-Basic-Kit/git/trees/17304b9271a7ae91e5d8f37de09c18796f6f4b91?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c6-tree",
+          "title": "tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c3-tree",
+          "title": "tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C3-Zero-Basic-Kit/git/trees/4db4202faa251964321f79b39efb232d6ca7bef5?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "本条目适配套件内精确Zero主控板；1.5英寸SSD1327 OLED、PIR、蜂鸣器、8位RGB及面包板是松散外设，未自动接线或冒充板载功能。",
+        "SKU33355只有配件，不含ESP32主控，从本次主控设备统计中排除。33356/33357/33358三个含板SKU各计一次。",
+        "C6当前套件链接说明8MiB FH8，但旧原理图/教材对应4MiB FH4；同一套件SKU提供两个明确容量profile，交付批次/销售版次未经证实。",
+        "模型仅表示官方明确随附的主控板，复用同款原厂CAD或照片模型；未虚构三套新PCB、预焊排针、箱内布局或整套配件3D结构。",
+        "S3/C6固定教程仓库没有完整BIN；C3仓库中的候选BIN实际为S3芯片，已拒绝用于C3。没有把教程目录或自编诊断标成出厂恢复固件。",
+        "真实指令的板级数字子集不等于整套教程、无线、MicroPython全功能、浏览器WebGL或实物验收。",
+        "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+        "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+        "Current official overview explicitly statesESP32-C6FH8 and8MiB. The retained official schematic explicitly statesESP32-C6FH4 and4MiB. Both source-backed capacity profiles are exposed; there is no proven V1/V2 sale designation or release date.",
+        "The two exact sale SKUs27035/26976 are counted once each. Four product profiles distinguish two documented capacities and two header options, without inventing extra SKUs.",
+        "All original native116/118 CAD components remain unscaled. Exact electrical revision/CAD match is unverified; native package geometry does not establish embedded flash capacity.",
+        "Fixed official Basic Kit repository has noBIN file; linkedBLEAssist is an Android APK. No full ESP image/default has been fabricated. Digital native regressions are not official application acceptance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "官方SKU/文档/仓库日期不构成硬件发布时间。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-zero/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c6-zero-basic-kit-fh4",
+      "name": "Waveshare ESP32-C6-Zero-Basic-Kit · FH4资料版本",
+      "manufacturer": "Waveshare",
+      "sku": "33357",
+      "chip": "esp32c6",
+      "hardwareRevision": "retained official schematic: ESP32-C6FH4/4MiB; sale revision unspecified",
+      "summary": "套件含ESP32-C6-Zero主控；4MiB Flash/0MiB PSRAM。外接OLED及其他松散外设未预接线。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-zero-basic-kit-fh4.json",
+      "family": {
+        "id": "esp32-xx-basic-kit",
+        "name": "ESP32-XX Basic Kit"
+      },
+      "runtime": {
+        "board": "waveshare-c6-zero-fh4",
+        "flashMb": 4,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "kit-product",
+          "title": "esp32-xx-basic-kit.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-xx-basic-kit.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-wiki",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-XX-Basic-Kit-Acce",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-s3-docs",
+          "title": "s3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/?variant=ESP32-S3-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c6-docs",
+          "title": "c6-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/?variant=ESP32-C6-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c3-docs",
+          "title": "c3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C3-Zero/?variant=ESP32-C3-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-s3-tree",
+          "title": "s3-tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-Zero-Basic-Kit/git/trees/17304b9271a7ae91e5d8f37de09c18796f6f4b91?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c6-tree",
+          "title": "tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c3-tree",
+          "title": "tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C3-Zero-Basic-Kit/git/trees/4db4202faa251964321f79b39efb232d6ca7bef5?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-zero.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "本条目适配套件内精确Zero主控板；1.5英寸SSD1327 OLED、PIR、蜂鸣器、8位RGB及面包板是松散外设，未自动接线或冒充板载功能。",
+        "SKU33355只有配件，不含ESP32主控，从本次主控设备统计中排除。33356/33357/33358三个含板SKU各计一次。",
+        "C6当前套件链接说明8MiB FH8，但旧原理图/教材对应4MiB FH4；同一套件SKU提供两个明确容量profile，交付批次/销售版次未经证实。",
+        "模型仅表示官方明确随附的主控板，复用同款原厂CAD或照片模型；未虚构三套新PCB、预焊排针、箱内布局或整套配件3D结构。",
+        "S3/C6固定教程仓库没有完整BIN；C3仓库中的候选BIN实际为S3芯片，已拒绝用于C3。没有把教程目录或自编诊断标成出厂恢复固件。",
+        "真实指令的板级数字子集不等于整套教程、无线、MicroPython全功能、浏览器WebGL或实物验收。",
+        "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+        "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+        "Current official overview explicitly statesESP32-C6FH8 and8MiB. The retained official schematic explicitly statesESP32-C6FH4 and4MiB. Both source-backed capacity profiles are exposed; there is no proven V1/V2 sale designation or release date.",
+        "The two exact sale SKUs27035/26976 are counted once each. Four product profiles distinguish two documented capacities and two header options, without inventing extra SKUs.",
+        "All original native116/118 CAD components remain unscaled. Exact electrical revision/CAD match is unverified; native package geometry does not establish embedded flash capacity.",
+        "Fixed official Basic Kit repository has noBIN file; linkedBLEAssist is an Android APK. No full ESP image/default has been fabricated. Digital native regressions are not official application acceptance."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "官方SKU/文档/仓库日期不构成硬件发布时间。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-zero/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-c3-zero-basic-kit",
+      "name": "Waveshare ESP32-C3-Zero-Basic-Kit",
+      "manufacturer": "Waveshare",
+      "sku": "33358",
+      "chip": "esp32c3",
+      "hardwareRevision": "retained2026/8/19 C3FH4 schematic and official4MiB overview; sale revision unspecified",
+      "summary": "套件含ESP32-C3-Zero主控；4MiB Flash/0MiB PSRAM。外接OLED及其他松散外设未预接线。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c3-zero-basic-kit.json",
+      "family": {
+        "id": "esp32-xx-basic-kit",
+        "name": "ESP32-XX Basic Kit"
+      },
+      "runtime": {
+        "board": "waveshare-c3-zero",
+        "flashMb": 4,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [],
+      "sources": [
+        {
+          "id": "kit-product",
+          "title": "esp32-xx-basic-kit.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-xx-basic-kit.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-wiki",
+          "title": "overview.html",
+          "url": "https://www.waveshare.com/wiki/ESP32-XX-Basic-Kit-Acce",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-s3-docs",
+          "title": "s3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/?variant=ESP32-S3-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c6-docs",
+          "title": "c6-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C6-Zero/?variant=ESP32-C6-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c3-docs",
+          "title": "c3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-C3-Zero/?variant=ESP32-C3-Zero-Basic-Kit",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-s3-tree",
+          "title": "s3-tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-S3-Zero-Basic-Kit/git/trees/17304b9271a7ae91e5d8f37de09c18796f6f4b91?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c6-tree",
+          "title": "tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Zero-Basic-Kit/git/trees/067435640535d90ce9c1fe0c046ba36a12886974?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "kit-c3-tree",
+          "title": "tree.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C3-Zero-Basic-Kit/git/trees/4db4202faa251964321f79b39efb232d6ca7bef5?recursive=1",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C3-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C3-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "controller-product",
+          "title": "Exact official SKU/options",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c3-zero.htm",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "本条目适配套件内精确Zero主控板；1.5英寸SSD1327 OLED、PIR、蜂鸣器、8位RGB及面包板是松散外设，未自动接线或冒充板载功能。",
+        "SKU33355只有配件，不含ESP32主控，从本次主控设备统计中排除。33356/33357/33358三个含板SKU各计一次。",
+        "C6当前套件链接说明8MiB FH8，但旧原理图/教材对应4MiB FH4；同一套件SKU提供两个明确容量profile，交付批次/销售版次未经证实。",
+        "模型仅表示官方明确随附的主控板，复用同款原厂CAD或照片模型；未虚构三套新PCB、预焊排针、箱内布局或整套配件3D结构。",
+        "S3/C6固定教程仓库没有完整BIN；C3仓库中的候选BIN实际为S3芯片，已拒绝用于C3。没有把教程目录或自编诊断标成出厂恢复固件。",
+        "真实指令的板级数字子集不等于整套教程、无线、MicroPython全功能、浏览器WebGL或实物验收。",
+        "部分适配：真实芯片、明确容量版本、BOOT和RGB数字通路；完整应用、无线、模拟电源及实物验收未完成。",
+        "原生厂家模型与原始来源保持原尺寸/字节；电路版次和机械版次关系未确认，不能视为装配尺寸验收。",
+        "Exact manufacturer BlinkRGB source and current schematic agree onGPIO10. This C3 does not borrow the C6 pin or chip identity.",
+        "Official Basic Kit repository contains a4MiB mergedBIN under an ESP32-S3 build target. Its actual header chipID is9 (S3),not5 (C3); it is rejected for this C3 board, not promoted to a matching example/factory.",
+        "Board-specific linked BlinkRGB ZIP contains source only. No matching full original C3 image is invented or assigned by default.",
+        "Published18×23.5mm XY retained; no exact solid CAD found in recorded resources/related pinned tree. Hidden structures and unmeasured depths remain visibly UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "官方SKU/文档/仓库日期不构成硬件发布时间。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c3-zero/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
       "id": "waveshare-esp32-s3-lcd-1-9",
       "name": "Waveshare ESP32-S3-LCD-1.9",
       "manufacturer": "Waveshare",
@@ -88561,6 +89844,244 @@
         "provenance": "official-cad"
       },
       "defaultFirmwareId": "waveshare-s3-tail-lcd43-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-69",
+      "name": "Waveshare ESP32-S3-LCD-1.69 · V1",
+      "manufacturer": "Waveshare",
+      "sku": "27932",
+      "chip": "esp32s3",
+      "hardwareRevision": "V1",
+      "summary": "1.69英寸非触控240×280屏，16MiB Flash/8MiB PSRAM；独立电气版次，原厂多色画面已观察，数字子集部分适配。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-69.json",
+      "family": {
+        "id": "esp32-s3-lcd-1-69",
+        "name": "ESP32-S3-LCD-1.69"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd169-v1",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 280,
+        "type": "IPS LCD",
+        "bus": "SPI",
+        "diagonalInches": 1.69,
+        "controller": "ST7789V2",
+        "touch": false,
+        "shape": "rectangle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · 数字按键",
+          "type": "button",
+          "pin": 36,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C供电/下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview"
+          ]
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-69/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "sources": [
+        {
+          "id": "product",
+          "title": "esp32-s3-lcd-1.69.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.69.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-1.69",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic-v1",
+          "title": "ESP32-S3-LCD-1.69(2).pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.69/ESP32-S3-LCD-1.69(2).pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic-v2",
+          "title": "ESP32-S3-LCD-1.69_V2.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.69/ESP32-S3-LCD-1.69_V2.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "demo-archive",
+          "title": "ESP32-S3-LCD-1.69_DemoCode.zip",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.69/ESP32-S3-LCD-1.69_DemoCode.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "非触控LCD169与Touch-LCD169是不同商品，未添加CST触摸、TF、RGB灯或AXP2101；ETA6098为模拟充电器。",
+        "两版的SYS_OUT/SYS_EN/蜂鸣器/RTC中断引脚不同；BOOT和低有效PWR只模拟真实数字输入，未模拟电源保持、充电、蜂鸣声音或RTC中断。",
+        "ST7789V2支持RGB565串行子集，240×280玻璃取240×320 RAM的第20至299行；物理光学、完整模拟伽马与262K色路径未验证。",
+        "原始出厂BIN按两版各运行5秒，均13个RAMWR帧、9931种颜色及0重启；该结果不证明闭源BIN对两版电源引脚的完整资格。",
+        "原生实际LX7测试验证SPI模式0/3与全双工、错线、复位/PWM、GPIO按键、QMI/RTC数字路径；无线、USB、电池、完整应用及实物未验收。",
+        "原CAD未标明电气版次；保留287个原生组件及原坐标，不能据此宣称V1/V2机械完全等同。",
+        "已检查官方说明、固件包和定向来源检索，未定位此非触控S3型号的精确UIFlow/小智恢复镜像；不借用C6或Touch版本。"
+      ],
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-1-69-factory",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "无可靠硬件发布日期；资料或抓取时间不冒充上市日。"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-69-v2",
+      "name": "Waveshare ESP32-S3-LCD-1.69 · V2",
+      "manufacturer": "Waveshare",
+      "sku": "27932",
+      "chip": "esp32s3",
+      "hardwareRevision": "V2",
+      "summary": "1.69英寸非触控240×280屏，16MiB Flash/8MiB PSRAM；独立电气版次，原厂多色画面已观察，数字子集部分适配。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-69-v2.json",
+      "family": {
+        "id": "esp32-s3-lcd-1-69",
+        "name": "ESP32-S3-LCD-1.69"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd169-v2",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 240,
+        "height": 280,
+        "type": "IPS LCD",
+        "bus": "SPI",
+        "diagonalInches": 1.69,
+        "controller": "ST7789V2",
+        "touch": false,
+        "shape": "rectangle"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · 数字按键",
+          "type": "button",
+          "pin": 40,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C供电/下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview"
+          ]
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-69/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "sources": [
+        {
+          "id": "product",
+          "title": "esp32-s3-lcd-1.69.html",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.69.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-1.69",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic-v1",
+          "title": "ESP32-S3-LCD-1.69(2).pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.69/ESP32-S3-LCD-1.69(2).pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic-v2",
+          "title": "ESP32-S3-LCD-1.69_V2.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.69/ESP32-S3-LCD-1.69_V2.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "demo-archive",
+          "title": "ESP32-S3-LCD-1.69_DemoCode.zip",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.69/ESP32-S3-LCD-1.69_DemoCode.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "非触控LCD169与Touch-LCD169是不同商品，未添加CST触摸、TF、RGB灯或AXP2101；ETA6098为模拟充电器。",
+        "两版的SYS_OUT/SYS_EN/蜂鸣器/RTC中断引脚不同；BOOT和低有效PWR只模拟真实数字输入，未模拟电源保持、充电、蜂鸣声音或RTC中断。",
+        "ST7789V2支持RGB565串行子集，240×280玻璃取240×320 RAM的第20至299行；物理光学、完整模拟伽马与262K色路径未验证。",
+        "原始出厂BIN按两版各运行5秒，均13个RAMWR帧、9931种颜色及0重启；该结果不证明闭源BIN对两版电源引脚的完整资格。",
+        "原生实际LX7测试验证SPI模式0/3与全双工、错线、复位/PWM、GPIO按键、QMI/RTC数字路径；无线、USB、电池、完整应用及实物未验收。",
+        "原CAD未标明电气版次；保留287个原生组件及原坐标，不能据此宣称V1/V2机械完全等同。",
+        "已检查官方说明、固件包和定向来源检索，未定位此非触控S3型号的精确UIFlow/小智恢复镜像；不借用C6或Touch版本。"
+      ],
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-1-69-factory",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "无可靠硬件发布日期；资料或抓取时间不冒充上市日。"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-lcd-1-69",
+      "firmwareTargetId": "waveshare-esp32-s3-lcd-1-69"
     }
   ]
 }
