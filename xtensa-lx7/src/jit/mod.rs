@@ -640,6 +640,14 @@ mod native {
         }
         #[test]
         fn cache_drop_unmaps_after_write_reset_and_move() {
+            // Other parallel core tests create caches too and may immediately reuse a just
+            // unmapped address. Query VM state in a child running only this test.
+            if std::env::var_os("ESP32SIM_CACHE_DROP_CHILD").is_none() {
+                let status=std::process::Command::new(std::env::current_exe().unwrap())
+                    .args(["--exact","jit::native::tests::cache_drop_unmaps_after_write_reset_and_move","--test-threads=1"])
+                    .env("ESP32SIM_CACHE_DROP_CHILD","1").status().expect("isolated cache test");
+                assert!(status.success());return;
+            }
             for _ in 0..64 {
                 let mut cache = CodeCache::new(4096).expect("executable mmap");
                 let base = cache.base;
