@@ -77,7 +77,7 @@ impl SocBus {
         else { return false };
         if !(LOW..HIGH).contains(&address) || !(LOW..HIGH).contains(&last) { return false; }
         // What psram_offsets checks is the same for every byte of a 32 KiB page, and the
-        // installed PSRAM is whole pages (0 or 4 MiB), so one byte of each page stands for it.
+        // installed PSRAM is whole pages (0, 2, 4 or 8 MiB), so one byte of each page stands for it.
         let mut page = address;
         loop {
             if self.psram_offsets::<1>(page).is_err() { return false; }
@@ -117,7 +117,11 @@ impl SocBus {
         for table in &mut self.mmu { table[SRAM_SLOT..SRAM_SLOT + 128].fill(0x100); }
     }
     pub(crate) fn configure_psram(&mut self, bytes: usize) -> Result<(), String> {
-        if bytes != 0 && bytes != (4 << 20) { return Err("classic PSRAM supports 0 or 4194304 bytes".into()); }
+        // IDF v4.4.7 spiram_psram.c: psram_get_size() recognizes 16/32/64 Mbit
+        // EIDs. Capacity changes backing and RDID, not the fixed 4 MiB CPU window.
+        // An 8 MiB device uses physical page IDs 0..255 through that same window;
+        // this does not implement 2T mode or infer a physical RAM manufacturer.
+        if ![0, 2 << 20, 4 << 20, 8 << 20].contains(&bytes) { return Err("classic PSRAM supports 0, 2097152, 4194304 or 8388608 bytes".into()); }
         // Stopped-machine boundary only. Classic has no fast_mem or published backing pointer.
         self.reset_psram();
         self.psram = vec![0; bytes];

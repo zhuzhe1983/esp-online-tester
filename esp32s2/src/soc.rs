@@ -55,6 +55,7 @@ impl SocBus for S2Bus {
     }
     fn reboot(&mut self,_mac:[u8;6])->u32 {
         let mut fresh=S2Bus::new();
+        fresh.psram.configure(self.psram.len()).expect("previously validated S2 capacity");
         std::mem::swap(&mut fresh.flash,&mut self.flash); std::mem::swap(&mut fresh.board,&mut self.board);
         fresh.gpio.restore_external(&self.gpio); fresh.gpio.strap=self.gpio.strap;
         fresh.cycles=self.cycles; fresh.debug=self.debug.clone(); fresh.reset_cause=self.reset_cause;
@@ -88,9 +89,9 @@ impl SocBus for S2Bus {
     fn irq_sources_of(&self,_core:usize,_line:u32)->Vec<usize> {Vec::new()}
     fn set_debug(&mut self,f:&esp_soc::DebugFlags) {self.debug=f.clone();}
     fn set_flash_size(&mut self,bytes:usize) {self.flash.resize(bytes.min(MAX_STAGING_FLASH),0xff);}
-    fn set_psram_size(&mut self,bytes:usize)->Result<(),String> {if bytes==0 {Ok(())}else{Err("S2 diagnostic backend has no mapped PSRAM".into())}}
+    fn set_psram_size(&mut self,bytes:usize)->Result<(),String> {self.psram.configure(bytes)}
     fn set_strap(&mut self,value:u32) {self.gpio.strap=value&0xffff;}
     fn set_reset_cause(&mut self,cause:u32) {self.reset_cause=cause&0x3f;}
     fn refresh_board_outputs(&mut self) {self.publish_gpio();}
-    fn report(&self)->String {format!("[s2] SRAM app-direct diagnostic rev0; one integer core, JIT off; {SRAM_SIZE}B shared IRAM/DRAM aliases; polled UART/GPIO; ROM/flash/MMU/RTC/IRQ/USB/Wi-Fi/IDF boot unimplemented; {}",self.board.report())}
+    fn report(&self)->String {format!("[s2] SRAM app-direct diagnostic rev0; one integer core, JIT off; {SRAM_SIZE}B shared IRAM/DRAM aliases; polled UART/GPIO; {}B data-only PSRAM with64KiB MMU; ROM/flash mapping/PSRAM SPI init/cache timing/RTC/IRQ/USB/Wi-Fi/IDF boot unimplemented; {}",self.psram.len(),self.board.report())}
 }

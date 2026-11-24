@@ -1,6 +1,28 @@
 // Exact runtime profiles; memory and physical TF presence are separate from full peripheral acceptance.
 // Source and runtime limits: docs/evidence/waveshare-* and each product knowledge record.
 export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.create(null),{
+  "waveshare-s2-pico": {
+    "chip": "esp32s2",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "flashMb": 4,
+    "psramMb": 8,
+    "boardButtons": []
+  },
+  "waveshare-s2-lcd096": {
+    "chip": "esp32s2",
+    "display": true,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "flashMb": 4,
+    "psramMb": 8,
+    "boardButtons": []
+  },
   "waveshare-s3-touch-amoled143c": {
     "chip": "esp32s3",
     "flashMb": 8,
@@ -1160,5 +1182,75 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "flashMb": 16,
     "psramMb": 32,
     "virtualRevision": 301
+  },
+  "waveshare-servo-driver-esp32": {
+    "chip": "esp32",
+    "display": true,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "flashMb": 4,
+    "psramMb": 0
+  },
+  "waveshare-esp32-devkit-wroom-32e-n4": {
+    "chip": "esp32",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "flashMb": 4,
+    "psramMb": 0
+  },
+  "waveshare-esp32-devkit-wroom-32ue-n16": {
+    "chip": "esp32",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "flashMb": 16,
+    "psramMb": 0
+  },
+  "waveshare-esp32-devkit-wrover-e-n16r8": {
+    "chip": "esp32",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "flashMb": 16,
+    "psramMb": 8
+  },
+  "waveshare-esp32-devkit-wrover-ie-n16r8": {
+    "chip": "esp32",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": true,
+    "sdCard": false,
+    "flashMb": 16,
+    "psramMb": 8
+  },
+  "waveshare-general-driver-robots": {
+    "chip": "esp32",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "flashMb": 4,
+    "psramMb": 0
+  },
+  "waveshare-epaper-esp32-driver-v3": {
+    "chip": "esp32",
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "flashMb": 4,
+    "psramMb": 0
   }
 }));

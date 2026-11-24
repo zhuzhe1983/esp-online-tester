@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-11-23T20:04:50+00:00",
+  "board": "waveshare-servo-driver-esp32",
+  "tests": {
+    "command": "cargo test --release -p esp32 --test waveshare_legacy",
+    "passed": 2,
+    "failed": 0,
+    "durationSeconds": 0.01,
+    "method": "LX6 s32i/l32i instructions execute real GPIO,I2C,RMT MMIO; no direct framebuffer write",
+    "observed": [
+      "128x32 SSD1306 pixel at(1,2)",
+      "wrong pins/address NACK",
+      "DISPOFF blanks without erasing RAM",
+      "MCU reboot retains independent OLED",
+      "new board has no pixels",
+      "two physical WS2812B receive distinct GRB colors; wrong pin rejected",
+      "BOOT0 active-low inputs"
+    ]
+  },
+  "clippy": {
+    "command": "cargo clippy --release -p esp32 --lib --test waveshare_legacy -- -D warnings",
+    "exitCode": 0
+  },
+  "limitations": [
+    "No full official Arduino boot or physical hardware test",
+    "External servos/UART transceiver, power, voltage feedback and wireless protocols unmodeled",
+    "Exact physical Flash capacity unknown; 4MiB is a virtual simulation configuration only",
+    "Source sample NUMPIXELS10 does not imply ten onboard LEDs; schematic shows2"
+  ]
+}

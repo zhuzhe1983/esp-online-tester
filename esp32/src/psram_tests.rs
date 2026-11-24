@@ -164,7 +164,7 @@ fn sram_configuration_reset_loader_and_flash_separation() {
     assert_eq!(b.read32(0x3f400000), Ok(0x06070809));
     assert_eq!(b.read32(LOW), Ok(0x04030201));
     let ptr = b.psram.as_ptr();
-    for size in [1, 2 << 20, 8 << 20] {
+    for size in [1, 3 << 20, 16 << 20] {
         assert!(b.set_psram_size(size).is_err());
         assert_eq!(b.psram.as_ptr(), ptr);
         assert_eq!(b.read32(LOW), Ok(0x04030201));
@@ -182,4 +182,46 @@ fn sram_configuration_reset_loader_and_flash_separation() {
     assert!(b.psram.is_empty());
     let fresh = configured();
     assert!(fresh.psram.iter().all(|&v| v == 0));
+}
+
+#[test]
+fn sram_capacity_rdid_lx6_last_physical_page_and_fixed_virtual_window() {
+    use emu_core::Core;
+    use esp_soc::Soc;
+    for (mib, eid) in [(2, 0x02), (4, 0x22), (8, 0x42)] {
+        let mut b = SocBus::new(4 << 20, [0; 6]);
+        b.set_psram_size(mib << 20).unwrap();
+        // SPI1 CS1 RDID via actual MMIO. Manufacturer/KGD bytes are the existing
+        // host-selected virtual RAM identity; EID[7:5] describes its capacity.
+        for (off, value) in [(0x34,5), (0x1c,0xf0000000), (0x20,0x5c000001),
+            (0x24,0x7000009f), (4,0), (0x2c,0x3f), (0,1<<18)] {
+            b.write32(0x3ff42000 + off,value).unwrap();
+        }
+        assert_eq!(b.read32(0x3ff42080),Ok((eid<<16)|0x5d0d),"{mib} MiB RDID");
+        enable_cache(&mut b);
+        let last_page = (mib as u32 * 32) - 1;
+        map(&mut b, 0, last_page);
+        map(&mut b, 1, 0);
+        // Real LX6 store/load instructions: 8 MiB reaches physical page 255,
+        // still through a virtual address within the original 4 MiB window.
+        b.load_bytes(0x40080000,&[0x32,0x64,0,0x52,0x24,0]).unwrap();
+        let mut cpu = crate::Esp32::new_core(0);
+        cpu.pc = 0x40080000;cpu.set_ar(4,0x3f807ffc);cpu.set_ar(3,0x89abcdef);
+        assert!(cpu.step(&mut b).trap().is_none());
+        assert!(cpu.step(&mut b).trap().is_none());
+        assert_eq!(cpu.get_ar(5),0x89abcdef);
+        assert_eq!(&b.psram[(mib<<20)-4..],&0x89abcdefu32.to_le_bytes());
+        assert_eq!(b.read32(0x3f808000),Ok(0),"highest page must not alias page zero");
+        map(&mut b,0,last_page+1);
+        assert_eq!(b.read32(0x3f800000),Err(Fault::Unmapped),"one past physical capacity must not wrap");
+        assert_eq!(b.write32(0x3f800000,1),Err(Fault::Unmapped));
+        assert_eq!(b.read32(0x3fc00000),Err(Fault::Unmapped),"capacity does not extend the virtual window");
+        assert_eq!(b.write32(0x3fc00000,1),Err(Fault::Prohibited));
+        map(&mut b,0,last_page);
+        assert_eq!(b.read32(0x3f807ffc),Ok(0x89abcdef),"failed access retains valid bytes");
+        b.reboot([0;6]);assert_eq!(b.psram.len(),mib<<20);
+        assert_eq!(b.read32(0x3f807ffc),Err(Fault::Unmapped));
+        enable_cache(&mut b);map(&mut b,0,last_page);
+        assert_eq!(b.read32(0x3f807ffc),Ok(0),"reset clears the highest physical page");
+    }
 }

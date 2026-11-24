@@ -113,8 +113,8 @@ unsafe fn text<'a>(ptr: *const u8, len: usize) -> &'a str {
 /// co-processor, which are console-only and take no board, or `waveshare-p4-lcd35` for that P4
 /// rev >= 3 board (its panel, touch and codec). Null on failure.
 /// Flash and PSRAM are each limited to 32 MiB, matching the browser configuration form.
-/// Classic ESP32 enables PSRAM only at 4 MiB; other sizes within the cap start without
-/// PSRAM (0 is the default), preserving existing callers' configurations.
+/// Classic ESP32 accepts 0, 2, 4 or 8 MiB PSRAM. Unsupported capacities fail
+/// construction; the virtual data window remains 4 MiB even with 8 MiB backing.
 ///
 /// # Safety
 /// For nonzero `board_len`, `board` must be non-null and readable for `board_len` bytes throughout
@@ -133,7 +133,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     }
     let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
     let c5_board = if matches!(board.as_str(), "none" | "bare") { None } else { esp32c5::board::make_board(&board) };
-    let s2_board = if board == "esp32s2" { esp32s2::board::make_board("none") } else if matches!(board.as_str(), "lilygo-esp32-s2-woor" | "lilygo-esp32-s2" | "lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board") { esp32s2::board::make_board(&board) } else { None };
+    let s2_board = if board == "esp32s2" { esp32s2::board::make_board("none") } else if esp32s2::waveshare::memory_mib(&board).is_some() || matches!(board.as_str(), "lilygo-esp32-s2-woor" | "lilygo-esp32-s2" | "lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board") { esp32s2::board::make_board(&board) } else { None };
     let c61_board = if board == "esp32c61" { esp32c61::board::make_board("none") } else if board == "corematrix" { esp32c61::board::make_board(&board) } else { None };
     let s31_board = if board == "esp32s31" { esp32s31::board::make_board("none") } else if matches!(board.as_str(), "none" | "bare") { None } else { esp32s31::board::make_board(&board) };
     if s31_board.as_ref().is_some_and(|b| b.name() == "mosaico") && (flash_mb != 16 || psram_mb != 16) {
@@ -146,8 +146,9 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     if c5_board.is_some() && (flash_mb, psram_mb) != c5_memory {
         log("[emu] C5 board requires its documented Flash and PSRAM capacity"); return std::ptr::null_mut();
     }
-    if s2_board.is_some() && (flash_mb != 4 || psram_mb != 0) {
-        log("[emu] S2 SRAM profile requires 4 MiB host staging capacity and no simulated PSRAM"); return std::ptr::null_mut();
+    let s2_memory = esp32s2::waveshare::memory_mib(&board).unwrap_or((4,0));
+    if s2_board.is_some() && (flash_mb as usize,psram_mb as usize) != s2_memory {
+        log("[emu] S2 profile requires its explicit Flash staging and PSRAM configuration; Waveshare Pico/LCD require4/8MiB"); return std::ptr::null_mut();
     }
     if board == "waveshare-s3-epaper133e6" && (flash_mb != 32 || psram_mb != 16) {
         log("[emu] ESP32-S3-ePaper-13.3E6 WROOM-2-N32R16V requires 32 MiB Flash and 16 MiB PSRAM"); return std::ptr::null_mut();
@@ -209,17 +210,15 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         esp32::board::make_board(&board)
     };
     let m = if let Some(b) = classic_board {
+        let classic_memory = esp32::board::documented_memory_mib(b.name());
+        if classic_memory.is_some_and(|m| (flash_mb as usize,psram_mb as usize) != m) {
+            log("[emu] selected classic ESP32 board requires its documented Flash/PSRAM capacities"); return std::ptr::null_mut();
+        }
         let mut m = esp32::machine([0x24, 0x6f, 0x28, 0, 0x11, 0x22], flash_bytes);
         m.bus.board = b;
         m.bus.attach_board_devices();
         m.bus.set_flash_size(flash_bytes);
-        let classic_psram_bytes = if matches!(psram_mb, 0 | 4) {
-            psram_bytes
-        } else {
-            log("[emu] classic ESP32 PSRAM is 0 or 4 MiB; starting without PSRAM");
-            0
-        };
-        if let Err(reason) = m.bus.set_psram_size(classic_psram_bytes) {
+        if let Err(reason) = m.bus.set_psram_size(psram_bytes) {
             log(&format!("[emu] {}", reason));
             return std::ptr::null_mut();
         }
@@ -236,6 +235,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         MachineKind::C3(Box::new(m))
     } else if let Some(b) = s2_board {
         let mut m = esp32s2::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x02], flash_bytes);
+        if let Err(reason) = m.bus.set_psram_size(psram_bytes) {log(&format!("[emu] {reason}"));return std::ptr::null_mut();}
         m.bus.board = b;
         m.bus.attach_board_devices();
         m.console.mask = 2;

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {validateAppImage,chipForBoard,chipIdForBoard} from '../web/platform/app-image.js';
 
-const boards=['lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'];
+const boards=['waveshare-s2-pico','waveshare-s2-lcd096','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'];
 function image({segments=[{address:0x40020000,length:4}],entry=0x40020000,chip=2,min=0}={}) {
   const end=24+segments.reduce((n,s)=>n+8+s.length,0),checksumAt=Math.floor(end/16)*16+15;
   const bytes=new Uint8Array(checksumAt+33),view=new DataView(bytes.buffer);

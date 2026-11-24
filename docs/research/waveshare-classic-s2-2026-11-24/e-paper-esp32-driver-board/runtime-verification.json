@@ -1,0 +1,32 @@
+{
+  "boards": [
+    "waveshare-epaper-esp32-driver-v3"
+  ],
+  "observed": [
+    "Physical4MiBFlash/0PSRAM source configuration",
+    "No onboard panel/framebuffer returned",
+    "Real guest SPI output observed only13CLK/14MOSI/15CS,27DC,26RESET high",
+    "Wrong mux, reset or CS produces no accepted connector transaction",
+    "BUSY25 remains undriven; no synthesized refresh response"
+  ],
+  "limitations": [
+    "External EPD panel unspecified and not modeled",
+    "No high-voltage waveform, optical image, factory boot or hardware validation"
+  ],
+  "checkedAt": "2026-11-23T20:21:52+00:00",
+  "method": "Actual Xtensa guest s32i/l32i instructions access implemented SoC MMIO; no direct framebuffer injection",
+  "tests": {
+    "command": "cargo test --release -p esp32 --test waveshare_legacy",
+    "passed": 6,
+    "failed": 0,
+    "scope": "Whole scoped suite, including pre-existing tests; observations above are family-specific."
+  },
+  "clippy": {
+    "command": "cargo clippy --release -p esp32 -p esp32s2 -p esp32sim --all-targets -- -D warnings",
+    "exitCode": 0
+  },
+  "publicAbi": {
+    "fixture": "wasm/tests/waveshare_classic.rs",
+    "status": "added, pending integration runner execution; no pass asserted"
+  }
+}

@@ -38,6 +38,7 @@ pub struct S2Bus {
     pub sram: Vec<u8>, version: u32,
     pub uart: [Uart; 2], pub gpio: Gpio, pub io_mux: RegRam, pub board: Board,
     pub flash: Vec<u8>, // Host image staging only, never mapped into guest address space.
+    pub psram: crate::psram::Psram, // Guest-configured data-only MMU subset; independent from SRAM/flash staging.
     pub first_fault: Option<AccessFault>, pc: u32, pub cycles: u64,
     pub(crate) app_off: Option<usize>, pub(crate) app_entry: Option<u32>,
     pub(crate) reset_requested: bool, pub(crate) reset_cause: u32, pub(crate) irq_dirty: bool,
@@ -60,7 +61,7 @@ impl S2Bus {
         let mut io_mux = RegRam::new();
         gpio.set_pad(46, 1 << 7); io_mux.write(4 + 46 * 4, 1 << 7);
         Self { sram: vec![0; SRAM_SIZE], version: 1, uart, gpio, io_mux,
-            board: Box::new(NoBoard), flash: Vec::new(), first_fault: None, pc: ROM_BASE, cycles: 0,
+            board: Box::new(NoBoard), flash: Vec::new(), psram:Default::default(), first_fault: None, pc: ROM_BASE, cycles: 0,
             app_off: None, app_entry: None, reset_requested: false, reset_cause: 1, irq_dirty: true,
             misc: Default::default(), gpio_events: None, debug: Default::default(), gpio_date: 0x1905061 }
     }
@@ -121,6 +122,7 @@ impl S2Bus {
         if let Some(range) = physical_range(address,usize::from(width)) {
             let mut b = [0;4]; b[..usize::from(width)].copy_from_slice(&self.sram[range]); return Ok(u32::from_le_bytes(b));
         }
+        if let Some(result)=self.psram.read(address,width) {return result.or_else(|fault|self.fail(address,width,false,fault));}
         if let Some((i,off)) = Self::uart_register(address) {
             if width == 4 || (width == 1 && off == 0) { return Ok(self.uart[i].read(off)); }
         }
@@ -143,6 +145,7 @@ impl S2Bus {
             self.sram[range].copy_from_slice(&value.to_le_bytes()[..usize::from(width)]);
             self.version = self.version.wrapping_add(1); return Ok(());
         }
+        if let Some(result)=self.psram.write(address,value,width) {return result.or_else(|fault|self.fail(address,width,true,fault));}
         if let Some((i,off)) = Self::uart_register(address) {
             if width == 4 || (width == 1 && off == 0) { self.uart[i].write(off,value); self.irq_dirty=true; return Ok(()); }
         }

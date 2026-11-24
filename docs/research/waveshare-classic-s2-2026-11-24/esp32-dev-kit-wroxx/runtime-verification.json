@@ -1,0 +1,35 @@
+{
+  "boards": [
+    "waveshare-esp32-devkit-wroom-32e-n4",
+    "waveshare-esp32-devkit-wroom-32ue-n16",
+    "waveshare-esp32-devkit-wrover-e-n16r8",
+    "waveshare-esp32-devkit-wrover-ie-n16r8"
+  ],
+  "observed": [
+    "Exact documented 4/0,16/0,16/8,16/8 MiB profiles",
+    "Guest RMT uses GPIO27; wrong GPIO23 rejected",
+    "BOOT0 active low; no fabricated display",
+    "8MiB PSRAM guest RDID 0x425d0d is virtual device identity, not a manufacturer/package identification"
+  ],
+  "limitations": [
+    "No full original firmware boot or hardware validation",
+    "Wi-Fi/Bluetooth and USB bridge behavior not verified",
+    "Header and no-header SKUs share electrical runtime, retain separate mechanical identities"
+  ],
+  "checkedAt": "2026-11-23T20:21:52+00:00",
+  "method": "Actual Xtensa guest s32i/l32i instructions access implemented SoC MMIO; no direct framebuffer injection",
+  "tests": {
+    "command": "cargo test --release -p esp32 --test waveshare_legacy",
+    "passed": 6,
+    "failed": 0,
+    "scope": "Whole scoped suite, including pre-existing tests; observations above are family-specific."
+  },
+  "clippy": {
+    "command": "cargo clippy --release -p esp32 -p esp32s2 -p esp32sim --all-targets -- -D warnings",
+    "exitCode": 0
+  },
+  "publicAbi": {
+    "fixture": "wasm/tests/waveshare_classic.rs",
+    "status": "added, pending integration runner execution; no pass asserted"
+  }
+}

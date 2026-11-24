@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-11-23T20:33:02+00:00",
+  "change": "PCB placeholder solid now occludes input raycasts, so a BOOT hit region cannot be operated through an otherwise solid board from its reverse face.",
+  "trigger": "e-Paper ESP32 Driver V3 reverse-ray gate failed before the fix;13source-photo models passed after it.",
+  "checks": [
+    {
+      "command": "node --test tools/platform-manufacturer-model-test.mjs tools/platform-model-inspection-test.mjs",
+      "passed": 8,
+      "failed": 0
+    },
+    {
+      "command": "node tools/check-waveshare-model-loading.mjs <13classic-photo-model-ids>",
+      "passed": 13,
+      "failed": 0,
+      "scope": "Actual production loader, button nearest-hit/front and reverse occlusion, screen rays, source hashes and dimensions. Model records delivered in the following family commit."
+    }
+  ],
+  "boundary": "No speculative connector geometry or input locations added by this shared fix; no WebGL or physical hardware acceptance."
+}

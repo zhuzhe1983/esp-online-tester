@@ -21,11 +21,30 @@ pub mod core2;
 pub mod m5_tough;
 pub mod stickc;
 pub mod stickc_plus;
+pub mod waveshare_touch35;
+pub mod waveshare_servo;
+pub mod waveshare_devkit;
+pub mod waveshare_robot;
+pub mod waveshare_epaper_driver;
 
 pub use tdisplay::*;
 
+/// Source-documented capacities only. Robot/servo boards intentionally return
+/// None: their 4 MiB diagnostic defaults do not identify fitted Flash silicon.
+pub fn documented_memory_mib(name: &str) -> Option<(usize,usize)> {
+    waveshare_devkit::memory_mib(name).or(match name {
+        waveshare_touch35::NAME => Some(waveshare_touch35::MEMORY_MIB),
+        waveshare_epaper_driver::NAME => Some(waveshare_epaper_driver::MEMORY_MIB),
+        _ => None,
+    })
+}
+
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "waveshare-epaper-esp32-driver-v3" => Some(Box::new(waveshare_epaper_driver::EpaperDriver::new())),
+        "waveshare-general-driver-robots" => Some(Box::new(waveshare_robot::RobotDriver::new())),
+        "waveshare-servo-driver-esp32" => Some(Box::new(waveshare_servo::ServoDriver::new())),
+        "waveshare-esp32-touch35" => Some(Box::new(waveshare_touch35::WaveshareTouch35::new())),
         "stickc-plus" | "m5stack-k016-p" => Some(Box::new(stickc_plus::StickCPlus::new())),
         "core2" => Some(Box::new(core2::Core2::new())),
         "core2-v11" => Some(Box::new(core2::Core2::with_revision(core2::Revision::V11))),
@@ -47,7 +66,7 @@ pub fn make_board(name: &str) -> Option<esp_soc::Board> {
         "stickc" => Some(Box::new(stickc::StickC::new())),
         "m5stack-basic" => Some(Box::new(m5stack_basic::M5StackBasic::new())),
         "ulanzi-tc001" | "tc001" => Some(Box::new(ulanzi::UlanziTc001::new())),
-        _ => lilygo_additional::make_board(name).or_else(|| crate::spi::make_board(name)),
+        _ => waveshare_devkit::make_board(name).or_else(|| lilygo_additional::make_board(name)).or_else(|| crate::spi::make_board(name)),
     }
 }
 

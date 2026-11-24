@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-11-23T19:18:20Z",
+  "capacityMiB": [
+    0,
+    2,
+    4,
+    8
+  ],
+  "virtualWindow": {
+    "start": "0x3f800000",
+    "endExclusive": "0x3fc00000",
+    "pageBytes": 32768
+  },
+  "verification": [
+    {
+      "command": "cargo test --release -p esp32 --lib psram",
+      "result": "passed",
+      "tests": 24,
+      "elapsedTestSeconds": 0.03,
+      "scope": "Actual SPI1 MMIO RDID EID02/22/42, real LX6 store/load of each final physical page (63/127/255), out-of-capacity fault, non-aliasing, unchanged virtual window and reset clearing."
+    },
+    {
+      "command": "cargo clippy --release -p esp32 --lib --tests -- -D warnings",
+      "result": "passed",
+      "elapsedSeconds": 3.31
+    }
+  ],
+  "publicConstruction": "CLI accepts only 0/2/4/8; WASM returns null for unsupported capacities instead of silently dropping PSRAM. ABI fixture assertions updated; final native ABI/wasm32 build delegated to integration owner.",
+  "limitations": [
+    "Capacity and virtual identity are explicit host scenarios, not measured per-board PSRAM vendor/die identification.",
+    "8 MiB backing uses existing MMU page identifiers through the unchanged 4 MiB virtual window; this is not 2T-mode support.",
+    "This test does not establish original factory firmware boot or hardware performance."
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "checkedAt": "2026-11-23T20:44:47.605216+00:00",
+  "scope": "Exact Waveshare S2 platform routing and original diagnostic images; no manufacturer firmware replacement or boot claim",
+  "boards": [
+    "waveshare-s2-pico",
+    "waveshare-s2-lcd096"
+  ],
+  "chipId": 2,
+  "flashMb": 4,
+  "psramMb": 8,
+  "changes": [
+    "isS2Board recognizes exact names and declared Waveshare chip capability",
+    "SRAM-only public runtime selects interpreter/no ROM and verifies4/8 capacity",
+    "Worker suppresses network/Flash-storage capabilities for both exact S2 profiles",
+    "Manufacturer images remain subject to exact chip, integrity, layout and SRAM-only rejection"
+  ],
+  "diagnostic": {
+    "kind": "original-authored-Xtensa-S2-SRAM-diagnostic",
+    "thirdPartyFirmware": false,
+    "generator": "tools/build-s2-sram-diagnostic.py",
+    "chipId": 2,
+    "diagnosticRevision": 0,
+    "entry": 1073878016,
+    "marker": 1073737728,
+    "codeAddress": 1073876992,
+    "codeBytes": 2412,
+    "screen": {
+      "width": 160,
+      "height": 80,
+      "released": "RGB565 f800 red",
+      "pressed": "RGB565 07e0 green"
+    },
+    "bootPin": 0,
+    "uart0": 1061158912,
+    "uartMarkers": [
+      "S2 SRAM READY\n",
+      "BUTTON UP\n",
+      "BUTTON DOWN\n",
+      "FRAME RED\n",
+      "FRAME GREEN\n"
+    ],
+    "uartEcho": "At the idle input-poll loop, each received UART0 byte is transmitted unchanged.",
+    "limits": "SRAM app-direct only; GPIO software SPI, not hardware SPI. No ROM/SDK/full factory boot, USB, radio, timers or physical timing certification.",
+    "sha256": "33d345e8f1b300c59fcb18e8cb5ee35f35b99b934679048ec08f0a25f6e10ca0",
+    "bytes": 2752
+  },
+  "validation": [
+    {
+      "command": "cargo test --release -p esp32s2 --test waveshare s2_original_app_images_run_to_uart_frame_input_echo_and_reset",
+      "result": "passed",
+      "checks": [
+        "Real complete application boot into independent S2 LX7 interpreter",
+        "Both profiles BOOT0 up/down/up and UART FIFO echo",
+        "LCD every12800 RGB565 pixel changes red/green/red via guest softwareSPI",
+        "Same original SRAM image restart clears/reinitializes panel, preserves4/8 configuration"
+      ],
+      "seconds": 0.46
+    },
+    {
+      "command": "cargo test --release -p esp32s2 --test waveshare",
+      "result": "passed",
+      "tests": 3,
+      "seconds": 0.56,
+      "scope": "Exact source-backed pin/reset/MMU boundaries and complete original application diagnostics"
+    },
+    {
+      "command": "node --test tools/platform-s2-image-test.mjs tools/platform-local-firmware-test.mjs",
+      "result": "passed",
+      "tests": 4,
+      "checks": [
+        "chip2 / SRAM address and alias limits / SHA / checksum / unsupported-chip rejection",
+        "S2 bootloader@0x1000 retained; no package padding inserted"
+      ]
+    },
+    {
+      "command": "cargo clippy --release -p esp32s2 --all-targets -- -D warnings",
+      "result": "passed",
+      "seconds": 0.22
+    },
+    {
+      "command": "node --test tools/platform-waveshare-s2-test.mjs",
+      "result": "pending-root-WASM-integration",
+      "note": "Checks4 exact catalog SKUs through actual public Platform/Worker/WASM; no success claimed before root execution"
+    }
+  ],
+  "legacyFixtures": "s2-sram-console and dongle-sram-diagnostic re-generated bit-identically; no goldens changed",
+  "limits": [
+    "SRAM-only app-direct; independent memory/peripheral implementation",
+    "Data PSRAM8MiB does not imply ROM/IDF boot or instruction PSRAM",
+    "No hardware SPI / physical timing / factory firmware run certification"
+  ]
+}

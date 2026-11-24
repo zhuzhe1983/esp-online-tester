@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-23T19:27:36Z",
+  "board": "waveshare-esp32-touch35",
+  "memoryMiB": {
+    "flash": 16,
+    "psram": 2
+  },
+  "artifactSha256": {
+    "esp32/src/board/waveshare_touch35.rs": "2b3f6d7a27ba8ba94244d66a74d462ef8719f179ba3bcf75cab8acb25f86b578",
+    "esp32/tests/waveshare_touch35.rs": "b1ba7937619b1dbe3d7446832c4208555c4cfb520853a3bf0d901068ee307784"
+  },
+  "sourceManifest": "board-sources/source-manifest.json",
+  "checks": [
+    {
+      "command": "cargo test --release -p esp32 --test waveshare_touch35",
+      "status": "passed",
+      "testCount": 3,
+      "testSeconds": 0.02,
+      "scope": [
+        "Each tested GPIO/I2C/SPI MMIO access is an executed LX6 s32i/l32i instruction; host only sets test instruction operands and physical user inputs.",
+        "320x480 ST7796 common RGB565 DCS writes produce the exact expected framebuffer pixel; incorrect MOSI/SCLK/DC and simultaneous LCD/SD selection do not write it. Backlight and TCA9554 EX0 reset hide it correctly. RGB666 payloads are rejected rather than decoded as RGB565.",
+        "FT6336 single-point bytes and GPIO37 IRQ, BOOT GPIO0 active-low, SYS_OUT GPIO36 active-high; wrong I2C pins/address NACK.",
+        "ES8311 control readback, AXP2101 published ID/reference USB/no-cell register scenario, PCF85063 BCD seconds from normalized guest cycles. MCU reboot preserves independently powered codec/RTC state and rebases RTC cycle origin; a new board has initial defaults.",
+        "SPI SD CMD0/CMD8 include the required NCR response byte, on GPIO18/23/19 with CS15; wrong MISO cannot read responses. No filesystem mount is claimed."
+      ]
+    },
+    {
+      "command": "cargo clippy --release -p esp32 -p esp32sim --lib --tests -- -D warnings",
+      "status": "passed",
+      "elapsedSeconds": 6.18
+    }
+  ],
+  "qualificationChanges": [
+    "Initial RTC test incorrectly passed 240 million reset-CPU ticks as one second; the reset 40 MHz XTAL scales those ticks to six seconds on the normalized 240 MHz board horizon. Corrected fixture passes 40 million CPU ticks and asserts the resulting board-clock delta.",
+    "Initial SD fixture expected R1 before the mandatory NCR byte. Corrected expectations retain the actual SD SPI protocol response; no card-model behavior was weakened."
+  ],
+  "publicFactoryGate": {
+    "status": "pending-root-integration",
+    "test": "cargo test --release -p esp32sim-wasm --test waveshare_classic",
+    "scope": "Constructor exact memory only; original factory boot is independent."
+  },
+  "limitations": [
+    "Common ST7796 RGB565 DCS subset only; unsupported RGB666 and RAMWRC are not modeled. Analog inversion/gamma/colorimetry, display readback and factory cold-start behavior are not qualified.",
+    "FT6336 single-contact FT6x36 report only; no two-contact, gesture, precise interrupt pulse timing or physical chip-revision identification.",
+    "TCA9554 reset signals are digital and immediate; analog rails and startup delays are not modeled.",
+    "AXP2101 uses the existing documented USB/no-cell reference scenario; it does not implement battery fuel gauge, charging, watchdog, MCU power-off or characterize board EFUSE settings. SYS_OUT input does not fabricate a shutdown.",
+    "ES8311 control-port only; I2S PCM, PA audio output and microphone capture are not implemented for this board.",
+    "SPI SD byte protocol exists; guest FAT32 mounting, DMA throughput and original factory storage use have not been verified.",
+    "Native tests require no ROM and are independent register/protocol probes; they do not claim complete original factory boot, real hardware verification or browser output."
+  ]
+}

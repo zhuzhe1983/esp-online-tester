@@ -1,0 +1,49 @@
+{
+  "boards": [
+    "waveshare-s2-pico",
+    "waveshare-s2-lcd096"
+  ],
+  "observed": [
+    "4MiB Flash staging/8MiB independent S2 data-only PSRAM",
+    "Actual LX7 guest writes 64KiB MMU page127 in all3DBUS windows; page128 rejected",
+    "Per-bus mask and DCACHE enable honored; invalid/FLASH-only mappings reject; no S3 address aliases",
+    "SRAM aliases retain first priority; PSRAM instruction fetch rejected; diagnostic reboot clears memory/MMU gates",
+    "LCD actual guest GPIO softwareSPI10/11/9DC18RST21BL45 draws160x80 usingST7735offset1/26",
+    "Wrong MOSI/mux, backlight/reset, RGB666 rejection and BOOT0 checked"
+  ],
+  "limitations": [
+    "No S2 ROM/IDF boot, hardware SPI, USB, flash mapping, PSRAM SPI init/RDID/cache timing or physical retention claim",
+    "Pico RGB, charger, Wi-Fi and analog optical response unmodeled",
+    "Original Arduino uses hardware SPI; passing GPIO guest fixture does not prove the original example runs"
+  ],
+  "checkedAt": "2026-11-23T20:21:52+00:00",
+  "method": "Actual Xtensa guest s32i/l32i instructions access implemented SoC MMIO; no direct framebuffer injection",
+  "tests": {
+    "command": "cargo test --release -p esp32s2",
+    "passed": 9,
+    "failed": 0,
+    "scope": "Whole scoped suite, including pre-existing tests; observations above are family-specific."
+  },
+  "clippy": {
+    "command": "cargo clippy --release -p esp32 -p esp32s2 -p esp32sim --all-targets -- -D warnings",
+    "exitCode": 0
+  },
+  "publicAbi": {
+    "fixture": "wasm/tests/waveshare_classic.rs",
+    "status": "added, pending integration runner execution; no pass asserted"
+  },
+  "sramBenchmark": {
+    "source": "esp32s2/examples/sram_benchmark.rs",
+    "sourceSha256": "7137767fb5ccd62a51838d89bde4bff0ee077e856b5a3e3ac70afce4ca149cf3",
+    "command": "cargo run --release -p esp32s2 --example sram_benchmark -- 400000",
+    "workload": "s2-sram-l32i-addi-s32i-j-v1",
+    "instructions": 400000,
+    "checksum": 100000,
+    "pc": 1073872896,
+    "trap": null,
+    "psramEnabled": false,
+    "jitEnabled": false,
+    "comparison": "No comparative performance measurement made. Copy identical source into baseline and candidate, isolate target directories, and alternate ABBA. Use same integer multiple-of4 instruction budget and require checksum count/4."
+  },
+  "developmentCorrection": "Initial benchmark u64 budget mismatched existing u32 run API; fixed type. Scoped Clippy is_multiple_of/or fixes applied."
+}

@@ -1,0 +1,15 @@
+# Waveshare batch 016 evidence
+
+Five listing families: Servo Driver with ESP32, ESP32-S2, ESP32 Dev Kit WROxx, General Driver for Robots and E-paper ESP32 Driver Board V3. Their fifteen SKU/profile entries preserve bare/header, module antenna and exact memory distinctions.
+
+The actual release native tests pass for six classic board behaviors and three S2 behaviors, plus three classic Touch35 regression tests and two native WASM constructor tests. S2 is an independent LX7/S2 SRAM/MMU/software-SPI implementation, not an alias for S3. Last-page PSRAM mapping, masks, invalid entries, reset, mux negatives and exact memory rejection are covered. Classic WROVER physical 8 MiB PSRAM remains distinct from its bounded virtual mapped window. Robot I2C samples, exact SD bus, motor output observation, Servo two-LED guest RMT and OLED are checked without simulating analog motors or RF.
+
+The production WASM was rebuilt. Six actual public platform/Worker regression tests pass, including all four S2 SKUs executing original authored SRAM images: fresh UART output and echo, BOOT press/release, reset, and full 160x80 ST7735 red/green frames for LCD variants. Five C5 core profiles and all exact-capacity/revision registry checks also pass. These SRAM images are diagnostics authored for the simulator, not vendor binaries or factory success evidence.
+
+All fifteen models pass the production Three loader, exact source hash, dimensions and CPU ray checks. Original manufacturer CAD is retained for Servo and Robot. Other models use original photos and nominal XY dimensions with explicitly estimated thickness and package depths; unobserved reverse remains marked UNKNOWN. Eight WROxx models now bind GPIO27 RGB at the source-confirmed carrier position behind USB. The RGB package envelope is an estimate and does not alter source pixels. Servo RGB physical index order is unproven, so its native packages remain deliberately unbound. E-paper V3 includes the board and adapter without fabricating an included panel.
+
+The four-view geometry plots and source registration plots were visually reviewed. `models.json` and `review.json` contain current post-integration model hashes; older agent receipts under docs/research describe the pre-RGB-binding stage. Full factory simulation and hardware-validation flags remain false. Physical flash size for Servo/Robot is unproven and their 4 MiB virtual default is explicitly qualified.
+
+The installed Chromium failed before opening a page: process_singleton_posix.cc socket() failed with Operation not permitted. Browser-first records the exact startup log and zero completed browser checks. No DOM, WebGL, real hardware or physical fit acceptance follows from these CPU-only plots.
+
+Catalog/knowledge/watch contracts pass. Storefront metadata timestamps use whole UTC seconds while original retrieval receipts retain their original precision. Twelve products with no included display use explicit known-absence values instead of an unsupported official null fact. Integration-conflicts.json documents repaired complete WASM/Worker registry merges before the final tests.

@@ -116,7 +116,7 @@ class Assembler:
         return data
 
 
-def probe(screen):
+def probe(screen, waveshare=False):
     a = Assembler()
     serial_byte = 0
 
@@ -132,15 +132,20 @@ def probe(screen):
         serial_byte += 1
         a.addi(4, register, 0)
         a.li(5, 8)
-        a.li(6, 0x42 | (int(dc) << 5))  # BL33/RST38 high, CS34/CLK36 low
-        a.bitop(6, 6, 15, 2)
+        a.li(6, (1 << 21) | (int(dc) << 18) if waveshare else 0x42 | (int(dc) << 5))  # Exact reset/DC bits; CS/CLK low
+        if not waveshare:
+            a.bitop(6, 6, 15, 2)
         a.label(label)
         a.extui(7, 4, 7, 1)
-        a.slli(7, 7, 3)  # MOSI35 is bit3 in OUT1
+        a.slli(7, 7, 11 if waveshare else 3)  # WS MOSI11 vs Dongle MOSI35
         a.bitop(3, 6, 7, 2)
-        a.store(3, 12, 0x10)
-        a.addi(3, 3, 16)  # rising CLK36 edge
-        a.store(3, 12, 0x10)
+        a.store(3, 12, 0x04 if waveshare else 0x10)
+        if waveshare:
+            a.li(2, 1 << 10)
+            a.bitop(3, 3, 2, 2)
+        else:
+            a.addi(3, 3, 16)  # rising CLK36 edge
+        a.store(3, 12, 0x04 if waveshare else 0x10)
         a.slli(4, 4, 1)
         a.addi(5, 5, -1)
         a.bz(label, 5, True)
@@ -155,20 +160,27 @@ def probe(screen):
     # Function1=GPIO; actual S2 IO_MUX offsets, input enable and pullup on BOOT0.
     a.write(MUX, (1 << 12) | (1 << 9) | (1 << 8))
     if screen:
-        for pin in range(33, 40):
+        for pin in ([9,10,11,18,21,45] if waveshare else range(33, 40)):
             a.write(MUX + 4 * pin, (1 << 12) | (1 << 9))
             a.write(GPIO + 0x554 + 4 * pin, 256)
-        a.write(GPIO + 0x10, 0x46)
-        a.write(GPIO + 0x2C, 0xFE)
+        if waveshare:
+            a.write(GPIO + 0x04, (1 << 21) | (1 << 9))
+            a.write(GPIO + 0x20, sum(1 << pin for pin in [9,10,11,18,21]))
+            a.write(GPIO + 0x10, 1 << 13)
+            a.write(GPIO + 0x2C, 1 << 13)
+        else:
+            a.write(GPIO + 0x10, 0x46)
+            a.write(GPIO + 0x2C, 0xFE)
     a.li(12, GPIO)
     a.li(13, UART)
     a.li(15, 0)
     if screen:
         command(0x11)
         command(0x29)
-        command(0x3A, [0x55])
-        command(0x36, [0x08])
-        command(0x21)  # official panel init enables optical inversion
+        command(0x3A, [5 if waveshare else 0x55])
+        command(0x36, [0xA8 if waveshare else 0x08])
+        if not waveshare:
+            command(0x21)  # Dongle optical inversion
     uart("S2 SRAM READY\n")
     a.li(11, 0xFFFFFFFF)
 
@@ -196,18 +208,19 @@ def probe(screen):
     a.li(10, 0)
     a.label("draw")
     if screen:
-        command(0x2A, [0, 52, 0, 186])
-        command(0x2B, [0, 40, 1, 23])  # 40 + 240 - 1 = 279
+        command(0x2A, [0, 1, 0, 160] if waveshare else [0, 52, 0, 186])
+        command(0x2B, [0, 26, 0, 105] if waveshare else [0, 40, 1, 23])
         command(0x2C)
-        a.li(8, 135 * 240)
+        a.li(8, 160 * 80 if waveshare else 135 * 240)
         a.label("pixels")
         spi_byte(9, True)
         spi_byte(10, True)
         a.addi(8, 8, -1)
         a.bz("pixels", 8, True)
-        a.li(3, 0x46)  # CS high; leave reset and backlight enabled.
-        a.bitop(3, 3, 15, 2)
-        a.store(3, 12, 0x10)
+        a.li(3, (1 << 21) | (1 << 9) if waveshare else 0x46)  # CS high.
+        if not waveshare:
+            a.bitop(3, 3, 15, 2)
+        a.store(3, 12, 0x04 if waveshare else 0x10)
         a.bz("frame-red", 11, True)
         uart("FRAME GREEN\n")
         a.jump("frame-done")
@@ -249,7 +262,7 @@ def probe(screen):
         "marker": MARKER,
         "codeAddress": IRAM,
         "codeBytes": len(code),
-        "screen": {"width": 135, "height": 240, "released": "RGB565 f800 red", "pressed": "RGB565 07e0 green"} if screen else None,
+        "screen": {"width": 160 if waveshare else 135, "height": 80 if waveshare else 240, "released": "RGB565 f800 red", "pressed": "RGB565 07e0 green"} if screen else None,
         "bootPin": 0,
         "uart0": UART,
         "uartMarkers": ["S2 SRAM READY\n", "BUTTON UP\n", "BUTTON DOWN\n"] + (["FRAME RED\n", "FRAME GREEN\n"] if screen else []),
@@ -265,8 +278,8 @@ def main():
     parser.add_argument("--output-dir", type=Path, default=Path(__file__).resolve().parents[1] / "esp32s2/tests/fixtures")
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    for screen, name in [(False, "s2-sram-console"), (True, "dongle-sram-diagnostic")]:
-        image, metadata = probe(screen)
+    for screen, waveshare, name in [(False, False, "s2-sram-console"), (True, False, "dongle-sram-diagnostic"), (True, True, "waveshare-lcd096-sram-diagnostic")]:
+        image, metadata = probe(screen, waveshare)
         (args.output_dir / (name + ".bin")).write_bytes(image)
         (args.output_dir / (name + ".json")).write_text(json.dumps(metadata, indent=2) + "\n")
         print(name + ": " + str(len(image)) + " bytes; SHA-256 " + metadata["sha256"])

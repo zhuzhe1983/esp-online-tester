@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-11-23T20:30:19+00:00",
+  "source": {
+    "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/bootloader/Kconfig.projbuild",
+    "finalUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/bootloader/Kconfig.projbuild",
+    "requestedAt": "2026-11-23T20:29:43Z",
+    "fetchedAt": "2026-11-23T20:29:50Z",
+    "status": "fetched",
+    "httpStatus": 200,
+    "mediaType": "text/plain; charset=utf-8",
+    "bytes": 61590,
+    "sha256": "9fe4b026dbcb4e98d8302d7305994f1b6566ae16bc61c859d20d89040acb0145",
+    "retainedFile": "bootloader-Kconfig.projbuild.gz",
+    "retained": {
+      "encoding": "gzip",
+      "bytes": 15311,
+      "sha256": "e18266dfe660e71317d057b20c54b60d769562a4ddd77f54547c7385cc903f72"
+    }
+  },
+  "fact": "ESP-IDF v5.5.4 BOOTLOADER_OFFSET_IN_FLASH defaults to0x1000 for bothESP32 andESP32S2. P4/S31 keep0x2000; S3/C3/C6 keep0.",
+  "change": [
+    "Merged image layout and local segments both select exact S2 boot offset0x1000",
+    "Wrong chip and bootloader-at0 still reject",
+    "No ROM, full boot or S2 SRAM guard relaxation"
+  ],
+  "validation": {
+    "command": "node --test tools/platform-local-firmware-test.mjs tools/platform-s2-image-test.mjs",
+    "passed": 4,
+    "failed": 0
+  },
+  "originalManufacturerArchiveObservation": {
+    "zip": "https://files.waveshare.com/upload/6/69/ESP32-S2-Pico_Code.zip",
+    "member": "ESP32-S2-Pico_Code/CircuitPython_TinyUSB_bin/combined.bin",
+    "bytes": 3106752,
+    "sha256": "fd7832cdfd149e6f6f99190ecf2276deec69f5c55ff2ad5df0ab9e024b868550",
+    "bootOffset": 4096,
+    "partitionTableOffset": 32768,
+    "chipId": 2,
+    "layoutStatus": "validateMergedImage accepted after repair",
+    "observedIdentity": [
+      "TinyUF2 Bootloader0.16.0",
+      "Espressif Saola1R WROVER",
+      "ESP32S2-Saola1R-v1.2"
+    ],
+    "scope": "Layout identity only. This generic board recovery payload is not labelled exact Waveshare factory firmware; no execution success is inferred."
+  }
+}

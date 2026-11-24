@@ -16,7 +16,7 @@ fn usage(chip: &str) -> ! { help(chip, 2) }
 
 /// `--help` prints this and exits 0; a usage error prints it and exits 2.
 fn help(chip: &str, code: i32) -> ! {
-    eprintln!("usage: esp32sim [--chip esp32|s3|c3|c5|c6|c61|p4|s31] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
+    eprintln!("usage: esp32sim [--chip esp32|s2|s3|c3|c5|c6|c61|p4|s31] --boot rom|app --bootloader B.bin --ptable P.bin --app A.bin [--elf X.elf]... [options]");
     eprintln!("       esp32sim --flash-image flash.bin --boot rom [options]            (a whole flash dump instead of the three images)");
     eprintln!("       default chip here: {}; esp32sim-c3/c6/p4/s31 are --chip c3 / c6 / p4 / s31", chip);
     eprintln!();
@@ -28,6 +28,7 @@ fn help(chip: &str, code: i32) -> ! {
     eprintln!("  --flash-mb N, --psram-mb N   memory sizes (S3 default 8 / 2, C3, C6 and classic 4 / 0, P4 16 / 0)");
     eprintln!("  --chip c61 --board corematrix --boot rom --flash-image FLASH.bin (16 / 8 MiB)");
     eprintln!("  --chip c5 --board stamp-c5|stamp-c5-dip --boot app --app SRAM.bin (4 / 0 MiB; SRAM app-direct only)");
+    eprintln!("  --chip s2 --board waveshare-s2-pico|waveshare-s2-lcd096 --boot app --app SRAM.bin (4 / 8 MiB; SRAM app-direct + data-only PSRAM MMU; no ROM/USB/IDF boot)");
     eprintln!("  --max-seconds S       stop after S emulated seconds (always give one: the run returns)");
     eprintln!("  --console usb|uart0|both|none   which consoles to print (uart0 shows the ROM and bootloader)");
     eprintln!("  --imu-motion N        scripted IMU motion: 0 at rest, 1 the 30 s tilt/flip/shake script (amoled18-v2, mosaico)");
@@ -293,6 +294,7 @@ pub fn run_cli(default_chip: &str) {
     if o.coproc.is_some() { return run_cosim(&o); }
     match o.chip.as_str() {
         "esp32" => { let m = setup_esp32(&o); run(m, &o) }
+        "s2" | "esp32s2" => { let m = setup_s2(&o); run(m, &o) }
         "s3" | "esp32s3" => { let m = setup_s3(&o); run(m, &o) }
         "c3" | "esp32c3" => { let m = setup_c3(&o); run(m, &o) }
         "c5" | "esp32c5" => { let m = setup_c5(&o); run(m, &o) }
@@ -301,7 +303,7 @@ pub fn run_cli(default_chip: &str) {
         "p4" | "esp32p4" if p4_rev3(&o) => { let m = setup_p4::<esp32p4::RevGe3>(&o); run(m, &o) }
         "p4" | "esp32p4" => { let m = setup_p4::<esp32p4::RevLt3>(&o); run(m, &o) }
         "s31" | "esp32s31" => { let m = setup_s31(&o); run(m, &o) }
-        c => { eprintln!("--chip {}: esp32, s3, c3, c5, c6, c61, p4 or s31", c); std::process::exit(2) }
+        c => { eprintln!("--chip {}: esp32, s2, s3, c3, c5, c6, c61, p4 or s31", c); std::process::exit(2) }
     }
 }
 
@@ -641,11 +643,28 @@ fn setup_c3(o: &Opts) -> esp32c3::Machine {
     m
 }
 
+fn setup_s2(o:&Opts)->esp32s2::Machine {
+    let board=if o.board=="atech14" {"none"}else{&o.board};
+    let memory=esp32s2::waveshare::memory_mib(board).unwrap_or((4,0));
+    if o.flash_mb.is_some_and(|n|n!=memory.0)||o.psram_mb.is_some_and(|n|n!=memory.1) {usage_error("S2 board requires its explicit Flash staging/PSRAM configuration; Waveshare Pico/LCD4/8MiB");}
+    if o.rom.is_some()||o.boot.as_deref()==Some("rom") {usage_error("S2 supports SRAM app-direct diagnostics only; no mask ROM or full ESP-IDF boot");}
+    for(flag,on)in[("--wifi",!o.wifi.is_empty()),("--wifi-nearby",!o.wifi_nearby.is_empty()),("--cam-image",o.cam_image.is_some()),("--cam-stream",o.cam_stream.is_some()),("--flash-octal",o.flash_octal),("--efuse-regs",o.efuse_regs.is_some()),("--regs-init",o.regs_init.is_some()),("--regstat",o.regstat.is_some())] {if on {usage_error(&format!("{flag} is not implemented by the S2 diagnostic backend"));}}
+    let mut m=esp32s2::machine(o.mac.unwrap_or([0x30,0xed,0xa0,0,0x11,2]),memory.0<<20);
+    m.bus.set_psram_size(memory.1<<20).unwrap_or_else(|e|usage_error(&e));
+    m.bus.attach_board(esp32s2::board::make_board(board).unwrap_or_else(||usage_error(&format!("unknown S2 board {board}"))));
+    if !o.debug.is_empty() {let mut f=esp_soc::DebugFlags::from_env();for d in &o.debug {f.parse(d);}m.set_debug(&f);}
+    m
+}
+
 fn setup_esp32(o: &Opts) -> esp32::Machine {
-    let mut m = esp32::machine(o.mac.unwrap_or([0x24, 0x6f, 0x28, 0x00, 0x11, 0x22]), o.flash_mb.unwrap_or(4) << 20);
-    m.bus.set_flash_size(o.flash_mb.unwrap_or(4) << 20);
-    if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
     let board = if o.board == "atech14" { "none" } else { &o.board };
+    let exact = esp32::board::documented_memory_mib(board);
+    let flash_mb = o.flash_mb.unwrap_or_else(|| exact.map_or(4, |m|m.0));
+    let psram_mb = o.psram_mb.unwrap_or_else(|| exact.map_or(0, |m|m.1));
+    if exact.is_some_and(|memory| memory != (flash_mb,psram_mb)) {usage_error(&format!("{board} requires its documented module capacity {:?} MiB Flash/PSRAM",exact.unwrap()));}
+    let mut m = esp32::machine(o.mac.unwrap_or([0x24, 0x6f, 0x28, 0x00, 0x11, 0x22]), flash_mb << 20);
+    m.bus.set_flash_size(flash_mb << 20);
+    if !o.debug.is_empty() { let mut f = esp_soc::DebugFlags::from_env(); for d in &o.debug { f.parse(d); } m.set_debug(&f); }
     m.bus.board = esp32::board::make_board(board).unwrap_or_else(|| usage_error(&format!("unknown classic ESP32 board '{board}' (none, bare, esp32dev, ttgo-tdisplay, cyd, ai-thinker-cam, ulanzi-tc001)")));
     m.bus.attach_board_devices();
     set_camera_image(&mut m.bus.board, o.cam_image.as_deref());
@@ -654,10 +673,8 @@ fn setup_esp32(o: &Opts) -> esp32::Machine {
         attach_wifi(&mut m.bus, o, net_log);
     }
     attach_nearby_networks(&mut m.bus.periph.wifi.link, o);
-    if let Some(mb) = o.psram_mb {
-        if !matches!(mb, 0 | 4) { usage_error("--psram-mb: classic ESP32 supports only 0 or 4 MiB"); }
-        m.bus.set_psram_size(mb << 20).unwrap_or_else(|e| usage_error(&e));
-    }
+    if !matches!(psram_mb, 0 | 2 | 4 | 8) { usage_error("--psram-mb: classic ESP32 supports 0, 2, 4 or 8 MiB"); }
+    m.bus.set_psram_size(psram_mb << 20).unwrap_or_else(|e| usage_error(&e));
     for (flag, on) in [("--flash-octal", o.flash_octal), ("--efuse-regs", o.efuse_regs.is_some()), ("--regs-init", o.regs_init.is_some()), ("--regstat", o.regstat.is_some())] {
         if on { eprintln!("{} is not available on the classic ESP32", flag); std::process::exit(2); }
     }
@@ -957,7 +974,7 @@ fn prepare<S: Soc>(m: &mut Machine<S>, o: &Opts) -> String {
     m.bus.misc().log_unknown = o.log_periph;
     if !o.breaks.is_empty() { m.add_observer(Box::new(Breakpoints { pcs: o.breaks.clone() })); }
     if o.trace { m.add_observer(Box::new(Trace { from: o.trace_from })); }
-    let rom = if S::NAME == "esp32c5" && boot == "app" { None } else { o.rom.clone().or_else(|| find_rom(S::ROM_ELF)) };
+    let rom = if S::NAME == "esp32s2" || (S::NAME == "esp32c5" && boot == "app") { None } else { o.rom.clone().or_else(|| find_rom(S::ROM_ELF)) };
     match &rom {
         Some(r) => match std::fs::read(r) { Ok(d) => { m.load_rom(&d).expect("rom"); eprintln!("[emu] ROM loaded from {}", r.display()); } Err(e) => eprintln!("[emu] no ROM ({}): {}", r.display(), e) },
         None if boot == "rom" => { eprintln!("[emu] no {} mask ROM ELF found (pass --rom, or use --boot app)", S::NAME); std::process::exit(2) }

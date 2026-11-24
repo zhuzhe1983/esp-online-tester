@@ -7,7 +7,7 @@ pub const BASE:&str="lilygo-esp32-s2";
 pub const DONGLE:&str="lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board";
 
 pub fn make_board(id:&str)->Option<Board> {
-    let name=match id {WOOR=>WOOR,BASE=>BASE,DONGLE=>DONGLE,"bare"|"none"=>return Some(Box::new(esp_soc::NoBoard)),_=>return None};
+    let name=match id {WOOR=>WOOR,BASE=>BASE,DONGLE=>DONGLE,"bare"|"none"=>return Some(Box::new(esp_soc::NoBoard)),_=>return crate::waveshare::make_board(id)};
     Some(Box::new(LilygoS2::new(name)))
 }
 #[derive(Default)]
