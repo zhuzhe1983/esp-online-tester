@@ -32,12 +32,20 @@ mod native {
     // ------------------------------------------------------------------ executable memory
     extern "C" {
         fn mmap(addr: *mut c_void, len: usize, prot: c_int, flags: c_int, fd: c_int, off: i64) -> *mut c_void;
+        fn munmap(addr: *mut c_void, len: usize) -> c_int;
         #[cfg(target_os = "macos")] fn pthread_jit_write_protect_np(enabled: c_int);
         #[cfg(target_os = "macos")] fn sys_icache_invalidate(start: *mut c_void, len: usize);
         #[cfg(target_os = "linux")] fn __clear_cache(start: *mut c_void, end: *mut c_void);
     }
 
     pub struct CodeCache { base: *mut u8, size: usize, used: usize }
+    impl Drop for CodeCache {
+        fn drop(&mut self) {
+            // SAFETY: This cache uniquely owns the successful mmap and its original length.
+            // Generated entry points must stop being used before their owning cache is dropped.
+            unsafe { munmap(self.base.cast(), self.size); }
+        }
+    }
     // SAFETY: Moving the cache transfers ownership of its process-local mapping. Access to the
     // mapping remains synchronized through the cache.
     unsafe impl Send for CodeCache {}
@@ -602,6 +610,50 @@ mod native {
     pub const CODE_END: u32 = EXIT_END; pub const CODE_LEFT: u32 = EXIT_LEFT; pub const CODE_TRAP: u32 = EXIT_TRAP;
     pub const CODE_CUT: u32 = EXIT_CUT; pub const CODE_TRAP_PRE: u32 = EXIT_TRAP_PRE;
     #[allow(dead_code)] fn _uses(_: Label, _: Trap) {}
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+        #[cfg(target_os = "linux")]
+        fn mapped(base: *mut u8) -> bool {
+            extern "C" { fn mincore(addr: *mut c_void, len: usize, vec: *mut u8) -> c_int; }
+            let mut resident = 0u8;
+            // SAFETY: one byte covers the first page; the query never dereferences base.
+            unsafe { mincore(base.cast(), 1, &mut resident) == 0 }
+        }
+        #[cfg(target_os = "macos")]
+        fn mapped(base: *mut u8) -> bool {
+            extern "C" {
+                static mach_task_self_: u32;
+                fn mach_vm_region(task: u32, addr: *mut u64, size: *mut u64, flavor: c_int,
+                    info: *mut c_int, count: *mut u32, object: *mut u32) -> c_int;
+                fn mach_port_deallocate(task: u32, port: u32) -> c_int;
+            }
+            let (mut addr, mut size, mut info, mut count, mut object) = (base as u64, 0, [0i32; 9], 9, 0);
+            // SAFETY: VM_REGION_BASIC_INFO_64 (9), nine integer words, SDK mach/vm_region.h.
+            // A hole returns the next mapping; unlike Linux, macOS mincore accepts holes.
+            unsafe {
+                let result = mach_vm_region(mach_task_self_, &mut addr, &mut size, 9, info.as_mut_ptr(), &mut count, &mut object);
+                if object != 0 { mach_port_deallocate(mach_task_self_, object); }
+                result == 0 && addr == base as u64
+            }
+        }
+        #[test]
+        fn cache_drop_unmaps_after_write_reset_and_move() {
+            for _ in 0..64 {
+                let mut cache = CodeCache::new(4096).expect("executable mmap");
+                let base = cache.base;
+                assert!(mapped(base));
+                assert_eq!(cache.write(&[0xd65f03c0]), Some(0)); // A64 RET; no stale entry is called.
+                cache.reset();
+                assert_eq!(cache.remaining(), 4096);
+                let moved = cache;
+                drop(moved);
+                assert!(!mapped(base));
+            }
+            assert!(CodeCache::new(0).is_none());
+        }
+    }
 }
 
 #[cfg(not(any(target_arch = "wasm32", all(target_arch = "aarch64", any(target_os = "macos", target_os = "linux")))))]
