@@ -1,0 +1,347 @@
+{
+  "listingId": "esp32-s3-touch-amoled-1.64",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-64",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.64",
+      "manufacturer": "Waveshare",
+      "sku": "31197",
+      "chip": "esp32s3",
+      "hardwareRevision": "PCB Rev1.1; official software repository named v2",
+      "summary": "SKU31197的新PCB Rev1.1明确接CS46，旧CS9不接受；16MiB Flash /8MiB PSRAM、280×456 CO5300、FT3168与原生单线TF。实际R34未装/R35零欧使触摸复位共享LCD_RESET21。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-64.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-64",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.64"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled164-rev11",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 280,
+        "height": 456,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300 (overview; SH8601-named BSP class retained separately)",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 41
+            },
+            {
+              "name": "CMD",
+              "gpio": 39
+            },
+            {
+              "name": "D0",
+              "gpio": 40
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。D1/D2在原理图经0欧拉高，DAT3/CS38有10k上拉。另显式SPI端点41/39/40/38可独立attach；默认ROM原图使用native SDMMC。"
+        }
+      ],
+      "limitations": [
+        "当前SKU经历V1/Rev1.1改版但商店未给按SKU分开的板次，运行配置显式限定Rev1.1；旧CS9接线不兼容，不同时接受两套片选。",
+        "官方source driver类名SH8601与型号页CO5300不同；实现CO5300源证实数字子集，不伪造die身份。",
+        "原始v2 BIN调用native SDMMC，而当前07_FactoryProgram源码使用SPI TF；两种模式各有电路依据但不同来源版本不伪称二进制可重复构建。",
+        "20241221原厂STEP与当前Rev1.1的具体器件布局关系未知，保持旧native形状并删除非当前SKU排针；新充电/阻容元件几何UNKNOWN。",
+        "QMI后缀/IRQ/校准、模拟充电电池、触摸手势/真实扫描、TE45与完整原厂体验未验收。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.64.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.64",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/user_app.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/user_app.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/user_app.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/user_app.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/dependencies.lock",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/dependencies.lock",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/main/main.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/main.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：schematic/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/schematic/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：official-schematics/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.64/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-64-rev11/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-64-demo",
+      "name": "ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+      "productIds": [
+        "waveshare-esp32-s3-touch-amoled-1-64"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/Firmware/ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+        "sha256": "30ea1f1904fb11a1ae1554ed6e835f870ce89550acba334397711655fc0f52a8",
+        "bootMode": "rom"
+      },
+      "role": "official-demo",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-Touch-AMOLED-1.64-v2",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.64.htm",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/Firmware/ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "当前官方v2仓库精确BIN2918800B、S3 chipId9/checksum通过。未取得明确factory恢复角色，保留official-demo trial不假设default；历史V1 factory不错误映射给Rev1.1。原图实际调用SDMMC，与当前07_FactoryProgram源码SPI不同；按原理图41/39/40和DAT3上拉接入真实1bit路线后，同原图5秒TF33命令/2timeouts/1744B读取，UART成功挂载，屏幕仍4帧/单色并进入BLE初始化。保留初次错误transport及修正后原帧/UART；完整应用未验收。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-touch-amoled-1-64-demo-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-64-demo-watch",
+      "name": "ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+      "category": "development",
+      "upstreamRepo": "waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/releases",
+      "version": "21b952243d306692774f3b5bfeb3eb5cff10f851",
+      "checkedAt": "2026-11-23T16:52:16Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/Firmware/ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+          "sha256": "30ea1f1904fb11a1ae1554ed6e835f870ce89550acba334397711655fc0f52a8",
+          "bytes": 2918800,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-touch-amoled-1-64"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-touch-amoled-1-64.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-touch-amoled164-rev11": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "原理图图像确认R34 NC/R35zero，RESET21同时门控LCD与FT，GPIO8不成为假复位。",
+    "CO5300实际xgap20、拒绝旧CS9、FT00=00正常模式与真实02..06交换XY报文；native SD1bit及SPI CMD0/MISO/错误CLK负例。",
+    "当前原图与历史V1两套原始BIN/源码差异保留，原厂264组件机械STEP不冒称精确新版PCB器件布局。"
+  ],
+  "limitations": [
+    "当前SKU经历V1/Rev1.1改版但商店未给按SKU分开的板次，运行配置显式限定Rev1.1；旧CS9接线不兼容，不同时接受两套片选。",
+    "官方source driver类名SH8601与型号页CO5300不同；实现CO5300源证实数字子集，不伪造die身份。",
+    "原始v2 BIN调用native SDMMC，而当前07_FactoryProgram源码使用SPI TF；两种模式各有电路依据但不同来源版本不伪称二进制可重复构建。",
+    "20241221原厂STEP与当前Rev1.1的具体器件布局关系未知，保持旧native形状并删除非当前SKU排针；新充电/阻容元件几何UNKNOWN。",
+    "QMI后缀/IRQ/校准、模拟充电电池、触摸手势/真实扫描、TE45与完整原厂体验未验收。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

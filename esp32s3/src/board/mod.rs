@@ -70,6 +70,9 @@ mod waveshare_dualeye;
 mod waveshare_lcd7b;
 mod waveshare_serial_rgb;
 mod waveshare_knob18;
+mod waveshare_lcd147;
+mod waveshare_lcd35b;
+mod waveshare_amoled164;
 pub mod waveshare_core;
 pub mod waveshare_epaper133;
 pub mod waveshare_qspi;
@@ -101,6 +104,9 @@ pub use waveshare_lcd4b::*;
 /// Board by name: `atech14` (default), `none`, `stopwatch` or a supported Waveshare board.
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
+        "waveshare-s3-lcd147b" | "waveshare-s3-touch-lcd147" => waveshare_lcd147::make_board(name),
+        "waveshare-s3-touch-lcd35b" => Some(Box::new(waveshare_lcd35b::WaveshareLcd35b::new())),
+        "waveshare-s3-touch-amoled164-rev11" => Some(Box::new(waveshare_amoled164::WaveshareAmoled164::new())),
         "waveshare-s3-touch-lcd185b" => Some(Box::new(waveshare_lcd185b::WaveshareLcd185b::new())),
         "waveshare-s3-lr1121-oled154" | "waveshare-s3-lr1121-epaper29" => waveshare_lr::make_board(name),
         "waveshare-s3-touch-amoled206" => Some(Box::new(waveshare_amoled_watch::WaveshareAmoledWatch::new(waveshare_amoled_watch::AmoledWatchVariant::TouchAmoled206))),

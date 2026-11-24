@@ -1,0 +1,802 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-touch-amoled-1-64",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-touch-amoled-1-64",
+  "title": "Waveshare ESP32-S3-Touch-AMOLED-1.64",
+  "summary": "SKU31197的新PCB Rev1.1明确接CS46，旧CS9不接受；16MiB Flash /8MiB PSRAM、280×456 CO5300、FT3168与原生单线TF。实际R34未装/R35零欧使触摸复位共享LCD_RESET21。",
+  "summarySourceIds": [
+    "official-store",
+    "official-overview"
+  ],
+  "updatedAt": "2026-11-23T21:26:12Z",
+  "hardwareRevision": "PCB Rev1.1; official software repository named v2",
+  "identity": {
+    "listingId": "esp32-s3-touch-amoled-1.64",
+    "sku": "31197",
+    "storeOptions": {},
+    "manufacturerProductNames": [
+      "ESP32-S3-Touch-AMOLED-1.64"
+    ]
+  },
+  "facts": [
+    {
+      "id": "store-sku",
+      "label": "精确商店SKU",
+      "value": "31197",
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "store-options",
+      "label": "此SKU的选项",
+      "value": {},
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "model-name",
+      "label": "厂家命名",
+      "value": "ESP32-S3-Touch-AMOLED-1.64",
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "physical-memory",
+      "label": "主控存储容量",
+      "value": {
+        "flashMiB": 16,
+        "psramMiB": 8
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview"
+      ],
+      "notes": "容量属于此SKU/已注明硬件版本；不从通用ESP32名称推断。"
+    },
+    {
+      "id": "display-spec",
+      "label": "屏幕规格",
+      "value": {
+        "width": 280,
+        "height": 456,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300 (overview; SH8601-named BSP class retained separately)",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview"
+      ]
+    },
+    {
+      "id": "board-wiring",
+      "label": "本次实现的源代码接线",
+      "value": {
+        "qspi": {
+          "clock": 10,
+          "data": [
+            11,
+            12,
+            13,
+            14
+          ],
+          "cs": 46,
+          "reset": 21,
+          "xGap": 20
+        },
+        "i2c": {
+          "sda": 47,
+          "scl": 48,
+          "touch": 56,
+          "qmi8658": 107
+        },
+        "touch": {
+          "reset": 21,
+          "irq": 18,
+          "controller": "FT3168",
+          "hostToRaw": "(y,x)",
+          "strap": "R34 NC disconnectsGPIO8; R35zero connectsTP_RESET toLCD_RESET"
+        },
+        "sdmmc": [
+          41,
+          39,
+          40,
+          255,
+          255,
+          255
+        ],
+        "sdSpi": {
+          "clock": 41,
+          "mosi": 39,
+          "miso": 40,
+          "cs": 38
+        },
+        "revisionConflict": "V1CS9/IMUirq46 versusRev1.1CS46/IMUirq9; not accepted simultaneously"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview",
+        "board-source-0",
+        "board-source-1",
+        "board-source-2",
+        "board-source-3",
+        "board-source-4",
+        "board-source-5",
+        "board-source-6",
+        "board-source-7",
+        "board-source-8",
+        "board-source-9",
+        "board-source-10",
+        "board-source-11",
+        "board-source-12",
+        "board-source-13",
+        "board-source-14",
+        "board-source-15",
+        "board-source-16",
+        "board-source-17",
+        "board-source-18",
+        "board-source-19",
+        "board-source-20",
+        "board-source-21",
+        "board-source-22"
+      ]
+    },
+    {
+      "id": "factory-candidates",
+      "label": "官方原版镜像调查",
+      "value": [
+        {
+          "name": "ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+          "sha256": "30ea1f1904fb11a1ae1554ed6e835f870ce89550acba334397711655fc0f52a8",
+          "bytes": 2918800,
+          "mergedS3ChecksumsPass": true
+        }
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "official-overview",
+        "board-source-0",
+        "board-source-1",
+        "board-source-2",
+        "board-source-3",
+        "board-source-4",
+        "board-source-5",
+        "board-source-6",
+        "board-source-7",
+        "board-source-8",
+        "board-source-9",
+        "board-source-10",
+        "board-source-11",
+        "board-source-12",
+        "board-source-13",
+        "board-source-14",
+        "board-source-15",
+        "board-source-16",
+        "board-source-17",
+        "board-source-18",
+        "board-source-19",
+        "board-source-20",
+        "board-source-21",
+        "board-source-22"
+      ],
+      "notes": "当前官方v2仓库精确BIN2918800B、S3 chipId9/checksum通过。未取得明确factory恢复角色，保留official-demo trial不假设default；历史V1 factory不错误映射给Rev1.1。原图实际调用SDMMC，与当前07_FactoryProgram源码SPI不同；按原理图41/39/40和DAT3上拉接入真实1bit路线后，同原图5秒TF33命令/2timeouts/1744B读取，UART成功挂载，屏幕仍4帧/单色并进入BLE初始化。保留初次错误transport及修正后原帧/UART；完整应用未验收。"
+    },
+    {
+      "id": "current-ecosystem-release-inventory",
+      "label": "已抓取UIFlow与小智发布目录",
+      "value": {
+        "xiaozhiVersion": "v2.6.0",
+        "xiaozhiTotalAssets": 200,
+        "matchingNamedAssets": [],
+        "uiflowVersion": "2.5.5",
+        "uiflowTotalAssets": 58,
+        "uiflowWaveshareNamedAssets": []
+      },
+      "basis": "official",
+      "sourceIds": [
+        "ecosystem-http-0",
+        "ecosystem-http-1",
+        "ecosystem-http-2",
+        "ecosystem-http-3",
+        "ecosystem-http-4",
+        "ecosystem-http-5",
+        "ecosystem-http-6"
+      ],
+      "notes": "小智列表由100+100+0分页与latest资产ID交叉核对为完整200项。精确名称仅建立候选分发身份，未下载/审计的资产不冒运行兼容。UIFlow当前58项与较旧landing选择器的范围化无Waveshare结果，不证明不存在第三方移植。"
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "official-store",
+      "title": "官方商品页与精确SKU选项",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.64.htm",
+      "kind": "storefront",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:06Z",
+      "sha256": "742e9e559fed525b00cd2fb94831a13940da4fdc15726366808214acb8669705",
+      "bytes": 330585,
+      "archiveName": "store-response-not-retained.html",
+      "notes": "原HTTP响应的字节哈希；原始商店HTML含匿名会话值，Git仅保留无会话值的SKU抽取与收据。",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.64.htm"
+    },
+    {
+      "id": "official-overview",
+      "title": "官方型号、容量、接口与屏幕规格",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.64",
+      "kind": "documentation",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:21Z",
+      "sha256": "f3553ab729198586f08eeca4cc782c308551853fb5b7c5408a780f6f6f19036f",
+      "bytes": 66557,
+      "archiveName": "esp32-s3-touch-amoled-1-64-overview.html",
+      "notes": "原始文档响应收据；可核对厂家URL与curated inventory。",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.64"
+    },
+    {
+      "id": "board-source-0",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:26Z",
+      "sha256": "39683ad78e89dcc7f24e17410b7c6f622c02aa53c13bcec6589726cd2ee89d48",
+      "bytes": 88,
+      "archiveName": "39683ad78e89dcc7f2-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-1",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:31Z",
+      "sha256": "9e2e1a2c58ce44014c7f8078397e2f8981272862f94890f6319a19b126ff8a95",
+      "bytes": 1245,
+      "archiveName": "9e2e1a2c58ce44014c-adc_bsp.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-2",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:31Z",
+      "sha256": "109775d21f19373c30d1ac5f1b443a91b7303c5222774ea645c31e910468ee8b",
+      "bytes": 137,
+      "archiveName": "109775d21f19373c30-adc_bsp.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-3",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:31Z",
+      "sha256": "abbe800225d4b7f6ffca9e5baadd5823ca3f94bb37b71b3b16f65f34c88c0959",
+      "bytes": 105,
+      "archiveName": "abbe800225d4b7f6ff-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-4",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:36Z",
+      "sha256": "864167fbdec59b1aeff79072f5c1386176f1e7a370db383c969bf8b198a52b91",
+      "bytes": 570,
+      "archiveName": "864167fbdec59b1aef-touch_bsp.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-5",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:36Z",
+      "sha256": "91d6119b3ccd2d304f821d6d40e04d1d9f7256049331e78cd98be77aa96480df",
+      "bytes": 182,
+      "archiveName": "91d6119b3ccd2d304f-touch_bsp.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-6",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:36Z",
+      "sha256": "2d4e7151a6d2cfc47076e4f149af96141ad3e580283f822b681f2be158a704f6",
+      "bytes": 82,
+      "archiveName": "2d4e7151a6d2cfc470-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-7",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:41Z",
+      "sha256": "17038f6a7650ece83bebbfc87c6aef0fb291a6889d087592c18b64b90ee70fcf",
+      "bytes": 1509,
+      "archiveName": "17038f6a7650ece83b-i2c_bsp.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-8",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:41Z",
+      "sha256": "3db5f1ed9e192fa4a9d43719f75c5cfdaa06f4b1a8ff92ebd6bb43c6636eaa0b",
+      "bytes": 365,
+      "archiveName": "3db5f1ed9e192fa4a9-i2c_bsp.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-9",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:41Z",
+      "sha256": "f19ea9d348b32bdeaa5f92aa040ea0f1f2ea49afc903cd48dc42219c53a5e456",
+      "bytes": 142,
+      "archiveName": "f19ea9d348b32bdeaa-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-10",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:45Z",
+      "sha256": "dd189e497efe51ff4d38def22feeb5a0cb9e79e6bf3938ed98ecc7ceed94d7f9",
+      "bytes": 5125,
+      "archiveName": "dd189e497efe51ff4d-sd_card_bsp.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-11",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:45Z",
+      "sha256": "e2d375fb195480530bff8e3dcdaf6705a820e6fd514862c2e581f21094be0cfd",
+      "bytes": 354,
+      "archiveName": "e2d375fb195480530b-sd_card_bsp.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-12",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:45Z",
+      "sha256": "e690f5c57df3690bcdd53fa4b5269b84adee7f6164eda730fef87ceeba1806a8",
+      "bytes": 148,
+      "archiveName": "e690f5c57df3690bcd-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/CMakeLists.txt",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-13",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/user_app.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/user_app.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:49Z",
+      "sha256": "baafe007cc9ab563afd20063adf063fc90801e8ef3319831d6d5a00699054603",
+      "bytes": 13164,
+      "archiveName": "baafe007cc9ab563af-user_app.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/user_app.c",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-14",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/user_app.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/user_app.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:49Z",
+      "sha256": "3e7e1a204ba89adf0a8271270502886d2a8abc96741fc033f4363311a3743712",
+      "bytes": 312,
+      "archiveName": "3e7e1a204ba89adf0a-user_app.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/user_app.h",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-15",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/dependencies.lock",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/dependencies.lock",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:49Z",
+      "sha256": "e03022d2584761a2c7f41c4e022d6255d7b23e46e4b86abb0201a774589e3f72",
+      "bytes": 1170,
+      "archiveName": "e03022d2584761a2c7-dependencies.lock.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/dependencies.lock",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-16",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:54Z",
+      "sha256": "8e1932400ea6f234e692ed60f71a4c428a803fb84c145017f67da7dfbdff3c62",
+      "bytes": 181,
+      "archiveName": "8e1932400ea6f234e6-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-17",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:54Z",
+      "sha256": "2a15566405ef8ae52fc43e63c01b0765015b549ee1a47eda2c24642b22b69df2",
+      "bytes": 134,
+      "archiveName": "2a15566405ef8ae52f-idf_component.yml.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-18",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/main/main.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/main.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:54Z",
+      "sha256": "53092e658d4563920afb2fe633dabc9a578d74d957d5e26c924afc86801ba3ec",
+      "bytes": 11364,
+      "archiveName": "53092e658d4563920a-main.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/main.c",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-19",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/partitions.csv",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/partitions.csv",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:59Z",
+      "sha256": "e5ce510b1bb307bee15462656b0062e9ee3fa06e0635db0e7ae73cd7da489508",
+      "bytes": 271,
+      "archiveName": "e5ce510b1bb307bee1-partitions.csv.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/partitions.csv",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-20",
+      "title": "固定提交：ESP-IDF/07_FactoryProgram/sdkconfig",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/sdkconfig",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:59Z",
+      "sha256": "a976a053fc7383add4a95f80a29e1ae2f9fa23bbce213bb71e34aebb6e19c58f",
+      "bytes": 103764,
+      "archiveName": "a976a053fc7383add4-sdkconfig.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/sdkconfig",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-21",
+      "title": "固定提交：schematic/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/schematic/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:32:59Z",
+      "sha256": "70345ca6e1b5385bcc362fa74ac8692a735648b8a4afa3377e2cc8599a03c14b",
+      "bytes": 151445,
+      "archiveName": "70345ca6e1b5385bcc-ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/schematic/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      },
+      "mediaType": "application/octet-stream"
+    },
+    {
+      "id": "board-source-22",
+      "title": "固定原始来源：official-schematics/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.64/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T20:33:23Z",
+      "sha256": "70345ca6e1b5385bcc362fa74ac8692a735648b8a4afa3377e2cc8599a03c14b",
+      "bytes": 151445,
+      "archiveName": "70345ca6e1b5385bcc-ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.64/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+      "mediaType": "application/pdf"
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "UIFlow 固定板树调查",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "pinned-source-tree-inspection",
+      "status": "linked",
+      "notes": "完整固定提交板树的生成检查收据见 docs/platform/research/waveshare-shared-ecosystem-sources；不是HTTP原文。"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "小智固定板树调查",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards/waveshare",
+      "kind": "pinned-source-tree-inspection",
+      "status": "linked",
+      "notes": "精确目标目录与型号关联须独立检查；不使用generic镜像替换。"
+    },
+    {
+      "id": "firmware-30ea1f1904fb",
+      "title": "ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/Firmware/ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+      "kind": "original-manufacturer-binary",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:52:16Z",
+      "sha256": "30ea1f1904fb11a1ae1554ed6e835f870ce89550acba334397711655fc0f52a8",
+      "bytes": 2918800,
+      "archiveName": "ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+      "notes": "下载并检查原始镜像字节，BIN未收入Git；结构检查详情在firmware-manifest.json。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/Firmware/ESP32-S3-Touch-AMOLED-1.64-v2.bin",
+      "revision": {
+        "gitCommit": "21b952243d306692774f3b5bfeb3eb5cff10f851"
+      }
+    },
+    {
+      "id": "ecosystem-http-0",
+      "title": "UIFlow/小智公开发布调查：78-xiaozhi-esp32.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:55:50Z",
+      "sha256": "f157e88b07fcee7614e4514fbebdf94058a8d2442f946fe3d28b013ecbe0e62f",
+      "bytes": 295537,
+      "archiveName": "78-xiaozhi-esp32.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-1",
+      "title": "UIFlow/小智公开发布调查：m5stack-uiflow-micropython.json.gz",
+      "url": "https://api.github.com/repos/m5stack/uiflow-micropython/releases/latest",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:55:55Z",
+      "sha256": "2fe27212a5f23523b4f4e120e815235800721a0ac8d69695b1fb85dc19726c7e",
+      "bytes": 102561,
+      "archiveName": "m5stack-uiflow-micropython.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/m5stack/uiflow-micropython/releases/latest",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-2",
+      "title": "UIFlow/小智公开发布调查：uiflow-landing-main.js.gz",
+      "url": "https://flow.m5stack.com/main-es2015.f7d6676b98a624264591.js",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:59:05Z",
+      "sha256": "769b89daaa624cad09a8e0af1bcbe0e42649e1377eae2f39b3e8dc1b7410f64c",
+      "bytes": 4078547,
+      "archiveName": "uiflow-landing-main.js.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://flow.m5stack.com/main-es2015.f7d6676b98a624264591.js",
+      "mediaType": "application/javascript"
+    },
+    {
+      "id": "ecosystem-http-3",
+      "title": "UIFlow/小智公开发布调查：uiflow-landing.html.gz",
+      "url": "https://flow.m5stack.com/",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:56:11Z",
+      "sha256": "c6832f2986ee8b5c7c6d4e568d17d5c3bace665d9a2a3bfd81dd731fc64190ab",
+      "bytes": 3838,
+      "archiveName": "uiflow-landing.html.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://flow.m5stack.com/",
+      "mediaType": "text/html"
+    },
+    {
+      "id": "ecosystem-http-4",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-1.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=1",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "30db04ee457856106c1856b6dd84cf9cd2e8a89e2fb7139f1d7d28fd56d9d449",
+      "bytes": 141802,
+      "archiveName": "xiaozhi-assets-page-1.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=1",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-5",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-2.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=2",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "00fd0a5e85787a9b125a6544efd77bd3e846605946ba0168bce748ad250d48e4",
+      "bytes": 143388,
+      "archiveName": "xiaozhi-assets-page-2.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=2",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-6",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-3.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=3",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "archiveName": "xiaozhi-assets-page-3.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=3",
+      "mediaType": "application/json; charset=utf-8"
+    }
+  ],
+  "assets": [],
+  "unknowns": [
+    {
+      "id": "physical-acceptance",
+      "label": "实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "未连接实物，未声明通过。"
+    },
+    {
+      "id": "unimplemented-scope",
+      "label": "未覆盖范围",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "当前SKU经历V1/Rev1.1改版但商店未给按SKU分开的板次，运行配置显式限定Rev1.1；旧CS9接线不兼容，不同时接受两套片选。；官方source driver类名SH8601与型号页CO5300不同；实现CO5300源证实数字子集，不伪造die身份。；原始v2 BIN调用native SDMMC，而当前07_FactoryProgram源码使用SPI TF；两种模式各有电路依据但不同来源版本不伪称二进制可重复构建。；20241221原厂STEP与当前Rev1.1的具体器件布局关系未知，保持旧native形状并删除非当前SKU排针；新充电/阻容元件几何UNKNOWN。；QMI后缀/IRQ/校准、模拟充电电池、触摸手势/真实扫描、TE45与完整原厂体验未验收。；本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。；商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+    },
+    {
+      "id": "display-active-area",
+      "label": "屏幕独立有效显示区边框",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-overview"
+      ],
+      "notes": "有来源的optical-window窗口仅作为3D画面映射参考；独立AA边框、物理像素间距与AA比例未建立。保留窗口尺寸，不拉伸原CAD或伪称AA。"
+    }
+  ],
+  "collectionNotes": [
+    "原理图图像确认R34 NC/R35zero，RESET21同时门控LCD与FT，GPIO8不成为假复位。",
+    "CO5300实际xgap20、拒绝旧CS9、FT00=00正常模式与真实02..06交换XY报文；native SD1bit及SPI CMD0/MISO/错误CLK负例。",
+    "当前原图与历史V1两套原始BIN/源码差异保留，原厂264组件机械STEP不冒称精确新版PCB器件布局。",
+    "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance.",
+    "精确SKU包内电池、外壳、排针和天线差异保持独立身份；共用数字路径不表示机械与RF等价。",
+    "UIFlow/小智是固定Git板树的范围化调查，生成检查收据不冒称HTTP响应：{\"uiflow\": \"固定提交a61a29409f09f1f4bebae05e15c4bd6dcc4956b6板树中无Waveshare命名目录；此检索范围不证明不存在第三方移植。\", \"xiaozhi\": \"固定提交92d400d6374bbe750e0a0188fa969fc4042820c2板树已检索；未建立此精确SKU的可直接运行镜像。\"}",
+    "模型来源和几何范围：waveshare-esp32-s3-touch-amoled-1-64-rev11；model-plan.json保留原始参考、尺寸、图像像素/UV及UNKNOWN边界。"
+  ]
+}

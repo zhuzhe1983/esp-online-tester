@@ -1,0 +1,708 @@
+{
+  "listingId": "esp32-s3-lcd-1.47b",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-47b",
+      "name": "Waveshare ESP32-S3-LCD-1.47B",
+      "manufacturer": "Waveshare",
+      "sku": "31501",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、172×320 ST7789T、RGB LED与四线TF；标准31501与预焊排针31031分列，精确B版引脚和LCD AA。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-47b.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-47b",
+        "name": "Waveshare ESP32-S3-LCD-1.47B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd147b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "IPS LCD",
+        "bus": "SPI",
+        "controller": "ST7789T",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 14
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 16
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 17
+            },
+            {
+              "name": "D3",
+              "gpio": 21
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "QMI8658样本数字子集可用，但原版含部分未支持的寄存器写入；具体器件后缀、IRQ/校准、模拟电池/充电/射频未验收。",
+        "Test示例在LCD初始化前启动BLE，当前无完整原厂屏幕画面；不能把TF读取成功当作整机通过。",
+        "31501裸板原生STEP有来源；31031-M预焊排针身份独立，但精确排针高度与 mating 几何未取得，3D仅呈现有证据的共同板体。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.47b.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-1.47B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/BAT_Driver/BAT_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/BAT_Driver/BAT_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/Button_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/Button_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/multi_button.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/multi_button.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/I2C_Driver/I2C_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/I2C_Driver/I2C_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/ST7789.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/ST7789.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/Vernon_ST7789T/Vernon_ST7789T.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/Vernon_ST7789T/Vernon_ST7789T.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_Driver/LVGL_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_Driver/LVGL_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_UI/LVGL_Example.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_UI/LVGL_Example.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/QMI8658/QMI8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/QMI8658/QMI8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/RGB/RGB.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/RGB/RGB.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/SD_Card/SD_MMC.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/SD_Card/SD_MMC.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Simulated_Gesture/Simulated_Gesture.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Simulated_Gesture/Simulated_Gesture.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Wireless/Wireless.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Wireless/Wireless.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：official-schematics/ESP32-S3-LCD-1.47B_schematic_diagram.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-47b/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-47b-sku-31031",
+      "name": "Waveshare ESP32-S3-LCD-1.47B-M",
+      "manufacturer": "Waveshare",
+      "sku": "31031",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、172×320 ST7789T、RGB LED与四线TF；标准31501与预焊排针31031分列，精确B版引脚和LCD AA。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-47b-sku-31031.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-47b",
+        "name": "Waveshare ESP32-S3-LCD-1.47B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd147b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "IPS LCD",
+        "bus": "SPI",
+        "controller": "ST7789T",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 14
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 16
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 17
+            },
+            {
+              "name": "D3",
+              "gpio": 21
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "QMI8658样本数字子集可用，但原版含部分未支持的寄存器写入；具体器件后缀、IRQ/校准、模拟电池/充电/射频未验收。",
+        "Test示例在LCD初始化前启动BLE，当前无完整原厂屏幕画面；不能把TF读取成功当作整机通过。",
+        "31501裸板原生STEP有来源；31031-M预焊排针身份独立，但精确排针高度与 mating 几何未取得，3D仅呈现有证据的共同板体。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.47b.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-1.47B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/BAT_Driver/BAT_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/BAT_Driver/BAT_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/Button_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/Button_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/multi_button.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/multi_button.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/I2C_Driver/I2C_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/I2C_Driver/I2C_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/ST7789.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/ST7789.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/Vernon_ST7789T/Vernon_ST7789T.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/Vernon_ST7789T/Vernon_ST7789T.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_Driver/LVGL_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_Driver/LVGL_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_UI/LVGL_Example.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_UI/LVGL_Example.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/QMI8658/QMI8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/QMI8658/QMI8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/RGB/RGB.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/RGB/RGB.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/SD_Card/SD_MMC.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/SD_Card/SD_MMC.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Simulated_Gesture/Simulated_Gesture.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Simulated_Gesture/Simulated_Gesture.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Wireless/Wireless.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Wireless/Wireless.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：official-schematics/ESP32-S3-LCD-1.47B_schematic_diagram.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-47b-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-47b-demo",
+      "name": "ESP32-S3-LCD-1.47B-Test.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-1-47b",
+        "waveshare-esp32-s3-lcd-1-47b-sku-31031"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+        "sha256": "af8c722689f670b674f1ca3c1627ae10a145a26ec3b43c9e51eeaa96bd96cf3f",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "Firmware/ESP32-S3-LCD-1.47B-Test.bin",
+          "sha256": "9e375aeb82e4ad56212cbbfbf6a8dc7ddb1183469d9904b2d09c7ba070699e08"
+        }
+      },
+      "role": "official-demo",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LCD-1.47B-Test",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://www.waveshare.com/wiki/ESP32-S3-LCD-1.47B",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方Demo.zip中的完整Test.bin通过S3 boot/table/application校验；未找到明确factory恢复角色，保留official-demo trial且不设置default。原版ROM5guest秒停在BLE初始化，屏幕0帧/单色，但TF33条命令/1744B真实读取、UART报告成功挂载。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-lcd-1-47b-demo-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-47b-demo-watch",
+      "name": "ESP32-S3-LCD-1.47B-Test.bin",
+      "category": "development",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-LCD-1.47B",
+      "metadataUrl": "https://www.waveshare.com/wiki/ESP32-S3-LCD-1.47B",
+      "releaseUrl": "https://www.waveshare.com/wiki/ESP32-S3-LCD-1.47B",
+      "version": "archive-sha256-9e375aeb82e4ad56212cbbfbf6a8dc7ddb1183469d9904b2d09c7ba070699e08",
+      "checkedAt": "2026-11-23T20:33:06Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LCD-1.47B-Demo.zip",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "sha256": "9e375aeb82e4ad56212cbbfbf6a8dc7ddb1183469d9904b2d09c7ba070699e08",
+          "bytes": 62855139,
+          "format": "zip-bundle",
+          "member": {
+            "path": "Firmware/ESP32-S3-LCD-1.47B-Test.bin",
+            "sha256": "af8c722689f670b674f1ca3c1627ae10a145a26ec3b43c9e51eeaa96bd96cf3f",
+            "bytes": 1813472,
+            "format": "merged"
+          }
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-1-47b",
+          "waveshare-esp32-s3-lcd-1-47b-sku-31031"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-1-47b.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-1-47b-sku-31031.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-lcd147b": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "精确ST7789 RAM窗口x34..205、factory MX参考和RGB565真实像素；错误MOSI不写，RAMCTRL仅ST7789生效。",
+    "原厂Test.bin原生ROM5秒：SD成功挂载、BLE初始化处尚无LCD帧；完整原样UART和末帧归档。",
+    "原厂269组件STEP及LCD AA17.39×32.35mm标注，模型保持单位和源相对坐标。"
+  ],
+  "limitations": [
+    "QMI8658样本数字子集可用，但原版含部分未支持的寄存器写入；具体器件后缀、IRQ/校准、模拟电池/充电/射频未验收。",
+    "Test示例在LCD初始化前启动BLE，当前无完整原厂屏幕画面；不能把TF读取成功当作整机通过。",
+    "31501裸板原生STEP有来源；31031-M预焊排针身份独立，但精确排针高度与 mating 几何未取得，3D仅呈现有证据的共同板体。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

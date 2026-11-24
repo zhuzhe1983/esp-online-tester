@@ -76883,6 +76883,2882 @@
         "status": "partial",
         "provenance": "official-cad"
       }
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-47b",
+      "name": "Waveshare ESP32-S3-LCD-1.47B",
+      "manufacturer": "Waveshare",
+      "sku": "31501",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、172×320 ST7789T、RGB LED与四线TF；标准31501与预焊排针31031分列，精确B版引脚和LCD AA。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-47b.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-47b",
+        "name": "Waveshare ESP32-S3-LCD-1.47B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd147b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "IPS LCD",
+        "bus": "SPI",
+        "controller": "ST7789T",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 14
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 16
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 17
+            },
+            {
+              "name": "D3",
+              "gpio": 21
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "QMI8658样本数字子集可用，但原版含部分未支持的寄存器写入；具体器件后缀、IRQ/校准、模拟电池/充电/射频未验收。",
+        "Test示例在LCD初始化前启动BLE，当前无完整原厂屏幕画面；不能把TF读取成功当作整机通过。",
+        "31501裸板原生STEP有来源；31031-M预焊排针身份独立，但精确排针高度与 mating 几何未取得，3D仅呈现有证据的共同板体。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.47b.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-1.47B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/BAT_Driver/BAT_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/BAT_Driver/BAT_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/Button_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/Button_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/multi_button.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/multi_button.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/I2C_Driver/I2C_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/I2C_Driver/I2C_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/ST7789.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/ST7789.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/Vernon_ST7789T/Vernon_ST7789T.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/Vernon_ST7789T/Vernon_ST7789T.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_Driver/LVGL_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_Driver/LVGL_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_UI/LVGL_Example.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_UI/LVGL_Example.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/QMI8658/QMI8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/QMI8658/QMI8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/RGB/RGB.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/RGB/RGB.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/SD_Card/SD_MMC.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/SD_Card/SD_MMC.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Simulated_Gesture/Simulated_Gesture.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Simulated_Gesture/Simulated_Gesture.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Wireless/Wireless.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Wireless/Wireless.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：official-schematics/ESP32-S3-LCD-1.47B_schematic_diagram.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-47b/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-47b-sku-31031",
+      "name": "Waveshare ESP32-S3-LCD-1.47B-M",
+      "manufacturer": "Waveshare",
+      "sku": "31031",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、172×320 ST7789T、RGB LED与四线TF；标准31501与预焊排针31031分列，精确B版引脚和LCD AA。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-47b-sku-31031.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-47b",
+        "name": "Waveshare ESP32-S3-LCD-1.47B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd147b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "IPS LCD",
+        "bus": "SPI",
+        "controller": "ST7789T",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 14
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 16
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 17
+            },
+            {
+              "name": "D3",
+              "gpio": 21
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "QMI8658样本数字子集可用，但原版含部分未支持的寄存器写入；具体器件后缀、IRQ/校准、模拟电池/充电/射频未验收。",
+        "Test示例在LCD初始化前启动BLE，当前无完整原厂屏幕画面；不能把TF读取成功当作整机通过。",
+        "31501裸板原生STEP有来源；31031-M预焊排针身份独立，但精确排针高度与 mating 几何未取得，3D仅呈现有证据的共同板体。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.47b.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-1.47B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/BAT_Driver/BAT_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/BAT_Driver/BAT_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/Button_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/Button_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/multi_button.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Button_Driver/multi_button.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/I2C_Driver/I2C_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/I2C_Driver/I2C_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/ST7789.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/ST7789.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/Vernon_ST7789T/Vernon_ST7789T.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LCD_Driver/Vernon_ST7789T/Vernon_ST7789T.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_Driver/LVGL_Driver.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_Driver/LVGL_Driver.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_UI/LVGL_Example.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/LVGL_UI/LVGL_Example.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/QMI8658/QMI8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/QMI8658/QMI8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/RGB/RGB.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/RGB/RGB.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/SD_Card/SD_MMC.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/SD_Card/SD_MMC.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Simulated_Gesture/Simulated_Gesture.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Simulated_Gesture/Simulated_Gesture.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Wireless/Wireless.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/Wireless/Wireless.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：ESP-IDF/ESP32-S3-LCD-1.47B-Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：official-schematics/ESP32-S3-LCD-1.47B_schematic_diagram.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.47B/ESP32-S3-LCD-1.47B_schematic_diagram.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-47b-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-3-5b",
+      "name": "Waveshare ESP32-S3-Touch-LCD-3.5B",
+      "manufacturer": "Waveshare",
+      "sku": "31137",
+      "chip": "esp32s3",
+      "hardwareRevision": "V2/current factory BSP; V1 differences retained in sources",
+      "summary": "16MiB Flash /8MiB PSRAM、320×480 AXS15231B；精确QSPI/共享TCA复位、14字节触摸、PWR真实扩展器输入与单线TF。带壳OV5640套装单独保留。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-3-5b.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-3-5b",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-3.5B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd35b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "QSPI mode3",
+        "controller": "AXS15231B",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 EX6",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Active-high physical input on expander EX6; no fabricated GPIO pin or long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 11
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "当前AXP2101数字控制子集未接受原图全部电源配置，原厂应用在PMU配置错误后返回；没有完整出厂UI帧。",
+        "QMI8658、OV5640摄像头/DVP、PCM、模拟电池/PMU供电瞬态、实际关机、TE及屏幕模拟参数未实现。",
+        "裸板与-C套装分别建模；-C外壳只取得二维工程图，用明确估计壁厚的独立前框/空腔侧壁/后盖，内部卡扣、相机FPC及装配配合UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-3.5b.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-3.5B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_i2c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/esp32_s3_touch_lcd_3_5b.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/esp32_s3_touch_lcd_3_5b.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_AXS15231B.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_AXS15231B.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_AXS15231B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_AXS15231B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：examples/arduino/libraries/esp_lcd_touch_axs15231b/esp_lcd_touch_axs15231b.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/arduino/libraries/esp_lcd_touch_axs15231b/esp_lcd_touch_axs15231b.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：examples/arduino/libraries/esp_lcd_touch_axs15231b/esp_lcd_touch_axs15231b.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/arduino/libraries/esp_lcd_touch_axs15231b/esp_lcd_touch_axs15231b.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_axp2101.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_axp2101.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_axp2101.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_axp2101.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_camera.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_camera.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_camera.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_camera.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_display.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_display.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_es8311.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_es8311.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_es8311.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_es8311.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_pcf85063.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_pcf85063.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_pcf85063.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_pcf85063.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_qmi8658.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_qmi8658.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_qmi8658.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_qmi8658.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_touch.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_touch.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_wifi.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_wifi.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_wifi.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_wifi.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/bsp_board.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/bsp_board.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/esp32_s3_touch_lcd_3_5b.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/esp32_s3_touch_lcd_3_5b.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/board.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/board.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/esp-bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/esp-bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/priv_include/bsp_board_internal.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/priv_include/bsp_board_internal.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定提交：hardware/mechanical/ESP32-S3-Touch-LCD-3.5B-C.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/hardware/mechanical/ESP32-S3-Touch-LCD-3.5B-C.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定提交：hardware/mechanical/ESP32-S3-Touch-LCD-3.5B.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/hardware/mechanical/ESP32-S3-Touch-LCD-3.5B.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定提交：hardware/schematic/ESP32-S3-Touch-LCD-3.5B-V1-Schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/hardware/schematic/ESP32-S3-Touch-LCD-3.5B-V1-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定提交：hardware/schematic/ESP32-S3-Touch-LCD-3.5B-V2-Schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/hardware/schematic/ESP32-S3-Touch-LCD-3.5B-V2-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-3-5b/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-3-5b-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-3-5b-sku-31334",
+      "name": "Waveshare ESP32-S3-Touch-LCD-3.5B-C",
+      "manufacturer": "Waveshare",
+      "sku": "31334",
+      "chip": "esp32s3",
+      "hardwareRevision": "V2/current factory BSP; V1 differences retained in sources",
+      "summary": "16MiB Flash /8MiB PSRAM、320×480 AXS15231B；精确QSPI/共享TCA复位、14字节触摸、PWR真实扩展器输入与单线TF。带壳OV5640套装单独保留。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-3-5b-sku-31334.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-3-5b",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-3.5B"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd35b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "IPS LCD",
+        "bus": "QSPI mode3",
+        "controller": "AXS15231B",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 EX6",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Active-high physical input on expander EX6; no fabricated GPIO pin or long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 11
+            },
+            {
+              "name": "CMD",
+              "gpio": 10
+            },
+            {
+              "name": "D0",
+              "gpio": 9
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "当前AXP2101数字控制子集未接受原图全部电源配置，原厂应用在PMU配置错误后返回；没有完整出厂UI帧。",
+        "QMI8658、OV5640摄像头/DVP、PCM、模拟电池/PMU供电瞬态、实际关机、TE及屏幕模拟参数未实现。",
+        "裸板与-C套装分别建模；-C外壳只取得二维工程图，用明确估计壁厚的独立前框/空腔侧壁/后盖，内部卡扣、相机FPC及装配配合UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-3.5b.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-3.5B",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_i2c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/esp32_s3_touch_lcd_3_5b.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/esp32_s3_touch_lcd_3_5b.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_AXS15231B.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_AXS15231B.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_AXS15231B.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_AXS15231B.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：examples/arduino/libraries/esp_lcd_touch_axs15231b/esp_lcd_touch_axs15231b.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/arduino/libraries/esp_lcd_touch_axs15231b/esp_lcd_touch_axs15231b.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：examples/arduino/libraries/esp_lcd_touch_axs15231b/esp_lcd_touch_axs15231b.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/arduino/libraries/esp_lcd_touch_axs15231b/esp_lcd_touch_axs15231b.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_axp2101.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_axp2101.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_axp2101.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_axp2101.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_camera.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_camera.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_camera.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_camera.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_display.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_display.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_es8311.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_es8311.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_es8311.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_es8311.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_pcf85063.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_pcf85063.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_pcf85063.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_pcf85063.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_qmi8658.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_qmi8658.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_qmi8658.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_qmi8658.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_touch.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_touch.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_wifi.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_wifi.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：examples/esp-idf/01_factory/components/esp_bsp/bsp_wifi.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/esp-idf/01_factory/components/esp_bsp/bsp_wifi.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/bsp_board.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/bsp_board.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/esp32_s3_touch_lcd_3_5b.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/esp32_s3_touch_lcd_3_5b.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/board.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/board.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/esp-bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/esp-bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/include/bsp/touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5b/priv_include/bsp_board_internal.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/examples/factory/components/esp32_s3_touch_lcd_3_5b/priv_include/bsp_board_internal.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定提交：hardware/mechanical/ESP32-S3-Touch-LCD-3.5B-C.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/hardware/mechanical/ESP32-S3-Touch-LCD-3.5B-C.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定提交：hardware/mechanical/ESP32-S3-Touch-LCD-3.5B.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/hardware/mechanical/ESP32-S3-Touch-LCD-3.5B.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定提交：hardware/schematic/ESP32-S3-Touch-LCD-3.5B-V1-Schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/hardware/schematic/ESP32-S3-Touch-LCD-3.5B-V1-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定提交：hardware/schematic/ESP32-S3-Touch-LCD-3.5B-V2-Schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5B/3698bcafe6f6b331e45cd8a0d9d350ccc4e4f749/hardware/schematic/ESP32-S3-Touch-LCD-3.5B-V2-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-3-5b-c/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-3-5b-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-1-47",
+      "name": "Waveshare ESP32-S3-Touch-LCD-1.47",
+      "manufacturer": "Waveshare",
+      "sku": "31202",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、172×320 JD9853与AXS5106L；独立于非触摸B版的SPI/I2C/复位/TF接线。裸板31202与预焊排针31199独立。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-1-47.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-1-47",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-1.47"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd147",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "IPS LCD",
+        "bus": "SPI",
+        "controller": "JD9853",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 13
+            },
+            {
+              "name": "D3",
+              "gpio": 14
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "JD9853采用厂家完整调用链确认的240列数字RAM/可视窗口x34..205及commonDCS；ST7789独有RAMCTRL不会响应，厂商页寄存器、真实面板电气与全部旋转未完整实现。",
+        "触摸mirrorX是源BSP参考约定，AA、扫描时序、手势、多点、物理像素/玻璃方向未标定。",
+        "厂家概述参数表有72×320笔误；采用同页特性、代码与原始输出的172×320，保留来源冲突。",
+        "32.93×17.75mm是CG VA窗口，不是独立LCD AA；0.29%比例差保留且原CAD不拉伸。",
+        "厂家details-inter照片将TP_RST/INT标为47/48，而固定01_factory源码与原理图使用RST48/INT47；采用后者并保留照片标注冲突。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.47.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/README.md",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_battery.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_battery.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_display.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_display.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_qmi8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_qmi8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_touch.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_touch.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_wifi.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_wifi.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_jd9853/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_touch_axs5106/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/main/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/main/lv_fs_port.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/partitions.csv",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：official-schematics/ESP32-S3-Touch-LCD-1.47-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-1-47/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-1-47-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-lcd-1-47-sku-31199",
+      "name": "Waveshare ESP32-S3-Touch-LCD-1.47-M",
+      "manufacturer": "Waveshare",
+      "sku": "31199",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、172×320 JD9853与AXS5106L；独立于非触摸B版的SPI/I2C/复位/TF接线。裸板31202与预焊排针31199独立。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-lcd-1-47-sku-31199.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-lcd-1-47",
+        "name": "Waveshare ESP32-S3-TOUCH-LCD-1.47"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd147",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "IPS LCD",
+        "bus": "SPI",
+        "controller": "JD9853",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 16
+            },
+            {
+              "name": "CMD",
+              "gpio": 15
+            },
+            {
+              "name": "D0",
+              "gpio": 17
+            },
+            {
+              "name": "D1",
+              "gpio": 18
+            },
+            {
+              "name": "D2",
+              "gpio": 13
+            },
+            {
+              "name": "D3",
+              "gpio": 14
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "JD9853采用厂家完整调用链确认的240列数字RAM/可视窗口x34..205及commonDCS；ST7789独有RAMCTRL不会响应，厂商页寄存器、真实面板电气与全部旋转未完整实现。",
+        "触摸mirrorX是源BSP参考约定，AA、扫描时序、手势、多点、物理像素/玻璃方向未标定。",
+        "厂家概述参数表有72×320笔误；采用同页特性、代码与原始输出的172×320，保留来源冲突。",
+        "32.93×17.75mm是CG VA窗口，不是独立LCD AA；0.29%比例差保留且原CAD不拉伸。",
+        "厂家details-inter照片将TP_RST/INT标为47/48，而固定01_factory源码与原理图使用RST48/INT47；采用后者并保留照片标注冲突。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-1.47.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/README.md",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_battery.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_battery.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_display.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_display.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_qmi8658.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_qmi8658.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_touch.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_touch.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_wifi.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_bsp/bsp_wifi.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_jd9853/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_touch_axs5106/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/main/CMakeLists.txt",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/main/lv_fs_port.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP32-S3-Touch-LCD-1.47-Demo/ESP-IDF/01_factory/partitions.csv",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：official-schematics/ESP32-S3-Touch-LCD-1.47-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-LCD-1.47/ESP32-S3-Touch-LCD-1.47-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-1-47-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-lcd-1-47-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-75",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.75",
+      "manufacturer": "Waveshare",
+      "sku": "31261",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、466×466 CO5300与CST9217；真实xgap6、AXP电源数字条件、TCA EX4 PWR、单线TF。标准/壳/GPS三SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-75.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-75",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.75"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled175",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 EX4",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Active-high physical input on expander EX4; no fabricated GPIO pin or long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "QMI8658支持控制/样本与DCDC1门控，但INT1扩展器/INT2、后缀身份/校准未实现；GNSS LC76G、RF、音频PCM、模拟电池/充电、PMU长按断电及完整应用未验收。",
+        "TP AA43.76mm与TP VA44.16mm是不同注释；独立发光面AA、实际触摸坐标/像素方向仍未物理校准。",
+        "原STEP最大法向范围12.70mm与照片裸板10.40mm注释不同；保持原CAD、记录可能配件/版本差，不拉伸或截短组件来伪造吻合。",
+        "-G的LC76G/陶瓷天线几何与精确选装布局UNKNOWN；-B只取得二维工程图，其墙厚/内部/孔槽配合明示估计。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.75.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.75",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：HARDWARE_REFERENCE_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/HARDWARE_REFERENCE_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：Schematic/ESP32-S3-Touch-AMOLED-1.75-schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/Schematic/ESP32-S3-Touch-AMOLED-1.75-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/esp32_s3_touch_amoled_1_75.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/esp32_s3_touch_amoled_1_75.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp-bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp-bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/priv_include/bsp_err_check.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/priv_include/bsp_err_check.h",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-75/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-1-75-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-75-sku-31262",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.75-B",
+      "manufacturer": "Waveshare",
+      "sku": "31262",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、466×466 CO5300与CST9217；真实xgap6、AXP电源数字条件、TCA EX4 PWR、单线TF。标准/壳/GPS三SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-75-sku-31262.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-75",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.75"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled175",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 EX4",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Active-high physical input on expander EX4; no fabricated GPIO pin or long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "QMI8658支持控制/样本与DCDC1门控，但INT1扩展器/INT2、后缀身份/校准未实现；GNSS LC76G、RF、音频PCM、模拟电池/充电、PMU长按断电及完整应用未验收。",
+        "TP AA43.76mm与TP VA44.16mm是不同注释；独立发光面AA、实际触摸坐标/像素方向仍未物理校准。",
+        "原STEP最大法向范围12.70mm与照片裸板10.40mm注释不同；保持原CAD、记录可能配件/版本差，不拉伸或截短组件来伪造吻合。",
+        "-G的LC76G/陶瓷天线几何与精确选装布局UNKNOWN；-B只取得二维工程图，其墙厚/内部/孔槽配合明示估计。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.75.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.75",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：HARDWARE_REFERENCE_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/HARDWARE_REFERENCE_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：Schematic/ESP32-S3-Touch-AMOLED-1.75-schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/Schematic/ESP32-S3-Touch-AMOLED-1.75-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/esp32_s3_touch_amoled_1_75.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/esp32_s3_touch_amoled_1_75.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp-bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp-bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/priv_include/bsp_err_check.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/priv_include/bsp_err_check.h",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-75-b/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-1-75-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-75-sku-31264",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.75-G",
+      "manufacturer": "Waveshare",
+      "sku": "31264",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM、466×466 CO5300与CST9217；真实xgap6、AXP电源数字条件、TCA EX4 PWR、单线TF。标准/壳/GPS三SKU分列。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-75-sku-31264.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-75",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.75"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled175",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "PWR · TCA9554 EX4",
+          "type": "button",
+          "transport": "board",
+          "activeLow": false,
+          "notes": "Active-high physical input on expander EX4; no fabricated GPIO pin or long-press poweroff."
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 2
+            },
+            {
+              "name": "CMD",
+              "gpio": 1
+            },
+            {
+              "name": "D0",
+              "gpio": 3
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "QMI8658支持控制/样本与DCDC1门控，但INT1扩展器/INT2、后缀身份/校准未实现；GNSS LC76G、RF、音频PCM、模拟电池/充电、PMU长按断电及完整应用未验收。",
+        "TP AA43.76mm与TP VA44.16mm是不同注释；独立发光面AA、实际触摸坐标/像素方向仍未物理校准。",
+        "原STEP最大法向范围12.70mm与照片裸板10.40mm注释不同；保持原CAD、记录可能配件/版本差，不拉伸或截短组件来伪造吻合。",
+        "-G的LC76G/陶瓷天线几何与精确选装布局UNKNOWN；-B只取得二维工程图，其墙厚/内部/孔槽配合明示估计。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.75.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.75",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：HARDWARE_REFERENCE.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/HARDWARE_REFERENCE.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：HARDWARE_REFERENCE_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/HARDWARE_REFERENCE_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：examples/arduino/libraries/Mylibrary/pin_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/arduino/libraries/Mylibrary/pin_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/esp-idf/03_esp-brookesia/components/esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp32_s3_touch_amoled_1_75.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：Schematic/ESP32-S3-Touch-AMOLED-1.75-schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/Schematic/ESP32-S3-Touch-AMOLED-1.75-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/examples/arduino/libraries/GFX_Library_for_Arduino/src/display/Arduino_CO5300.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/esp32_s3_touch_amoled_1_75.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/esp32_s3_touch_amoled_1_75.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp-bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/esp-bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/include/bsp/touch.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/priv_include/bsp_err_check.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.75/54816190c194c3a9cf612f85063899c89b18a776/firmware/brookesia/components/waveshare__esp32_s3_touch_amoled_1_75/priv_include/bsp_err_check.h",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-75-g/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-touch-amoled-1-75-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-touch-amoled-1-64",
+      "name": "Waveshare ESP32-S3-Touch-AMOLED-1.64",
+      "manufacturer": "Waveshare",
+      "sku": "31197",
+      "chip": "esp32s3",
+      "hardwareRevision": "PCB Rev1.1; official software repository named v2",
+      "summary": "SKU31197的新PCB Rev1.1明确接CS46，旧CS9不接受；16MiB Flash /8MiB PSRAM、280×456 CO5300、FT3168与原生单线TF。实际R34未装/R35零欧使触摸复位共享LCD_RESET21。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-touch-amoled-1-64.json",
+      "family": {
+        "id": "waveshare-esp32-s3-touch-amoled-1-64",
+        "name": "Waveshare ESP32-S3-TOUCH-AMOLED-1.64"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-amoled164-rev11",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 280,
+        "height": 456,
+        "type": "AMOLED",
+        "bus": "QSPI",
+        "controller": "CO5300 (overview; SH8601-named BSP class retained separately)",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 41
+            },
+            {
+              "name": "CMD",
+              "gpio": 39
+            },
+            {
+              "name": "D0",
+              "gpio": 40
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。D1/D2在原理图经0欧拉高，DAT3/CS38有10k上拉。另显式SPI端点41/39/40/38可独立attach；默认ROM原图使用native SDMMC。"
+        }
+      ],
+      "limitations": [
+        "当前SKU经历V1/Rev1.1改版但商店未给按SKU分开的板次，运行配置显式限定Rev1.1；旧CS9接线不兼容，不同时接受两套片选。",
+        "官方source driver类名SH8601与型号页CO5300不同；实现CO5300源证实数字子集，不伪造die身份。",
+        "原始v2 BIN调用native SDMMC，而当前07_FactoryProgram源码使用SPI TF；两种模式各有电路依据但不同来源版本不伪称二进制可重复构建。",
+        "20241221原厂STEP与当前Rev1.1的具体器件布局关系未知，保持旧native形状并删除非当前SKU排针；新充电/阻容元件几何UNKNOWN。",
+        "QMI后缀/IRQ/校准、模拟充电电池、触摸手势/真实扫描、TE45与完整原厂体验未验收。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-amoled-1.64.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-Touch-AMOLED-1.64",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/user_app.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/user_app.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/components/user_app/user_app.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/components/user_app/user_app.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/dependencies.lock",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/dependencies.lock",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/main/main.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/main/main.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：ESP-IDF/07_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/ESP-IDF/07_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：schematic/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-AMOLED-1.64-v2/21b952243d306692774f3b5bfeb3eb5cff10f851/schematic/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：official-schematics/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Touch-AMOLED-1.64/ESP32-S3-Touch-AMOLED-1.64-Rev1.1.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-amoled-1-64-rev11/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
     }
   ]
 }
