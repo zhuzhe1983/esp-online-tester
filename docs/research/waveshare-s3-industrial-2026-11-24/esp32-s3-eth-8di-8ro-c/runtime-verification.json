@@ -1,0 +1,18 @@
+{
+  "listingId": "esp32-s3-eth-8di-8ro-c",
+  "boardProfiles": [
+    "waveshare-s3-eth-8di-8ro-c",
+    "waveshare-s3-poe-eth-8di-8ro-c"
+  ],
+  "checkedAt": "2026-11-23T22:44:42Z",
+  "command": "cargo test --release -p esp32s3 --test waveshare_industrial_controls",
+  "result": "6 passed;0 failed",
+  "scope": "Real LX7 instructions: exact route/mux/address NACK, RTC time+STOP, TCA9555 keys+codec ports, actualRMT RGB bytes, Relay1 GPIO47, distinct eight-channel control, five actual guest1bit SDMMC IDMAC512-byte roundtrip/wrong-route/eject.",
+  "clippy": "cargo clippy --release -p esp32s3 --test waveshare_industrial_controls -- -D warnings: passed",
+  "limitations": [
+    "Eight TCA9554 relay coil controls are observable, but contact loads, current ratings, isolation and analog switching are unmodeled.",
+    "GPIO4..11 input controls inject digital pad levels, not optocoupler voltage transfer. PoE SKU31284 remains separate from common Ethernet SKU31282.",
+    "W5500 Ethernet, PoE power, CAN/RS485 peers, buzzer acoustics and network services are unimplemented.",
+    "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim."
+  ]
+}

@@ -112,3 +112,12 @@ fn all_six_rgb_products_expose_host_samples_through_the_guest_i2c_fifo() {
         probe(Box::new(WaveshareTcaRgb::new(variant)), (15, 7));
     }
 }
+
+#[test]
+fn exact_tail_spi_and_matrix_products_deliver_samples_over_actual_cpu_fifo() {
+    for name in ["waveshare-s3-lcd28", "waveshare-s3-touch-lcd28-v1",
+        "waveshare-s3-touch-lcd28-v2", "waveshare-s3-touch-lcd169", "waveshare-s3-matrix8"] {
+        let pins = if name == "waveshare-s3-matrix8" { (11, 12) } else { (11, 10) };
+        probe(esp32s3::board::make_board(name).unwrap(), pins);
+    }
+}

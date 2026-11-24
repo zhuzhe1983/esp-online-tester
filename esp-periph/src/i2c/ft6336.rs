@@ -18,6 +18,10 @@ impl Ft6336State {
 pub struct Ft6336g {registers:Reg8Device,state:Arc<Mutex<Ft6336State>>}
 impl Ft6336g {
     pub fn new(state:Arc<Mutex<Ft6336State>>) -> Self {Self{registers:Reg8Device::new("ft6336g",&[(0xa8,0x11)]),state}}
+    /// Common single-contact report with every identity register unknown (zero).
+    /// Waveshare FT6336/FT6336U boards establish the report format, not a measured
+    /// vendor, silicon or firmware ID; do not inherit M5 panel identity values.
+    pub fn unknown_identity(state:Arc<Mutex<Ft6336State>>) -> Self {Self{registers:Reg8Device::new("ft6x36-report",&[]),state}}
     /// FT3267 uses the same FT5x06 single-contact register report on M5Dial.
     /// Only this common subset is modeled; undocumented chip/revision IDs remain zero.
     pub fn ft3267(state:Arc<Mutex<Ft6336State>>) -> Self {Self{registers:Reg8Device::new("ft3267",&[(0xa8,0x11)]),state}}

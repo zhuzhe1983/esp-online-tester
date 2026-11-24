@@ -20,6 +20,18 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'web/platform/assets'
 
+# BRepBndLib's conservative analytic bounds exceed this native battery's
+# triangulated Y maximum by 0.2264991127 mm at three independent mesh densities.
+# The original STEP and component identity are fixed; no geometry is rescaled.
+# See the retained Clean/remesh receipt and reproducible check in this directory.
+NATIVE_BOUNDS_EXCEPTIONS = {
+    ('0a2557e0a975f29049ab5e55222c01f13d2559d79ffade488106107f0bea521d', 2): {
+        'toleranceMm': .23,
+        'evidence': 'docs/research/waveshare-s3-industrial-2026-11-24/batch-02/audio-battery-bounds-check.json',
+        'reason': 'Native Audio Board battery conservative analytic Y bound; three Clean/remesh densities agree. This is an export bound exception, not physical accuracy.',
+    },
+}
+
 
 def sha(data):
     return hashlib.sha256(data).hexdigest()
@@ -246,9 +258,13 @@ def build(product_id, destination):
                     positions = original[:, :3].astype('<f4')
                     exported = np.asarray([positions.min(0), positions.max(0)])
                     deviation = float(np.abs(expected - exported).max())
-                    assert deviation <= .05, f'Native bounds exceed declared export tolerance: {item["name"]} component {indices[component_number]} {deviation}'
+                    source_identity = next(s['sha256'] for s in plan['sources'] if s['file'] == item['sourceFile'])
+                    exception = NATIVE_BOUNDS_EXCEPTIONS.get((source_identity, indices[component_number]))
+                    tolerance = exception['toleranceMm'] if exception else .05
+                    assert deviation <= tolerance, f'Native bounds exceed declared export tolerance: {item["name"]} component {indices[component_number]} {deviation}'
                     component_checks.append({'sourceComponent': indices[component_number], 'sourceBoundsMm': raw.tolist(),
-                                             'maxSourceBoundsDeviationMm': deviation, 'triangles': len(original) // 3})
+                                             'maxSourceBoundsDeviationMm': deviation, 'triangles': len(original) // 3,
+                                             **({'sourceBoundsException': exception} if exception else {})})
             original = np.concatenate(arrays)
             data = original.astype('<f4')
             error = float(np.abs(original[:, :3] - data[:, :3]).max())
@@ -265,6 +281,8 @@ def build(product_id, destination):
                 check.update(sourceBoundsMm=raw, maxSourceBoundsDeviationMm=max(entry['maxSourceBoundsDeviationMm'] for entry in component_checks))
                 if 'sourceComponents' in item:
                     check['componentChecks'] = component_checks
+                elif component_checks[0].get('sourceBoundsException'):
+                    check['sourceBoundsException'] = component_checks[0]['sourceBoundsException']
             checks.append(check)
             offset += data.nbytes
     for name, coverage in plan.get('sourceCoverage', {}).items():

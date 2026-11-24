@@ -51,3 +51,5 @@ pub mod waveshare_ili9488;
 pub mod ft3168;
 
 pub mod cst92xx;
+pub mod rm690b0;
+pub mod waveshare_ch422g;

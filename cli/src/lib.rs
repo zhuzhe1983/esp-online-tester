@@ -598,7 +598,7 @@ fn setup_c5(o: &Opts) -> esp32c5::Machine {
     let board = if o.board == "atech14" { "stamp-c5" } else { &o.board };
     let (flash_mb, psram_mb) = esp_soc::waveshare_profiles::memory_mib(board)
         .or_else(|| esp32c5::board::waveshare_core::CoreVariant::from_name(board).map(|v| v.memory_mib()))
-        .unwrap_or_else(|| match board {
+        .unwrap_or(match board {
         "waveshare-c5-touch169" => (16, 8),
         "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8),
         "lilygo-t-dongle-c5" => (16, 0),

@@ -1,0 +1,849 @@
+{
+  "listingId": "esp32-s3-lcd-1.9",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-9",
+      "name": "Waveshare ESP32-S3-LCD-1.9",
+      "manufacturer": "Waveshare",
+      "sku": "30995",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "170×320 ST7789V2、16MiB Flash/8MiB PSRAM；非触30995有GPIO15串联两RGB灯，触摸30939为CST816且无RGB，分别使用对应原厂283/286零件CAD与真实单线TF。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-9.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-9",
+        "name": "Waveshare ESP32-S3-LCD-1.9"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd19",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 170,
+        "height": 320,
+        "type": "IPS LCD",
+        "controller": "ST7789V2",
+        "bus": "SPI",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC 1-bit",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 41
+            },
+            {
+              "name": "CMD",
+              "gpio": 39
+            },
+            {
+              "name": "D0",
+              "gpio": 40
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact physical native1-bit bus, with prepared64MiB FAT32 default. SPI transport not inferred from native support."
+        }
+      ],
+      "limitations": [
+        "1.9原程序在5秒有界运行内停在QMI校准/BLE相关阶段，只有初始化单色，未取得完整factory UI。",
+        "IMU校准/IRQ/具体器件后缀、RF、模拟电池充放电及触控手势/扫描节拍未验收；CST身份寄存器保持未知。",
+        "非触LCD AA22.70×42.72mm有官方明确注释；触摸版工程图CG VA23.40×43.12mm与商店照片23.10注释有差异，选工程图窗口、独立AA未知且原CAD不拉伸。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.9.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-1.9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/user_app/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/user_app/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/user_app/user_app.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/user_app/user_app.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/user_app/user_app.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/user_app/user_app.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/main/main.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/main/main.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定原始来源：official-components/ESP32-S3-Touch-LCD-1.9-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.9/ESP32-S3-Touch-LCD-1.9-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定原始来源：official-components/ESP32-S3-LCD-1.9-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.9/ESP32-S3-LCD-1.9-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-1-9/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-1-9-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-lcd-1-9-sku-30939",
+      "name": "Waveshare ESP32-S3-Touch-LCD-1.9",
+      "manufacturer": "Waveshare",
+      "sku": "30939",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "170×320 ST7789V2、16MiB Flash/8MiB PSRAM；非触30995有GPIO15串联两RGB灯，触摸30939为CST816且无RGB，分别使用对应原厂283/286零件CAD与真实单线TF。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-1-9-sku-30939.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-1-9",
+        "name": "Waveshare ESP32-S3-LCD-1.9"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-lcd19",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 170,
+        "height": 320,
+        "type": "IPS LCD",
+        "controller": "ST7789V2",
+        "bus": "SPI",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC 1-bit",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 41
+            },
+            {
+              "name": "CMD",
+              "gpio": 39
+            },
+            {
+              "name": "D0",
+              "gpio": 40
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "Exact physical native1-bit bus, with prepared64MiB FAT32 default. SPI transport not inferred from native support."
+        }
+      ],
+      "limitations": [
+        "1.9原程序在5秒有界运行内停在QMI校准/BLE相关阶段，只有初始化单色，未取得完整factory UI。",
+        "IMU校准/IRQ/具体器件后缀、RF、模拟电池充放电及触控手势/扫描节拍未验收；CST身份寄存器保持未知。",
+        "非触LCD AA22.70×42.72mm有官方明确注释；触摸版工程图CG VA23.40×43.12mm与商店照片23.10注释有差异，选工程图窗口、独立AA未知且原CAD不拉伸。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-1.9.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-LCD-1.9",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/adc_bsp/adc_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/ble_scan_bsp/ble_scan_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/button_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/button_bsp/multi_button.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_touch/touch_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/esp_wifi_bsp/esp_wifi_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/qmi8658c.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/qmi8658c/qmi8658c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/sd_card_bsp.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/sd_card_bsp/sd_card_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/user_app/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/user_app/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/user_app/user_app.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/user_app/user_app.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/components/user_app/user_app.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/components/user_app/user_app.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/main/CMakeLists.txt",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/main/main.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/main/main.c",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/partitions.csv",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/partitions.csv",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/sdkconfig.defaults",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/sdkconfig.defaults",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定提交：02_Example/ESP-IDF/08_FactoryProgram/sdkconfig",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/02_Example/ESP-IDF/08_FactoryProgram/sdkconfig",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定原始来源：official-components/ESP32-S3-Touch-LCD-1.9-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.9/ESP32-S3-Touch-LCD-1.9-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定原始来源：official-components/ESP32-S3-LCD-1.9-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-1.9/ESP32-S3-LCD-1.9-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-lcd-1-9/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-1-9-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-9-factory",
+      "name": "ESP32-S3-LCD-1.9_FactoryOnly_20250408.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-1-9",
+        "waveshare-esp32-s3-lcd-1-9-sku-30939"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/firmware/ESP32-S3-LCD-1.9_FactoryOnly_20250408.bin",
+        "sha256": "53078624c3b0f7a33d5437228f0d1cba2fe433f1dce6db58d2d42fa788dfbbc6",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LCD-1.9_FactoryOnly_20250408",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/firmware/ESP32-S3-LCD-1.9_FactoryOnly_20250408.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "固定README明确两个1.9型号共用仓库；firmwareREADME指定完整20250408 factory图。原图两种精确板型各运行5guest秒，4帧/108800写像素但末帧为真实单色；显示已开启、背光全亮，非空显示被隐藏。TF实际挂载64MB并读1744B；QMI部分命令失败，BLE/完整应用未完成。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-lcd-1-9-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-lcd-1-9-factory-watch",
+      "name": "ESP32-S3-LCD-1.9_FactoryOnly_20250408.bin",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-LCD-1.9",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-LCD-1.9/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-LCD-1.9/releases",
+      "version": "0d79f909069ebe40ef653fd8fc2cc2485a771480",
+      "checkedAt": "2026-11-23T16:52:01Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-LCD-1.9_FactoryOnly_20250408.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-LCD-1.9/0d79f909069ebe40ef653fd8fc2cc2485a771480/firmware/ESP32-S3-LCD-1.9_FactoryOnly_20250408.bin",
+          "sha256": "53078624c3b0f7a33d5437228f0d1cba2fe433f1dce6db58d2d42fa788dfbbc6",
+          "bytes": 2185584,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-1-9",
+          "waveshare-esp32-s3-lcd-1-9-sku-30939"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-1-9.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-1-9-sku-30939.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-lcd19": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-touch-lcd19": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "独立SPI170×320/xgap35真实RGB565像素，错误MOSI拒绝，低有效BL用PWM duty而不是Hz。",
+    "非触摸LED2/LED3串联顺序与两颗真实CAD灯体绑定；触摸版无灯，CST报告0x00..06和RESET17断路负例。",
+    "两个原始完整ROM分别5秒启动和真实SD1bit挂载，原始UART、raw/PNG末帧保留。"
+  ],
+  "limitations": [
+    "1.9原程序在5秒有界运行内停在QMI校准/BLE相关阶段，只有初始化单色，未取得完整factory UI。",
+    "IMU校准/IRQ/具体器件后缀、RF、模拟电池充放电及触控手势/扫描节拍未验收；CST身份寄存器保持未知。",
+    "非触LCD AA22.70×42.72mm有官方明确注释；触摸版工程图CG VA23.40×43.12mm与商店照片23.10注释有差异，选工程图窗口、独立AA未知且原CAD不拉伸。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

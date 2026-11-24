@@ -137,6 +137,13 @@ def main():
             # Root acceptance evidence is named by delivery batch, not chip.
             # Carry earlier receipts forward without rewriting immutable patches.
             return int(batch_evidence.group(1)) <= number
+        if path.startswith('docs/platform/evidence/waveshare-root-extras-'):
+            # These shared receipts cover the classic display, thermal module,
+            # and controller-containing Basic Kit; their directory is not named
+            # after one chip. Release them when the first covered family ships.
+            return bool(set(all_listings) & {
+                'esp32-touch-lcd-3.5', 'thermal-45-camera-esp32-module',
+                'esp32-xx-basic-kit'})
         if path.startswith(('docs/evidence/waveshare-', 'docs/research/waveshare-', 'docs/platform/evidence/waveshare-')):
             return any(('waveshare-' + chip) in path for chip in chips) or 'store-inventory' in path
         if path == 'tools/platform-waveshare-test.mjs':

@@ -146,7 +146,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     if s31_board.as_ref().is_some_and(|b| b.name() == "metalio-ink4-plus") && flash_mb != 16 {
         log("[emu] Metalio INK4 Plus requires 16 MiB Flash; PSRAM capacity is a simulation setting"); return std::ptr::null_mut();
     }
-    let c5_memory = esp_soc::waveshare_profiles::memory_mib(&board).map(|(f,p)|(f as u32,p as u32)).unwrap_or_else(||match board.as_str() { "waveshare-c5-touch169" => (16, 8), "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8), "lilygo-t-dongle-c5" => (16, 0), _ => (4, 0) });
+    let c5_memory = esp_soc::waveshare_profiles::memory_mib(&board).map(|(f,p)|(f as u32,p as u32)).unwrap_or(match board.as_str() { "waveshare-c5-touch169" => (16, 8), "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8), "lilygo-t-dongle-c5" => (16, 0), _ => (4, 0) });
     if c5_board.is_some() && (flash_mb, psram_mb) != c5_memory {
         log("[emu] C5 board requires its documented Flash and PSRAM capacity"); return std::ptr::null_mut();
     }

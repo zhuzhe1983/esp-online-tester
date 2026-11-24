@@ -78,6 +78,20 @@ def main():
     x=json.loads(gzip.decompress((ep/'78-xiaozhi-esp32.json.gz').read_bytes()));u=json.loads(gzip.decompress((ep/'m5stack-uiflow-micropython.json.gz').read_bytes()));wanted=c.get('xiaozhiReleaseTargets',[lid]);matches=[{'name':a['name'],'url':a['browser_download_url'],'bytes':a['size'],'digest':a.get('digest')}for a in x['assets']if any(a['name']==x['tag_name']+'_waveshare-'+target+'.zip'for target in wanted)]
     k['facts'].append({'id':'current-ecosystem-release-inventory','label':'已抓取UIFlow与小智发布目录','value':{'xiaozhiVersion':x['tag_name'],'xiaozhiTotalAssets':len(x['assets']),'matchingNamedAssets':matches,'uiflowVersion':u['tag_name'],'uiflowTotalAssets':len(u['assets']),'uiflowWaveshareNamedAssets':[a['name']for a in u['assets']if'waveshare'in a['name'].lower()]},'basis':'official','sourceIds':['ecosystem-http-'+str(i)for i in range(len(er))],'notes':'小智列表由100+100+0分页与latest资产ID交叉核对为完整200项。精确名称仅建立候选分发身份，未下载/审计的资产不冒运行兼容。UIFlow当前58项与较旧landing选择器的范围化无Waveshare结果，不证明不存在第三方移植。'})
     k['collectionNotes'].append('模型来源和几何范围：'+c.get('modelId','none')+'；model-plan.json保留原始参考、尺寸、图像像素/UV及UNKNOWN边界。')
+   if c.get('modelId'):
+    plan=json.loads((ROOT/'web/platform/assets'/c['modelId']/'model-plan.json').read_text())
+    model_refs=[]
+    for mi,entry in enumerate(plan.get('sources',[])):
+     mid='model-source-'+str(mi);record=dict(entry);archive=record.pop('archive',None)
+     # Model-member SHA describes the decoded original member, not the URL's container.
+     ms=source(record,mid,'模型原始来源：'+entry['file'],entry.get('role','model-reference'),entry['file'],'模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。')
+     if entry.get('origin')in('zip-member','rar-member'):
+      ms.setdefault('revision',{}).update(containerSha256=archive['containerSha256'],containerBytes=archive['containerBytes'],member=archive['entry'])
+      ms['notes']+=' URL指向原始容器，sha256/bytes对应精确解包成员；model-plan.json保留containerSourceId与双层校验。'
+     k['sources'].append(ms);model_refs.append(mid);k['assets'].append({'id':'model-asset-'+str(mi),'sourceId':mid,'role':entry.get('role','model-reference'),'url':ms['url'],'localUrl':'./assets/'+c['modelId']+'/'+entry['file']})
+    k['collectionNotes'].append('模型逐项边界：'+'；'.join(plan.get('limitations',[])))
+    if any(x.get('kind')=='pcb-placeholder'for x in plan.get('derivedParts',[])):
+     k['unknowns'].append({'id':'model-internal-pcb','label':'真实内部PCB布局与装配','value':None,'basis':'unknown','sourceIds':model_refs,'notes':'模型含可读UNKNOWN占位层；外形约束、估计厚度及照片已知面均在model-plan中区分，不能视为板级CAD。'})
    kp=ROOT/'web/platform/knowledge'/f'{pid}.json'
    if previous and c.get('preserveExisting') and kp.exists():
     oldk=json.loads(kp.read_text());oldk['updatedAt']=UTC

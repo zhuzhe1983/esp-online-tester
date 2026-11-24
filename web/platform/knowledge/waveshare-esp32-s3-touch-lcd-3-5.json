@@ -1,0 +1,983 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-touch-lcd-3-5",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-touch-lcd-3-5",
+  "title": "Waveshare ESP32-S3-Touch-LCD-3.5",
+  "summary": "精确S3当前V2、ST7796 SPI与FT6336：LCD_CS原理图R35接地，无MCU片选；TCA EX1共用复位，EX6真实PWR高有效输入，原生单线TF。裸板30733与-C/OV5640套装30934独立。",
+  "summarySourceIds": [
+    "official-store",
+    "official-overview"
+  ],
+  "updatedAt": "2026-11-23T22:50:11Z",
+  "hardwareRevision": "V2/current official20261021 factory BSP; previous hardware differences retained",
+  "identity": {
+    "listingId": "esp32-s3-touch-lcd-3.5",
+    "sku": "30733",
+    "storeOptions": {
+      "Version Options": "without case"
+    },
+    "manufacturerProductNames": [
+      "ESP32-S3-Touch-LCD-3.5"
+    ]
+  },
+  "facts": [
+    {
+      "id": "store-sku",
+      "label": "精确商店SKU",
+      "value": "30733",
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "store-options",
+      "label": "此SKU的选项",
+      "value": {
+        "Version Options": "without case"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "model-name",
+      "label": "厂家命名",
+      "value": "ESP32-S3-Touch-LCD-3.5",
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "physical-memory",
+      "label": "主控存储容量",
+      "value": {
+        "flashMiB": 16,
+        "psramMiB": 8
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview"
+      ],
+      "notes": "容量属于此SKU/已注明硬件版本；不从通用ESP32名称推断。"
+    },
+    {
+      "id": "display-spec",
+      "label": "屏幕规格",
+      "value": {
+        "width": 320,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7796",
+        "bus": "SPI (physical CS tied low)",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview"
+      ]
+    },
+    {
+      "id": "board-wiring",
+      "label": "本次实现的源代码接线",
+      "value": {
+        "spi": {
+          "clock": 5,
+          "mosi": 1,
+          "dc": 3,
+          "cs": "R35 tied GND; BSPgpio_cs=NC",
+          "referenceMadctl": 72
+        },
+        "backlight": {
+          "gpio": 6,
+          "activeLow": false
+        },
+        "i2c": {
+          "sda": 8,
+          "scl": 7,
+          "tca9554": 32,
+          "axp2101": 52,
+          "pcf85063": 81,
+          "ft6336": 56,
+          "qmi8658": 107,
+          "es8311": 24
+        },
+        "expander": {
+          "EX1": "shared LCD/FT reset",
+          "EX6": "PWR active-high input",
+          "interrupt": 4
+        },
+        "sdmmc": [
+          11,
+          10,
+          9
+        ],
+        "camera": {
+          "caseSku30934": "OV5640 included; digital DVP unimplemented"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview",
+        "board-source-0",
+        "board-source-1",
+        "board-source-2",
+        "board-source-3",
+        "board-source-4",
+        "board-source-5",
+        "board-source-6",
+        "board-source-7",
+        "board-source-8",
+        "board-source-9",
+        "board-source-10",
+        "board-source-11",
+        "board-source-12",
+        "board-source-13",
+        "board-source-14",
+        "board-source-15",
+        "board-source-16",
+        "board-source-17",
+        "board-source-18",
+        "board-source-19",
+        "board-source-20",
+        "board-source-21",
+        "board-source-22",
+        "board-source-23",
+        "board-source-24",
+        "board-source-25"
+      ]
+    },
+    {
+      "id": "factory-candidates",
+      "label": "官方原版镜像调查",
+      "value": [
+        {
+          "name": "ESP32-S3-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+          "sha256": "40f09da5d08c0d2a7b2a2f1cadf3c66bbe3b83f29d09e877395ea3abb2357a94",
+          "bytes": 8745186,
+          "mergedS3ChecksumsPass": true
+        }
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "official-overview",
+        "board-source-0",
+        "board-source-1",
+        "board-source-2",
+        "board-source-3",
+        "board-source-4",
+        "board-source-5",
+        "board-source-6",
+        "board-source-7",
+        "board-source-8",
+        "board-source-9",
+        "board-source-10",
+        "board-source-11",
+        "board-source-12",
+        "board-source-13",
+        "board-source-14",
+        "board-source-15",
+        "board-source-16",
+        "board-source-17",
+        "board-source-18",
+        "board-source-19",
+        "board-source-20",
+        "board-source-21",
+        "board-source-22",
+        "board-source-23",
+        "board-source-24",
+        "board-source-25"
+      ],
+      "notes": "官方firmwareREADME明确裸板和-C共用20261021完整factory，独立确认8745186B镜像chipId9/boot0/app10000，不因classic同长度误认。原生ROM5guest秒，657ms读取PMU后669ms报告PMU configuration / ESP_ERR_INVALID_STATE并返回app_main；0屏帧。未假ACK未知DC5/看门狗/纽扣电池引擎来绕过真实失败。"
+    },
+    {
+      "id": "current-ecosystem-release-inventory",
+      "label": "已抓取UIFlow与小智发布目录",
+      "value": {
+        "xiaozhiVersion": "v2.6.0",
+        "xiaozhiTotalAssets": 200,
+        "matchingNamedAssets": [
+          {
+            "name": "v2.6.0_waveshare-esp32-s3-touch-lcd-3.5.zip",
+            "url": "https://github.com/78/xiaozhi-esp32/releases/download/v2.6.0/v2.6.0_waveshare-esp32-s3-touch-lcd-3.5.zip",
+            "bytes": 2714646,
+            "digest": "sha256:22e5c4bbe9c002d793498d6a8cf95d15dc9fc46ba40b90abe9e5143081f8906f"
+          }
+        ],
+        "uiflowVersion": "2.5.5",
+        "uiflowTotalAssets": 58,
+        "uiflowWaveshareNamedAssets": []
+      },
+      "basis": "official",
+      "sourceIds": [
+        "ecosystem-http-0",
+        "ecosystem-http-1",
+        "ecosystem-http-2",
+        "ecosystem-http-3",
+        "ecosystem-http-4",
+        "ecosystem-http-5",
+        "ecosystem-http-6"
+      ],
+      "notes": "小智列表由100+100+0分页与latest资产ID交叉核对为完整200项。精确名称仅建立候选分发身份，未下载/审计的资产不冒运行兼容。UIFlow当前58项与较旧landing选择器的范围化无Waveshare结果，不证明不存在第三方移植。"
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "official-store",
+      "title": "官方商品页与精确SKU选项",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-3.5.htm",
+      "kind": "storefront",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:15Z",
+      "sha256": "7b5589dfa782cce2a55e3b2a0ede2468e9ff10331d197a88e96b22299928f601",
+      "bytes": 327980,
+      "archiveName": "store-response-not-retained.html",
+      "notes": "原HTTP响应的字节哈希；原始商店HTML含匿名会话值，Git仅保留无会话值的SKU抽取与收据。",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-touch-lcd-3.5.htm"
+    },
+    {
+      "id": "official-overview",
+      "title": "官方型号、容量、接口与屏幕规格",
+      "url": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-3.5",
+      "kind": "documentation",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:33:48Z",
+      "sha256": "ec4b7c3198ef0d17162284a15087c55f49406ed2207d585e5ba8ffa0342b10de",
+      "bytes": 66815,
+      "archiveName": "esp32-s3-touch-lcd-3-5-overview.html",
+      "notes": "原始文档响应收据；可核对厂家URL与curated inventory。",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-Touch-LCD-3.5"
+    },
+    {
+      "id": "board-source-0",
+      "title": "固定提交：README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:46:18Z",
+      "sha256": "ccc819be1fd62ab7ccbf6edf6144fe609c92a07af35968fda0e3bc0b8baac23d",
+      "bytes": 8760,
+      "archiveName": "ccc819be1fd62ab7-README.md.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/README.md",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-1",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/display.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/display.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:46:18Z",
+      "sha256": "0a430801a94137c99b4bb444a581c683f2bb0b0d2bdf86c2766883d953dd7988",
+      "bytes": 3845,
+      "archiveName": "0a430801a94137c9-display.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/display.h",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-2",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/esp32_s3_touch_lcd_3_5.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/esp32_s3_touch_lcd_3_5.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:46:18Z",
+      "sha256": "0e787de961df8eb861c9ed1747b36b055f16dfdbc39fcceed10dac121da86fca",
+      "bytes": 5486,
+      "archiveName": "0e787de961df8eb8-esp32_s3_touch_lcd_3_5.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/esp32_s3_touch_lcd_3_5.h",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-3",
+      "title": "固定提交：firmware/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/firmware/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:46:18Z",
+      "sha256": "4451e4ab76281419d81008ff1fd22e4ef4b09c97af3e85a44f278cdd66452e92",
+      "bytes": 1410,
+      "archiveName": "4451e4ab76281419-README.md.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/firmware/README.md",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-4",
+      "title": "固定提交：firmware/README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/firmware/README_ZH.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:46:18Z",
+      "sha256": "42af090555af24a3a621fc2c8233c352049807e01125a55bc0acf49fa52d95e4",
+      "bytes": 1334,
+      "archiveName": "42af090555af24a3-README_ZH.md.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/firmware/README_ZH.md",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-5",
+      "title": "固定提交：README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/README_ZH.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:43Z",
+      "sha256": "1e8d50aa828cf90fddfced38dc57c8a7863fb3b5a65d1eb51fd73e0c0e3b29aa",
+      "bytes": 8683,
+      "archiveName": "1e8d50aa828cf90fdd-README_ZH.md.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/README_ZH.md",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-6",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:48Z",
+      "sha256": "f5afd7dfe5385e7fa64c3a686ec82eacaf0e9b5fbb43b2d491a425f69b46b0da",
+      "bytes": 595,
+      "archiveName": "f5afd7dfe5385e7fa6-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/CMakeLists.txt",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-7",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/bsp_board.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/bsp_board.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:48Z",
+      "sha256": "1784dff6f95f0d99c5eb2e86882b205c2e182e4fc937b0566a7f7de8c7e1adc4",
+      "bytes": 29983,
+      "archiveName": "1784dff6f95f0d99c5-bsp_board.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/bsp_board.cpp",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-8",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/esp32_s3_touch_lcd_3_5.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/esp32_s3_touch_lcd_3_5.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:48Z",
+      "sha256": "fb51f7a99278167dc7cc6255f77c3797d02e867f5a92bf7762f0f8d6489b85d3",
+      "bytes": 24249,
+      "archiveName": "fb51f7a99278167dc7-esp32_s3_touch_lcd_3_5.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/esp32_s3_touch_lcd_3_5.cpp",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-9",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:53Z",
+      "sha256": "55709d220a4ac89e3b820560851b0f9fb9d41c345c95252abd75fadb72c35d14",
+      "bytes": 236,
+      "archiveName": "55709d220a4ac89e3b-idf_component.yml.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/idf_component.yml",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-10",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/board.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/board.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:53Z",
+      "sha256": "dfd884f07780bafe2adf6f1b370adfac883e3287d505c3bd6748f3d877f9a739",
+      "bytes": 3771,
+      "archiveName": "dfd884f07780bafe2a-board.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/board.h",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-11",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/config.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:53Z",
+      "sha256": "9c2b3229543db1cebb75cdc9a1411f24480543b410cc12a6263553dcbfcc9dec",
+      "bytes": 575,
+      "archiveName": "9c2b3229543db1cebb-config.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/config.h",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-12",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/esp-bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/esp-bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:57Z",
+      "sha256": "8026b3657940c930556923c0ed31a25f95148b856ac3d68c86125b6a5e866421",
+      "bytes": 53,
+      "archiveName": "8026b3657940c93055-esp-bsp.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/esp-bsp.h",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-13",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/touch.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/touch.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:57Z",
+      "sha256": "2da8c9ebbce82db3dc84df7ddc21ed95201cdbd8e1d39e2becb880a8aa659021",
+      "bytes": 2303,
+      "archiveName": "2da8c9ebbce82db3dc-touch.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/include/bsp/touch.h",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-14",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/priv_include/bsp_board_internal.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/priv_include/bsp_board_internal.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:33:57Z",
+      "sha256": "cfcb66ce6c71a620d6a82a3d3724f4c978516fcfb15dd396d04e4d220c7f4425",
+      "bytes": 153,
+      "archiveName": "cfcb66ce6c71a620d6-bsp_board_internal.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/priv_include/bsp_board_internal.h",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-15",
+      "title": "固定提交：examples/factory/components/esp32_s3_touch_lcd_3_5/priv_include/bsp_err_check.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/priv_include/bsp_err_check.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:02Z",
+      "sha256": "63599e8d8623716579e7cda929e0656fe71e9d8640025140fa3c8c85d37f5c97",
+      "bytes": 1502,
+      "archiveName": "63599e8d8623716579-bsp_err_check.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/components/esp32_s3_touch_lcd_3_5/priv_include/bsp_err_check.h",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-16",
+      "title": "固定提交：examples/factory/main/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/CMakeLists.txt",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:02Z",
+      "sha256": "78c2ac74340a45aab4a842b23a435c4aa33a9371ea93b4124159fbbd6527c218",
+      "bytes": 399,
+      "archiveName": "78c2ac74340a45aab4-CMakeLists.txt.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/CMakeLists.txt",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-17",
+      "title": "固定提交：examples/factory/main/assets/img_desktop_wallpaper.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/assets/img_desktop_wallpaper.c",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:02Z",
+      "sha256": "e0f36f6f465ec83fa5b4f614903809cf72c26532d235548adece84572f6de977",
+      "bytes": 1584386,
+      "archiveName": "e0f36f6f465ec83fa5-img_desktop_wallpaper.c.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/assets/img_desktop_wallpaper.c",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-18",
+      "title": "固定提交：examples/factory/main/desktop.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/desktop.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:06Z",
+      "sha256": "42fd542617635c49301dc597a3971db904e51da5211ae79cc527aa15a110072e",
+      "bytes": 2266,
+      "archiveName": "42fd542617635c4930-desktop.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/desktop.cpp",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-19",
+      "title": "固定提交：examples/factory/main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:06Z",
+      "sha256": "bab64a8321d6c0591bfb64cc76b4d2561358252b7d834584060dfe4e28c360de",
+      "bytes": 105,
+      "archiveName": "bab64a8321d6c0591b-idf_component.yml.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/idf_component.yml",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-20",
+      "title": "固定提交：examples/factory/main/main.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/main.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:06Z",
+      "sha256": "acef4de2e429b6baab305693909848ad0bda547ab5a3b2a4c91f05370bd453b0",
+      "bytes": 6403,
+      "archiveName": "acef4de2e429b6baab-main.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/main/main.cpp",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-21",
+      "title": "固定提交：examples/factory/sdkconfig.defaults",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/sdkconfig.defaults",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:10Z",
+      "sha256": "33255fa8e701d113b8ebf7e9e474db1cff8e87632f5952f21072c13ea9354ba2",
+      "bytes": 2285,
+      "archiveName": "33255fa8e701d113b8-sdkconfig.defaults.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/examples/factory/sdkconfig.defaults",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "board-source-22",
+      "title": "固定提交：hardware/mechanical/ESP32-S3-Touch-LCD-3.5-C.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5-C.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:10Z",
+      "sha256": "01fd868b0a83dbe2c9abb398b014bfa1c693f6bbcc1477a130188e94dc148b25",
+      "bytes": 26245,
+      "archiveName": "01fd868b0a83dbe2c9-ESP32-S3-Touch-LCD-3.5-C.pdf.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5-C.pdf",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "application/octet-stream"
+    },
+    {
+      "id": "board-source-23",
+      "title": "固定提交：hardware/mechanical/ESP32-S3-Touch-LCD-3.5.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:10Z",
+      "sha256": "3c1777063062c22b72f66b63b0628ec07dd2ecccf9074893f192905cbbece649",
+      "bytes": 117129,
+      "archiveName": "3c1777063062c22b72-ESP32-S3-Touch-LCD-3.5.pdf.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5.pdf",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "application/octet-stream"
+    },
+    {
+      "id": "board-source-24",
+      "title": "固定提交：hardware/schematic/ESP32-S3-Touch-LCD-3.5-V1-Schematic.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/schematic/ESP32-S3-Touch-LCD-3.5-V1-Schematic.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:15Z",
+      "sha256": "1fc6459d66b420605c1e667ce47ff73adc80cdbed42501d58f0d773f4fd7cfcc",
+      "bytes": 1051098,
+      "archiveName": "1fc6459d66b420605c-ESP32-S3-Touch-LCD-3.5-V1-Schematic.pdf.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/schematic/ESP32-S3-Touch-LCD-3.5-V1-Schematic.pdf",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "application/octet-stream"
+    },
+    {
+      "id": "board-source-25",
+      "title": "固定提交：hardware/schematic/ESP32-S3-Touch-LCD-3.5-V2-Schematic.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/schematic/ESP32-S3-Touch-LCD-3.5-V2-Schematic.pdf",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:14Z",
+      "sha256": "4704a21df091fc5a54aab009a00bdb4f70d94f7b98dc9385d7afe9d2f9b1d481",
+      "bytes": 191170,
+      "archiveName": "4704a21df091fc5a54-ESP32-S3-Touch-LCD-3.5-V2-Schematic.pdf.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/schematic/ESP32-S3-Touch-LCD-3.5-V2-Schematic.pdf",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "application/octet-stream"
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "UIFlow 固定板树调查",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "pinned-source-tree-inspection",
+      "status": "linked",
+      "notes": "完整固定提交板树的生成检查收据见 docs/platform/research/waveshare-shared-ecosystem-sources；不是HTTP原文。"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "小智固定板树调查",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards/waveshare",
+      "kind": "pinned-source-tree-inspection",
+      "status": "linked",
+      "notes": "精确目标目录与型号关联须独立检查；不使用generic镜像替换。"
+    },
+    {
+      "id": "firmware-40f09da5d08c",
+      "title": "ESP32-S3-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/firmware/ESP32-S3-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+      "kind": "original-manufacturer-binary",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:52:42Z",
+      "sha256": "40f09da5d08c0d2a7b2a2f1cadf3c66bbe3b83f29d09e877395ea3abb2357a94",
+      "bytes": 8745186,
+      "archiveName": "ESP32-S3-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+      "notes": "下载并检查原始镜像字节，BIN未收入Git；结构检查详情在firmware-manifest.json。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/firmware/ESP32-S3-Touch-LCD-3.5_FactoryOnly_20261021.bin",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      }
+    },
+    {
+      "id": "ecosystem-http-0",
+      "title": "UIFlow/小智公开发布调查：78-xiaozhi-esp32.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:55:50Z",
+      "sha256": "f157e88b07fcee7614e4514fbebdf94058a8d2442f946fe3d28b013ecbe0e62f",
+      "bytes": 295537,
+      "archiveName": "78-xiaozhi-esp32.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/latest",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-1",
+      "title": "UIFlow/小智公开发布调查：m5stack-uiflow-micropython.json.gz",
+      "url": "https://api.github.com/repos/m5stack/uiflow-micropython/releases/latest",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:55:55Z",
+      "sha256": "2fe27212a5f23523b4f4e120e815235800721a0ac8d69695b1fb85dc19726c7e",
+      "bytes": 102561,
+      "archiveName": "m5stack-uiflow-micropython.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/m5stack/uiflow-micropython/releases/latest",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-2",
+      "title": "UIFlow/小智公开发布调查：uiflow-landing-main.js.gz",
+      "url": "https://flow.m5stack.com/main-es2015.f7d6676b98a624264591.js",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:59:05Z",
+      "sha256": "769b89daaa624cad09a8e0af1bcbe0e42649e1377eae2f39b3e8dc1b7410f64c",
+      "bytes": 4078547,
+      "archiveName": "uiflow-landing-main.js.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://flow.m5stack.com/main-es2015.f7d6676b98a624264591.js",
+      "mediaType": "application/javascript"
+    },
+    {
+      "id": "ecosystem-http-3",
+      "title": "UIFlow/小智公开发布调查：uiflow-landing.html.gz",
+      "url": "https://flow.m5stack.com/",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:56:11Z",
+      "sha256": "c6832f2986ee8b5c7c6d4e568d17d5c3bace665d9a2a3bfd81dd731fc64190ab",
+      "bytes": 3838,
+      "archiveName": "uiflow-landing.html.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://flow.m5stack.com/",
+      "mediaType": "text/html"
+    },
+    {
+      "id": "ecosystem-http-4",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-1.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=1",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "30db04ee457856106c1856b6dd84cf9cd2e8a89e2fb7139f1d7d28fd56d9d449",
+      "bytes": 141802,
+      "archiveName": "xiaozhi-assets-page-1.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=1",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-5",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-2.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=2",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "00fd0a5e85787a9b125a6544efd77bd3e846605946ba0168bce748ad250d48e4",
+      "bytes": 143388,
+      "archiveName": "xiaozhi-assets-page-2.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=2",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "ecosystem-http-6",
+      "title": "UIFlow/小智公开发布调查：xiaozhi-assets-page-3.json.gz",
+      "url": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=3",
+      "kind": "release-metadata",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:57:23Z",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2,
+      "archiveName": "xiaozhi-assets-page-3.json.gz",
+      "notes": "原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。",
+      "resolvedUrl": "https://api.github.com/repos/78/xiaozhi-esp32/releases/444647826/assets?per_page=100&page=3",
+      "mediaType": "application/json; charset=utf-8"
+    },
+    {
+      "id": "model-source-0",
+      "title": "模型原始来源：source.stp.gz",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3_5.stp",
+      "kind": "cad-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:15Z",
+      "sha256": "12b36e5977ce2ff08e7dbe10adb7fd3c69b1601048924008b8956a5af94c237a",
+      "bytes": 23215858,
+      "archiveName": "source.stp.gz",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3_5.stp",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "text/plain; charset=utf-8"
+    },
+    {
+      "id": "model-source-1",
+      "title": "模型原始来源：mechanical-drawing.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5.pdf",
+      "kind": "dimension-reference",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:10Z",
+      "sha256": "3c1777063062c22b72f66b63b0628ec07dd2ecccf9074893f192905cbbece649",
+      "bytes": 117129,
+      "archiveName": "mechanical-drawing.pdf",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5.pdf",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "application/octet-stream"
+    },
+    {
+      "id": "model-source-2",
+      "title": "模型原始来源：dimension-photo.jpg",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-3.5/ESP32-S3-Touch-LCD-3.5-details-size.jpg",
+      "kind": "dimension-and-photo-reference",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:50:48Z",
+      "sha256": "da11bb0098b1b4adb7289368058216ffa2ec191edddc026f35ffea8461532cb2",
+      "bytes": 212958,
+      "archiveName": "dimension-photo.jpg",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-3.5/ESP32-S3-Touch-LCD-3.5-details-size.jpg",
+      "mediaType": "image/jpeg"
+    },
+    {
+      "id": "model-source-3",
+      "title": "模型原始来源：case-drawing.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5-C.pdf",
+      "kind": "dimension-reference",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T21:34:10Z",
+      "sha256": "01fd868b0a83dbe2c9abb398b014bfa1c693f6bbcc1477a130188e94dc148b25",
+      "bytes": 26245,
+      "archiveName": "case-drawing.pdf",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5-C.pdf",
+      "revision": {
+        "gitCommit": "c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6"
+      },
+      "mediaType": "application/octet-stream"
+    },
+    {
+      "id": "model-source-4",
+      "title": "模型原始来源：rear-photo.jpg",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-3.5/ESP32-S3-Touch-LCD-3.5-details-inter.jpg",
+      "kind": "dimension-and-photo-reference",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:50:48Z",
+      "sha256": "03b4dd796c40b15d52ebc77566eaf780d77c2ff9b32e30d4dc8b257d42675a47",
+      "bytes": 310986,
+      "archiveName": "rear-photo.jpg",
+      "notes": "模型原件和压缩保留件分别校验；public URL及原始UTC不由生成时间代替。",
+      "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-3.5/ESP32-S3-Touch-LCD-3.5-details-inter.jpg",
+      "mediaType": "image/jpeg"
+    }
+  ],
+  "assets": [
+    {
+      "id": "model-asset-0",
+      "sourceId": "model-source-0",
+      "role": "cad-source",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3_5.stp",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-3-5/source.stp.gz"
+    },
+    {
+      "id": "model-asset-1",
+      "sourceId": "model-source-1",
+      "role": "dimension-reference",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5.pdf",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-3-5/mechanical-drawing.pdf"
+    },
+    {
+      "id": "model-asset-2",
+      "sourceId": "model-source-2",
+      "role": "dimension-and-photo-reference",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-3.5/ESP32-S3-Touch-LCD-3.5-details-size.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-3-5/dimension-photo.jpg"
+    },
+    {
+      "id": "model-asset-3",
+      "sourceId": "model-source-3",
+      "role": "dimension-reference",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Touch-LCD-3.5/c7dc9f7877ae7533a2a2d71d1ad37fb1d87d01e6/hardware/mechanical/ESP32-S3-Touch-LCD-3.5-C.pdf",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-3-5/case-drawing.pdf"
+    },
+    {
+      "id": "model-asset-4",
+      "sourceId": "model-source-4",
+      "role": "dimension-and-photo-reference",
+      "url": "https://www.waveshare.com/img/devkit/ESP32-S3-Touch-LCD-3.5/ESP32-S3-Touch-LCD-3.5-details-inter.jpg",
+      "localUrl": "./assets/waveshare-esp32-s3-touch-lcd-3-5/rear-photo.jpg"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "physical-acceptance",
+      "label": "实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "未连接实物，未声明通过。"
+    },
+    {
+      "id": "unimplemented-scope",
+      "label": "未覆盖范围",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "AXP2101共享数字子集拒绝尚未建模的变体DC5/看门狗/纽扣电池充电配置；完整原厂应用当前在PMU初始化退出，不能称出厂UI通过。；OV5640/DVP、PCM音频、真实PMU模拟供电/关机、电池/RTC告警、FT扫描IRQ时序/手势和完整应用未验收。；-C只有二维外壳图，用独立前框/有孔厚壁/后盖保留空腔，1mm壁厚是估计，内部卡扣/相机安装/精确侧键和孔槽UNKNOWN。；本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。；商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+    },
+    {
+      "id": "display-active-area",
+      "label": "屏幕独立有效显示区边框",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-overview"
+      ],
+      "notes": "有来源的optical-window窗口仅作为3D画面映射参考；独立AA边框、物理像素间距与AA比例未建立。保留窗口尺寸，不拉伸原CAD或伪称AA。"
+    }
+  ],
+  "collectionNotes": [
+    "真实SPI无MCU CS接法；ST7796参考MADCTL48的独立红绿像素，错误MOSI不写。",
+    "FT6336通用坐标报告子集、TCA EX1共享复位、EX6高有效PWR输入、原生SD1bit路由，未沿用M5身份寄存器。",
+    "原厂S3镜像布局/checksum和完整ROM负面运行记录；529零件原厂STEP与独立-C工程外壳尺寸。",
+    "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance.",
+    "精确SKU包内电池、外壳、排针和天线差异保持独立身份；共用数字路径不表示机械与RF等价。",
+    "UIFlow/小智是固定Git板树的范围化调查，生成检查收据不冒称HTTP响应：{\"uiflow\": \"固定提交a61a29409f09f1f4bebae05e15c4bd6dcc4956b6板树中无Waveshare命名目录；此检索范围不证明不存在第三方移植。\", \"xiaozhi\": \"固定提交92d400d6374bbe750e0a0188fa969fc4042820c2板树已检索；未建立此精确SKU的可直接运行镜像。\"}",
+    "模型来源和几何范围：waveshare-esp32-s3-touch-lcd-3-5；model-plan.json保留原始参考、尺寸、图像像素/UV及UNKNOWN边界。",
+    "模型逐项边界：Native source CAD is retained without scale changes, including free shells and faces. Simplified materials and approximate screen registration do not establish hardware revision, connector mating or physical pixel calibration.；Native electrical assembly source is a manufacturer reference; current20261021 firmware explicitly targets S3 chip9 and this3.5/ST7796 board. 3.5B/AXS15231B is a separate hardware family."
+  ]
+}

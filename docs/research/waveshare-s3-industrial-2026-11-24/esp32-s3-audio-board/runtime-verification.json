@@ -1,0 +1,18 @@
+{
+  "listingId": "esp32-s3-audio-board",
+  "boardProfiles": [
+    "waveshare-s3-audio-board",
+    "waveshare-s3-audio-board-en"
+  ],
+  "checkedAt": "2026-11-23T22:44:42Z",
+  "command": "cargo test --release -p esp32s3 --test waveshare_industrial_controls",
+  "result": "6 passed;0 failed",
+  "scope": "Real LX7 instructions: exact route/mux/address NACK, RTC time+STOP, TCA9555 keys+codec ports, actualRMT RGB bytes, Relay1 GPIO47, distinct eight-channel control, five actual guest1bit SDMMC IDMAC512-byte roundtrip/wrong-route/eject.",
+  "clippy": "cargo clippy --release -p esp32s3 --test waveshare_industrial_controls -- -D warnings: passed",
+  "limitations": [
+    "ES8311/ES7210 control register endpoints only; microphone capture, PCM playback, voice recognition, camera/display options and cloud services are not implemented.",
+    "Three keys are TCA9555 inputs P11/P12/P13 (linear9/10/11). Seven RGB chain positions have not been mapped to native3D parts.",
+    "SKU32184 includes native1000mAh battery. SKU32185/EN excludes it; battery/charging/RTC-backup electrical physics remain unmodeled.",
+    "Source-bounded digital subset only. Original factory execution, browser/WebGL and physical hardware acceptance are separate; no complete compatibility claim."
+  ]
+}
