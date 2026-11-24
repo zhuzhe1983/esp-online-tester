@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-11-23T20:01:52Z",
+  "reason": "Manufacturer source enables EPD GPIO6 and1.54V2 codec GPIO42 with0, disables with1. Previous board gate incorrectly required1. Corrected without modifying original firmware or bypassing pad routing.",
+  "sources": [
+    {
+      "repository": "ESP32-S3-ePaper-1.54G",
+      "revision": "55eb1278f482c0cfd1e0cba5611a4132022eea48",
+      "path": "Example/ESP-IDF_5.5.1/09_E_Paper_Test/components/board_power_bsp/board_power_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54G/55eb1278f482c0cfd1e0cba5611a4132022eea48/Example/ESP-IDF_5.5.1/09_E_Paper_Test/components/board_power_bsp/board_power_bsp.cpp",
+      "fetchedAt": "2026-11-23T17:46:00Z",
+      "sha256": "c927af98d6492f48e7a7ab51238c481ace0c953bb24481ac6dc61c1ddb06948e",
+      "bytes": 1605,
+      "archiveName": "ESP32-S3-ePaper-1.54G-Example-ESP-IDF_5.5.1-09_E_Paper_Test-components-board_power_bsp-board_power_bsp.cpp-c927af98d649.gz"
+    },
+    {
+      "repository": "ESP32-S3-ePaper-1.54",
+      "revision": "2f287c01d763e44b4307c48af95044acee5c891e",
+      "path": "02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "fetchedAt": "2026-11-23T18:18:15Z",
+      "sha256": "1c0c0c42ca24a9fc6b1b36af8fb05aa7c113a7e10c542183d238978511dd14ff",
+      "bytes": 1255,
+      "archiveName": "1c0c0c42ca24a9fc-port_power.cpp.gz"
+    },
+    {
+      "repository": "ESP32-S3-ePaper-1.54",
+      "revision": "2f287c01d763e44b4307c48af95044acee5c891e",
+      "path": "02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "fetchedAt": "2026-11-23T18:18:41Z",
+      "sha256": "1c0c0c42ca24a9fc6b1b36af8fb05aa7c113a7e10c542183d238978511dd14ff",
+      "bytes": 1255,
+      "archiveName": "1c0c0c42ca24a9fc-port_power.cpp.gz"
+    }
+  ],
+  "validation": {
+    "nativeCommand": "cargo test -p esp32s3 --lib waveshare_epaper_catalog -- --nocapture",
+    "passed": 4,
+    "failed": 0,
+    "boundaries": [
+      "unrouted GPIO does not enable rail",
+      "high level disables EPD and codec",
+      "low level enables EPD and codec",
+      "ES8311 actual I2C register32h write/read",
+      "codec power cycle clears register32h",
+      "full200x200 packed four-colour output and mono pixel/retention regressions"
+    ],
+    "clippy": "cargo clippy -p esp32s3 --lib -- -D warnings PASS"
+  },
+  "limits": [
+    "Physical MOSFET voltage, regulator rise time, battery/PCB validation and full original application acceptance remain unverified.",
+    "The shared adapter does not declare a codec on1.54G; its independently sourcedEPD power polarity is corrected."
+  ]
+}

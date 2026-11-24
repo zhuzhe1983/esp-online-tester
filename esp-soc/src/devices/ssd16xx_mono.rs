@@ -22,9 +22,16 @@ pub struct Ssd16xxMono {
 }
 impl Ssd16xxMono {
     pub fn new(variant:Variant,busy_pin:u8,cycles_per_ms:u64)->Self {
-        let (width,height)=variant.dimensions();let stride=width.div_ceil(8);let bytes=stride*height;
-        Self{frame:vec![0xffff;width*height],frames:0,version:0,ram_bytes_written:0,width,height,stride,ram:[vec![255;bytes],vec![255;bytes]],command:0,params:[0;4],count:0,
-            entry:3,xs:0,xe:(stride-1) as u8,ys:0,ye:(height-1) as u16,x:0,y:0,control1:0,control2:255,clock:false,analog:false,sleep:false,cycle:0,deadline:None,refresh:false,edges:Vec::new(),busy_pin,cycles_per_ms}
+        let (width,height)=variant.dimensions();Self::sourced_dimensions(width,height,busy_pin,cycles_per_ms).expect("Fixed SSD16xx dimensions")
+    }
+    /// A source-checked compatible byte-X/gate-Y endpoint, without asserting a
+    /// controller die identity. Address counters support at most512x512.
+    /// The 200x200 Waveshare source/limits are retained in sourced-mono-dimensions.md.
+    pub fn sourced_dimensions(width:usize,height:usize,busy_pin:u8,cycles_per_ms:u64)->Option<Self> {
+        if width==0||height==0||width>512||height>512{return None;}
+        let stride=width.div_ceil(8);let bytes=stride*height;
+        Some(Self{frame:vec![0xffff;width*height],frames:0,version:0,ram_bytes_written:0,width,height,stride,ram:[vec![255;bytes],vec![255;bytes]],command:0,params:[0;4],count:0,
+            entry:3,xs:0,xe:(stride-1) as u8,ys:0,ye:(height-1) as u16,x:0,y:0,control1:0,control2:255,clock:false,analog:false,sleep:false,cycle:0,deadline:None,refresh:false,edges:Vec::new(),busy_pin,cycles_per_ms})
     }
     pub fn reset(&mut self) {
         self.command=0;self.count=0;self.entry=3;self.xs=0;self.xe=(self.stride-1) as u8;self.ys=0;self.ye=(self.height-1) as u16;self.x=0;self.y=0;
@@ -77,6 +84,11 @@ impl Ssd16xxMono {
     use super::*;
     fn send(p:&mut Ssd16xxMono,c:u8,d:&[u8]){p.write(false,&[c]);p.write(true,d);}
     fn refresh(p:&mut Ssd16xxMono){send(p,0x22,&[0xf7]);send(p,0x20,&[]);p.advance_to(p.cycle+20);}
+    #[test] fn sourced200_byte_x_last_pixel_busy_and_unknown_dimensions(){
+        assert!(Ssd16xxMono::sourced_dimensions(0,200,8,1).is_none());assert!(Ssd16xxMono::sourced_dimensions(513,200,8,1).is_none());
+        let mut p=Ssd16xxMono::sourced_dimensions(200,200,8,1).unwrap();send(&mut p,0x44,&[24,24]);send(&mut p,0x45,&[199,0,199,0]);send(&mut p,0x4e,&[24]);send(&mut p,0x4f,&[199,0]);send(&mut p,0x24,&[0xfe]);send(&mut p,0x22,&[0xc7]);send(&mut p,0x20,&[]);assert!(p.busy());assert_eq!(p.frame[39999],0xffff);p.advance_to(20);assert!(!p.busy());assert_eq!(p.frame[39999],0);assert_eq!(p.frame.iter().filter(|v|**v==0).count(),1);assert_eq!(p.ram_bytes_written,1);
+        send(&mut p,0x4e,&[25]);send(&mut p,0x24,&[0]);assert_eq!(p.ram_bytes_written,1);p.power_loss();assert_eq!(p.frame[39999],0);refresh(&mut p);assert_eq!(p.frame[39999],0xffff);
+    }
     #[test] fn hidden_213_bits_do_not_shift_rows_or_publish_before_busy(){
         let mut p=Ssd16xxMono::new(Variant::Ssd1680_213,4,1);let mut row=vec![255;16];row[15]=0xc0;
         send(&mut p,0x24,&row);p.write(true,&[0x7f]);assert!(p.frame.iter().all(|v|*v==0xffff));

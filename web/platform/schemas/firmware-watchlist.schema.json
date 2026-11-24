@@ -65,6 +65,7 @@
           "metadataProvider": {
             "enum": [
               "github",
+              "manual",
               "m5burner",
               "m5burner-v1",
               "cloudzao",
@@ -85,6 +86,18 @@
           }
         },
         "allOf": [
+          {
+            "if": { "required": ["metadataProvider"], "properties": { "metadataProvider": { "const": "manual" } } },
+            "then": {
+              "required": ["monitoringNote"],
+              "properties": {
+                "monitoringNote": { "type": "string", "minLength": 20 },
+                "catalogTargets": { "maxItems": 0 },
+                "assetMetadata": false,
+                "metadataAssetNamePattern": false
+              }
+            }
+          },
           {
             "if": { "required": ["metadataAssetNamePattern"] },
             "then": {

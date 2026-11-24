@@ -25,11 +25,14 @@ export function validateWatchlist(document) {
   for (const entry of document.entries) {
     if (!/^[a-z0-9-]+$/.test(entry.id) || ids.has(entry.id) || !categories.has(entry.category)) throw new Error('Invalid watchlist ID or category.');
     ids.add(entry.id);
-    if (!(entry.metadataProvider==='m5burner-v1'&&entry.upstreamRepo===null) && !/^[\w.-]+\/[\w.-]+$/.test(entry.upstreamRepo)) throw new Error('Invalid upstream repository.');
+    const manual=entry.metadataProvider==='manual';
+    if (!(entry.metadataProvider==='m5burner-v1'&&entry.upstreamRepo===null) && !(manual&&(entry.upstreamRepo===null||/^manufacturer:[a-zA-Z0-9][\w.-]*\/[a-zA-Z0-9][\w.-]*$/.test(entry.upstreamRepo))) && !/^[\w.-]+\/[\w.-]+$/.test(entry.upstreamRepo)) throw new Error('Invalid upstream repository.');
     safeUrl(entry.releaseUrl); safeUrl(entry.metadataUrl);
     if (entry.browserInstallUrl) safeUrl(entry.browserInstallUrl);
     if (entry.browserAuditUrl) safeUrl(entry.browserAuditUrl);
-    if(entry.metadataProvider==='m5burner-v1') {
+    if(manual) {
+      if(entry.catalogTargets?.length||entry.assetMetadata!==undefined||entry.metadataAssetNamePattern!==undefined||typeof entry.monitoringNote!=='string'||entry.monitoringNote.length<20)throw new Error('Manual sources require a review note and cannot declare automatic metadata selectors or catalog targets.');
+    } else if(entry.metadataProvider==='m5burner-v1') {
       if(typeof entry.firmwareId!=='string'||typeof entry.deviceId!=='string'||!/^[1-9][0-9]{0,29}$/.test(entry.firmwareId)||!/^[1-9][0-9]{0,29}$/.test(entry.deviceId)||entry.metadataUrl!==`https://burner.m5stack.com/api/v1/firmwares/${entry.firmwareId}`||entry.releaseUrl!==`https://burner.m5stack.com/firmware/${entry.firmwareId}`)throw new Error('Invalid official M5Burner v1 source.');
       if(entry.versionNamePattern!==undefined){const pattern=entry.versionNamePattern;if(typeof pattern!=='string'||pattern.length>160||!pattern.startsWith('^')||!pattern.endsWith('$'))throw new Error('Invalid version edition selector.');new RegExp(pattern);}
     } else if(entry.metadataProvider==='m5burner') {
@@ -171,6 +174,9 @@ export async function checkWatchEntry(entry, { fetchImpl = globalThis.fetch, tim
   const selection={firmwareId,productId:firmwareTargetId||productId,currentVersion,source};
   const previousVersion=currentVersion||(entry.deviceVersions||[]).find(item=>firmwareId&&item.firmwareId===firmwareId)?.version||entry.version;
   try {
+    if(entry.metadataProvider==='manual')return {id:entry.id,firmwareId:firmwareId||null,productId:productId||null,checkedAt,previousVersion,latestVersion:null,updateAvailable:false,
+      metadata:{source:'manual-review',scope:firmwareId||productId?'device':'project',checkedAt:entry.checkedAt,stale:!Number.isFinite(Date.parse(entry.checkedAt))||Date.now()-Date.parse(entry.checkedAt)>48*3600000,refreshError:entry.monitoringNote,matchReason:'manual-review-required'},
+      releaseUrl:safeUrl(entry.releaseUrl),upstreamAssets:[],assets:[],state:'attention',issueUrl:null};
     // Visitors read the static snapshot; never consume anonymous API quotas.
     const snapshot = await metadataJson(new URL('./catalog/firmware-release-snapshot.json', import.meta.url).href, { fetchImpl, signal: controller.signal });
     if (snapshot?.schemaVersion !== '1' || !Array.isArray(snapshot.entries)) throw new Error('Invalid release metadata snapshot.');

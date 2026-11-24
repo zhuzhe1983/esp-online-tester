@@ -70,7 +70,10 @@ impl DcsPanel {
             0x36 => self.madctl = b,
             0x3a => self.colmod = b,
             0xb0 if self.ramctrl => { if self.argn == 1 { self.little_endian = b & 0x08 != 0; } self.argn = self.argn.saturating_add(1); }
-            0x2c => match self.pixel_hi.take() {
+            // DCS RAMWRC continues the existing address cursor. Waveshare's
+            // AXS15231B QSPI BSP emits CASET, then 2Ch for the first vertical
+            // chunk and 3Ch for the later chunks without another RASET.
+            0x2c | 0x3c => match self.pixel_hi.take() {
                 None => self.pixel_hi = Some(b),
                 Some(first) => self.write_pixel(if self.little_endian { u16::from_le_bytes([first, b]) } else { u16::from_be_bytes([first, b]) }),
             },
@@ -117,6 +120,20 @@ mod tests {
         cmd(&mut p, 0x2c, &[0, 1, 0, 2, 0, 3, 0, 4, 0, 5]);
         assert_eq!(p.gram, [0, 0, 0, 0, 0, 5, 2, 0, 0, 3, 4, 0]);
         assert_eq!((p.frames, p.pixels_written, p.bbox()), (1, 5, Some((1, 1, 2, 2))));
+    }
+
+    #[test]
+    fn ramwrc_continues_y_after_repeated_column_window() {
+        let mut p = DcsPanel::new(2, 3);
+        cmd(&mut p, 0x3a, &[0x55]);
+        cmd(&mut p, 0x2a, &[0, 0, 0, 1]);
+        cmd(&mut p, 0x2c, &[0xf8, 0, 0x07, 0xe0]);
+        cmd(&mut p, 0x2a, &[0, 0, 0, 1]);
+        cmd(&mut p, 0x3c, &[0, 0x1f, 0xff, 0xff]);
+        assert_eq!(p.gram, [0xf800, 0x07e0, 0x001f, 0xffff, 0, 0]);
+        assert_eq!((p.frames, p.pixels_written), (1, 4));
+        cmd(&mut p, 0x2c, &[0, 1]);
+        assert_eq!(p.gram, [1, 0x07e0, 0x001f, 0xffff, 0, 0]);
     }
 
     #[test]

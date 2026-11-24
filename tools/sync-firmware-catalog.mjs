@@ -44,6 +44,7 @@ export function updateFirmwareCatalog({products,firmwares,watchlist,snapshot,man
   const pids=new Set(products.items.map(p=>p.id)),usedTargets=new Set();
   for(const entry of result.watchlist.entries){
     const saved=snapshot.entries?.find(s=>s.id===entry.id&&s.upstreamRepo===entry.upstreamRepo);const targets=entry.catalogTargets||[];
+    if(entry.metadataProvider==='manual'){result.report.entries.push({watchlistId:entry.id,status:'retained',reason:'manual-review-required',metadataStatus:'manual'});continue;}
     if(!targets.length){result.report.entries.push({watchlistId:entry.id,status:'retained',reason:'no-explicit-device-targets',metadataStatus:saved?.error?'failed':'checked'});continue;}
     const updated=[];
     for(const target of targets){

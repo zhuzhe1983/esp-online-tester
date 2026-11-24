@@ -9,7 +9,7 @@
     "official-store",
     "official-overview"
   ],
-  "updatedAt": "2026-11-23T18:13:54Z",
+  "updatedAt": "2026-11-23T20:01:32Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "listingId": "esp32-s3-epaper-1.54g",
@@ -92,7 +92,8 @@
           "dc": 10,
           "reset": 9,
           "busy": 8,
-          "supply": 6
+          "supply": 6,
+          "powerActiveLow": true
         },
         "i2c": {
           "sda": 47,
@@ -132,7 +133,8 @@
         "board-source-17",
         "board-source-18",
         "board-source-19"
-      ]
+      ],
+      "notes": "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。"
     },
     {
       "id": "factory-candidates",
@@ -576,6 +578,7 @@
     "Native: color154_requires_full_wire_frame_refresh_and_preserves_optical_power_loss PASS；完整帧四色、供电门控、截断帧拒绝、刷新BUSY与光学保留验证。",
     "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance.",
     "精确SKU包内电池、外壳、排针和天线差异保持独立身份；共用数字路径不表示机械与RF等价。",
-    "UIFlow/小智是固定Git板树的范围化调查，生成检查收据不冒称HTTP响应：{\"uiflow\": \"固定提交a61a29409f09f1f4bebae05e15c4bd6dcc4956b6板树中无Waveshare命名目录；此检索范围不证明不存在第三方移植。\", \"xiaozhi\": \"固定提交92d400d6374bbe750e0a0188fa969fc4042820c2板树已检索；未建立此精确SKU的可直接运行镜像。\"}"
+    "UIFlow/小智是固定Git板树的范围化调查，生成检查收据不冒称HTTP响应：{\"uiflow\": \"固定提交a61a29409f09f1f4bebae05e15c4bd6dcc4956b6板树中无Waveshare命名目录；此检索范围不证明不存在第三方移植。\", \"xiaozhi\": \"固定提交92d400d6374bbe750e0a0188fa969fc4042820c2板树已检索；未建立此精确SKU的可直接运行镜像。\"}",
+    "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。"
   ]
 }

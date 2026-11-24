@@ -39,6 +39,12 @@ export async function syncReleaseMetadata(list,{previous={entries:[]},token,fetc
   };
   for(const entry of list.entries){
     const saved=previous.entries?.find(item=>item.id===entry.id&&item.upstreamRepo===entry.upstreamRepo);let result;
+    if(entry.metadataProvider==='manual'){
+      // Retain the real source-review date. A scheduled skip neither fetches a
+      // publisher page nor renews evidence or promotes an old API snapshot.
+      entries.push({id:entry.id,upstreamRepo:entry.upstreamRepo,metadataProvider:'manual',status:'manual-review-required',checkedAt:entry.checkedAt,sourceUrl:entry.metadataUrl,release:null,releases:[],error:null,note:entry.monitoringNote});
+      continue;
+    }
     try{
       const request=releaseRequest(entry,token);if(!cache.has(request.url))cache.set(request.url,metadata(request));
       let data=await cache.get(request.url);

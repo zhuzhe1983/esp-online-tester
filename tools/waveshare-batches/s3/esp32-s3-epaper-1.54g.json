@@ -81,7 +81,8 @@
         "RTC与真实SDMMC数字接线可用；音频、传感器、电量ADC和PWR长按断电锁存尚未建模。",
         "官方G资源链接的STEP仍命名非G，不能证明其PCB版次相同；模型使用G尺寸照片39.8×53×16.9mm和27.8mm光学开口，旧CAD的27mm AA单独保留，内部PCB为UNKNOWN。",
         "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
-        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。"
       ],
       "chronology": {
         "date": null,
@@ -313,7 +314,8 @@
         "RTC与真实SDMMC数字接线可用；音频、传感器、电量ADC和PWR长按断电锁存尚未建模。",
         "官方G资源链接的STEP仍命名非G，不能证明其PCB版次相同；模型使用G尺寸照片39.8×53×16.9mm和27.8mm光学开口，旧CAD的27mm AA单独保留，内部PCB为UNKNOWN。",
         "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
-        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。"
       ],
       "chronology": {
         "date": null,
@@ -559,13 +561,15 @@
     "docs/research/waveshare-s3-20261123/firmware-manifest.json"
   ],
   "tests": [
-    "Native: color154_requires_full_wire_frame_refresh_and_preserves_optical_power_loss PASS；完整帧四色、供电门控、截断帧拒绝、刷新BUSY与光学保留验证。"
+    "Native: color154_requires_full_wire_frame_refresh_and_preserves_optical_power_loss PASS；完整帧四色、供电门控、截断帧拒绝、刷新BUSY与光学保留验证。",
+    "Native: source_active_low_rails_reject_high_and_unrouted_then_reset_codec；厂家低有效电平、未路由/高电平拒绝、掉电配置复位与原像素测试。"
   ],
   "limitations": [
     "只实现厂家正常完整帧刷新：10000bytes按00黑/01白/10黄/11红解码，0x61分辨率、0x04上电、0x10数据、0x12提交、0x07+A5睡眠；未伪称SSD1680硅片。",
     "正常刷新BUSY使用官方标称20秒数字等待，非实测光学波形；快速15秒刷新、局部区域、温度、残影和模拟驱动未实现。断电保留已刷新的双稳态图像。",
     "RTC与真实SDMMC数字接线可用；音频、传感器、电量ADC和PWR长按断电锁存尚未建模。",
-    "官方G资源链接的STEP仍命名非G，不能证明其PCB版次相同；模型使用G尺寸照片39.8×53×16.9mm和27.8mm光学开口，旧CAD的27mm AA单独保留，内部PCB为UNKNOWN。"
+    "官方G资源链接的STEP仍命名非G，不能证明其PCB版次相同；模型使用G尺寸照片39.8×53×16.9mm和27.8mm光学开口，旧CAD的27mm AA单独保留，内部PCB为UNKNOWN。",
+    "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。"
   ],
   "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
 }

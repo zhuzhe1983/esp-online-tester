@@ -46,6 +46,8 @@ for knowledge in data['knowledge']:
         elif fact['id'] == 'ecosystem-investigation':
             fact['value']['factory'] = 'No explicit factory restoration purpose found; audited official Test.bin is an example trial.'
 for watch in data['watchlist']:
+    watch['metadataProvider'] = 'manual'
+    watch['monitoringNote'] = 'Official static Demo ZIP; no release API is established. Review the exact member and both hashes manually.'
     watch['category'] = 'development'
     watch['name'] = 'ESP32-C6-LCD-1.3 official test image'
     watch['compatibility']['note'] = note + ' Future upstream changes still require independent approval.'

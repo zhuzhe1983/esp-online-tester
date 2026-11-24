@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def meshes(record):
     result = []
     for mesh in record['meshes']:
-        position = np.asarray(mesh['position']).reshape(-1, 3)
+        position = np.asarray(mesh['position'], dtype=float).reshape(-1, 3)
         index = np.asarray(mesh['index']).reshape(-1, 3) if mesh['index'] else np.arange(len(position)).reshape(-1, 3)
         result.append((mesh, position[index]))
     return result
@@ -115,11 +115,17 @@ def review(path, output):
             polygons.extend(project(triangles, right, up))
             colors.extend(np.clip(rgb * light[:, None], 0, 1))
             depths.extend(triangles @ view)
-        rendered, extent, zbuffer = rasterize(polygons, depths, colors)
-        ax.imshow(rendered, origin='lower', extent=extent, interpolation='nearest')
-        for point, depth in unknown_labels:
-            if annotation_visible(point, depth, extent, zbuffer):
-                ax.text(*point, 'UNKNOWN', ha='center', va='center', color='white', fontsize=8, weight='bold')
+        if polygons:
+            rendered, extent, zbuffer = rasterize(polygons, depths, colors)
+            ax.imshow(rendered, origin='lower', extent=extent, interpolation='nearest')
+            for point, depth in unknown_labels:
+                if annotation_visible(point, depth, extent, zbuffer):
+                    ax.text(*point, 'UNKNOWN', ha='center', va='center', color='white', fontsize=8, weight='bold')
+        else:
+            # A retained front surface does not establish a side or reverse.
+            # Keep that absence visible instead of inventing an enclosure.
+            ax.text(.5, .5, 'UNKNOWN\nNo sourced surface in this view',
+                    transform=ax.transAxes, ha='center', va='center', fontsize=10)
         ax.set_aspect('equal')
         ax.set_title(title)
         ax.set_xlabel('mm')
@@ -130,7 +136,7 @@ def review(path, output):
     output.mkdir(parents=True, exist_ok=True)
     fig.savefig(output / (product_id + '-four-views.png'), dpi=135)
     plt.close(fig)
-    if plan['photoRegistration'].get('review'):
+    if plan.get('photoRegistration', {}).get('review'):
         reg = plan['photoRegistration']['review']
         filename = reg['file']
         affine = np.asarray(reg['pixelFromModelXY'])
@@ -160,7 +166,7 @@ def review(path, output):
     axes[0].set_title('Unmodified manufacturer reference')
     axes[1].set_title('Same pixels + registered geometry outlines')
     for mesh, triangles in parts:
-        if plan['photoRegistration'].get('review', {}).get('includeParts') is not None and mesh['name'] not in plan['photoRegistration']['review']['includeParts']:
+        if plan.get('photoRegistration', {}).get('review', {}).get('includeParts') is not None and mesh['name'] not in plan['photoRegistration']['review']['includeParts']:
             continue
         if mesh['texture'] or mesh['unknown'] or mesh['screen'] or mesh['name'] == 'optional-glass':
             continue

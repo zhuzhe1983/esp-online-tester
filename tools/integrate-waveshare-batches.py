@@ -99,6 +99,10 @@ def main():
         upsert(products['items'], rows)
         upsert(firmwares['items'], fragment.get('firmwares', []))
         for entry in fragment.get('watchlist', []):
+            if str(entry.get('upstreamRepo', '')).startswith('manufacturer:'):
+                assert entry.get('metadataProvider') in (None, 'manual')
+                entry['metadataProvider'] = 'manual'
+                entry.setdefault('monitoringNote', 'Static manufacturer source; future changes require manual source and image review.')
             compatibility = entry['compatibility']
             if compatibility.get('status') in ('partial', 'unverified'):
                 assert not compatibility.get('simulationVerified') and not entry.get('catalogTargets')

@@ -1,0 +1,1827 @@
+{
+  "listingId": "esp32-s3-epaper-1.54",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-epaper-1-54",
+      "name": "Waveshare ESP32-S3-ePaper-1.54",
+      "manufacturer": "Waveshare",
+      "sku": "32298",
+      "chip": "esp32s3",
+      "hardwareRevision": "V2 (non-touch); current from 2025-11-01",
+      "summary": "当前8MiB Flash /8MiB PSRAM、200×200黑白电子纸；实现源字节X/门Y寻址、BUSY与光学画面保留。非触摸V2与单一触摸版、含/不含电池四SKU分别登记。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-epaper-1-54.json",
+      "family": {
+        "id": "waveshare-esp32-s3-epaper-1-54",
+        "name": "Waveshare ESP32-S3-EPAPER-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-epaper154v2",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 200,
+        "height": 200,
+        "type": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "bus": "SPI",
+        "controller": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 18,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 39
+            },
+            {
+              "name": "CMD",
+              "gpio": 41
+            },
+            {
+              "name": "D0",
+              "gpio": 40
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现厂家1bit SDMMC接线，可默认准备空白64MiB FAT32镜像。"
+        }
+      ],
+      "limitations": [
+        "电子纸控制器die未由overview/BSP建立；仅命名源协议兼容子集，不冒称SSD1681。LUT/四级灰/温度鬼影/模拟刷新波形未实现，BUSY是明确数字期限。",
+        "非触摸V2是8F8P，旧V1是4F2P且固件不可互刷；当前触摸版只有一个公开版本，不将非触摸V2标签当触摸PCB修订事实。",
+        "20250818原厂裸板CAD早于V2/触摸支持资料；完整保留原部件并标出当前PCB/芯片几何对应UNKNOWN，外壳与电池不补造。",
+        "FT6336仅公共单点报告；1msIRQ和共享两次读取保留快点击为数字策略。SHTC3、音频PCM、ADC/电池锁存与完整应用未验收。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。",
+        "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-s3-epaper-1-54运行5客体秒。按原源码纠正GPIO6屏幕、GPIO42音频低有效门控后，原图越过ES8311初始化并启动LVGL，200×200末帧2色，64MiB FAT32卡真实修改4页；SHTC3缺失仍报错。修复前无帧及音频abort证据另存epaper154-original。记录见docs/platform/evidence/waveshare-batch011-20261124/epaper154-active-low。仅记录所选配置的有界原图执行，不代表同家族所有SKU/硬件版本、浏览器WebGL或实物整机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-44",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-45",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-46",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-47",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-48",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-49",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-50",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-51",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-epaper-1-54-v2/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-epaper-1-54-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-epaper-1-54-sku-32299",
+      "name": "Waveshare ESP32-S3-ePaper-1.54-EN",
+      "manufacturer": "Waveshare",
+      "sku": "32299",
+      "chip": "esp32s3",
+      "hardwareRevision": "V2 (non-touch); current from 2025-11-01",
+      "summary": "当前8MiB Flash /8MiB PSRAM、200×200黑白电子纸；实现源字节X/门Y寻址、BUSY与光学画面保留。非触摸V2与单一触摸版、含/不含电池四SKU分别登记。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-epaper-1-54-sku-32299.json",
+      "family": {
+        "id": "waveshare-esp32-s3-epaper-1-54",
+        "name": "Waveshare ESP32-S3-EPAPER-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-epaper154v2",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 200,
+        "height": 200,
+        "type": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "bus": "SPI",
+        "controller": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 18,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 39
+            },
+            {
+              "name": "CMD",
+              "gpio": 41
+            },
+            {
+              "name": "D0",
+              "gpio": 40
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现厂家1bit SDMMC接线，可默认准备空白64MiB FAT32镜像。"
+        }
+      ],
+      "limitations": [
+        "电子纸控制器die未由overview/BSP建立；仅命名源协议兼容子集，不冒称SSD1681。LUT/四级灰/温度鬼影/模拟刷新波形未实现，BUSY是明确数字期限。",
+        "非触摸V2是8F8P，旧V1是4F2P且固件不可互刷；当前触摸版只有一个公开版本，不将非触摸V2标签当触摸PCB修订事实。",
+        "20250818原厂裸板CAD早于V2/触摸支持资料；完整保留原部件并标出当前PCB/芯片几何对应UNKNOWN，外壳与电池不补造。",
+        "FT6336仅公共单点报告；1msIRQ和共享两次读取保留快点击为数字策略。SHTC3、音频PCM、ADC/电池锁存与完整应用未验收。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。",
+        "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-s3-epaper-1-54运行5客体秒。按原源码纠正GPIO6屏幕、GPIO42音频低有效门控后，原图越过ES8311初始化并启动LVGL，200×200末帧2色，64MiB FAT32卡真实修改4页；SHTC3缺失仍报错。修复前无帧及音频abort证据另存epaper154-original。记录见docs/platform/evidence/waveshare-batch011-20261124/epaper154-active-low。仅记录所选配置的有界原图执行，不代表同家族所有SKU/硬件版本、浏览器WebGL或实物整机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-44",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-45",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-46",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-47",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-48",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-49",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-50",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-51",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-epaper-1-54-v2/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-epaper-1-54-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-epaper-1-54-sku-34212",
+      "name": "Waveshare ESP32-S3-Touch-ePaper-1.54-EN",
+      "manufacturer": "Waveshare",
+      "sku": "34212",
+      "chip": "esp32s3",
+      "hardwareRevision": "Touch variant: single published hardware revision; exact PCB marking unspecified",
+      "summary": "当前8MiB Flash /8MiB PSRAM、200×200黑白电子纸；实现源字节X/门Y寻址、BUSY与光学画面保留。非触摸V2与单一触摸版、含/不含电池四SKU分别登记。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-epaper-1-54-sku-34212.json",
+      "family": {
+        "id": "waveshare-esp32-s3-epaper-1-54",
+        "name": "Waveshare ESP32-S3-EPAPER-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-epaper154v2",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 200,
+        "height": 200,
+        "type": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "bus": "SPI",
+        "controller": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 18,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 39
+            },
+            {
+              "name": "CMD",
+              "gpio": 41
+            },
+            {
+              "name": "D0",
+              "gpio": 40
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现厂家1bit SDMMC接线，可默认准备空白64MiB FAT32镜像。"
+        }
+      ],
+      "limitations": [
+        "电子纸控制器die未由overview/BSP建立；仅命名源协议兼容子集，不冒称SSD1681。LUT/四级灰/温度鬼影/模拟刷新波形未实现，BUSY是明确数字期限。",
+        "非触摸V2是8F8P，旧V1是4F2P且固件不可互刷；当前触摸版只有一个公开版本，不将非触摸V2标签当触摸PCB修订事实。",
+        "20250818原厂裸板CAD早于V2/触摸支持资料；完整保留原部件并标出当前PCB/芯片几何对应UNKNOWN，外壳与电池不补造。",
+        "FT6336仅公共单点报告；1msIRQ和共享两次读取保留快点击为数字策略。SHTC3、音频PCM、ADC/电池锁存与完整应用未验收。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。",
+        "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-s3-epaper-1-54运行5客体秒。按原源码纠正GPIO6屏幕、GPIO42音频低有效门控后，原图越过ES8311初始化并启动LVGL，200×200末帧2色，64MiB FAT32卡真实修改4页；SHTC3缺失仍报错。修复前无帧及音频abort证据另存epaper154-original。记录见docs/platform/evidence/waveshare-batch011-20261124/epaper154-active-low。仅记录所选配置的有界原图执行，不代表同家族所有SKU/硬件版本、浏览器WebGL或实物整机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-44",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-45",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-46",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-47",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-48",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-49",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-50",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-51",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-epaper-1-54-v2/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-epaper-1-54-sku-34211",
+      "name": "Waveshare ESP32-S3-Touch-ePaper-1.54",
+      "manufacturer": "Waveshare",
+      "sku": "34211",
+      "chip": "esp32s3",
+      "hardwareRevision": "Touch variant: single published hardware revision; exact PCB marking unspecified",
+      "summary": "当前8MiB Flash /8MiB PSRAM、200×200黑白电子纸；实现源字节X/门Y寻址、BUSY与光学画面保留。非触摸V2与单一触摸版、含/不含电池四SKU分别登记。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-epaper-1-54-sku-34211.json",
+      "family": {
+        "id": "waveshare-esp32-s3-epaper-1-54",
+        "name": "Waveshare ESP32-S3-EPAPER-1.54"
+      },
+      "runtime": {
+        "board": "waveshare-s3-touch-epaper154v2",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 200,
+        "height": 200,
+        "type": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "bus": "SPI",
+        "controller": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "power",
+          "name": "POWER",
+          "type": "button",
+          "pin": 18,
+          "activeLow": true,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 39
+            },
+            {
+              "name": "CMD",
+              "gpio": 41
+            },
+            {
+              "name": "D0",
+              "gpio": 40
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "已实现厂家1bit SDMMC接线，可默认准备空白64MiB FAT32镜像。"
+        }
+      ],
+      "limitations": [
+        "电子纸控制器die未由overview/BSP建立；仅命名源协议兼容子集，不冒称SSD1681。LUT/四级灰/温度鬼影/模拟刷新波形未实现，BUSY是明确数字期限。",
+        "非触摸V2是8F8P，旧V1是4F2P且固件不可互刷；当前触摸版只有一个公开版本，不将非触摸V2标签当触摸PCB修订事实。",
+        "20250818原厂裸板CAD早于V2/触摸支持资料；完整保留原部件并标出当前PCB/芯片几何对应UNKNOWN，外壳与电池不补造。",
+        "FT6336仅公共单点报告；1msIRQ和共享两次读取保留快点击为数字策略。SHTC3、音频PCM、ADC/电池锁存与完整应用未验收。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。",
+        "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-s3-epaper-1-54运行5客体秒。按原源码纠正GPIO6屏幕、GPIO42音频低有效门控后，原图越过ES8311初始化并启动LVGL，200×200末帧2色，64MiB FAT32卡真实修改4页；SHTC3缺失仍报错。修复前无帧及音频abort证据另存epaper154-original。记录见docs/platform/evidence/waveshare-batch011-20261124/epaper154-active-low。仅记录所选配置的有界原图执行，不代表同家族所有SKU/硬件版本、浏览器WebGL或实物整机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-1.54.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方型号、容量、接口与屏幕规格",
+          "url": "https://docs.waveshare.com/ESP32-S3-ePaper-1.54",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定提交：README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定提交：firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定提交：firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README_ZH.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-33",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-34",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-35",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-36",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-37",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-38",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-39",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-40",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-41",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-42",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-43",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-44",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-45",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-46",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-47",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-48",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-49",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-50",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-51",
+          "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-touch-epaper-1-54-v2/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-epaper-1-54-factory",
+      "name": "ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+      "productIds": [
+        "waveshare-esp32-s3-epaper-1-54",
+        "waveshare-esp32-s3-epaper-1-54-sku-32299"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+        "sha256": "29be91047ff789b311886da81f2817087b6b747d33aae0ca73d5ae611eb43282",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-ePaper-1.54_FactoryOnly_20260416",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README.md",
+      "sources": [
+        {
+          "title": "原厂原始BIN固定链接",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "厂家firmware/README明确20260416原BIN为非触摸V2，20260415为V1且不可互刷；本轮只给当前非触摸V2两个SKU默认trial。触摸源码已具备FT6336支持，但未凭源码存在推断其原BIN已验证匹配，暂不设置触摸SKU默认factory。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。",
+        "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-s3-epaper-1-54运行5客体秒。按原源码纠正GPIO6屏幕、GPIO42音频低有效门控后，原图越过ES8311初始化并启动LVGL，200×200末帧2色，64MiB FAT32卡真实修改4页；SHTC3缺失仍报错。修复前无帧及音频abort证据另存epaper154-original。记录见docs/platform/evidence/waveshare-batch011-20261124/epaper154-active-low。仅记录所选配置的有界原图执行，不代表同家族所有SKU/硬件版本、浏览器WebGL或实物整机验收。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-epaper-1-54-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-epaper-1-54-factory-watch",
+      "name": "ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S3-ePaper-1.54",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S3-ePaper-1.54/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S3-ePaper-1.54/releases",
+      "version": "2f287c01d763e44b4307c48af95044acee5c891e",
+      "checkedAt": "2026-11-23T16:52:46Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+          "sha256": "29be91047ff789b311886da81f2817087b6b747d33aae0ca73d5ae611eb43282",
+          "bytes": 1183440,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-epaper-1-54",
+          "waveshare-esp32-s3-epaper-1-54-sku-32299"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-epaper-1-54.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-epaper-1-54-sku-32299.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-epaper-1-54-sku-34212.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-epaper-1-54-sku-34211.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-epaper154v2": {
+      "chip": "esp32s3",
+      "flashMb": 8,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    },
+    "waveshare-s3-touch-epaper154v2": {
+      "chip": "esp32s3",
+      "flashMb": 8,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "Native mono154v2_distinct_touch_slot_byte_window_and_power_retention PASS：最后像素200×200、错片选、BUSY发布、断电保留、触摸仅相应SKU出现、音频GPIO42和SD引脚。",
+    "非触摸52/触摸53组件的不同原厂CAD均完整保留，真实Three加载与SHA/源27mm AA尺寸检查PASS。",
+    "Native: source_active_low_rails_reject_high_and_unrouted_then_reset_codec；厂家低有效电平、未路由/高电平拒绝、掉电配置复位与原像素测试。"
+  ],
+  "limitations": [
+    "电子纸控制器die未由overview/BSP建立；仅命名源协议兼容子集，不冒称SSD1681。LUT/四级灰/温度鬼影/模拟刷新波形未实现，BUSY是明确数字期限。",
+    "非触摸V2是8F8P，旧V1是4F2P且固件不可互刷；当前触摸版只有一个公开版本，不将非触摸V2标签当触摸PCB修订事实。",
+    "20250818原厂裸板CAD早于V2/触摸支持资料；完整保留原部件并标出当前PCB/芯片几何对应UNKNOWN，外壳与电池不补造。",
+    "FT6336仅公共单点报告；1msIRQ和共享两次读取保留快点击为数字策略。SHTC3、音频PCM、ADC/电池锁存与完整应用未验收。",
+    "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。",
+    "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-s3-epaper-1-54运行5客体秒。按原源码纠正GPIO6屏幕、GPIO42音频低有效门控后，原图越过ES8311初始化并启动LVGL，200×200末帧2色，64MiB FAT32卡真实修改4页；SHTC3缺失仍报错。修复前无帧及音频abort证据另存epaper154-original。记录见docs/platform/evidence/waveshare-batch011-20261124/epaper154-active-low。仅记录所选配置的有界原图执行，不代表同家族所有SKU/硬件版本、浏览器WebGL或实物整机验收。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

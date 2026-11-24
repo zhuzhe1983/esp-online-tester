@@ -11,6 +11,7 @@ export function releaseMatchesChannel(release,channel='stable') {
   return channel==='prerelease'?releaseIsPrerelease(release):!releaseIsPrerelease(release);
 }
 export function releaseRequest(entry,token) {
+  if(entry.metadataProvider==='manual')throw Error('Manual sources have no automatic release metadata request.');
   if(entry.metadataProvider==='espressif-mosaico') return mosaicoRequest(entry);
   if(entry.metadataProvider==='m5burner-v1') return m5burnerV1Request(entry);
   if(entry.metadataProvider==='cloudzao') return {url:cloudzaoMetadataUrl(entry),headers:{Accept:'application/json'},maxBytes:2*1024*1024};
@@ -24,6 +25,7 @@ export function releaseRequest(entry,token) {
   return {url:limit?`https://api.github.com/repos/${entry.upstreamRepo}/releases?per_page=${limit}`:entry.metadataUrl,headers:{Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(token?{Authorization:`Bearer ${token}`}:{})},maxBytes:32*1024*1024};
 }
 export function publicReleases(entry,data) {
+  if(entry.metadataProvider==='manual')throw Error('Manual sources require an explicit human review; no release API is inferred.');
   if(entry.metadataProvider==='espressif-mosaico') return mosaicoReleases(entry,data);
   if(entry.metadataProvider==='m5burner-v1') return m5burnerV1Releases(entry,data).map(release=>({...release,prerelease:releaseIsPrerelease(release)}));
   if(entry.metadataProvider==='cloudzao') return cloudzaoReleases(entry,data);

@@ -1,0 +1,1172 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-s3-epaper-1-54-sku-34211",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-s3-epaper-1-54-sku-34211",
+  "title": "Waveshare ESP32-S3-Touch-ePaper-1.54",
+  "summary": "当前8MiB Flash /8MiB PSRAM、200×200黑白电子纸；实现源字节X/门Y寻址、BUSY与光学画面保留。非触摸V2与单一触摸版、含/不含电池四SKU分别登记。",
+  "summarySourceIds": [
+    "official-store",
+    "official-overview"
+  ],
+  "updatedAt": "2026-11-23T20:01:32Z",
+  "hardwareRevision": "Touch variant: single published hardware revision; exact PCB marking unspecified",
+  "identity": {
+    "listingId": "esp32-s3-epaper-1.54",
+    "sku": "34211",
+    "storeOptions": {
+      "Version Options": "With touch control",
+      "3.7V MX1.25 Lithium battery": "Included"
+    },
+    "manufacturerProductNames": [
+      "ESP32-S3-Touch-ePaper-1.54"
+    ]
+  },
+  "facts": [
+    {
+      "id": "store-sku",
+      "label": "精确商店SKU",
+      "value": "34211",
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "store-options",
+      "label": "此SKU的选项",
+      "value": {
+        "Version Options": "With touch control",
+        "3.7V MX1.25 Lithium battery": "Included"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "model-name",
+      "label": "厂家命名",
+      "value": "ESP32-S3-Touch-ePaper-1.54",
+      "basis": "official",
+      "sourceIds": [
+        "official-store"
+      ]
+    },
+    {
+      "id": "physical-memory",
+      "label": "主控存储容量",
+      "value": {
+        "flashMiB": 8,
+        "psramMiB": 8
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview"
+      ],
+      "notes": "容量属于此SKU/已注明硬件版本；不从通用ESP32名称推断。"
+    },
+    {
+      "id": "display-spec",
+      "label": "屏幕规格",
+      "value": {
+        "width": 200,
+        "height": 200,
+        "type": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "bus": "SPI",
+        "controller": "Manufacturer monochrome byte-X/gate-Y subset; die unconfirmed",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview"
+      ]
+    },
+    {
+      "id": "board-wiring",
+      "label": "本次实现的源代码接线",
+      "value": {
+        "spi": {
+          "clock": 12,
+          "mosi": 13,
+          "cs": 11,
+          "dc": 10,
+          "reset": 9,
+          "busy": 8,
+          "busyActiveHigh": true,
+          "power": 6,
+          "powerActiveLow": true
+        },
+        "i2c": {
+          "sda": 47,
+          "scl": 48,
+          "rtc": 81,
+          "es8311": 24
+        },
+        "audioPower": 42,
+        "sdmmc": [
+          39,
+          41,
+          40,
+          255,
+          255,
+          255
+        ],
+        "touchVariantOnly": {
+          "ft6336": 56,
+          "reset": 7,
+          "irq": 21
+        },
+        "audioPowerActiveLow": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-overview",
+        "board-source-0",
+        "board-source-1",
+        "board-source-2",
+        "board-source-3",
+        "board-source-4",
+        "board-source-5",
+        "board-source-6",
+        "board-source-7",
+        "board-source-8",
+        "board-source-9",
+        "board-source-10",
+        "board-source-11",
+        "board-source-12",
+        "board-source-13",
+        "board-source-14",
+        "board-source-15",
+        "board-source-16",
+        "board-source-17",
+        "board-source-18",
+        "board-source-19",
+        "board-source-20",
+        "board-source-21",
+        "board-source-22",
+        "board-source-23",
+        "board-source-24",
+        "board-source-25",
+        "board-source-26",
+        "board-source-27",
+        "board-source-28",
+        "board-source-29",
+        "board-source-30",
+        "board-source-31",
+        "board-source-32",
+        "board-source-33",
+        "board-source-34",
+        "board-source-35",
+        "board-source-36",
+        "board-source-37",
+        "board-source-38",
+        "board-source-39",
+        "board-source-40",
+        "board-source-41",
+        "board-source-42",
+        "board-source-43",
+        "board-source-44",
+        "board-source-45",
+        "board-source-46",
+        "board-source-47",
+        "board-source-48",
+        "board-source-49",
+        "board-source-50",
+        "board-source-51"
+      ],
+      "notes": "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。"
+    },
+    {
+      "id": "factory-candidates",
+      "label": "官方原版镜像调查",
+      "value": [
+        {
+          "name": "ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+          "sha256": "29be91047ff789b311886da81f2817087b6b747d33aae0ca73d5ae611eb43282",
+          "bytes": 1183440,
+          "mergedS3ChecksumsPass": true
+        }
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "official-overview",
+        "board-source-0",
+        "board-source-1",
+        "board-source-2",
+        "board-source-3",
+        "board-source-4",
+        "board-source-5",
+        "board-source-6",
+        "board-source-7",
+        "board-source-8",
+        "board-source-9",
+        "board-source-10",
+        "board-source-11",
+        "board-source-12",
+        "board-source-13",
+        "board-source-14",
+        "board-source-15",
+        "board-source-16",
+        "board-source-17",
+        "board-source-18",
+        "board-source-19",
+        "board-source-20",
+        "board-source-21",
+        "board-source-22",
+        "board-source-23",
+        "board-source-24",
+        "board-source-25",
+        "board-source-26",
+        "board-source-27",
+        "board-source-28",
+        "board-source-29",
+        "board-source-30",
+        "board-source-31",
+        "board-source-32",
+        "board-source-33",
+        "board-source-34",
+        "board-source-35",
+        "board-source-36",
+        "board-source-37",
+        "board-source-38",
+        "board-source-39",
+        "board-source-40",
+        "board-source-41",
+        "board-source-42",
+        "board-source-43",
+        "board-source-44",
+        "board-source-45",
+        "board-source-46",
+        "board-source-47",
+        "board-source-48",
+        "board-source-49",
+        "board-source-50",
+        "board-source-51"
+      ],
+      "notes": "厂家firmware/README明确20260416原BIN为非触摸V2，20260415为V1且不可互刷；本轮只给当前非触摸V2两个SKU默认trial。触摸源码已具备FT6336支持，但未凭源码存在推断其原BIN已验证匹配，暂不设置触摸SKU默认factory。"
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "official-store",
+      "title": "官方商品页与精确SKU选项",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-1.54.htm",
+      "kind": "storefront",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:32:41Z",
+      "sha256": "e40e9b3ac7191771878e0654ec0c689ec71e53117df2b967ad193f9658b137b1",
+      "bytes": 199471,
+      "archiveName": "store-response-not-retained.html",
+      "notes": "原HTTP响应的字节哈希；原始商店HTML含匿名会话值，Git仅保留无会话值的SKU抽取与收据。",
+      "resolvedUrl": "https://www.waveshare.com/product/esp32-related/esp32-s3-epaper-1.54.htm"
+    },
+    {
+      "id": "official-overview",
+      "title": "官方型号、容量、接口与屏幕规格",
+      "url": "https://docs.waveshare.com/ESP32-S3-ePaper-1.54",
+      "kind": "documentation",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:34:06Z",
+      "sha256": "fe51d0ceb72fc9dc8f880bbc3f427867a955e091111c8196a747fa853bcf021c",
+      "bytes": 68128,
+      "archiveName": "esp32-s3-epaper-1-54-overview.html",
+      "notes": "原始文档响应收据；可核对厂家URL与curated inventory。",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-S3-ePaper-1.54"
+    },
+    {
+      "id": "board-source-0",
+      "title": "固定提交：README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:46:37Z",
+      "sha256": "d9f0cbfa16441b816bbe8628d49243414a076b15f00405e984b1aac2f574340f",
+      "bytes": 928,
+      "archiveName": "d9f0cbfa16441b81-README.md.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/README.md",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-1",
+      "title": "固定提交：firmware/README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:46:37Z",
+      "sha256": "0aa0babc0b735d3344c7ef3ee35e509fc545a642237d9b67415e39d1c0b922d1",
+      "bytes": 752,
+      "archiveName": "0aa0babc0b735d33-README.md.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README.md",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-2",
+      "title": "固定提交：firmware/README_ZH.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README_ZH.md",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:46:37Z",
+      "sha256": "c9a06a214c537ce58c5a079a42bb5d9d7f5b583dbbc21deeb9875af4f783f85d",
+      "bytes": 722,
+      "archiveName": "c9a06a214c537ce5-README_ZH.md.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/README_ZH.md",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-3",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:22Z",
+      "sha256": "404ebe84d781160cfcbaaf964d08b702678edf8be2cfa21e7350ec545bcab6eb",
+      "bytes": 899,
+      "archiveName": "404ebe84d781160c-main.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/main/main.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-4",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:09Z",
+      "sha256": "b2040a89208a71494311684bd4e64bf78d0ecac7f7e771e795dd66678679c5e3",
+      "bytes": 617,
+      "archiveName": "b2040a89208a7149-port_display.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-5",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:22Z",
+      "sha256": "425698fb3f249088dfb93191228eb8c97529805b3c074016fb561ca74d693e8a",
+      "bytes": 4848,
+      "archiveName": "425698fb3f249088-port_shtc3.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-6",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:02Z",
+      "sha256": "558c3905f1510b48a5bb416b829b4391fe6e491f207e95f687d436f6f238bea6",
+      "bytes": 150,
+      "archiveName": "558c3905f1510b48-idf_component.yml.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/idf_component.yml",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-7",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:15Z",
+      "sha256": "05978440d7989401f1180188d594a24246eef19ca15db20e415063c9e33a2708",
+      "bytes": 593,
+      "archiveName": "05978440d7989401-port_ft6336.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-8",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:02Z",
+      "sha256": "5580ddcd0603dfbb52e6f0382ecb995a4d9829e5f590690e78c3c377f9c10156",
+      "bytes": 1417,
+      "archiveName": "5580ddcd0603dfbb-port_adc.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-9",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:22Z",
+      "sha256": "7e30310eba76f5ccc15777bb7d82d497ce3bf47e0c7409657974033df91401e8",
+      "bytes": 311,
+      "archiveName": "7e30310eba76f5cc-port_power.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-10",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:15Z",
+      "sha256": "4b746f14de1924494a37a644bc03367ce5dae27af1870d0cc07330d668925751",
+      "bytes": 2873,
+      "archiveName": "4b746f14de192449-port_i2c.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-11",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:09Z",
+      "sha256": "e723e4115a74f3d0212da5648533fdc34ab85754e0a6fad07dc6212725dd181d",
+      "bytes": 8892,
+      "archiveName": "e723e4115a74f3d0-port_display.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_display.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-12",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:09Z",
+      "sha256": "fcbe12cbbb568ce13d5e1f1aaa6772adca365eab238bb2b10ac28f77a81a90eb",
+      "bytes": 2115,
+      "archiveName": "fcbe12cbbb568ce1-port_ft6336.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-13",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:09Z",
+      "sha256": "c9131291924c35f449f1db72f243b83756af983e5c1fb71d6c35315a1ba02403",
+      "bytes": 1939,
+      "archiveName": "c9131291924c35f4-port_codec.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-14",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:15Z",
+      "sha256": "1c0c0c42ca24a9fc6b1b36af8fb05aa7c113a7e10c542183d238978511dd14ff",
+      "bytes": 1255,
+      "archiveName": "1c0c0c42ca24a9fc-port_power.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-15",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:09Z",
+      "sha256": "dbdd31d1cae4c1ed1d97991801cd5be18c771b9da9f5d3ed7e0155b2bfcf9b6c",
+      "bytes": 308,
+      "archiveName": "dbdd31d1cae4c1ed-port_codec.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_codec.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-16",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:02Z",
+      "sha256": "e55152d242fec82b351ccc3848c87b4c4963d5e37ac56152825cfdede7cedccf",
+      "bytes": 1190,
+      "archiveName": "e55152d242fec82b-epaper_config.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/epaper_config.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-17",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:22Z",
+      "sha256": "edf6f08212ac04df04424f39115b2d509c107cdea3936cc432df7e319a1fb02e",
+      "bytes": 2659,
+      "archiveName": "edf6f08212ac04df-port_sdcard.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-18",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:22Z",
+      "sha256": "673bbfbd8d4279273b0646e3445ca6c497d1c1b05853fc141afeee29749690d2",
+      "bytes": 1038,
+      "archiveName": "673bbfbd8d427927-port_shtc3.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-19",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:22Z",
+      "sha256": "7c8ba6154797767d99bdc0721355a794af0ab098c378c4c92f9af54c5fa194ff",
+      "bytes": 371,
+      "archiveName": "7c8ba6154797767d-port_sdcard.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-20",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:09Z",
+      "sha256": "b815b01757ac8f60cf3ffeb067eccf68f669ba7f298798e0c998c5e7f52a590d",
+      "bytes": 191,
+      "archiveName": "b815b01757ac8f60-port_adc.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_adc.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-21",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:15Z",
+      "sha256": "e0c8976d621943a1ffe386a4dffa88f14ec3f863333b2f76a23f66c3784ef139",
+      "bytes": 436,
+      "archiveName": "e0c8976d621943a1-port_lvgl.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-22",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:15Z",
+      "sha256": "e6372618b79ff3366dd2b27eb90b3365258b9fed9d4d4eaa1933ab865501767a",
+      "bytes": 2562,
+      "archiveName": "e6372618b79ff336-port_lvgl.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-23",
+      "title": "固定提交：02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:15Z",
+      "sha256": "0eb9c8a46ca043052860b8228e1edc2efc1e3d61b3da4ff179ddc349dd766fa6",
+      "bytes": 739,
+      "archiveName": "0eb9c8a46ca04305-port_i2c.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V1/11_FactoryProgram/components/port_bsp/port_i2c.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-24",
+      "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:54Z",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1,
+      "archiveName": "01ba4719c80b6fe9-idf_component.yml.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/idf_component.yml",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-25",
+      "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:47Z",
+      "sha256": "05978440d7989401f1180188d594a24246eef19ca15db20e415063c9e33a2708",
+      "bytes": 593,
+      "archiveName": "05978440d7989401-ft6336_bsp.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-26",
+      "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:54Z",
+      "sha256": "b6ca966cd69bd55b176e4fd9d1cf496d84620ef2d4e32415c25ff8e4cb06dc2e",
+      "bytes": 1137,
+      "archiveName": "b6ca966cd69bd55b-user_config.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/user_config.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-27",
+      "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:54Z",
+      "sha256": "5d269b57aaeb5ae89e56463bbb639a6829258ab6be34dc23515543b6b8048e55",
+      "bytes": 1713,
+      "archiveName": "5d269b57aaeb5ae8-main.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/main.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-28",
+      "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:47Z",
+      "sha256": "7183a9fa6ce608f57c8b228fc6d48ab4cab10482d8a199520b45bc079b2c5b99",
+      "bytes": 2112,
+      "archiveName": "7183a9fa6ce608f5-ft6336_bsp.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/ft6336_bsp.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-29",
+      "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:54Z",
+      "sha256": "0eb9c8a46ca043052860b8228e1edc2efc1e3d61b3da4ff179ddc349dd766fa6",
+      "bytes": 739,
+      "archiveName": "0eb9c8a46ca04305-i2c_bsp.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-30",
+      "title": "固定提交：02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:47Z",
+      "sha256": "bffccb53f82944cc2b1c8e0175e3ffe57ea019c115f6ef5d8cbd9081c53436a4",
+      "bytes": 2872,
+      "archiveName": "bffccb53f82944cc-i2c_bsp.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/13_FT6336_Test/main/i2c_bsp.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-31",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:47Z",
+      "sha256": "404ebe84d781160cfcbaaf964d08b702678edf8be2cfa21e7350ec545bcab6eb",
+      "bytes": 899,
+      "archiveName": "404ebe84d781160c-main.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/main/main.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-32",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:34Z",
+      "sha256": "b2040a89208a71494311684bd4e64bf78d0ecac7f7e771e795dd66678679c5e3",
+      "bytes": 617,
+      "archiveName": "b2040a89208a7149-port_display.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-33",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:47Z",
+      "sha256": "425698fb3f249088dfb93191228eb8c97529805b3c074016fb561ca74d693e8a",
+      "bytes": 4848,
+      "archiveName": "425698fb3f249088-port_shtc3.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-34",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:28Z",
+      "sha256": "558c3905f1510b48a5bb416b829b4391fe6e491f207e95f687d436f6f238bea6",
+      "bytes": 150,
+      "archiveName": "558c3905f1510b48-idf_component.yml.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/idf_component.yml",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-35",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:34Z",
+      "sha256": "05978440d7989401f1180188d594a24246eef19ca15db20e415063c9e33a2708",
+      "bytes": 593,
+      "archiveName": "05978440d7989401-port_ft6336.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-36",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:28Z",
+      "sha256": "5580ddcd0603dfbb52e6f0382ecb995a4d9829e5f590690e78c3c377f9c10156",
+      "bytes": 1417,
+      "archiveName": "5580ddcd0603dfbb-port_adc.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-37",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:41Z",
+      "sha256": "7e30310eba76f5ccc15777bb7d82d497ce3bf47e0c7409657974033df91401e8",
+      "bytes": 311,
+      "archiveName": "7e30310eba76f5cc-port_power.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-38",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:34Z",
+      "sha256": "4b746f14de1924494a37a644bc03367ce5dae27af1870d0cc07330d668925751",
+      "bytes": 2873,
+      "archiveName": "4b746f14de192449-port_i2c.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-39",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:35Z",
+      "sha256": "e723e4115a74f3d0212da5648533fdc34ab85754e0a6fad07dc6212725dd181d",
+      "bytes": 8892,
+      "archiveName": "e723e4115a74f3d0-port_display.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_display.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-40",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:34Z",
+      "sha256": "fcbe12cbbb568ce13d5e1f1aaa6772adca365eab238bb2b10ac28f77a81a90eb",
+      "bytes": 2115,
+      "archiveName": "fcbe12cbbb568ce1-port_ft6336.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_ft6336.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-41",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:28Z",
+      "sha256": "c9131291924c35f449f1db72f243b83756af983e5c1fb71d6c35315a1ba02403",
+      "bytes": 1939,
+      "archiveName": "c9131291924c35f4-port_codec.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-42",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:41Z",
+      "sha256": "1c0c0c42ca24a9fc6b1b36af8fb05aa7c113a7e10c542183d238978511dd14ff",
+      "bytes": 1255,
+      "archiveName": "1c0c0c42ca24a9fc-port_power.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_power.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-43",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:28Z",
+      "sha256": "dbdd31d1cae4c1ed1d97991801cd5be18c771b9da9f5d3ed7e0155b2bfcf9b6c",
+      "bytes": 308,
+      "archiveName": "dbdd31d1cae4c1ed-port_codec.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_codec.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-44",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:28Z",
+      "sha256": "e55152d242fec82b351ccc3848c87b4c4963d5e37ac56152825cfdede7cedccf",
+      "bytes": 1190,
+      "archiveName": "e55152d242fec82b-epaper_config.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/epaper_config.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-45",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:41Z",
+      "sha256": "edf6f08212ac04df04424f39115b2d509c107cdea3936cc432df7e319a1fb02e",
+      "bytes": 2659,
+      "archiveName": "edf6f08212ac04df-port_sdcard.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-46",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:47Z",
+      "sha256": "673bbfbd8d4279273b0646e3445ca6c497d1c1b05853fc141afeee29749690d2",
+      "bytes": 1038,
+      "archiveName": "673bbfbd8d427927-port_shtc3.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_shtc3.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-47",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:41Z",
+      "sha256": "7c8ba6154797767d99bdc0721355a794af0ab098c378c4c92f9af54c5fa194ff",
+      "bytes": 371,
+      "archiveName": "7c8ba6154797767d-port_sdcard.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_sdcard.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-48",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:28Z",
+      "sha256": "b815b01757ac8f60cf3ffeb067eccf68f669ba7f298798e0c998c5e7f52a590d",
+      "bytes": 191,
+      "archiveName": "b815b01757ac8f60-port_adc.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_adc.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-49",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:41Z",
+      "sha256": "e0c8976d621943a1ffe386a4dffa88f14ec3f863333b2f76a23f66c3784ef139",
+      "bytes": 436,
+      "archiveName": "e0c8976d621943a1-port_lvgl.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-50",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:41Z",
+      "sha256": "e6372618b79ff3366dd2b27eb90b3365258b9fed9d4d4eaa1933ab865501767a",
+      "bytes": 2562,
+      "archiveName": "e6372618b79ff336-port_lvgl.cpp.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_lvgl.cpp",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "board-source-51",
+      "title": "固定提交：02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T18:18:34Z",
+      "sha256": "0eb9c8a46ca043052860b8228e1edc2efc1e3d61b3da4ff179ddc349dd766fa6",
+      "bytes": 739,
+      "archiveName": "0eb9c8a46ca04305-port_i2c.h.gz",
+      "notes": "原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/02_Example/ESP-IDF/V2/11_FactoryProgram/components/port_bsp/port_i2c.h",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "UIFlow 固定板树调查",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "pinned-source-tree-inspection",
+      "status": "linked",
+      "notes": "完整固定提交板树的生成检查收据见 docs/platform/research/waveshare-shared-ecosystem-sources；不是HTTP原文。"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "小智固定板树调查",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2/main/boards/waveshare",
+      "kind": "pinned-source-tree-inspection",
+      "status": "linked",
+      "notes": "精确目标目录与型号关联须独立检查；不使用generic镜像替换。"
+    },
+    {
+      "id": "firmware-29be91047ff7",
+      "title": "ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+      "kind": "original-manufacturer-binary",
+      "status": "fetched",
+      "fetchedAt": "2026-11-23T16:52:46Z",
+      "sha256": "29be91047ff789b311886da81f2817087b6b747d33aae0ca73d5ae611eb43282",
+      "bytes": 1183440,
+      "archiveName": "ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+      "notes": "下载并检查原始镜像字节，BIN未收入Git；结构检查详情在firmware-manifest.json。",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/2f287c01d763e44b4307c48af95044acee5c891e/firmware/ESP32-S3-ePaper-1.54_FactoryOnly_20260416.bin",
+      "revision": {
+        "gitCommit": "2f287c01d763e44b4307c48af95044acee5c891e"
+      }
+    }
+  ],
+  "assets": [],
+  "unknowns": [
+    {
+      "id": "physical-acceptance",
+      "label": "实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "未连接实物，未声明通过。"
+    },
+    {
+      "id": "unimplemented-scope",
+      "label": "未覆盖范围",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [],
+      "notes": "电子纸控制器die未由overview/BSP建立；仅命名源协议兼容子集，不冒称SSD1681。LUT/四级灰/温度鬼影/模拟刷新波形未实现，BUSY是明确数字期限。；非触摸V2是8F8P，旧V1是4F2P且固件不可互刷；当前触摸版只有一个公开版本，不将非触摸V2标签当触摸PCB修订事实。；20250818原厂裸板CAD早于V2/触摸支持资料；完整保留原部件并标出当前PCB/芯片几何对应UNKNOWN，外壳与电池不补造。；FT6336仅公共单点报告；1msIRQ和共享两次读取保留快点击为数字策略。SHTC3、音频PCM、ADC/电池锁存与完整应用未验收。；本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。；商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。"
+    }
+  ],
+  "collectionNotes": [
+    "Native mono154v2_distinct_touch_slot_byte_window_and_power_retention PASS：最后像素200×200、错片选、BUSY发布、断电保留、触摸仅相应SKU出现、音频GPIO42和SD引脚。",
+    "非触摸52/触摸53组件的不同原厂CAD均完整保留，真实Three加载与SHA/源27mm AA尺寸检查PASS。",
+    "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance.",
+    "精确SKU包内电池、外壳、排针和天线差异保持独立身份；共用数字路径不表示机械与RF等价。",
+    "UIFlow/小智是固定Git板树的范围化调查，生成检查收据不冒称HTTP响应：{\"uiflow\": \"固定提交a61a29409f09f1f4bebae05e15c4bd6dcc4956b6板树中无Waveshare命名目录；此检索范围不证明不存在第三方移植。\", \"xiaozhi\": \"固定92d400d6374bbe750e0a0188fa969fc4042820c2板树已找到main/boards/waveshare/esp32-s3-epaper-1.54/README.md/config.h/config.json；源目标存在不代表精确SKU原始BIN已验证。\"}",
+    "按固定厂家源码纠正有效电平：1.54V2 port_power.cpp 的 EPD_ON 为 GPIO6=0、Audio_ON 为 GPIO42=0；1.54G 独立 board_power_bsp.cpp 的 EPD_ON 亦为 GPIO6=0。高电平和未路由输出均不视为供电；不改变原固件。",
+    "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-s3-epaper-1-54运行5客体秒。按原源码纠正GPIO6屏幕、GPIO42音频低有效门控后，原图越过ES8311初始化并启动LVGL，200×200末帧2色，64MiB FAT32卡真实修改4页；SHTC3缺失仍报错。修复前无帧及音频abort证据另存epaper154-original。记录见docs/platform/evidence/waveshare-batch011-20261124/epaper154-active-low。仅记录所选配置的有界原图执行，不代表同家族所有SKU/硬件版本、浏览器WebGL或实物整机验收。"
+  ]
+}

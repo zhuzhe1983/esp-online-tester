@@ -15,15 +15,16 @@ import {createDeviceStorage} from '../web/platform/device-storage.js';
 import {createSdCardStorage} from '../web/platform/sd-card-storage.js';
 import {extractFirmwareZip} from '../web/platform/firmware-archive.js';
 
-const [productId,firmwarePath,outputPath,secondsText='8']=process.argv.slice(2);
-assert(productId&&firmwarePath&&outputPath,'Usage: product-id original-vendor.bin output-dir [guest-seconds]');
+const [productId,firmwarePath,outputPath,secondsText='8',firmwareId]=process.argv.slice(2);
+assert(productId&&firmwarePath&&outputPath,'Usage: product-id original-vendor.bin output-dir [guest-seconds] [explicit-firmware-id]');
 const seconds=Number(secondsText);assert(Number.isFinite(seconds)&&seconds>0&&seconds<=60);
 const root=new URL('../',import.meta.url),origin='https://waveshare-attempt.invalid',out=resolve(outputPath);
 const sha=b=>createHash('sha256').update(b).digest('hex');await mkdir(out,{recursive:true});
 const catalog=Object.fromEntries(await Promise.all(['products','accessories','firmwares'].map(async n=>
   [n,JSON.parse(await readFile(new URL(`web/platform/catalog/${n}.json`,root))).items])));
 const product=catalog.products.find(p=>p.id===productId);assert(product);
-const firmware=catalog.firmwares.find(f=>f.id===product.defaultFirmwareId);assert.ok(['factory','example'].includes(firmware?.role));
+const firmware=catalog.firmwares.find(f=>f.id===(firmwareId||product.defaultFirmwareId));assert.ok(['factory','example','official-demo'].includes(firmware?.role));
+assert.ok(firmware.productIds.includes(productId),'Original image must explicitly target the selected exact product');
 assert.equal(firmware.publisher,'Waveshare');assert.equal(firmware.status,'trial');
 const original=await readFile(firmwarePath),binary=firmware.source.archive
   ? await extractFirmwareZip(original,firmware.source,{maxBytes:product.runtime.flashMb*1024*1024}) : original;
