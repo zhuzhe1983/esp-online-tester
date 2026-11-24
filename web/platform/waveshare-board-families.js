@@ -1326,5 +1326,161 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "psramMb": 8,
     "sdCard": true,
     "boardButtons": []
+  },
+  "waveshare-s3-rs485-wled": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-can-2ch": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-can-2ch-u": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-rgb-matrix": {
+    "chip": "esp32s3",
+    "flashMb": 32,
+    "psramMb": 16,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-cam-ov5640": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot",
+      "power"
+    ]
+  },
+  "waveshare-s3-cam-ov3660": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot",
+      "power"
+    ]
+  },
+  "waveshare-s3-cam-gc2145": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot",
+      "power"
+    ]
+  },
+  "waveshare-s3-cam-gc0308": {
+    "chip": "esp32s3",
+    "flashMb": 16,
+    "psramMb": 8,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot",
+      "power"
+    ]
+  },
+  "waveshare-s3-lr1121-hf": {
+    "chip": "esp32s3",
+    "flashMb": 4,
+    "psramMb": 2,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-s3-lr1121-hf-kit": {
+    "chip": "esp32s3",
+    "flashMb": 4,
+    "psramMb": 2,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
+  },
+  "waveshare-s3-lr1121-lf": {
+    "chip": "esp32s3",
+    "flashMb": 4,
+    "psramMb": 2,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-s3-lr1121-lf-kit": {
+    "chip": "esp32s3",
+    "flashMb": 4,
+    "psramMb": 2,
+    "display": false,
+    "touch": false,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": false,
+    "boardButtons": [
+      "boot"
+    ]
   }
 }));

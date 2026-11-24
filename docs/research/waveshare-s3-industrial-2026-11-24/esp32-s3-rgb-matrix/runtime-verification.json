@@ -1,0 +1,24 @@
+{
+  "listingId": "esp32-s3-rgb-matrix",
+  "testedAt": "2026-11-23T21:33:32Z",
+  "boardProfiles": [
+    "waveshare-s3-rgb-matrix"
+  ],
+  "physicalSkus": [
+    "34422"
+  ],
+  "tests": {
+    "command": "cargo test --release -p esp32s3 --test waveshare_industrial",
+    "result": "6 passed;0 failed",
+    "scope": "Actual LX7 S32I/L32I guest instructions drive GPIO matrix,I2C/RMT/SPI MMIO; checks correct and incorrect routes, absent-address NACK, RTC date rollover/STOP, resets, source-bounded capacities and no inherited display."
+  },
+  "clippy": {
+    "command": "cargo clippy --release -p esp32s3 --test waveshare_industrial -- -D warnings",
+    "result": "passed"
+  },
+  "limitations": [
+    "Bare controller contains no HUB75 panel and has no framebuffer. RTC/codec control and native1-bit SDMMC subset only; QMI8658/SHTC3, audio PCM, physical panel and original manufacturer demo startup unverified.",
+    "Manufacturer Test.bin is a complete board demonstration image, but the fetched guide does not establish that exact binary as factory shipping firmware. Keep role=project; no factory identity inferred from partition label.",
+    "Native source-bounded subset only. No original factory boot, browser/WebGL or physical hardware validation claimed."
+  ]
+}

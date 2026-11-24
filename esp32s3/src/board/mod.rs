@@ -74,12 +74,13 @@ mod waveshare_lcd147;
 mod waveshare_lcd35b;
 mod waveshare_amoled164;
 pub mod waveshare_core;
+pub mod waveshare_industrial;
+pub mod waveshare_rgb_matrix;
 pub mod waveshare_epaper133;
 pub mod waveshare_qspi;
 pub mod waveshare_lcd4b;
 pub mod waveshare_lr;
 pub mod waveshare_lcd185b;
-pub mod waveshare_rgb_matrix;
 pub mod waveshare_spi_legacy;
 pub mod waveshare_spi_catalog;
 pub mod waveshare_tca_rgb;
@@ -212,6 +213,7 @@ pub fn make_board(name: &str) -> Option<Board> {
             .or_else(|| waveshare_rgb_matrix::make_board(name))
             .or_else(|| waveshare_epaper133::make_board(name))
             .or_else(|| waveshare_core::make_board(name))
+            .or_else(|| waveshare_industrial::make_board(name))
             .or_else(|| lilygo_display::make_board(name))
             .or_else(|| lilygo_additional::make_board(name)),
     }

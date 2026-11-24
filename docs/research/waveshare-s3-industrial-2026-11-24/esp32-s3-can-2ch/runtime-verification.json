@@ -1,0 +1,25 @@
+{
+  "listingId": "esp32-s3-can-2ch",
+  "testedAt": "2026-11-23T21:33:32Z",
+  "boardProfiles": [
+    "waveshare-s3-can-2ch",
+    "waveshare-s3-can-2ch-u"
+  ],
+  "physicalSkus": [
+    "35815",
+    "35882"
+  ],
+  "tests": {
+    "command": "cargo test --release -p esp32s3 --test waveshare_industrial",
+    "result": "6 passed;0 failed",
+    "scope": "Actual LX7 S32I/L32I guest instructions drive GPIO matrix,I2C/RMT/SPI MMIO; checks correct and incorrect routes, absent-address NACK, RTC date rollover/STOP, resets, source-bounded capacities and no inherited display."
+  },
+  "clippy": {
+    "command": "cargo clippy --release -p esp32s3 --test waveshare_industrial -- -D warnings",
+    "result": "passed"
+  },
+  "limitations": [
+    "Actual PCF85063 BCD calendar/STOP through exact guest I2C routes only. CAN1/TWAI and XL2515 CAN2, isolation, bus peer, interrupts and original firmware startup remain unmodeled/unverified.",
+    "Native source-bounded subset only. No original factory boot, browser/WebGL or physical hardware validation claimed."
+  ]
+}

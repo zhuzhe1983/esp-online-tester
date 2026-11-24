@@ -23,7 +23,7 @@ const sha=b=>createHash('sha256').update(b).digest('hex');await mkdir(out,{recur
 const catalog=Object.fromEntries(await Promise.all(['products','accessories','firmwares'].map(async n=>
   [n,JSON.parse(await readFile(new URL(`web/platform/catalog/${n}.json`,root))).items])));
 const product=catalog.products.find(p=>p.id===productId);assert(product);
-const firmware=catalog.firmwares.find(f=>f.id===(firmwareId||product.defaultFirmwareId));assert.ok(['factory','example','official-demo'].includes(firmware?.role));
+const firmware=catalog.firmwares.find(f=>f.id===(firmwareId||product.defaultFirmwareId));assert.ok(['factory','example','official-demo'].includes(firmware?.role)||(firmwareId&&firmware?.role==='project'), 'Project images require an explicit firmware ID and retain their actual role.');
 assert.ok(firmware.productIds.includes(productId),'Original image must explicitly target the selected exact product');
 assert.equal(firmware.publisher,'Waveshare');assert.equal(firmware.status,'trial');
 const original=await readFile(firmwarePath),binary=firmware.source.archive

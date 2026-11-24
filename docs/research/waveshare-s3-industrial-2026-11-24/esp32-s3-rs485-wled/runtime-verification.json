@@ -1,0 +1,23 @@
+{
+  "listingId": "esp32-s3-rs485-wled",
+  "testedAt": "2026-11-23T21:33:32Z",
+  "boardProfiles": [
+    "waveshare-s3-rs485-wled"
+  ],
+  "physicalSkus": [
+    "35580"
+  ],
+  "tests": {
+    "command": "cargo test --release -p esp32s3 --test waveshare_industrial",
+    "result": "6 passed;0 failed",
+    "scope": "Actual LX7 S32I/L32I guest instructions drive GPIO matrix,I2C/RMT/SPI MMIO; checks correct and incorrect routes, absent-address NACK, RTC date rollover/STOP, resets, source-bounded capacities and no inherited display."
+  },
+  "clippy": {
+    "command": "cargo clippy --release -p esp32s3 --test waveshare_industrial -- -D warnings",
+    "result": "passed"
+  },
+  "limitations": [
+    "Only ES7210 digital control ports and actual GPIO/RMT connector observations implemented. No attached LED strip, physical RS485 transceiver peer, ES8389 codec/PCM, power/current/thermal or original WLED runtime verification.",
+    "Native source-bounded subset only. No original factory boot, browser/WebGL or physical hardware validation claimed."
+  ]
+}

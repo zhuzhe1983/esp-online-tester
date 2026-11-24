@@ -1,0 +1,31 @@
+{
+  "listingId": "esp32-s3-cam-ov5640",
+  "testedAt": "2026-11-23T21:33:32Z",
+  "boardProfiles": [
+    "waveshare-s3-cam-ov5640",
+    "waveshare-s3-cam-ov3660",
+    "waveshare-s3-cam-gc2145",
+    "waveshare-s3-cam-gc0308"
+  ],
+  "physicalSkus": [
+    "33699",
+    "33700",
+    "33702",
+    "33701"
+  ],
+  "tests": {
+    "command": "cargo test --release -p esp32s3 --test waveshare_industrial",
+    "result": "6 passed;0 failed",
+    "scope": "Actual LX7 S32I/L32I guest instructions drive GPIO matrix,I2C/RMT/SPI MMIO; checks correct and incorrect routes, absent-address NACK, RTC date rollover/STOP, resets, source-bounded capacities and no inherited display."
+  },
+  "clippy": {
+    "command": "cargo clippy --release -p esp32s3 --test waveshare_industrial -- -D warnings",
+    "result": "passed"
+  },
+  "limitations": [
+    "Exact four sensor SKU identities retained; only shared ES8311/ES7210 control ports plus BOOT/PWR implemented. No camera SCCB/DVP, sensor chip ID, capture frame, CH32 IO/power emulation or optional LCD.",
+    "A physical TF slot is declared and prepared64MiBFAT32 retained locally; guest native-SD transport is not attached because CH32 mode/power gating has not been implemented.",
+    "Plain manufacturer Factory.bin contains all four named camera drivers and is separate from LCD_1_83/2/2_8/3_5 images; original sensor detection/boot behavior remains unverified for each SKU.",
+    "Native source-bounded subset only. No original factory boot, browser/WebGL or physical hardware validation claimed."
+  ]
+}

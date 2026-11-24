@@ -164,6 +164,9 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
             log("[emu] Waveshare S3 core profile requires its exact documented Flash and PSRAM capacity"); return std::ptr::null_mut();
         }
     }
+    if let Some(memory)=esp32s3::board::waveshare_industrial::memory_mib(&board).or_else(||esp32s3::board::waveshare_rgb_matrix::memory_mib(&board)) {
+        if (flash_mb as usize,psram_mb as usize)!=memory {log("[emu] Exact Waveshare S3 controller memory is required");return std::ptr::null_mut();}
+    }
     if board=="waveshare-s3-touch-amoled143c" && (flash_mb,psram_mb)!=(8,8) {
         log("[emu] Waveshare S3 AMOLED1.43C requires 8 MiB Flash and 8 MiB Octal PSRAM");return std::ptr::null_mut();
     }
@@ -306,6 +309,9 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         esp32s3::board::configure_chip_identity(m.bus.board.name(), &mut m.bus.periph.efuse);
         m.bus.attach_board_devices();
         m.bus.set_flash_size(flash_bytes);
+        // The exact RGB Matrix controller and its kits use WROOM-2-N32R16V.
+        // Its physical octal flash and FLASH_TYPE eFuse must agree before boot.
+        if esp32s3::board::waveshare_rgb_matrix::memory_mib(&board).is_some() { m.bus.set_flash_octal(true); }
         let _ = m.bus.set_psram_size(psram_bytes);
         m.bus.periph.lcd_cam.frame_cycles = esp32s3::periph::CPU_HZ / 10;
         prepare(&mut m);
