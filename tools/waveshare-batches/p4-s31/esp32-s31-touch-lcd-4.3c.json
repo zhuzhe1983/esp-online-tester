@@ -1,0 +1,564 @@
+{
+  "listingId": "esp32-s31-touch-lcd-4.3c",
+  "products": [
+    {
+      "id": "waveshare-esp32-s31-touch-lcd-4-3c",
+      "name": "Waveshare ESP32-S31-Touch-LCD-4.3C",
+      "manufacturer": "Waveshare",
+      "sku": "36107",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "4.3 英寸 800×480 RGB565 / GT911；N16R16，精确包装 SKU，显示与输入数字子集。",
+      "family": {
+        "id": "waveshare-s31-touch-lcd43c",
+        "name": "Waveshare S31 4.3C"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-touch-lcd-4-3c.json",
+      "runtime": {
+        "board": "waveshare-s31-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7262",
+        "bus": "RGB565",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 24
+            },
+            {
+              "name": "CMD",
+              "gpio": 25
+            },
+            {
+              "name": "D0",
+              "gpio": 20
+            },
+            {
+              "name": "D1",
+              "gpio": 21
+            },
+            {
+              "name": "D2",
+              "gpio": 22
+            },
+            {
+              "name": "D3",
+              "gpio": 23
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 56
+            }
+          ],
+          "sourceIds": [
+            "overview"
+          ],
+          "notes": "Default 64 MiB FAT32; physical SDMMC/power-gate subset, factory mount not validated."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Touch-LCD-4.3C-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Touch-LCD-4.3C-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "已实现受真实 RGB/AXI-GDMA、完整 800×480 RGB565、引脚路由与 GPIO47 背光门控约束的显示子集；S31 LEDC 背光波形尚未实现。",
+        "GT911 单触点报告/确认、GPIO46 复位与 INT2 地址选择、GPIO61 BOOT、GPIO55 LED、PCF85063 和 QMI8658C 数字寄存器子集；原厂多点触摸、ES8389 音频、电池、电源、CAN-FD、RS485、USB Host 和无线未验收。",
+        "TF 卡具有 GPIO56 低有效电源门控与物理 SDMMC 引脚；默认 64 MiB FAT32 不表示原厂文件系统已通过。",
+        "官方同一型号出厂恢复镜像适用于三种包装 SKU；已核对完整镜像的芯片、分区、checksum/SHA 与容量，原厂启动和实机未验证。",
+        "按 N16R16 设置 16 MiB Flash/PSRAM；NOR/PLL/模拟输入沿用明确的名义模型假设，没有借用其他设备的实测 eFuse。",
+        "UIFlow1、UIFlow2、小智：本轮官方型号 README/资源页未列出精确 S31-Touch-LCD-4.3C 目标镜像；上游目标专项核验仍未知，不使用同名 S3 固件替代。",
+        "3D 来源：official-cad-partial；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Native shared displayCAD accounts for3/1116 source components. S3 electronic assembly is explicitly omitted; replacementS31 PCB is markedUNKNOWN.",
+        "Model: Box SKU116.3×79×18mm packaging is documented but model shows only shared display/PCB envelope. The box and optional battery are not reconstructed yet.",
+        "Model: Viewing aperture95.54×54.36mm and800×480 pixelaspect conflict; image is letterboxed inside the documented aperture, not stretched. Optical active area calibration unresolved.",
+        "Model: BOOT/LED/ports are exposed through product controls and logs; locations are not fabricated on this partial mechanical model."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-touch-lcd43c-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-touch43c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad-partial"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s31-touch-lcd-4-3c-box-en",
+      "name": "Waveshare ESP32-S31-Touch-LCD-4.3C-BOX-EN",
+      "manufacturer": "Waveshare",
+      "sku": "36106",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "4.3 英寸 800×480 RGB565 / GT911；N16R16，精确包装 SKU，显示与输入数字子集。",
+      "family": {
+        "id": "waveshare-s31-touch-lcd43c",
+        "name": "Waveshare S31 4.3C"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-touch-lcd-4-3c-box-en.json",
+      "runtime": {
+        "board": "waveshare-s31-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7262",
+        "bus": "RGB565",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 24
+            },
+            {
+              "name": "CMD",
+              "gpio": 25
+            },
+            {
+              "name": "D0",
+              "gpio": 20
+            },
+            {
+              "name": "D1",
+              "gpio": 21
+            },
+            {
+              "name": "D2",
+              "gpio": 22
+            },
+            {
+              "name": "D3",
+              "gpio": 23
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 56
+            }
+          ],
+          "sourceIds": [
+            "overview"
+          ],
+          "notes": "Default 64 MiB FAT32; physical SDMMC/power-gate subset, factory mount not validated."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Touch-LCD-4.3C-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Touch-LCD-4.3C-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "已实现受真实 RGB/AXI-GDMA、完整 800×480 RGB565、引脚路由与 GPIO47 背光门控约束的显示子集；S31 LEDC 背光波形尚未实现。",
+        "GT911 单触点报告/确认、GPIO46 复位与 INT2 地址选择、GPIO61 BOOT、GPIO55 LED、PCF85063 和 QMI8658C 数字寄存器子集；原厂多点触摸、ES8389 音频、电池、电源、CAN-FD、RS485、USB Host 和无线未验收。",
+        "TF 卡具有 GPIO56 低有效电源门控与物理 SDMMC 引脚；默认 64 MiB FAT32 不表示原厂文件系统已通过。",
+        "官方同一型号出厂恢复镜像适用于三种包装 SKU；已核对完整镜像的芯片、分区、checksum/SHA 与容量，原厂启动和实机未验证。",
+        "按 N16R16 设置 16 MiB Flash/PSRAM；NOR/PLL/模拟输入沿用明确的名义模型假设，没有借用其他设备的实测 eFuse。",
+        "UIFlow1、UIFlow2、小智：本轮官方型号 README/资源页未列出精确 S31-Touch-LCD-4.3C 目标镜像；上游目标专项核验仍未知，不使用同名 S3 固件替代。",
+        "3D 来源：official-cad-partial；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Native shared displayCAD accounts for3/1116 source components. S3 electronic assembly is explicitly omitted; replacementS31 PCB is markedUNKNOWN.",
+        "Model: Box SKU116.3×79×18mm packaging is documented but model shows only shared display/PCB envelope. The box and optional battery are not reconstructed yet.",
+        "Model: Viewing aperture95.54×54.36mm and800×480 pixelaspect conflict; image is letterboxed inside the documented aperture, not stretched. Optical active area calibration unresolved.",
+        "Model: BOOT/LED/ports are exposed through product controls and logs; locations are not fabricated on this partial mechanical model."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-touch-lcd43c-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-touch43c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad-partial"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s31-touch-lcd-4-3c-box",
+      "name": "Waveshare ESP32-S31-Touch-LCD-4.3C-BOX",
+      "manufacturer": "Waveshare",
+      "sku": "36105",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "4.3 英寸 800×480 RGB565 / GT911；N16R16，精确包装 SKU，显示与输入数字子集。",
+      "family": {
+        "id": "waveshare-s31-touch-lcd43c",
+        "name": "Waveshare S31 4.3C"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-touch-lcd-4-3c-box.json",
+      "runtime": {
+        "board": "waveshare-s31-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7262",
+        "bus": "RGB565",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 24
+            },
+            {
+              "name": "CMD",
+              "gpio": 25
+            },
+            {
+              "name": "D0",
+              "gpio": 20
+            },
+            {
+              "name": "D1",
+              "gpio": 21
+            },
+            {
+              "name": "D2",
+              "gpio": 22
+            },
+            {
+              "name": "D3",
+              "gpio": 23
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 56
+            }
+          ],
+          "sourceIds": [
+            "overview"
+          ],
+          "notes": "Default 64 MiB FAT32; physical SDMMC/power-gate subset, factory mount not validated."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Touch-LCD-4.3C-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Touch-LCD-4.3C-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "已实现受真实 RGB/AXI-GDMA、完整 800×480 RGB565、引脚路由与 GPIO47 背光门控约束的显示子集；S31 LEDC 背光波形尚未实现。",
+        "GT911 单触点报告/确认、GPIO46 复位与 INT2 地址选择、GPIO61 BOOT、GPIO55 LED、PCF85063 和 QMI8658C 数字寄存器子集；原厂多点触摸、ES8389 音频、电池、电源、CAN-FD、RS485、USB Host 和无线未验收。",
+        "TF 卡具有 GPIO56 低有效电源门控与物理 SDMMC 引脚；默认 64 MiB FAT32 不表示原厂文件系统已通过。",
+        "官方同一型号出厂恢复镜像适用于三种包装 SKU；已核对完整镜像的芯片、分区、checksum/SHA 与容量，原厂启动和实机未验证。",
+        "按 N16R16 设置 16 MiB Flash/PSRAM；NOR/PLL/模拟输入沿用明确的名义模型假设，没有借用其他设备的实测 eFuse。",
+        "UIFlow1、UIFlow2、小智：本轮官方型号 README/资源页未列出精确 S31-Touch-LCD-4.3C 目标镜像；上游目标专项核验仍未知，不使用同名 S3 固件替代。",
+        "3D 来源：official-cad-partial；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Native shared displayCAD accounts for3/1116 source components. S3 electronic assembly is explicitly omitted; replacementS31 PCB is markedUNKNOWN.",
+        "Model: Box SKU116.3×79×18mm packaging is documented but model shows only shared display/PCB envelope. The box and optional battery are not reconstructed yet.",
+        "Model: Viewing aperture95.54×54.36mm and800×480 pixelaspect conflict; image is letterboxed inside the documented aperture, not stretched. Optical active area calibration unresolved.",
+        "Model: BOOT/LED/ports are exposed through product controls and logs; locations are not fabricated on this partial mechanical model."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-touch-lcd43c-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-touch43c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad-partial"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-s31-touch-lcd43c-factory",
+      "name": "Waveshare S31 Touch4.3C · 官方出厂恢复镜像（未验证）",
+      "productIds": [
+        "waveshare-esp32-s31-touch-lcd-4-3c",
+        "waveshare-esp32-s31-touch-lcd-4-3c-box-en",
+        "waveshare-esp32-s31-touch-lcd-4-3c-box"
+      ],
+      "version": "FactoryOnly_20261110",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/ESP32-S31-Touch-LCD-4.3C_FactoryOnly_20261110.bin",
+        "sha256": "77d40d286b46613e7974ebc96260ab5be280f42b3b130a5f3112b1f7d0e9802d",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "watchlistId": "waveshare-s31-touch-lcd43c-official",
+      "sources": [
+        {
+          "title": "Official firmware restore README",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "ESP32-S31-Touch-LCD-4.3C_FactoryOnly_20261110.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/ESP32-S31-Touch-LCD-4.3C_FactoryOnly_20261110.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方同一型号出厂恢复镜像适用于三种包装 SKU；已核对完整镜像的芯片、分区、checksum/SHA 与容量，原厂启动和实机未验证。",
+        "已实现受真实 RGB/AXI-GDMA、完整 800×480 RGB565、引脚路由与 GPIO47 背光门控约束的显示子集；S31 LEDC 背光波形尚未实现。",
+        "GT911 单触点报告/确认、GPIO46 复位与 INT2 地址选择、GPIO61 BOOT、GPIO55 LED、PCF85063 和 QMI8658C 数字寄存器子集；原厂多点触摸、ES8389 音频、电池、电源、CAN-FD、RS485、USB Host 和无线未验收。"
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-s31-touch-lcd43c-official",
+      "name": "Waveshare S31 Touch4.3C 官方原厂固件",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-S31-Touch-LCD-4.3C",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-S31-Touch-LCD-4.3C/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/tree/main/firmware",
+      "version": "FactoryOnly_20261110",
+      "checkedAt": "2026-11-23T16:45:53Z",
+      "assets": [
+        {
+          "name": "ESP32-S31-Touch-LCD-4.3C_FactoryOnly_20261110.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/ESP32-S31-Touch-LCD-4.3C_FactoryOnly_20261110.bin",
+          "sha256": "77d40d286b46613e7974ebc96260ab5be280f42b3b130a5f3112b1f7d0e9802d",
+          "bytes": 16711680,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "unverified",
+        "productIds": [
+          "waveshare-esp32-s31-touch-lcd-4-3c",
+          "waveshare-esp32-s31-touch-lcd-4-3c-box-en",
+          "waveshare-esp32-s31-touch-lcd-4-3c-box"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Pinned official restore image for the single N16R16 board; packaging variants explicitly listed. Full factory boot not yet tested."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": []
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-touch-lcd-4-3c.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-touch-lcd-4-3c-box-en.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s31-touch-lcd-4-3c-box.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s31-touch-lcd43c": {
+      "chip": "esp32s31",
+      "display": true,
+      "touch": true,
+      "gpio": true,
+      "rgb": false,
+      "led": true,
+      "imu": true,
+      "sdCard": true
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-p4-s31-2026-11-24/esp32-s31-touch-lcd-4.3c/source-receipts.json",
+    "docs/research/waveshare-p4-s31-2026-11-24/esp32-s31-touch-lcd-4.3c/factory-image-audit.json",
+    "web/platform/assets/waveshare-s31-touch43c-mechanical/source-manifest.json"
+  ],
+  "tests": [
+    {
+      "command": "cargo test --release -p esp32s31 waveshare_touch43c",
+      "status": "passed",
+      "tests": 2,
+      "scope": "Native board GPIO/RGB/GT911/SD-gate protocol tests, not factory boot or WebGL acceptance."
+    },
+    {
+      "command": "cargo test --release -p esp32s31 s31_guest_rgb_dma_and_boot -- --nocapture",
+      "status": "passed",
+      "tests": 1,
+      "scope": "Actual S31 guest instructions write RGB565 pixels and188AXI-GDMA descriptors toSRAM, route800×480 physicalRGB pins, then readBOOT61. Correct route showsRGB pixels; wrongPCLK41 or unlitGPIO47 staysblack. No host framebuffer injection; no factoryboot claim."
+    },
+    {
+      "kind": "model-loader",
+      "command": "node tools/check-waveshare-model-loading.mjs waveshare-s31-touch43c-mechanical",
+      "status": "passed",
+      "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+    }
+  ],
+  "limitations": [
+    "已实现受真实 RGB/AXI-GDMA、完整 800×480 RGB565、引脚路由与 GPIO47 背光门控约束的显示子集；S31 LEDC 背光波形尚未实现。",
+    "GT911 单触点报告/确认、GPIO46 复位与 INT2 地址选择、GPIO61 BOOT、GPIO55 LED、PCF85063 和 QMI8658C 数字寄存器子集；原厂多点触摸、ES8389 音频、电池、电源、CAN-FD、RS485、USB Host 和无线未验收。",
+    "TF 卡具有 GPIO56 低有效电源门控与物理 SDMMC 引脚；默认 64 MiB FAT32 不表示原厂文件系统已通过。",
+    "官方同一型号出厂恢复镜像适用于三种包装 SKU；已核对完整镜像的芯片、分区、checksum/SHA 与容量，原厂启动和实机未验证。",
+    "按 N16R16 设置 16 MiB Flash/PSRAM；NOR/PLL/模拟输入沿用明确的名义模型假设，没有借用其他设备的实测 eFuse。",
+    "厂家提供的机械 STEP 沿用 S3 文件名；S31 PCB/外壳可视模型验收未完成，当前屏幕仅用于运行调试。",
+    "UIFlow1、UIFlow2、小智：本轮官方型号 README/资源页未列出精确 S31-Touch-LCD-4.3C 目标镜像；上游目标专项核验仍未知，不使用同名 S3 固件替代。"
+  ],
+  "integrationNotes": [
+    "Route S31 board through esp32s31::board::waveshare_touch43c::inputs() in CLI/WASM, preserving nominal16MiB PSRAM and no measured eFuse assumptions.",
+    "Add board to web platform capabilities and runtime selector.",
+    "Factory/default records grouped explicitly across SKU36107/36106/36105 per official single-model firmware README."
+  ],
+  "modelIds": [
+    "waveshare-s31-touch43c-mechanical"
+  ]
+}

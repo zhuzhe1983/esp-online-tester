@@ -18,7 +18,9 @@ export function buildFirmwareIssueUrl({ entryId = 'custom-firmware', url = '', r
 
 export function validateWatchlist(document) {
   if (document?.schemaVersion !== '1' || !Array.isArray(document.categories) || !Array.isArray(document.entries)) throw new Error('Invalid firmware watchlist schema.');
-  if (document.categories.length > 50 || document.entries.length > 200) throw new Error('Watchlist exceeds its metadata limits.');
+  // Exact SKU/wafer mappings exceed 200 entries across the supported vendors.
+  // Keep a finite bound; per-entry assets and network response limits remain.
+  if (document.categories.length > 50 || document.entries.length > 1024) throw new Error('Watchlist exceeds its metadata limits.');
   const categories = new Set(document.categories.map(item => item.id)), ids = new Set();
   for (const entry of document.entries) {
     if (!/^[a-z0-9-]+$/.test(entry.id) || ids.has(entry.id) || !categories.has(entry.category)) throw new Error('Invalid watchlist ID or category.');

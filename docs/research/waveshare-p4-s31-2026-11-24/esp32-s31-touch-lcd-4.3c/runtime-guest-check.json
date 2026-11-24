@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-11-23T17:22:40Z",
+  "result": {
+    "command": "cargo test --release -p esp32s31 s31_guest_rgb_dma_and_boot -- --nocapture",
+    "status": "passed",
+    "tests": 1,
+    "scope": "Actual S31 guest instructions write RGB565 pixels and188AXI-GDMA descriptors toSRAM, route800×480 physicalRGB pins, then readBOOT61. Correct route showsRGB pixels; wrongPCLK41 or unlitGPIO47 staysblack. No host framebuffer injection; no factoryboot claim."
+  },
+  "sourcePath": "esp32s31/src/board/waveshare_touch43c.rs",
+  "sourceSha256": "81cd1ac901a3ad127f10c359db42cdfc8e4f22f3254b3e2358a86409ad9473ba",
+  "runInstructionBudget": [
+    4000000,
+    100000
+  ],
+  "scenarios": [
+    {
+      "clockPin": 40,
+      "backlight": true,
+      "frames": 1,
+      "expectedFirstPixelsRGB565": [
+        63488,
+        2016,
+        31
+      ]
+    },
+    {
+      "clockPin": 41,
+      "backlight": true,
+      "frames": 0,
+      "expected": "black"
+    },
+    {
+      "clockPin": 40,
+      "backlight": false,
+      "frames": 1,
+      "expected": "black"
+    }
+  ],
+  "bootFeedback": "CPU readingGPIO61 observes high thenlow after host physicalbutton event.",
+  "boundaries": [
+    "Guest fixture, not original manufacturer firmware.",
+    "Touchcontroller,LEDC PWMbacklight,radio,audio andhardwarefit are not proved by this test."
+  ]
+}

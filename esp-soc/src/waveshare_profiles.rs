@@ -22,8 +22,13 @@ pub fn memory_mib(board: &str) -> Option<(usize, usize)> {
         "waveshare-p4-core-32mb" => Some((32, 32)),
         "waveshare-p4-core-dev-kit" => Some((32, 32)),
         "waveshare-p4-eth" => Some((32, 32)),
+        "waveshare-p4-knob-amoled175" => Some((32, 32)),
         "waveshare-p4-lcd35-v13" => Some((16, 32)),
         "waveshare-p4-lcd35-v32" => Some((16, 32)),
+        "waveshare-p4-lcd43-v13" => Some((32, 32)),
+        "waveshare-p4-lcd43-v32" => Some((32, 32)),
+        "waveshare-p4-lcd5-v13" => Some((32, 32)),
+        "waveshare-p4-lcd5-v32" => Some((32, 32)),
         "waveshare-p4-module-16mb" => Some((16, 32)),
         "waveshare-p4-module-16mb-ipex" => Some((16, 32)),
         "waveshare-p4-module-32mb" => Some((32, 32)),
@@ -63,6 +68,38 @@ pub fn memory_mib(board: &str) -> Option<(usize, usize)> {
         "waveshare-s3-touch-lcd28b" => Some((16, 8)),
         "waveshare-s3-touch-lcd28c" => Some((16, 8)),
         "waveshare-s3-zero" => Some((4, 2)),
+        "waveshare-s31-touch-lcd43c" => Some((16, 16)),
+        _ => None,
+    }
+}
+
+/// Explicit virtual wafer family; never inferred from a SKU name or image.
+pub fn virtual_revision(board: &str) -> Option<u16> {
+    match board {
+        "waveshare-p4-core" => Some(301),
+        "waveshare-p4-core-32mb" => Some(301),
+        "waveshare-p4-core-dev-kit" => Some(301),
+        "waveshare-p4-eth" => Some(301),
+        "waveshare-p4-knob-amoled175" => Some(301),
+        "waveshare-p4-lcd35-v13" => Some(100),
+        "waveshare-p4-lcd35-v32" => Some(301),
+        "waveshare-p4-lcd43-v13" => Some(100),
+        "waveshare-p4-lcd43-v32" => Some(301),
+        "waveshare-p4-lcd5-v13" => Some(100),
+        "waveshare-p4-lcd5-v32" => Some(301),
+        "waveshare-p4-module-16mb" => Some(301),
+        "waveshare-p4-module-16mb-ipex" => Some(301),
+        "waveshare-p4-module-32mb" => Some(301),
+        "waveshare-p4-module-32mb-ipex" => Some(301),
+        "waveshare-p4-module-dev-kit" => Some(301),
+        "waveshare-p4-nano" => Some(301),
+        "waveshare-p4-nano-wifi6-db" => Some(301),
+        "waveshare-p4-pico" => Some(301),
+        "waveshare-p4-poe-eth" => Some(301),
+        "waveshare-p4-wifi6" => Some(301),
+        "waveshare-p4-wifi6-db" => Some(301),
+        "waveshare-p4-wifi6-dev-kit" => Some(301),
+        "waveshare-p4-wifi6-poe-eth" => Some(301),
         _ => None,
     }
 }

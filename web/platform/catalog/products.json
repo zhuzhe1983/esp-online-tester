@@ -40426,6 +40426,284 @@
       }
     },
     {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-5-v13",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5 · silicon rev1.x",
+      "manufacturer": "Waveshare",
+      "sku": "33360",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "3.5 英寸 320×480 ST7796／FT6336 触摸屏，16 MiB Flash、32 MiB PSRAM；V1.3 固件独立匹配，当前为部分适配。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-5",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-3.5"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-3-5-v13.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd35-v13",
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7796",
+        "bus": "SPI2",
+        "diagonalInches": 3.5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "schematic"
+          ],
+          "notes": "默认 64 MiB FAT32；Q1 低有效电源；完整原厂挂载未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "factory-readme",
+          "title": "firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "Official overview",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "Exact V1.3 factory image",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/firmware/ESP32-P4-WIFI6-Touch-LCD-3.5_FactoryOnly_20261119.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按厂商 V1.3 固件范围建立独立配置；虚拟晶圆版本为 1.0，不是对实物修订版的等同声明。",
+        "基础显示和触摸沿用 P4 SPI／FT5x06 子集；GPIO35 BOOT 和 TF GPIO45 低有效电源接线已补充。",
+        "板载 C6 无线协处理器尚未接入；原厂 Wi-Fi 初始化可能进入异常并重启。当前无完整原厂界面、音频、TF 文件系统或电源管理验收。",
+        "AXP2101、PWR 键、充电／电池、CSI、USB 和完整物理 SPI／I2C 路由仍待实现；不能以显示启动画面推定这些功能已支持。",
+        "已用此精确修订的原始镜像和对应 ROM 执行 5 秒，显示真实 Starting Wi-Fi 启动画面；C6 SDIO 初始化失败后发生 Instruction access fault 并重启，完整原厂运行未通过。",
+        "SKU33360含锂电池，SKU33511的-EN表示不含锂电池；不是语言版本。PCB版本未指定，silicon profile独立匹配固件。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Current packaging drawing shows63.67×95.11mm exterior, while retained nativeCADcover is61×92.44mm. No scaling is used. This is a manufacturer mechanical reference with unresolved enclosure/revision difference, not a1:1current packaging claim."
+      ],
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-3-5-v13-factory",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Storefront ordering is a scheduling proxy; firmware date is not hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd35-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-5-v32",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5 · silicon rev3.x",
+      "manufacturer": "Waveshare",
+      "sku": "33360",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "3.5 英寸 320×480 ST7796／FT6336 触摸屏，16 MiB Flash、32 MiB PSRAM；V3.2 固件独立匹配，当前为部分适配。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-5",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-3.5"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-3-5-v32.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd35-v32",
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7796",
+        "bus": "SPI2",
+        "diagonalInches": 3.5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "schematic"
+          ],
+          "notes": "默认 64 MiB FAT32；Q1 低有效电源；完整原厂挂载未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "factory-readme",
+          "title": "firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "Official overview",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "Exact V3.2 factory image",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/firmware/ESP32-P4-WIFI6-Touch-LCD-3.5_FactoryOnly_20261105.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按厂商 V3.2 固件范围建立独立配置；虚拟晶圆版本为 3.1，不是对实物修订版的等同声明。",
+        "基础显示和触摸沿用 P4 SPI／FT5x06 子集；GPIO35 BOOT 和 TF GPIO45 低有效电源接线已补充。",
+        "板载 C6 无线协处理器尚未接入；原厂 Wi-Fi 初始化可能进入异常并重启。当前无完整原厂界面、音频、TF 文件系统或电源管理验收。",
+        "AXP2101、PWR 键、充电／电池、CSI、USB 和完整物理 SPI／I2C 路由仍待实现；不能以显示启动画面推定这些功能已支持。",
+        "已用此精确修订的原始镜像和对应 ROM 执行 5 秒，显示真实 Starting Wi-Fi 启动画面；C6 SDIO 初始化失败后发生 Instruction access fault 并重启，完整原厂运行未通过。",
+        "SKU33360含锂电池，SKU33511的-EN表示不含锂电池；不是语言版本。PCB版本未指定，silicon profile独立匹配固件。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Current packaging drawing shows63.67×95.11mm exterior, while retained nativeCADcover is61×92.44mm. No scaling is used. This is a manufacturer mechanical reference with unresolved enclosure/revision difference, not a1:1current packaging claim."
+      ],
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-3-5-v32-factory",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Storefront ordering is a scheduling proxy; firmware date is not hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd35-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
       "id": "waveshare-esp32-c5-touch-lcd-2-8",
       "name": "Waveshare ESP32-C5-Touch-LCD-2.8",
       "manufacturer": "Waveshare",
@@ -46032,6 +46310,2457 @@
         "unit": "mm",
         "basis": "official",
         "sourceId": "dimension-photo"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s31-touch-lcd-4-3c",
+      "name": "Waveshare ESP32-S31-Touch-LCD-4.3C",
+      "manufacturer": "Waveshare",
+      "sku": "36107",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "4.3 英寸 800×480 RGB565 / GT911；N16R16，精确包装 SKU，显示与输入数字子集。",
+      "family": {
+        "id": "waveshare-s31-touch-lcd43c",
+        "name": "Waveshare S31 4.3C"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-touch-lcd-4-3c.json",
+      "runtime": {
+        "board": "waveshare-s31-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7262",
+        "bus": "RGB565",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 24
+            },
+            {
+              "name": "CMD",
+              "gpio": 25
+            },
+            {
+              "name": "D0",
+              "gpio": 20
+            },
+            {
+              "name": "D1",
+              "gpio": 21
+            },
+            {
+              "name": "D2",
+              "gpio": 22
+            },
+            {
+              "name": "D3",
+              "gpio": 23
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 56
+            }
+          ],
+          "sourceIds": [
+            "overview"
+          ],
+          "notes": "Default 64 MiB FAT32; physical SDMMC/power-gate subset, factory mount not validated."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Touch-LCD-4.3C-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Touch-LCD-4.3C-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "已实现受真实 RGB/AXI-GDMA、完整 800×480 RGB565、引脚路由与 GPIO47 背光门控约束的显示子集；S31 LEDC 背光波形尚未实现。",
+        "GT911 单触点报告/确认、GPIO46 复位与 INT2 地址选择、GPIO61 BOOT、GPIO55 LED、PCF85063 和 QMI8658C 数字寄存器子集；原厂多点触摸、ES8389 音频、电池、电源、CAN-FD、RS485、USB Host 和无线未验收。",
+        "TF 卡具有 GPIO56 低有效电源门控与物理 SDMMC 引脚；默认 64 MiB FAT32 不表示原厂文件系统已通过。",
+        "官方同一型号出厂恢复镜像适用于三种包装 SKU；已核对完整镜像的芯片、分区、checksum/SHA 与容量，原厂启动和实机未验证。",
+        "按 N16R16 设置 16 MiB Flash/PSRAM；NOR/PLL/模拟输入沿用明确的名义模型假设，没有借用其他设备的实测 eFuse。",
+        "UIFlow1、UIFlow2、小智：本轮官方型号 README/资源页未列出精确 S31-Touch-LCD-4.3C 目标镜像；上游目标专项核验仍未知，不使用同名 S3 固件替代。",
+        "3D 来源：official-cad-partial；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Native shared displayCAD accounts for3/1116 source components. S3 electronic assembly is explicitly omitted; replacementS31 PCB is markedUNKNOWN.",
+        "Model: Box SKU116.3×79×18mm packaging is documented but model shows only shared display/PCB envelope. The box and optional battery are not reconstructed yet.",
+        "Model: Viewing aperture95.54×54.36mm and800×480 pixelaspect conflict; image is letterboxed inside the documented aperture, not stretched. Optical active area calibration unresolved.",
+        "Model: BOOT/LED/ports are exposed through product controls and logs; locations are not fabricated on this partial mechanical model."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-touch-lcd43c-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-touch43c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad-partial"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s31-touch-lcd-4-3c-box-en",
+      "name": "Waveshare ESP32-S31-Touch-LCD-4.3C-BOX-EN",
+      "manufacturer": "Waveshare",
+      "sku": "36106",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "4.3 英寸 800×480 RGB565 / GT911；N16R16，精确包装 SKU，显示与输入数字子集。",
+      "family": {
+        "id": "waveshare-s31-touch-lcd43c",
+        "name": "Waveshare S31 4.3C"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-touch-lcd-4-3c-box-en.json",
+      "runtime": {
+        "board": "waveshare-s31-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7262",
+        "bus": "RGB565",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 24
+            },
+            {
+              "name": "CMD",
+              "gpio": 25
+            },
+            {
+              "name": "D0",
+              "gpio": 20
+            },
+            {
+              "name": "D1",
+              "gpio": 21
+            },
+            {
+              "name": "D2",
+              "gpio": 22
+            },
+            {
+              "name": "D3",
+              "gpio": 23
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 56
+            }
+          ],
+          "sourceIds": [
+            "overview"
+          ],
+          "notes": "Default 64 MiB FAT32; physical SDMMC/power-gate subset, factory mount not validated."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Touch-LCD-4.3C-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Touch-LCD-4.3C-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "已实现受真实 RGB/AXI-GDMA、完整 800×480 RGB565、引脚路由与 GPIO47 背光门控约束的显示子集；S31 LEDC 背光波形尚未实现。",
+        "GT911 单触点报告/确认、GPIO46 复位与 INT2 地址选择、GPIO61 BOOT、GPIO55 LED、PCF85063 和 QMI8658C 数字寄存器子集；原厂多点触摸、ES8389 音频、电池、电源、CAN-FD、RS485、USB Host 和无线未验收。",
+        "TF 卡具有 GPIO56 低有效电源门控与物理 SDMMC 引脚；默认 64 MiB FAT32 不表示原厂文件系统已通过。",
+        "官方同一型号出厂恢复镜像适用于三种包装 SKU；已核对完整镜像的芯片、分区、checksum/SHA 与容量，原厂启动和实机未验证。",
+        "按 N16R16 设置 16 MiB Flash/PSRAM；NOR/PLL/模拟输入沿用明确的名义模型假设，没有借用其他设备的实测 eFuse。",
+        "UIFlow1、UIFlow2、小智：本轮官方型号 README/资源页未列出精确 S31-Touch-LCD-4.3C 目标镜像；上游目标专项核验仍未知，不使用同名 S3 固件替代。",
+        "3D 来源：official-cad-partial；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Native shared displayCAD accounts for3/1116 source components. S3 electronic assembly is explicitly omitted; replacementS31 PCB is markedUNKNOWN.",
+        "Model: Box SKU116.3×79×18mm packaging is documented but model shows only shared display/PCB envelope. The box and optional battery are not reconstructed yet.",
+        "Model: Viewing aperture95.54×54.36mm and800×480 pixelaspect conflict; image is letterboxed inside the documented aperture, not stretched. Optical active area calibration unresolved.",
+        "Model: BOOT/LED/ports are exposed through product controls and logs; locations are not fabricated on this partial mechanical model."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-touch-lcd43c-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-touch43c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad-partial"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s31-touch-lcd-4-3c-box",
+      "name": "Waveshare ESP32-S31-Touch-LCD-4.3C-BOX",
+      "manufacturer": "Waveshare",
+      "sku": "36105",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32s31",
+      "summary": "4.3 英寸 800×480 RGB565 / GT911；N16R16，精确包装 SKU，显示与输入数字子集。",
+      "family": {
+        "id": "waveshare-s31-touch-lcd43c",
+        "name": "Waveshare S31 4.3C"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s31-touch-lcd-4-3c-box.json",
+      "runtime": {
+        "board": "waveshare-s31-touch-lcd43c",
+        "flashMb": 16,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 800,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7262",
+        "bus": "RGB565",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 61,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 24
+            },
+            {
+              "name": "CMD",
+              "gpio": 25
+            },
+            {
+              "name": "D0",
+              "gpio": 20
+            },
+            {
+              "name": "D1",
+              "gpio": 21
+            },
+            {
+              "name": "D2",
+              "gpio": 22
+            },
+            {
+              "name": "D3",
+              "gpio": 23
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 56
+            }
+          ],
+          "sourceIds": [
+            "overview"
+          ],
+          "notes": "Default 64 MiB FAT32; physical SDMMC/power-gate subset, factory mount not validated."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-S31-Touch-LCD-4.3C-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-S31-Touch-LCD-4.3C-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-S31-Touch-LCD-4.3C/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S31-Touch-LCD-4.3C/aeafb2ce1c37fc05409856cff1bfed7d83fc0d58/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "已实现受真实 RGB/AXI-GDMA、完整 800×480 RGB565、引脚路由与 GPIO47 背光门控约束的显示子集；S31 LEDC 背光波形尚未实现。",
+        "GT911 单触点报告/确认、GPIO46 复位与 INT2 地址选择、GPIO61 BOOT、GPIO55 LED、PCF85063 和 QMI8658C 数字寄存器子集；原厂多点触摸、ES8389 音频、电池、电源、CAN-FD、RS485、USB Host 和无线未验收。",
+        "TF 卡具有 GPIO56 低有效电源门控与物理 SDMMC 引脚；默认 64 MiB FAT32 不表示原厂文件系统已通过。",
+        "官方同一型号出厂恢复镜像适用于三种包装 SKU；已核对完整镜像的芯片、分区、checksum/SHA 与容量，原厂启动和实机未验证。",
+        "按 N16R16 设置 16 MiB Flash/PSRAM；NOR/PLL/模拟输入沿用明确的名义模型假设，没有借用其他设备的实测 eFuse。",
+        "UIFlow1、UIFlow2、小智：本轮官方型号 README/资源页未列出精确 S31-Touch-LCD-4.3C 目标镜像；上游目标专项核验仍未知，不使用同名 S3 固件替代。",
+        "3D 来源：official-cad-partial；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Native shared displayCAD accounts for3/1116 source components. S3 electronic assembly is explicitly omitted; replacementS31 PCB is markedUNKNOWN.",
+        "Model: Box SKU116.3×79×18mm packaging is documented but model shows only shared display/PCB envelope. The box and optional battery are not reconstructed yet.",
+        "Model: Viewing aperture95.54×54.36mm and800×480 pixelaspect conflict; image is letterboxed inside the documented aperture, not stretched. Optical active area calibration unresolved.",
+        "Model: BOOT/LED/ports are exposed through product controls and logs; locations are not fabricated on this partial mechanical model."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-s31-touch-lcd43c-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-s31-touch43c-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad-partial"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75b",
+      "name": "Waveshare ESP32-P4-Knob-Touch-AMOLED-1.75B",
+      "manufacturer": "Waveshare",
+      "sku": "35886",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "1.75 英寸 466×466 MIPI-DSI / CST9217，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-knob-touch-amoled-1-75",
+        "name": "ESP32-P4-Knob-Touch-AMOLED-1.75"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75b.json",
+      "runtime": {
+        "board": "waveshare-p4-knob-amoled175",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 1.75,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "cw",
+          "name": "旋钮顺时针脉冲",
+          "type": "button",
+          "pin": 20,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "ccw",
+          "name": "旋钮逆时针脉冲",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "power",
+          "name": "PWR",
+          "type": "button",
+          "pin": 2,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "LDO4 supply; no GPIO45 gate; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "旋钮是 GPIO20/21 独立方向开关，一格一个低有效脉冲；使用CW/CCW两个输入，不伪装为正交编码器。PWR经BSS138反相，GPIO2按下为HIGH。CST9217只提供实际报告/分辨率寄存器；未知project/checkcode查询NACK，不能声称完整驱动初始化通过。",
+        "CST9217 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: ColorSKU is represented; packaged battery differences remain knowledge records and are not fabricated as internal geometry.",
+        "Model: CW/CCW and BOOT/PWR use product input controls; visual knob ring is not misrepresented as an analog potentiometer.",
+        "Model: Official62×30.10mm envelope retained. Flutes,seam,port faces andPWR hotspot are photo-informed visual estimates; no mechanical fit or exact aperture measurements are claimed. Internal boards,motor and optional battery remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-knob-175-black/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75b-en",
+      "name": "Waveshare ESP32-P4-Knob-Touch-AMOLED-1.75B-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35887",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "1.75 英寸 466×466 MIPI-DSI / CST9217，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-knob-touch-amoled-1-75",
+        "name": "ESP32-P4-Knob-Touch-AMOLED-1.75"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75b-en.json",
+      "runtime": {
+        "board": "waveshare-p4-knob-amoled175",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 1.75,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "cw",
+          "name": "旋钮顺时针脉冲",
+          "type": "button",
+          "pin": 20,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "ccw",
+          "name": "旋钮逆时针脉冲",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "power",
+          "name": "PWR",
+          "type": "button",
+          "pin": 2,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "LDO4 supply; no GPIO45 gate; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "旋钮是 GPIO20/21 独立方向开关，一格一个低有效脉冲；使用CW/CCW两个输入，不伪装为正交编码器。PWR经BSS138反相，GPIO2按下为HIGH。CST9217只提供实际报告/分辨率寄存器；未知project/checkcode查询NACK，不能声称完整驱动初始化通过。",
+        "CST9217 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: ColorSKU is represented; packaged battery differences remain knowledge records and are not fabricated as internal geometry.",
+        "Model: CW/CCW and BOOT/PWR use product input controls; visual knob ring is not misrepresented as an analog potentiometer.",
+        "Model: Official62×30.10mm envelope retained. Flutes,seam,port faces andPWR hotspot are photo-informed visual estimates; no mechanical fit or exact aperture measurements are claimed. Internal boards,motor and optional battery remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-knob-175-black/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75s",
+      "name": "Waveshare ESP32-P4-Knob-Touch-AMOLED-1.75S",
+      "manufacturer": "Waveshare",
+      "sku": "35888",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "1.75 英寸 466×466 MIPI-DSI / CST9217，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-knob-touch-amoled-1-75",
+        "name": "ESP32-P4-Knob-Touch-AMOLED-1.75"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75s.json",
+      "runtime": {
+        "board": "waveshare-p4-knob-amoled175",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 1.75,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "cw",
+          "name": "旋钮顺时针脉冲",
+          "type": "button",
+          "pin": 20,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "ccw",
+          "name": "旋钮逆时针脉冲",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "power",
+          "name": "PWR",
+          "type": "button",
+          "pin": 2,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "LDO4 supply; no GPIO45 gate; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "旋钮是 GPIO20/21 独立方向开关，一格一个低有效脉冲；使用CW/CCW两个输入，不伪装为正交编码器。PWR经BSS138反相，GPIO2按下为HIGH。CST9217只提供实际报告/分辨率寄存器；未知project/checkcode查询NACK，不能声称完整驱动初始化通过。",
+        "CST9217 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: ColorSKU is represented; packaged battery differences remain knowledge records and are not fabricated as internal geometry.",
+        "Model: CW/CCW and BOOT/PWR use product input controls; visual knob ring is not misrepresented as an analog potentiometer.",
+        "Model: Official62×30.10mm envelope retained. Flutes,seam,port faces andPWR hotspot are photo-informed visual estimates; no mechanical fit or exact aperture measurements are claimed. Internal boards,motor and optional battery remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-knob-175-silver/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75s-en",
+      "name": "Waveshare ESP32-P4-Knob-Touch-AMOLED-1.75S-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35889",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "1.75 英寸 466×466 MIPI-DSI / CST9217，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-knob-touch-amoled-1-75",
+        "name": "ESP32-P4-Knob-Touch-AMOLED-1.75"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75s-en.json",
+      "runtime": {
+        "board": "waveshare-p4-knob-amoled175",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 1.75,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "cw",
+          "name": "旋钮顺时针脉冲",
+          "type": "button",
+          "pin": 20,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "ccw",
+          "name": "旋钮逆时针脉冲",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "power",
+          "name": "PWR",
+          "type": "button",
+          "pin": 2,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "LDO4 supply; no GPIO45 gate; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "旋钮是 GPIO20/21 独立方向开关，一格一个低有效脉冲；使用CW/CCW两个输入，不伪装为正交编码器。PWR经BSS138反相，GPIO2按下为HIGH。CST9217只提供实际报告/分辨率寄存器；未知project/checkcode查询NACK，不能声称完整驱动初始化通过。",
+        "CST9217 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: ColorSKU is represented; packaged battery differences remain knowledge records and are not fabricated as internal geometry.",
+        "Model: CW/CCW and BOOT/PWR use product input controls; visual knob ring is not misrepresented as an analog potentiometer.",
+        "Model: Official62×30.10mm envelope retained. Flutes,seam,port faces andPWR hotspot are photo-informed visual estimates; no mechanical fit or exact aperture measurements are claimed. Internal boards,motor and optional battery remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-knob-175-silver/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-5-en-v13",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5-EN · silicon rev1.x",
+      "manufacturer": "Waveshare",
+      "sku": "33511",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "3.5 英寸 320×480 ST7796／FT6336 触摸屏，16 MiB Flash、32 MiB PSRAM；V1.3 固件独立匹配，当前为部分适配。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-5",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-3.5"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-3-5-en-v13.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd35-v13",
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7796",
+        "bus": "SPI2",
+        "diagonalInches": 3.5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "schematic"
+          ],
+          "notes": "默认 64 MiB FAT32；Q1 低有效电源；完整原厂挂载未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "factory-readme",
+          "title": "firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "Official overview",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "Exact V1.3 factory image",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/firmware/ESP32-P4-WIFI6-Touch-LCD-3.5_FactoryOnly_20261119.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按厂商 V1.3 固件范围建立独立配置；虚拟晶圆版本为 1.0，不是对实物修订版的等同声明。",
+        "基础显示和触摸沿用 P4 SPI／FT5x06 子集；GPIO35 BOOT 和 TF GPIO45 低有效电源接线已补充。",
+        "板载 C6 无线协处理器尚未接入；原厂 Wi-Fi 初始化可能进入异常并重启。当前无完整原厂界面、音频、TF 文件系统或电源管理验收。",
+        "AXP2101、PWR 键、充电／电池、CSI、USB 和完整物理 SPI／I2C 路由仍待实现；不能以显示启动画面推定这些功能已支持。",
+        "已用此精确修订的原始镜像和对应 ROM 执行 5 秒，显示真实 Starting Wi-Fi 启动画面；C6 SDIO 初始化失败后发生 Instruction access fault 并重启，完整原厂运行未通过。",
+        "SKU33360含锂电池，SKU33511的-EN表示不含锂电池；不是语言版本。PCB版本未指定，silicon profile独立匹配固件。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Current packaging drawing shows63.67×95.11mm exterior, while retained nativeCADcover is61×92.44mm. No scaling is used. This is a manufacturer mechanical reference with unresolved enclosure/revision difference, not a1:1current packaging claim."
+      ],
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-3-5-v13-factory",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Storefront ordering is a scheduling proxy; firmware date is not hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd35-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-5-en-v32",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-3.5-EN · silicon rev3.x",
+      "manufacturer": "Waveshare",
+      "sku": "33511",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "3.5 英寸 320×480 ST7796／FT6336 触摸屏，16 MiB Flash、32 MiB PSRAM；V3.2 固件独立匹配，当前为部分适配。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-3-5",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-3.5"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-3-5-en-v32.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd35-v32",
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 480,
+        "type": "IPS LCD",
+        "controller": "ST7796",
+        "bus": "SPI2",
+        "diagonalInches": 3.5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "schematic"
+          ],
+          "notes": "默认 64 MiB FAT32；Q1 低有效电源；完整原厂挂载未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "factory-readme",
+          "title": "firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/schematic/ESP32-P4-WIFI6-Touch-LCD-3.5-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "Official overview",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-3.5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-binary",
+          "title": "Exact V3.2 factory image",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-3.5/3e2fcd48fe8847e83fd2556522b33728fa247d64/firmware/ESP32-P4-WIFI6-Touch-LCD-3.5_FactoryOnly_20261105.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "按厂商 V3.2 固件范围建立独立配置；虚拟晶圆版本为 3.1，不是对实物修订版的等同声明。",
+        "基础显示和触摸沿用 P4 SPI／FT5x06 子集；GPIO35 BOOT 和 TF GPIO45 低有效电源接线已补充。",
+        "板载 C6 无线协处理器尚未接入；原厂 Wi-Fi 初始化可能进入异常并重启。当前无完整原厂界面、音频、TF 文件系统或电源管理验收。",
+        "AXP2101、PWR 键、充电／电池、CSI、USB 和完整物理 SPI／I2C 路由仍待实现；不能以显示启动画面推定这些功能已支持。",
+        "已用此精确修订的原始镜像和对应 ROM 执行 5 秒，显示真实 Starting Wi-Fi 启动画面；C6 SDIO 初始化失败后发生 Instruction access fault 并重启，完整原厂运行未通过。",
+        "SKU33360含锂电池，SKU33511的-EN表示不含锂电池；不是语言版本。PCB版本未指定，silicon profile独立匹配固件。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Current packaging drawing shows63.67×95.11mm exterior, while retained nativeCADcover is61×92.44mm. No scaling is used. This is a manufacturer mechanical reference with unresolved enclosure/revision difference, not a1:1current packaging claim."
+      ],
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-3-5-v32-factory",
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Storefront ordering is a scheduling proxy; firmware date is not hardware release date."
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd35-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-4-3-v13",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-4.3 · silicon rev1.x",
+      "manufacturer": "Waveshare",
+      "sku": "33874",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "4.3 英寸 480×800 MIPI-DSI / GT911，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-4-3",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-4.3"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-4-3-v13.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd43-v13",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 800,
+        "type": "IPS LCD",
+        "controller": "ST7701",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4.3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-4.3",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4.3-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-4.3/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-4.3/46502f5ab24bbe00bd65b2df3ceacfa9e34dbf5b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-4.3/46502f5ab24bbe00bd65b2df3ceacfa9e34dbf5b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT911 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev1.00，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Published viewing opening56.96×94.4mm differs slightly from480×800 pixelaspect. Runtime uses56.64×94.4mm centered inside it, with no pixel stretch; optical AA exactness remains unresolved."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-4-3-20260206-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd43-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-4-3-v32",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-4.3 · silicon rev3.x",
+      "manufacturer": "Waveshare",
+      "sku": "33874",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "4.3 英寸 480×800 MIPI-DSI / GT911，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-4-3",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-4.3"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-4-3-v32.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd43-v32",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 800,
+        "type": "IPS LCD",
+        "controller": "ST7701",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4.3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-4.3",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4.3-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-4.3/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-4.3/46502f5ab24bbe00bd65b2df3ceacfa9e34dbf5b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-4.3/46502f5ab24bbe00bd65b2df3ceacfa9e34dbf5b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT911 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Published viewing opening56.96×94.4mm differs slightly from480×800 pixelaspect. Runtime uses56.64×94.4mm centered inside it, with no pixel stretch; optical AA exactness remains unresolved."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-4-3-20261106-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd43-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-4-3-c-v13",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-4.3-C · silicon rev1.x",
+      "manufacturer": "Waveshare",
+      "sku": "33875",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "4.3 英寸 480×800 MIPI-DSI / GT911，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-4-3",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-4.3"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-4-3-c-v13.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd43-v13",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 800,
+        "type": "IPS LCD",
+        "controller": "ST7701",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4.3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-4.3",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4.3-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-4.3/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-4.3/46502f5ab24bbe00bd65b2df3ceacfa9e34dbf5b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-4.3/46502f5ab24bbe00bd65b2df3ceacfa9e34dbf5b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT911 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev1.00，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Published viewing opening56.96×94.4mm differs slightly from480×800 pixelaspect. Runtime uses56.64×94.4mm centered inside it, with no pixel stretch; optical AA exactness remains unresolved."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-4-3-20260206-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd43-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-4-3-c-v32",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-4.3-C · silicon rev3.x",
+      "manufacturer": "Waveshare",
+      "sku": "33875",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "4.3 英寸 480×800 MIPI-DSI / GT911，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-4-3",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-4.3"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-4-3-c-v32.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd43-v32",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 480,
+        "height": 800,
+        "type": "IPS LCD",
+        "controller": "ST7701",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 4.3,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4.3-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-4.3",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-4.3-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-4.3/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-4.3/46502f5ab24bbe00bd65b2df3ceacfa9e34dbf5b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-4.3/46502f5ab24bbe00bd65b2df3ceacfa9e34dbf5b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT911 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Published viewing opening56.96×94.4mm differs slightly from480×800 pixelaspect. Runtime uses56.64×94.4mm centered inside it, with no pixel stretch; optical AA exactness remains unresolved."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-4-3-20261106-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd43-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-5-v32",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-5 · silicon rev3.x",
+      "manufacturer": "Waveshare",
+      "sku": "33762",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "5 英寸 720×1280 MIPI-DSI / GT911，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-5",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-5"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-5-v32.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd5-v32",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 720,
+        "height": 1280,
+        "type": "IPS LCD",
+        "controller": "HX8394",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-5-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-5-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-5/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-5/8f7f3fc60c31701c4382f3adf60da64c1ed06dd1/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-5/8f7f3fc60c31701c4382f3adf60da64c1ed06dd1/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT911 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Published viewing opening62.28×110.32mm differs from720×1280 pixelaspect. Runtime uses62.055×110.32mm inside it; active area calibration remains unresolved."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-5-20261110-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd5-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-5-v13",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-5 · silicon rev1.x",
+      "manufacturer": "Waveshare",
+      "sku": "33762",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "5 英寸 720×1280 MIPI-DSI / GT911，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-5",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-5"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-5-v13.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd5-v13",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 720,
+        "height": 1280,
+        "type": "IPS LCD",
+        "controller": "HX8394",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-5-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-5-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-5/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-5/8f7f3fc60c31701c4382f3adf60da64c1ed06dd1/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-5/8f7f3fc60c31701c4382f3adf60da64c1ed06dd1/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT911 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev1.00，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Published viewing opening62.28×110.32mm differs from720×1280 pixelaspect. Runtime uses62.055×110.32mm inside it; active area calibration remains unresolved."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-5-20261119-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd5-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-5-c-v32",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-5-C · silicon rev3.x",
+      "manufacturer": "Waveshare",
+      "sku": "33763",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "5 英寸 720×1280 MIPI-DSI / GT911，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-5",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-5"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-5-c-v32.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd5-v32",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 720,
+        "height": 1280,
+        "type": "IPS LCD",
+        "controller": "HX8394",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-5-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-5-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-5/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-5/8f7f3fc60c31701c4382f3adf60da64c1ed06dd1/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-5/8f7f3fc60c31701c4382f3adf60da64c1ed06dd1/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT911 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Published viewing opening62.28×110.32mm differs from720×1280 pixelaspect. Runtime uses62.055×110.32mm inside it; active area calibration remains unresolved."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-5-20261110-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd5-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-wifi6-touch-lcd-5-c-v13",
+      "name": "Waveshare ESP32-P4-WIFI6-Touch-LCD-5-C · silicon rev1.x",
+      "manufacturer": "Waveshare",
+      "sku": "33763",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "5 英寸 720×1280 MIPI-DSI / GT911，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-wifi6-touch-lcd-5",
+        "name": "ESP32-P4-WIFI6-Touch-LCD-5"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-wifi6-touch-lcd-5-c-v13.json",
+      "runtime": {
+        "board": "waveshare-p4-lcd5-v13",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 720,
+        "height": 1280,
+        "type": "IPS LCD",
+        "controller": "HX8394",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 5,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            },
+            {
+              "name": "POWER_N",
+              "gpio": 45
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "GPIO45 low active supply; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-5-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-5",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-WIFI6-Touch-LCD-5-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-WIFI6-Touch-LCD-5/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-5/8f7f3fc60c31701c4382f3adf60da64c1ed06dd1/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-WIFI6-Touch-LCD-5/8f7f3fc60c31701c4382f3adf60da64c1ed06dd1/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "Goodix只在0x5D应答；未发明可控INT引脚来选择0x14。GT9271保留9271器件身份，复用官方BSP声明兼容的单点报告子集。",
+        "GT911 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev1.00，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：official-cad；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: Optional camera, purchased battery/header accessories and packaging differences are recorded in product knowledge. This mechanical asset depicts only components present in the retained manufacturer file.",
+        "Model: Only actual output uses framebuffer. Physical BOOT/PWR targets require separately calibrated source positions; product keyboard/button controls remain available.",
+        "Model: Colors are approximate and native component groups preserve exact source placement; no current PCB revision or internal electrical validation inferred from CAD.",
+        "Model: Published viewing opening62.28×110.32mm differs from720×1280 pixelaspect. Runtime uses62.055×110.32mm inside it; active area calibration remains unresolved."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-wifi6-touch-lcd-5-20261119-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-lcd5-mechanical/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
       }
     }
   ]

@@ -705,6 +705,7 @@ fn setup_c61(o: &Opts) -> esp32c61::Machine {
 /// places, or that of the bootloader in the flash image (`esp32p4::built_for_rev3`). The silicon
 /// revision follows them.
 fn p4_rev3(o: &Opts) -> bool {
+    if let Some(revision) = esp_soc::waveshare_profiles::virtual_revision(&o.board) { return revision >= 300; }
     if let Some(revision) = esp32p4::board::lcd35_virtual_revision(&o.board) { return revision >= 300; }
     // These are explicitly rev3.1 virtual profiles. Their image must still pass
     // the revision-aware loader; this does not identify every physical board.
@@ -722,7 +723,7 @@ fn p4_rev3(o: &Opts) -> bool {
 /// The ESP32-P4, a bare module: 16 MB of flash unless told otherwise, PSRAM with `--psram-mb`.
 fn setup_p4<R: esp32p4::Revision>(o: &Opts) -> esp_soc::Machine<esp32p4::Esp32p4<R>> {
     let profile = esp32p4::board::waveshare_platform::profile(&o.board);
-    let memory = profile.map(|p| (p.flash_mib, p.psram_mib)).or_else(|| esp32p4::board::lcd35_virtual_revision(&o.board).map(|_| (16, 32)));
+    let memory = esp_soc::waveshare_profiles::memory_mib(&o.board).or_else(||profile.map(|p| (p.flash_mib, p.psram_mib))).or_else(|| esp32p4::board::lcd35_virtual_revision(&o.board).map(|_| (16, 32)));
     let flash_mb = o.flash_mb.unwrap_or(memory.map_or(16, |p| p.0));
     let psram_mb = o.psram_mb.or(memory.map(|p| p.1));
     if memory.is_some_and(|p| flash_mb != p.0 || psram_mb != Some(p.1)) {
@@ -745,23 +746,29 @@ fn setup_p4<R: esp32p4::Revision>(o: &Opts) -> esp_soc::Machine<esp32p4::Esp32p4
 
 /// ESP32-S31 bare module: 2 MiB NOR + W25Q16 JEDEC by default (IDF hello image header).
 fn setup_s31(o: &Opts) -> esp32s31::Machine {
-    let flash_mb = o.flash_mb.unwrap_or(if matches!(o.board.as_str(), "mosaico" | "esp-mosaico" | "metalio-ink4-plus") { 16 } else { 2 });
+    let memory = esp_soc::waveshare_profiles::memory_mib(&o.board);
+    let flash_mb = o.flash_mb.unwrap_or(memory.map_or_else(||if matches!(o.board.as_str(), "mosaico" | "esp-mosaico" | "metalio-ink4-plus") { 16 } else { 2 },|p|p.0));
+    let psram_mb = o.psram_mb.or(memory.map(|p|p.1));
+    if memory.is_some_and(|p|flash_mb!=p.0||psram_mb!=Some(p.1)) { usage_error("Waveshare S31 profile requires its exact documented Flash and PSRAM capacity"); }
     let flash = flash_mb << 20;
     let mut m = esp32s31::machine(o.mac.unwrap_or([0x10, 0x20, 0x30, 0x40, 0x50, 0x60]), flash);
     m.bus.set_flash_size(flash);
     // Prefer the hello image's JEDEC / SFDP when flash is the default 2 MiB; larger sizes keep
     // BoardInputs unset so callers can supply their own NOR identity.
     let mut inputs = match (o.board.as_str(), flash_mb) {
+        ("waveshare-s31-touch-lcd43c", _) => Some(esp32s31::board::waveshare_touch43c::inputs()),
         ("mosaico" | "esp-mosaico", _) => Some(esp32s31::soc::BoardInputs::mosaico_gd25q128()),
         ("metalio-ink4-plus", _) => Some(esp32s31::board::ink4_plus_inputs(o.psram_mb.unwrap_or(16) << 20)),
         (_, 2) => Some(esp32s31::soc::BoardInputs::hello_w25q16()),
         _ => None,
     };
-    if let Some(mb) = o.psram_mb { inputs.get_or_insert_with(esp32s31::soc::BoardInputs::devkit_w25q128).psram_bytes = mb << 20; }
+    if let Some(mb) = psram_mb { inputs.get_or_insert_with(esp32s31::soc::BoardInputs::devkit_w25q128).psram_bytes = mb << 20; }
     if let Some(inputs) = inputs {
         m.bus.set_board_inputs(inputs).unwrap_or_else(|e| usage_error(&e));
     }
-    if let Some(board) = esp32s31::board::make_board(&o.board) { m.bus.board = board; }
+    let selected_board = esp32s31::board::make_board(&o.board);
+    let board_known = selected_board.is_some();
+    if let Some(board) = selected_board { m.bus.board = board; }
     m.bus.attach_board_devices();
     set_imu_motion(m.bus.board.as_mut(), o);
     // SPI_FAST_FLASH_BOOT; prepare() may override with --strap.
@@ -778,7 +785,7 @@ fn setup_s31(o: &Opts) -> esp32s31::Machine {
         attach_wifi(&mut m.bus, o, net_log);
     }
     for (flag, on) in [
-        ("--board", !matches!(o.board.as_str(), "atech14" | "none" | "bare" | "mosaico" | "esp-mosaico" | "metalio-ink4-plus")),
+        ("--board", o.board != "atech14" && !board_known),
         ("--cam-image", o.cam_image.is_some()),
         ("--cam-stream", o.cam_stream.is_some()),
         ("--cam-size", o.cam_size.is_some()),

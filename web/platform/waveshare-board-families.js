@@ -171,22 +171,24 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
   },
   "waveshare-p4-lcd35-v13": {
     "chip": "esp32p4",
+    "display": true,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
     "flashMb": 16,
     "psramMb": 32,
-    "sdCard": true,
-    "boardButtons": [
-      "boot"
-    ],
     "virtualRevision": 100
   },
   "waveshare-p4-lcd35-v32": {
     "chip": "esp32p4",
+    "display": true,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
     "flashMb": 16,
     "psramMb": 32,
-    "sdCard": true,
-    "boardButtons": [
-      "boot"
-    ],
     "virtualRevision": 301
   },
   "waveshare-p4-core": {
@@ -501,5 +503,77 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "psramMb": 0,
     "sdCard": true,
     "boardButtons": []
+  },
+  "waveshare-s31-touch-lcd43c": {
+    "chip": "esp32s31",
+    "display": true,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "led": true,
+    "imu": true,
+    "sdCard": true,
+    "flashMb": 16,
+    "psramMb": 16
+  },
+  "waveshare-p4-knob-amoled175": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "imu": true,
+    "flashMb": 32,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-p4-lcd43-v13": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "imu": false,
+    "flashMb": 32,
+    "psramMb": 32,
+    "virtualRevision": 100
+  },
+  "waveshare-p4-lcd43-v32": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "imu": false,
+    "flashMb": 32,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-p4-lcd5-v32": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "imu": false,
+    "flashMb": 32,
+    "psramMb": 32,
+    "virtualRevision": 301
+  },
+  "waveshare-p4-lcd5-v13": {
+    "chip": "esp32p4",
+    "display": false,
+    "touch": true,
+    "gpio": true,
+    "rgb": false,
+    "sdCard": true,
+    "imu": false,
+    "flashMb": 32,
+    "psramMb": 32,
+    "virtualRevision": 100
   }
 }));

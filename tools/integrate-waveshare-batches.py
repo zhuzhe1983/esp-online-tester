@@ -53,6 +53,19 @@ def main():
         rows = fragment['products']
         ids = {p['id'] for p in rows}
         assert len(ids) == len(rows) and not ids.intersection(added_ids)
+        # Some reviewed lanes keep memory only on each exact SKU and call the
+        # virtual wafer choice siliconRevision. Normalize without guessing it.
+        for board, cap in fragment.get('boardCapabilities', {}).items():
+            memories = {(p['runtime']['flashMb'], p['runtime']['psramMb'])
+                        for p in rows if p['runtime'].get('board') == board}
+            assert len(memories) == 1, (board, memories)
+            flash, psram = memories.pop()
+            assert cap.get('flashMb', flash) == flash and cap.get('psramMb', psram) == psram
+            cap.update(flashMb=flash, psramMb=psram)
+            if 'siliconRevision' in cap:
+                revision = cap.pop('siliconRevision')
+                assert cap.get('virtualRevision', revision) == revision
+                cap['virtualRevision'] = revision
         for p in rows:
             assert p['manufacturer'] == 'Waveshare'
             assert p.get('sku') and p.get('knowledgeUrl')
@@ -80,6 +93,13 @@ def main():
             assert not f.get('simulationVerified'), 'Verified firmware needs a separate final acceptance review'
         upsert(products['items'], rows)
         upsert(firmwares['items'], fragment.get('firmwares', []))
+        for entry in fragment.get('watchlist', []):
+            compatibility = entry['compatibility']
+            if compatibility.get('status') in ('partial', 'unverified'):
+                assert not compatibility.get('simulationVerified') and not entry.get('catalogTargets')
+                # This is the watcher's automatic-update approval boundary,
+                # independent of an original image's selectable trial status.
+                compatibility['status'] = 'reference-only'
         upsert(watch['entries'], fragment.get('watchlist', []))
         upsert(index['entries'], knowledge)
         capabilities.update(fragment.get('boardCapabilities', {}))
@@ -96,6 +116,13 @@ def main():
     for board, cap in sorted(capabilities.items()):
         assert board.startswith('waveshare-') and all(c.isalnum() or c in '-.' for c in board)
         rust.append(f'        "{board}" => Some(({int(cap["flashMb"])}, {int(cap["psramMb"])})),')
+    rust += ['        _ => None,', '    }', '}', '',
+             '/// Explicit virtual wafer family; never inferred from a SKU name or image.',
+             'pub fn virtual_revision(board: &str) -> Option<u16> {', '    match board {']
+    for board, cap in sorted(capabilities.items()):
+        if 'virtualRevision' in cap:
+            assert cap['chip'] == 'esp32p4' and cap['virtualRevision'] in (100, 301)
+            rust.append(f'        "{board}" => Some({cap["virtualRevision"]}),')
     rust += ['        _ => None,', '    }', '}', '']
     (ROOT / 'esp-soc/src/waveshare_profiles.rs').write_text('\n'.join(rust))
     if args.selection:

@@ -234,7 +234,10 @@ onmessage = async (ev) => {
         runCycles=(...args)=>{try{return flight.run(...args);}catch(e){postMessage({flightError:e.message});return 1;}};
         flight.publish(true);
       }
-      const sramOnly = ['stamp-c5','stamp-c5-dip','waveshare-c5-lcd147','waveshare-c5-touch169','waveshare-c5-touch28','waveshare-c5-touch35','waveshare-c5-lcd273','lilygo-t7-c5','lilygo-t-dongle-c5','esp32s2','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(m.board);
+      // Every registered Waveshare C5 currently has the same SRAM-only loader
+      // boundary. The WASM factory already rejects unknown names; keep this
+      // low-level Worker independent of the product UI and its catalog modules.
+      const sramOnly = m.board.startsWith('waveshare-c5-') || ['stamp-c5','stamp-c5-dip','lilygo-t7-c5','lilygo-t-dongle-c5','esp32s2','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(m.board);
       postMessage({ created: emu !== 0, clockHz:CPU_HZ, audioAvailable, networkAvailable:!sramOnly&&!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !sramOnly&&!!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
     }
     else if(m.op.startsWith('network-')) {

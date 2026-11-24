@@ -132,17 +132,17 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         log("[emu] This exact Waveshare board requires its documented Flash and PSRAM capacity"); return std::ptr::null_mut();
     }
     let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
-    let c5_board = if matches!(board.as_str(), "stamp-c5" | "stamp-c5-dip" | "lilygo-t7-c5" | "lilygo-t-dongle-c5" | "waveshare-c5-lcd147" | "waveshare-c5-touch169" | "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273") { esp32c5::board::make_board(&board) } else { None };
+    let c5_board = if matches!(board.as_str(), "none" | "bare") { None } else { esp32c5::board::make_board(&board) };
     let s2_board = if board == "esp32s2" { esp32s2::board::make_board("none") } else if matches!(board.as_str(), "lilygo-esp32-s2-woor" | "lilygo-esp32-s2" | "lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board") { esp32s2::board::make_board(&board) } else { None };
     let c61_board = if board == "esp32c61" { esp32c61::board::make_board("none") } else if board == "corematrix" { esp32c61::board::make_board(&board) } else { None };
-    let s31_board = if board == "esp32s31" { esp32s31::board::make_board("none") } else if matches!(board.as_str(), "mosaico" | "esp-mosaico" | "metalio-ink4-plus") { esp32s31::board::make_board(&board) } else { None };
+    let s31_board = if board == "esp32s31" { esp32s31::board::make_board("none") } else if matches!(board.as_str(), "none" | "bare") { None } else { esp32s31::board::make_board(&board) };
     if s31_board.as_ref().is_some_and(|b| b.name() == "mosaico") && (flash_mb != 16 || psram_mb != 16) {
         log("[emu] ESP-Mosaico V1.2 requires 16 MiB Flash and 16 MiB PSRAM"); return std::ptr::null_mut();
     }
     if s31_board.as_ref().is_some_and(|b| b.name() == "metalio-ink4-plus") && flash_mb != 16 {
         log("[emu] Metalio INK4 Plus requires 16 MiB Flash; PSRAM capacity is a simulation setting"); return std::ptr::null_mut();
     }
-    let c5_memory = match board.as_str() { "waveshare-c5-touch169" => (16, 8), "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8), "lilygo-t-dongle-c5" => (16, 0), _ => (4, 0) };
+    let c5_memory = esp_soc::waveshare_profiles::memory_mib(&board).map(|(f,p)|(f as u32,p as u32)).unwrap_or_else(||match board.as_str() { "waveshare-c5-touch169" => (16, 8), "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8), "lilygo-t-dongle-c5" => (16, 0), _ => (4, 0) });
     if c5_board.is_some() && (flash_mb, psram_mb) != c5_memory {
         log("[emu] C5 board requires its documented Flash and PSRAM capacity"); return std::ptr::null_mut();
     }
@@ -183,6 +183,10 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     let (p4_name, coproc) = board.strip_suffix("+c6").map_or((board.as_str(), false), |b| (b, true));
     let p4_profile = esp32p4::board::waveshare_platform::profile(p4_name);
     let p4_lcd35_revision = esp32p4::board::lcd35_virtual_revision(p4_name);
+    let p4_exact_revision = esp_soc::waveshare_profiles::virtual_revision(p4_name).or(p4_lcd35_revision);
+    if p4_exact_revision.is_some() && (coproc || esp_soc::waveshare_profiles::memory_mib(p4_name).is_some_and(|memory|memory!=(flash_mb as usize,psram_mb as usize))) {
+        log("[emu] Exact Waveshare P4 profiles require their documented memory and do not imply a verified co-simulation topology"); return std::ptr::null_mut();
+    }
     if p4_lcd35_revision.is_some() && ((flash_mb, psram_mb) != (16, 32) || coproc) {
         log("[emu] Exact Waveshare P4 LCD3.5 profiles require 16 MiB Flash, 32 MiB PSRAM and no unverified coprocessor topology"); return std::ptr::null_mut();
     }
@@ -195,7 +199,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         }
     }
     let p4_board = esp32p4::board::make_board(p4_name).filter(|_| !matches!(p4_name, "none" | "bare"));
-    let p4_rev3 = p4_profile.is_some() || p4_lcd35_revision == Some(301) || matches!(p4_name, "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" | "esp32p4-rev3" | "p4-rev3"); // Explicit virtual rev3.1; not a claim about every physical unit.
+    let p4_rev3 = p4_exact_revision.map_or_else(||p4_profile.is_some() || matches!(p4_name, "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" | "esp32p4-rev3" | "p4-rev3"),|revision|revision>=300); // Explicit virtual wafer family; not a claim about every physical unit.
     let p4 = p4_board.is_some() || p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
     let classic_board = if board == "esp32" {
         esp32::board::make_board("esp32dev")
@@ -260,7 +264,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         MachineKind::C61(Box::new(m))
     } else if let Some(b) = s31_board {
         let mut m = esp32s31::machine([0x30, 0xed, 0xa0, 0x00, 0x11, 0x31], flash_bytes);
-        let mut inputs = if b.name() == "metalio-ink4-plus" { esp32s31::board::ink4_plus_inputs(psram_bytes) } else if b.name() == "mosaico" { esp32s31::soc::BoardInputs::mosaico_gd25q128() } else if flash_mb == 2 { esp32s31::soc::BoardInputs::hello_w25q16() } else { esp32s31::soc::BoardInputs::devkit_w25q128() };
+        let mut inputs = if b.name() == "waveshare-s31-touch-lcd43c" { esp32s31::board::waveshare_touch43c::inputs() } else if b.name() == "metalio-ink4-plus" { esp32s31::board::ink4_plus_inputs(psram_bytes) } else if b.name() == "mosaico" { esp32s31::soc::BoardInputs::mosaico_gd25q128() } else if flash_mb == 2 { esp32s31::soc::BoardInputs::hello_w25q16() } else { esp32s31::soc::BoardInputs::devkit_w25q128() };
         inputs.psram_bytes = psram_bytes;
         if let Err(reason) = m.bus.set_board_inputs(inputs) {
             log(&format!("[emu] {}", reason)); return std::ptr::null_mut();
@@ -653,3 +657,6 @@ pub extern "C" fn esp32sim_test_gpio_waveform() -> u32 {
 
 #[cfg(test)]
 mod s31_tests;
+
+#[cfg(test)]
+mod waveshare_factory_tests;

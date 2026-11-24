@@ -1,0 +1,783 @@
+{
+  "listingId": "esp32-p4-knob-touch-amoled-1.75",
+  "products": [
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75b",
+      "name": "Waveshare ESP32-P4-Knob-Touch-AMOLED-1.75B",
+      "manufacturer": "Waveshare",
+      "sku": "35886",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "1.75 英寸 466×466 MIPI-DSI / CST9217，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-knob-touch-amoled-1-75",
+        "name": "ESP32-P4-Knob-Touch-AMOLED-1.75"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75b.json",
+      "runtime": {
+        "board": "waveshare-p4-knob-amoled175",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 1.75,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "cw",
+          "name": "旋钮顺时针脉冲",
+          "type": "button",
+          "pin": 20,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "ccw",
+          "name": "旋钮逆时针脉冲",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "power",
+          "name": "PWR",
+          "type": "button",
+          "pin": 2,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "LDO4 supply; no GPIO45 gate; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "旋钮是 GPIO20/21 独立方向开关，一格一个低有效脉冲；使用CW/CCW两个输入，不伪装为正交编码器。PWR经BSS138反相，GPIO2按下为HIGH。CST9217只提供实际报告/分辨率寄存器；未知project/checkcode查询NACK，不能声称完整驱动初始化通过。",
+        "CST9217 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: ColorSKU is represented; packaged battery differences remain knowledge records and are not fabricated as internal geometry.",
+        "Model: CW/CCW and BOOT/PWR use product input controls; visual knob ring is not misrepresented as an analog potentiometer.",
+        "Model: Official62×30.10mm envelope retained. Flutes,seam,port faces andPWR hotspot are photo-informed visual estimates; no mechanical fit or exact aperture measurements are claimed. Internal boards,motor and optional battery remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-knob-175-black/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75b-en",
+      "name": "Waveshare ESP32-P4-Knob-Touch-AMOLED-1.75B-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35887",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "1.75 英寸 466×466 MIPI-DSI / CST9217，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-knob-touch-amoled-1-75",
+        "name": "ESP32-P4-Knob-Touch-AMOLED-1.75"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75b-en.json",
+      "runtime": {
+        "board": "waveshare-p4-knob-amoled175",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 1.75,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "cw",
+          "name": "旋钮顺时针脉冲",
+          "type": "button",
+          "pin": 20,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "ccw",
+          "name": "旋钮逆时针脉冲",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "power",
+          "name": "PWR",
+          "type": "button",
+          "pin": 2,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "LDO4 supply; no GPIO45 gate; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "旋钮是 GPIO20/21 独立方向开关，一格一个低有效脉冲；使用CW/CCW两个输入，不伪装为正交编码器。PWR经BSS138反相，GPIO2按下为HIGH。CST9217只提供实际报告/分辨率寄存器；未知project/checkcode查询NACK，不能声称完整驱动初始化通过。",
+        "CST9217 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: ColorSKU is represented; packaged battery differences remain knowledge records and are not fabricated as internal geometry.",
+        "Model: CW/CCW and BOOT/PWR use product input controls; visual knob ring is not misrepresented as an analog potentiometer.",
+        "Model: Official62×30.10mm envelope retained. Flutes,seam,port faces andPWR hotspot are photo-informed visual estimates; no mechanical fit or exact aperture measurements are claimed. Internal boards,motor and optional battery remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-knob-175-black/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75s",
+      "name": "Waveshare ESP32-P4-Knob-Touch-AMOLED-1.75S",
+      "manufacturer": "Waveshare",
+      "sku": "35888",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "1.75 英寸 466×466 MIPI-DSI / CST9217，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-knob-touch-amoled-1-75",
+        "name": "ESP32-P4-Knob-Touch-AMOLED-1.75"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75s.json",
+      "runtime": {
+        "board": "waveshare-p4-knob-amoled175",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 1.75,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "cw",
+          "name": "旋钮顺时针脉冲",
+          "type": "button",
+          "pin": 20,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "ccw",
+          "name": "旋钮逆时针脉冲",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "power",
+          "name": "PWR",
+          "type": "button",
+          "pin": 2,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "LDO4 supply; no GPIO45 gate; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "旋钮是 GPIO20/21 独立方向开关，一格一个低有效脉冲；使用CW/CCW两个输入，不伪装为正交编码器。PWR经BSS138反相，GPIO2按下为HIGH。CST9217只提供实际报告/分辨率寄存器；未知project/checkcode查询NACK，不能声称完整驱动初始化通过。",
+        "CST9217 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: ColorSKU is represented; packaged battery differences remain knowledge records and are not fabricated as internal geometry.",
+        "Model: CW/CCW and BOOT/PWR use product input controls; visual knob ring is not misrepresented as an analog potentiometer.",
+        "Model: Official62×30.10mm envelope retained. Flutes,seam,port faces andPWR hotspot are photo-informed visual estimates; no mechanical fit or exact aperture measurements are claimed. Internal boards,motor and optional battery remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-knob-175-silver/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75s-en",
+      "name": "Waveshare ESP32-P4-Knob-Touch-AMOLED-1.75S-EN",
+      "manufacturer": "Waveshare",
+      "sku": "35889",
+      "hardwareRevision": "unspecified",
+      "chip": "esp32p4",
+      "summary": "1.75 英寸 466×466 MIPI-DSI / CST9217，32 MiB Flash/PSRAM；输入数字子集，DSI显示尚未实现。",
+      "family": {
+        "id": "waveshare-esp32-p4-knob-touch-amoled-1-75",
+        "name": "ESP32-P4-Knob-Touch-AMOLED-1.75"
+      },
+      "knowledgeUrl": "./knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75s-en.json",
+      "runtime": {
+        "board": "waveshare-p4-knob-amoled175",
+        "flashMb": 32,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 466,
+        "height": 466,
+        "type": "AMOLED",
+        "controller": "CO5300",
+        "bus": "MIPI-DSI",
+        "diagonalInches": 1.75,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 35,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "cw",
+          "name": "旋钮顺时针脉冲",
+          "type": "button",
+          "pin": 20,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowRight"
+        },
+        {
+          "id": "ccw",
+          "name": "旋钮逆时针脉冲",
+          "type": "button",
+          "pin": 21,
+          "activeLow": true,
+          "defaultKeyCode": "ArrowLeft"
+        },
+        {
+          "id": "power",
+          "name": "PWR",
+          "type": "button",
+          "pin": 2,
+          "activeLow": false,
+          "defaultKeyCode": "KeyP"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF · SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 43
+            },
+            {
+              "name": "CMD",
+              "gpio": 44
+            },
+            {
+              "name": "D0",
+              "gpio": 39
+            },
+            {
+              "name": "D1",
+              "gpio": 40
+            },
+            {
+              "name": "D2",
+              "gpio": 41
+            },
+            {
+              "name": "D3",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "readme"
+          ],
+          "notes": "LDO4 supply; no GPIO45 gate; default64MiB FAT32; original-firmware mount unverified."
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-overview.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75X-Resources-And-Documents.html",
+          "url": "https://docs.waveshare.com/ESP32-P4-Knob-Touch-AMOLED-1.75X/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory-readme",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "MIPI-DSI / DPI 图像传输未实现，当前不生成替代 framebuffer；产品尺寸/分辨率是硬件知识，不能当作显示运行通过。",
+        "旋钮是 GPIO20/21 独立方向开关，一格一个低有效脉冲；使用CW/CCW两个输入，不伪装为正交编码器。PWR经BSS138反相，GPIO2按下为HIGH。CST9217只提供实际报告/分辨率寄存器；未知project/checkcode查询NACK，不能声称完整驱动初始化通过。",
+        "CST9217 触摸报告数字子集、I2C GPIO7/8、GPIO35 BOOT 已实现；多点、复杂配置与完整原厂界面未验证。",
+        "TF 默认64MiB FAT32与已有P4 SDMMC数字模型；独立原厂文件系统挂载、C6无线、CSI、USB、音频模拟、Ethernet及模拟电源未验收。",
+        "此配置使用虚拟 silicon rev3.01，仅用于匹配原始镜像范围；不是实物PCB修订声明，实际芯片应单独识别。",
+        "原始出厂镜像固定提交/实际SHA，分区和每个ESP段checksum/SHA已审计；simulationVerified=false，未做本次原厂启动或实机验收。",
+        "UIFlow1/2：本轮官方型号README/资源页没有列出精确目标镜像；上游专项核验未知。Xiaozhi可能作为官方Brookesia内部应用出现，但这不证明独立上游镜像可复用。",
+        "3D 来源：dimension-photo-reconstruction；生产Three加载器/原生尺寸/屏幕射线/展开复位已检验；部分结构和光学尺寸有明确限制，未宣称浏览器WebGL或实物装配通过。",
+        "Model: No hardware-fit or browser/WebGL acceptance is implied by the retained CAD or CPU geometry checks.",
+        "Model: Factory display execution is independently recorded in product limitations; a model screen only shows the actual emulator framebuffer.",
+        "Model: ColorSKU is represented; packaged battery differences remain knowledge records and are not fabricated as internal geometry.",
+        "Model: CW/CCW and BOOT/PWR use product input controls; visual knob ring is not misrepresented as an analog potentiometer.",
+        "Model: Official62×30.10mm envelope retained. Flutes,seam,port faces andPWR hotspot are photo-informed visual estimates; no mechanical fit or exact aperture measurements are claimed. Internal boards,motor and optional battery remain UNKNOWN."
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "Official storefront position is a scheduling proxy; firmware dates are not hardware release dates."
+      },
+      "defaultFirmwareId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-p4-knob-175-silver/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-factory",
+      "name": "ESP32-P4-Knob-Touch-AMOLED-1.75 · 官方出厂镜像 · FactoryOnly_20261103（未验证）",
+      "productIds": [
+        "waveshare-esp32-p4-knob-touch-amoled-1-75b",
+        "waveshare-esp32-p4-knob-touch-amoled-1-75b-en",
+        "waveshare-esp32-p4-knob-touch-amoled-1-75s",
+        "waveshare-esp32-p4-knob-touch-amoled-1-75s-en"
+      ],
+      "version": "FactoryOnly_20261103",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/ESP32-P4-Knob-Touch-AMOLED-1.75_FactoryOnly_20261103.bin",
+        "sha256": "930b969ea3134da7a1df88ef6fe6f5f7b2145af28487d78d2183de33b79e90f9",
+        "bootMode": "rom"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "watchlistId": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-official",
+      "sources": [
+        {
+          "title": "Official firmware README",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/README.md",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "title": "ESP32-P4-Knob-Touch-AMOLED-1.75_FactoryOnly_20261103.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/ESP32-P4-Knob-Touch-AMOLED-1.75_FactoryOnly_20261103.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "Official exact model/packaging restore firmware. Silicon profiles are explicit; no factory boot verification. DSI/DPI output remains unimplemented."
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-p4-knob-touch-amoled-1-75-20261103-official",
+      "name": "ESP32-P4-Knob-Touch-AMOLED-1.75 原厂固件 FactoryOnly_20261103",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/tree/main/firmware",
+      "version": "FactoryOnly_20261103",
+      "checkedAt": "2026-11-23T16:59:09Z",
+      "assets": [
+        {
+          "name": "ESP32-P4-Knob-Touch-AMOLED-1.75_FactoryOnly_20261103.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-P4-Knob-Touch-AMOLED-1.75/7671170de4f5fe04ae9c9a9273f6b6119eb7fb0b/firmware/ESP32-P4-Knob-Touch-AMOLED-1.75_FactoryOnly_20261103.bin",
+          "sha256": "930b969ea3134da7a1df88ef6fe6f5f7b2145af28487d78d2183de33b79e90f9",
+          "bytes": 22020096,
+          "format": "merged"
+        }
+      ],
+      "compatibility": {
+        "status": "unverified",
+        "productIds": [
+          "waveshare-esp32-p4-knob-touch-amoled-1-75b",
+          "waveshare-esp32-p4-knob-touch-amoled-1-75b-en",
+          "waveshare-esp32-p4-knob-touch-amoled-1-75s",
+          "waveshare-esp32-p4-knob-touch-amoled-1-75s-en"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Official exact model/packaging restore firmware. Silicon profiles are explicit; no factory boot verification. DSI/DPI output remains unimplemented."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": []
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75b.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75b-en.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75s.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-p4-knob-touch-amoled-1-75s-en.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-p4-knob-amoled175": {
+      "chip": "esp32p4",
+      "display": false,
+      "touch": true,
+      "gpio": true,
+      "rgb": false,
+      "sdCard": true,
+      "imu": true,
+      "siliconRevision": 301
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-knob-touch-amoled-1.75/source-receipts.json",
+    "docs/research/waveshare-p4-s31-2026-11-24/esp32-p4-knob-touch-amoled-1.75/factory-image-audit.json",
+    "web/platform/assets/waveshare-p4-knob-175-black/source-manifest.json",
+    "web/platform/assets/waveshare-p4-knob-175-silver/source-manifest.json"
+  ],
+  "tests": [
+    {
+      "command": "cargo test --release -p esp32p4 waveshare_screens",
+      "status": "passed",
+      "tests": 3,
+      "scope": "Board protocol tests across15profiles: actual control addresses/coordinates/ACK/reset subset, no fabricated DSI frames. Full factory boot and WebGL unverified."
+    },
+    {
+      "kind": "model-loader",
+      "command": "node tools/check-waveshare-model-loading.mjs waveshare-p4-knob-175-black waveshare-p4-knob-175-silver",
+      "status": "passed",
+      "scope": "Actual productionThree loader, retainedsourcehashes, native geometry bounds, framebuffer rays, shellmaterial isolation, UNKNOWN label construction/exposure and inspection restoration. No WebGL or physical fit claim."
+    },
+    {
+      "kind": "guest-input",
+      "command": "CARGO_BUILD_JOBS=2 cargo test --release -p esp32p4 waveshare -- --nocapture",
+      "status": "passed",
+      "evidence": "docs/research/waveshare-p4-s31-2026-11-24/p4-input-guest-check.json",
+      "scope": "Actual rev3 guest CST9217 physical I2C route + wrong-pin NACK + switches press/release; no factory boot/DSI claim."
+    }
+  ],
+  "limitations": [
+    "MIPI-DSI/DPI output unimplemented; input/control digital subset only.",
+    "Chip revision profiles are distinct from PCB and sales variants; exact SKU count must deduplicate SKU across profiles."
+  ],
+  "integrationNotes": [
+    "Route exact names via esp32p4::board::waveshare_screens::profile(name), using its revision field as virtual silicon revision.",
+    "WASM/CLI:32MiB flash and32MiB PSRAM; root owns shared catalog/capability/selector integration."
+  ],
+  "modelIds": [
+    "waveshare-p4-knob-175-black",
+    "waveshare-p4-knob-175-silver"
+  ]
+}

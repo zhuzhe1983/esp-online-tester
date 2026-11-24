@@ -11,6 +11,8 @@ use esp_soc::devices::co5300::Co5300;
 use esp_soc::{Board, BoardModel, NoBoard};
 #[path = "board/ink4_plus.rs"]
 mod ink4_plus;
+#[path = "board/waveshare_touch43c.rs"]
+pub mod waveshare_touch43c;
 pub use ink4_plus::inputs as ink4_plus_inputs;
 
 pub fn make_board(name: &str) -> Option<Board> {
@@ -18,7 +20,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "none" | "bare" => Some(Box::new(NoBoard)),
         "mosaico" | "esp-mosaico" => Some(Box::new(Mosaico::new())),
         "metalio-ink4-plus" => Some(Box::new(ink4_plus::Ink4Plus::new())),
-        _ => None,
+        _ => waveshare_touch43c::make_board(name),
     }
 }
 

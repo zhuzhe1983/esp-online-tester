@@ -13,6 +13,7 @@ use esp_soc::board::{BoardEdge, VirtualCycle};
 use esp_soc::{Board, BoardModel, NoBoard};
 pub mod lilygo;
 pub mod waveshare_platform;
+pub mod waveshare_screens;
 
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
@@ -22,7 +23,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" => Some(Box::new(WaveshareP4Lcd35::new())),
         "waveshare-p4-lcd35-v13" => Some(Box::new(WaveshareP4Lcd35::with_name("waveshare-p4-lcd35-v13"))),
         "waveshare-p4-lcd35-v32" => Some(Box::new(WaveshareP4Lcd35::with_name("waveshare-p4-lcd35-v32"))),
-        _ => waveshare_platform::make_board(name),
+        _ => waveshare_platform::make_board(name).or_else(||waveshare_screens::make_board(name)),
     }
 }
 

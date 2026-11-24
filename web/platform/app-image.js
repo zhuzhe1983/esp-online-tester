@@ -12,7 +12,7 @@ const check=(value,code,message)=>{if(!value)fail(code,message);};
 export const isC5Board=board=>WAVESHARE_BOARD_CAPABILITIES[board]?.chip==='esp32c5'||['esp32c5','stamp-c5','stamp-c5-dip','lilygo-t7-c5','lilygo-t-dongle-c5'].includes(board);
 export const isS2Board=board=>['esp32s2','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(board);
 export const isSramOnlyBoard=board=>isC5Board(board)||isS2Board(board);
-export const isS31Board=board=>['esp32s31','mosaico','esp-mosaico','metalio-ink4-plus'].includes(board);
+export const isS31Board=board=>WAVESHARE_BOARD_CAPABILITIES[board]?.chip==='esp32s31'||['esp32s31','mosaico','esp-mosaico','metalio-ink4-plus'].includes(board);
 export const isC61Board=board=>['esp32c61','corematrix'].includes(board);
 export const isC3Board=board=>['esp32c3','stampc3','stampc3u','seeed-xiao-epaper-75'].includes(board);
 // ESP-IDF v6.1 esp_app_format.h: S31 = 0x0020; v5.5.4: C61 = 20, distinct from C6 (13).

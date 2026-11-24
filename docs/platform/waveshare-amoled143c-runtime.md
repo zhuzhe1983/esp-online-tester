@@ -91,9 +91,19 @@ uses this as its digital presentation reference. MX/MY/BGR changes are relative
 to that reference. Only the visible window is stored; it is not an assertion of
 the complete silicon GRAM dimensions. The data sheet's RDDMADCTL summary and
 write-command wording disagree, and the component supplies an MV bit that the
-data-sheet write table calls don't-care. Consequently axis swap via bit 5 is not
-claimed or silently approximated: pixel writes with that unsupported orientation
-are rejected. The current factory does not use that orientation.
+data-sheet write table calls don't-care. A later bounded extension supports the
+manufacturer BSP's bit-5 row/column exchange for square visible windows as an
+explicit digital presentation policy. It composes exchange and mirrors with
+the inverse fixed board reference; it does not discard a guest orientation bit.
+Rectangular exchanged address ranges remain unsupported and reject pixel writes.
+The 1.43C factory continues using C0h, so its existing presentation is unchanged.
+The source conflict remains unresolved at the physical-glass level; this is not
+a calibration claim. The independently pinned C6 2.16 source at commit
+`294543798f1a44e2f2c4d2976522323f2beee11d`, file
+`02_Example/ESP-IDF-v5.5.3/08_LVGL_V8_Test/components/port_bsp/display_bsp.cpp`,
+initializes MADCTL30h and explicitly uses30h/00h in its rotation method. Original
+bytes and receipt are retained under
+`docs/platform/research/waveshare-co5300-square-mv/`.
 
 COLMOD bit 7 selects VIPF or IFPF as documented. The implemented pixel format is
 RGB565. Sleep, display enable and explicit brightness-zero gating affect the

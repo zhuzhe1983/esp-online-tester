@@ -18,12 +18,14 @@ pub struct Profile {
     pub sd: bool,
     pub sd_power: Option<(u8, bool)>,
     pub rgb: Option<u8>,
+    /// Only an exact storefront kit that includes this panel attaches touch.
+    pub panel: Option<(u16, u16)>,
 }
 const fn module(name: &'static str, flash_mib: usize) -> Profile {
-    Profile { name, flash_mib, psram_mib: 32, boot: None, codec: false, sd: false, sd_power: None, rgb: None }
+    Profile { name, flash_mib, psram_mib: 32, boot: None, codec: false, sd: false, sd_power: None, rgb: None, panel: None }
 }
 const fn carrier(name: &'static str, flash_mib: usize) -> Profile {
-    Profile { name, flash_mib, psram_mib: 32, boot: Some(35), codec: true, sd: true, sd_power: None, rgb: None }
+    Profile { name, flash_mib, psram_mib: 32, boot: Some(35), codec: true, sd: true, sd_power: None, rgb: None, panel: None }
 }
 pub const PROFILES: &[Profile] = &[
     module("waveshare-p4-core", 16),
@@ -43,9 +45,24 @@ pub const PROFILES: &[Profile] = &[
     carrier("waveshare-p4-wifi6-poe-eth", 32),
     Profile { sd_power: Some((45, false)), ..carrier("waveshare-p4-wifi6-db", 32) },
     Profile { sd_power: Some((45, false)), ..carrier("waveshare-p4-nano-wifi6-db", 16) },
+    Profile { panel: Some((800, 1280)), sd_power: Some((45, false)), ..carrier("waveshare-p4-wifi6-db-kit-101", 32) },
+    Profile { panel: Some((800, 1280)), sd_power: Some((45, false)), ..carrier("waveshare-p4-nano-wifi6-db-kit-101", 16) },
+    Profile { panel: Some((800, 1280)), ..carrier("waveshare-p4-wifi6-poe-eth-kit-101", 32) },
+    Profile { panel: Some((800, 1280)), ..carrier("waveshare-p4-poe-eth-kit-101", 32) },
+    Profile { panel: Some((720, 1280)), ..carrier("waveshare-p4-wifi6-dev-kit-7", 16) },
+    Profile { panel: Some((800, 1280)), ..carrier("waveshare-p4-wifi6-dev-kit-101", 16) },
+    Profile { panel: Some((800, 1280)), ..carrier("waveshare-p4-wifi6-kit-101", 32) },
+    Profile { panel: Some((720, 1280)), ..carrier("waveshare-p4-module-dev-kit-7", 16) },
+    Profile { panel: Some((800, 1280)), ..carrier("waveshare-p4-module-dev-kit-101", 16) },
+    Profile { panel: Some((800, 1280)), ..carrier("waveshare-p4-nano-kit-101", 16) },
 ];
 pub fn profile(name: &str) -> Option<Profile> { PROFILES.iter().copied().find(|p| p.name == name) }
-pub fn make_board(name: &str) -> Option<Board> { profile(name).map(|p| Box::new(WavesharePlatform::new(p)) as Board) }
+pub fn make_board(name: &str) -> Option<Board> {
+    profile(name).map(|p| match p.panel {
+        Some((width, height)) => super::waveshare_screens::external_panel_kit(p.name, width, height, p.sd_power),
+        None => Box::new(WavesharePlatform::new(p)) as Board,
+    })
+}
 
 struct Codec(Arc<Mutex<Es8311>>);
 impl I2cDevice for Codec {
@@ -112,9 +129,9 @@ mod tests {
     #[test]
     fn bare_modules_and_core_carrier_do_not_inherit_external_panels_or_codecs() {
         for p in PROFILES {
-            let mut b = WavesharePlatform::new(*p);
+            let mut b = make_board(p.name).unwrap();
             assert!(b.display().is_none());
-            assert_eq!(b.i2c_devices().len(), if p.codec { 2 } else { 0 });
+            assert_eq!(b.i2c_devices().len(), if p.codec { 2 } else { 0 } + if p.panel.is_some() { 2 } else { 0 });
             assert_eq!(b.named_pin("boot"), p.boot);
             assert!(!b.button_at(0, "reset", true));
             assert_eq!(b.leds().is_some(), p.rgb.is_some());

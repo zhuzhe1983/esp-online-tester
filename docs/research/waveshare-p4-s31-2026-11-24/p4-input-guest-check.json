@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-11-23T17:44:08Z",
+  "testSource": "esp32p4/tests/waveshare.rs",
+  "sourceSha256": "0a25895819f990b1e4adb1c39116b2a9b69e28b6d900216ecf03033786597587",
+  "silicon": "P4 rev3.1 (RevGe3)",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "command": "CARGO_BUILD_JOBS=2 cargo test --release -p esp32p4 waveshare -- --nocapture",
+  "results": {
+    "boardUnitTests": 6,
+    "guestIntegrationTests": 2,
+    "passed": 8,
+    "failed": 0
+  },
+  "cases": [
+    {
+      "board": "waveshare-p4-knob-amoled175",
+      "input": {
+        "physicalTouch": [
+          100,
+          200,
+          true
+        ],
+        "buttons": [
+          "boot",
+          "cw",
+          "power"
+        ]
+      },
+      "actualGuestActions": [
+        "GPIO27 reset output high",
+        "IO_MUX and GPIO matrix SDA7/SCL8",
+        "I2C0 write 0xD000 and read 10 bytes",
+        "GPIO IN/IN1 read into guest SRAM",
+        "Wait and read released button levels"
+      ],
+      "expectedAndObserved": {
+        "touchXY": [
+          365,
+          265
+        ],
+        "touchReportHeader": [
+          6,
+          1,
+          171
+        ],
+        "boot35": false,
+        "cw20": false,
+        "ccw21": true,
+        "power2": true,
+        "releaseBoot35": true,
+        "releaseCW20": true,
+        "releasePower2": false
+      },
+      "negative": "The same touch event and CPU commands with SDA6 cause I2C NACK."
+    },
+    {
+      "board": "waveshare-p4-wifi6-db-kit-101",
+      "actualGuestActions": [
+        "IO_MUX and GPIO matrix SDA7/SCL8",
+        "I2C0 read register0x8140 at0x5D into guest SRAM"
+      ],
+      "expectedAndObserved": "9271",
+      "negative": "Bare waveshare-p4-wifi6-db NACKs the same address; no panel is inferred."
+    }
+  ],
+  "scope": "Actual CPU instructions and GPIO/I2C MMIO; host only loads guest program and supplies physical touch/button events. No host-injected registers or framebuffer. No factory firmware boot, complete controller emulation, DSI pixels, hardware or WebGL claim.",
+  "testHarnessCorrection": "Initial release assertion read GPIO before queued physical input edges advanced. Added guest delay before release reads; final exact rev3 guest suite passes without changing board behavior."
+}

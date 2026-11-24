@@ -49,3 +49,5 @@ pub mod waveshare_touch_parts;
 pub mod waveshare_ch32v006;
 pub mod waveshare_ili9488;
 pub mod ft3168;
+
+pub mod cst92xx;

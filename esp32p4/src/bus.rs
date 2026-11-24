@@ -291,6 +291,7 @@ impl SocBus {
             Some((45, false)) // LCD3.5 schematic Q1 AO3401: active-low TF power.
         } else {
             crate::board::waveshare_platform::profile(self.board.name()).and_then(|p| p.sd_power)
+                .or_else(||crate::board::waveshare_screens::profile(self.board.name()).and_then(|p|p.sd_power))
         };
         for (bus, address, device) in self.board.i2c_devices() {
             match bus {0=>self.periph.i2c0.attach(address,device),1=>self.periph.i2c1.attach(address,device),_=>{}}

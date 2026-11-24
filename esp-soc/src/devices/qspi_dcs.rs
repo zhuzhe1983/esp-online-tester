@@ -29,7 +29,7 @@ impl QspiDcsPanel {
     /// visible window is stored; this is not an assertion of full silicon GRAM size.
     pub fn co5300(width: usize, height: usize, x_gap: u16, reference_madctl: u8) -> Self {
         Self { memory: Co5300::new(width, height, x_gap).with_display_state(),
-            reference_madctl: reference_madctl & 0xc8, madctl: 0, page: 0, inverted: false,
+            reference_madctl: reference_madctl & 0xe8, madctl: 0, page: 0, inverted: false,
             selected: false, discard: false, header: [0; 4], header_len: 0,
             parameter_count: 0, command: 0, normal_command: false,
             commands: 0, opaque_commands: 0, opaque_bytes: 0, rejected: 0, changes: 0 }
@@ -41,7 +41,10 @@ impl QspiDcsPanel {
     pub fn state(&self) -> Co5300DisplayState { self.memory.display_state().expect("CO5300 state enabled") }
     pub fn window(&self) -> [u16; 4] { self.memory.window() }
     pub fn version(&self) -> u64 { self.changes.wrapping_add(self.pixels_written()).wrapping_add(self.state().revision) }
-    pub fn visible(&self) -> bool { self.state().visible() && self.madctl & 0x20 == 0 }
+    fn orientation_supported(&self) -> bool {
+        self.width() == self.height() || (self.madctl | self.reference_madctl) & 0x20 == 0
+    }
+    pub fn visible(&self) -> bool { self.state().visible() && self.orientation_supported() }
     pub fn frame(&self) -> Vec<u16> {
         let (w, h) = (self.width(), self.height());
         let mut out = vec![0; w * h];
@@ -49,8 +52,19 @@ impl QspiDcsPanel {
         let orientation = self.madctl ^ self.reference_madctl;
         for (i, &pixel) in self.memory.frame.iter().enumerate() {
             let (mut x, mut y) = (i % w, i / w);
-            if orientation & 0x40 != 0 { x = w - 1 - x; }
-            if orientation & 0x80 != 0 { y = h - 1 - y; }
+            // Apply guest row/column exchange and mirrors, then invert the
+            // fixed board reference transform. XOR alone is insufficient:
+            // exchanging axes does not commute with an individual mirror.
+            // This is the evidenced BSP digital presentation policy; the
+            // data-sheet bit-5 wording conflict remains physically unverified.
+            // Only square windows support MV here; rectangular address-range
+            // exchange remains explicitly unsupported rather than cropped.
+            if self.madctl & 0x20 != 0 { std::mem::swap(&mut x, &mut y); }
+            if self.madctl & 0x40 != 0 { x = w - 1 - x; }
+            if self.madctl & 0x80 != 0 { y = h - 1 - y; }
+            if self.reference_madctl & 0x80 != 0 { y = h - 1 - y; }
+            if self.reference_madctl & 0x40 != 0 { x = w - 1 - x; }
+            if self.reference_madctl & 0x20 != 0 { std::mem::swap(&mut x, &mut y); }
             let mut pixel = if orientation & 8 != 0 { (pixel & 0x07e0) | (pixel >> 11) | ((pixel & 31) << 11) } else { pixel };
             if self.inverted { pixel ^= 0xffff; }
             out[y * w + x] = pixel;
@@ -135,7 +149,7 @@ impl QspiDcsPanel {
         }
         if matches!(cmd, 0x2c | 0x3c) {
             let [x0, x1, y0, y1] = self.memory.window();
-            if !self.state().rgb565() || self.madctl & 0x20 != 0 || x0 > x1 || y0 > y1 { return false; }
+            if !self.state().rgb565() || !self.orientation_supported() || x0 > x1 || y0 > y1 { return false; }
         } else {
             let needed = match cmd { 0x2a | 0x2b => 4, 0x44 => 2,
                 0x35 | 0x36 | 0x3a | 0x51 | 0x53 => 1, _ => 0 };
@@ -163,6 +177,29 @@ mod tests {
         command(&mut p, 0x11, &[]); command(&mut p, 0x29, &[]);
         command(&mut p, 0x53, &[0x20]); command(&mut p, 0x51, &[255]);
         command(&mut p, 0x2a, &[0, 8, 0, 9]); command(&mut p, 0x2b, &[0, 0, 0, 0]); p
+    }
+    #[test]
+    fn square_mv_transposes_real_pixels_and_composes_with_reference_mirrors() {
+        for reference in [0, 0x30, 0x60, 0xa0, 0xe0] {
+            let mut p = QspiDcsPanel::co5300(2, 2, 0, reference);
+            command(&mut p, 0x36, &[reference]); command(&mut p, 0x3a, &[0x55]);
+            command(&mut p, 0x11, &[]); command(&mut p, 0x29, &[]);
+            command(&mut p, 0x53, &[0x20]); command(&mut p, 0x51, &[255]);
+            command(&mut p, 0x2a, &[0, 0, 0, 1]); command(&mut p, 0x2b, &[0, 0, 0, 1]);
+            assert!(p.transfer(pins(4, 1), &[0x32, 0, 0x2c, 0]));
+            assert!(p.transfer(pins(8, 4), &[0xf8, 0, 7, 0xe0, 0, 31, 255, 255])); p.deselect();
+            assert_eq!(p.frame(), [0xf800, 0x07e0, 0x001f, 0xffff], "same guest/reference orientation is identity");
+            if reference == 0 {
+                command(&mut p, 0x36, &[0x20]);
+                assert_eq!(p.frame(), [0xf800, 0x001f, 0x07e0, 0xffff]);
+                command(&mut p, 0x36, &[0x60]);
+                assert_eq!(p.frame(), [0x001f, 0xf800, 0xffff, 0x07e0]);
+            }
+        }
+        let mut p = ready(); command(&mut p, 0x36, &[0x20]);
+        assert!(!p.visible(), "rectangular swapped address ranges remain unsupported");
+        assert!(p.transfer(pins(4, 1), &[0x32, 0, 0x2c, 0]));
+        assert!(!p.transfer(pins(2, 4), &[0xf8, 0]));
     }
     #[test]
     fn split_header_quad_pixels_and_header_looking_pixel_chunks_keep_cs_identity() {
