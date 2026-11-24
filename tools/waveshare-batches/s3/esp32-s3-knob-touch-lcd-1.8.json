@@ -1,0 +1,1455 @@
+{
+  "listingId": "esp32-s3-knob-touch-lcd-1.8",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-knob-touch-lcd-1-8",
+      "name": "Waveshare ESP32-S3-KNOB-TOUCH-LCD-1.8 · Included, Blue",
+      "manufacturer": "Waveshare",
+      "sku": "31623",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "S3主控16MiB Flash /8MiB PSRAM、360×360触摸旋钮屏；真实QSPI、CST公共报告、GPIO8/7编码器与四线SDMMC。蓝/黑与有/无电池四SKU独立；第二颗classic ESP32不合并冒充。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-knob-touch-lcd-1-8.json",
+      "family": {
+        "id": "waveshare-esp32-s3-knob-touch-lcd-1-8",
+        "name": "Waveshare ESP32-S3-KNOB-TOUCH-LCD-1.8"
+      },
+      "runtime": {
+        "board": "waveshare-s3-knob-touch-lcd18",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 360,
+        "height": 360,
+        "type": "IPS LCD",
+        "bus": "QSPI",
+        "controller": "Manufacturer QSPI LCD subset; fitted die unconfirmed",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary ring · GPIO8 / GPIO7",
+          "type": "encoder",
+          "pins": {
+            "a": 8,
+            "b": 7
+          },
+          "detents": 24,
+          "detentsBasis": "simulation",
+          "physicalDetents": null,
+          "notes": "24步是工作台输入分辨率，不是实测卡点数；每步发送真实A/B四相，不虚构按压键。"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 4
+            },
+            {
+              "name": "CMD",
+              "gpio": 3
+            },
+            {
+              "name": "D0",
+              "gpio": 5
+            },
+            {
+              "name": "D1",
+              "gpio": 6
+            },
+            {
+              "name": "D2",
+              "gpio": 42
+            },
+            {
+              "name": "D3",
+              "gpio": 2
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "厂商源文件名SH8601但实际为带背光LCD且使用F0 vendor banks，不能据类名赋予AMOLED/SH8601芯片身份；只实现源证实的DCS/QSPI子集。",
+        "第二ESP32-U4WDH经典芯片镜像仅作来源参考，不与S3并行仿真。蓝牙音频/DRV2605/CH445P/DAC/麦克风/模拟PCM和电池ADC未实现。",
+        "原厂画面当前倒置、物理扫描方向与编码器机械卡点未标定；复位RAM清零是明确未知态策略，不声称硅片物理默认值。",
+        "66mm直径/22mm厚度只是外廓包络，有来源照片不证明真实旋钮分缝、内部PCB或壁厚；黑色版本缺少独立照片，内部PCB/可选电池UNKNOWN。BOOT按钮位置未标定，因此保留2D输入，不虚构3D热区。",
+        "本轮官方BIN.zip的Range请求返回206与正确ZIP签名，但未给Access-Control-Allow-Origin；浏览器直接加载可能被CORS阻止。保留原厂固定远程trial入口与原包来源，不冒称公开Worker已经取包通过。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "后续空腔修正：原实心外廓已拆为有实际内腔的侧壁、带光学孔的前盖及独立后盖；外尺寸取原厂标注，1.5mm壁厚/盖厚、未标注接缝与孔位是明确估计，不能用于制造或装配。照片保持原样，模型开孔去除照片中的端口覆盖；隐藏电路板标识UNKNOWN。本修正取代早期实心外廓说明，不增加整机或WebGL验收声明。",
+        "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-knob-touch-lcd-1-8运行5客体秒。360×360末帧25色、78显示帧；人工检查可见时钟/低电量内容，但画面倒置且偏暗，未验收方向和亮度。64MiB FAT32卡挂载，未观察到更改页；ZIP内第二颗经典ESP32固件未共同执行。证据：docs/platform/evidence/waveshare-batch013-20261124/knob18-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-knob-touch-lcd-1.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/04_Encoder_Test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/bidi_switch_knob.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/bidi_switch_knob.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/08_LVGL_Test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/cst816.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/cst816.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/esp_lcd_sh8601.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/esp_lcd_sh8601.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bl_pwm_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bl_pwm_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_config.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/sdcard_bsp/sdcard_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/sdcard_bsp/sdcard_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/user_app/user_app.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/user_app/user_app.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/.vscode/settings.json",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_touch_bsp/lcd_touch_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_touch_bsp/lcd_touch_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/user_config.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/1_LCD&POWER.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/2_ESP32S3-R8.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/3_ESP32-CHIP.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/4_OTHER.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/5_DAC.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-knob-touch-lcd-1-8-blue/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-knob-touch-lcd-1-8-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-31624",
+      "name": "Waveshare ESP32-S3-KNOB-TOUCH-LCD-1.8 · NOT Included, Blue",
+      "manufacturer": "Waveshare",
+      "sku": "31624",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "S3主控16MiB Flash /8MiB PSRAM、360×360触摸旋钮屏；真实QSPI、CST公共报告、GPIO8/7编码器与四线SDMMC。蓝/黑与有/无电池四SKU独立；第二颗classic ESP32不合并冒充。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-knob-touch-lcd-1-8-sku-31624.json",
+      "family": {
+        "id": "waveshare-esp32-s3-knob-touch-lcd-1-8",
+        "name": "Waveshare ESP32-S3-KNOB-TOUCH-LCD-1.8"
+      },
+      "runtime": {
+        "board": "waveshare-s3-knob-touch-lcd18",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 360,
+        "height": 360,
+        "type": "IPS LCD",
+        "bus": "QSPI",
+        "controller": "Manufacturer QSPI LCD subset; fitted die unconfirmed",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary ring · GPIO8 / GPIO7",
+          "type": "encoder",
+          "pins": {
+            "a": 8,
+            "b": 7
+          },
+          "detents": 24,
+          "detentsBasis": "simulation",
+          "physicalDetents": null,
+          "notes": "24步是工作台输入分辨率，不是实测卡点数；每步发送真实A/B四相，不虚构按压键。"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 4
+            },
+            {
+              "name": "CMD",
+              "gpio": 3
+            },
+            {
+              "name": "D0",
+              "gpio": 5
+            },
+            {
+              "name": "D1",
+              "gpio": 6
+            },
+            {
+              "name": "D2",
+              "gpio": 42
+            },
+            {
+              "name": "D3",
+              "gpio": 2
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "厂商源文件名SH8601但实际为带背光LCD且使用F0 vendor banks，不能据类名赋予AMOLED/SH8601芯片身份；只实现源证实的DCS/QSPI子集。",
+        "第二ESP32-U4WDH经典芯片镜像仅作来源参考，不与S3并行仿真。蓝牙音频/DRV2605/CH445P/DAC/麦克风/模拟PCM和电池ADC未实现。",
+        "原厂画面当前倒置、物理扫描方向与编码器机械卡点未标定；复位RAM清零是明确未知态策略，不声称硅片物理默认值。",
+        "66mm直径/22mm厚度只是外廓包络，有来源照片不证明真实旋钮分缝、内部PCB或壁厚；黑色版本缺少独立照片，内部PCB/可选电池UNKNOWN。BOOT按钮位置未标定，因此保留2D输入，不虚构3D热区。",
+        "本轮官方BIN.zip的Range请求返回206与正确ZIP签名，但未给Access-Control-Allow-Origin；浏览器直接加载可能被CORS阻止。保留原厂固定远程trial入口与原包来源，不冒称公开Worker已经取包通过。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "后续空腔修正：原实心外廓已拆为有实际内腔的侧壁、带光学孔的前盖及独立后盖；外尺寸取原厂标注，1.5mm壁厚/盖厚、未标注接缝与孔位是明确估计，不能用于制造或装配。照片保持原样，模型开孔去除照片中的端口覆盖；隐藏电路板标识UNKNOWN。本修正取代早期实心外廓说明，不增加整机或WebGL验收声明。",
+        "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-knob-touch-lcd-1-8运行5客体秒。360×360末帧25色、78显示帧；人工检查可见时钟/低电量内容，但画面倒置且偏暗，未验收方向和亮度。64MiB FAT32卡挂载，未观察到更改页；ZIP内第二颗经典ESP32固件未共同执行。证据：docs/platform/evidence/waveshare-batch013-20261124/knob18-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-knob-touch-lcd-1.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/04_Encoder_Test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/bidi_switch_knob.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/bidi_switch_knob.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/08_LVGL_Test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/cst816.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/cst816.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/esp_lcd_sh8601.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/esp_lcd_sh8601.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bl_pwm_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bl_pwm_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_config.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/sdcard_bsp/sdcard_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/sdcard_bsp/sdcard_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/user_app/user_app.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/user_app/user_app.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/.vscode/settings.json",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_touch_bsp/lcd_touch_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_touch_bsp/lcd_touch_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/user_config.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/1_LCD&POWER.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/2_ESP32S3-R8.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/3_ESP32-CHIP.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/4_OTHER.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/5_DAC.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-knob-touch-lcd-1-8-blue/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-knob-touch-lcd-1-8-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34875",
+      "name": "Waveshare ESP32-S3-KNOB-TOUCH-LCD-1.8 · Included, Black",
+      "manufacturer": "Waveshare",
+      "sku": "34875",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "S3主控16MiB Flash /8MiB PSRAM、360×360触摸旋钮屏；真实QSPI、CST公共报告、GPIO8/7编码器与四线SDMMC。蓝/黑与有/无电池四SKU独立；第二颗classic ESP32不合并冒充。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34875.json",
+      "family": {
+        "id": "waveshare-esp32-s3-knob-touch-lcd-1-8",
+        "name": "Waveshare ESP32-S3-KNOB-TOUCH-LCD-1.8"
+      },
+      "runtime": {
+        "board": "waveshare-s3-knob-touch-lcd18",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 360,
+        "height": 360,
+        "type": "IPS LCD",
+        "bus": "QSPI",
+        "controller": "Manufacturer QSPI LCD subset; fitted die unconfirmed",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary ring · GPIO8 / GPIO7",
+          "type": "encoder",
+          "pins": {
+            "a": 8,
+            "b": 7
+          },
+          "detents": 24,
+          "detentsBasis": "simulation",
+          "physicalDetents": null,
+          "notes": "24步是工作台输入分辨率，不是实测卡点数；每步发送真实A/B四相，不虚构按压键。"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 4
+            },
+            {
+              "name": "CMD",
+              "gpio": 3
+            },
+            {
+              "name": "D0",
+              "gpio": 5
+            },
+            {
+              "name": "D1",
+              "gpio": 6
+            },
+            {
+              "name": "D2",
+              "gpio": 42
+            },
+            {
+              "name": "D3",
+              "gpio": 2
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "厂商源文件名SH8601但实际为带背光LCD且使用F0 vendor banks，不能据类名赋予AMOLED/SH8601芯片身份；只实现源证实的DCS/QSPI子集。",
+        "第二ESP32-U4WDH经典芯片镜像仅作来源参考，不与S3并行仿真。蓝牙音频/DRV2605/CH445P/DAC/麦克风/模拟PCM和电池ADC未实现。",
+        "原厂画面当前倒置、物理扫描方向与编码器机械卡点未标定；复位RAM清零是明确未知态策略，不声称硅片物理默认值。",
+        "66mm直径/22mm厚度只是外廓包络，有来源照片不证明真实旋钮分缝、内部PCB或壁厚；黑色版本缺少独立照片，内部PCB/可选电池UNKNOWN。BOOT按钮位置未标定，因此保留2D输入，不虚构3D热区。",
+        "本轮官方BIN.zip的Range请求返回206与正确ZIP签名，但未给Access-Control-Allow-Origin；浏览器直接加载可能被CORS阻止。保留原厂固定远程trial入口与原包来源，不冒称公开Worker已经取包通过。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "后续空腔修正：原实心外廓已拆为有实际内腔的侧壁、带光学孔的前盖及独立后盖；外尺寸取原厂标注，1.5mm壁厚/盖厚、未标注接缝与孔位是明确估计，不能用于制造或装配。照片保持原样，模型开孔去除照片中的端口覆盖；隐藏电路板标识UNKNOWN。本修正取代早期实心外廓说明，不增加整机或WebGL验收声明。",
+        "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-knob-touch-lcd-1-8运行5客体秒。360×360末帧25色、78显示帧；人工检查可见时钟/低电量内容，但画面倒置且偏暗，未验收方向和亮度。64MiB FAT32卡挂载，未观察到更改页；ZIP内第二颗经典ESP32固件未共同执行。证据：docs/platform/evidence/waveshare-batch013-20261124/knob18-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-knob-touch-lcd-1.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/04_Encoder_Test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/bidi_switch_knob.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/bidi_switch_knob.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/08_LVGL_Test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/cst816.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/cst816.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/esp_lcd_sh8601.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/esp_lcd_sh8601.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bl_pwm_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bl_pwm_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_config.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/sdcard_bsp/sdcard_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/sdcard_bsp/sdcard_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/user_app/user_app.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/user_app/user_app.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/.vscode/settings.json",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_touch_bsp/lcd_touch_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_touch_bsp/lcd_touch_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/user_config.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/1_LCD&POWER.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/2_ESP32S3-R8.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/3_ESP32-CHIP.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/4_OTHER.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/5_DAC.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-knob-touch-lcd-1-8-black/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-knob-touch-lcd-1-8-factory"
+    },
+    {
+      "id": "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34876",
+      "name": "Waveshare ESP32-S3-KNOB-TOUCH-LCD-1.8 · NOT Included, Black",
+      "manufacturer": "Waveshare",
+      "sku": "34876",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "S3主控16MiB Flash /8MiB PSRAM、360×360触摸旋钮屏；真实QSPI、CST公共报告、GPIO8/7编码器与四线SDMMC。蓝/黑与有/无电池四SKU独立；第二颗classic ESP32不合并冒充。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34876.json",
+      "family": {
+        "id": "waveshare-esp32-s3-knob-touch-lcd-1-8",
+        "name": "Waveshare ESP32-S3-KNOB-TOUCH-LCD-1.8"
+      },
+      "runtime": {
+        "board": "waveshare-s3-knob-touch-lcd18",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 360,
+        "height": 360,
+        "type": "IPS LCD",
+        "bus": "QSPI",
+        "controller": "Manufacturer QSPI LCD subset; fitted die unconfirmed",
+        "touch": true,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        },
+        {
+          "id": "encoder",
+          "name": "Rotary ring · GPIO8 / GPIO7",
+          "type": "encoder",
+          "pins": {
+            "a": 8,
+            "b": 7
+          },
+          "detents": 24,
+          "detentsBasis": "simulation",
+          "physicalDetents": null,
+          "notes": "24步是工作台输入分辨率，不是实测卡点数；每步发送真实A/B四相，不虚构按压键。"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 4
+            },
+            {
+              "name": "CMD",
+              "gpio": 3
+            },
+            {
+              "name": "D0",
+              "gpio": 5
+            },
+            {
+              "name": "D1",
+              "gpio": 6
+            },
+            {
+              "name": "D2",
+              "gpio": 42
+            },
+            {
+              "name": "D3",
+              "gpio": 2
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。"
+        }
+      ],
+      "limitations": [
+        "厂商源文件名SH8601但实际为带背光LCD且使用F0 vendor banks，不能据类名赋予AMOLED/SH8601芯片身份；只实现源证实的DCS/QSPI子集。",
+        "第二ESP32-U4WDH经典芯片镜像仅作来源参考，不与S3并行仿真。蓝牙音频/DRV2605/CH445P/DAC/麦克风/模拟PCM和电池ADC未实现。",
+        "原厂画面当前倒置、物理扫描方向与编码器机械卡点未标定；复位RAM清零是明确未知态策略，不声称硅片物理默认值。",
+        "66mm直径/22mm厚度只是外廓包络，有来源照片不证明真实旋钮分缝、内部PCB或壁厚；黑色版本缺少独立照片，内部PCB/可选电池UNKNOWN。BOOT按钮位置未标定，因此保留2D输入，不虚构3D热区。",
+        "本轮官方BIN.zip的Range请求返回206与正确ZIP签名，但未给Access-Control-Allow-Origin；浏览器直接加载可能被CORS阻止。保留原厂固定远程trial入口与原包来源，不冒称公开Worker已经取包通过。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "后续空腔修正：原实心外廓已拆为有实际内腔的侧壁、带光学孔的前盖及独立后盖；外尺寸取原厂标注，1.5mm壁厚/盖厚、未标注接缝与孔位是明确估计，不能用于制造或装配。照片保持原样，模型开孔去除照片中的端口覆盖；隐藏电路板标识UNKNOWN。本修正取代早期实心外廓说明，不增加整机或WebGL验收声明。",
+        "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-knob-touch-lcd-1-8运行5客体秒。360×360末帧25色、78显示帧；人工检查可见时钟/低电量内容，但画面倒置且偏暗，未验收方向和亮度。64MiB FAT32卡挂载，未观察到更改页；ZIP内第二颗经典ESP32固件未共同执行。证据：docs/platform/evidence/waveshare-batch013-20261124/knob18-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-knob-touch-lcd-1.8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/04_Encoder_Test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/bidi_switch_knob.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/04_Encoder_Test/bidi_switch_knob.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/08_LVGL_Test.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/cst816.cpp",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/cst816.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/esp_lcd_sh8601.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/esp_lcd_sh8601.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bl_pwm_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bl_pwm_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/Arduino/examples/08_LVGL_Test/lcd_config.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/sdcard_bsp/sdcard_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/sdcard_bsp/sdcard_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-15",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/user_app/user_app.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-16",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/components/user_app/user_app.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-17",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/02_SD_Card/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-18",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/.vscode/settings.json",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-19",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-20",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-21",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-22",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-23",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_touch_bsp/lcd_touch_bsp.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-24",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/components/lcd_touch_bsp/lcd_touch_bsp.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-25",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/idf_component.yml",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-26",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/main.c",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-27",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-Demo/ESP-IDF/08_LVGL_Test/main/user_config.h",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-Demo.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-28",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/1_LCD&POWER.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-29",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/2_ESP32S3-R8.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-30",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/3_ESP32-CHIP.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-31",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/4_OTHER.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-32",
+          "title": "固定原始来源：ESP32-S3-Knob-Touch-LCD-1.8-schematic/5_DAC.png",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-schematic.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-knob-touch-lcd-1-8-black/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-knob-touch-lcd-1-8-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-knob-touch-lcd-1-8-factory",
+      "name": "WX-ESP32S3-KNOB_V1.2.bin",
+      "productIds": [
+        "waveshare-esp32-s3-knob-touch-lcd-1-8",
+        "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-31624",
+        "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34875",
+        "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34876"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-BIN.zip",
+        "sha256": "f7c1cc18b687559f3bd69e5c9ab526bc61c2b2d9c502f38367f7f2bfe4ff8e87",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "ESP32-S3-Knob-Touch-LCD-1.8-BIN/WX-ESP32S3-KNOB_V1.2.bin",
+          "sha256": "7d29fc1fb356059f7291eccd74bfb5c9fa7538998bc3f5ff811cd87f04c1691c"
+        }
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "WX-ESP32S3-KNOB_V1.2",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://www.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-BIN.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方恢复BIN.zip包含独立S3与classic ESP32两个镜像。只选择WX-ESP32S3-KNOB_V1.2.bin作为S3 factory/default：2,138,224B、chipId9，原ZIP2,032,893B与精确成员双SHA。原厂S3 ROM5guest秒生成78帧/25色时钟和low-battery提示；画面方向在当前模型中为倒置，实物玻璃方向尚未标定，未宣称原应用/第二MCU完整兼容。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。",
+        "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-knob-touch-lcd-1-8运行5客体秒。360×360末帧25色、78显示帧；人工检查可见时钟/低电量内容，但画面倒置且偏暗，未验收方向和亮度。64MiB FAT32卡挂载，未观察到更改页；ZIP内第二颗经典ESP32固件未共同执行。证据：docs/platform/evidence/waveshare-batch013-20261124/knob18-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-knob-touch-lcd-1-8-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-knob-touch-lcd-1-8-factory-watch",
+      "name": "WX-ESP32S3-KNOB_V1.2.bin",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Knob-Touch-LCD-1.8",
+      "metadataUrl": "https://www.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8",
+      "releaseUrl": "https://www.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8",
+      "version": "archive-sha256-7d29fc1fb356059f7291eccd74bfb5c9fa7538998bc3f5ff811cd87f04c1691c",
+      "checkedAt": "2026-11-23T19:13:19Z",
+      "assets": [
+        {
+          "name": "ESP32-S3-Knob-Touch-LCD-1.8-BIN.zip",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Knob-Touch-LCD-1.8/ESP32-S3-Knob-Touch-LCD-1.8-BIN.zip",
+          "sha256": "7d29fc1fb356059f7291eccd74bfb5c9fa7538998bc3f5ff811cd87f04c1691c",
+          "bytes": 2032893,
+          "format": "zip-bundle",
+          "member": {
+            "path": "ESP32-S3-Knob-Touch-LCD-1.8-BIN/WX-ESP32S3-KNOB_V1.2.bin",
+            "sha256": "f7c1cc18b687559f3bd69e5c9ab526bc61c2b2d9c502f38367f7f2bfe4ff8e87",
+            "bytes": 2138224,
+            "format": "merged"
+          }
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-knob-touch-lcd-1-8",
+          "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-31624",
+          "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34875",
+          "waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34876"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-knob-touch-lcd-1-8.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-knob-touch-lcd-1-8-sku-31624.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34875.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-knob-touch-lcd-1-8-sku-34876.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-knob-touch-lcd18": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "实际QSPI窗口红绿像素、错误CS/数据脚/mode、F0 bank隔离、背光与复位、真实CST寄存器/IRQ和四线SDMMC测试通过。",
+    "原厂S3 ROM5guest秒：360×360、78帧、25色、SD30命令/2,128B读取；真实画面倒置与low-battery提示作为未标定结果保留，不修图冒充正常。",
+    "蓝/黑外形分别建模；蓝色真实原图纹理，黑色无来源照片时使用明确中性无纹理材质；背面原图与UNKNOWN模型、旋钮射线检查通过。"
+  ],
+  "limitations": [
+    "厂商源文件名SH8601但实际为带背光LCD且使用F0 vendor banks，不能据类名赋予AMOLED/SH8601芯片身份；只实现源证实的DCS/QSPI子集。",
+    "第二ESP32-U4WDH经典芯片镜像仅作来源参考，不与S3并行仿真。蓝牙音频/DRV2605/CH445P/DAC/麦克风/模拟PCM和电池ADC未实现。",
+    "原厂画面当前倒置、物理扫描方向与编码器机械卡点未标定；复位RAM清零是明确未知态策略，不声称硅片物理默认值。",
+    "66mm直径/22mm厚度只是外廓包络，有来源照片不证明真实旋钮分缝、内部PCB或壁厚；黑色版本缺少独立照片，内部PCB/可选电池UNKNOWN。BOOT按钮位置未标定，因此保留2D输入，不虚构3D热区。",
+    "本轮官方BIN.zip的Range请求返回206与正确ZIP签名，但未给Access-Control-Allow-Origin；浏览器直接加载可能被CORS阻止。保留原厂固定远程trial入口与原包来源，不冒称公开Worker已经取包通过。",
+    "后续空腔修正：原实心外廓已拆为有实际内腔的侧壁、带光学孔的前盖及独立后盖；外尺寸取原厂标注，1.5mm壁厚/盖厚、未标注接缝与孔位是明确估计，不能用于制造或装配。照片保持原样，模型开孔去除照片中的端口覆盖；隐藏电路板标识UNKNOWN。本修正取代早期实心外廓说明，不增加整机或WebGL验收声明。",
+    "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-knob-touch-lcd-1-8运行5客体秒。360×360末帧25色、78显示帧；人工检查可见时钟/低电量内容，但画面倒置且偏暗，未验收方向和亮度。64MiB FAT32卡挂载，未观察到更改页；ZIP内第二颗经典ESP32固件未共同执行。证据：docs/platform/evidence/waveshare-batch013-20261124/knob18-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

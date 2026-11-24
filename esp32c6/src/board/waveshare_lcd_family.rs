@@ -114,7 +114,14 @@ impl BoardModel for WaveshareLcd {
             if gpio==Some(true)||(gpio.is_none()&&!hardware){if let Some(sd)=&mut self.sd{sd.deselect();}}}
     }
     fn uses_gpio_pwm(&self)->bool{true}
-    fn gpio_pwm_at(&mut self,cycle:u64,pwm:&dyn Fn(u8)->Option<(f64,u32)>){self.advance_to(cycle);if let Some((high,_hz))=pwm(self.w.bl){let duty=if self.w.bl_low{1.0-high}else{high};self.set_backlight((duty.clamp(0.0,1.0)*255.0).round()as u8);}}
+    fn gpio_pwm_at(&mut self,cycle:u64,pwm:&dyn Fn(u8)->Option<(f64,u32)>){
+        self.advance_to(cycle);
+        if let Some((_,high))=pwm(self.w.bl){
+            // BoardModel's tuple is (frequency Hz, high-time duty / 65535).
+            let high=high.min(65535);let duty=if self.w.bl_low{65535-high}else{high};
+            self.set_backlight(((duty*255+32767)/65535)as u8);
+        }
+    }
     fn uses_qspi_pins(&self)->bool{true}
     fn spi_transfer_qspi_pins(&mut self,host:u8,p:SpiQspiPins,tx:&[u8],rx_len:usize)->Vec<u8>{
         let floating=vec![0xff;rx_len];
@@ -162,6 +169,20 @@ mod tests {
     use super::*;
     use esp_periph::{Gpio,RegRam};
     use esp_soc::pins::ChipPins;
+    #[test]
+    fn waveshare_pwm_uses_duty_field_and_schematic_backlight_polarity(){
+        for (variant,expected) in [(LcdVariant::Touch147,[0,128,255]),(LcdVariant::Lcd19,[255,127,0])]{
+            let mut b=WaveshareLcd::new(variant);let pin=b.w.bl;
+            for (duty,level) in [0,32768,65535].into_iter().zip(expected){
+                b.gpio_pwm_at(1,&|p|(p==pin).then_some((20000.0,duty)));assert_eq!(b.backlight,level);
+                let generation=b.generation;
+                b.gpio_pwm_at(2,&|p|(p==pin).then_some((37.0,duty)));assert_eq!(b.backlight,level);assert_eq!(b.generation,generation,"frequency is not brightness");
+                b.gpio_pwm_at(3,&|p|(p!=pin).then_some((1000.0,12345)));assert_eq!(b.backlight,level,"unrouted PWM does not overwrite GPIO state");
+                b.gpio_pwm_at(4,&|_|None);assert_eq!(b.backlight,level);
+            }
+            b.gpio_pwm_at(5,&|p|(p==pin).then_some((1.0,u32::MAX)));assert_eq!(b.backlight,expected[2],"duty saturates without overflow");
+        }
+    }
     fn gpio(g:&mut Gpio,m:&mut RegRam,pin:u8,high:bool){g.func_out_sel[usize::from(pin)]=128;g.enable|=1<<pin;if high{g.out|=1<<pin;}else{g.out&=!(1<<pin);}m.write(4+u32::from(pin)*4,1<<12|1<<9);}
     fn activate(b:&mut WaveshareLcd)->(Gpio,RegRam){let mut g=Gpio::new();let mut m=RegRam::new();gpio(&mut g,&mut m,b.w.rst,true);gpio(&mut g,&mut m,b.w.bl,!b.w.bl_low);gpio(&mut g,&mut m,b.w.dc,false);b.gpio_waveform_at(0,ChipPins::C6.routes(&g,&m));(g,m)}
     fn command(b:&mut WaveshareLcd,g:&mut Gpio,m:&mut RegRam,c:u8,args:&[u8]){

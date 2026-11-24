@@ -77,12 +77,51 @@
         ],
         "basis": "Source-photo hit region; electrical ID separately sourced."
       }
+    ],
+    "inspectionGroups": [
+      {
+        "id": "front-cap-inspection",
+        "parts": [
+          "case-front-annulus",
+          "live-display",
+          "official-front-photo",
+          "cover-key:boot",
+          "cover-key:menu",
+          "cover-key:power",
+          "cover-key:ptt"
+        ],
+        "offsetMm": [
+          70,
+          0,
+          12
+        ],
+        "sourceIds": [
+          "dimension-photo"
+        ],
+        "notes": "Illustrative front-cap separation reveals UNKNOWN PCB. The displacement is not assembly travel."
+      },
+      {
+        "id": "rear-cap-inspection",
+        "parts": [
+          "case-rear-cap"
+        ],
+        "offsetMm": [
+          -70,
+          0,
+          -12
+        ],
+        "sourceIds": [
+          "dimension-photo"
+        ],
+        "notes": "Independent rear-cap separation; hollow walls remain in place. Exact internal mounting is unknown."
+      }
     ]
   },
   "limitations": [
     "Internal PCB/battery geometry, RF antenna shape and reverse LF branding are UNKNOWN and omitted. This shared exterior preview uses the source front face only.",
     "Outer box is a dimension-bounded envelope; sculpted bevels/side connector and key travel are not mechanical replicas.",
-    "37.5x20 mm source annotation measures the optical opening; exact OLED active dimensions remain unknown."
+    "37.5x20 mm source annotation measures the optical opening; exact OLED active dimensions remain unknown.",
+    "Hollow repair: Previous solid-envelope representation is superseded. Exterior printed dimensions retained; 1.5mm wall/cap thickness, simplified corner/side profiles and unannotated port positions are explicit estimates. Only visible openings are approximated; no screw threads, hidden electronics, battery, seals or connector mating model is invented."
   ],
   "method": "dimension-photo-reconstruction",
   "sourceSearch": {
@@ -103,7 +142,26 @@
       110
     ],
     "method": "Front-face pixel bounds registered to the printed manufacturer dimension; source image is unchanged.",
-    "uncertaintyMm": 1.5
+    "uncertaintyMm": 1.5,
+    "review": {
+      "file": "dimension-photo.jpg",
+      "pixelFromModelXY": [
+        [
+          5.090909090909092,
+          0,
+          267.0
+        ],
+        [
+          0,
+          -5.127272727272728,
+          634.0
+        ]
+      ],
+      "includeParts": [
+        "case-front-annulus"
+      ],
+      "basis": "Same explicitly declared source-pixel registration as the production front texture. Overlay checks the exterior contour only; no hidden dimensions or independent camera calibration inferred."
+    }
   },
   "schemaVersion": "1",
   "unit": "mm",
@@ -112,11 +170,51 @@
   "binaryCompression": "gzip",
   "parts": [
     {
-      "name": "documented-enclosure-envelope",
+      "name": "case-side-ring",
       "role": "shell",
       "color": "#292b2e",
-      "basis": "55 x110 x14.5 mm manufacturer outer bounds; bevels and corner curvature omitted.",
+      "basis": "Printed manufacturer outer dimensions; hollow presentation only. Wall/cap thickness 1.5mm and unannotated split/opening dimensions are estimates, not a measured enclosure interior, connector mating interface or manufacturing CAD.",
       "byteOffset": 0,
+      "vertexCount": 276,
+      "boundsMm": [
+        [
+          -27.5,
+          -55.0,
+          -5.75
+        ],
+        [
+          27.5,
+          55.0,
+          5.75
+        ]
+      ]
+    },
+    {
+      "name": "case-front-annulus",
+      "role": "shell",
+      "color": "#292b2e",
+      "basis": "Printed manufacturer outer dimensions; hollow presentation only. Wall/cap thickness 1.5mm and unannotated split/opening dimensions are estimates, not a measured enclosure interior, connector mating interface or manufacturing CAD.",
+      "byteOffset": 6624,
+      "vertexCount": 96,
+      "boundsMm": [
+        [
+          -27.5,
+          -55.0,
+          5.75
+        ],
+        [
+          27.5,
+          55.0,
+          7.25
+        ]
+      ]
+    },
+    {
+      "name": "case-rear-cap",
+      "role": "shell",
+      "color": "#292b2e",
+      "basis": "Printed manufacturer outer dimensions; hollow presentation only. Wall/cap thickness 1.5mm and unannotated split/opening dimensions are estimates, not a measured enclosure interior, connector mating interface or manufacturing CAD.",
+      "byteOffset": 8928,
       "vertexCount": 36,
       "boundsMm": [
         [
@@ -127,13 +225,13 @@
         [
           27.5,
           55.0,
-          7.25
+          -5.75
         ]
       ]
     },
     {
       "name": "official-front-photo",
-      "role": "shell",
+      "role": "component",
       "color": "#ffffff",
       "texture": {
         "file": "dimension-photo.jpg",
@@ -147,7 +245,7 @@
         ]
       },
       "basis": "Manufacturer annotated dimensions and unchanged photo; perspective/registration uncertainty stated separately.",
-      "byteOffset": 864,
+      "byteOffset": 9792,
       "vertexCount": 24,
       "boundsMm": [
         [
@@ -188,12 +286,31 @@
         ]
       },
       "basis": "Annotation of unmodeled reverse/internal structures, not claimed PCB geometry."
+    },
+    {
+      "id": "pcb-inner-unknown",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          45,
+          100,
+          1
+        ],
+        "centerMm": [
+          0,
+          0,
+          0
+        ],
+        "labelSide": "front"
+      },
+      "color": "#596767",
+      "basis": "UNKNOWN hidden PCB: size/thickness are inspection placeholders only; no sourced layout or assembly-fit claim."
     }
   ],
   "artifacts": {
     "dimension-photo.jpg": "5fa277b8095b9646f5fdf8281212876cf08605081c40823633186b2629e10cea",
-    "geometry.bin.gz": "bbf64300969ae8fccde7be9fe745bf6be1fa66d6481e0eb89cfee46a6ca88924",
-    "model-plan.json": "62abb9b78356077898a29be950cd04cb9efc89c6074dd69d3747335ee1ec5d1a",
+    "geometry.bin.gz": "c38a9c9299f264f6b29fafc9622eb6b4e011419d4910194d9370fa5be14a09d8",
+    "model-plan.json": "187db87bba6a1596c9531a74b62dca8b9131905123a97275ddbae434952dbfe4",
     "source-manifest.json": "47959ff9a6563cfb9fb0698060d2cb55f76d3a383b68193f4aca8eaf18b09dfb",
     "SOURCE-RIGHTS.txt": "04a305bbd4984f08fe8f5399987976d9b52d7677d64eec6c4efc6f85e89870bb"
   },
@@ -220,7 +337,7 @@
       }
     ],
     "generator": "tools/build-waveshare-models.py",
-    "generatorSha256": "2966cc7b65cff4a819cd53b2fbb39099edee0228967004cecd290090453728d3",
+    "generatorSha256": "4dba59d4dc1973226dce3184d3e9c26c9322b606df8f309ebc2c142ac3a4e780",
     "tessellation": {
       "deflectionMm": 0.05,
       "angleRadians": 0.25

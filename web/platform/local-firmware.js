@@ -113,7 +113,7 @@ export async function assembleLocalFirmware(source, {board, flashBytes, signal, 
   ensure(tables.length === 1, 'PARTITION_TABLE_REQUIRED', 'Select exactly one binary partition table with its actual flash offset. An app.bin alone is not bootable.');
   const table = tables[0], partitionTableOffset = table.offset;
   ensure(partitionTableOffset >= 0x8000 && table.data.length <= 0x1000, 'INVALID_PARTITION_TABLE', 'Partition table must occupy at most one 4096-byte sector at offset 0x8000 or above.');
-  const bootOffset = chipForBoard(board) === 'esp32' ? 0x1000 : ['esp32p4','esp32s31'].includes(chipForBoard(board)) ? 0x2000 : 0;
+  const bootOffset = ['esp32','esp32s2'].includes(chipForBoard(board)) ? 0x1000 : ['esp32p4','esp32s31'].includes(chipForBoard(board)) ? 0x2000 : 0;
   const boot = segments.find(s => s.offset === bootOffset);
   ensure(boot && boot.data[0] === 0xe9 && boot.offset + boot.data.length <= partitionTableOffset, 'BOOTLOADER_REQUIRED', `A complete matching bootloader at 0x${bootOffset.toString(16)} is required; app-direct boot is not used.`);
   const partitions = [], dv = new DataView(table.data.buffer, table.data.byteOffset, table.data.byteLength);

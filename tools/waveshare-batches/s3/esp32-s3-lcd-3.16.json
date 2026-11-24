@@ -1,0 +1,314 @@
+{
+  "listingId": "esp32-s3-lcd-3.16",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-lcd-3-16",
+      "name": "Waveshare ESP32-S3-LCD-3.16",
+      "manufacturer": "Waveshare",
+      "sku": "31786",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16MiB Flash /8MiB PSRAM，320×820长屏；GPIO0/2/1真实九位LCD初始化、GPIO16复位、精确RGB16路由与SDMMC单线TF。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-lcd-3-16.json",
+      "family": {
+        "id": "waveshare-esp32-s3-lcd-3-16",
+        "name": "Waveshare ESP32-S3-LCD-3.16"
+      },
+      "runtime": {
+        "board": "waveshare-s3-lcd316",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 320,
+        "height": 820,
+        "type": "IPS LCD",
+        "bus": "RGB565 + nine-bit serial control",
+        "controller": "ST7701S",
+        "touch": false,
+        "attachment": "onboard"
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "micro-sd",
+          "name": "TF / native SDMMC",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "CMD",
+              "gpio": 2
+            },
+            {
+              "name": "D0",
+              "gpio": 42
+            }
+          ],
+          "sourceIds": [
+            "official-overview"
+          ],
+          "notes": "物理TF插槽与此板真实SDMMC路由；默认64MiB FAT32卡。GPIO1/2也用于LCD初始串行，初始化后CS0释放高电平。"
+        }
+      ],
+      "limitations": [
+        "原厂bounce-buffer完整RGB刷新在这次原图运行尚未交付帧，当前仅真实数字板级帧入口通过；具体全链阻塞仍未知。",
+        "QMI8658传感器、Wi-Fi/蓝牙、RTC闹钟、模拟电池/充电与物理电源开关不模拟，不为前进而返回伪造传感器ID。",
+        "Drive公开确认/跨域权限仍可能阻止浏览器直接取原包；下载失败应保留来源入口，不能把远程trial改为已验证。",
+        "最大9.3mm厚度是资料边界，不推断未建模元件高度；仅光学/板外廓和照片可见面有来源，内部厚度/器件/独立AA UNKNOWN。",
+        "本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。",
+        "商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。",
+        "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-lcd-3-16运行5客体秒。原始214,706,718字节ZIP经生产选择器解包后，320×820末帧单色、0显示帧；64MiB FAT32卡挂载，未观察到更改页。证据：docs/platform/evidence/waveshare-batch013-20261124/lcd316-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。"
+      },
+      "sources": [
+        {
+          "id": "official-store",
+          "title": "官方商品页与精确SKU选项",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-lcd-3.16.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "official-overview",
+          "title": "官方Wiki硬件文档",
+          "url": "https://www.waveshare.com/wiki/ESP32-S3-LCD-3.16",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-0",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/i2c_bsp/CMakeLists.txt",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-1",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/i2c_bsp/i2c_bsp.c",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-2",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/i2c_bsp/i2c_bsp.h",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-3",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/lcd_bl_pwm_bsp/CMakeLists.txt",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-4",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.c",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-5",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/lcd_bl_pwm_bsp/lcd_bl_pwm_bsp.h",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-6",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/sdcard_bsp/CMakeLists.txt",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-7",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/sdcard_bsp/sdcard_bsp.c",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-8",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/components/sdcard_bsp/sdcard_bsp.h",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-9",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/main/CMakeLists.txt",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-10",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/main/idf_component.yml",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-11",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/main/main.cpp",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-12",
+          "title": "固定原始来源：ESP32-S3-LCD-3.16-Demo/ESP-IDF/09_FactoryProgram/main/user_config.h",
+          "url": "https://drive.google.com/file/d/1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK/view?usp=sharing",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-13",
+          "title": "固定原始来源：official-schematics/lcd316-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-3.16/ESP32-S3-LCD-3.16-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "board-source-14",
+          "title": "固定原始来源：official-schematics/lcd316-rev11.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-LCD-3.16/ESP32-S3-LCD-3.16-Rev1.1.pdf",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-lcd-3-16/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-lcd-3-16-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-lcd-3-16-factory",
+      "name": "ESP32-S3-LCD-3.16-factory.bin",
+      "productIds": [
+        "waveshare-esp32-s3-lcd-3-16"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://drive.usercontent.google.com/download?id=1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK&export=download&confirm=t",
+        "sha256": "731aa7fc07a9bec11d857bc156fb53235be8a1591ec11c0ecaa43c2aa50f51cb",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "ESP32-S3-LCD-3.16-Demo/Firmware/ESP32-S3-LCD-3.16-factory.bin",
+          "sha256": "e5914bb732f47eb6a3d76856f707253ee6008847e6675011796180943683c3de"
+        }
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "version": "ESP32-S3-LCD-3.16-factory",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://www.waveshare.com/wiki/ESP32-S3-LCD-3.16",
+      "sources": [
+        {
+          "title": "原厂分发来源（原BIN或明确成员的原包）",
+          "url": "https://drive.usercontent.google.com/download?id=1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK&export=download&confirm=t",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "官方Wiki Drive原ZIP214,706,718B / 8,852项 / 717,568,656B声明展开量，精确成员Firmware/ESP32-S3-LCD-3.16-factory.bin为5,704,848B完整S3镜像；两个独立SHA均保留。原生5guest秒到app_main返回、真实SIMSD读卡和Wi-Fi/BT初始化，LCD串行253字但0次RGB帧，整幅应用画面尚未得到。固定原包仅manual人工更新。",
+        "已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。",
+        "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-lcd-3-16运行5客体秒。原始214,706,718字节ZIP经生产选择器解包后，320×820末帧单色、0显示帧；64MiB FAT32卡挂载，未观察到更改页。证据：docs/platform/evidence/waveshare-batch013-20261124/lcd316-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+      ],
+      "watchlistId": "waveshare-esp32-s3-lcd-3-16-factory-watch"
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-lcd-3-16-factory-watch",
+      "name": "ESP32-S3-LCD-3.16-factory.bin",
+      "category": "factory",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-LCD-3.16",
+      "metadataUrl": "https://www.waveshare.com/wiki/ESP32-S3-LCD-3.16",
+      "releaseUrl": "https://www.waveshare.com/wiki/ESP32-S3-LCD-3.16",
+      "version": "archive-sha256-e5914bb732f47eb6a3d76856f707253ee6008847e6675011796180943683c3de",
+      "checkedAt": "2026-11-23T19:16:00Z",
+      "assets": [
+        {
+          "name": "view",
+          "url": "https://drive.usercontent.google.com/download?id=1fsIRFZ7HQxAZFpMyKR3LApBGr8H7ttXK&export=download&confirm=t",
+          "sha256": "e5914bb732f47eb6a3d76856f707253ee6008847e6675011796180943683c3de",
+          "bytes": 214706718,
+          "format": "zip-bundle",
+          "member": {
+            "path": "ESP32-S3-LCD-3.16-Demo/Firmware/ESP32-S3-LCD-3.16-factory.bin",
+            "sha256": "731aa7fc07a9bec11d857bc156fb53235be8a1591ec11c0ecaa43c2aa50f51cb",
+            "bytes": 5704848,
+            "format": "merged"
+          }
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-lcd-3-16"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确来源/芯片布局已调查；运行范围见产品知识。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。",
+      "metadataProvider": "manual"
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-lcd-3-16.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-lcd316": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-20261123/source-manifest.json",
+    "docs/research/waveshare-s3-20261123/firmware-manifest.json"
+  ],
+  "tests": [
+    "真实九位命令、vendor bank隔离、RGB错误PCLK/正确红绿像素、reset新帧和无TCA/PMU/触摸测试通过。",
+    "原版ROM5guest秒：SD33命令/1,744B读取、UART有SIMSD容量131072扇区；320×820末帧单色且0帧，不把卡准备或程序返回冒称显示通过。",
+    "31.2×76.6mm面板与33.35×78.85mm PCB分别保留尺寸；原始正反照片/光学窗口/UNKNOWN与Three加载检查通过。",
+    "当前固定Drive confirm=t直链Range请求返回206、ZIP签名、总214706718B与Access-Control-Allow-Origin:*；此网络探测不是完整浏览器加载验收。"
+  ],
+  "limitations": [
+    "原厂bounce-buffer完整RGB刷新在这次原图运行尚未交付帧，当前仅真实数字板级帧入口通过；具体全链阻塞仍未知。",
+    "QMI8658传感器、Wi-Fi/蓝牙、RTC闹钟、模拟电池/充电与物理电源开关不模拟，不为前进而返回伪造传感器ID。",
+    "Drive公开确认/跨域权限仍可能阻止浏览器直接取原包；下载失败应保留来源入口，不能把远程trial改为已验证。",
+    "最大9.3mm厚度是资料边界，不推断未建模元件高度；仅光学/板外廓和照片可见面有来源，内部厚度/器件/独立AA UNKNOWN。",
+    "公开Worker/生产WASM原镜像有界记录：waveshare-esp32-s3-lcd-3-16运行5客体秒。原始214,706,718字节ZIP经生产选择器解包后，320×820末帧单色、0显示帧；64MiB FAT32卡挂载，未观察到更改页。证据：docs/platform/evidence/waveshare-batch013-20261124/lcd316-worker。不推定其他SKU、完整应用、浏览器WebGL、实物、音频或RF通过。"
+  ],
+  "scope": "Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance."
+}

@@ -91,10 +91,21 @@ def face(points, holes=(), z=0):
 
 
 def procedural(item):
-    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox, BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakePrism
     from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
-    from OCP.gp import gp_Pnt, gp_Ax2, gp_Dir
+    from OCP.gp import gp_Pnt, gp_Ax2, gp_Dir, gp_Vec
     kind = item['shape']
+    if kind == 'plate':
+        depth = float(item['depthMm'])
+        center = float(item.get('centerZMm', 0))
+        assert np.isfinite([depth, center]).all() and depth > 0
+        surface = face(item['outlineMm'], item.get('holesMm', []), center - depth / 2)
+        result = BRepPrimAPI_MakePrism(surface, gp_Vec(0, 0, depth)).Shape()
+        for opening in item.get('subtract', []):
+            cut = BRepAlgoAPI_Cut(result, procedural(opening))
+            assert cut.IsDone()
+            result = cut.Shape()
+        return result
     if kind == 'box':
         size, center = np.asarray(item['sizeMm']), np.asarray(item.get('centerMm', [0, 0, 0]))
         assert np.isfinite(size).all() and (size > 0).all()

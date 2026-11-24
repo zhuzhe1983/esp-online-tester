@@ -42,6 +42,18 @@ for(const offset of [0x2000,0x20000]) {
   assert.throws(()=>validateMergedImage(rev3,'stamp-p4',flashBytes,{partitionTableOffset:0x9000}),{code:'CHIP_REVISION_UNSUPPORTED'});
 }
 await fail(()=>assembleLocalFirmware(p4Build,{board:'stopwatch',flashBytes}),'CHIP_MISMATCH');
+// S2 bootloader is at0x1000, like classic ESP32, not S3's0. Layout acceptance
+// is separate from S2's SRAM-only execution boundary and never bypasses it.
+const s2Options={board:'lilygo-esp32-s2-woor',flashBytes:4*1024*1024};
+const s2Build={format:'build',files:[config({extra_esptool_args:{chip:'esp32s2'},flash_settings:{flash_size:'4MB'},flash_files:{'0x1000':'bootloader.bin','0x9000':'partition-table.bin','0x20000':'custom.bin'}}),file('bootloader.bin',image(2)),part,file('custom.bin',image(2))]};
+const s2=await assembleLocalFirmware(s2Build,s2Options);
+assert.equal(s2.data[0],255);assert.equal(s2.data[0x1000],0xe9);
+assert.equal(validateMergedImage(s2.data,s2Options.board,s2Options.flashBytes,{partitionTableOffset:0x9000}),true);
+await fail(()=>assembleLocalFirmware({...s2Build,files:[config({extra_esptool_args:{chip:'esp32s2'},flash_settings:{flash_size:'4MB'}}),...s2Build.files.slice(1)]},s2Options),'BOOTLOADER_REQUIRED');
+const wrongS2=s2.data.slice();wrongS2[0x1000+12]=9;
+assert.throws(()=>validateMergedImage(wrongS2,s2Options.board,s2Options.flashBytes,{partitionTableOffset:0x9000}),{code:'CHIP_MISMATCH'});
+const misplacedS2=s2.data.slice();misplacedS2.copyWithin(0,0x1000,0x1040);misplacedS2[0x1000]=255;
+assert.throws(()=>validateMergedImage(misplacedS2,s2Options.board,s2Options.flashBytes,{partitionTableOffset:0x9000}),{code:'INCOMPLETE_IMAGE'});
 const dirs=[file('flasher_args.json',await config().arrayBuffer(),'build/flasher_args.json'),file(boot.name,await boot.arrayBuffer(),'build/bootloader/bootloader.bin'),file(part.name,table,'build/partition_table/partition-table.bin'),file(app.name,image(),'build/custom.bin'),file(app.name,image(5),'build/unrelated/custom.bin')];inspect=await inspectLocalBuild(dirs);assert.equal(inspect.segments.at(-1).file.webkitRelativePath,'build/custom.bin');
 await fail(()=>inspectLocalBuild([config(),boot,file('bootloader.bin',image()),part,app]),'DUPLICATE_BUILD_PATH');
 await fail(()=>inspectLocalBuild([config({flash_files:{'0x0':'../bootloader.bin'}}),boot]),'INVALID_BUILD_PATH');

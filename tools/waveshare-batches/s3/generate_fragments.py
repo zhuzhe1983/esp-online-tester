@@ -16,7 +16,14 @@ def source(s,sid,title,kind,archive=None,notes=''):
  url=s.get('url',s.get('originalUrl',s.get('requestedUrl')));resolved=s.get('resolvedUrl',s.get('finalUrl',url))
  d={'id':sid,'title':title,'url':url.replace('http://','https://'),'kind':kind,'status':'fetched','fetchedAt':utc(s['fetchedAt']),'sha256':s['sha256'],'bytes':s['bytes'],'archiveName':archive or s.get('archiveName',sid+'.html'),'notes':notes}
  if resolved and resolved.startswith('https:'):d['resolvedUrl']=resolved
- if s.get('revision'):d['revision']={('gitCommit'if re.fullmatch('[a-f0-9]{40}',s['revision'])else'componentVersion'):s['revision']}
+ if s.get('revision'):d['revision']={('gitCommit'if re.fullmatch('[a-f0-9]{40}',s['revision'])else'containerRevision'if s['revision'].startswith('archive-sha256-')else'componentVersion'):s['revision']}
+ if s.get('extractedFromArchive'):
+  d.setdefault('revision',{}).update(containerSha256=s.get('sourceArchiveSha256',s.get('archiveSha256')),containerBytes=s.get('sourceArchiveBytes',s.get('archiveBytes')),member=s.get('path'))
+  d['notes'] += ' 本记录sha256/bytes属于从已抓取原包提取的精确成员；URL为原包来源，不声称该URL直接返回成员字节。原包SHA/bytes与member路径见revision及原始manifest。'
+ if isinstance(s.get('archive'),dict):
+  d.setdefault('revision',{}).update(containerSha256=s['archive']['sha256'],containerBytes=s.get('archiveBytes'),member=s['archive']['entry'])
+  d['notes'] += ' 此BIN的sha256/bytes属于明确ZIP成员；URL返回原包，原包哈希与成员路径见revision，未声称远程URL直接返回BIN。'
+ if s.get('mediaType'):d['mediaType']=s['mediaType']
  return d
 
 def main():
@@ -37,11 +44,12 @@ def main():
     d=json.loads(f.read_text());s=d.get('source',d);ss.append(source(s,'official-overview','官方Wiki硬件文档','documentation',lid+'.html'))
   source_candidates=[s for s in receipts if s.get('repository','').split('/')[-1]==repo or s.get('repository')==repo]
   for i,s in enumerate(source_candidates):
-   ss.append(source(s,'board-source-'+str(i),'固定提交：'+s.get('path','板级源码'),'manufacturer-source',s['archiveName'],'原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。'))
+   ss.append(source(s,'board-source-'+str(i),('固定提交：'if re.fullmatch('[a-f0-9]{40}',str(s.get('revision','')))else'固定原始来源：')+s.get('path','板级源码'),'manufacturer-source',s['archiveName'],'原始内容或原始内容的gzip保留于docs/research/waveshare-s3-20261123；源字节与保留文件分别有SHA-256。'))
   overview='official-overview'if any(x['id']=='official-overview'for x in ss)else'official-store';refs=[overview]+[s['id']for s in ss if s['id'].startswith('board-source-')]
   selected_bins=[b for b in bins if b['repository']==repo and (not cfg.get('firmwareFiles')or Path(b['path']).name in cfg['firmwareFiles'])]
   if cfg.get('skipFirmware'):selected_bins=[]
   if cfg.get('firmwareLatest')and selected_bins:selected_bins=[max(selected_bins,key=lambda b:Path(b['path']).name)]
+  selected_bins.sort(key=lambda b:cfg.get('firmwareOverrides',{}).get(Path(b['path']).name,{}).get('role',cfg.get('firmwareRole','official-demo'))!='factory')
   frag={'listingId':lid,'products':[],'firmwares':[],'watchlist':[],'knowledge':[],'boardCapabilities':{},'sourceReceiptPaths':['docs/research/waveshare-s3-20261123/source-manifest.json','docs/research/waveshare-s3-20261123/firmware-manifest.json'],'tests':cfg.get('tests',[]),'limitations':cfg.get('limitations',[]),'scope':'Exact storefront SKU registration with the stated digital subsets. Partial does not mean whole-device or physical acceptance.'}
   for vi,v in enumerate(item['variants']):
    c={**cfg,**cfg.get('skuOverrides',{}).get(v['sku'],{})};previous=by_sku.get(v['sku']);pid=previous['id']if previous else base+(''if vi==0 else'-sku-'+v['sku']);title=(v.get('documentedProductNames')or[]);title=title[0]if title else lid.upper()+(' · '+', '.join(v['attributes'])if v['attributes']else'')
@@ -49,6 +57,7 @@ def main():
    limitations=c.get('limitations',[])+['本型号尚未完成实物验证。目录、数字外设测试、原厂固件原生执行和浏览器worker验收是不同证据层；逐项范围见知识页。','商品页顺序用作带屏优先的工作队列，不能据此认定发布日期。']
    p=copy.deepcopy(previous)if previous and c.get('preserveExisting')else{'id':pid,'name':name,'manufacturer':'Waveshare','sku':v['sku'],'chip':'esp32s3','hardwareRevision':c.get('hardwareRevision','unspecified'),'summary':c.get('summary',title+'；精确SKU '+v['sku']+'。'),'knowledgeUrl':'./knowledge/'+pid+'.json','family':{'id':base,'name':'Waveshare '+lid.upper()},'runtime':{'board':board,'flashMb':flash,'psramMb':psram,'status':status,'touch':touch},'displayStatus':'known'if display else c.get('displayStatus','none'),'display':display,'controls':[{'id':n,'name':n.upper(),'type':'button','pin':pin,'activeLow':active,'defaultKeyCode':'Space'if n=='boot'else'Key'+n[0].upper()}for n,pin,active in c.get('buttons',[])],'interfaces':copy.deepcopy(c.get('interfaces',[])),'limitations':limitations,'chronology':{'date':None,'basis':'unknown','sourceId':None,'sourceUrl':None,'confidence':'unknown','notes':'官方发布日期未建立；商店位置、Git提交与BIN文件名日期不是发布日期。'}}
    fresh_sources=[{'id':s['id'],'title':s['title'],'url':s['url'],'checkedAt':'2026-11-23'}for s in ss];p['sources'] = list({s['id']:s for s in (p.get('sources',[])+[{**s,'id':'current-'+s['id']}for s in fresh_sources])}.values()) if previous and c.get('preserveExisting') else fresh_sources
+   p['controls'] += copy.deepcopy(c.get('extraControls',[]))
    if c.get('modelId'):
     model=ROOT/'web/platform/assets'/c['modelId']/'model.json'
     if not model.exists():raise ValueError('Model missing '+str(model))
@@ -63,6 +72,12 @@ def main():
    k={'schemaVersion':'1','id':pid,'kind':'product','catalogId':pid,'title':name,'summary':p['summary'],'summarySourceIds':['official-store',overview]if overview!='official-store'else[overview],'updatedAt':UTC,'hardwareRevision':p['hardwareRevision'],'identity':{'listingId':lid,'sku':v['sku'],'storeOptions':v.get('options',{}),'manufacturerProductNames':v.get('documentedProductNames',[])},'facts':facts,'revisions':[],'sources':kss,'assets':[],'unknowns':[{'id':'physical-acceptance','label':'实物验收','value':None,'basis':'unknown','sourceIds':[],'notes':'未连接实物，未声明通过。'},{'id':'unimplemented-scope','label':'未覆盖范围','value':None,'basis':'unknown','sourceIds':[],'notes':'；'.join(limitations)}],'collectionNotes':c.get('tests',[])+[frag['scope'],'精确SKU包内电池、外壳、排针和天线差异保持独立身份；共用数字路径不表示机械与RF等价。']}
    if c.get('activeAreaUnknown'):k['unknowns'].append({'id':'display-active-area','label':'屏幕独立有效显示区边框','value':None,'basis':'unknown','sourceIds':[overview],'notes':'有来源的optical-window窗口仅作为3D画面映射参考；独立AA边框、物理像素间距与AA比例未建立。保留窗口尺寸，不拉伸原CAD或伪称AA。'})
    ecosystem=[f for f in k['facts'] if f['id']=='source-ecosystem'];k['facts']=[f for f in k['facts'] if f['id']!='source-ecosystem'];k['collectionNotes'] += ['UIFlow/小智是固定Git板树的范围化调查，生成检查收据不冒称HTTP响应：'+json.dumps(f['value'],ensure_ascii=False)for f in ecosystem]
+   if c.get('ecosystemReleaseInventory'):
+    ep=ROOT/'docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases';er=json.loads((ep/'source-manifest.json').read_text())['sources']
+    for ei,e in enumerate(er):k['sources'].append(source(e,'ecosystem-http-'+str(ei),'UIFlow/小智公开发布调查：'+e['archiveName'],'release-metadata',e['archiveName'],'原始响应gzip保留于docs/research/waveshare-p4-s31-2026-11-24/ecosystem-releases；源bytes/hash均为解压原字节。'))
+    x=json.loads(gzip.decompress((ep/'78-xiaozhi-esp32.json.gz').read_bytes()));u=json.loads(gzip.decompress((ep/'m5stack-uiflow-micropython.json.gz').read_bytes()));wanted=c.get('xiaozhiReleaseTargets',[lid]);matches=[{'name':a['name'],'url':a['browser_download_url'],'bytes':a['size'],'digest':a.get('digest')}for a in x['assets']if any(a['name']==x['tag_name']+'_waveshare-'+target+'.zip'for target in wanted)]
+    k['facts'].append({'id':'current-ecosystem-release-inventory','label':'已抓取UIFlow与小智发布目录','value':{'xiaozhiVersion':x['tag_name'],'xiaozhiTotalAssets':len(x['assets']),'matchingNamedAssets':matches,'uiflowVersion':u['tag_name'],'uiflowTotalAssets':len(u['assets']),'uiflowWaveshareNamedAssets':[a['name']for a in u['assets']if'waveshare'in a['name'].lower()]},'basis':'official','sourceIds':['ecosystem-http-'+str(i)for i in range(len(er))],'notes':'小智列表由100+100+0分页与latest资产ID交叉核对为完整200项。精确名称仅建立候选分发身份，未下载/审计的资产不冒运行兼容。UIFlow当前58项与较旧landing选择器的范围化无Waveshare结果，不证明不存在第三方移植。'})
+    k['collectionNotes'].append('模型来源和几何范围：'+c.get('modelId','none')+'；model-plan.json保留原始参考、尺寸、图像像素/UV及UNKNOWN边界。')
    kp=ROOT/'web/platform/knowledge'/f'{pid}.json'
    if previous and c.get('preserveExisting') and kp.exists():
     oldk=json.loads(kp.read_text());oldk['updatedAt']=UTC
@@ -78,9 +93,14 @@ def main():
   for bi,b in enumerate(selected_bins):
    name=Path(b['path']).name;target_skus=cfg.get('firmwareTargetSkus',{}).get(name);targets=[p['id']for p in frag['products'] if target_skus is None or p['sku'] in target_skus]
    if lid=='esp32-s3-lr1121-epaper-2.9':targets=[p['id']for p in frag['products']if ('HF' in p['name'])==('-HF.'in name)]
-   role=cfg.get('firmwareRole','official-demo');complete=b['layout']['mergedS3ChecksumsPass'];fstatus='trial'if complete and all(p['runtime']['board']for p in frag['products'])else'reference';fid=base+'-'+('factory'if role=='factory'else'demo')+(''if len(selected_bins)==1 else'-'+ident(name.removesuffix('.bin'))[-40:]);wid=fid+'-watch'
-   fw={'id':fid,'name':name,'productIds':targets,'status':fstatus,'source':{'url':b['url'],'sha256':b['sha256'],'bootMode':'rom'}if fstatus=='trial'else None,'role':role,'publisher':'Waveshare','publisherGroup':'官方','version':name.removesuffix('.bin'),'simulationVerified':False,'hardwareValidated':False,'storage':'remote-links-only','compatibility':'partial','publicationUrl':next((s['url']for s in ss if s['title'].endswith('firmware/README.md')),next((s['url']for s in ss if s['title'].endswith('README.md')),item['url'])),'sources':[{'title':'原厂原始BIN固定链接','url':b['url'],'checkedAt':'2026-11-23'}],'limitations':[cfg.get('firmwareNotes','原版结构校验通过；完整应用与物理外设尚未验收。'),'已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。'],'watchlistId':wid}
-   frag['firmwares'].append(fw);frag['watchlist'].append({'id':wid,'name':name,'category':'factory'if role=='factory'else'development','upstreamRepo':'waveshareteam/'+repo,'metadataUrl':'https://api.github.com/repos/waveshareteam/'+repo+'/releases/latest','releaseUrl':'https://github.com/waveshareteam/'+repo+'/releases','version':b['revision'],'checkedAt':utc(b['fetchedAt']),'assets':[{'name':name,'url':b['url'],'sha256':b['sha256'],'bytes':b['bytes'],'format':'merged'if complete else'unknown'}],'compatibility':{'status':'reference-only','productIds':targets,'simulationVerified':False,'hardwareValidated':False,'note':'精确来源/芯片布局已调查；运行范围见产品知识。'},'storage':'remote-links-only','catalogTargets':[],'monitoringNote':'厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。'})
+   override=cfg.get('firmwareOverrides',{}).get(name,{});role=override.get('role',cfg.get('firmwareRole','official-demo'));complete=b['layout']['mergedS3ChecksumsPass'];fstatus='trial'if complete and all(p['runtime']['board']for p in frag['products'])else'reference';fid=base+'-'+('factory'if role=='factory'else'demo')+(''if len(selected_bins)==1 else'-'+ident(name.removesuffix('.bin'))[-40:]);fid=fid if len(fid)<=74 else fid[:65]+'-'+hashlib.sha256(fid.encode()).hexdigest()[:8];wid=fid+'-watch'
+   fw={'id':fid,'name':name,'productIds':targets,'status':fstatus,'source':{'url':b['url'],'sha256':b['sha256'],'bootMode':'rom',**({'archive':b['archive']}if b.get('archive')else{})}if fstatus=='trial'else None,'role':role,'publisher':'Waveshare','publisherGroup':'官方','version':name.removesuffix('.bin'),'simulationVerified':False,'hardwareValidated':False,'storage':'remote-links-only','compatibility':'partial','publicationUrl':b.get('publicationUrl')or next((s['url']for s in ss if s['title'].endswith('firmware/README.md')),next((s['url']for s in ss if s['title'].endswith('README.md')),item['url'])),'sources':[{'title':'原厂分发来源（原BIN或明确成员的原包）','url':b['url'],'checkedAt':'2026-11-23'}],'limitations':[cfg.get('firmwareNotes','原版结构校验通过；完整应用与物理外设尚未验收。'),'已注册trial表示可按精确板型尝试ROM启动，不代表完整应用已通过。'],'watchlistId':wid}
+   frag['firmwares'].append(fw);watch={'id':wid,'name':name,'category':'factory'if role=='factory'else'development','upstreamRepo':'waveshareteam/'+repo,'metadataUrl':'https://api.github.com/repos/waveshareteam/'+repo+'/releases/latest','releaseUrl':'https://github.com/waveshareteam/'+repo+'/releases','version':b['revision'],'checkedAt':utc(b['fetchedAt']),'assets':[{'name':name,'url':b['url'],'sha256':b['sha256'],'bytes':b['bytes'],'format':'merged'if complete else'unknown'}],'compatibility':{'status':'reference-only','productIds':targets,'simulationVerified':False,'hardwareValidated':False,'note':'精确来源/芯片布局已调查；运行范围见产品知识。'},'storage':'remote-links-only','catalogTargets':[],'monitoringNote':'厂家固定提交原二进制。发现新版本须重新确认硬件修订与缺失分区。'}
+   if cfg.get('manualFirmwareDistribution'):
+    watch.update(metadataProvider='manual',upstreamRepo='manufacturer:Waveshare/'+repo,metadataUrl=b.get('publicationUrl',item['url']),releaseUrl=b.get('publicationUrl',item['url']),monitoringNote='厂家Wiki列出的静态ZIP/Drive分发入口；未建立自动Release API。固定原包与精确BIN成员已独立审计，未来修订需人工重新抓取并核对原包、成员、芯片和硬件版次。')
+   if b.get('archive'):
+    watch['assets']=[{'name':Path(b.get('distributionUrl',b['url']).split('?')[0]).name or name,'url':b['url'],'sha256':b['archive']['sha256'],'bytes':b['archiveBytes'],'format':'zip-bundle','member':{'path':b['archive']['entry'],'sha256':b['sha256'],'bytes':b['bytes'],'format':'merged'if complete else'unknown'}}]
+   frag['watchlist'].append(watch)
    if role=='factory'and fstatus=='trial':
     for p in frag['products']:
      if p['id']in targets:p['defaultFirmwareId']=fid

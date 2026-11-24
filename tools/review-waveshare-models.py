@@ -131,11 +131,14 @@ def review(path, output):
         ax.set_xlabel('mm')
         ax.set_ylabel('mm')
         ax.set_facecolor('#e4e7e6')
-    fig.suptitle(product_id + '\nActual loader mesh; geometry-only plots; screen is a review swatch', fontsize=12)
+    fig.suptitle(product_id + ('\nExpanded inspection; ' if record.get('inspectionExpanded') else '\n') + 'Actual loader mesh; geometry-only; screen is a review swatch', fontsize=12)
     fig.tight_layout(rect=(0, 0, 1, .94))
     output.mkdir(parents=True, exist_ok=True)
     fig.savefig(output / (product_id + '-four-views.png'), dpi=135)
     plt.close(fig)
+    if record.get('inspectionExpanded'):
+        print(product_id + ' expanded inspection review written; assembled-photo registration is inapplicable', flush=True)
+        return
     if plan.get('photoRegistration', {}).get('review'):
         reg = plan['photoRegistration']['review']
         filename = reg['file']

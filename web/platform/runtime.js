@@ -154,12 +154,12 @@ export function decodeFramebuffer(data) {
 
 // A URL ending in .bin does not establish that it contains a bootable flash image.
 export function validateMergedImage(data, board, flashBytes, {partitionTableOffset = 0x8000} = {}) {
-  const bytes = bytesOf(data), bootOffset = chipIdForBoard(board)===0 ? 0x1000 : [18,32].includes(chipIdForBoard(board)) ? 0x2000 : 0;
+  const bytes = bytesOf(data), bootOffset = [0,2].includes(chipIdForBoard(board)) ? 0x1000 : [18,32].includes(chipIdForBoard(board)) ? 0x2000 : 0;
   requireValue(Number.isSafeInteger(partitionTableOffset) && partitionTableOffset >= 0x8000 && partitionTableOffset % 0x1000 === 0 && partitionTableOffset + 0x1000 <= flashBytes, 'INVALID_PARTITION_TABLE', 'Partition-table offset is outside flash or not sector aligned.');
   requireValue(bytes.length <= flashBytes, 'FLASH_OVERFLOW', 'Merged firmware exceeds the selected product flash size.');
   requireValue(bytes.length > partitionTableOffset + 32 && bytes[bootOffset] === 0xe9 && bytes[partitionTableOffset] === 0xaa && bytes[partitionTableOffset + 1] === 0x50,
     'INCOMPLETE_IMAGE', 'A raw BIN must be a merged flash image starting at offset 0, containing a bootloader and partition table at 0x8000. Use a manifest for separate app, bootloader and partition images.');
-  // ESP-IDF image header chip IDs: ESP32=0, S3=9, C3=5, C6=13, P4=18.
+  // ESP-IDF image header chip IDs: ESP32=0, S2=2, S3=9, C3=5, C6=13, P4=18.
   const chipId = bytes[bootOffset + 12] | bytes[bootOffset + 13] << 8;
   const expected = chipIdForBoard(board);
   requireValue(chipId === expected, 'CHIP_MISMATCH', 'Firmware image targets a different ESP32 chip.', { expected, actual: chipId });

@@ -25,22 +25,179 @@
   "sourceTopologyCounts": {},
   "parts": [
     {
-      "name": "documented-enclosure-envelope",
+      "name": "case-side-ring",
       "role": "shell",
       "color": "#292b2e",
       "geometry": {
-        "shape": "box",
-        "sizeMm": [
-          55,
-          110,
-          14.5
+        "shape": "plate",
+        "outlineMm": [
+          [
+            -27.5,
+            -55.0
+          ],
+          [
+            27.5,
+            -55.0
+          ],
+          [
+            27.5,
+            55.0
+          ],
+          [
+            -27.5,
+            55.0
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              -26.0,
+              -53.5
+            ],
+            [
+              26.0,
+              -53.5
+            ],
+            [
+              26.0,
+              53.5
+            ],
+            [
+              -26.0,
+              53.5
+            ]
+          ]
+        ],
+        "depthMm": 11.5,
+        "centerZMm": 0,
+        "subtract": [
+          {
+            "shape": "box",
+            "sizeMm": [
+              9,
+              5,
+              4
+            ],
+            "centerMm": [
+              0,
+              -55.0,
+              0
+            ]
+          },
+          {
+            "shape": "box",
+            "sizeMm": [
+              8,
+              5,
+              5
+            ],
+            "centerMm": [
+              -14,
+              -55.0,
+              -1
+            ]
+          },
+          {
+            "shape": "box",
+            "sizeMm": [
+              8,
+              5,
+              5
+            ],
+            "centerMm": [
+              14,
+              -55.0,
+              -1
+            ]
+          }
         ]
       },
-      "basis": "55 x110 x14.5 mm manufacturer outer bounds; bevels and corner curvature omitted."
+      "basis": "Printed manufacturer outer dimensions; hollow presentation only. Wall/cap thickness 1.5mm and unannotated split/opening dimensions are estimates, not a measured enclosure interior, connector mating interface or manufacturing CAD."
+    },
+    {
+      "name": "case-front-annulus",
+      "role": "shell",
+      "color": "#292b2e",
+      "geometry": {
+        "shape": "plate",
+        "outlineMm": [
+          [
+            -27.5,
+            -55.0
+          ],
+          [
+            27.5,
+            -55.0
+          ],
+          [
+            27.5,
+            55.0
+          ],
+          [
+            -27.5,
+            55.0
+          ]
+        ],
+        "holesMm": [
+          [
+            [
+              -18.75,
+              22.5
+            ],
+            [
+              18.75,
+              22.5
+            ],
+            [
+              18.75,
+              42.5
+            ],
+            [
+              -18.75,
+              42.5
+            ]
+          ]
+        ],
+        "depthMm": 1.5,
+        "centerZMm": 6.5,
+        "subtract": []
+      },
+      "basis": "Printed manufacturer outer dimensions; hollow presentation only. Wall/cap thickness 1.5mm and unannotated split/opening dimensions are estimates, not a measured enclosure interior, connector mating interface or manufacturing CAD."
+    },
+    {
+      "name": "case-rear-cap",
+      "role": "shell",
+      "color": "#292b2e",
+      "geometry": {
+        "shape": "plate",
+        "outlineMm": [
+          [
+            -27.5,
+            -55.0
+          ],
+          [
+            27.5,
+            -55.0
+          ],
+          [
+            27.5,
+            55.0
+          ],
+          [
+            -27.5,
+            55.0
+          ]
+        ],
+        "holesMm": [],
+        "depthMm": 1.5,
+        "centerZMm": -6.5,
+        "subtract": []
+      },
+      "basis": "Printed manufacturer outer dimensions; hollow presentation only. Wall/cap thickness 1.5mm and unannotated split/opening dimensions are estimates, not a measured enclosure interior, connector mating interface or manufacturing CAD."
     },
     {
       "name": "official-front-photo",
-      "role": "shell",
+      "role": "component",
       "color": "#ffffff",
       "geometry": {
         "shape": "photo-face",
@@ -108,7 +265,8 @@
   "limitations": [
     "Internal PCB/battery geometry, RF antenna shape and reverse LF branding are UNKNOWN and omitted. This shared exterior preview uses the source front face only.",
     "Outer box is a dimension-bounded envelope; sculpted bevels/side connector and key travel are not mechanical replicas.",
-    "37.5x20 mm source annotation measures the optical opening; exact OLED active dimensions remain unknown."
+    "37.5x20 mm source annotation measures the optical opening; exact OLED active dimensions remain unknown.",
+    "Hollow repair: Previous solid-envelope representation is superseded. Exterior printed dimensions retained; 1.5mm wall/cap thickness, simplified corner/side profiles and unannotated port positions are explicit estimates. Only visible openings are approximated; no screw threads, hidden electronics, battery, seals or connector mating model is invented."
   ],
   "presentation": {
     "screen": {
@@ -181,6 +339,44 @@
         ],
         "basis": "Source-photo hit region; electrical ID separately sourced."
       }
+    ],
+    "inspectionGroups": [
+      {
+        "id": "front-cap-inspection",
+        "parts": [
+          "case-front-annulus",
+          "live-display",
+          "official-front-photo",
+          "cover-key:boot",
+          "cover-key:menu",
+          "cover-key:power",
+          "cover-key:ptt"
+        ],
+        "offsetMm": [
+          70,
+          0,
+          12
+        ],
+        "sourceIds": [
+          "dimension-photo"
+        ],
+        "notes": "Illustrative front-cap separation reveals UNKNOWN PCB. The displacement is not assembly travel."
+      },
+      {
+        "id": "rear-cap-inspection",
+        "parts": [
+          "case-rear-cap"
+        ],
+        "offsetMm": [
+          -70,
+          0,
+          -12
+        ],
+        "sourceIds": [
+          "dimension-photo"
+        ],
+        "notes": "Independent rear-cap separation; hollow walls remain in place. Exact internal mounting is unknown."
+      }
     ]
   },
   "derivedParts": [
@@ -208,6 +404,25 @@
         ]
       },
       "basis": "Annotation of unmodeled reverse/internal structures, not claimed PCB geometry."
+    },
+    {
+      "id": "pcb-inner-unknown",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          45,
+          100,
+          1
+        ],
+        "centerMm": [
+          0,
+          0,
+          0
+        ],
+        "labelSide": "front"
+      },
+      "color": "#596767",
+      "basis": "UNKNOWN hidden PCB: size/thickness are inspection placeholders only; no sourced layout or assembly-fit claim."
     }
   ],
   "photoRegistration": {
@@ -223,7 +438,26 @@
       110
     ],
     "method": "Front-face pixel bounds registered to the printed manufacturer dimension; source image is unchanged.",
-    "uncertaintyMm": 1.5
+    "uncertaintyMm": 1.5,
+    "review": {
+      "file": "dimension-photo.jpg",
+      "pixelFromModelXY": [
+        [
+          5.090909090909092,
+          0,
+          267.0
+        ],
+        [
+          0,
+          -5.127272727272728,
+          634.0
+        ]
+      ],
+      "includeParts": [
+        "case-front-annulus"
+      ],
+      "basis": "Same explicitly declared source-pixel registration as the production front texture. Overlay checks the exterior contour only; no hidden dimensions or independent camera calibration inferred."
+    }
   },
   "dimensions": {
     "widthMm": 55,
@@ -256,10 +490,174 @@
     ],
     "ledIndices": [],
     "shellNames": [
-      "documented-enclosure-envelope",
-      "official-front-photo"
+      "case-side-ring",
+      "case-front-annulus",
+      "case-rear-cap"
     ],
-    "screenAspectRelativeTolerance": 0.001
+    "screenAspectRelativeTolerance": 0.001,
+    "unknownPcbInspection": [
+      {
+        "label": "pcb-inner-unknown-unknown-front"
+      }
+    ],
+    "hollowEnclosure": {
+      "wallParts": [
+        "case-side-ring"
+      ],
+      "frontCap": "case-front-annulus",
+      "rearCap": "case-rear-cap",
+      "cavityPointMm": [
+        0,
+        0,
+        0
+      ],
+      "aperturePointMm": [
+        0,
+        32.5,
+        0
+      ],
+      "wallMmEstimate": 1.5,
+      "sourceIds": [
+        "dimension-photo"
+      ]
+    }
   },
-  "dimensionTargets": []
+  "dimensionTargets": [
+    {
+      "part": "case-front-annulus",
+      "sizeMm": [
+        55,
+        110,
+        1.5
+      ],
+      "toleranceMm": 0.001
+    },
+    {
+      "part": "case-rear-cap",
+      "sizeMm": [
+        55,
+        110,
+        1.5
+      ],
+      "toleranceMm": 0.001
+    },
+    {
+      "part": "case-front-annulus",
+      "sizeMm": [
+        55,
+        110,
+        1.5
+      ],
+      "toleranceMm": 0.001
+    },
+    {
+      "part": "case-rear-cap",
+      "sizeMm": [
+        55,
+        110,
+        1.5
+      ],
+      "toleranceMm": 0.001
+    },
+    {
+      "part": "case-front-annulus",
+      "sizeMm": [
+        55,
+        110,
+        1.5
+      ],
+      "toleranceMm": 0.001
+    },
+    {
+      "part": "case-rear-cap",
+      "sizeMm": [
+        55,
+        110,
+        1.5
+      ],
+      "toleranceMm": 0.001
+    }
+  ],
+  "enclosureReconstruction": {
+    "originalEnvelope": {
+      "name": "documented-enclosure-envelope",
+      "role": "shell",
+      "color": "#292b2e",
+      "geometry": {
+        "shape": "box",
+        "sizeMm": [
+          55,
+          110,
+          14.5
+        ]
+      },
+      "basis": "55 x110 x14.5 mm manufacturer outer bounds; bevels and corner curvature omitted."
+    },
+    "originalPhotoParts": [
+      {
+        "name": "official-front-photo",
+        "role": "component",
+        "color": "#ffffff",
+        "geometry": {
+          "shape": "photo-face",
+          "outlineMm": [
+            [
+              -27.5,
+              -55.0
+            ],
+            [
+              27.5,
+              -55.0
+            ],
+            [
+              27.5,
+              55.0
+            ],
+            [
+              -27.5,
+              55.0
+            ]
+          ],
+          "holesMm": [
+            [
+              [
+                -18.75,
+                22.5
+              ],
+              [
+                18.75,
+                22.5
+              ],
+              [
+                18.75,
+                42.5
+              ],
+              [
+                -18.75,
+                42.5
+              ]
+            ]
+          ],
+          "zMm": 7.28
+        },
+        "texture": {
+          "file": "dimension-photo.jpg",
+          "projection": "xy",
+          "side": "front",
+          "boundsMm": [
+            -52.44642857142857,
+            -74.69858156028369,
+            136.125,
+            123.65248226950355
+          ]
+        },
+        "basis": "Manufacturer annotated dimensions and unchanged photo; perspective/registration uncertainty stated separately."
+      }
+    ],
+    "sourceObservations": [
+      "Official bottom view documents USB-C and two PIN OUT mouths at 14mm/28mm spacing. Mouth sizes/depth and microphone grille details remain photo estimates or omitted. RF mating geometry is not invented."
+    ],
+    "wallMmEstimate": 1.5,
+    "scope": "Geometry correction, not physical hardware or browser acceptance."
+  }
 }
