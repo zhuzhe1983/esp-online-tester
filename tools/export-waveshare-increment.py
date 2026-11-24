@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 
@@ -131,6 +132,11 @@ def main():
         if path in ['docs/platform/waveshare-progress-2026-11-23.md',
                     'docs/platform/research/waveshare-progress-2026-11-23.json']:
             return False
+        batch_evidence = re.match(r'docs/platform/evidence/waveshare-batch(\d+)-', path)
+        if batch_evidence:
+            # Root acceptance evidence is named by delivery batch, not chip.
+            # Carry earlier receipts forward without rewriting immutable patches.
+            return int(batch_evidence.group(1)) <= number
         if path.startswith(('docs/evidence/waveshare-', 'docs/research/waveshare-', 'docs/platform/evidence/waveshare-')):
             return any(('waveshare-' + chip) in path for chip in chips) or 'store-inventory' in path
         if path == 'tools/platform-waveshare-test.mjs':

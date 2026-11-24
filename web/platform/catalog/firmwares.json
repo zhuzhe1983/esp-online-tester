@@ -22616,6 +22616,68 @@
       ]
     },
     {
+      "id": "waveshare-c6-touch-lcd-169-factory",
+      "name": "ESP32-C6-Touch-LCD-1.69 · 官方出厂镜像（验证中）",
+      "productIds": [
+        "waveshare-esp32-c6-touch-lcd-1-69"
+      ],
+      "version": "ESP32-C6-Touch-LCD-1.69_FactoryOnly_20250618",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.69/48906a4a31a80ecd128bd83c9ebc36e257236e5f/firmware/ESP32-C6-Touch-LCD-1.69_FactoryOnly_20250618.bin",
+        "sha256": "9bdd002959e8c007759679c4c30470b3e0655524c5d49ff0c807021708c01533"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Pinned original manufacturer binary",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.69/48906a4a31a80ecd128bd83c9ebc36e257236e5f/firmware/ESP32-C6-Touch-LCD-1.69_FactoryOnly_20250618.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始镜像芯片、分区和校验通过；具体运行结果和故障逐版本保留，完整交互仍未验收。",
+        "只关联已记录的精确硬件修订，不跨触摸/显示芯片修订冒用。",
+        "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-lcd-1-69运行5客体秒。240×280末帧16色，显示Touch testing mode / Exit with BOOT button。I2C NACK、RTC振荡器及RF校准告警保留；尚未验证触摸交互。证据见docs/platform/evidence/waveshare-batch012-20261124/touch169-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。"
+      ]
+    },
+    {
+      "id": "waveshare-c6-touch-lcd-147-factory",
+      "name": "ESP32-C6-Touch-LCD-1.47 · 官方出厂镜像（验证中）",
+      "productIds": [
+        "waveshare-esp32-c6-touch-lcd-1-47",
+        "waveshare-esp32-c6-touch-lcd-1-47-m"
+      ],
+      "version": "ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+        "sha256": "0dd9c8c64309aa69d32af8bd5d79c505e4c561f5069aea57e3ee21f40867fb9a"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Pinned original manufacturer binary",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始镜像芯片、分区和校验通过；具体运行结果和故障逐版本保留，完整交互仍未验收。",
+        "只关联已记录的精确硬件修订，不跨触摸/显示芯片修订冒用。",
+        "[修复前历史记录] 2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-lcd-1-47运行5.16客体秒。172×320末帧524色，启动器可见Squareline/DrawPanel；左侧34像素白条仍待查。64MiB FAT32卡挂载，当前观察0页改写。RF校准和手势告警保留。证据见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。 此显示窗口错误已由本批后续JD9853偏移修复，详见修复后证据。",
+        "2026-11-23修复验证：按厂家main.c的set_gap(34,0)，将JD9853独立GRAM设为240×320、可视列34..205；首末像素和隐藏列负例通过。同一完整原镜像在公开Worker/生产WASM运行5.02秒，30帧、530色，目视确认左侧34px白条消失且Squareline/DrawPanel居中。修复前后原图及UART均保留，见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker-fixed与docs/evidence/waveshare-c6-touch147-window-fix-2026-11-23。该结论仅针对该显示窗口错误，不扩大为整机验收。"
+      ]
+    },
+    {
       "id": "waveshare-esp32-s3-rgb-matrix-px-demo",
       "name": "ESP32-S3-RGB-Matrix-Test.bin",
       "productIds": [
@@ -24464,6 +24526,102 @@
         "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-s3-epaper-1-54运行5客体秒。按原源码纠正GPIO6屏幕、GPIO42音频低有效门控后，原图越过ES8311初始化并启动LVGL，200×200末帧2色，64MiB FAT32卡真实修改4页；SHTC3缺失仍报错。修复前无帧及音频abort证据另存epaper154-original。记录见docs/platform/evidence/waveshare-batch011-20261124/epaper154-active-low。仅记录所选配置的有界原图执行，不代表同家族所有SKU/硬件版本、浏览器WebGL或实物整机验收。"
       ],
       "watchlistId": "waveshare-esp32-s3-epaper-1-54-factory-watch"
+    },
+    {
+      "id": "waveshare-c6-touch-amoled-206-factory",
+      "name": "ESP32-C6-Touch-AMOLED-2.06 · 官方出厂镜像（验证中）",
+      "productIds": [
+        "waveshare-esp32-c6-touch-amoled-2-06",
+        "waveshare-esp32-c6-touch-amoled-2-06-en"
+      ],
+      "version": "ESP32-C6-Touch-AMOLED-2.06_FactoryOnly_20261029",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-2.06/9378d715f0b149f3d8838e603df2fc0e6eee1469/firmware/ESP32-C6-Touch-AMOLED-2.06_FactoryOnly_20261029.bin",
+        "sha256": "a8561a0502f7dacf836ab33fc2087b464e63bb3bc0898d648c6853007fb6d9c9"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Pinned original manufacturer binary",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-2.06/9378d715f0b149f3d8838e603df2fc0e6eee1469/firmware/ESP32-C6-Touch-AMOLED-2.06_FactoryOnly_20261029.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始镜像芯片、分区和校验通过；具体运行结果和故障逐版本保留，完整交互仍未验收。",
+        "只关联已记录的精确硬件修订，不跨触摸/显示芯片修订冒用。",
+        "2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-amoled-2-06运行5客体秒。410×502末帧2027色，显示DrawPanel/AIChats启动器；原码PMU WRITE FAILED与swap_xy不支持告警保留。证据见docs/platform/evidence/waveshare-batch012-20261124/amoled206-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。"
+      ]
+    },
+    {
+      "id": "waveshare-c6-touch-amoled-143-example",
+      "name": "ESP32-C6-Touch-AMOLED-1.43 · 官方综合示例（验证中）",
+      "productIds": [
+        "waveshare-esp32-c6-touch-amoled-1-43",
+        "waveshare-esp32-c6-touch-amoled-1-43-b"
+      ],
+      "version": "ESP32-C6-Touch-AMOLED-1.43-factory",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Firmware/ESP32-C6-Touch-AMOLED-1.43-factory.bin",
+        "sha256": "4e62fac513a3727277a453be5ef090dc1d6bf7817efc121b44200498df8d7c5f"
+      },
+      "role": "example",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Pinned original manufacturer binary",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Firmware/ESP32-C6-Touch-AMOLED-1.43-factory.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始镜像芯片、分区和校验通过；具体运行结果和故障逐版本保留，完整交互仍未验收。",
+        "只关联已记录的精确硬件修订，不跨触摸/显示芯片修订冒用。"
+      ]
+    },
+    {
+      "id": "waveshare-c6-lcd-169-factory",
+      "name": "ESP32-C6-LCD-1.69 · 官方出厂镜像（验证中）",
+      "productIds": [
+        "waveshare-esp32-c6-lcd-1-69"
+      ],
+      "version": "01_factory",
+      "status": "trial",
+      "source": {
+        "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.69/ESP32-C6-LCD-1.69-Demo.zip",
+        "sha256": "2bab9dde4d0b4f3372f96e450b57ce2a0e3061f341bdf25e8ba6e28e882dc3d5",
+        "bootMode": "rom",
+        "archive": {
+          "format": "zip-bundle",
+          "entry": "Firmware/01_factory.bin",
+          "sha256": "8de271df9c2f78d938bc1480d5133efbe70ce1ddca51588d2f3c7ce6d23601f7"
+        }
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Pinned original manufacturer ZIP member",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-LCD-1.69/ESP32-C6-LCD-1.69-Demo.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始镜像芯片、分区和校验通过；具体运行结果和故障逐版本保留，完整交互仍未验收。",
+        "只关联已记录的精确硬件修订，不跨触摸/显示芯片修订冒用。"
+      ]
     }
   ]
 }

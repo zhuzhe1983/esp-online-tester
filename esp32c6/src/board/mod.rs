@@ -38,6 +38,8 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-c6-touch-amoled18" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch18V2))),
         "waveshare-c6-touch-amoled18-v1" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch18V1))),
         "waveshare-c6-touch-amoled132" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch132))),
+        "waveshare-c6-touch-amoled143" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch143))),
+        "waveshare-c6-touch-amoled206" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch206))),
         "waveshare-c6-lcd273" => Some(Box::new(waveshare_lcd273::Lcd273::new())),
         "waveshare-c6-epaper154" => Some(Box::new(waveshare_epaper154::Epaper154::new())),
         "waveshare-c6-touch-amoled216" => Some(Box::new(waveshare_amoled::WaveshareAmoled::new(waveshare_amoled::AmoledVariant::Touch216))),

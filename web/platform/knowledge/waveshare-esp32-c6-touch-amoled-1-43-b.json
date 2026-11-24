@@ -1,0 +1,1218 @@
+{
+  "schemaVersion": "1",
+  "id": "waveshare-esp32-c6-touch-amoled-1-43-b",
+  "kind": "product",
+  "catalogId": "waveshare-esp32-c6-touch-amoled-1-43-b",
+  "title": "Waveshare ESP32-C6-Touch-AMOLED-1.43-B",
+  "summary": "1.43 英寸 466×466 CO5300，16 MiB Flash，无PSRAM。",
+  "summarySourceIds": [
+    "electrical-0",
+    "electrical-1",
+    "electrical-2",
+    "electrical-3",
+    "electrical-4",
+    "electrical-5",
+    "electrical-6",
+    "electrical-7",
+    "electrical-8",
+    "electrical-9",
+    "electrical-10",
+    "electrical-11",
+    "electrical-12",
+    "electrical-13",
+    "electrical-14",
+    "electrical-15",
+    "electrical-16",
+    "electrical-17",
+    "electrical-18",
+    "electrical-19",
+    "electrical-20",
+    "electrical-21",
+    "electrical-22",
+    "electrical-23",
+    "electrical-24",
+    "electrical-25",
+    "electrical-26",
+    "electrical-27",
+    "electrical-28",
+    "electrical-29",
+    "overview",
+    "resources"
+  ],
+  "updatedAt": "2026-11-23T20:00:15Z",
+  "hardwareRevision": "Rev1.3 schematic; September2025 bare CAD",
+  "facts": [
+    {
+      "id": "hardware",
+      "label": "精确SKU/修订与真实接线",
+      "value": {
+        "sku": "31905",
+        "hardwareRevision": "Rev1.3 schematic; September2025 bare CAD",
+        "options": {
+          "Version Options": "with protective case"
+        },
+        "chip": "esp32c6",
+        "flashMiB": 16,
+        "psramMiB": 0,
+        "display": {
+          "width": 466,
+          "height": 466,
+          "type": "AMOLED",
+          "controller": "CO5300",
+          "bus": "QSPI2",
+          "diagonalInches": 1.43,
+          "touch": true
+        },
+        "touch": "FT6146 compatible FT5x06 report",
+        "spi": {
+          "CLK": 11,
+          "D0": 4,
+          "D1": 5,
+          "D2": 6,
+          "D3": 7,
+          "CS": 10,
+          "RST": 3
+        },
+        "i2c": {
+          "SDA": 18,
+          "SCL": 8
+        },
+        "sd": {
+          "CLK": 11,
+          "MOSI": 4,
+          "MISO": 5,
+          "CS": 15
+        },
+        "components": [
+          "FT6146@0x38 common coordinate report; unknown private IDs NACK",
+          "TCA9554@0x20: EX0 touchIRQ, CPU interruptGPIO1; EX1 RTCINT; EX2 LCD_EN/DSI",
+          "QMI8658@0x6b digital compatible subset",
+          "PCF85063@0x51",
+          "ES8311@0x18",
+          "ES7210@0x40",
+          "BOOT9/PWR2; ETA6098 charging not emulated"
+        ],
+        "buttons": [
+          {
+            "id": "boot",
+            "name": "BOOT",
+            "type": "button",
+            "pin": 9,
+            "activeLow": true,
+            "defaultKeyCode": "Space"
+          },
+          {
+            "id": "power",
+            "name": "PWR digital input",
+            "type": "button",
+            "pin": 2,
+            "activeLow": true,
+            "defaultKeyCode": "KeyP"
+          }
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-17",
+        "electrical-18",
+        "electrical-19",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-24",
+        "electrical-25",
+        "electrical-26",
+        "electrical-27",
+        "electrical-28",
+        "electrical-29",
+        "overview",
+        "resources",
+        "product"
+      ]
+    },
+    {
+      "id": "factory-layout",
+      "label": "原厂镜像字节、分区与实际结果",
+      "value": {
+        "bytes": 6944416,
+        "sha256": "4e62fac513a3727277a453be5ef090dc1d6bf7817efc121b44200498df8d7c5f",
+        "archiveMember": null,
+        "containerBytes": null,
+        "containerSha256": null,
+        "layout": {
+          "loadOffset": 0,
+          "chipId": 13,
+          "bootloaderChecksumAndDigestValid": true,
+          "partitionTableOffset": 32768,
+          "partitionTableMd5Valid": true,
+          "partitions": [
+            {
+              "type": 1,
+              "subtype": 2,
+              "offset": 36864,
+              "bytes": 24576,
+              "label": "nvs",
+              "flags": 0
+            },
+            {
+              "type": 1,
+              "subtype": 1,
+              "offset": 61440,
+              "bytes": 4096,
+              "label": "phy_init",
+              "flags": 0
+            },
+            {
+              "type": 0,
+              "subtype": 0,
+              "offset": 65536,
+              "bytes": 8388608,
+              "label": "factory",
+              "flags": 0,
+              "imageChipId": 13,
+              "imageChecksumsValid": true
+            }
+          ],
+          "fitsFlashMiB": 16,
+          "headerFlashSizeCode": 4
+        },
+        "nativeObservations": [
+          "Original full image stops via software reset at4.594 emulated seconds after BLE hardware-encryption assertion;1 exception.",
+          "39 RAMWR/672936 pixels;18 RGB colors;green field plus performance overlay, not home-screen acceptance.",
+          "Sensor self-test lacks dynamic completion and no SD card was attached; those error logs do not mean no physical IMU/socket."
+        ],
+        "nativeEvidence": "docs/evidence/waveshare-c6-fourth-five-2026-11-23/native-runs.json",
+        "publicTrialAssigned": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory"
+      ]
+    },
+    {
+      "id": "ecosystem-investigation",
+      "label": "原厂、小智与UIFlow调查",
+      "value": {
+        "factory": "Exact original image/member verified; native outcome is revision-specific and partial",
+        "xiaozhiExactBoardPaths": [
+          "main/boards/waveshare/esp32-c6-touch-amoled-1.43/README.md",
+          "main/boards/waveshare/esp32-c6-touch-amoled-1.43/config.h",
+          "main/boards/waveshare/esp32-c6-touch-amoled-1.43/config.json",
+          "main/boards/waveshare/esp32-c6-touch-amoled-1.43/esp32-c6-touch-amoled-1.43.cc"
+        ],
+        "xiaozhiBinaryVerified": false,
+        "uiflowExactNamedPaths": [],
+        "uiflowBinaryVerified": false,
+        "scope": "A source target is not an accepted flash image. Absence is scoped to pinned complete trees."
+      },
+      "basis": "official",
+      "sourceIds": [
+        "factory",
+        "resources",
+        "xiaozhi-tree",
+        "uiflow-tree"
+      ]
+    },
+    {
+      "id": "source-conflicts",
+      "label": "来源冲突与采用依据",
+      "value": [
+        "Touch IRQ travels through TCA9554 EX0 to MCU GPIO1; it is not a direct GPIO1 FT interrupt. Touch reset is pulled high by R24; R22 to RTC EX1 is NC and must not reset touch.",
+        "No AXP2101 is fitted. EX2 LCD_EN/DSI is not treated as an invented power switch. Factory source leaves EX2 input while configuring battery/amp EX6/7.",
+        "Published FT6146 identity uses common FT5x06 report byte layout. This subset returns sourced contacts and rejects unknown private version/ID selectors; it does not assert an FT3168 die identity.",
+        "Exact official BIN and11_FactoryProgram demonstrate a comprehensive example. A distinct default-shipping/recovery purpose is not explicitly documented in retained prose, so it is labelled official example trial, not accepted factory recovery.",
+        "Native689 source components are retained in34 draw groups. Emissive36.35 mm, cover viewing36.75 mm, cover46 mm and case48 mm are distinct; no rescaling. Case-B archive is only2D PDF/DWG, so case shell is explicit unverified reconstruction.",
+        "Original full image stops at4.594s in BLE encryption assertion; green test image/performance overlay is not application acceptance."
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-17",
+        "electrical-18",
+        "electrical-19",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-24",
+        "electrical-25",
+        "electrical-26",
+        "electrical-27",
+        "electrical-28",
+        "electrical-29",
+        "overview",
+        "resources"
+      ]
+    },
+    {
+      "id": "model-scope",
+      "label": "机械模型可证明范围",
+      "value": {
+        "model": "waveshare-esp32-c6-touch-amoled-1-43-b",
+        "method": "manufacturer-cad",
+        "limitations": [
+          "Native source preserves every689 topology;24 original/fallback colors are grouped for rendering, not omitted or geometrically merged.",
+          "Native emissive36.35 mm differs from36.75 mm cover viewing aperture. The latter is not relabelled active area.",
+          "Native total height11.8003 mm includes headers; current photograph9.60 mm differs. Source is not rescaled; revision/measurement scope remains unresolved.",
+          "Bare native switch282 maps to BOOT and283 to PWR from the unchanged rear photo and USB/connector frame. Case actuators have no retained3D geometry and remain workbench-only controls.",
+          "No physical assembly fit, calibrated optical appearance, touch registration or browser WebGL acceptance claim.",
+          "Case-B is a hybrid: exact bare native board plus exterior dimension reconstruction. The official case archive contains2D PDF/DWG only. Shell wall/rim/back thickness, port openings, support bosses and registration are UNKNOWN; fit is not claimed.",
+          "Broad rear debug openings intentionally reveal native headers/connectors; they are not measured production cutouts. Side openings/key actuators are reference-only, and shell placement may overlap the native USB until a solid case source is available."
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "dimension-photo",
+        "resources",
+        "official-cad"
+      ]
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "overview",
+      "title": "overview.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/overview.html.gz",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43",
+      "fetchedAt": "2026-11-23T16:32:06Z",
+      "bytes": 44771,
+      "sha256": "aace3e1670c8e0f473b74bbcef3082370686dba92991ad7add33aa5ae7c68d1a",
+      "archiveName": "overview.html.gz"
+    },
+    {
+      "id": "resources",
+      "title": "resources.html.gz",
+      "url": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/Resources-And-Documents",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/resources.html.gz",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/Resources-And-Documents",
+      "fetchedAt": "2026-11-23T16:39:23Z",
+      "bytes": 35578,
+      "sha256": "223b23e94430ad6ce41cd935ebbc6556441f9963d019944e126a88c3b1919105",
+      "archiveName": "resources.html.gz"
+    },
+    {
+      "id": "repository-tree",
+      "title": "repository-tree.json.gz",
+      "url": "https://github.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/tree/041a83d6ec24c266377bbf4f68505bf38c2ad4f8",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Derived Git tree, not raw HTTP response. Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/repository-tree.json.gz",
+      "resolvedUrl": "https://github.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/tree/041a83d6ec24c266377bbf4f68505bf38c2ad4f8",
+      "fetchedAt": "2026-11-23T19:04:32Z",
+      "bytes": 1366977,
+      "sha256": "7b1c3212f44ca5a780db0d8342d86a0b5ffbe0629a122a5340648aae6d88f8c8",
+      "archiveName": "repository-tree.json.gz"
+    },
+    {
+      "id": "official-archive",
+      "title": "source-archive.zip",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-20250915.zip",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/source-archive.zip",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-20250915.zip",
+      "fetchedAt": "2026-11-23T19:03:31Z",
+      "bytes": 5760050,
+      "sha256": "82da3c59276447f31c46faef7d6cd4503f8f379b22361f1907b3b8448b5c09a7",
+      "archiveName": "source-archive.zip"
+    },
+    {
+      "id": "official-cad",
+      "title": "source.stp.gz",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-20250915.zip",
+      "kind": "manufacturer-cad",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/source.stp.gz",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-20250915.zip",
+      "fetchedAt": "2026-11-23T19:03:31Z",
+      "bytes": 14466377,
+      "sha256": "4081917ad3056bac65ad4e31f2b8a70b306e8b0fd07ba2618bc98f3724e95e4c",
+      "archiveName": "source.stp.gz"
+    },
+    {
+      "id": "dimension-photo",
+      "title": "dimension-photo.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ProductSize-1-4de9c5f476b4c62d4f00ed0fe76201f6.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/dimension-photo.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ProductSize-1-4de9c5f476b4c62d4f00ed0fe76201f6.webp",
+      "fetchedAt": "2026-11-23T19:03:30Z",
+      "bytes": 68944,
+      "sha256": "cc5f0c9dd67bbf14fec93bc82aa952c3ce33adbaa7b4b66799abb232be7fd53e",
+      "archiveName": "dimension-photo.webp"
+    },
+    {
+      "id": "case-dimension-photo",
+      "title": "case-dimension-photo.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ProductSize-2-ed5d019488e8f0b60c617aaff0e4a19b.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/case-dimension-photo.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ProductSize-2-ed5d019488e8f0b60c617aaff0e4a19b.webp",
+      "fetchedAt": "2026-11-23T19:03:30Z",
+      "bytes": 45410,
+      "sha256": "cface4f46dfc2d814b28b0c682b139a08df7c89184bef2e1284787ed24ab4f25",
+      "archiveName": "case-dimension-photo.webp"
+    },
+    {
+      "id": "photo-0",
+      "title": "photo-0.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-DocHeader-1-37053b0a34607f4a308a813d21145b1d.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/photo-0.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-DocHeader-1-37053b0a34607f4a308a813d21145b1d.webp",
+      "fetchedAt": "2026-11-23T19:03:27Z",
+      "bytes": 91380,
+      "sha256": "7b760ecdd9db24a662c54e1303dee8494a5ba2e95f3925ad86cb9133961d1810",
+      "archiveName": "photo-0.webp"
+    },
+    {
+      "id": "photo-1",
+      "title": "photo-1.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-DocHeader-2-1f587c90bec4ca82bc8a080bdab124fc.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/photo-1.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-DocHeader-2-1f587c90bec4ca82bc8a080bdab124fc.webp",
+      "fetchedAt": "2026-11-23T19:03:27Z",
+      "bytes": 101190,
+      "sha256": "1ea5d9e542dff4a94a574bb5d5f31a266c78d6e25e0513ad3ba94c9b16c63b96",
+      "archiveName": "photo-1.webp"
+    },
+    {
+      "id": "photo-2",
+      "title": "photo-2.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-HW-42a88b3fd220953880d1d17459f9d852.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/photo-2.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-HW-42a88b3fd220953880d1d17459f9d852.webp",
+      "fetchedAt": "2026-11-23T19:03:30Z",
+      "bytes": 54210,
+      "sha256": "3502d94a1595d7715709ddacb0d341d78692f600a9123acd925a3114d2b4d890",
+      "archiveName": "photo-2.webp"
+    },
+    {
+      "id": "photo-3",
+      "title": "photo-3.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-IntfIntro-cdcdac14d4f0450d39b9e91d69029f39.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/photo-3.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-IntfIntro-cdcdac14d4f0450d39b9e91d69029f39.webp",
+      "fetchedAt": "2026-11-23T19:03:30Z",
+      "bytes": 80100,
+      "sha256": "e584cc4e6d8eda6331a5b6df3080a51fa3de332da7a840f340cb7f5b103118c7",
+      "archiveName": "photo-3.webp"
+    },
+    {
+      "id": "photo-6",
+      "title": "photo-6.webp",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ScreenParameters-70f44cb25496638446162c19ed6d2b88.webp",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-amoled-1-43/photo-6.webp",
+      "resolvedUrl": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ScreenParameters-70f44cb25496638446162c19ed6d2b88.webp",
+      "fetchedAt": "2026-11-23T19:03:30Z",
+      "bytes": 14340,
+      "sha256": "7e78e76057281501a642930ea56e2b0f44d319ad59cdd151030e425a4c9f9051",
+      "archiveName": "photo-6.webp"
+    },
+    {
+      "id": "product",
+      "title": "Official exact-SKU selection",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-touch-amoled-1.43.htm",
+      "kind": "manufacturer-product",
+      "status": "linked",
+      "notes": "Public selected SKU fields are explicitly derived. Shared SKU revisions are separated by physical controller and sourced wiring, not fabricated sale options."
+    },
+    {
+      "id": "electrical-0",
+      "title": "Arduino_Libraries/ReadMe.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Arduino_Libraries/ReadMe.txt",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Arduino_Libraries/ReadMe.txt",
+      "fetchedAt": "2026-11-23T19:05:16Z",
+      "bytes": 697,
+      "sha256": "1252c108c1a3ed3085b35a4f45d70bee6ac038689244fd04fd08c6e517ec4c8c",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Arduino_Libraries_ReadMe.txt.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Arduino_Libraries_ReadMe.txt.gz"
+    },
+    {
+      "id": "electrical-1",
+      "title": "Example/Arduino/11_FactoryProgram/11_FactoryProgram.ino",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/11_FactoryProgram.ino",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/11_FactoryProgram.ino",
+      "fetchedAt": "2026-11-23T19:06:13Z",
+      "bytes": 11790,
+      "sha256": "3baad7dd0346b703d6f8d3c65373d13140eaffef7f0acec6c0a25b103c61b368",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_11_FactoryProgram.ino.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_11_FactoryProgram.ino.gz"
+    },
+    {
+      "id": "electrical-2",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/adc_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/adc_bsp.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/adc_bsp.cpp",
+      "fetchedAt": "2026-11-23T19:05:55Z",
+      "bytes": 1429,
+      "sha256": "978f8afc567b85175c80b7634f5bb7fbb885b4eb3730162504b4cacebfd42898",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_adc_bsp.cpp.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_adc_bsp.cpp.gz"
+    },
+    {
+      "id": "electrical-3",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/adc_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/adc_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/adc_bsp.h",
+      "fetchedAt": "2026-11-23T19:05:55Z",
+      "bytes": 130,
+      "sha256": "85c2fffc95b34d7056e8951ea6b04fdbab512886e77e446867ecdb04b03dda6a",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_adc_bsp.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_adc_bsp.h.gz"
+    },
+    {
+      "id": "electrical-4",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/button_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/button_bsp.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/button_bsp.c",
+      "fetchedAt": "2026-11-23T19:05:55Z",
+      "bytes": 3777,
+      "sha256": "3bcab55ff2c9a3813e16ca007ae35e0723782a888918750ea1c94580444115b0",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_button_bsp.c.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_button_bsp.c.gz"
+    },
+    {
+      "id": "electrical-5",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/button_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/button_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/button_bsp.h",
+      "fetchedAt": "2026-11-23T19:05:55Z",
+      "bytes": 629,
+      "sha256": "e532b25dfe62affb9abfbb571984adf259eba8e842ee164c222d7ddcab84ba3b",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_button_bsp.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_button_bsp.h.gz"
+    },
+    {
+      "id": "electrical-6",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/codec_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/codec_bsp.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/codec_bsp.cpp",
+      "fetchedAt": "2026-11-23T19:05:55Z",
+      "bytes": 4185,
+      "sha256": "6c2a035004f5599429818a1c2eb9b66a157f879439338591bfc49cb12dd64dfc",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_codec_bsp.cpp.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_codec_bsp.cpp.gz"
+    },
+    {
+      "id": "electrical-7",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/codec_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/codec_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/codec_bsp.h",
+      "fetchedAt": "2026-11-23T19:05:55Z",
+      "bytes": 1276,
+      "sha256": "b54d74e4339a7c09d99f794a218525b091f176dd4c3b625e0164b580ed327dba",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_codec_bsp.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_codec_bsp.h.gz"
+    },
+    {
+      "id": "electrical-8",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/display_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/display_bsp.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/display_bsp.cpp",
+      "fetchedAt": "2026-11-23T19:05:55Z",
+      "bytes": 4223,
+      "sha256": "1826601dfc5dcb4d8fb0c2b0b876799e9fc3d2c749c48b18de5ba5840d39c801",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_display_bsp.cpp.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_display_bsp.cpp.gz"
+    },
+    {
+      "id": "electrical-9",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/display_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/display_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/display_bsp.h",
+      "fetchedAt": "2026-11-23T19:05:55Z",
+      "bytes": 1671,
+      "sha256": "958973579d557579d7a8ed73ee297bb6695ba0a4e0372b87d5fdbd52a124c61e",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_display_bsp.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_display_bsp.h.gz"
+    },
+    {
+      "id": "electrical-10",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_bsp.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_bsp.cpp",
+      "fetchedAt": "2026-11-23T19:06:00Z",
+      "bytes": 2616,
+      "sha256": "94e9e02a4f4f7636ec3712bd3004fa850834b8edf3b7e5e3b09d9bf849a71ebd",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_i2c_bsp.cpp.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_i2c_bsp.cpp.gz"
+    },
+    {
+      "id": "electrical-11",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_bsp.h",
+      "fetchedAt": "2026-11-23T19:06:01Z",
+      "bytes": 619,
+      "sha256": "d7ed76550c7798c2aa9d9b6938649e55c6f6e351be7a847fd02c37d395aa3104",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_i2c_bsp.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_i2c_bsp.h.gz"
+    },
+    {
+      "id": "electrical-12",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_equipment.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_equipment.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_equipment.cpp",
+      "fetchedAt": "2026-11-23T19:06:01Z",
+      "bytes": 8024,
+      "sha256": "83516186fe62ba356faa9cbabc13523730a22801c96849f8697f15f4252834d4",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_i2c_equipment.cpp.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_i2c_equipment.cpp.gz"
+    },
+    {
+      "id": "electrical-13",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_equipment.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_equipment.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_equipment.h",
+      "fetchedAt": "2026-11-23T19:06:00Z",
+      "bytes": 682,
+      "sha256": "13b3f449fb7902144472c180a154dd87175e3e085a374930373893b330286ced",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_i2c_equipment.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_i2c_equipment.h.gz"
+    },
+    {
+      "id": "electrical-14",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/multi_button.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/multi_button.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/multi_button.c",
+      "fetchedAt": "2026-11-23T19:06:01Z",
+      "bytes": 7577,
+      "sha256": "bf4389e2eefebd357e3eba0e63fe550388b72f0f45e7d800fbf00b3b187a36f6",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_lib_src_multi_button.c.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_lib_src_multi_button.c.gz"
+    },
+    {
+      "id": "electrical-15",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/multi_button.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/multi_button.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/multi_button.h",
+      "fetchedAt": "2026-11-23T19:06:01Z",
+      "bytes": 2904,
+      "sha256": "6a75eee13fe518b8b5d538c6c38caf6d95418d31868c0ccc0a7bd6710b02a0bc",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_lib_src_multi_button.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_lib_src_multi_button.h.gz"
+    },
+    {
+      "id": "electrical-16",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/pcmdata.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/pcmdata.c",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/pcmdata.c",
+      "fetchedAt": "2026-11-23T19:06:01Z",
+      "bytes": 17777177,
+      "sha256": "3c0cb6c4bf06b9fe8e1bb113165f75262e90ae58d2999d2a8d490a79ee83c738",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_lib_src_pcmdata.c.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_lib_src_pcmdata.c.gz"
+    },
+    {
+      "id": "electrical-17",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/pcmdata.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/pcmdata.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/pcmdata.h",
+      "fetchedAt": "2026-11-23T19:06:01Z",
+      "bytes": 179,
+      "sha256": "2fe2c42917020a15aad87a869287d3374c80531d32ad6cc0850c1d55d4403a7a",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_lib_src_pcmdata.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_lib_src_pcmdata.h.gz"
+    },
+    {
+      "id": "electrical-18",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/sdcard_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/sdcard_bsp.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/sdcard_bsp.cpp",
+      "fetchedAt": "2026-11-23T19:06:05Z",
+      "bytes": 5661,
+      "sha256": "6958e869c8d7abf2682e04b3fee9f1997aff4a6ad339ef6ab0f706227341c92e",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_sdcard_bsp.cpp.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_sdcard_bsp.cpp.gz"
+    },
+    {
+      "id": "electrical-19",
+      "title": "Example/Arduino/11_FactoryProgram/src/port_bsp/sdcard_bsp.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/sdcard_bsp.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/sdcard_bsp.h",
+      "fetchedAt": "2026-11-23T19:06:05Z",
+      "bytes": 970,
+      "sha256": "d083f2bbbe9ddfa11972d278478b67cea0fb866cd19e0d5dee584d59b49afc4f",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_sdcard_bsp.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_src_port_bsp_sdcard_bsp.h.gz"
+    },
+    {
+      "id": "electrical-20",
+      "title": "Example/Arduino/11_FactoryProgram/user_config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/user_config.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/user_config.h",
+      "fetchedAt": "2026-11-23T19:06:13Z",
+      "bytes": 679,
+      "sha256": "3d5679bc59d8444213607edd1d079e40485f967abb7869956cb4a23ffd678855",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_user_config.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_Arduino_11_FactoryProgram_user_config.h.gz"
+    },
+    {
+      "id": "electrical-21",
+      "title": "Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/CMakeLists.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/CMakeLists.txt",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/CMakeLists.txt",
+      "fetchedAt": "2026-11-23T19:07:21Z",
+      "bytes": 111,
+      "sha256": "676f83e5ea0a4837fcb685540bb0c85683b4c0fed3644390faeafc924b5d8ec3",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_ESP-IDF_11_FactoryProgram_components_i2c_equipment_CMakeLists.txt.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_ESP-IDF_11_FactoryProgram_components_i2c_equipment_CMakeLists.txt.gz"
+    },
+    {
+      "id": "electrical-22",
+      "title": "Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/i2c_equipment.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/i2c_equipment.cpp",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/i2c_equipment.cpp",
+      "fetchedAt": "2026-11-23T19:07:21Z",
+      "bytes": 6438,
+      "sha256": "b9650e3a728291b2f652412f66f0ad8a2d130e3f9192ca2b67aebe6999c18a50",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_ESP-IDF_11_FactoryProgram_components_i2c_equipment_i2c_equipment.cpp.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_ESP-IDF_11_FactoryProgram_components_i2c_equipment_i2c_equipment.cpp.gz"
+    },
+    {
+      "id": "electrical-23",
+      "title": "Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/i2c_equipment.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/i2c_equipment.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/i2c_equipment.h",
+      "fetchedAt": "2026-11-23T19:07:21Z",
+      "bytes": 639,
+      "sha256": "a9afb80070725ce6187cbdb38d3705423a083bce6e6676e3f43899958e4565f0",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_ESP-IDF_11_FactoryProgram_components_i2c_equipment_i2c_equipment.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_ESP-IDF_11_FactoryProgram_components_i2c_equipment_i2c_equipment.h.gz"
+    },
+    {
+      "id": "electrical-24",
+      "title": "Example/ESP-IDF/11_FactoryProgram/main/user_config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/main/user_config.h",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/main/user_config.h",
+      "fetchedAt": "2026-11-23T19:07:29Z",
+      "bytes": 1413,
+      "sha256": "53051ad10bd85e31d067991b109d4a06d00933cf53a178e4f8a72de2b3bd29d6",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_Example_ESP-IDF_11_FactoryProgram_main_user_config.h.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_Example_ESP-IDF_11_FactoryProgram_main_user_config.h.gz"
+    },
+    {
+      "id": "electrical-25",
+      "title": "README.md",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/README.md",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/README.md",
+      "fetchedAt": "2026-11-23T19:08:07Z",
+      "bytes": 272,
+      "sha256": "bf8462f9bbef6a0cf86de2d2c5ab68b936a1530681681e9a6b5201bf11ddc632",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_README.md.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_README.md.gz"
+    },
+    {
+      "id": "electrical-26",
+      "title": "documentation/Arduino.html",
+      "url": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/Arduino",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/Arduino",
+      "fetchedAt": "2026-11-23T19:23:58Z",
+      "bytes": 91617,
+      "sha256": "f911756ce583b37d9f1ff315aa84d018a592eb9c6a9a14c8b3b064dcfbe6da07",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_documentation_Arduino.html.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_documentation_Arduino.html.gz"
+    },
+    {
+      "id": "electrical-27",
+      "title": "documentation/ESP-IDF.html",
+      "url": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/ESP-IDF",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/ESP-IDF",
+      "fetchedAt": "2026-11-23T19:23:54Z",
+      "bytes": 82334,
+      "sha256": "3f575fc7337bf8a2ba5d3ad29c03cdf850bf54d0ee0faa00c083bf7105b4dc59",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_documentation_ESP-IDF.html.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_documentation_ESP-IDF.html.gz"
+    },
+    {
+      "id": "electrical-28",
+      "title": "official-resources/ESP32-C6-Touch-AMOLED-1.43_Rev1.3.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43_Rev1.3.pdf",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43_Rev1.3.pdf",
+      "fetchedAt": "2026-11-23T19:03:31Z",
+      "bytes": 778112,
+      "sha256": "9feed92fc1b62194852bd35dbbed6142fe99e59b4b50b1ab65d0cc008fd3eca3",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_official-resources_ESP32-C6-Touch-AMOLED-1.43_Rev1.3.pdf.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_official-resources_ESP32-C6-Touch-AMOLED-1.43_Rev1.3.pdf.gz"
+    },
+    {
+      "id": "electrical-29",
+      "title": "official-resources/case-drawing.pdf",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-3dFile.zip",
+      "kind": "primary-electrical-source",
+      "status": "fetched",
+      "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-3dFile.zip",
+      "fetchedAt": "2026-11-23T19:03:31Z",
+      "bytes": 26281,
+      "sha256": "398b0aeddcc6b1c7eb49885915cf657ff53038455c2b7fa641f89908896d697c",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43_files_official-resources_case-drawing.pdf.gz",
+      "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-AMOLED-1.43_files_official-resources_case-drawing.pdf.gz; container/member receipt retained in manifest"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "title": "78/xiaozhi-esp32 pinned source-tree investigation",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Inspected 2026-11-23T16:55:27Z; public filtered git clone and git ls-tree -r --name-only HEAD. Shared receipt: docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json"
+    },
+    {
+      "id": "uiflow-tree",
+      "title": "m5stack/uiflow-micropython pinned source-tree investigation",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+      "kind": "upstream-source-tree",
+      "status": "linked",
+      "notes": "Inspected 2026-11-23T16:55:27Z; public filtered git clone and git ls-tree -r --name-only HEAD. Shared receipt: docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json"
+    },
+    {
+      "id": "factory",
+      "title": "Firmware/ESP32-C6-Touch-AMOLED-1.43-factory.bin",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Firmware/ESP32-C6-Touch-AMOLED-1.43-factory.bin",
+      "kind": "manufacturer-firmware",
+      "status": "fetched",
+      "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Firmware/ESP32-C6-Touch-AMOLED-1.43-factory.bin",
+      "fetchedAt": "2026-11-23T19:08:07Z",
+      "bytes": 6944416,
+      "sha256": "4e62fac513a3727277a453be5ef090dc1d6bf7817efc121b44200498df8d7c5f",
+      "archiveName": "ESP32-C6-Touch-AMOLED-1.43-factory.bin",
+      "notes": "Original exact member/binary bytes verified in scratch; remote-only distribution. Container/member distinction and native failure/success observations retained in batch evidence. Not proof of compatibility with every revision."
+    }
+  ],
+  "assets": [
+    {
+      "id": "overview",
+      "sourceId": "overview",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43"
+    },
+    {
+      "id": "resources",
+      "sourceId": "resources",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/Resources-And-Documents"
+    },
+    {
+      "id": "repository-tree",
+      "sourceId": "repository-tree",
+      "role": "source-document",
+      "url": "https://github.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/tree/041a83d6ec24c266377bbf4f68505bf38c2ad4f8"
+    },
+    {
+      "id": "official-archive",
+      "sourceId": "official-archive",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-20250915.zip"
+    },
+    {
+      "id": "official-cad",
+      "sourceId": "official-cad",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-20250915.zip"
+    },
+    {
+      "id": "dimension-photo",
+      "sourceId": "dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ProductSize-1-4de9c5f476b4c62d4f00ed0fe76201f6.webp"
+    },
+    {
+      "id": "case-dimension-photo",
+      "sourceId": "case-dimension-photo",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ProductSize-2-ed5d019488e8f0b60c617aaff0e4a19b.webp"
+    },
+    {
+      "id": "photo-0",
+      "sourceId": "photo-0",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-DocHeader-1-37053b0a34607f4a308a813d21145b1d.webp"
+    },
+    {
+      "id": "photo-1",
+      "sourceId": "photo-1",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-DocHeader-2-1f587c90bec4ca82bc8a080bdab124fc.webp"
+    },
+    {
+      "id": "photo-2",
+      "sourceId": "photo-2",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-HW-42a88b3fd220953880d1d17459f9d852.webp"
+    },
+    {
+      "id": "photo-3",
+      "sourceId": "photo-3",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-IntfIntro-cdcdac14d4f0450d39b9e91d69029f39.webp"
+    },
+    {
+      "id": "photo-6",
+      "sourceId": "photo-6",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/assets/images/ESP32-C6-Touch-AMOLED-1.43-ScreenParameters-70f44cb25496638446162c19ed6d2b88.webp"
+    },
+    {
+      "id": "product",
+      "sourceId": "product",
+      "role": "source-document",
+      "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-touch-amoled-1.43.htm"
+    },
+    {
+      "id": "electrical-0",
+      "sourceId": "electrical-0",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Arduino_Libraries/ReadMe.txt"
+    },
+    {
+      "id": "electrical-1",
+      "sourceId": "electrical-1",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/11_FactoryProgram.ino"
+    },
+    {
+      "id": "electrical-2",
+      "sourceId": "electrical-2",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/adc_bsp.cpp"
+    },
+    {
+      "id": "electrical-3",
+      "sourceId": "electrical-3",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/adc_bsp.h"
+    },
+    {
+      "id": "electrical-4",
+      "sourceId": "electrical-4",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/button_bsp.c"
+    },
+    {
+      "id": "electrical-5",
+      "sourceId": "electrical-5",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/button_bsp.h"
+    },
+    {
+      "id": "electrical-6",
+      "sourceId": "electrical-6",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/codec_bsp.cpp"
+    },
+    {
+      "id": "electrical-7",
+      "sourceId": "electrical-7",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/codec_bsp.h"
+    },
+    {
+      "id": "electrical-8",
+      "sourceId": "electrical-8",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/display_bsp.cpp"
+    },
+    {
+      "id": "electrical-9",
+      "sourceId": "electrical-9",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/display_bsp.h"
+    },
+    {
+      "id": "electrical-10",
+      "sourceId": "electrical-10",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_bsp.cpp"
+    },
+    {
+      "id": "electrical-11",
+      "sourceId": "electrical-11",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_bsp.h"
+    },
+    {
+      "id": "electrical-12",
+      "sourceId": "electrical-12",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_equipment.cpp"
+    },
+    {
+      "id": "electrical-13",
+      "sourceId": "electrical-13",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/i2c_equipment.h"
+    },
+    {
+      "id": "electrical-14",
+      "sourceId": "electrical-14",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/multi_button.c"
+    },
+    {
+      "id": "electrical-15",
+      "sourceId": "electrical-15",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/multi_button.h"
+    },
+    {
+      "id": "electrical-16",
+      "sourceId": "electrical-16",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/pcmdata.c"
+    },
+    {
+      "id": "electrical-17",
+      "sourceId": "electrical-17",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/lib_src/pcmdata.h"
+    },
+    {
+      "id": "electrical-18",
+      "sourceId": "electrical-18",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/sdcard_bsp.cpp"
+    },
+    {
+      "id": "electrical-19",
+      "sourceId": "electrical-19",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/src/port_bsp/sdcard_bsp.h"
+    },
+    {
+      "id": "electrical-20",
+      "sourceId": "electrical-20",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/Arduino/11_FactoryProgram/user_config.h"
+    },
+    {
+      "id": "electrical-21",
+      "sourceId": "electrical-21",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/CMakeLists.txt"
+    },
+    {
+      "id": "electrical-22",
+      "sourceId": "electrical-22",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/i2c_equipment.cpp"
+    },
+    {
+      "id": "electrical-23",
+      "sourceId": "electrical-23",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/components/i2c_equipment/i2c_equipment.h"
+    },
+    {
+      "id": "electrical-24",
+      "sourceId": "electrical-24",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Example/ESP-IDF/11_FactoryProgram/main/user_config.h"
+    },
+    {
+      "id": "electrical-25",
+      "sourceId": "electrical-25",
+      "role": "source-document",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/README.md"
+    },
+    {
+      "id": "electrical-26",
+      "sourceId": "electrical-26",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/Arduino"
+    },
+    {
+      "id": "electrical-27",
+      "sourceId": "electrical-27",
+      "role": "source-document",
+      "url": "https://docs.waveshare.com/ESP32-C6-Touch-AMOLED-1.43/ESP-IDF"
+    },
+    {
+      "id": "electrical-28",
+      "sourceId": "electrical-28",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43_Rev1.3.pdf"
+    },
+    {
+      "id": "electrical-29",
+      "sourceId": "electrical-29",
+      "role": "source-document",
+      "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-AMOLED-1.43/ESP32-C6-Touch-AMOLED-1.43-3dFile.zip"
+    },
+    {
+      "id": "xiaozhi-tree",
+      "sourceId": "xiaozhi-tree",
+      "role": "source-document",
+      "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+    },
+    {
+      "id": "uiflow-tree",
+      "sourceId": "uiflow-tree",
+      "role": "source-document",
+      "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+    },
+    {
+      "id": "factory",
+      "sourceId": "factory",
+      "role": "firmware-download",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-AMOLED-1.43/041a83d6ec24c266377bbf4f68505bf38c2ad4f8/Firmware/ESP32-C6-Touch-AMOLED-1.43-factory.bin"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "release-date",
+      "label": "硬件真实发布日期",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "product",
+        "overview"
+      ]
+    },
+    {
+      "id": "full-app-acceptance",
+      "label": "完整应用与实物验收",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "factory"
+      ],
+      "notes": "Exact native outcome retained. No full app or browser WebGL acceptance inferred."
+    },
+    {
+      "id": "touch-and-physical-calibration",
+      "label": "物理扫描与触摸配准",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "overview",
+        "resources"
+      ]
+    }
+  ],
+  "collectionNotes": [
+    "部分适配：真实ESP32-C6容量、精确总线、数字显示/复位及已列输入；完整应用、浏览器与实物尚未验收。",
+    "厂家完整镜像保持原字节、分区和校验通过；逐型号运行结果保留，不以CLI退出码代替成功。",
+    "音频PCM、无线业务、模拟电源/充电/电池ADC、物理屏幕扫描/颜色及触摸配准仍未验收。",
+    "3D保留厂家CAD或尺寸依据；UNKNOWN内部与推测厚度/排针不能用作装配尺寸。",
+    "TF数字卡接口按此硬件版本接入；本次原厂快照未插卡，不将无卡错误解释为无卡槽。",
+    "原厂最终快照 18 种RGB颜色。 详见native-stop-summaries及逐版本限制。",
+    "Original full image stops via software reset at4.594 emulated seconds after BLE hardware-encryption assertion;1 exception.",
+    "39 RAMWR/672936 pixels;18 RGB colors;green field plus performance overlay, not home-screen acceptance.",
+    "Sensor self-test lacks dynamic completion and no SD card was attached; those error logs do not mean no physical IMU/socket.",
+    "Touch IRQ travels through TCA9554 EX0 to MCU GPIO1; it is not a direct GPIO1 FT interrupt. Touch reset is pulled high by R24; R22 to RTC EX1 is NC and must not reset touch.",
+    "No AXP2101 is fitted. EX2 LCD_EN/DSI is not treated as an invented power switch. Factory source leaves EX2 input while configuring battery/amp EX6/7.",
+    "Published FT6146 identity uses common FT5x06 report byte layout. This subset returns sourced contacts and rejects unknown private version/ID selectors; it does not assert an FT3168 die identity.",
+    "Exact official BIN and11_FactoryProgram demonstrate a comprehensive example. A distinct default-shipping/recovery purpose is not explicitly documented in retained prose, so it is labelled official example trial, not accepted factory recovery.",
+    "Native689 source components are retained in34 draw groups. Emissive36.35 mm, cover viewing36.75 mm, cover46 mm and case48 mm are distinct; no rescaling. Case-B archive is only2D PDF/DWG, so case shell is explicit unverified reconstruction.",
+    "Original full image stops at4.594s in BLE encryption assertion; green test image/performance overlay is not application acceptance."
+  ]
+}

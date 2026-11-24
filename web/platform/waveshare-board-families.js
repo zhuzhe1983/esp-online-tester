@@ -960,5 +960,26 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "psramMb": 8,
     "sdCard": true,
     "boardButtons": []
+  },
+  "waveshare-c6-touch-amoled206": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-amoled143": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-lcd169": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
   }
 }));

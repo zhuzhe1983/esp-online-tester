@@ -1,0 +1,2933 @@
+{
+  "listingId": "esp32-c6-touch-lcd-1.47",
+  "products": [
+    {
+      "id": "waveshare-esp32-c6-touch-lcd-1-47",
+      "name": "Waveshare ESP32-C6-Touch-LCD-1.47",
+      "manufacturer": "Waveshare",
+      "sku": "31203",
+      "chip": "esp32c6",
+      "hardwareRevision": "native model/source revision retained",
+      "summary": "1.47 英寸 172×320 JD9853，8 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-touch-lcd-1-47.json",
+      "family": {
+        "id": "esp32-c6-touch-lcd-1-47",
+        "name": "Waveshare ESP32-C6-Touch-LCD-1.47"
+      },
+      "runtime": {
+        "board": "waveshare-c6-touch-lcd147",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": true,
+        "status": "partial"
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "JD9853",
+        "bus": "SPI2",
+        "diagonalInches": 1.47,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "MOSI",
+              "gpio": 2
+            },
+            {
+              "name": "MISO",
+              "gpio": 3
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
+          "notes": "此硬件版本精确接线 {'CLK': 1, 'MOSI': 2, 'MISO': 3, 'CS': 4}；本次原厂运行未插卡。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Official exact-SKU selection",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-touch-lcd-1.47.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：真实ESP32-C6容量、精确总线、数字显示/复位及已列输入；完整应用、浏览器与实物尚未验收。",
+        "厂家完整镜像保持原字节、分区和校验通过；逐型号运行结果保留，不以CLI退出码代替成功。",
+        "音频PCM、无线业务、模拟电源/充电/电池ADC、物理屏幕扫描/颜色及触摸配准仍未验收。",
+        "3D保留厂家CAD或尺寸依据；UNKNOWN内部与推测厚度/排针不能用作装配尺寸。",
+        "TF数字卡接口按此硬件版本接入；本次原厂快照未插卡，不将无卡错误解释为无卡槽。",
+        "原厂最终快照 524 种RGB颜色。 详见native-stop-summaries及逐版本限制。",
+        "Pinned20261119 original full image runs5.000 emulated seconds, zero exceptions;30 RAMWR/143360 pixels;524 RGB colors.",
+        "[修复前历史记录] Screenshot shows SquareLine and DrawPanel icons. Left white strip/window placement remains a visible limitation; full UI and touch orientation are not accepted. 此显示窗口错误已由本批后续JD9853偏移修复，详见修复后证据。",
+        "CLI screenshot is scaled3× to516×960, while runtime framebuffer remains172×320; no fictitious physical pixel resolution.",
+        "[修复前历史记录] 2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-lcd-1-47运行5.16客体秒。172×320末帧524色，启动器可见Squareline/DrawPanel；左侧34像素白条仍待查。64MiB FAT32卡挂载，当前观察0页改写。RF校准和手势告警保留。证据见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。 此显示窗口错误已由本批后续JD9853偏移修复，详见修复后证据。",
+        "2026-11-23修复验证：按厂家main.c的set_gap(34,0)，将JD9853独立GRAM设为240×320、可视列34..205；首末像素和隐藏列负例通过。同一完整原镜像在公开Worker/生产WASM运行5.02秒，30帧、530色，目视确认左侧34px白条消失且Squareline/DrawPanel居中。修复前后原图及UART均保留，见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker-fixed与docs/evidence/waveshare-c6-touch147-window-fix-2026-11-23。该结论仅针对该显示窗口错误，不扩大为整机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "类别Position倒序仅为当前位置代理；固件日期和硬件发布日期不同。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-touch-lcd-1-47/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-c6-touch-lcd-147-factory"
+    },
+    {
+      "id": "waveshare-esp32-c6-touch-lcd-1-47-m",
+      "name": "Waveshare ESP32-C6-Touch-LCD-1.47-M",
+      "manufacturer": "Waveshare",
+      "sku": "31201",
+      "chip": "esp32c6",
+      "hardwareRevision": "native model/source revision retained",
+      "summary": "1.47 英寸 172×320 JD9853，8 MiB Flash，无PSRAM。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-c6-touch-lcd-1-47-m.json",
+      "family": {
+        "id": "esp32-c6-touch-lcd-1-47",
+        "name": "Waveshare ESP32-C6-Touch-LCD-1.47"
+      },
+      "runtime": {
+        "board": "waveshare-c6-touch-lcd147",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": true,
+        "status": "partial"
+      },
+      "displayStatus": "known",
+      "display": {
+        "width": 172,
+        "height": 320,
+        "type": "TFT LCD",
+        "controller": "JD9853",
+        "bus": "SPI2",
+        "diagonalInches": 1.47,
+        "touch": true
+      },
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 9,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "tf",
+          "name": "TF / microSD",
+          "type": "microSD",
+          "external": true,
+          "pins": [
+            {
+              "name": "CLK",
+              "gpio": 1
+            },
+            {
+              "name": "MOSI",
+              "gpio": 2
+            },
+            {
+              "name": "MISO",
+              "gpio": 3
+            },
+            {
+              "name": "CS",
+              "gpio": 4
+            }
+          ],
+          "notes": "此硬件版本精确接线 {'CLK': 1, 'MOSI': 2, 'MISO': 3, 'CS': 4}；本次原厂运行未插卡。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "product",
+          "title": "Official exact-SKU selection",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-touch-lcd-1.47.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "factory",
+          "title": "firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "部分适配：真实ESP32-C6容量、精确总线、数字显示/复位及已列输入；完整应用、浏览器与实物尚未验收。",
+        "厂家完整镜像保持原字节、分区和校验通过；逐型号运行结果保留，不以CLI退出码代替成功。",
+        "音频PCM、无线业务、模拟电源/充电/电池ADC、物理屏幕扫描/颜色及触摸配准仍未验收。",
+        "3D保留厂家CAD或尺寸依据；UNKNOWN内部与推测厚度/排针不能用作装配尺寸。",
+        "TF数字卡接口按此硬件版本接入；本次原厂快照未插卡，不将无卡错误解释为无卡槽。",
+        "原厂最终快照 524 种RGB颜色。 详见native-stop-summaries及逐版本限制。",
+        "Pinned20261119 original full image runs5.000 emulated seconds, zero exceptions;30 RAMWR/143360 pixels;524 RGB colors.",
+        "[修复前历史记录] Screenshot shows SquareLine and DrawPanel icons. Left white strip/window placement remains a visible limitation; full UI and touch orientation are not accepted. 此显示窗口错误已由本批后续JD9853偏移修复，详见修复后证据。",
+        "CLI screenshot is scaled3× to516×960, while runtime framebuffer remains172×320; no fictitious physical pixel resolution.",
+        "[修复前历史记录] 2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-lcd-1-47运行5.16客体秒。172×320末帧524色，启动器可见Squareline/DrawPanel；左侧34像素白条仍待查。64MiB FAT32卡挂载，当前观察0页改写。RF校准和手势告警保留。证据见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。 此显示窗口错误已由本批后续JD9853偏移修复，详见修复后证据。",
+        "2026-11-23修复验证：按厂家main.c的set_gap(34,0)，将JD9853独立GRAM设为240×320、可视列34..205；首末像素和隐藏列负例通过。同一完整原镜像在公开Worker/生产WASM运行5.02秒，30帧、530色，目视确认左侧34px白条消失且Squareline/DrawPanel居中。修复前后原图及UART均保留，见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker-fixed与docs/evidence/waveshare-c6-touch147-window-fix-2026-11-23。该结论仅针对该显示窗口错误，不扩大为整机验收。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "confidence": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "notes": "类别Position倒序仅为当前位置代理；固件日期和硬件发布日期不同。"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-c6-touch-lcd-1-47-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "defaultFirmwareId": "waveshare-c6-touch-lcd-147-factory"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-c6-touch-lcd-147-factory",
+      "name": "ESP32-C6-Touch-LCD-1.47 · 官方出厂镜像（验证中）",
+      "productIds": [
+        "waveshare-esp32-c6-touch-lcd-1-47",
+        "waveshare-esp32-c6-touch-lcd-1-47-m"
+      ],
+      "version": "ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119",
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+        "sha256": "0dd9c8c64309aa69d32af8bd5d79c505e4c561f5069aea57e3ee21f40867fb9a"
+      },
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Pinned original manufacturer binary",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "原始镜像芯片、分区和校验通过；具体运行结果和故障逐版本保留，完整交互仍未验收。",
+        "只关联已记录的精确硬件修订，不跨触摸/显示芯片修订冒用。",
+        "[修复前历史记录] 2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-lcd-1-47运行5.16客体秒。172×320末帧524色，启动器可见Squareline/DrawPanel；左侧34像素白条仍待查。64MiB FAT32卡挂载，当前观察0页改写。RF校准和手势告警保留。证据见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。 此显示窗口错误已由本批后续JD9853偏移修复，详见修复后证据。",
+        "2026-11-23修复验证：按厂家main.c的set_gap(34,0)，将JD9853独立GRAM设为240×320、可视列34..205；首末像素和隐藏列负例通过。同一完整原镜像在公开Worker/生产WASM运行5.02秒，30帧、530色，目视确认左侧34px白条消失且Squareline/DrawPanel居中。修复前后原图及UART均保留，见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker-fixed与docs/evidence/waveshare-c6-touch147-window-fix-2026-11-23。该结论仅针对该显示窗口错误，不扩大为整机验收。"
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-c6-touch-lcd-147-factory-watch",
+      "name": "ESP32-C6-Touch-LCD-1.47 official factory",
+      "category": "factory",
+      "upstreamRepo": "waveshareteam/ESP32-C6-Touch-LCD-1.47",
+      "metadataUrl": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/releases/latest",
+      "releaseUrl": "https://github.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/releases",
+      "version": "ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119",
+      "checkedAt": "2026-11-23T20:00:15Z",
+      "assets": [
+        {
+          "name": "ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "bytes": 3498016,
+          "sha256": "0dd9c8c64309aa69d32af8bd5d79c505e4c561f5069aea57e3ee21f40867fb9a",
+          "format": "merged",
+          "archiveMember": null,
+          "memberBytes": 3498016,
+          "memberSha256": "0dd9c8c64309aa69d32af8bd5d79c505e4c561f5069aea57e3ee21f40867fb9a"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-c6-touch-lcd-1-47",
+          "waveshare-esp32-c6-touch-lcd-1-47-m"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "Exact original source/member verified; full image stays trial. Native failures and application limitations are retained. ZIP uses bounded hash-pinned exact-member transport."
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Monitor exact official firmware resources and pinned directory commits; image timestamps are not hardware release dates."
+    }
+  ],
+  "knowledge": [
+    {
+      "schemaVersion": "1",
+      "id": "waveshare-esp32-c6-touch-lcd-1-47",
+      "kind": "product",
+      "catalogId": "waveshare-esp32-c6-touch-lcd-1-47",
+      "title": "Waveshare ESP32-C6-Touch-LCD-1.47",
+      "summary": "1.47 英寸 172×320 JD9853，8 MiB Flash，无PSRAM。",
+      "summarySourceIds": [
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-17",
+        "electrical-18",
+        "electrical-19",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-24",
+        "electrical-25",
+        "electrical-26",
+        "electrical-27",
+        "electrical-28",
+        "electrical-29",
+        "overview",
+        "resources"
+      ],
+      "updatedAt": "2026-11-23T20:00:15Z",
+      "hardwareRevision": "native model/source revision retained",
+      "facts": [
+        {
+          "id": "hardware",
+          "label": "精确SKU/修订与真实接线",
+          "value": {
+            "sku": "31203",
+            "hardwareRevision": "native model/source revision retained",
+            "options": {
+              "Version Options": "Standard Ver. "
+            },
+            "chip": "esp32c6",
+            "flashMiB": 8,
+            "psramMiB": 0,
+            "display": {
+              "width": 172,
+              "height": 320,
+              "type": "TFT LCD",
+              "controller": "JD9853",
+              "bus": "SPI2",
+              "diagonalInches": 1.47,
+              "touch": true
+            },
+            "touch": "AXS5106L",
+            "spi": {
+              "CLK": 1,
+              "MOSI": 2,
+              "CS": 14,
+              "DC": 15,
+              "RST": 22,
+              "BL": 23
+            },
+            "i2c": {
+              "SDA": 18,
+              "SCL": 19
+            },
+            "sd": {
+              "CLK": 1,
+              "MOSI": 2,
+              "MISO": 3,
+              "CS": 4
+            },
+            "components": [
+              "ESP32-C6FH8 integrated8MiB",
+              "AXS5106L@0x63 reset20 IRQ21",
+              "QMI8658A@0x6b",
+              "BOOT9/RESET CHIP_PU"
+            ],
+            "buttons": [
+              {
+                "id": "boot",
+                "name": "BOOT",
+                "type": "button",
+                "pin": 9,
+                "activeLow": true,
+                "defaultKeyCode": "Space"
+              }
+            ]
+          },
+          "basis": "official",
+          "sourceIds": [
+            "electrical-0",
+            "electrical-1",
+            "electrical-2",
+            "electrical-3",
+            "electrical-4",
+            "electrical-5",
+            "electrical-6",
+            "electrical-7",
+            "electrical-8",
+            "electrical-9",
+            "electrical-10",
+            "electrical-11",
+            "electrical-12",
+            "electrical-13",
+            "electrical-14",
+            "electrical-15",
+            "electrical-16",
+            "electrical-17",
+            "electrical-18",
+            "electrical-19",
+            "electrical-20",
+            "electrical-21",
+            "electrical-22",
+            "electrical-23",
+            "electrical-24",
+            "electrical-25",
+            "electrical-26",
+            "electrical-27",
+            "electrical-28",
+            "electrical-29",
+            "overview",
+            "resources",
+            "product"
+          ]
+        },
+        {
+          "id": "factory-layout",
+          "label": "原厂镜像字节、分区与实际结果",
+          "value": {
+            "bytes": 3498016,
+            "sha256": "0dd9c8c64309aa69d32af8bd5d79c505e4c561f5069aea57e3ee21f40867fb9a",
+            "archiveMember": null,
+            "containerBytes": null,
+            "containerSha256": null,
+            "layout": {
+              "loadOffset": 0,
+              "chipId": 13,
+              "bootloaderChecksumAndDigestValid": true,
+              "partitionTableOffset": 32768,
+              "partitionTableMd5Valid": true,
+              "partitions": [
+                {
+                  "type": 1,
+                  "subtype": 2,
+                  "offset": 36864,
+                  "bytes": 24576,
+                  "label": "nvs",
+                  "flags": 0
+                },
+                {
+                  "type": 1,
+                  "subtype": 1,
+                  "offset": 61440,
+                  "bytes": 4096,
+                  "label": "phy_init",
+                  "flags": 0
+                },
+                {
+                  "type": 0,
+                  "subtype": 0,
+                  "offset": 65536,
+                  "bytes": 8323072,
+                  "label": "factory",
+                  "flags": 0,
+                  "imageChipId": 13,
+                  "imageChecksumsValid": true
+                }
+              ],
+              "fitsFlashMiB": 8,
+              "headerFlashSizeCode": 3
+            },
+            "nativeObservations": [
+              "Pinned20261119 original full image runs5.000 emulated seconds, zero exceptions;30 RAMWR/143360 pixels;524 RGB colors.",
+              "Screenshot shows SquareLine and DrawPanel icons. Left white strip/window placement remains a visible limitation; full UI and touch orientation are not accepted.",
+              "CLI screenshot is scaled3× to516×960, while runtime framebuffer remains172×320; no fictitious physical pixel resolution."
+            ],
+            "nativeEvidence": "docs/evidence/waveshare-c6-fourth-five-2026-11-23/native-runs.json",
+            "publicTrialAssigned": true
+          },
+          "basis": "official",
+          "sourceIds": [
+            "factory"
+          ]
+        },
+        {
+          "id": "ecosystem-investigation",
+          "label": "原厂、小智与UIFlow调查",
+          "value": {
+            "factory": "Exact original image/member verified; native outcome is revision-specific and partial",
+            "xiaozhiExactBoardPaths": [],
+            "xiaozhiBinaryVerified": false,
+            "uiflowExactNamedPaths": [],
+            "uiflowBinaryVerified": false,
+            "scope": "A source target is not an accepted flash image. Absence is scoped to pinned complete trees."
+          },
+          "basis": "official",
+          "sourceIds": [
+            "factory",
+            "resources",
+            "xiaozhi-tree",
+            "uiflow-tree"
+          ]
+        },
+        {
+          "id": "source-conflicts",
+          "label": "来源冲突与采用依据",
+          "value": [
+            "Official overview BOOT8 conflicts with actual schematic and pinned factory mainGPIO9. Keep physicalBOOT9; do not change it to fit the documentation typo.",
+            "Copied FAQ address list0x51/0x6b/0x7e does not establish fitted RTC. Exact drivers useAXS5106L0x63 andQMI0x6b; there is no invented RTC.",
+            "Existing recovered exact native bare/M models are retained and production-loader checked. Original CAD source/member identity and all source photographs remain unchanged.",
+            "Latest original20261119 image5s0exceptions/524colors shows SquareLine/DrawPanel icons, but left white strip/window placement remains visually unresolved. Native outputPNG is3×scaled; actualpanel172×320.",
+            "JD9853 physical identity is retained; implemented DCS/control subset does not establish vendor-private timing/gamma/TE or full physical touch registration."
+          ],
+          "basis": "official",
+          "sourceIds": [
+            "electrical-0",
+            "electrical-1",
+            "electrical-2",
+            "electrical-3",
+            "electrical-4",
+            "electrical-5",
+            "electrical-6",
+            "electrical-7",
+            "electrical-8",
+            "electrical-9",
+            "electrical-10",
+            "electrical-11",
+            "electrical-12",
+            "electrical-13",
+            "electrical-14",
+            "electrical-15",
+            "electrical-16",
+            "electrical-17",
+            "electrical-18",
+            "electrical-19",
+            "electrical-20",
+            "electrical-21",
+            "electrical-22",
+            "electrical-23",
+            "electrical-24",
+            "electrical-25",
+            "electrical-26",
+            "electrical-27",
+            "electrical-28",
+            "electrical-29",
+            "overview",
+            "resources"
+          ]
+        },
+        {
+          "id": "model-scope",
+          "label": "机械模型可证明范围",
+          "value": {
+            "model": "waveshare-esp32-c6-touch-lcd-1-47",
+            "method": "official-cad",
+            "limitations": [
+              "All 241 native components (238 solids and three open shells) from the exact base assembly are retained. Native component geometry and coordinates are not scaled or repositioned.",
+              "SKU31203 is the base assembly without soldered headers; SKU31201 (-M) has two soldered 1×11 headers. Both exact official archives and drawings are independently retained by their corresponding models.",
+              "Native case part2 has the reused library name ESP32-S3-TOUCH-LCD-1_47-CASE. This is a mechanical library label in the explicitly named C6 archive, not evidence of an S3 controller or interchangeable complete PCB.",
+              "The supplied assembly does not declare a shipping PCB revision. The fixed repository and archive retrieval dates are source dates, not release-date certification.",
+              "The PDF labels cover viewing area17.75×32.93 mm, not LCD active area. Native LCD component0 face46 provides the separate17.39×32.35 mm active region with2.30 mm corner radius, centered at XY0/Z1.85.",
+              "The live framebuffer preserves the native active region and is projected onto touch viewing face component1 face40 at Z3.20 plus0.008 mm rendering offset. The native raised cover rim remains at3.25; the rendering offset is not a physical layer.",
+              "Outer case24.55×44.50 mm and native complete Y44.773315 mm differ because USB protrudes beyond the case. Source geometry is preserved; drawing dimensions are not used to rescale the complete assembly.",
+              "Native cover component1 includes flex and reaches4.35 mm overall depth; this is not the glass laminate thickness. Native PCB24.071610×44.023628×1.200000 mm is reported independently of case dimensions.",
+              "BOOT is native component7 and binds to boot/GPIO9 active-low. The retained overview repeatedly calls BOOT GPIO8; the official schematic BOOT net at GPIO9 is authoritative for this mapping. RESET component8 remains visible and unbound.",
+              "Native CAD colors are approximate material references. Cover, case and PCB are darkened using official photographs. The exact supplied case alone is recolorable; PCB, cover, display and connectors are excluded from shell presets.",
+              "Optical text-to-USB registration and hardware fit are not calibrated on a physical device. The native portrait geometry and172×320 framebuffer are retained without a claimed optical orientation acceptance.",
+              "No source stock screenshot is substituted for the live framebuffer. Source photos remain unchanged references; no battery, cable or extra accessory is invented.",
+              "No lost pre-reset model, archive or historical acceptance receipt is reused.",
+              "The base STEP omits soldered headers. A supplied loose header photograph is retained as package evidence but no header is installed in this model."
+            ]
+          },
+          "basis": "official",
+          "sourceIds": [
+            "dimension-photo",
+            "resources",
+            "official-cad"
+          ]
+        }
+      ],
+      "revisions": [],
+      "sources": [
+        {
+          "id": "base-mechanical-archive",
+          "title": "source-archive.rar",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/source-archive.rar",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "fetchedAt": "2026-11-23T10:47:54Z",
+          "bytes": 2356113,
+          "sha256": "45601b82bc913a9fb6831065b2a0b2db8fee92820fb0758feb45c43123efaac2",
+          "archiveName": "source-archive.rar"
+        },
+        {
+          "id": "official-cad",
+          "title": "source.stp.gz",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "kind": "manufacturer-cad",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/source.stp.gz",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "fetchedAt": "2026-11-23T10:47:54Z",
+          "bytes": 12652795,
+          "sha256": "94f44f6a79c151ab928c8b8398d9a978f3effaf4c6f953ee890a9d7326fdf55b",
+          "archiveName": "source.stp.gz"
+        },
+        {
+          "id": "mechanical-drawing",
+          "title": "mechanical.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/mechanical.pdf",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "fetchedAt": "2026-11-23T10:47:54Z",
+          "bytes": 52624,
+          "sha256": "5e3fab19a6b55bc655435c8eaecf05871d65838d582bd55d1cb14823dd0ddfaf",
+          "archiveName": "mechanical.pdf"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/overview.html.gz",
+          "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47",
+          "fetchedAt": "2026-11-23T08:00:12Z",
+          "bytes": 50595,
+          "sha256": "7b150e412735c805fe62944ba437608fb48b2ce29902daac5988eda2011f85ab",
+          "archiveName": "overview.html.gz"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Resources-And-Documents",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/resources.html.gz",
+          "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Resources-And-Documents",
+          "fetchedAt": "2026-11-23T08:00:12Z",
+          "bytes": 36343,
+          "sha256": "b054879bf738a6becaa9368ba75c40647754b3d7a5250fcfef07aaebc6b09883",
+          "archiveName": "resources.html.gz"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic.pdf.gz",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/schematic.pdf.gz",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "fetchedAt": "2026-11-23T10:21:55Z",
+          "bytes": 434051,
+          "sha256": "b679d1a6198ece26992c72a1b93a97ed2db6cc5f0066d041cb49150c5759c480",
+          "archiveName": "schematic.pdf.gz"
+        },
+        {
+          "id": "repository-tree",
+          "title": "repository-tree.json.gz",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/git/trees/da7035e2400edfac3b6998e036baa1b49c4f18f3?recursive=1",
+          "kind": "manufacturer-source",
+          "status": "linked",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/repository-tree.json.gz"
+        },
+        {
+          "id": "repository-head-selection",
+          "title": "repository-head-selection.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/commits/main",
+          "kind": "manufacturer-source",
+          "status": "linked",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/repository-head-selection.json"
+        },
+        {
+          "id": "front-angle-photo",
+          "title": "front-angle-photo.jpg",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-2.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/front-angle-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-2.jpg",
+          "fetchedAt": "2026-11-23T10:50:36Z",
+          "bytes": 28232,
+          "sha256": "ea8d02c5aed9d11ec98c947ff6288aefe31860d3f0e90aaa22a5aa9d2963a700",
+          "archiveName": "front-angle-photo.jpg"
+        },
+        {
+          "id": "back-angle-photo",
+          "title": "back-angle-photo.jpg",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-3.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/back-angle-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-3.jpg",
+          "fetchedAt": "2026-11-23T10:50:36Z",
+          "bytes": 68903,
+          "sha256": "9bc9c677d2903cf584e7dbbc9e09118ada8c4266010affe3a0d2cf95aefb75ee",
+          "archiveName": "back-angle-photo.jpg"
+        },
+        {
+          "id": "back-angle-other-photo",
+          "title": "back-angle-other-photo.jpg",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-4.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/back-angle-other-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-4.jpg",
+          "fetchedAt": "2026-11-23T10:50:37Z",
+          "bytes": 67637,
+          "sha256": "fa2fb7b75dd7c7c8675570d80c987cf1d66787f17d8f7d2fa7efe6558ef6c58d",
+          "archiveName": "back-angle-other-photo.jpg"
+        },
+        {
+          "id": "back-photo",
+          "title": "back-photo.jpg",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-5.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/back-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-5.jpg",
+          "fetchedAt": "2026-11-23T10:50:37Z",
+          "bytes": 53022,
+          "sha256": "bd4ef752301a46ca76659e2562a4ced31b5aca95e26f39cea76e8bf934fd2828",
+          "archiveName": "back-photo.jpg"
+        },
+        {
+          "id": "dimension-photo",
+          "title": "dimension-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-size.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/dimension-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-size.jpg",
+          "fetchedAt": "2026-11-23T10:50:42Z",
+          "bytes": 134199,
+          "sha256": "3ab74fd5bb6536e669ce8be4eb8a7da468cbe457ce4d751d9dacf118e005ec63",
+          "archiveName": "dimension-photo.jpg"
+        },
+        {
+          "id": "pinout-photo",
+          "title": "pinout-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-inter.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/pinout-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-inter.jpg",
+          "fetchedAt": "2026-11-23T10:50:42Z",
+          "bytes": 325199,
+          "sha256": "0c75f3489bd60d240dbe1bd37de9fa6866023a206404ccac359890cd392d83e1",
+          "archiveName": "pinout-photo.jpg"
+        },
+        {
+          "id": "base-package-photo",
+          "title": "base-package-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-1.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/base-package-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-1.jpg",
+          "fetchedAt": "2026-11-23T10:50:44Z",
+          "bytes": 194066,
+          "sha256": "76a97a07960c8a602c3b1fce69d0e63a76517ff328a130fdc4ed64034958d2c7",
+          "archiveName": "base-package-photo.jpg"
+        },
+        {
+          "id": "loose-header-photo",
+          "title": "loose-header-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-2.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/loose-header-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-2.jpg",
+          "fetchedAt": "2026-11-23T10:50:42Z",
+          "bytes": 69380,
+          "sha256": "1879ef97de0f2c5973754a38d37164dee22ba1e09b46f487871fd1da0c838c55",
+          "archiveName": "loose-header-photo.jpg"
+        },
+        {
+          "id": "m-package-photo",
+          "title": "m-package-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-M-pack.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/m-package-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-M-pack.jpg",
+          "fetchedAt": "2026-11-23T10:50:52Z",
+          "bytes": 80826,
+          "sha256": "316f61de24cc6c59cbe2e1d876bd688b63437a22a3f7576f225036487550879f",
+          "archiveName": "m-package-photo.jpg"
+        },
+        {
+          "id": "product",
+          "title": "Official exact-SKU selection",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-touch-lcd-1.47.htm",
+          "kind": "manufacturer-product",
+          "status": "linked",
+          "notes": "Public selected SKU fields are explicitly derived. Shared SKU revisions are separated by physical controller and sourced wiring, not fabricated sale options."
+        },
+        {
+          "id": "electrical-0",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README.md",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README.md",
+          "fetchedAt": "2026-11-23T19:05:13Z",
+          "bytes": 4069,
+          "sha256": "33f4a6c26535ca2486827b29d8df89a351dd0ef6fa1d040d12537c5cd58ea7ac",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_README.md.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_README.md.gz"
+        },
+        {
+          "id": "electrical-1",
+          "title": "README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README_ZH.md",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README_ZH.md",
+          "fetchedAt": "2026-11-23T19:05:13Z",
+          "bytes": 3906,
+          "sha256": "823203f732f654e25fc0d31ae6cd799b8d26de8bc029d346e67f1f8c119af578",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_README_ZH.md.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_README_ZH.md.gz"
+        },
+        {
+          "id": "electrical-2",
+          "title": "documentation/Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Arduino",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Arduino",
+          "fetchedAt": "2026-11-23T19:23:58Z",
+          "bytes": 136949,
+          "sha256": "ad22fd1e21fc78d96423adae4fcffb47ea22e4adc4e212df85556ff4a82eb095",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_documentation_Arduino.html.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_documentation_Arduino.html.gz"
+        },
+        {
+          "id": "electrical-3",
+          "title": "documentation/ESP-IDF.html",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/ESP-IDF",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/ESP-IDF",
+          "fetchedAt": "2026-11-23T19:23:54Z",
+          "bytes": 118370,
+          "sha256": "a5c6e73d784fb902e5f52d9c0944d2a401b755ad3b30899c7ab044353666d7c2",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_documentation_ESP-IDF.html.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_documentation_ESP-IDF.html.gz"
+        },
+        {
+          "id": "electrical-4",
+          "title": "examples/factory/components/esp_bsp/bsp_battery.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.c",
+          "fetchedAt": "2026-11-23T19:05:47Z",
+          "bytes": 3165,
+          "sha256": "55b83140f3116a7bc0b84e4c1da29b5f3b1739a8b4c438b590a53ab4a7e1cf22",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_battery.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_battery.c.gz"
+        },
+        {
+          "id": "electrical-5",
+          "title": "examples/factory/components/esp_bsp/bsp_battery.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.h",
+          "fetchedAt": "2026-11-23T19:05:47Z",
+          "bytes": 375,
+          "sha256": "da2f62efe5558175d6db55dca770971a20518eb3712dcce1f51de1d6c22cf3c9",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_battery.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_battery.h.gz"
+        },
+        {
+          "id": "electrical-6",
+          "title": "examples/factory/components/esp_bsp/bsp_display.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.c",
+          "fetchedAt": "2026-11-23T19:05:46Z",
+          "bytes": 3075,
+          "sha256": "f5eda6931a83082125152a3cf944cc6926348dbd47e0fb56dd114a45dfa98328",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_display.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_display.c.gz"
+        },
+        {
+          "id": "electrical-7",
+          "title": "examples/factory/components/esp_bsp/bsp_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.h",
+          "fetchedAt": "2026-11-23T19:05:46Z",
+          "bytes": 1141,
+          "sha256": "d44eb912a095fc60c6e5b8164c4accc8c1ad3022bb13d83319178bfa3cf93be6",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_display.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_display.h.gz"
+        },
+        {
+          "id": "electrical-8",
+          "title": "examples/factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.c",
+          "fetchedAt": "2026-11-23T19:05:46Z",
+          "bytes": 580,
+          "sha256": "e9fa927dbd5f8ca5b104d379516acffab136dfe31fef647ba15f060a1639a696",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_i2c.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_i2c.c.gz"
+        },
+        {
+          "id": "electrical-9",
+          "title": "examples/factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.h",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 345,
+          "sha256": "82d0a0512728394de9728d6841ee7537a71d0293d0304820deefc0b70cc95831",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_i2c.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_i2c.h.gz"
+        },
+        {
+          "id": "electrical-10",
+          "title": "examples/factory/components/esp_bsp/bsp_qmi8658.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.c",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 3978,
+          "sha256": "3ace3f535e3b27c862b2ebfef9a0b5b4aef69f1f6d62fa116327da290bf9e378",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_qmi8658.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_qmi8658.c.gz"
+        },
+        {
+          "id": "electrical-11",
+          "title": "examples/factory/components/esp_bsp/bsp_qmi8658.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.h",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 1900,
+          "sha256": "a4810e5c622bc30fe355568d3ec73fa3e41c7ba99ae325a2c8ca66f9f5638c59",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_qmi8658.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_qmi8658.h.gz"
+        },
+        {
+          "id": "electrical-12",
+          "title": "examples/factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.c",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 4943,
+          "sha256": "22422cf09e74c3f9febe35cc62d196056641141f696ef12a5916316f64f02134",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_sdcard.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_sdcard.c.gz"
+        },
+        {
+          "id": "electrical-13",
+          "title": "examples/factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.h",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 358,
+          "sha256": "7a209d64143f91f29dc70bbe67432aab85b2e7c39a42bd144abeb31b57f484b3",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_sdcard.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_sdcard.h.gz"
+        },
+        {
+          "id": "electrical-14",
+          "title": "examples/factory/components/esp_bsp/bsp_spi.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.c",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 453,
+          "sha256": "6adbc7c77a28945ab693245aaa9ee7f6a3a231064a786a35125632ad527c51c7",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_spi.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_spi.c.gz"
+        },
+        {
+          "id": "electrical-15",
+          "title": "examples/factory/components/esp_bsp/bsp_spi.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.h",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 370,
+          "sha256": "171b317644d7e18b0b38e3f67417d80e0c65bb0aae9660483049486312eb347a",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_spi.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_spi.h.gz"
+        },
+        {
+          "id": "electrical-16",
+          "title": "examples/factory/components/esp_bsp/bsp_touch.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.c",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 1512,
+          "sha256": "ea04be7d49ba19b2c70e61a25658f0b4d31c6a963d042cd7e0841512bbb5d8ea",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_touch.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_touch.c.gz"
+        },
+        {
+          "id": "electrical-17",
+          "title": "examples/factory/components/esp_bsp/bsp_touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.h",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 417,
+          "sha256": "e5b6f5874e80d2aaee584005aa98d2268bd2aee8e988b182591afbf4b274f412",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_touch.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_touch.h.gz"
+        },
+        {
+          "id": "electrical-18",
+          "title": "examples/factory/components/esp_bsp/bsp_wifi.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.c",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 6582,
+          "sha256": "c78490664b66c0e1a8b8838b62545e030098d28429396f07f20bdf9e8f9ba752",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_wifi.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_wifi.c.gz"
+        },
+        {
+          "id": "electrical-19",
+          "title": "examples/factory/components/esp_bsp/bsp_wifi.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.h",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 419,
+          "sha256": "ddbaa50bc1a1a485deb2741f2c0754b9254f56faa789223175f0469470a5c0aa",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_wifi.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_wifi.h.gz"
+        },
+        {
+          "id": "electrical-20",
+          "title": "examples/factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 17765,
+          "sha256": "62b669405e3c009a4e4034b20d1343823d6b11f1528b572a84a074e2b1c5a128",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_jd9853_esp_lcd_jd9853.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_jd9853_esp_lcd_jd9853.c.gz"
+        },
+        {
+          "id": "electrical-21",
+          "title": "examples/factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 3887,
+          "sha256": "d67ecbb84b1d180117f3f38cc89acd92b8c3f6e9fd4c5dea76f944997e448cf9",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_jd9853_include_esp_lcd_jd9853.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_jd9853_include_esp_lcd_jd9853.h.gz"
+        },
+        {
+          "id": "electrical-22",
+          "title": "examples/factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 8267,
+          "sha256": "9f630512cd8fc299c85860da654b1614b66865f5e2c9d34521b27e8c0b19ba28",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_touch_axs5106_esp_lcd_touch_axs5106.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_touch_axs5106_esp_lcd_touch_axs5106.c.gz"
+        },
+        {
+          "id": "electrical-23",
+          "title": "examples/factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 1523,
+          "sha256": "16b1af76cd40f6b4fb3f691d6d7d235f99432251c3d0e47700d82fc05a51a8f7",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_touch_axs5106_include_esp_lcd_touch_axs5106.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_touch_axs5106_include_esp_lcd_touch_axs5106.h.gz"
+        },
+        {
+          "id": "electrical-24",
+          "title": "examples/factory/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/idf_component.yml",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/idf_component.yml",
+          "fetchedAt": "2026-11-23T19:07:48Z",
+          "bytes": 157,
+          "sha256": "a0cfb9ac54fdb907da3db52401dffe0ae1e98c326be88a6276f55c84c9ebd78a",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_idf_component.yml.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_idf_component.yml.gz"
+        },
+        {
+          "id": "electrical-25",
+          "title": "examples/factory/main/lv_fs_port.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/lv_fs_port.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/lv_fs_port.c",
+          "fetchedAt": "2026-11-23T19:07:48Z",
+          "bytes": 8854,
+          "sha256": "8a137ef69bd40d5316572603a8db4dcb02d592c68d4a05843318b174035fbae2",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_lv_fs_port.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_lv_fs_port.c.gz"
+        },
+        {
+          "id": "electrical-26",
+          "title": "examples/factory/main/main.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/main.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/main.c",
+          "fetchedAt": "2026-11-23T19:07:48Z",
+          "bytes": 7346,
+          "sha256": "813ba3b3c6dc0bad039d67e895a9a13a14ac0f025fa430b20d81343270ebddda",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_main.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_main.c.gz"
+        },
+        {
+          "id": "electrical-27",
+          "title": "firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README.md",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README.md",
+          "fetchedAt": "2026-11-23T19:06:00Z",
+          "bytes": 973,
+          "sha256": "3ca7c294889a6e669b02574916db414ef03639320785c402f6f611399024e4b3",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_firmware_README.md.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_firmware_README.md.gz"
+        },
+        {
+          "id": "electrical-28",
+          "title": "firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README_ZH.md",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README_ZH.md",
+          "fetchedAt": "2026-11-23T19:06:00Z",
+          "bytes": 967,
+          "sha256": "0c3602fe516321fcc77980509f861443353b10f4444b375c5fae6337e43530b9",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_firmware_README_ZH.md.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_firmware_README_ZH.md.gz"
+        },
+        {
+          "id": "electrical-29",
+          "title": "official-resources/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "fetchedAt": "2026-11-23T19:06:01Z",
+          "bytes": 434051,
+          "sha256": "b679d1a6198ece26992c72a1b93a97ed2db6cc5f0066d041cb49150c5759c480",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_official-resources_ESP32-C6-Touch-LCD-1.47-Schematic.pdf.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_official-resources_ESP32-C6-Touch-LCD-1.47-Schematic.pdf.gz"
+        },
+        {
+          "id": "xiaozhi-tree",
+          "title": "78/xiaozhi-esp32 pinned source-tree investigation",
+          "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+          "kind": "upstream-source-tree",
+          "status": "linked",
+          "notes": "Inspected 2026-11-23T16:55:27Z; public filtered git clone and git ls-tree -r --name-only HEAD. Shared receipt: docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json"
+        },
+        {
+          "id": "uiflow-tree",
+          "title": "m5stack/uiflow-micropython pinned source-tree investigation",
+          "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+          "kind": "upstream-source-tree",
+          "status": "linked",
+          "notes": "Inspected 2026-11-23T16:55:27Z; public filtered git clone and git ls-tree -r --name-only HEAD. Shared receipt: docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json"
+        },
+        {
+          "id": "factory",
+          "title": "firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "kind": "manufacturer-firmware",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "fetchedAt": "2026-11-23T19:06:00Z",
+          "bytes": 3498016,
+          "sha256": "0dd9c8c64309aa69d32af8bd5d79c505e4c561f5069aea57e3ee21f40867fb9a",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "notes": "Original exact member/binary bytes verified in scratch; remote-only distribution. Container/member distinction and native failure/success observations retained in batch evidence. Not proof of compatibility with every revision."
+        }
+      ],
+      "assets": [
+        {
+          "id": "base-mechanical-archive",
+          "sourceId": "base-mechanical-archive",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar"
+        },
+        {
+          "id": "official-cad",
+          "sourceId": "official-cad",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar"
+        },
+        {
+          "id": "mechanical-drawing",
+          "sourceId": "mechanical-drawing",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar"
+        },
+        {
+          "id": "overview",
+          "sourceId": "overview",
+          "role": "source-document",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47"
+        },
+        {
+          "id": "resources",
+          "sourceId": "resources",
+          "role": "source-document",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Resources-And-Documents"
+        },
+        {
+          "id": "schematic",
+          "sourceId": "schematic",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf"
+        },
+        {
+          "id": "repository-tree",
+          "sourceId": "repository-tree",
+          "role": "source-document",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/git/trees/da7035e2400edfac3b6998e036baa1b49c4f18f3?recursive=1"
+        },
+        {
+          "id": "repository-head-selection",
+          "sourceId": "repository-head-selection",
+          "role": "source-document",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/commits/main"
+        },
+        {
+          "id": "front-angle-photo",
+          "sourceId": "front-angle-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-2.jpg"
+        },
+        {
+          "id": "back-angle-photo",
+          "sourceId": "back-angle-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-3.jpg"
+        },
+        {
+          "id": "back-angle-other-photo",
+          "sourceId": "back-angle-other-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-4.jpg"
+        },
+        {
+          "id": "back-photo",
+          "sourceId": "back-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-5.jpg"
+        },
+        {
+          "id": "dimension-photo",
+          "sourceId": "dimension-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-size.jpg"
+        },
+        {
+          "id": "pinout-photo",
+          "sourceId": "pinout-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-inter.jpg"
+        },
+        {
+          "id": "base-package-photo",
+          "sourceId": "base-package-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-1.jpg"
+        },
+        {
+          "id": "loose-header-photo",
+          "sourceId": "loose-header-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-2.jpg"
+        },
+        {
+          "id": "m-package-photo",
+          "sourceId": "m-package-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-M-pack.jpg"
+        },
+        {
+          "id": "product",
+          "sourceId": "product",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-touch-lcd-1.47.htm"
+        },
+        {
+          "id": "electrical-0",
+          "sourceId": "electrical-0",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README.md"
+        },
+        {
+          "id": "electrical-1",
+          "sourceId": "electrical-1",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README_ZH.md"
+        },
+        {
+          "id": "electrical-2",
+          "sourceId": "electrical-2",
+          "role": "source-document",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Arduino"
+        },
+        {
+          "id": "electrical-3",
+          "sourceId": "electrical-3",
+          "role": "source-document",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/ESP-IDF"
+        },
+        {
+          "id": "electrical-4",
+          "sourceId": "electrical-4",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.c"
+        },
+        {
+          "id": "electrical-5",
+          "sourceId": "electrical-5",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.h"
+        },
+        {
+          "id": "electrical-6",
+          "sourceId": "electrical-6",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.c"
+        },
+        {
+          "id": "electrical-7",
+          "sourceId": "electrical-7",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.h"
+        },
+        {
+          "id": "electrical-8",
+          "sourceId": "electrical-8",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.c"
+        },
+        {
+          "id": "electrical-9",
+          "sourceId": "electrical-9",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.h"
+        },
+        {
+          "id": "electrical-10",
+          "sourceId": "electrical-10",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.c"
+        },
+        {
+          "id": "electrical-11",
+          "sourceId": "electrical-11",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.h"
+        },
+        {
+          "id": "electrical-12",
+          "sourceId": "electrical-12",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.c"
+        },
+        {
+          "id": "electrical-13",
+          "sourceId": "electrical-13",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.h"
+        },
+        {
+          "id": "electrical-14",
+          "sourceId": "electrical-14",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.c"
+        },
+        {
+          "id": "electrical-15",
+          "sourceId": "electrical-15",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.h"
+        },
+        {
+          "id": "electrical-16",
+          "sourceId": "electrical-16",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.c"
+        },
+        {
+          "id": "electrical-17",
+          "sourceId": "electrical-17",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.h"
+        },
+        {
+          "id": "electrical-18",
+          "sourceId": "electrical-18",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.c"
+        },
+        {
+          "id": "electrical-19",
+          "sourceId": "electrical-19",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.h"
+        },
+        {
+          "id": "electrical-20",
+          "sourceId": "electrical-20",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c"
+        },
+        {
+          "id": "electrical-21",
+          "sourceId": "electrical-21",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h"
+        },
+        {
+          "id": "electrical-22",
+          "sourceId": "electrical-22",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c"
+        },
+        {
+          "id": "electrical-23",
+          "sourceId": "electrical-23",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h"
+        },
+        {
+          "id": "electrical-24",
+          "sourceId": "electrical-24",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/idf_component.yml"
+        },
+        {
+          "id": "electrical-25",
+          "sourceId": "electrical-25",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/lv_fs_port.c"
+        },
+        {
+          "id": "electrical-26",
+          "sourceId": "electrical-26",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/main.c"
+        },
+        {
+          "id": "electrical-27",
+          "sourceId": "electrical-27",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README.md"
+        },
+        {
+          "id": "electrical-28",
+          "sourceId": "electrical-28",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README_ZH.md"
+        },
+        {
+          "id": "electrical-29",
+          "sourceId": "electrical-29",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf"
+        },
+        {
+          "id": "xiaozhi-tree",
+          "sourceId": "xiaozhi-tree",
+          "role": "source-document",
+          "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+        },
+        {
+          "id": "uiflow-tree",
+          "sourceId": "uiflow-tree",
+          "role": "source-document",
+          "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+        },
+        {
+          "id": "factory",
+          "sourceId": "factory",
+          "role": "firmware-download",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin"
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "release-date",
+          "label": "硬件真实发布日期",
+          "value": null,
+          "basis": "unknown",
+          "sourceIds": [
+            "product",
+            "overview"
+          ]
+        },
+        {
+          "id": "full-app-acceptance",
+          "label": "完整应用与实物验收",
+          "value": null,
+          "basis": "unknown",
+          "sourceIds": [
+            "factory"
+          ],
+          "notes": "Exact native outcome retained. No full app or browser WebGL acceptance inferred."
+        },
+        {
+          "id": "touch-and-physical-calibration",
+          "label": "物理扫描与触摸配准",
+          "value": null,
+          "basis": "unknown",
+          "sourceIds": [
+            "overview",
+            "resources"
+          ]
+        }
+      ],
+      "collectionNotes": [
+        "部分适配：真实ESP32-C6容量、精确总线、数字显示/复位及已列输入；完整应用、浏览器与实物尚未验收。",
+        "厂家完整镜像保持原字节、分区和校验通过；逐型号运行结果保留，不以CLI退出码代替成功。",
+        "音频PCM、无线业务、模拟电源/充电/电池ADC、物理屏幕扫描/颜色及触摸配准仍未验收。",
+        "3D保留厂家CAD或尺寸依据；UNKNOWN内部与推测厚度/排针不能用作装配尺寸。",
+        "TF数字卡接口按此硬件版本接入；本次原厂快照未插卡，不将无卡错误解释为无卡槽。",
+        "原厂最终快照 524 种RGB颜色。 详见native-stop-summaries及逐版本限制。",
+        "Pinned20261119 original full image runs5.000 emulated seconds, zero exceptions;30 RAMWR/143360 pixels;524 RGB colors.",
+        "Screenshot shows SquareLine and DrawPanel icons. Left white strip/window placement remains a visible limitation; full UI and touch orientation are not accepted.",
+        "CLI screenshot is scaled3× to516×960, while runtime framebuffer remains172×320; no fictitious physical pixel resolution.",
+        "Official overview BOOT8 conflicts with actual schematic and pinned factory mainGPIO9. Keep physicalBOOT9; do not change it to fit the documentation typo.",
+        "Copied FAQ address list0x51/0x6b/0x7e does not establish fitted RTC. Exact drivers useAXS5106L0x63 andQMI0x6b; there is no invented RTC.",
+        "Existing recovered exact native bare/M models are retained and production-loader checked. Original CAD source/member identity and all source photographs remain unchanged.",
+        "Latest original20261119 image5s0exceptions/524colors shows SquareLine/DrawPanel icons, but left white strip/window placement remains visually unresolved. Native outputPNG is3×scaled; actualpanel172×320.",
+        "JD9853 physical identity is retained; implemented DCS/control subset does not establish vendor-private timing/gamma/TE or full physical touch registration.",
+        "[修复前历史记录] 2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-lcd-1-47运行5.16客体秒。172×320末帧524色，启动器可见Squareline/DrawPanel；左侧34像素白条仍待查。64MiB FAT32卡挂载，当前观察0页改写。RF校准和手势告警保留。证据见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。 显示窗口错误已修复，见后续修复验证。",
+        "2026-11-23修复验证：按厂家main.c的set_gap(34,0)，将JD9853独立GRAM设为240×320、可视列34..205；首末像素和隐藏列负例通过。同一完整原镜像在公开Worker/生产WASM运行5.02秒，30帧、530色，目视确认左侧34px白条消失且Squareline/DrawPanel居中。修复前后原图及UART均保留，见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker-fixed与docs/evidence/waveshare-c6-touch147-window-fix-2026-11-23。该结论仅针对该显示窗口错误，不扩大为整机验收。"
+      ]
+    },
+    {
+      "schemaVersion": "1",
+      "id": "waveshare-esp32-c6-touch-lcd-1-47-m",
+      "kind": "product",
+      "catalogId": "waveshare-esp32-c6-touch-lcd-1-47-m",
+      "title": "Waveshare ESP32-C6-Touch-LCD-1.47-M",
+      "summary": "1.47 英寸 172×320 JD9853，8 MiB Flash，无PSRAM。",
+      "summarySourceIds": [
+        "electrical-0",
+        "electrical-1",
+        "electrical-2",
+        "electrical-3",
+        "electrical-4",
+        "electrical-5",
+        "electrical-6",
+        "electrical-7",
+        "electrical-8",
+        "electrical-9",
+        "electrical-10",
+        "electrical-11",
+        "electrical-12",
+        "electrical-13",
+        "electrical-14",
+        "electrical-15",
+        "electrical-16",
+        "electrical-17",
+        "electrical-18",
+        "electrical-19",
+        "electrical-20",
+        "electrical-21",
+        "electrical-22",
+        "electrical-23",
+        "electrical-24",
+        "electrical-25",
+        "electrical-26",
+        "electrical-27",
+        "electrical-28",
+        "electrical-29",
+        "overview",
+        "resources"
+      ],
+      "updatedAt": "2026-11-23T20:00:15Z",
+      "hardwareRevision": "native model/source revision retained",
+      "facts": [
+        {
+          "id": "hardware",
+          "label": "精确SKU/修订与真实接线",
+          "value": {
+            "sku": "31201",
+            "hardwareRevision": "native model/source revision retained",
+            "options": {
+              "Version Options": "Standard Ver. with pinheader"
+            },
+            "chip": "esp32c6",
+            "flashMiB": 8,
+            "psramMiB": 0,
+            "display": {
+              "width": 172,
+              "height": 320,
+              "type": "TFT LCD",
+              "controller": "JD9853",
+              "bus": "SPI2",
+              "diagonalInches": 1.47,
+              "touch": true
+            },
+            "touch": "AXS5106L",
+            "spi": {
+              "CLK": 1,
+              "MOSI": 2,
+              "CS": 14,
+              "DC": 15,
+              "RST": 22,
+              "BL": 23
+            },
+            "i2c": {
+              "SDA": 18,
+              "SCL": 19
+            },
+            "sd": {
+              "CLK": 1,
+              "MOSI": 2,
+              "MISO": 3,
+              "CS": 4
+            },
+            "components": [
+              "ESP32-C6FH8 integrated8MiB",
+              "AXS5106L@0x63 reset20 IRQ21",
+              "QMI8658A@0x6b",
+              "BOOT9/RESET CHIP_PU"
+            ],
+            "buttons": [
+              {
+                "id": "boot",
+                "name": "BOOT",
+                "type": "button",
+                "pin": 9,
+                "activeLow": true,
+                "defaultKeyCode": "Space"
+              }
+            ]
+          },
+          "basis": "official",
+          "sourceIds": [
+            "electrical-0",
+            "electrical-1",
+            "electrical-2",
+            "electrical-3",
+            "electrical-4",
+            "electrical-5",
+            "electrical-6",
+            "electrical-7",
+            "electrical-8",
+            "electrical-9",
+            "electrical-10",
+            "electrical-11",
+            "electrical-12",
+            "electrical-13",
+            "electrical-14",
+            "electrical-15",
+            "electrical-16",
+            "electrical-17",
+            "electrical-18",
+            "electrical-19",
+            "electrical-20",
+            "electrical-21",
+            "electrical-22",
+            "electrical-23",
+            "electrical-24",
+            "electrical-25",
+            "electrical-26",
+            "electrical-27",
+            "electrical-28",
+            "electrical-29",
+            "overview",
+            "resources",
+            "product"
+          ]
+        },
+        {
+          "id": "factory-layout",
+          "label": "原厂镜像字节、分区与实际结果",
+          "value": {
+            "bytes": 3498016,
+            "sha256": "0dd9c8c64309aa69d32af8bd5d79c505e4c561f5069aea57e3ee21f40867fb9a",
+            "archiveMember": null,
+            "containerBytes": null,
+            "containerSha256": null,
+            "layout": {
+              "loadOffset": 0,
+              "chipId": 13,
+              "bootloaderChecksumAndDigestValid": true,
+              "partitionTableOffset": 32768,
+              "partitionTableMd5Valid": true,
+              "partitions": [
+                {
+                  "type": 1,
+                  "subtype": 2,
+                  "offset": 36864,
+                  "bytes": 24576,
+                  "label": "nvs",
+                  "flags": 0
+                },
+                {
+                  "type": 1,
+                  "subtype": 1,
+                  "offset": 61440,
+                  "bytes": 4096,
+                  "label": "phy_init",
+                  "flags": 0
+                },
+                {
+                  "type": 0,
+                  "subtype": 0,
+                  "offset": 65536,
+                  "bytes": 8323072,
+                  "label": "factory",
+                  "flags": 0,
+                  "imageChipId": 13,
+                  "imageChecksumsValid": true
+                }
+              ],
+              "fitsFlashMiB": 8,
+              "headerFlashSizeCode": 3
+            },
+            "nativeObservations": [
+              "Pinned20261119 original full image runs5.000 emulated seconds, zero exceptions;30 RAMWR/143360 pixels;524 RGB colors.",
+              "Screenshot shows SquareLine and DrawPanel icons. Left white strip/window placement remains a visible limitation; full UI and touch orientation are not accepted.",
+              "CLI screenshot is scaled3× to516×960, while runtime framebuffer remains172×320; no fictitious physical pixel resolution."
+            ],
+            "nativeEvidence": "docs/evidence/waveshare-c6-fourth-five-2026-11-23/native-runs.json",
+            "publicTrialAssigned": true
+          },
+          "basis": "official",
+          "sourceIds": [
+            "factory"
+          ]
+        },
+        {
+          "id": "ecosystem-investigation",
+          "label": "原厂、小智与UIFlow调查",
+          "value": {
+            "factory": "Exact original image/member verified; native outcome is revision-specific and partial",
+            "xiaozhiExactBoardPaths": [],
+            "xiaozhiBinaryVerified": false,
+            "uiflowExactNamedPaths": [],
+            "uiflowBinaryVerified": false,
+            "scope": "A source target is not an accepted flash image. Absence is scoped to pinned complete trees."
+          },
+          "basis": "official",
+          "sourceIds": [
+            "factory",
+            "resources",
+            "xiaozhi-tree",
+            "uiflow-tree"
+          ]
+        },
+        {
+          "id": "source-conflicts",
+          "label": "来源冲突与采用依据",
+          "value": [
+            "Official overview BOOT8 conflicts with actual schematic and pinned factory mainGPIO9. Keep physicalBOOT9; do not change it to fit the documentation typo.",
+            "Copied FAQ address list0x51/0x6b/0x7e does not establish fitted RTC. Exact drivers useAXS5106L0x63 andQMI0x6b; there is no invented RTC.",
+            "Existing recovered exact native bare/M models are retained and production-loader checked. Original CAD source/member identity and all source photographs remain unchanged.",
+            "Latest original20261119 image5s0exceptions/524colors shows SquareLine/DrawPanel icons, but left white strip/window placement remains visually unresolved. Native outputPNG is3×scaled; actualpanel172×320.",
+            "JD9853 physical identity is retained; implemented DCS/control subset does not establish vendor-private timing/gamma/TE or full physical touch registration."
+          ],
+          "basis": "official",
+          "sourceIds": [
+            "electrical-0",
+            "electrical-1",
+            "electrical-2",
+            "electrical-3",
+            "electrical-4",
+            "electrical-5",
+            "electrical-6",
+            "electrical-7",
+            "electrical-8",
+            "electrical-9",
+            "electrical-10",
+            "electrical-11",
+            "electrical-12",
+            "electrical-13",
+            "electrical-14",
+            "electrical-15",
+            "electrical-16",
+            "electrical-17",
+            "electrical-18",
+            "electrical-19",
+            "electrical-20",
+            "electrical-21",
+            "electrical-22",
+            "electrical-23",
+            "electrical-24",
+            "electrical-25",
+            "electrical-26",
+            "electrical-27",
+            "electrical-28",
+            "electrical-29",
+            "overview",
+            "resources"
+          ]
+        },
+        {
+          "id": "model-scope",
+          "label": "机械模型可证明范围",
+          "value": {
+            "model": "waveshare-esp32-c6-touch-lcd-1-47-m",
+            "method": "official-cad",
+            "limitations": [
+              "All 243 native components (240 solids and three open shells) from the exact m assembly are retained. Native component geometry and coordinates are not scaled or repositioned.",
+              "SKU31203 is the base assembly without soldered headers; SKU31201 (-M) has two soldered 1×11 headers. Both exact official archives and drawings are independently retained by their corresponding models.",
+              "Native case part2 has the reused library name ESP32-S3-TOUCH-LCD-1_47-CASE. This is a mechanical library label in the explicitly named C6 archive, not evidence of an S3 controller or interchangeable complete PCB.",
+              "The supplied assembly does not declare a shipping PCB revision. The fixed repository and archive retrieval dates are source dates, not release-date certification.",
+              "The PDF labels cover viewing area17.75×32.93 mm, not LCD active area. Native LCD component0 face46 provides the separate17.39×32.35 mm active region with2.30 mm corner radius, centered at XY0/Z1.85.",
+              "The live framebuffer preserves the native active region and is projected onto touch viewing face component1 face40 at Z3.20 plus0.008 mm rendering offset. The native raised cover rim remains at3.25; the rendering offset is not a physical layer.",
+              "Outer case24.55×44.50 mm and native complete Y44.773315 mm differ because USB protrudes beyond the case. Source geometry is preserved; drawing dimensions are not used to rescale the complete assembly.",
+              "Native cover component1 includes flex and reaches4.35 mm overall depth; this is not the glass laminate thickness. Native PCB24.071610×44.023628×1.200000 mm is reported independently of case dimensions.",
+              "BOOT is native component7 and binds to boot/GPIO9 active-low. The retained overview repeatedly calls BOOT GPIO8; the official schematic BOOT net at GPIO9 is authoritative for this mapping. RESET component8 remains visible and unbound.",
+              "Native CAD colors are approximate material references. Cover, case and PCB are darkened using official photographs. The exact supplied case alone is recolorable; PCB, cover, display and connectors are excluded from shell presets.",
+              "Optical text-to-USB registration and hardware fit are not calibrated on a physical device. The native portrait geometry and172×320 framebuffer are retained without a claimed optical orientation acceptance.",
+              "No source stock screenshot is substituted for the live framebuffer. Source photos remain unchanged references; no battery, cable or extra accessory is invented.",
+              "No lost pre-reset model, archive or historical acceptance receipt is reused.",
+              "The -M native pin tips extend the complete source assembly to15.60 mm depth. The PDF10.60 mm annotation stops at the standoffs and excludes those tips.",
+              "The rear photo shows the base board. Its outline comparison covers only common native components; header geometry is supported by the separate -M STEP/PDF and -M package photo, not inferred from that base photograph."
+            ]
+          },
+          "basis": "official",
+          "sourceIds": [
+            "dimension-photo",
+            "resources",
+            "official-cad"
+          ]
+        }
+      ],
+      "revisions": [],
+      "sources": [
+        {
+          "id": "base-mechanical-archive",
+          "title": "source-archive.rar",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/source-archive.rar",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "fetchedAt": "2026-11-23T10:47:54Z",
+          "bytes": 2356113,
+          "sha256": "45601b82bc913a9fb6831065b2a0b2db8fee92820fb0758feb45c43123efaac2",
+          "archiveName": "source-archive.rar"
+        },
+        {
+          "id": "official-cad",
+          "title": "source.stp.gz",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "kind": "manufacturer-cad",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/source.stp.gz",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "fetchedAt": "2026-11-23T10:47:54Z",
+          "bytes": 12652795,
+          "sha256": "94f44f6a79c151ab928c8b8398d9a978f3effaf4c6f953ee890a9d7326fdf55b",
+          "archiveName": "source.stp.gz"
+        },
+        {
+          "id": "mechanical-drawing",
+          "title": "mechanical.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/mechanical.pdf",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar",
+          "fetchedAt": "2026-11-23T10:47:54Z",
+          "bytes": 52624,
+          "sha256": "5e3fab19a6b55bc655435c8eaecf05871d65838d582bd55d1cb14823dd0ddfaf",
+          "archiveName": "mechanical.pdf"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/overview.html.gz",
+          "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47",
+          "fetchedAt": "2026-11-23T08:00:12Z",
+          "bytes": 50595,
+          "sha256": "7b150e412735c805fe62944ba437608fb48b2ce29902daac5988eda2011f85ab",
+          "archiveName": "overview.html.gz"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html.gz",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Resources-And-Documents",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/resources.html.gz",
+          "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Resources-And-Documents",
+          "fetchedAt": "2026-11-23T08:00:12Z",
+          "bytes": 36343,
+          "sha256": "b054879bf738a6becaa9368ba75c40647754b3d7a5250fcfef07aaebc6b09883",
+          "archiveName": "resources.html.gz"
+        },
+        {
+          "id": "schematic",
+          "title": "schematic.pdf.gz",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/schematic.pdf.gz",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "fetchedAt": "2026-11-23T10:21:55Z",
+          "bytes": 434051,
+          "sha256": "b679d1a6198ece26992c72a1b93a97ed2db6cc5f0066d041cb49150c5759c480",
+          "archiveName": "schematic.pdf.gz"
+        },
+        {
+          "id": "repository-tree",
+          "title": "repository-tree.json.gz",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/git/trees/da7035e2400edfac3b6998e036baa1b49c4f18f3?recursive=1",
+          "kind": "manufacturer-source",
+          "status": "linked",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/repository-tree.json.gz"
+        },
+        {
+          "id": "repository-head-selection",
+          "title": "repository-head-selection.json",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/commits/main",
+          "kind": "manufacturer-source",
+          "status": "linked",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/repository-head-selection.json"
+        },
+        {
+          "id": "front-angle-photo",
+          "title": "front-angle-photo.jpg",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-2.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/front-angle-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-2.jpg",
+          "fetchedAt": "2026-11-23T10:50:36Z",
+          "bytes": 28232,
+          "sha256": "ea8d02c5aed9d11ec98c947ff6288aefe31860d3f0e90aaa22a5aa9d2963a700",
+          "archiveName": "front-angle-photo.jpg"
+        },
+        {
+          "id": "back-angle-photo",
+          "title": "back-angle-photo.jpg",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-3.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/back-angle-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-3.jpg",
+          "fetchedAt": "2026-11-23T10:50:36Z",
+          "bytes": 68903,
+          "sha256": "9bc9c677d2903cf584e7dbbc9e09118ada8c4266010affe3a0d2cf95aefb75ee",
+          "archiveName": "back-angle-photo.jpg"
+        },
+        {
+          "id": "back-angle-other-photo",
+          "title": "back-angle-other-photo.jpg",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-4.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/back-angle-other-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-4.jpg",
+          "fetchedAt": "2026-11-23T10:50:37Z",
+          "bytes": 67637,
+          "sha256": "fa2fb7b75dd7c7c8675570d80c987cf1d66787f17d8f7d2fa7efe6558ef6c58d",
+          "archiveName": "back-angle-other-photo.jpg"
+        },
+        {
+          "id": "back-photo",
+          "title": "back-photo.jpg",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-5.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/back-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-5.jpg",
+          "fetchedAt": "2026-11-23T10:50:37Z",
+          "bytes": 53022,
+          "sha256": "bd4ef752301a46ca76659e2562a4ced31b5aca95e26f39cea76e8bf934fd2828",
+          "archiveName": "back-photo.jpg"
+        },
+        {
+          "id": "dimension-photo",
+          "title": "dimension-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-size.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/dimension-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-size.jpg",
+          "fetchedAt": "2026-11-23T10:50:42Z",
+          "bytes": 134199,
+          "sha256": "3ab74fd5bb6536e669ce8be4eb8a7da468cbe457ce4d751d9dacf118e005ec63",
+          "archiveName": "dimension-photo.jpg"
+        },
+        {
+          "id": "pinout-photo",
+          "title": "pinout-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-inter.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/pinout-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-inter.jpg",
+          "fetchedAt": "2026-11-23T10:50:42Z",
+          "bytes": 325199,
+          "sha256": "0c75f3489bd60d240dbe1bd37de9fa6866023a206404ccac359890cd392d83e1",
+          "archiveName": "pinout-photo.jpg"
+        },
+        {
+          "id": "base-package-photo",
+          "title": "base-package-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-1.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/base-package-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-1.jpg",
+          "fetchedAt": "2026-11-23T10:50:44Z",
+          "bytes": 194066,
+          "sha256": "76a97a07960c8a602c3b1fce69d0e63a76517ff328a130fdc4ed64034958d2c7",
+          "archiveName": "base-package-photo.jpg"
+        },
+        {
+          "id": "loose-header-photo",
+          "title": "loose-header-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-2.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/loose-header-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-2.jpg",
+          "fetchedAt": "2026-11-23T10:50:42Z",
+          "bytes": 69380,
+          "sha256": "1879ef97de0f2c5973754a38d37164dee22ba1e09b46f487871fd1da0c838c55",
+          "archiveName": "loose-header-photo.jpg"
+        },
+        {
+          "id": "m-package-photo",
+          "title": "m-package-photo.jpg",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-M-pack.jpg",
+          "kind": "manufacturer-source",
+          "status": "fetched",
+          "notes": "Retained at web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/m-package-photo.jpg",
+          "resolvedUrl": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-M-pack.jpg",
+          "fetchedAt": "2026-11-23T10:50:52Z",
+          "bytes": 80826,
+          "sha256": "316f61de24cc6c59cbe2e1d876bd688b63437a22a3f7576f225036487550879f",
+          "archiveName": "m-package-photo.jpg"
+        },
+        {
+          "id": "product",
+          "title": "Official exact-SKU selection",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-touch-lcd-1.47.htm",
+          "kind": "manufacturer-product",
+          "status": "linked",
+          "notes": "Public selected SKU fields are explicitly derived. Shared SKU revisions are separated by physical controller and sourced wiring, not fabricated sale options."
+        },
+        {
+          "id": "electrical-0",
+          "title": "README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README.md",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README.md",
+          "fetchedAt": "2026-11-23T19:05:13Z",
+          "bytes": 4069,
+          "sha256": "33f4a6c26535ca2486827b29d8df89a351dd0ef6fa1d040d12537c5cd58ea7ac",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_README.md.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_README.md.gz"
+        },
+        {
+          "id": "electrical-1",
+          "title": "README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README_ZH.md",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README_ZH.md",
+          "fetchedAt": "2026-11-23T19:05:13Z",
+          "bytes": 3906,
+          "sha256": "823203f732f654e25fc0d31ae6cd799b8d26de8bc029d346e67f1f8c119af578",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_README_ZH.md.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_README_ZH.md.gz"
+        },
+        {
+          "id": "electrical-2",
+          "title": "documentation/Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Arduino",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Arduino",
+          "fetchedAt": "2026-11-23T19:23:58Z",
+          "bytes": 136949,
+          "sha256": "ad22fd1e21fc78d96423adae4fcffb47ea22e4adc4e212df85556ff4a82eb095",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_documentation_Arduino.html.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_documentation_Arduino.html.gz"
+        },
+        {
+          "id": "electrical-3",
+          "title": "documentation/ESP-IDF.html",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/ESP-IDF",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/ESP-IDF",
+          "fetchedAt": "2026-11-23T19:23:54Z",
+          "bytes": 118370,
+          "sha256": "a5c6e73d784fb902e5f52d9c0944d2a401b755ad3b30899c7ab044353666d7c2",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_documentation_ESP-IDF.html.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_documentation_ESP-IDF.html.gz"
+        },
+        {
+          "id": "electrical-4",
+          "title": "examples/factory/components/esp_bsp/bsp_battery.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.c",
+          "fetchedAt": "2026-11-23T19:05:47Z",
+          "bytes": 3165,
+          "sha256": "55b83140f3116a7bc0b84e4c1da29b5f3b1739a8b4c438b590a53ab4a7e1cf22",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_battery.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_battery.c.gz"
+        },
+        {
+          "id": "electrical-5",
+          "title": "examples/factory/components/esp_bsp/bsp_battery.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.h",
+          "fetchedAt": "2026-11-23T19:05:47Z",
+          "bytes": 375,
+          "sha256": "da2f62efe5558175d6db55dca770971a20518eb3712dcce1f51de1d6c22cf3c9",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_battery.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_battery.h.gz"
+        },
+        {
+          "id": "electrical-6",
+          "title": "examples/factory/components/esp_bsp/bsp_display.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.c",
+          "fetchedAt": "2026-11-23T19:05:46Z",
+          "bytes": 3075,
+          "sha256": "f5eda6931a83082125152a3cf944cc6926348dbd47e0fb56dd114a45dfa98328",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_display.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_display.c.gz"
+        },
+        {
+          "id": "electrical-7",
+          "title": "examples/factory/components/esp_bsp/bsp_display.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.h",
+          "fetchedAt": "2026-11-23T19:05:46Z",
+          "bytes": 1141,
+          "sha256": "d44eb912a095fc60c6e5b8164c4accc8c1ad3022bb13d83319178bfa3cf93be6",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_display.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_display.h.gz"
+        },
+        {
+          "id": "electrical-8",
+          "title": "examples/factory/components/esp_bsp/bsp_i2c.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.c",
+          "fetchedAt": "2026-11-23T19:05:46Z",
+          "bytes": 580,
+          "sha256": "e9fa927dbd5f8ca5b104d379516acffab136dfe31fef647ba15f060a1639a696",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_i2c.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_i2c.c.gz"
+        },
+        {
+          "id": "electrical-9",
+          "title": "examples/factory/components/esp_bsp/bsp_i2c.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.h",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 345,
+          "sha256": "82d0a0512728394de9728d6841ee7537a71d0293d0304820deefc0b70cc95831",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_i2c.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_i2c.h.gz"
+        },
+        {
+          "id": "electrical-10",
+          "title": "examples/factory/components/esp_bsp/bsp_qmi8658.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.c",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 3978,
+          "sha256": "3ace3f535e3b27c862b2ebfef9a0b5b4aef69f1f6d62fa116327da290bf9e378",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_qmi8658.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_qmi8658.c.gz"
+        },
+        {
+          "id": "electrical-11",
+          "title": "examples/factory/components/esp_bsp/bsp_qmi8658.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.h",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 1900,
+          "sha256": "a4810e5c622bc30fe355568d3ec73fa3e41c7ba99ae325a2c8ca66f9f5638c59",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_qmi8658.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_qmi8658.h.gz"
+        },
+        {
+          "id": "electrical-12",
+          "title": "examples/factory/components/esp_bsp/bsp_sdcard.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.c",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 4943,
+          "sha256": "22422cf09e74c3f9febe35cc62d196056641141f696ef12a5916316f64f02134",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_sdcard.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_sdcard.c.gz"
+        },
+        {
+          "id": "electrical-13",
+          "title": "examples/factory/components/esp_bsp/bsp_sdcard.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.h",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 358,
+          "sha256": "7a209d64143f91f29dc70bbe67432aab85b2e7c39a42bd144abeb31b57f484b3",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_sdcard.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_sdcard.h.gz"
+        },
+        {
+          "id": "electrical-14",
+          "title": "examples/factory/components/esp_bsp/bsp_spi.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.c",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 453,
+          "sha256": "6adbc7c77a28945ab693245aaa9ee7f6a3a231064a786a35125632ad527c51c7",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_spi.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_spi.c.gz"
+        },
+        {
+          "id": "electrical-15",
+          "title": "examples/factory/components/esp_bsp/bsp_spi.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.h",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 370,
+          "sha256": "171b317644d7e18b0b38e3f67417d80e0c65bb0aae9660483049486312eb347a",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_spi.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_spi.h.gz"
+        },
+        {
+          "id": "electrical-16",
+          "title": "examples/factory/components/esp_bsp/bsp_touch.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.c",
+          "fetchedAt": "2026-11-23T19:05:51Z",
+          "bytes": 1512,
+          "sha256": "ea04be7d49ba19b2c70e61a25658f0b4d31c6a963d042cd7e0841512bbb5d8ea",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_touch.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_touch.c.gz"
+        },
+        {
+          "id": "electrical-17",
+          "title": "examples/factory/components/esp_bsp/bsp_touch.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.h",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 417,
+          "sha256": "e5b6f5874e80d2aaee584005aa98d2268bd2aee8e988b182591afbf4b274f412",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_touch.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_touch.h.gz"
+        },
+        {
+          "id": "electrical-18",
+          "title": "examples/factory/components/esp_bsp/bsp_wifi.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.c",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 6582,
+          "sha256": "c78490664b66c0e1a8b8838b62545e030098d28429396f07f20bdf9e8f9ba752",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_wifi.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_wifi.c.gz"
+        },
+        {
+          "id": "electrical-19",
+          "title": "examples/factory/components/esp_bsp/bsp_wifi.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.h",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 419,
+          "sha256": "ddbaa50bc1a1a485deb2741f2c0754b9254f56faa789223175f0469470a5c0aa",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_wifi.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_bsp_bsp_wifi.h.gz"
+        },
+        {
+          "id": "electrical-20",
+          "title": "examples/factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 17765,
+          "sha256": "62b669405e3c009a4e4034b20d1343823d6b11f1528b572a84a074e2b1c5a128",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_jd9853_esp_lcd_jd9853.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_jd9853_esp_lcd_jd9853.c.gz"
+        },
+        {
+          "id": "electrical-21",
+          "title": "examples/factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 3887,
+          "sha256": "d67ecbb84b1d180117f3f38cc89acd92b8c3f6e9fd4c5dea76f944997e448cf9",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_jd9853_include_esp_lcd_jd9853.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_jd9853_include_esp_lcd_jd9853.h.gz"
+        },
+        {
+          "id": "electrical-22",
+          "title": "examples/factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 8267,
+          "sha256": "9f630512cd8fc299c85860da654b1614b66865f5e2c9d34521b27e8c0b19ba28",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_touch_axs5106_esp_lcd_touch_axs5106.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_touch_axs5106_esp_lcd_touch_axs5106.c.gz"
+        },
+        {
+          "id": "electrical-23",
+          "title": "examples/factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h",
+          "fetchedAt": "2026-11-23T19:05:56Z",
+          "bytes": 1523,
+          "sha256": "16b1af76cd40f6b4fb3f691d6d7d235f99432251c3d0e47700d82fc05a51a8f7",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_touch_axs5106_include_esp_lcd_touch_axs5106.h.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_components_esp_lcd_touch_axs5106_include_esp_lcd_touch_axs5106.h.gz"
+        },
+        {
+          "id": "electrical-24",
+          "title": "examples/factory/main/idf_component.yml",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/idf_component.yml",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/idf_component.yml",
+          "fetchedAt": "2026-11-23T19:07:48Z",
+          "bytes": 157,
+          "sha256": "a0cfb9ac54fdb907da3db52401dffe0ae1e98c326be88a6276f55c84c9ebd78a",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_idf_component.yml.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_idf_component.yml.gz"
+        },
+        {
+          "id": "electrical-25",
+          "title": "examples/factory/main/lv_fs_port.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/lv_fs_port.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/lv_fs_port.c",
+          "fetchedAt": "2026-11-23T19:07:48Z",
+          "bytes": 8854,
+          "sha256": "8a137ef69bd40d5316572603a8db4dcb02d592c68d4a05843318b174035fbae2",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_lv_fs_port.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_lv_fs_port.c.gz"
+        },
+        {
+          "id": "electrical-26",
+          "title": "examples/factory/main/main.c",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/main.c",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/main.c",
+          "fetchedAt": "2026-11-23T19:07:48Z",
+          "bytes": 7346,
+          "sha256": "813ba3b3c6dc0bad039d67e895a9a13a14ac0f025fa430b20d81343270ebddda",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_main.c.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_examples_factory_main_main.c.gz"
+        },
+        {
+          "id": "electrical-27",
+          "title": "firmware/README.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README.md",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README.md",
+          "fetchedAt": "2026-11-23T19:06:00Z",
+          "bytes": 973,
+          "sha256": "3ca7c294889a6e669b02574916db414ef03639320785c402f6f611399024e4b3",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_firmware_README.md.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_firmware_README.md.gz"
+        },
+        {
+          "id": "electrical-28",
+          "title": "firmware/README_ZH.md",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README_ZH.md",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README_ZH.md",
+          "fetchedAt": "2026-11-23T19:06:00Z",
+          "bytes": 967,
+          "sha256": "0c3602fe516321fcc77980509f861443353b10f4444b375c5fae6337e43530b9",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_firmware_README_ZH.md.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_firmware_README_ZH.md.gz"
+        },
+        {
+          "id": "electrical-29",
+          "title": "official-resources/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "kind": "primary-electrical-source",
+          "status": "fetched",
+          "resolvedUrl": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf",
+          "fetchedAt": "2026-11-23T19:06:01Z",
+          "bytes": 434051,
+          "sha256": "b679d1a6198ece26992c72a1b93a97ed2db6cc5f0066d041cb49150c5759c480",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_files_official-resources_ESP32-C6-Touch-LCD-1.47-Schematic.pdf.gz",
+          "notes": "Exact original member/source bytes retained at docs/platform/research/waveshare-c6-fourth-five-sources/ESP32-C6-Touch-LCD-1.47_files_official-resources_ESP32-C6-Touch-LCD-1.47-Schematic.pdf.gz"
+        },
+        {
+          "id": "xiaozhi-tree",
+          "title": "78/xiaozhi-esp32 pinned source-tree investigation",
+          "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2",
+          "kind": "upstream-source-tree",
+          "status": "linked",
+          "notes": "Inspected 2026-11-23T16:55:27Z; public filtered git clone and git ls-tree -r --name-only HEAD. Shared receipt: docs/platform/research/waveshare-shared-ecosystem-sources/xiaozhi-esp32-board-tree.json"
+        },
+        {
+          "id": "uiflow-tree",
+          "title": "m5stack/uiflow-micropython pinned source-tree investigation",
+          "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6",
+          "kind": "upstream-source-tree",
+          "status": "linked",
+          "notes": "Inspected 2026-11-23T16:55:27Z; public filtered git clone and git ls-tree -r --name-only HEAD. Shared receipt: docs/platform/research/waveshare-shared-ecosystem-sources/uiflow-micropython-board-tree.json"
+        },
+        {
+          "id": "factory",
+          "title": "firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "kind": "manufacturer-firmware",
+          "status": "fetched",
+          "resolvedUrl": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "fetchedAt": "2026-11-23T19:06:00Z",
+          "bytes": 3498016,
+          "sha256": "0dd9c8c64309aa69d32af8bd5d79c505e4c561f5069aea57e3ee21f40867fb9a",
+          "archiveName": "ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin",
+          "notes": "Original exact member/binary bytes verified in scratch; remote-only distribution. Container/member distinction and native failure/success observations retained in batch evidence. Not proof of compatibility with every revision."
+        }
+      ],
+      "assets": [
+        {
+          "id": "base-mechanical-archive",
+          "sourceId": "base-mechanical-archive",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar"
+        },
+        {
+          "id": "official-cad",
+          "sourceId": "official-cad",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar"
+        },
+        {
+          "id": "mechanical-drawing",
+          "sourceId": "mechanical-drawing",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47.rar"
+        },
+        {
+          "id": "overview",
+          "sourceId": "overview",
+          "role": "source-document",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47"
+        },
+        {
+          "id": "resources",
+          "sourceId": "resources",
+          "role": "source-document",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Resources-And-Documents"
+        },
+        {
+          "id": "schematic",
+          "sourceId": "schematic",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf"
+        },
+        {
+          "id": "repository-tree",
+          "sourceId": "repository-tree",
+          "role": "source-document",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/git/trees/da7035e2400edfac3b6998e036baa1b49c4f18f3?recursive=1"
+        },
+        {
+          "id": "repository-head-selection",
+          "sourceId": "repository-head-selection",
+          "role": "source-document",
+          "url": "https://api.github.com/repos/waveshareteam/ESP32-C6-Touch-LCD-1.47/commits/main"
+        },
+        {
+          "id": "front-angle-photo",
+          "sourceId": "front-angle-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-2.jpg"
+        },
+        {
+          "id": "back-angle-photo",
+          "sourceId": "back-angle-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-3.jpg"
+        },
+        {
+          "id": "back-angle-other-photo",
+          "sourceId": "back-angle-other-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-4.jpg"
+        },
+        {
+          "id": "back-photo",
+          "sourceId": "back-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/media/catalog/product/cache/1/image/800x800/9df78eab33525d08d6e5fb8d27136e95/e/s/esp32-c6-touch-lcd-1.47-5.jpg"
+        },
+        {
+          "id": "dimension-photo",
+          "sourceId": "dimension-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-size.jpg"
+        },
+        {
+          "id": "pinout-photo",
+          "sourceId": "pinout-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-details-inter.jpg"
+        },
+        {
+          "id": "base-package-photo",
+          "sourceId": "base-package-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-1.jpg"
+        },
+        {
+          "id": "loose-header-photo",
+          "sourceId": "loose-header-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-pack-2.jpg"
+        },
+        {
+          "id": "m-package-photo",
+          "sourceId": "m-package-photo",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/img/devkit/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-M-pack.jpg"
+        },
+        {
+          "id": "product",
+          "sourceId": "product",
+          "role": "source-document",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-c6-touch-lcd-1.47.htm"
+        },
+        {
+          "id": "electrical-0",
+          "sourceId": "electrical-0",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README.md"
+        },
+        {
+          "id": "electrical-1",
+          "sourceId": "electrical-1",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/README_ZH.md"
+        },
+        {
+          "id": "electrical-2",
+          "sourceId": "electrical-2",
+          "role": "source-document",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/Arduino"
+        },
+        {
+          "id": "electrical-3",
+          "sourceId": "electrical-3",
+          "role": "source-document",
+          "url": "https://docs.waveshare.com/ESP32-C6-Touch-LCD-1.47/ESP-IDF"
+        },
+        {
+          "id": "electrical-4",
+          "sourceId": "electrical-4",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.c"
+        },
+        {
+          "id": "electrical-5",
+          "sourceId": "electrical-5",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_battery.h"
+        },
+        {
+          "id": "electrical-6",
+          "sourceId": "electrical-6",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.c"
+        },
+        {
+          "id": "electrical-7",
+          "sourceId": "electrical-7",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_display.h"
+        },
+        {
+          "id": "electrical-8",
+          "sourceId": "electrical-8",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.c"
+        },
+        {
+          "id": "electrical-9",
+          "sourceId": "electrical-9",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_i2c.h"
+        },
+        {
+          "id": "electrical-10",
+          "sourceId": "electrical-10",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.c"
+        },
+        {
+          "id": "electrical-11",
+          "sourceId": "electrical-11",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_qmi8658.h"
+        },
+        {
+          "id": "electrical-12",
+          "sourceId": "electrical-12",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.c"
+        },
+        {
+          "id": "electrical-13",
+          "sourceId": "electrical-13",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_sdcard.h"
+        },
+        {
+          "id": "electrical-14",
+          "sourceId": "electrical-14",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.c"
+        },
+        {
+          "id": "electrical-15",
+          "sourceId": "electrical-15",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_spi.h"
+        },
+        {
+          "id": "electrical-16",
+          "sourceId": "electrical-16",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.c"
+        },
+        {
+          "id": "electrical-17",
+          "sourceId": "electrical-17",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_touch.h"
+        },
+        {
+          "id": "electrical-18",
+          "sourceId": "electrical-18",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.c"
+        },
+        {
+          "id": "electrical-19",
+          "sourceId": "electrical-19",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_bsp/bsp_wifi.h"
+        },
+        {
+          "id": "electrical-20",
+          "sourceId": "electrical-20",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/esp_lcd_jd9853.c"
+        },
+        {
+          "id": "electrical-21",
+          "sourceId": "electrical-21",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_jd9853/include/esp_lcd_jd9853.h"
+        },
+        {
+          "id": "electrical-22",
+          "sourceId": "electrical-22",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/esp_lcd_touch_axs5106.c"
+        },
+        {
+          "id": "electrical-23",
+          "sourceId": "electrical-23",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/components/esp_lcd_touch_axs5106/include/esp_lcd_touch_axs5106.h"
+        },
+        {
+          "id": "electrical-24",
+          "sourceId": "electrical-24",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/idf_component.yml"
+        },
+        {
+          "id": "electrical-25",
+          "sourceId": "electrical-25",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/lv_fs_port.c"
+        },
+        {
+          "id": "electrical-26",
+          "sourceId": "electrical-26",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/examples/factory/main/main.c"
+        },
+        {
+          "id": "electrical-27",
+          "sourceId": "electrical-27",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README.md"
+        },
+        {
+          "id": "electrical-28",
+          "sourceId": "electrical-28",
+          "role": "source-document",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/README_ZH.md"
+        },
+        {
+          "id": "electrical-29",
+          "sourceId": "electrical-29",
+          "role": "source-document",
+          "url": "https://files.waveshare.com/wiki/ESP32-C6-Touch-LCD-1.47/ESP32-C6-Touch-LCD-1.47-Schematic.pdf"
+        },
+        {
+          "id": "xiaozhi-tree",
+          "sourceId": "xiaozhi-tree",
+          "role": "source-document",
+          "url": "https://github.com/78/xiaozhi-esp32/tree/92d400d6374bbe750e0a0188fa969fc4042820c2"
+        },
+        {
+          "id": "uiflow-tree",
+          "sourceId": "uiflow-tree",
+          "role": "source-document",
+          "url": "https://github.com/m5stack/uiflow-micropython/tree/a61a29409f09f1f4bebae05e15c4bd6dcc4956b6"
+        },
+        {
+          "id": "factory",
+          "sourceId": "factory",
+          "role": "firmware-download",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C6-Touch-LCD-1.47/baea85be7ac288b42664670a456f9c86df7b5a63/firmware/ESP32-C6-Touch-LCD-1.47_FactoryOnly_20261119.bin"
+        }
+      ],
+      "unknowns": [
+        {
+          "id": "release-date",
+          "label": "硬件真实发布日期",
+          "value": null,
+          "basis": "unknown",
+          "sourceIds": [
+            "product",
+            "overview"
+          ]
+        },
+        {
+          "id": "full-app-acceptance",
+          "label": "完整应用与实物验收",
+          "value": null,
+          "basis": "unknown",
+          "sourceIds": [
+            "factory"
+          ],
+          "notes": "Exact native outcome retained. No full app or browser WebGL acceptance inferred."
+        },
+        {
+          "id": "touch-and-physical-calibration",
+          "label": "物理扫描与触摸配准",
+          "value": null,
+          "basis": "unknown",
+          "sourceIds": [
+            "overview",
+            "resources"
+          ]
+        }
+      ],
+      "collectionNotes": [
+        "部分适配：真实ESP32-C6容量、精确总线、数字显示/复位及已列输入；完整应用、浏览器与实物尚未验收。",
+        "厂家完整镜像保持原字节、分区和校验通过；逐型号运行结果保留，不以CLI退出码代替成功。",
+        "音频PCM、无线业务、模拟电源/充电/电池ADC、物理屏幕扫描/颜色及触摸配准仍未验收。",
+        "3D保留厂家CAD或尺寸依据；UNKNOWN内部与推测厚度/排针不能用作装配尺寸。",
+        "TF数字卡接口按此硬件版本接入；本次原厂快照未插卡，不将无卡错误解释为无卡槽。",
+        "原厂最终快照 524 种RGB颜色。 详见native-stop-summaries及逐版本限制。",
+        "Pinned20261119 original full image runs5.000 emulated seconds, zero exceptions;30 RAMWR/143360 pixels;524 RGB colors.",
+        "Screenshot shows SquareLine and DrawPanel icons. Left white strip/window placement remains a visible limitation; full UI and touch orientation are not accepted.",
+        "CLI screenshot is scaled3× to516×960, while runtime framebuffer remains172×320; no fictitious physical pixel resolution.",
+        "Official overview BOOT8 conflicts with actual schematic and pinned factory mainGPIO9. Keep physicalBOOT9; do not change it to fit the documentation typo.",
+        "Copied FAQ address list0x51/0x6b/0x7e does not establish fitted RTC. Exact drivers useAXS5106L0x63 andQMI0x6b; there is no invented RTC.",
+        "Existing recovered exact native bare/M models are retained and production-loader checked. Original CAD source/member identity and all source photographs remain unchanged.",
+        "Latest original20261119 image5s0exceptions/524colors shows SquareLine/DrawPanel icons, but left white strip/window placement remains visually unresolved. Native outputPNG is3×scaled; actualpanel172×320.",
+        "JD9853 physical identity is retained; implemented DCS/control subset does not establish vendor-private timing/gamma/TE or full physical touch registration.",
+        "[修复前历史记录] 2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-lcd-1-47运行5.16客体秒。172×320末帧524色，启动器可见Squareline/DrawPanel；左侧34像素白条仍待查。64MiB FAT32卡挂载，当前观察0页改写。RF校准和手势告警保留。证据见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。 显示窗口错误已修复，见后续修复验证。",
+        "2026-11-23修复验证：按厂家main.c的set_gap(34,0)，将JD9853独立GRAM设为240×320、可视列34..205；首末像素和隐藏列负例通过。同一完整原镜像在公开Worker/生产WASM运行5.02秒，30帧、530色，目视确认左侧34px白条消失且Squareline/DrawPanel居中。修复前后原图及UART均保留，见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker-fixed与docs/evidence/waveshare-c6-touch147-window-fix-2026-11-23。该结论仅针对该显示窗口错误，不扩大为整机验收。"
+      ]
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-c6-touch-lcd147": {
+      "chip": "esp32c6",
+      "flashMb": 8,
+      "psramMb": 0,
+      "sdCard": true,
+      "boardButtons": []
+    }
+  },
+  "sourceReceiptPaths": [
+    "docs/platform/research/waveshare-c6-fourth-five-sources/manifest.json",
+    "web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47/source-manifest.json",
+    "web/platform/assets/waveshare-esp32-c6-touch-lcd-1-47-m/source-manifest.json"
+  ],
+  "tests": [
+    "cargo test -p esp32c6 waveshare --lib",
+    "docs/evidence/waveshare-c6-fourth-five-2026-11-23/native-runs.json",
+    "docs/evidence/waveshare-c6-fourth-five-2026-11-23/model-loader-check.json"
+  ],
+  "limitations": [
+    "All runtime statuses remain partial; original complete-image outcomes and source conflicts are preserved. LCD169 zip-bundle requires root256MiB hash-pinned container limit.",
+    "[修复前历史记录] 2026-11-23公开Worker/生产WASM原镜像尝试：代表配置waveshare-esp32-c6-touch-lcd-1-47运行5.16客体秒。172×320末帧524色，启动器可见Squareline/DrawPanel；左侧34像素白条仍待查。64MiB FAT32卡挂载，当前观察0页改写。RF校准和手势告警保留。证据见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker。仅代表所选配置的有界原图执行，不代表同家族所有SKU、浏览器WebGL或实物整机验收。 此显示窗口错误已由本批后续JD9853偏移修复，详见修复后证据。",
+    "2026-11-23修复验证：按厂家main.c的set_gap(34,0)，将JD9853独立GRAM设为240×320、可视列34..205；首末像素和隐藏列负例通过。同一完整原镜像在公开Worker/生产WASM运行5.02秒，30帧、530色，目视确认左侧34px白条消失且Squareline/DrawPanel居中。修复前后原图及UART均保留，见docs/platform/evidence/waveshare-batch012-20261124/touch147-worker-fixed与docs/evidence/waveshare-c6-touch147-window-fix-2026-11-23。该结论仅针对该显示窗口错误，不扩大为整机验收。"
+  ]
+}
