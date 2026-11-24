@@ -25,4 +25,4 @@ async page => {
   assert(receipt.unknown==='UNKNOWN','Unknown PCB label is missing');
   assert(errors.length===0,errors.join('\n'));
   return {...receipt,pageErrors:errors,visualReviewStillRequired:['front','back','side','oblique','gold','purple','expanded UNKNOWN']};
-};
+}
