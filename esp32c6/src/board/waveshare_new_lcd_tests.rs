@@ -86,3 +86,30 @@ fn six_boards_route_sd_card_startup_and_response_on_exact_miso(){
         assert_eq!(b.spi_transfer_qspi_pins(2,p,&[],2),[255,255],"simultaneously selected LCD/card is rejected and clears card reply");
     }
 }
+#[test]
+fn third_lcd_boards_do_not_invent_sensors_and_honor_source_windows(){
+ for(name,pins,rst,bl,mad,gap,addresses,size)in[
+  ("waveshare-c6-geek",(1,2,5,3),4,6,0,(52,40),vec![],(135,240)),
+  ("waveshare-c6-geek-v1",(1,2,5,3),4,6,0,(52,40),vec![],(135,240)),
+  ("waveshare-c6-lcd13",(7,6,14,15),21,22,0x40,(0,0),vec![],(240,240)),
+  ("waveshare-c6-touch-lcd183",(1,2,5,3),4,6,0,(0,0),vec![0x15,0x6b,0x51,0x18,0x40,0x34],(240,284)),
+ ]{
+  let mut b=make_board(name).unwrap();let ds=b.i2c_devices();assert_eq!(ds.iter().map(|(_,a,_)|*a).collect::<Vec<_>>(),addresses);let mut g=Gpio::new();let mut m=RegRam::new();gpio(&mut g,&mut m,rst,true);gpio(&mut g,&mut m,bl,true);b.gpio_waveform_at(0,ChipPins::C6.routes(&g,&m));
+  command(&mut *b,&mut g,&mut m,pins,0x36,&[mad]);command(&mut *b,&mut g,&mut m,pins,0x11,&[]);command(&mut *b,&mut g,&mut m,pins,0x29,&[]);command(&mut *b,&mut g,&mut m,pins,0x3a,&[0x55]);command(&mut *b,&mut g,&mut m,pins,0x2a,&[0,gap.0,0,gap.0]);command(&mut *b,&mut g,&mut m,pins,0x2b,&[0,gap.1,0,gap.1]);command(&mut *b,&mut g,&mut m,pins,0x2c,&[0xf8,0]);assert_eq!((b.display().unwrap().0,b.display().unwrap().1),size);assert_eq!(b.display().unwrap().2[0],0xf800);
+  assert_eq!(b.set_imu_motion(1),name.ends_with("183"));assert_eq!(b.leds().is_some(),name.ends_with("13"));
+  if name.ends_with("183"){assert!(ds.iter().all(|(_,_,d)|d.pins()==Some((7,8))));b.touch(999,999,true);assert_eq!(b.touch_irq(),Some((11,false)));gpio(&mut g,&mut m,rst,false);b.gpio_waveform_at(0,ChipPins::C6.routes(&g,&m));assert_eq!(b.touch_irq(),Some((11,true)));}
+ }
+}
+#[test]
+fn geek_revision_sd_wires_are_distinct_and_lcd13_uses_its_real_socket(){use esp_periph::sdmmc::{card::MemStore,SdCardConfig};
+ for(name,clk,mosi,miso,cs)in[("waveshare-c6-geek",1,2,20,23),("waveshare-c6-geek-v1",19,18,20,23),("waveshare-c6-lcd13",7,6,5,4),("waveshare-c6-touch-lcd183",1,2,16,17)]{
+  let mut b=make_board(name).unwrap();b.attach_spi_sd_card(Box::new(MemStore(vec![0;1<<20])),SdCardConfig::default()).unwrap();let mut p=SpiQspiPins{sclk:1<<clk,data:[1<<mosi,0,0,0],data_width:1,read_width:1,data_bits:80,..Default::default()};b.spi_transfer_qspi_pins(2,p,&[255;10],0);p.cs=1<<cs;p.software_cs=p.cs;p.input[1]=Some(miso);p.data_bits=48;b.spi_transfer_qspi_pins(2,p,&[0x40,0,0,0,0,0x95],0);p.data_bits=0;p.read_bits=16;assert_eq!(b.spi_transfer_qspi_pins(2,p,&[],2),[255,1]);p.input[1]=Some(24);assert_eq!(b.spi_transfer_qspi_pins(2,p,&[],2),[255,255]);
+ }
+}
+
+#[test]
+fn geek_arduino_full_duplex_write_is_visible_but_miso_stays_floating(){
+ let mut b=make_board("waveshare-c6-geek").unwrap();let mut g=Gpio::new();let mut m=RegRam::new();for pin in[4,6]{gpio(&mut g,&mut m,pin,true);}b.gpio_waveform_at(0,ChipPins::C6.routes(&g,&m));
+ for(c,a)in[(0x11,vec![]),(0x29,vec![]),(0x3a,vec![5]),(0x2a,vec![0,52,0,52]),(0x2b,vec![0,40,0,40])]{command(&mut *b,&mut g,&mut m,(1,2,5,3),c,&a);}
+ command(&mut *b,&mut g,&mut m,(1,2,5,3),0x2c,&[]);gpio(&mut g,&mut m,3,true);b.gpio_waveform_at(0,ChipPins::C6.routes(&g,&m));let p=SpiQspiPins{sclk:2,data:[4,0,0,0],cs:32,data_width:1,data_bits:16,read_width:1,read_bits:16,full_duplex:true,clock_idle_high:true,..Default::default()};assert_eq!(b.spi_transfer_qspi_pins(2,p,&[0xf8,0],2),[255,255]);assert_eq!(b.display().unwrap().2[0],0xf800);
+}

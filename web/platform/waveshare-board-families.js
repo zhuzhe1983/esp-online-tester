@@ -869,5 +869,54 @@ export const WAVESHARE_BOARD_CAPABILITIES=Object.freeze(Object.assign(Object.cre
     "flashMb": 32,
     "psramMb": 32,
     "virtualRevision": 301
+  },
+  "waveshare-c6-geek": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-geek-v1": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-lcd13": {
+    "chip": "esp32c6",
+    "flashMb": 4,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-amoled18": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-amoled18-v1": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-lcd183": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": true,
+    "boardButtons": []
+  },
+  "waveshare-c6-touch-amoled132": {
+    "chip": "esp32c6",
+    "flashMb": 16,
+    "psramMb": 0,
+    "sdCard": false,
+    "boardButtons": []
   }
 }));

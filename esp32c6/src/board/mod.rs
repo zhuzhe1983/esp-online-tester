@@ -16,6 +16,7 @@ pub mod waveshare_touch28;
 pub mod waveshare_lcd273;
 pub mod waveshare_epaper154;
 pub mod waveshare_amoled;
+pub mod waveshare_amoled_compact;
 pub mod xiao;
 pub mod nanoc6;
 pub mod nesso_n1;
@@ -34,6 +35,9 @@ pub use xiao::XiaoEsp32C6;
 pub fn make_board(name: &str) -> Option<Board> {
     if let Some(variant)=waveshare_lcd_family::LcdVariant::from_name(name) { return Some(Box::new(waveshare_lcd_family::WaveshareLcd::new(variant))); }
     match name {
+        "waveshare-c6-touch-amoled18" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch18V2))),
+        "waveshare-c6-touch-amoled18-v1" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch18V1))),
+        "waveshare-c6-touch-amoled132" => Some(Box::new(waveshare_amoled_compact::CompactAmoled::new(waveshare_amoled_compact::Variant::Touch132))),
         "waveshare-c6-lcd273" => Some(Box::new(waveshare_lcd273::Lcd273::new())),
         "waveshare-c6-epaper154" => Some(Box::new(waveshare_epaper154::Epaper154::new())),
         "waveshare-c6-touch-amoled216" => Some(Box::new(waveshare_amoled::WaveshareAmoled::new(waveshare_amoled::AmoledVariant::Touch216))),

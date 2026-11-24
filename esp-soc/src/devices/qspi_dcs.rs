@@ -4,8 +4,18 @@
 //! Sources: docs/platform/waveshare-amoled143c-runtime.md.
 use crate::{board::SpiQspiPins, devices::co5300::{Co5300, Co5300DisplayState}};
 
+/// SH8601-specific observations. The underlying RGB565 address storage is
+/// shared code only; CO5300 reset/page/orientation semantics are not inherited.
+/// Official SH8601A v0.0 pp42,56,57,119,123,136,138 versus pinned Waveshare
+/// Arduino_SH8601.h: 16-bit QSPI is a documented BSP/data-sheet conflict.
+#[derive(Clone, Copy)]
+struct Sh8601BspState { state: Co5300DisplayState, brightness: u16 }
+impl Default for Sh8601BspState {
+    fn default() -> Self { Self { state: Co5300DisplayState { brightness:255, control_display:Some(0x28), ..Default::default() }, brightness:255 } }
+}
 pub struct QspiDcsPanel {
     memory: Co5300,
+    sh8601: Option<Sh8601BspState>,
     reference_madctl: u8,
     pub madctl: u8,
     pub page: u8,
@@ -28,21 +38,34 @@ impl QspiDcsPanel {
     /// orientation, not a calibrated physical glass/PCB pose. Only the supplied
     /// visible window is stored; this is not an assertion of full silicon GRAM size.
     pub fn co5300(width: usize, height: usize, x_gap: u16, reference_madctl: u8) -> Self {
-        Self { memory: Co5300::new(width, height, x_gap).with_display_state(),
+        Self { memory: Co5300::new(width, height, x_gap).with_display_state(), sh8601:None,
             reference_madctl: reference_madctl & 0xe8, madctl: 0, page: 0, inverted: false,
             selected: false, discard: false, header: [0; 4], header_len: 0,
             parameter_count: 0, command: 0, normal_command: false,
             commands: 0, opaque_commands: 0, opaque_bytes: 0, rejected: 0, changes: 0 }
     }
+    /// Explicit manufacturer-BSP RGB565 subset, not full SH8601 silicon emulation.
+    /// The preliminary data sheet says QSPI accepts 24-bit pixels only, while
+    /// the pinned manufacturer's shipped Arduino driver sends RGB565. This API
+    /// intentionally names that unresolved conflict. Reserved MADCTL bits,
+    /// private registers, readback IDs, TE and physical analog timing are absent.
+    pub fn sh8601_bsp_rgb565(width: usize, height: usize, x_gap: u16, reference_madctl: u8) -> Self {
+        assert_eq!(reference_madctl & !0x48, 0, "SH8601 reference includes reserved MADCTL bits");
+        let mut panel = Self::co5300(width, height, x_gap, reference_madctl);
+        panel.sh8601 = Some(Sh8601BspState::default());
+        panel
+    }
+    pub fn controller(&self) -> &'static str { if self.sh8601.is_some() { "SH8601 manufacturer-BSP RGB565 subset" } else { "CO5300" } }
+    pub fn brightness_10bit(&self) -> Option<u16> { self.sh8601.map(|s|s.brightness) }
     pub fn width(&self) -> usize { self.memory.width() }
     pub fn height(&self) -> usize { self.memory.height() }
     pub fn frames(&self) -> u64 { self.memory.frames }
     pub fn pixels_written(&self) -> u64 { self.memory.pixels_written }
-    pub fn state(&self) -> Co5300DisplayState { self.memory.display_state().expect("CO5300 state enabled") }
+    pub fn state(&self) -> Co5300DisplayState { self.sh8601.map_or_else(||self.memory.display_state().expect("CO5300 state enabled"), |s|s.state) }
     pub fn window(&self) -> [u16; 4] { self.memory.window() }
     pub fn version(&self) -> u64 { self.changes.wrapping_add(self.pixels_written()).wrapping_add(self.state().revision) }
     fn orientation_supported(&self) -> bool {
-        self.width() == self.height() || (self.madctl | self.reference_madctl) & 0x20 == 0
+        if self.sh8601.is_some() { self.madctl & !0x48 == 0 } else { self.width() == self.height() || (self.madctl | self.reference_madctl) & 0x20 == 0 }
     }
     pub fn visible(&self) -> bool { self.state().visible() && self.orientation_supported() }
     pub fn frame(&self) -> Vec<u16> {
@@ -76,7 +99,13 @@ impl QspiDcsPanel {
         // both software and hardware reset. Event counters remain monotonic.
         let frame = std::mem::take(&mut self.memory.frame);
         let (frames, pixels) = (self.memory.frames, self.memory.pixels_written);
-        self.memory.reset(); self.memory.frame = frame;
+        self.memory.reset();
+        if let Some(state) = &mut self.sh8601 {
+            // SH8601 reset table says RAM becomes random, unlike CO5300.
+            // Deterministic zero is the emulator's explicit UNKNOWN RAM policy,
+            // never a synthetic factory image or asserted physical reset value.
+            *state = Sh8601BspState { state:Co5300DisplayState { revision:state.state.revision.wrapping_add(1), ..Sh8601BspState::default().state }, ..Default::default() };
+        } else { self.memory.frame = frame; }
         self.memory.frames = frames; self.memory.pixels_written = pixels;
         self.madctl = 0; self.page = 0; self.inverted = false; self.changes += 1;
     }
@@ -130,7 +159,10 @@ impl QspiDcsPanel {
                     0x34 | 0x35 | 0x36 | 0x3a | 0x3c | 0x44 | 0x51 | 0x53);
                 if self.normal_command {
                     if cmd == 1 { self.reset_registers(); }
-                    else { self.memory.transaction_stream(&self.header); }
+                    else {
+                        self.memory.transaction_stream(&self.header);
+                        if let Some(s) = &mut self.sh8601 { match cmd { 0x10=>s.state.sleep_out=false,0x11=>s.state.sleep_out=true,0x28=>s.state.display_on=false,0x29=>s.state.display_on=true,_=>{} } s.state.revision=s.state.revision.wrapping_add(1); }
+                    }
                     if cmd == 0x20 { self.inverted = false; }
                     if cmd == 0x21 { self.inverted = true; }
                     self.changes += 1;
@@ -143,7 +175,7 @@ impl QspiDcsPanel {
         if !self.normal_command {
             // FE selects the manufacturer register page. An unknown page must
             // not turn an unrelated vendor register into a standard DCS command.
-            if cmd == 0xfe && self.parameter_count == 0 { self.page = bytes[0]; }
+            if self.sh8601.is_none() && cmd == 0xfe && self.parameter_count == 0 { self.page = bytes[0]; }
             self.opaque_bytes += bytes.len() as u64; self.parameter_count += bytes.len();
             return true;
         }
@@ -152,9 +184,23 @@ impl QspiDcsPanel {
             if !self.state().rgb565() || !self.orientation_supported() || x0 > x1 || y0 > y1 { return false; }
         } else {
             let needed = match cmd { 0x2a | 0x2b => 4, 0x44 => 2,
+                0x51 if self.sh8601.is_some() => 2,
                 0x35 | 0x36 | 0x3a | 0x51 | 0x53 => 1, _ => 0 };
             if self.parameter_count + bytes.len() > needed { return false; }
             if cmd == 0x36 { self.madctl = bytes[0]; self.changes += 1; }
+        }
+        if let Some(s) = &mut self.sh8601 {
+            if matches!(cmd,0x2c|0x3c) {
+                if !s.state.visible() { s.state.pixel_bytes_while_hidden+=bytes.len() as u64; }
+            } else {
+                match cmd {
+                    0x3a=>s.state.pixel_format=bytes[0],
+                    0x53=>s.state.control_display=Some(bytes[0]),
+                    0x51=>{ for (i,&v) in bytes.iter().enumerate() { if self.parameter_count+i==0 { s.brightness=(s.brightness&0x300)|u16::from(v); } else { s.brightness=(s.brightness&255)|(u16::from(v&3)<<8); } } s.state.brightness=if s.brightness==0 {0}else{255}; },
+                    _=>{}
+                }
+                s.state.revision=s.state.revision.wrapping_add(1);
+            }
         }
         self.parameter_count += bytes.len(); self.memory.transaction_stream(bytes); true
     }
@@ -177,6 +223,32 @@ mod tests {
         command(&mut p, 0x11, &[]); command(&mut p, 0x29, &[]);
         command(&mut p, 0x53, &[0x20]); command(&mut p, 0x51, &[255]);
         command(&mut p, 0x2a, &[0, 8, 0, 9]); command(&mut p, 0x2b, &[0, 0, 0, 0]); p
+    }
+    #[test]
+    fn sh8601_bsp_rgb565_keeps_its_own_reset_brightness_and_reserved_orientation() {
+        let mut p=QspiDcsPanel::sh8601_bsp_rgb565(2,1,0,0);
+        assert_eq!(p.state().control_display,Some(0x28)); assert_eq!(p.brightness_10bit(),Some(255));
+        assert_eq!(p.state().pixel_format,0x77); assert!(!p.visible());
+        command(&mut p,0x3a,&[5]); command(&mut p,0x11,&[]); command(&mut p,0x29,&[]);
+        command(&mut p,0x2a,&[0,0,0,1]); command(&mut p,0x2b,&[0,0,0,0]);
+        assert!(p.transfer(pins(4,1),&[0x32,0,0x2c,0])); assert!(p.transfer(pins(4,4),&[0xf8,0,0,31])); p.deselect();
+        assert_eq!(p.frame(),[0xf800,31]); command(&mut p,0x36,&[0x40]); assert_eq!(p.frame(),[31,0xf800]);
+        command(&mut p,0x36,&[2]); assert!(!p.visible(),"BSP low-bit flip constant conflicts with data sheet; never silently reinterpret it");
+        command(&mut p,0x36,&[0]); command(&mut p,0x51,&[0,0]); assert!(!p.visible());
+        command(&mut p,0x51,&[0,1]); assert_eq!(p.brightness_10bit(),Some(256)); assert!(p.visible());
+        command(&mut p,0x51,&[12]); assert_eq!(p.brightness_10bit(),Some(268));
+        p.reset(); assert_eq!(p.pixels_written(),2); assert_eq!(p.brightness_10bit(),Some(255));
+        command(&mut p,0x3a,&[5]); command(&mut p,0x11,&[]); command(&mut p,0x29,&[]);
+        assert_eq!(p.frame(),[0,0],"undefined SH reset memory uses deterministic unknown-zero policy, never CO retention");
+    }
+    #[test]
+    fn sh8601_does_not_borrow_co5300_vendor_pages_or_accept_wrong_quad_header() {
+        let mut p=QspiDcsPanel::sh8601_bsp_rgb565(1,1,0,0);
+        command(&mut p,0xfe,&[1]); assert_eq!(p.page,0,"no SH FE register-page meaning is asserted");
+        command(&mut p,0x11,&[]); command(&mut p,0x29,&[]); assert!(p.visible());
+        assert!(!p.transfer(pins(4,4),&[2,0,0x28,0])); assert!(p.visible());
+        assert!(!p.transfer(pins(4,1),&[2,0,0x28,0])); p.deselect();
+        command(&mut p,0x28,&[]); assert!(!p.visible());
     }
     #[test]
     fn square_mv_transposes_real_pixels_and_composes_with_reference_mirrors() {

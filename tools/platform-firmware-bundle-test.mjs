@@ -13,7 +13,7 @@ function directory(zip){const end=zip.length-22,cd=zip.readUInt32LE(end+16),out=
 
 test('exact nested factory member is read from a large source tree; legacy ZIP limits stay intact',async()=>{
   assert.equal(MAX_FIRMWARE_ZIP_BYTES,64*1024*1024);assert.equal(MAX_FIRMWARE_ZIP_ENTRIES,64);
-  assert.equal(MAX_FIRMWARE_BUNDLE_BYTES,128*1024*1024);assert.equal(MAX_FIRMWARE_BUNDLE_ENTRIES,16384);
+  assert.equal(MAX_FIRMWARE_BUNDLE_BYTES,256*1024*1024);assert.equal(MAX_FIRMWARE_BUNDLE_ENTRIES,16384);
   const entries=[{name:'Exact-Demo/',data:''},{name:member,data:payload,descriptor:true},...Array.from({length:6090},(_,i)=>({name:`Exact-Demo/source/tree/file-${i}.cpp`,data:'unselected source'}))];
   const zip=firmwareZipEntries(entries),central=directory(zip);
   // Actual manufacturers include Unix directory-mode entries in the tree.
@@ -34,16 +34,29 @@ test('both container and selected image hashes are independent requirements',asy
 });
 
 test('unselected members are not inflated, and their declared total remains bounded',async()=>{
-  const entries=[{name:member,data:payload},...Array.from({length:4},(_,i)=>({name:`source/unused-${i}.txt`,data:'small'}))];
+  const entries=[{name:member,data:payload},...Array.from({length:8},(_,i)=>({name:`source/unused-${i}.txt`,data:'small'}))];
   const zip=firmwareZipEntries(entries),positions=directory(zip);
   const declare=(z,index,size)=>{const at=positions[index],local=z.readUInt32LE(at+42);z.writeUInt32LE(size,at+24);z.writeUInt32LE(size,local+22);};
-  for(let i=1;i<5;i++)declare(zip,i,128*1024*1024-(i===4?payload.length:0));
-  assert.equal(MAX_FIRMWARE_BUNDLE_DECLARED_BYTES,512*1024*1024);
+  for(let i=1;i<9;i++)declare(zip,i,128*1024*1024-(i===8?payload.length:0));
+  assert.equal(MAX_FIRMWARE_BUNDLE_DECLARED_BYTES,1024*1024*1024);
   // The unrelated compressed streams cannot produce their declared sizes.
   // Success proves only the pinned BIN was inflated, without source-tree allocation.
   assert.deepEqual(Buffer.from(await extract(zip)),payload);
-  const over=Buffer.from(zip);declare(over,4,128*1024*1024-payload.length+1);
+  const over=Buffer.from(zip);declare(over,8,128*1024*1024-payload.length+1);
   await assert.rejects(extract(over),{code:'INVALID_FIRMWARE_ARCHIVE'});
+});
+
+test('unselected legacy filenames stay opaque bytes; UTF-8 flags and path safety remain enforced',async()=>{
+  const zip=firmwareZipEntries([{name:member,data:payload},{name:'source/ab.pdf',data:'unselected'}]);
+  const c=directory(zip)[1],l=zip.readUInt32LE(c+42);
+  for(const start of [c+46,l+30]){zip[start+7]=0xb4;zip[start+8]=0xa5;}
+  assert.deepEqual(Buffer.from(await extract(zip)),payload,'GBK source-document name does not prevent selecting the exact ASCII BIN');
+  const flagged=Buffer.from(zip);flagged.writeUInt16LE(0x800,c+8);flagged.writeUInt16LE(0x800,l+6);
+  await assert.rejects(extract(flagged),{code:'INVALID_FIRMWARE_ARCHIVE'},'Invalid declared UTF-8 still rejects');
+  const traversal=Buffer.from(zip);for(const start of[c+46,l+30]){traversal[start+7]=46;traversal[start+8]=46;traversal[start+9]=47;}
+  await assert.rejects(extract(traversal),{code:'INVALID_FIRMWARE_ARCHIVE'});
+  const mismatch=Buffer.from(zip);mismatch[l+30+7]^=1;
+  await assert.rejects(extract(mismatch),{code:'INVALID_FIRMWARE_ARCHIVE'},'Local/central names compare exact bytes');
 });
 
 test('relative-path checks reject traversal, alternate separators, duplicates and links',async()=>{

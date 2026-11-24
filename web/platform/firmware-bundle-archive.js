@@ -1,9 +1,9 @@
 // Some manufacturers publish a complete recovery BIN inside a source/demo ZIP.
 // The catalog pins both identities and an exact relative member. Read only that
 // member in memory; never unpack the source tree, execute it, or guess a layout.
-export const MAX_FIRMWARE_BUNDLE_BYTES=128*1024*1024;
+export const MAX_FIRMWARE_BUNDLE_BYTES=256*1024*1024;
 export const MAX_FIRMWARE_BUNDLE_ENTRIES=16384;
-export const MAX_FIRMWARE_BUNDLE_DECLARED_BYTES=512*1024*1024;
+export const MAX_FIRMWARE_BUNDLE_DECLARED_BYTES=1024*1024*1024;
 const MAX_DIRECTORY_BYTES=16*1024*1024;
 const hashPattern=/^[a-f0-9]{64}$/i;
 const fail=message=>{throw Object.assign(new Error(message),{code:'INVALID_FIRMWARE_ARCHIVE'});};
@@ -20,6 +20,17 @@ export function validFirmwareBundle(source) {
     &&safePath(a.entry)&&/\.bin$/i.test(a.entry)&&typeof source.url==='string'&&source.url&&!source.manifestUrl);
 }
 const digest=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
+// Legacy source trees can contain CP437/GBK names without the UTF-8 flag. Never
+// interpret or extract those names: compare their exact bytes and validate the
+// ASCII path separators. The selected member must be ASCII or flagged UTF-8.
+const rawKey=bytes=>String.fromCharCode(...bytes);
+function safeName(bytes,flags,directory){
+  if(!bytes.length||bytes.length>512)return false;
+  if(flags&0x800){try{return safePath(new TextDecoder('utf-8',{fatal:true}).decode(bytes),directory);}catch{return false;}}
+  const key=rawKey(bytes);
+  if(/[\\\x00-\x1f\x7f:]/.test(key)||key.startsWith('/'))return false;
+  return (directory?key.slice(0,-1):key).split('/').every(p=>p.length&&p!=='.'&&p!=='..'&&!p.startsWith(' ')&&!p.endsWith(' '));
+}
 export async function extractFirmwareBundle(bytes,source,{maxBytes=64*1024*1024,signal,decodeSingle}={}) {
   active(signal);
   if(!validFirmwareBundle(source)||!(bytes instanceof Uint8Array)||bytes.length<22||bytes.length>MAX_FIRMWARE_BUNDLE_BYTES||typeof decodeSingle!=='function')fail('官方 ZIP 恢复包需要固定容器、BIN 校验值和精确相对路径。');
@@ -31,30 +42,30 @@ export async function extractFirmwareBundle(bytes,source,{maxBytes=64*1024*1024,
   if(end<0||u16(end+4)||u16(end+6)||u16(end+8)!==u16(end+10)||u16(end+10)<1||u16(end+10)>MAX_FIRMWARE_BUNDLE_ENTRIES)fail('官方 ZIP 必须是有界的普通单卷压缩包。');
   const count=u16(end+10),cd=u32(end+16),cdSize=u32(end+12),entries=[],names=new Set();
   if(cd+cdSize!==end||cdSize>MAX_DIRECTORY_BYTES)fail('ZIP 目录范围或大小无效。');
-  const decode=b=>{try{return new TextDecoder('utf-8',{fatal:true}).decode(b);}catch{fail('ZIP 文件名必须是有效 UTF-8。');}};
+  const requested=rawKey(new TextEncoder().encode(source.archive.entry)),asciiRequested=/^[\x00-\x7f]+$/.test(source.archive.entry);
   let cursor=cd,total=0;
   for(let i=0;i<count;i++) {
     active(signal);
     if(cursor+46>end||u32(cursor)!==0x02014b50)fail('ZIP 目录不完整。');
     const flags=u16(cursor+8),method=u16(cursor+10),packed=u32(cursor+20),size=u32(cursor+24),nameSize=u16(cursor+28),extraSize=u16(cursor+30),commentSize=u16(cursor+32),length=46+nameSize+extraSize+commentSize,local=u32(cursor+42),type=(u32(cursor+38)>>>16)&0xf000;
     if(cursor+length>end||u16(cursor+34)||u16(cursor+6)>20||flags&~0x080e||![0,8].includes(method)||![0,0x4000,0x8000].includes(type)||packed>MAX_FIRMWARE_BUNDLE_BYTES||size>MAX_FIRMWARE_BUNDLE_BYTES)fail('ZIP 含加密、链接、ZIP64、不支持的压缩或过大的条目。');
-    const name=decode(bytes.subarray(cursor+46,cursor+46+nameSize)),directory=name.endsWith('/');
-    if(!safePath(name,directory)||names.has(name)||type===0x4000&&!directory||directory&&size!==0)fail('ZIP 路径重复、目录类型错误或包含不允许的路径。');
+    const nameBytes=bytes.subarray(cursor+46,cursor+46+nameSize),name=rawKey(nameBytes),directory=name.endsWith('/');
+    if(!safeName(nameBytes,flags,directory)||names.has(name)||type===0x4000&&!directory||directory&&size!==0)fail('ZIP 路径重复、目录类型错误或包含不允许的路径。');
     names.add(name);total+=size;
     if(total>MAX_FIRMWARE_BUNDLE_DECLARED_BYTES||local+30>cd||u32(local)!==0x04034b50||u16(local+4)>20||u16(local+6)!==flags||u16(local+8)!==method||u16(local+26)!==nameSize)fail('ZIP 本地头、长度或声明总大小无效。');
     const localExtra=u16(local+28),start=local+30+nameSize+localExtra,finish=start+packed;
-    if(start>cd||finish>cd||decode(bytes.subarray(local+30,local+30+nameSize))!==name)fail('ZIP 本地条目范围或名称不一致。');
+    if(start>cd||finish>cd||rawKey(bytes.subarray(local+30,local+30+nameSize))!==name)fail('ZIP 本地条目范围或名称不一致。');
     let tail=finish;
     if(flags&8){const d=finish+((finish+4<=cd&&u32(finish)===0x08074b50)?4:0);tail=d+12;if(tail>cd||u32(d)!==u32(cursor+16)||u32(d+4)!==packed||u32(d+8)!==size)fail('ZIP 数据描述符无效。');}
     else if(u32(local+14)!==u32(cursor+16)||u32(local+18)!==packed||u32(local+22)!==size)fail('ZIP 本地头和中央目录校验信息不一致。');
-    entries.push({name,directory,local,localExtra,start,tail,central:cursor,length,nameSize,extraSize,commentSize,size});cursor+=length;
+    entries.push({name,flags,directory,local,localExtra,start,tail,central:cursor,length,nameSize,extraSize,commentSize,size});cursor+=length;
   }
   if(cursor!==end)fail('ZIP 目录长度不一致。');
   let next=0;
   for(const e of [...entries].sort((a,b)=>a.local-b.local)){if(e.local!==next)fail('ZIP 本地条目重叠或存在未声明数据。');next=e.tail;}
   if(next!==cd)fail('ZIP 数据与目录间存在未声明内容。');
-  const selected=entries.find(e=>e.name===source.archive.entry);
-  if(!selected||selected.directory||selected.size<1||selected.size>maxBytes)fail('ZIP 中缺少指定 BIN，或其长度超过设备 Flash。');
+  const selected=entries.find(e=>e.name===requested);
+  if(!selected||!asciiRequested&&!(selected.flags&0x800)||selected.directory||selected.size<1||selected.size>maxBytes)fail('ZIP 中缺少指定 BIN，或其长度超过设备 Flash。');
   // Convert only the selected headers to the established single-BIN decoder.
   // Its original compressed payload, flags, CRC and descriptor remain intact.
   // A constant filename avoids extending the legacy flat-name ZIP contract.

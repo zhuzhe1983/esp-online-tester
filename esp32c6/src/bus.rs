@@ -77,7 +77,7 @@ impl SocBus {
         // unchanged in v5.5.1 used by the Stamp C6LoRa protocol fixture.
         // Nesso TPX00227 and Stamp C6LoRa S012 schematic v0.2.3 page 2 use
         // QFN40 (0), external 16 MiB flash. Other boards unchanged.
-        if matches!(self.board.name(),"nesso-n1"|"stamp-c6lora"|"waveshare-c6-touch28"|"waveshare-c6-lcd273"|"waveshare-c6-epaper154"|"waveshare-c6-touch-amoled216"|"waveshare-c6-touch-amoled164")||crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==16) {
+        if matches!(self.board.name(),"nesso-n1"|"stamp-c6lora"|"waveshare-c6-touch28"|"waveshare-c6-lcd273"|"waveshare-c6-epaper154"|"waveshare-c6-touch-amoled216"|"waveshare-c6-touch-amoled164"|"waveshare-c6-touch-amoled18"|"waveshare-c6-touch-amoled18-v1"|"waveshare-c6-touch-amoled132")||crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==16) {
             let identity=self.periph.efuse.read(0x50);self.periph.efuse.write(0x50,identity & !(7<<24));
             let flash=self.periph.efuse.read(0x54);self.periph.efuse.write(0x54,flash & !0xe7);
         }
@@ -86,6 +86,11 @@ impl SocBus {
         if crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==8) {
             let identity=self.periph.efuse.read(0x50);self.periph.efuse.write(0x50,(identity & !(7<<24))|(1<<24));
             let flash=self.periph.efuse.read(0x54);self.periph.efuse.write(0x54,(flash & !0xe7)|2);
+        }
+        // C6FH4 QFN32 with embedded4MiB (LCD1.3); preserve unknown die vendor.
+        if crate::board::waveshare_lcd_family::LcdVariant::from_name(self.board.name()).is_some_and(|v|v.flash_mb()==4) {
+            let identity=self.periph.efuse.read(0x50);self.periph.efuse.write(0x50,(identity & !(7<<24))|(1<<24));
+            let flash=self.periph.efuse.read(0x54);self.periph.efuse.write(0x54,(flash & !0xe7)|1);
         }
         if self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, esp_soc::pins::ChipPins::C6.routes(&self.periph.gpio, &self.periph.io_mux));

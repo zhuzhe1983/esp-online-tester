@@ -62,6 +62,14 @@ def main():
     products['items'] = [p for p in products['items'] if p.get('manufacturer') != 'Waveshare' or p['id'] in allowed]
     assert allowed <= {p['id'] for p in products['items']}
     selected_products = [p for p in products['items'] if p['id'] in allowed]
+    source_paths = set(git('ls-tree', '-r', '--name-only', '-z', source).split('\0'))
+    for product in selected_products:
+        # The working-tree validator also sees generated, untracked knowledge.
+        # A downloadable diff must contain each reference in its committed source.
+        for relative in [product.get('knowledgeUrl'), (product.get('model') or {}).get('url')]:
+            if relative:
+                required = 'web/platform/' + relative.removeprefix('./')
+                assert required in source_paths, (product['id'], 'uncommitted or missing release reference', required)
     all_product_ids = {p['id'] for p in products['items']}
     model_dirs = {p['model']['url'].split('/assets/')[1].split('/')[0]
                   for p in selected_products if p.get('model')}
