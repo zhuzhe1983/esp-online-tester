@@ -14,6 +14,7 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 pub mod atech14;
 pub mod tdisplay_s3;
 mod lilygo_display;
+pub mod cloudzao_claw154;
 mod lilygo_epaper;
 pub mod lilygo_additional;
 pub mod lilygo_io;
@@ -81,6 +82,7 @@ pub use waveshare_lcd4b::*;
 /// Board by name: `atech14` (default), `none`, `stopwatch` or a supported Waveshare board.
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
+        "cloudzao-claw-154" => Some(Box::new(cloudzao_claw154::Claw154::new())),
         "lilygo-t-keyboard-s3-pro" => Some(Box::new(lilygo_io::LilygoIo::t_keyboard_s3_pro())),
         "lilygo-t-micro32-s3" => Some(Box::new(lilygo_io::LilygoIo::t_micro32_s3())),
         "lilygo-t-panel-s3" => Some(Box::new(lilygo_io::LilygoIo::t_panel_s3())),

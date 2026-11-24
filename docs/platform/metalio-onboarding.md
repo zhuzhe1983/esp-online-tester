@@ -1,5 +1,7 @@
 # 无名科技 / Metalio INK4 与 INK4 Plus
 
+> 历史记录：以下是 2026-10-27 的首次入库状态。2026-11-23 已统一显示为 CloudZao，两个 INK 产品均已有独立的部分运行实现，并新增两款 Claw；最新范围、型号排序与验证边界见 [CloudZao 批量适配](cloudzao-adaptation-20261123.md)。旧 ID、来源路径和许可证继续保留。
+
 2026-10-27 入库：两个产品系列、三个官方固件版本、两个按型号隔离的 CloudZao watchlist。厂家筛选为“无名科技（Metalio）”；可搜索 INK4、Metalio、CloudZao、无名、Nologo。
 
 | 产品 ID | 官方源码主控 | 显示与触摸 | 默认官方固件 | 其他渠道 |

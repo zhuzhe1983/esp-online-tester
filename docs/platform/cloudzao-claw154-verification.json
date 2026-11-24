@@ -1,0 +1,201 @@
+{
+  "schemaVersion": "1",
+  "productId": "cloudzao-claw-154",
+  "recordedAt": "2026-11-22T17:29:39.318757Z",
+  "sourceCommit": "ba2fcbde5cd7c42e6f684aea64bed63951309684",
+  "assets": {
+    "NOTICE.md": {
+      "bytes": 1360,
+      "sha256": "16400157771ade72af22e751235dca2bb60ccf5d6d50e7e2dc0143e34572c5ed"
+    },
+    "cover-marks.svg": {
+      "bytes": 335,
+      "sha256": "f7095bf773be178553d0a111cbd791ad111962883c910ec689f32601bec08c48"
+    },
+    "geometry.bin": {
+      "bytes": 73440,
+      "sha256": "bdc5041024ca717597c1cdca7610cd296651510a67859e93e5641501aec5b793"
+    },
+    "model-plan.json": {
+      "bytes": 17450,
+      "sha256": "a9583fc2b476d2917288585c8306d51da414056154da22063fa372c0940b7e66"
+    },
+    "model.json": {
+      "bytes": 23965,
+      "sha256": "074ecd62598ed09140a264d503e4b55d009db977be25b6f81bf06089d4e96c6f"
+    },
+    "reference-front-oblique.jpg": {
+      "bytes": 120896,
+      "sha256": "9c3e494ab297e05139823a08224e34468e128573742eb67069905c824c92285d"
+    },
+    "upstream-LICENSE.txt": {
+      "bytes": 1140,
+      "sha256": "0a5a839033bfe18fe75d32b50d9d028912cf876f69ef59c2791aeb2971335d05"
+    }
+  },
+  "reproducibility": {
+    "status": "pass",
+    "method": "Run tools/build-cloudzao-claw154-model.py in a new directory and byte-compare every generated output to the committed assets",
+    "comparedFiles": [
+      "geometry.bin",
+      "cover-marks.svg",
+      "reference-front-oblique.jpg",
+      "NOTICE.md",
+      "upstream-LICENSE.txt",
+      "model.json"
+    ],
+    "networkRequired": false
+  },
+  "integrity": {
+    "status": "pass",
+    "checks": [
+      "JSON Schema and format: product catalog fragment",
+      "JSON Schema and format: knowledge index fragment",
+      "JSON Schema and format: device knowledge",
+      "Knowledge and model source ID closure",
+      "Model asset SHA-256 receipts",
+      "Finite float geometry",
+      "Stored part bounds versus exported float data"
+    ]
+  },
+  "nativeTests": {
+    "status": "pass",
+    "boardUnitTests": 2,
+    "guestCpuDiagnostics": 3,
+    "testTargets": [
+      "cargo test -p esp32s3 --lib board::cloudzao_claw154::tests",
+      "cargo test -p esp32s3 --test cloudzao_claw154"
+    ],
+    "scope": "Authored Xtensa instructions through routed S3 MMIO and host input delivery; no whole official firmware or physical hardware"
+  },
+  "geometryExport": {
+    "status": "pass",
+    "scope": "Native generated mesh parts only; excludes derived nominal connector, labels, live display and UNKNOWN board. Not a physical dimension acceptance.",
+    "parts": [
+      {
+        "name": "shell-wall",
+        "vertexCount": 900,
+        "boundsMm": [
+          [
+            -17.850000381469727,
+            -21.399999618530273,
+            -3.6500000953674316
+          ],
+          [
+            17.850000381469727,
+            21.399999618530273,
+            3.799999952316284
+          ]
+        ]
+      },
+      {
+        "name": "shell-back",
+        "vertexCount": 432,
+        "boundsMm": [
+          [
+            -17.850000381469727,
+            -21.399999618530273,
+            -4.25
+          ],
+          [
+            17.850000381469727,
+            21.399999618530273,
+            -3.6500000953674316
+          ]
+        ]
+      },
+      {
+        "name": "front-glass-frame",
+        "vertexCount": 864,
+        "boundsMm": [
+          [
+            -17.600000381469727,
+            -21.149999618530273,
+            3.799999952316284
+          ],
+          [
+            17.600000381469727,
+            21.149999618530273,
+            4.079999923706055
+          ]
+        ]
+      },
+      {
+        "name": "debug-boot",
+        "vertexCount": 432,
+        "boundsMm": [
+          [
+            -14.5,
+            -33.5,
+            -0.6000000238418579
+          ],
+          [
+            -1.5,
+            -28.5,
+            0.6000000238418579
+          ]
+        ]
+      },
+      {
+        "name": "debug-power",
+        "vertexCount": 432,
+        "boundsMm": [
+          [
+            1.5,
+            -33.5,
+            -0.6000000238418579
+          ],
+          [
+            14.5,
+            -28.5,
+            0.6000000238418579
+          ]
+        ]
+      }
+    ]
+  },
+  "physicalDimensionAcceptance": {
+    "status": "unverified",
+    "reason": "No independent official body dimensions, thickness, tolerances or hardware measurement. Nominal display scale and one-view homography produce estimates only."
+  },
+  "visualAcceptance": {
+    "status": "unverified",
+    "exactSkuReferenceViews": 1,
+    "missing": [
+      "Independent exact-SKU front, back and side views",
+      "Independent same-angle silhouette comparison",
+      "Physical button positions",
+      "PCB and internal assembly"
+    ]
+  },
+  "browserAcceptance": {
+    "status": "pending-integration-report",
+    "scope": "Native tests do not prove browser inputs, screen/label rendering, material isolation or UNKNOWN visibility."
+  },
+  "officialFirmwareBoot": {
+    "status": "partial-observed",
+    "receipt": "docs/platform/evidence/cloudzao-claw154-official-probe-20261122.json",
+    "receiptSha256": "8f393bc21ddebded64c4fa97bf1e3999fb52a0f4a0998869cf00f7b9c5e8d92b",
+    "observed": [
+      "ROM and second-stage bootloader",
+      "Exact official application app_main entry",
+      "Nonblack 240x240 guest framebuffer",
+      "Repeated ML307 baud detection with zero received bytes"
+    ],
+    "notVerified": [
+      "Complete cellular application",
+      "Official-firmware key/touch interaction",
+      "ES8311 audio",
+      "Cloud services",
+      "Physical hardware"
+    ]
+  },
+  "physicalHardware": {
+    "status": "unverified"
+  },
+  "runtimeImplementationOriginalLocalCommit": "13a24a5e90a875e6bd87c2d40f03c42bbe4cad32",
+  "runtimeImplementationFiles": {
+    "esp32s3/src/board/cloudzao_claw154.rs": "ec8a92915d6e3936e40cdb8176855f3c6ac354420378dfc0df4dd550dd1f462b",
+    "esp32s3/tests/cloudzao_claw154.rs": "71be8da7d1ed1d6742b2df0675f9c7bc7682d042e9227f36ea3f6a60e4904f1f"
+  }
+}

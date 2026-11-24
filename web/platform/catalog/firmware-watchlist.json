@@ -2896,7 +2896,7 @@
     },
     {
       "id": "metalio-ink4-official",
-      "name": "Metalio INK4 官方固件",
+      "name": "CloudZao INK4 官方固件",
       "category": "factory",
       "description": "CloudZao 官方烧录站公开发布记录，按型号、芯片和稳定/测试渠道区分。出厂时版本未确认。",
       "upstreamRepo": "CloudZao/Metalio-E-INK4",
@@ -2938,7 +2938,7 @@
           "sourceType": "manufacturer-distribution",
           "updateMode": "source",
           "assetNamePattern": "^[a-f0-9-]+\\.bin$",
-          "nameTemplate": "Metalio 官方固件 · {version}",
+          "nameTemplate": "CloudZao 官方固件 · {version}",
           "basis": {
             "url": "https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=1&hardwareModelId=38&sourceType=official",
             "note": "Exact official firmware ID 64795eef17390ae50771ef0e564baac0, hardwareModelId 38, chip esp32s3; test/latest split from versionStatus."
@@ -2954,7 +2954,7 @@
           "sourceType": "manufacturer-distribution",
           "updateMode": "source",
           "assetNamePattern": "^[a-f0-9-]+\\.bin$",
-          "nameTemplate": "Metalio 官方固件 · {version} 测试版",
+          "nameTemplate": "CloudZao 官方固件 · {version} 测试版",
           "basis": {
             "url": "https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=1&hardwareModelId=38&sourceType=official",
             "note": "Exact official firmware ID 64795eef17390ae50771ef0e564baac0, hardwareModelId 38, chip esp32s3; test/latest split from versionStatus."
@@ -2975,7 +2975,7 @@
     },
     {
       "id": "metalio-ink4-plus-official",
-      "name": "Metalio INK4 Plus 官方固件",
+      "name": "CloudZao INK4 Plus 官方固件",
       "category": "factory",
       "description": "CloudZao 官方烧录站公开发布记录，按型号、芯片和稳定/测试渠道区分。出厂时版本未确认。",
       "upstreamRepo": "CloudZao/Metalio-E-INK4-Plus",
@@ -3009,7 +3009,7 @@
           "sourceType": "manufacturer-distribution",
           "updateMode": "source",
           "assetNamePattern": "^[a-f0-9-]+\\.bin$",
-          "nameTemplate": "Metalio 官方固件 · {version}",
+          "nameTemplate": "CloudZao 官方固件 · {version}",
           "basis": {
             "url": "https://admin.metalio.world/xiaozhi/api/firmwares?page=1&limit=1&hardwareModelId=44&sourceType=official",
             "note": "Exact official firmware ID 32b9b8d0790fe483d8b24a9909c5bdac, hardwareModelId 44, chip esp32s31; test/latest split from versionStatus."
@@ -12167,6 +12167,82 @@
         "evidence": "docs/platform/evidence/stickt2-20261122/sources.json",
         "reason": "本轮 main/boards/m5stack 仅发现 StickS3 而非 StickT2；官方产品页未提供小智入口。无精确镜像和板型映射，不建立自动镜像匹配。"
       }
+    },
+    {
+      "id": "cloudzao-claw-154-official-github",
+      "name": "CloudZao Claw 1.54 官方 GitHub 发布",
+      "category": "voice",
+      "description": "仅发现官方固件候选；精确出厂预装版本未证实，禁止继承旧版本验证。",
+      "upstreamRepo": "CloudZao/Metalio-Claw-1.54",
+      "metadataProvider": "github",
+      "metadataUrl": "https://api.github.com/repos/CloudZao/Metalio-Claw-1.54/releases/latest",
+      "releaseUrl": "https://github.com/CloudZao/Metalio-Claw-1.54/releases/tag/latest",
+      "version": "2.0.51-20261014_1105",
+      "publishedAt": "2026-10-14T03:05:07Z",
+      "checkedAt": "2026-11-22T17:18:28.757109+00:00",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 5,
+      "assets": [
+        {
+          "name": "Metalio-Claw-1.54_2.0.51_20261014_1105.bin",
+          "url": "https://github.com/CloudZao/Metalio-Claw-1.54/releases/download/latest/Metalio-Claw-1.54_2.0.51_20261014_1105.bin",
+          "bytes": 16722264,
+          "sha256": "7e4d9ec9bb3a539598ee1f7d68834eae0888d1d8b5a26ea34cf04b54955b7550",
+          "format": "merged",
+          "sourcePolicy": "mutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "cloudzao-claw-154"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "选定镜像已完成静态完整性/布局核验，并观察到原始官方整包ROM启动及应用显示；ML307初始化等待回应。完整功能和实机未验证；后续候选不继承此结果。"
+      },
+      "catalogTargets": [],
+      "storage": "remote-links-only",
+      "documentationUrl": "https://github.com/CloudZao/Metalio-Claw-1.54",
+      "notes": "Discovery only: moving latest tags and main-source versions must not overwrite the reviewed catalog selection automatically."
+    },
+    {
+      "id": "cloudzao-claw4-official-github",
+      "name": "CloudZao Claw4 官方 GitHub 发布",
+      "category": "voice",
+      "description": "仅发现官方固件候选；精确出厂预装版本未证实，禁止继承旧版本验证。",
+      "upstreamRepo": "CloudZao/MetalioClaw4",
+      "metadataProvider": "github",
+      "metadataUrl": "https://api.github.com/repos/CloudZao/MetalioClaw4/releases/latest",
+      "releaseUrl": "https://github.com/CloudZao/MetalioClaw4/releases/tag/v2.0.5.1",
+      "version": "v2.0.5.1",
+      "publishedAt": "2026-07-07T12:11:14Z",
+      "checkedAt": "2026-11-22T17:18:28.757109+00:00",
+      "releaseChannel": "stable",
+      "releaseHistoryLimit": 5,
+      "assets": [
+        {
+          "name": "Metalio_Claw4_2.0.5.1.bin",
+          "url": "https://github.com/CloudZao/MetalioClaw4/releases/download/v2.0.5.1/Metalio_Claw4_2.0.5.1.bin",
+          "bytes": 30944336,
+          "sha256": "5e8dc6f395e02b9b161423a0267af4c8f4bf2c62c65f998b97cb4060c22d6e7c",
+          "format": "merged",
+          "sourcePolicy": "mutable-pinned"
+        }
+      ],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "cloudzao-claw4"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "选定镜像已完成静态完整性与布局核验；未完成官方应用执行、功能或实机验证。后续候选不继承此核验，仅供人工复核。"
+      },
+      "catalogTargets": [],
+      "storage": "remote-links-only",
+      "documentationUrl": "https://github.com/CloudZao/MetalioClaw4",
+      "notes": "Discovery only: moving latest tags and main-source versions must not overwrite the reviewed catalog selection automatically."
     }
   ]
 }

@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-22T17:46:12Z",
+  "baseCommit": "4d8f3d892e9171a61e8ff0008a029db6aea0e4bf",
+  "delivery": "Binary-capable git diff; no remote push, merge or deployment.",
+  "scope": "Four CloudZao products; existing INK identities retained; Claw1.54 partial board + official boot; Claw4 hardware/model preview.",
+  "environment": {
+    "rust": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "node": "v24.22.3",
+    "python": "3.12.14",
+    "platform": "Linux",
+    "architecture": "x86_64",
+    "cargoOverrides": {
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_PROFILE_RELEASE_DEBUG": "0"
+    },
+    "notes": "Build artifacts share a task-owned target directory to stay within disk capacity. Standard optimization, LTO and production WASM rustflags retained. No performance comparison is claimed."
+  },
+  "checks": [
+    {
+      "id": "native-clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "1ffb81d297c7c0bdca45ea45a07a868ff431face1253321577536b3331224caf"
+    },
+    {
+      "id": "wasm-clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "a6cc7840f729c674acab3968f3e940b898d67d312c5318c6bb378092b67fb124"
+    },
+    {
+      "id": "native-release-build",
+      "command": "cargo build --release --workspace",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "fd3b188ef0bd1c06dad2e3064822272b1309f4b9c7c8415243f852ca52c03105"
+    },
+    {
+      "id": "native-workspace",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms cargo test --release --workspace -- --include-ignored --skip external_",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "a37dc8d5bdfcfc44bade52841b2d04907b303db2d3af36d4bcd5702acd608e87",
+      "suites": 189,
+      "passed": 2363,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 98
+    },
+    {
+      "id": "virtual-quantum",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "e2ce3c434d91a13e9a2d8a36a02b3f0fd0c58be06f219f20b0976b99ccd1580c",
+      "suites": 2,
+      "passed": 44,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 0
+    },
+    {
+      "id": "platform-contracts-and-real-worker",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node --test --test-concurrency=2 tools/platform-*-test.mjs",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "4e4b4e721ea99b90ae09ecc170f510431b61e8b06a3f9f062b04fac69214e6d7",
+      "tests": 456,
+      "pass": 456,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    {
+      "id": "wasm-manifest-demos",
+      "command": "ESP32SIM_ROM_DIR=$PWD/roms node tools/wasm-test.mjs hello c3-hello c6-hello c6-xiao p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "2be0caeb757a67e33c09aed15a07c8f77c08862508198af59936797507f4558d",
+      "demos": [
+        "hello",
+        "c3-hello",
+        "c6-hello",
+        "c6-xiao",
+        "p4-hello",
+        "p4-c6-hosted",
+        "p4-lcd35-synth",
+        "c6-energy-scan",
+        "c6-contiki",
+        "c6-contiki-net",
+        "c6-rpl-net",
+        "panel",
+        "tdisplay-prices",
+        "tdisplay-schematik"
+      ],
+      "count": 14
+    },
+    {
+      "id": "catalog-schemas",
+      "command": "python3 tools/validate-platform-catalog.py",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "8dede261266c7f01bc0baac6bef8a77c8e3861efc5262eb50968e12cdb8a42fb",
+      "products": 221,
+      "accessories": 10,
+      "firmwares": 180,
+      "watchlistEntries": 124
+    },
+    {
+      "id": "knowledge-schemas",
+      "command": "JSON Schema Draft 2020-12 + FormatChecker for four touched knowledge records and complete index",
+      "status": "passed",
+      "exitCode": 0,
+      "originalLogSha256": "5b7c232435e421c7e35cb307c4ac1da776783c9408810d9826938ce671cc85e4",
+      "productRecords": 4
+    }
+  ],
+  "wasm": {
+    "sha256": "347cfd7a0385e307656913f49540b84403dd26500f3d1381823bf09ef058e0ac",
+    "bytes": 6584819,
+    "dwarfAbsent": true,
+    "nameRetained": true,
+    "sectionsCommand": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+    "distribution": "Not included in patch; rebuild from the patched source."
+  },
+  "claw154": {
+    "nativeDiagnosticsPassed": 5,
+    "publicWorkerTestsPassed": 2,
+    "diagnostic": "Original guest SPI3 red/green/red full frames and BOOT; no stub, touch capability is not a touch execution test.",
+    "officialProbe": "../cloudzao-claw154-official-probe-20261122.json",
+    "officialImageUnmodified": true,
+    "officialApplicationEntered": true,
+    "officialFrameObserved": true,
+    "officialFullFunctionalityVerified": false,
+    "blocker": "ML307 detection receives no response; modem not modeled.",
+    "hardwareValidated": false
+  },
+  "models": [
+    {
+      "id": "cloudzao-claw-154",
+      "modelSha256": "074ecd62598ed09140a264d503e4b55d009db977be25b6f81bf06089d4e96c6f",
+      "actualNodeLoaderPassed": true,
+      "offlineRebuildFilesIdentical": 6,
+      "receipt": "../../cloudzao-claw154-verification.json",
+      "physicalReplicaVerified": false
+    },
+    {
+      "id": "cloudzao-claw4",
+      "modelSha256": "8e194aa49d1d46494fa1a070798ed71763d1a4b57306e552f215c83c31ec624b",
+      "actualNodeLoaderPassed": true,
+      "offlineRebuildFilesIdentical": 4,
+      "receipt": "../cloudzao-claw4/checks.json",
+      "physicalReplicaVerified": false
+    }
+  ],
+  "browser": {
+    "status": "blocked",
+    "visualAcceptancePassed": false,
+    "chromium": "Exited before navigation: process_singleton_posix.cc socket() failed: Operation not permitted (1).",
+    "cloudBrowser": "Local preview connection refused; browser access policy subsequently blocked access. No workaround attempted after policy denial.",
+    "fixture": "tools/fixtures/cloudzao-claw4-model-check.js",
+    "scopeNotVerified": [
+      "WebGL front/back/side appearance",
+      "exploded UNKNOWN readability in real browser",
+      "screen placement under actual renderer",
+      "browser CORS for official firmware"
+    ],
+    "nodeScope": "Actual Three.js geometry, materials and inspection tested; local fetch and image decoding use test doubles."
+  },
+  "skill": {
+    "name": "esp-product-onboarding",
+    "status": "Already installed; repository SKILL.md and three reference files match the active installation byte for byte; quick_validate passed.",
+    "repositoryPath": "skills/esp-product-onboarding/SKILL.md"
+  },
+  "privacy": {
+    "status": "passed",
+    "command": "node tools/check-evidence-privacy.mjs",
+    "result": "PASS: 2378 tracked evidence files checked (22 gzip files); no configured privacy patterns found. Manual review is still required.",
+    "manualReview": "Public source receipts retain original hashes, omit unrelated accounts; official runtime serial is sanitized; no firmware BIN, credentials or browser screenshot added."
+  },
+  "logRetention": "Only command/result summaries and SHA-256 of original local logs are retained. Machine paths and unrelated process/account inventories are omitted.",
+  "remainingLimits": [
+    "Claw4 MIPI-DSI/GT911/P4-C5 runtime and online P4 flashing unavailable.",
+    "Claw1.54 official input, modem, audio, cloud, power/battery hardware and physical tests unverified.",
+    "Claw models are estimates, not manufacturing CAD or verified 1:1 replicas.",
+    "AArch64-only CI and the complete auxiliary CI matrix were not executed; listed passing checks do not imply full remote CI success."
+  ]
+}

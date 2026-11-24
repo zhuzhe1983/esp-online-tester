@@ -16,8 +16,8 @@ const compareManufacturers = (a,b) => {
 };
 export const productOptionLabel = product => product.runtime?.board ? product.runtime.status==='diagnostic' ? `${product.name} · 调试适配` : product.name : product.model ? `${product.name} · 模型预览` : `${product.name} × 尚未适配`;
 // Manufacturer revision/announcement dates take precedence when available.
-// Storefront publication is an explicitly labelled proxy, never a claim of a
-// retail launch. Missing or malformed dates sort after the dated LilyGO queue.
+// Storefront publication and earliest repository history are explicitly labelled
+// proxies, never claims of retail launch. Undated products follow dated entries.
 const chronologyTime = product => {
   const value=product.chronology?.date;
   if(typeof value!=='string'||!/^\d{4}-\d\d-\d\d$/.test(value))return -Infinity;
@@ -36,9 +36,15 @@ export function productChronologyLabel(product) {
 }
 const orderProducts = products => {
   const sorted=[...products].sort(compareProductNames);
-  const lilygo=sorted.filter(p=>p.manufacturer==='LILYGO').sort(compareProductChronology);
-  let next=0;
-  return sorted.map(p=>p.manufacturer==='LILYGO'?lilygo[next++]:p);
+  const queues=new Map(['LILYGO','CloudZao'].map(brand=>[brand,sorted.filter(p=>p.manufacturer===brand).sort(compareProductChronology)]));
+  const positions=new Map();
+  return sorted.map(product=>{
+    const queue=queues.get(product.manufacturer);
+    if(!queue)return product;
+    const index=positions.get(product.manufacturer)||0;
+    positions.set(product.manufacturer,index+1);
+    return queue[index];
+  });
 };
 // Picker visibility never changes the full catalog or scene identity.
 export const isPickerProduct = product => product.pickerVisible !== false;
@@ -70,7 +76,7 @@ export function productIdentityLabel(product) {
 }
 export function searchProducts(products, query) {
   const words = String(query).normalize('NFKC').toLowerCase().trim().split(/\s+/).filter(Boolean);
-  return orderProducts(products.filter(isPickerProduct).filter(item => { const text = [item.name,item.manufacturer,item.family?.name,item.family?.id,item.sku,item.id,item.module,item.chip,item.hardwareRevision,item.providers?.['lilygo-spark']?.productId,...(Array.isArray(item.aliases)?item.aliases:[])].filter(Boolean).join(' ').normalize('NFKC').toLowerCase(); return words.every(word => text.includes(word)); }));
+  return orderProducts(products.filter(isPickerProduct).filter(item => { const text = [item.name,item.manufacturer,...(Array.isArray(item.manufacturerAliases)?item.manufacturerAliases:[]),item.family?.name,item.family?.id,item.sku,item.id,item.module,item.chip,item.hardwareRevision,item.providers?.['lilygo-spark']?.productId,...(Array.isArray(item.aliases)?item.aliases:[])].filter(Boolean).join(' ').normalize('NFKC').toLowerCase(); return words.every(word => text.includes(word)); }));
 }
 export const accessoryBrand = item => item.manufacturer || 'DIY';
 export const accessoryInterface = item => item.connector?.type || '未标注';

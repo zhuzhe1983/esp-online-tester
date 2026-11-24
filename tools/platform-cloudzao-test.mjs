@@ -34,6 +34,48 @@ test('new CloudZao version without SHA retains audited image, including unsuppor
 
 test('manufacturer aliases are searchable and official stable is selected first',async()=>{
  const {searchProducts,firstFirmware}=await import('../web/platform/catalog-selection.js');const products=(await read('products')).items,firmwares=(await read('firmwares')).items;
- assert.deepEqual(searchProducts(products,'CloudZao').map(p=>p.id),['metalio-ink4','metalio-ink4-plus']);
- for(const id of ['metalio-ink4','metalio-ink4-plus']){const p=products.find(p=>p.id===id);assert.equal(firstFirmware(firmwares,p).id,p.defaultFirmwareId);assert.equal(firstFirmware(firmwares,p).role,'official');}
+ const ids=['cloudzao-claw-154','metalio-ink4-plus','metalio-ink4','cloudzao-claw4'];
+ for(const brand of ['CloudZao','Metalio','无名科技'])assert.deepEqual(searchProducts(products,brand).map(p=>p.id),ids);
+ for(const id of ids){const p=products.find(p=>p.id===id);assert.equal(p.manufacturer,'CloudZao');assert.equal(firstFirmware(firmwares,p).id,p.defaultFirmwareId);assert.equal(firstFirmware(firmwares,p).role,'official');}
+});
+
+test('legacy INK scenes retain exact product IDs and audited official sources after rebranding',async()=>{
+ const {createDefaultScene,encodeScene,decodeScene,validateScene}=await import('../web/platform/catalog.js');
+ const catalog={products:(await read('products')).items,accessories:(await read('accessories')).items,firmwares:(await read('firmwares')).items};
+ const hashes={'metalio-ink4':'1d02cba522fe1aec5b2c160973c6a15d89cbf0e13a5794a42faf6e3f15587919','metalio-ink4-plus':'56786c7407405993fe1b049446d8535f4cc7e72c99953fff5f2662c7aa2cfbc0'};
+ for(const [id,sha256]of Object.entries(hashes)){
+  const product=catalog.products.find(p=>p.id===id),firmware=catalog.firmwares.find(f=>f.id===product.defaultFirmwareId);
+  assert.equal(product.runtime.board,id);assert.equal(firmware.source.sha256,sha256);
+  assert.equal(product.model.url,`./assets/${id}/model.json`);
+  const scene=createDefaultScene(catalog,id);scene.firmware=firmware.source;
+  const restored=decodeScene(encodeScene(scene));assert.deepEqual(restored,scene);assert.equal(validateScene(restored,catalog).valid,true);
+ }
+});
+
+test('CloudZao chronology is a labelled repository proxy and does not mutate source order',async()=>{
+ const {productsForManufacturer,productChronologyLabel}=await import('../web/platform/catalog-selection.js');
+ const products=(await read('products')).items,original=products.map(p=>p.id);
+ const queue=productsForManufacturer(products,'CloudZao');
+ assert.deepEqual(queue.map(p=>p.id),['cloudzao-claw-154','metalio-ink4-plus','metalio-ink4','cloudzao-claw4']);
+ assert.deepEqual(queue.map(p=>p.chronology.date),['2026-10-10','2026-09-30','2026-09-14','2026-07-01']);
+ for(const p of queue){assert.equal(p.chronology.basis,'repository-first-seen');assert.equal(p.chronology.confidence,'low');assert.match(productChronologyLabel(p),/代用/);assert(p.sources.some(s=>s.id===p.chronology.sourceId));}
+ assert.deepEqual(products.map(p=>p.id),original);
+});
+
+test('Claw releases are discovery-only and never replace independently audited defaults',async()=>{
+ const watch=await read('firmware-watchlist'),firmwares=await read('firmwares'),products=await read('products'),snapshot=await read('firmware-release-snapshot');
+ const selected=watch.entries.filter(e=>e.id.startsWith('cloudzao-claw'));
+ assert.equal(selected.length,2);validateWatchlist({...watch,entries:selected});
+ for(const e of selected){assert.deepEqual(e.catalogTargets,[]);assert(e.assets.every(a=>a.sourcePolicy==='mutable-pinned'&&a.sha256));}
+ const beforeProducts=structuredClone(products);
+ const result=updateFirmwareCatalog({products,firmwares,watchlist:{...watch,entries:selected},snapshot});
+ assert.deepEqual(result.firmwares,firmwares);assert.deepEqual(products,beforeProducts);
+ const audit=JSON.parse(await readFile(new URL('../docs/platform/evidence/cloudzao-20261123/firmware-memory-audit.json',import.meta.url),'utf8'));
+ for(const report of audit.reports){
+  const f=firmwares.items.find(f=>f.id===report.firmwareId);
+  assert.equal(f.source.sha256,report.actualSha256);assert.equal(f.sourceIdentity.bytes,report.actualBytes);assert.equal(f.catalogUpdate.layoutVerified,true);
+  assert.equal(f.simulationVerified,false);assert.equal(f.hardwareValidated,false);assert.equal(f.role,'official');assert.equal(f.storage,'remote-links-only');
+ }
+ const claw4=firmwares.items.find(f=>f.id==='cloudzao-claw4-official');
+ assert.equal(claw4.version,'v2.0.5.1');assert.equal(claw4.sourceIdentity.imageAppVersion,'2.0.5');
 });
