@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "lane": "wasm-tests",
+  "sourceCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "runtimeSourceSha256": "eb1e9597b5aac7ffa604bae1f95b945e89cbc98c6b3bd33ecaafe1611766b56c",
+  "runtimeSourceFileCount": 855,
+  "environment": {
+    "architecture": "x86_64",
+    "system": "Linux",
+    "logicalCpus": 9,
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v24.22.3",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "limitations": [
+    "Linux x86_64 only; no native AArch64 CI execution.",
+    "Node/Worker checks do not establish browser WebGL or physical hardware acceptance."
+  ],
+  "steps": [
+    {
+      "id": "wasm-sections",
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "log": "wasm-tests-wasm-sections.log",
+      "startedAt": "2026-11-24T06:54:38.277737+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.126,
+      "finishedAt": "2026-11-24T06:54:38.404491+00:00",
+      "logSha256": "e8af9c235042c6d73f0fc66e17844aac14f2615d9119ecbbbdc896826417ced6",
+      "logBytes": 57
+    },
+    {
+      "id": "wasm-page-manifests",
+      "command": "node tools/wasm-test.mjs hello c3-hello c6-hello c6-xiao p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik",
+      "log": "wasm-tests-wasm-page-manifests.log",
+      "startedAt": "2026-11-24T06:54:38.553405+00:00",
+      "exitCode": 0,
+      "durationSeconds": 109.898,
+      "finishedAt": "2026-11-24T06:56:28.451431+00:00",
+      "logSha256": "177438337cef6661e917abd39dc4f57f14b948eb351ca1d4d5052d27416b65d7",
+      "logBytes": 1691
+    },
+    {
+      "id": "platform-contracts",
+      "command": "node --test --test-concurrency=2 tools/platform-*-test.mjs",
+      "log": "wasm-tests-platform-contracts.log",
+      "startedAt": "2026-11-24T07:19:48.995473+00:00",
+      "exitCode": 0,
+      "durationSeconds": 55.195,
+      "finishedAt": "2026-11-24T07:20:44.191337+00:00",
+      "logSha256": "f21539be0b5bbc13777d997c12d59b34f599d2ac9a330a0153ea7a11df86ce73",
+      "logBytes": 64383
+    },
+    {
+      "id": "platform-real-recording",
+      "command": "node tools/platform-recording-test.mjs --real",
+      "log": "wasm-tests-platform-real-recording.log",
+      "startedAt": "2026-11-24T07:20:44.344535+00:00",
+      "exitCode": 0,
+      "durationSeconds": 6.042,
+      "finishedAt": "2026-11-24T07:20:50.387352+00:00",
+      "logSha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d",
+      "logBytes": 1100
+    },
+    {
+      "id": "stopwatch-wasm",
+      "command": "node tools/wasm-test.mjs demo-stopwatch",
+      "log": "wasm-tests-stopwatch-wasm.log",
+      "startedAt": "2026-11-24T07:20:50.540730+00:00",
+      "exitCode": 0,
+      "durationSeconds": 1.236,
+      "finishedAt": "2026-11-24T07:20:51.777639+00:00",
+      "logSha256": "61c0b4bc174880873de069f900cdf366841fecf52006d21fee56735dbb7609c0",
+      "logBytes": 193
+    },
+    {
+      "id": "stopwatch-hardware-diagnostics",
+      "command": "node tools/probe-hardware-diagnostics.mjs tools/fixtures/stopwatch-hardware-checks.json \"$FINAL_EVIDENCE/stopwatch-hardware-checks.json\"",
+      "log": "wasm-tests-stopwatch-hardware-diagnostics.log",
+      "startedAt": "2026-11-24T07:20:51.926296+00:00",
+      "exitCode": 0,
+      "durationSeconds": 8.48,
+      "finishedAt": "2026-11-24T07:21:00.406867+00:00",
+      "logSha256": "5fbad15c761bd2c614b1707bb466e4703c9946363806d0f2b3d8f25cacafbd8f",
+      "logBytes": 65
+    },
+    {
+      "id": "timing-abi",
+      "command": "node wasm/tests/timing-api.mjs web/wasm/esp32sim.wasm",
+      "log": "wasm-tests-timing-abi.log",
+      "startedAt": "2026-11-24T07:21:00.586414+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.094,
+      "finishedAt": "2026-11-24T07:21:00.680741+00:00",
+      "logSha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3",
+      "logBytes": 78
+    },
+    {
+      "id": "ble-abi",
+      "command": "node wasm/tests/ble-api.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "log": "wasm-tests-ble-abi.log",
+      "startedAt": "2026-11-24T07:21:00.848613+00:00",
+      "exitCode": 0,
+      "durationSeconds": 1.785,
+      "finishedAt": "2026-11-24T07:21:02.634204+00:00",
+      "logSha256": "ccd6757fd6b640732633f7b49a1fabddc779951ed6cb3e91dffebeb464041cd8",
+      "logBytes": 552
+    },
+    {
+      "id": "ble-connection",
+      "command": "node wasm/tests/ble-connection.mjs web/wasm/esp32sim.wasm web/wasm/fw/public web/wasm/fw/esp32c3_rev3_rom.elf",
+      "log": "wasm-tests-ble-connection.log",
+      "startedAt": "2026-11-24T07:21:02.807119+00:00",
+      "exitCode": 0,
+      "durationSeconds": 5.661,
+      "finishedAt": "2026-11-24T07:21:08.468161+00:00",
+      "logSha256": "fe3b3af138c71a012f1e0be351324b9d4461b3ae4690fcd3d913b1f6cd58b2cb",
+      "logBytes": 441
+    },
+    {
+      "id": "worker-pacing",
+      "command": "node tools/worker-pacing-test.mjs",
+      "log": "wasm-tests-worker-pacing.log",
+      "startedAt": "2026-11-24T07:21:08.654923+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.214,
+      "finishedAt": "2026-11-24T07:21:08.869992+00:00",
+      "logSha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158",
+      "logBytes": 89
+    },
+    {
+      "id": "worker-channel",
+      "command": "node tools/worker-channel-test.mjs",
+      "log": "wasm-tests-worker-channel.log",
+      "startedAt": "2026-11-24T07:21:09.057029+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.198,
+      "finishedAt": "2026-11-24T07:21:09.255846+00:00",
+      "logSha256": "800f4b3a7998503164619c6c11ee7b6dd2f2812e7dd207a443b685b8c17987e6",
+      "logBytes": 347
+    },
+    {
+      "id": "touch-stopwatch-ui",
+      "command": "node --test tools/touch-input-test.mjs tools/stopwatch-ui-test.mjs",
+      "log": "wasm-tests-touch-stopwatch-ui.log",
+      "startedAt": "2026-11-24T07:21:09.401663+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.184,
+      "finishedAt": "2026-11-24T07:21:09.586485+00:00",
+      "logSha256": "14e80a5415d65808cb0ed8f648da5ffc219969b2d5aec2bc73f46bbe17c952a2",
+      "logBytes": 1195
+    },
+    {
+      "id": "wasm-build-policy",
+      "command": "node --test tools/wasm-build-policy.test.mjs",
+      "log": "wasm-tests-wasm-build-policy.log",
+      "startedAt": "2026-11-24T07:21:09.737276+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.156,
+      "finishedAt": "2026-11-24T07:21:09.893622+00:00",
+      "logSha256": "6ba31f3305412c6ba8f590c2f98b20abd14a92a97108d364ac9e9bcc23b774ca",
+      "logBytes": 360
+    },
+    {
+      "id": "browser-benchmark-js",
+      "command": "node --test tools/browser-benchmark/*.test.mjs",
+      "log": "wasm-tests-browser-benchmark-js.log",
+      "startedAt": "2026-11-24T07:21:10.044393+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.18,
+      "finishedAt": "2026-11-24T07:21:10.224811+00:00",
+      "logSha256": "fa5004d2e45d0a94c18a0c89206d19826f25a04c0c7ad8688fbe78994c420d96",
+      "logBytes": 1262
+    },
+    {
+      "id": "browser-benchmark-python",
+      "command": "python3 -m unittest discover -s tools/browser-benchmark -p 'test_*.py'",
+      "log": "wasm-tests-browser-benchmark-python.log",
+      "startedAt": "2026-11-24T07:21:10.368242+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.111,
+      "finishedAt": "2026-11-24T07:21:10.479271+00:00",
+      "logSha256": "dc93e1ad8c71598c3eb66567fa8d82decd8763a2bb977499ab18ee5efdb2ed29",
+      "logBytes": 114
+    },
+    {
+      "id": "network-helper",
+      "command": "node tools/network-helper-test.mjs",
+      "log": "wasm-tests-network-helper.log",
+      "startedAt": "2026-11-24T07:21:10.622096+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.838,
+      "finishedAt": "2026-11-24T07:21:11.460105+00:00",
+      "logSha256": "18dc4bc02cb5191c5c981adbc373a5a80eccdb7fbd861240f4f329ba91023c30",
+      "logBytes": 127
+    },
+    {
+      "id": "network-relay",
+      "command": "node --test tools/network-relay-test.mjs",
+      "log": "wasm-tests-network-relay.log",
+      "startedAt": "2026-11-24T07:21:11.626585+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.53,
+      "finishedAt": "2026-11-24T07:21:12.157406+00:00",
+      "logSha256": "efa780b086ab18ce245e64d5a01a1724cb74ced67e84750a41961871c5a99422",
+      "logBytes": 1071
+    },
+    {
+      "id": "x5-receipt-tests",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs",
+      "log": "wasm-tests-x5-receipt-tests.log",
+      "startedAt": "2026-11-24T07:21:12.307611+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.235,
+      "finishedAt": "2026-11-24T07:21:12.543130+00:00",
+      "logSha256": "2084c785b07b7c6f71ba6e695d7d9ae63d5e63001e39312e54db1a0a014f91e5",
+      "logBytes": 1148
+    },
+    {
+      "id": "x5-receipts",
+      "command": "node docs/evidence/perf-x5-2026-09-22/verify-results.mjs",
+      "log": "wasm-tests-x5-receipts.log",
+      "startedAt": "2026-11-24T07:21:12.697466+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.063,
+      "finishedAt": "2026-11-24T07:21:12.760616+00:00",
+      "logSha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b",
+      "logBytes": 432
+    },
+    {
+      "id": "m1-receipt-tests",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs",
+      "log": "wasm-tests-m1-receipt-tests.log",
+      "startedAt": "2026-11-24T07:21:12.933806+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.188,
+      "finishedAt": "2026-11-24T07:21:13.122276+00:00",
+      "logSha256": "49604ee69ac672f7f73b6d1daac5f400d9c86b7f4d2764d0433a80c82a6c3cf4",
+      "logBytes": 1782
+    },
+    {
+      "id": "m1-receipts",
+      "command": "node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs",
+      "log": "wasm-tests-m1-receipts.log",
+      "startedAt": "2026-11-24T07:21:13.396191+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.072,
+      "finishedAt": "2026-11-24T07:21:13.468972+00:00",
+      "logSha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a",
+      "logBytes": 58
+    },
+    {
+      "id": "historical-receipt-tests",
+      "command": "node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs",
+      "log": "wasm-tests-historical-receipt-tests.log",
+      "startedAt": "2026-11-24T07:21:13.615020+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.185,
+      "finishedAt": "2026-11-24T07:21:13.800895+00:00",
+      "logSha256": "1d6269339d68490c41226accc965acaae11d0419b8ead8851000c1cd938a9fd1",
+      "logBytes": 1674
+    },
+    {
+      "id": "historical-receipts",
+      "command": "node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs",
+      "log": "wasm-tests-historical-receipts.log",
+      "startedAt": "2026-11-24T07:21:13.966682+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.068,
+      "finishedAt": "2026-11-24T07:21:14.035569+00:00",
+      "logSha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4",
+      "logBytes": 57
+    },
+    {
+      "id": "retained-ci-privacy",
+      "command": "node tools/check-evidence-privacy.mjs docs/evidence 'docs/platform/evidence/seeed*'",
+      "log": "wasm-tests-retained-ci-privacy.log",
+      "startedAt": "2026-11-24T07:21:14.191755+00:00",
+      "exitCode": 0,
+      "durationSeconds": 1.074,
+      "finishedAt": "2026-11-24T07:21:15.265784+00:00",
+      "logSha256": "e1695228361ad90908a12e48ce43cf42726cb58ce386be72a7bf1efd41d41b8f",
+      "logBytes": 131
+    }
+  ],
+  "complete": true,
+  "priorAttempts": [
+    {
+      "id": "platform-contracts",
+      "command": "node --test --test-concurrency=2 tools/platform-*-test.mjs",
+      "log": "wasm-tests-platform-contracts-attempt1.log",
+      "startedAt": "2026-11-24T07:17:03.918601+00:00",
+      "exitCode": 1,
+      "durationSeconds": 57.283,
+      "finishedAt": "2026-11-24T07:18:01.202764+00:00",
+      "logSha256": "f273acea1eecef71e59ae5abc5039471e407a3aab6f615f6f2ba8a651e34ce88",
+      "logBytes": 65364
+    }
+  ],
+  "resumptions": [
+    {
+      "at": "2026-11-24T07:19:48.918933+00:00",
+      "from": "platform-contracts",
+      "reason": "Added the missing English translation for the new USB-C power/programming connector label. Catalog, models, Rust/Cargo and production WASM are unchanged; preceding module/firmware checks are unaffected.",
+      "englishDictionarySha256": "c70fe013016bfb29a9dc0fe811eef1b0685f18ed3d7494d7d9ac86336cc78bc8"
+    }
+  ],
+  "productionWasm": {
+    "bytes": 8494328,
+    "sha256": "5b91383f70d44d6a960dc475850a06340dc59e3c0fd830d4a87c5b8606d711a0"
+  },
+  "passed": true
+}

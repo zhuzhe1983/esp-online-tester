@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "lane": "wasm-build",
+  "sourceCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "runtimeSourceSha256": "1ba789a2073818d4306b6f53b502bca67da09fdba4232b8c718048c6b68cc5bf",
+  "runtimeSourceFileCount": 855,
+  "environment": {
+    "architecture": "x86_64",
+    "system": "Linux",
+    "logicalCpus": 9,
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v24.22.3",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "limitations": [
+    "Linux x86_64 only; no native AArch64 CI execution.",
+    "Node/Worker checks do not establish browser WebGL or physical hardware acceptance."
+  ],
+  "steps": [
+    {
+      "id": "wasm-clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "log": "wasm-build-wasm-clippy-before-c6-boundary-fixture.log",
+      "startedAt": "2026-11-24T07:37:30.741111+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.139,
+      "finishedAt": "2026-11-24T07:37:30.880600+00:00",
+      "logSha256": "a6f71f1d718ee6323cd368bc18713c1eb14f6c04dc4f03578259c30deb35e84a",
+      "logBytes": 74
+    },
+    {
+      "id": "production-wasm",
+      "command": "bash tools/wasm-build.sh",
+      "log": "wasm-build-production-wasm-before-c6-boundary-fixture.log",
+      "startedAt": "2026-11-24T07:37:31.040081+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.214,
+      "finishedAt": "2026-11-24T07:37:31.254164+00:00",
+      "logSha256": "57ab4f14b00868f5f996f69515e115a737ea94cd6fc78cee205ff94ccbb7a70b",
+      "logBytes": 134,
+      "ownershipNormalizationInputSha256": "93c0840282cfadb2c83fbf09aa2fe5a0a033e0a5bdbcd35765e62998c662fd78"
+    }
+  ],
+  "complete": true,
+  "productionWasm": {
+    "bytes": 8494328,
+    "sha256": "5b91383f70d44d6a960dc475850a06340dc59e3c0fd830d4a87c5b8606d711a0"
+  },
+  "passed": true,
+  "runtimeSourceFreezeFile": "rust-source-freeze-before-c6-boundary-fixture.json"
+}

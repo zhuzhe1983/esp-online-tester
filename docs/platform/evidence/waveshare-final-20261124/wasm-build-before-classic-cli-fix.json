@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "lane": "wasm-build",
+  "sourceCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "runtimeSourceSha256": "eb1e9597b5aac7ffa604bae1f95b945e89cbc98c6b3bd33ecaafe1611766b56c",
+  "runtimeSourceFileCount": 855,
+  "environment": {
+    "architecture": "x86_64",
+    "system": "Linux",
+    "logicalCpus": 9,
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v24.22.3",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "limitations": [
+    "Linux x86_64 only; no native AArch64 CI execution.",
+    "Node/Worker checks do not establish browser WebGL or physical hardware acceptance."
+  ],
+  "steps": [
+    {
+      "id": "wasm-clippy",
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "log": "wasm-build-wasm-clippy-before-classic-cli-fix.log",
+      "startedAt": "2026-11-24T06:50:11.019680+00:00",
+      "exitCode": 0,
+      "durationSeconds": 7.318,
+      "finishedAt": "2026-11-24T06:50:18.338666+00:00",
+      "logSha256": "dce7b92649646ac7360a388f2cc77363410b4fcb137807616a5739b0fa145ba5",
+      "logBytes": 856
+    },
+    {
+      "id": "production-wasm",
+      "command": "bash tools/wasm-build.sh",
+      "log": "wasm-build-production-wasm-before-classic-cli-fix.log",
+      "startedAt": "2026-11-24T06:50:18.510139+00:00",
+      "exitCode": 0,
+      "durationSeconds": 74.947,
+      "finishedAt": "2026-11-24T06:51:33.457588+00:00",
+      "logSha256": "d9a2df4e8c54a3155760a7433152593dd9ac39d8bfffb4af1d80874c3468c898",
+      "logBytes": 917,
+      "ownershipNormalizationInputSha256": "8d8c581bebf936b70211827b4edd294e84dc98dfb377e2a263f609d34521ed19"
+    }
+  ],
+  "complete": true,
+  "productionWasm": {
+    "bytes": 8494328,
+    "sha256": "5b91383f70d44d6a960dc475850a06340dc59e3c0fd830d4a87c5b8606d711a0"
+  },
+  "passed": true,
+  "runtimeSourceFreezeFile": "rust-source-freeze-before-classic-cli-fix.json"
+}

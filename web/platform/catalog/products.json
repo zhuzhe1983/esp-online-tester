@@ -106376,6 +106376,2157 @@
         "notes": "以官方仓库最早可达提交作为排序代用日期；真实上市时间和首次公开披露时间未知。"
       },
       "defaultFirmwareId": "cloudzao-claw4-official"
+    },
+    {
+      "id": "waveshare-esp32-s3-nano",
+      "name": "Waveshare ESP32-S3-Nano",
+      "manufacturer": "Waveshare",
+      "sku": "26745",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 8 MiB PSRAM；离散RGB GPIO46/0/45、GPIO48指示灯，无物理BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-nano.json",
+      "family": {
+        "id": "waveshare-esp32-s3-nano",
+        "name": "Waveshare ESP32-S3-Nano"
+      },
+      "runtime": {
+        "board": "waveshare-s3-nano",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "D-",
+              "gpio": 19
+            },
+            {
+              "name": "D+",
+              "gpio": 20
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线行为未模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-nano.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Nano-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Demo-Code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-datasheet",
+          "title": "ROHM LED 封装资料",
+          "url": "https://fscdn.rohm.com/en/products/databook/datasheet/opto/led/chip_multi/smlp34rgb-e.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-pins",
+          "title": "固定版本 Arduino Nano GPIO 映射",
+          "url": "https://raw.githubusercontent.com/espressif/arduino-esp32/bc8ab15634eb0402d39e1e259a5a4a29be3e6e1c/variants/arduino_nano_nora/pins_arduino.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-NANO-Firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "Arduino/0.RTC/sketch_nov13c/sketch_nov13c.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Demo-Code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "实际只有RESET；GPIO0是离散LED通道，不提供虚构BOOT。历史LED封装引脚号与ROHM手册的冲突保留；RGB命名依官方程序及固定Arduino Nano映射，实物光色未校准。",
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Nano has no invented BOOT button and GPIO0 remains an RGB channel.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-nano-official-test",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-nano/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-m",
+      "name": "Waveshare ESP32-S3-Nano-M",
+      "manufacturer": "Waveshare",
+      "sku": "26752",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 8 MiB PSRAM；离散RGB GPIO46/0/45、GPIO48指示灯，无物理BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-nano-m.json",
+      "family": {
+        "id": "waveshare-esp32-s3-nano",
+        "name": "Waveshare ESP32-S3-Nano"
+      },
+      "runtime": {
+        "board": "waveshare-s3-nano-m",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "D-",
+              "gpio": 19
+            },
+            {
+              "name": "D+",
+              "gpio": 20
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线行为未模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-nano.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Nano-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Demo-Code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-datasheet",
+          "title": "ROHM LED 封装资料",
+          "url": "https://fscdn.rohm.com/en/products/databook/datasheet/opto/led/chip_multi/smlp34rgb-e.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-pins",
+          "title": "固定版本 Arduino Nano GPIO 映射",
+          "url": "https://raw.githubusercontent.com/espressif/arduino-esp32/bc8ab15634eb0402d39e1e259a5a4a29be3e6e1c/variants/arduino_nano_nora/pins_arduino.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-NANO-Firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "Arduino/0.RTC/sketch_nov13c/sketch_nov13c.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Demo-Code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "实际只有RESET；GPIO0是离散LED通道，不提供虚构BOOT。历史LED封装引脚号与ROHM手册的冲突保留；RGB命名依官方程序及固定Arduino Nano映射，实物光色未校准。",
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Nano has no invented BOOT button and GPIO0 remains an RGB channel.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-nano-m-official-test",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-nano-m/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-nano"
+    },
+    {
+      "id": "waveshare-esp32-s3-zero",
+      "name": "Waveshare ESP32-S3-Zero",
+      "manufacturer": "Waveshare",
+      "sku": "25081",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "4 MiB Flash / 2 MiB PSRAM；GPIO21 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-zero.json",
+      "family": {
+        "id": "waveshare-esp32-s3-zero",
+        "name": "Waveshare ESP32-S3-Zero"
+      },
+      "runtime": {
+        "board": "waveshare-s3-zero",
+        "flashMb": 4,
+        "psramMb": 2,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "D-",
+              "gpio": 19
+            },
+            {
+              "name": "D+",
+              "gpio": 20
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线行为未模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-zero.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Zero-Sch.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "BlinkRGB/BlinkRGB.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "CAD is the manufacturer linked base Zero mechanical file. Do not apply its FH4R2 identity to the independently sold N8R8 option.",
+        "No editable PCB stack, RF behaviour or production fit certification is implied.",
+        "PCB photograph is registered to the nominal 18 x 23.5 mm board rectangle; slight perspective and photo/CAD differences remain. Native chip and USB geometry is not stretched to fit it.",
+        "BOOT and RGB body locations are matched to the official component photograph; RESET is geometry only and uses the platform reset action.",
+        "CAD materials and dimensions are retained with explicitly photo-based color overrides; no measured optical material is claimed.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-zero-blinkrgb",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-zero/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-zero-m",
+      "name": "Waveshare ESP32-S3-Zero-M",
+      "manufacturer": "Waveshare",
+      "sku": "25517",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "4 MiB Flash / 2 MiB PSRAM；GPIO21 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-zero-m.json",
+      "family": {
+        "id": "waveshare-esp32-s3-zero",
+        "name": "Waveshare ESP32-S3-Zero"
+      },
+      "runtime": {
+        "board": "waveshare-s3-zero-m",
+        "flashMb": 4,
+        "psramMb": 2,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "D-",
+              "gpio": 19
+            },
+            {
+              "name": "D+",
+              "gpio": 20
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线行为未模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-zero.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Zero-Sch.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "BlinkRGB/BlinkRGB.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "CAD is the manufacturer linked base Zero mechanical file. Do not apply its FH4R2 identity to the independently sold N8R8 option.",
+        "No editable PCB stack, RF behaviour or production fit certification is implied.",
+        "PCB photograph is registered to the nominal 18 x 23.5 mm board rectangle; slight perspective and photo/CAD differences remain. Native chip and USB geometry is not stretched to fit it.",
+        "BOOT and RGB body locations are matched to the official component photograph; RESET is geometry only and uses the platform reset action.",
+        "CAD materials and dimensions are retained with explicitly photo-based color overrides; no measured optical material is claimed.",
+        "Header count/centers are source-backed; body and pin dimensions including hidden insertion length remain unmeasured estimates. No physical mating guarantee.",
+        "This is a new Zero-M reconstruction from the retained original CAD. The original published Zero asset directory is unchanged.",
+        "The exact-M reference demonstrates soldered headers, but no manufacturer header CAD/hidden insertion-depth specification was located.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-zero-m-blinkrgb",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-zero-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad-partial"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-zero"
+    },
+    {
+      "id": "waveshare-esp32-s3-zero-n8r8",
+      "name": "Waveshare ESP32-S3-Zero-N8R8",
+      "manufacturer": "Waveshare",
+      "sku": "33879",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "8 MiB Flash / 8 MiB PSRAM；GPIO21 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-zero-n8r8.json",
+      "family": {
+        "id": "waveshare-esp32-s3-zero",
+        "name": "Waveshare ESP32-S3-Zero"
+      },
+      "runtime": {
+        "board": "waveshare-s3-zero-n8r8",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线行为未模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-zero.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Zero-Sch.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "BlinkRGB/BlinkRGB.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "独立PICO-1-N8R8为8F/8P；FH4R2的4F/2P镜像与内部CAD不替代此SiP型号。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "USB shell is physically open in the mesh but contact tongues, detailed contacts and mating dimensions remain unknown. Source-photo parallax does not measure connector height.",
+        "No exact N8R8 native CAD was located in inspected official pages. Original FH4R2 Zero CAD topology and silkscreen are not copied.",
+        "N8R8 package is shown at a source-backed approximate 45-degree angle. Exact package edge, height, PCB stackup, bottom contact layout and hidden small passives remain UNKNOWN.",
+        "Small pads, solder fillets and printed labels are not reconstructed from the low-resolution oblique photographs. No arbitrary detailed circuit placement is fabricated.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-zero-factory-reference",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-zero-n8r8/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-zero"
+    },
+    {
+      "id": "waveshare-esp32-s3-zero-n8r8-m",
+      "name": "Waveshare ESP32-S3-Zero-N8R8-M",
+      "manufacturer": "Waveshare",
+      "sku": "33549",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "8 MiB Flash / 8 MiB PSRAM；GPIO21 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-zero-n8r8-m.json",
+      "family": {
+        "id": "waveshare-esp32-s3-zero",
+        "name": "Waveshare ESP32-S3-Zero"
+      },
+      "runtime": {
+        "board": "waveshare-s3-zero-n8r8-m",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线行为未模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-zero.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Zero/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Zero-Sch.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/ESP32-S3-Zero-Sch.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "BlinkRGB/BlinkRGB.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Zero/Esp32-s3-zero-code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "独立PICO-1-N8R8为8F/8P；FH4R2的4F/2P镜像与内部CAD不替代此SiP型号。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "USB shell is physically open in the mesh but contact tongues, detailed contacts and mating dimensions remain unknown. Source-photo parallax does not measure connector height.",
+        "Header count/centers are source-backed; body and pin dimensions including hidden insertion length remain unmeasured estimates. No physical mating guarantee.",
+        "No exact N8R8 native CAD was located in inspected official pages. Original FH4R2 Zero CAD topology and silkscreen are not copied.",
+        "N8R8 package is shown at a source-backed approximate 45-degree angle. Exact package edge, height, PCB stackup, bottom contact layout and hidden small passives remain UNKNOWN.",
+        "Small pads, solder fillets and printed labels are not reconstructed from the low-resolution oblique photographs. No arbitrary detailed circuit placement is fabricated.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-zero-factory-reference",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-zero-n8r8-m/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-zero"
+    },
+    {
+      "id": "waveshare-esp32-s3-dev-kit-n8r8",
+      "name": "Waveshare ESP32-S3-DEV-KIT-N8R8",
+      "manufacturer": "Waveshare",
+      "sku": "24363",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "8 MiB Flash / 8 MiB PSRAM；GPIO38 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-dev-kit-n8r8.json",
+      "family": {
+        "id": "waveshare-esp32-s3-dev-kit-n8r8",
+        "name": "Waveshare ESP32-S3-DEV-KIT"
+      },
+      "runtime": {
+        "board": "waveshare-s3-devkit-n8r8",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-dev-kit-n8r8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-micropython-firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "ESP32-S3-DEV-KIT-MPY-Example/7-RGB-LED/rgb.py",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "Exact manufacturer nativeN8R8 assembly; board trace/stackup editing and physical fit remain unverified.",
+        "Published25.4×63.3mm and native25.42068576×63.31069634mm PCB extents differ slightly. Native source is not scaled to erase the discrepancy.",
+        "The bare variant omits only the two native pre-soldered headers. The-M variant retains all420 source components, including the complete sourceUSB topology.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-dev-kit-n8r8-micropython",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-dev-kit-n8r8/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-dev-kit-n8r8-m",
+      "name": "Waveshare ESP32-S3-DEV-KIT-N8R8-M",
+      "manufacturer": "Waveshare",
+      "sku": "24243",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "8 MiB Flash / 8 MiB PSRAM；GPIO38 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-dev-kit-n8r8-m.json",
+      "family": {
+        "id": "waveshare-esp32-s3-dev-kit-n8r8",
+        "name": "Waveshare ESP32-S3-DEV-KIT"
+      },
+      "runtime": {
+        "board": "waveshare-s3-devkit-n8r8-m",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-dev-kit-n8r8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-micropython-firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "ESP32-S3-DEV-KIT-MPY-Example/7-RGB-LED/rgb.py",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "Exact manufacturer nativeN8R8 assembly; board trace/stackup editing and physical fit remain unverified.",
+        "Published25.4×63.3mm and native25.42068576×63.31069634mm PCB extents differ slightly. Native source is not scaled to erase the discrepancy.",
+        "The bare variant omits only the two native pre-soldered headers. The-M variant retains all420 source components, including the complete sourceUSB topology.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-dev-kit-n8r8-m-micropython",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-dev-kit-n8r8-m/model.json",
+        "status": "partial",
+        "provenance": "official-cad"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-dev-kit-n8r8"
+    },
+    {
+      "id": "waveshare-esp32-s3-dev-kit-n16r8",
+      "name": "Waveshare ESP32-S3-DEV-KIT-N16R8",
+      "manufacturer": "Waveshare",
+      "sku": "28409",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 8 MiB PSRAM；GPIO38 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-dev-kit-n16r8.json",
+      "family": {
+        "id": "waveshare-esp32-s3-dev-kit-n8r8",
+        "name": "Waveshare ESP32-S3-DEV-KIT"
+      },
+      "runtime": {
+        "board": "waveshare-s3-devkit-n16r8",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-dev-kit-n8r8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-micropython-firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "ESP32-S3-DEV-KIT-MPY-Example/7-RGB-LED/rgb.py",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "USB shell is physically open in the mesh but contact tongues, detailed contacts and mating dimensions remain unknown. Source-photo parallax does not measure connector height.",
+        "Only N8R8 has inspected original native STEP. No N8R8 internal electrical package geometry or exact module shield dimensions are transferred to this SKU.",
+        "Front small passives, silkscreen, concealed components, reverse placement and stackup remain UNKNOWN. The model retains visible large component envelopes and the actual board openings only.",
+        "Nominal family board dimensions are supported by the official family drawing; exact-option planar congruence is checked by manual photo registration, not by metrology.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-dev-kit-n16r8-micropython",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-dev-kit-n16r8/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-dev-kit-n8r8"
+    },
+    {
+      "id": "waveshare-esp32-s3-dev-kit-n16r8-m",
+      "name": "Waveshare ESP32-S3-DEV-KIT-N16R8-M",
+      "manufacturer": "Waveshare",
+      "sku": "28836",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 8 MiB PSRAM；GPIO38 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-dev-kit-n16r8-m.json",
+      "family": {
+        "id": "waveshare-esp32-s3-dev-kit-n8r8",
+        "name": "Waveshare ESP32-S3-DEV-KIT"
+      },
+      "runtime": {
+        "board": "waveshare-s3-devkit-n16r8-m",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-dev-kit-n8r8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-micropython-firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "ESP32-S3-DEV-KIT-MPY-Example/7-RGB-LED/rgb.py",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "USB shell is physically open in the mesh but contact tongues, detailed contacts and mating dimensions remain unknown. Source-photo parallax does not measure connector height.",
+        "Header count/centers are source-backed; body and pin dimensions including hidden insertion length remain unmeasured estimates. No physical mating guarantee.",
+        "Only N8R8 has inspected original native STEP. No N8R8 internal electrical package geometry or exact module shield dimensions are transferred to this SKU.",
+        "Front small passives, silkscreen, concealed components, reverse placement and stackup remain UNKNOWN. The model retains visible large component envelopes and the actual board openings only.",
+        "Nominal family board dimensions are supported by the official family drawing; exact-option planar congruence is checked by manual photo registration, not by metrology.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-dev-kit-n16r8-m-micropython",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-dev-kit-n16r8-m/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-dev-kit-n8r8"
+    },
+    {
+      "id": "waveshare-esp32-s3-dev-kit-n32r16v",
+      "name": "Waveshare ESP32-S3-DEV-KIT-N32R16V",
+      "manufacturer": "Waveshare",
+      "sku": "32837",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32 MiB Flash / 16 MiB PSRAM；OPI Flash；GPIO38 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-dev-kit-n32r16v.json",
+      "family": {
+        "id": "waveshare-esp32-s3-dev-kit-n8r8",
+        "name": "Waveshare ESP32-S3-DEV-KIT"
+      },
+      "runtime": {
+        "board": "waveshare-s3-devkit-n32r16v",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-dev-kit-n8r8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-micropython-firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "ESP32-S3-DEV-KIT-MPY-Example/7-RGB-LED/rgb.py",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "N32R16V为32MiB OPI Flash/16MiB PSRAM；GPIO47/48属于官方1.8V域。数字模拟不表示实际电压；尚无确认的精确可启动原厂镜像。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "USB shell is physically open in the mesh but contact tongues, detailed contacts and mating dimensions remain unknown. Source-photo parallax does not measure connector height.",
+        "Only N8R8 has inspected original native STEP. No N8R8 internal electrical package geometry or exact module shield dimensions are transferred to this SKU.",
+        "Front small passives, silkscreen, concealed components, reverse placement and stackup remain UNKNOWN. The model retains visible large component envelopes and the actual board openings only.",
+        "Nominal family board dimensions are supported by the official family drawing; exact-option planar congruence is checked by manual photo registration, not by metrology.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-dev-kit-n8r8-factory-reference",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-dev-kit-n32r16v/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-dev-kit-n8r8"
+    },
+    {
+      "id": "waveshare-esp32-s3-dev-kit-n32r16v-m",
+      "name": "Waveshare ESP32-S3-DEV-KIT-N32R16V-M",
+      "manufacturer": "Waveshare",
+      "sku": "32588",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "32 MiB Flash / 16 MiB PSRAM；OPI Flash；GPIO38 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-dev-kit-n32r16v-m.json",
+      "family": {
+        "id": "waveshare-esp32-s3-dev-kit-n8r8",
+        "name": "Waveshare ESP32-S3-DEV-KIT"
+      },
+      "runtime": {
+        "board": "waveshare-s3-devkit-n32r16v-m",
+        "flashMb": 32,
+        "psramMb": 16,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-dev-kit-n8r8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-micropython-firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "ESP32-S3-DEV-KIT-MPY-Example/7-RGB-LED/rgb.py",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "N32R16V为32MiB OPI Flash/16MiB PSRAM；GPIO47/48属于官方1.8V域。数字模拟不表示实际电压；尚无确认的精确可启动原厂镜像。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "USB shell is physically open in the mesh but contact tongues, detailed contacts and mating dimensions remain unknown. Source-photo parallax does not measure connector height.",
+        "Header count/centers are source-backed; body and pin dimensions including hidden insertion length remain unmeasured estimates. No physical mating guarantee.",
+        "Only N8R8 has inspected original native STEP. No N8R8 internal electrical package geometry or exact module shield dimensions are transferred to this SKU.",
+        "Front small passives, silkscreen, concealed components, reverse placement and stackup remain UNKNOWN. The model retains visible large component envelopes and the actual board openings only.",
+        "Nominal family board dimensions are supported by the official family drawing; exact-option planar congruence is checked by manual photo registration, not by metrology.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-dev-kit-n8r8-factory-reference",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-dev-kit-n32r16v-m/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-dev-kit-n8r8"
+    },
+    {
+      "id": "waveshare-esp32-s3-dev-kit-n16r8-u",
+      "name": "Waveshare ESP32-S3-DEV-KIT-N16R8-U",
+      "manufacturer": "Waveshare",
+      "sku": "34549",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 8 MiB PSRAM；GPIO38 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-dev-kit-n16r8-u.json",
+      "family": {
+        "id": "waveshare-esp32-s3-dev-kit-n8r8",
+        "name": "Waveshare ESP32-S3-DEV-KIT"
+      },
+      "runtime": {
+        "board": "waveshare-s3-devkit-n16r8-u",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-dev-kit-n8r8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-micropython-firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "ESP32-S3-DEV-KIT-MPY-Example/7-RGB-LED/rgb.py",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "USB shell is physically open in the mesh but contact tongues, detailed contacts and mating dimensions remain unknown. Source-photo parallax does not measure connector height.",
+        "Exact 1U module, RF connector and notch CAD was not found in inspected official sources. Coax and external antenna remain visible source references only; their length, curvature and attachment geometry are not invented.",
+        "Only N8R8 has inspected original native STEP. No N8R8 internal electrical package geometry or exact module shield dimensions are transferred to this SKU.",
+        "Front small passives, silkscreen, concealed components, reverse placement and stackup remain UNKNOWN. The model retains visible large component envelopes and the actual board openings only.",
+        "Nominal family board dimensions are supported by the official family drawing; exact-option planar congruence is checked by manual photo registration, not by metrology.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-dev-kit-n16r8-u-micropython",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-dev-kit-n16r8-u/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-dev-kit-n8r8"
+    },
+    {
+      "id": "waveshare-esp32-s3-dev-kit-n16r8-um",
+      "name": "Waveshare ESP32-S3-DEV-KIT-N16R8-UM",
+      "manufacturer": "Waveshare",
+      "sku": "34550",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 8 MiB PSRAM；GPIO38 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-dev-kit-n16r8-um.json",
+      "family": {
+        "id": "waveshare-esp32-s3-dev-kit-n8r8",
+        "name": "Waveshare ESP32-S3-DEV-KIT"
+      },
+      "runtime": {
+        "board": "waveshare-s3-devkit-n16r8-um",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-dev-kit-n8r8.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-DEV-KIT-N8R8/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-N8R8-micropython-firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "ESP32-S3-DEV-KIT-MPY-Example/7-RGB-LED/rgb.py",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-DEV-KIT-N8R8/ESP32-S3-DEV-KIT-MPY-Example.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "Newly generated model with new hashes and new validation. Historical batch-04 reviews are not acceptance of these artifacts.",
+        "No physical fit, material calibration, complete hidden layout, original application compatibility or hardware acceptance is implied.",
+        "USB shell is physically open in the mesh but contact tongues, detailed contacts and mating dimensions remain unknown. Source-photo parallax does not measure connector height.",
+        "Exact 1U module, RF connector and notch CAD was not found in inspected official sources. Coax and external antenna remain visible source references only; their length, curvature and attachment geometry are not invented.",
+        "Header count/centers are source-backed; body and pin dimensions including hidden insertion length remain unmeasured estimates. No physical mating guarantee.",
+        "Only N8R8 has inspected original native STEP. No N8R8 internal electrical package geometry or exact module shield dimensions are transferred to this SKU.",
+        "Front small passives, silkscreen, concealed components, reverse placement and stackup remain UNKNOWN. The model retains visible large component envelopes and the actual board openings only.",
+        "Nominal family board dimensions are supported by the official family drawing; exact-option planar congruence is checked by manual photo registration, not by metrology.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-dev-kit-n16r8-um-micropython",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-dev-kit-n16r8-um/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-dev-kit-n8r8"
+    },
+    {
+      "id": "waveshare-esp32-s3-pico",
+      "name": "Waveshare ESP32-S3-Pico",
+      "manufacturer": "Waveshare",
+      "sku": "23803",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 2 MiB PSRAM；GPIO21 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-pico.json",
+      "family": {
+        "id": "waveshare-esp32-s3-pico",
+        "name": "Waveshare ESP32-S3-Pico"
+      },
+      "runtime": {
+        "board": "waveshare-s3-pico",
+        "flashMb": 16,
+        "psramMb": 2,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-pico.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Pico",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Pico/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Pico/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Pico/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Pico-Schematics.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Pico/ESP32-S3-Pico-Schematics.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Pico/f0d0562a53e2087eb14d646ff1daa791e47e0aa0/examples/ESP32-S3-Pico-MPY-Example/7-RGB-LED/rgb.py",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/common/ESP32-S3-MicroPythn-4MB-Flash.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "rgb.py",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Pico/f0d0562a53e2087eb14d646ff1daa791e47e0aa0/examples/ESP32-S3-Pico-MPY-Example/7-RGB-LED/rgb.py",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "精确S3R2/2MiB身份与官方Octal-PSRAM段落有冲突；4MiB MicroPython软件布局不改变物理16MiB Flash。",
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Pico BOOT is the only mapped physical button; RESET is not a second GPIO control.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-pico-micropython",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-pico/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-pico-m",
+      "name": "Waveshare ESP32-S3-Pico-M",
+      "manufacturer": "Waveshare",
+      "sku": "24023",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 2 MiB PSRAM；GPIO21 RGB与GPIO0 BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-pico-m.json",
+      "family": {
+        "id": "waveshare-esp32-s3-pico",
+        "name": "Waveshare ESP32-S3-Pico"
+      },
+      "runtime": {
+        "board": "waveshare-s3-pico-m",
+        "flashMb": 16,
+        "psramMb": 2,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [
+        {
+          "id": "boot",
+          "name": "BOOT",
+          "type": "button",
+          "pin": 0,
+          "activeLow": true,
+          "defaultKeyCode": "Space"
+        }
+      ],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线、CH343/CH334桥接或集线器行为未由此条目模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-pico.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Pico",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Pico/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Pico/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Pico/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Pico-Schematics.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Pico/ESP32-S3-Pico-Schematics.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Pico/f0d0562a53e2087eb14d646ff1daa791e47e0aa0/examples/ESP32-S3-Pico-MPY-Example/7-RGB-LED/rgb.py",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/common/ESP32-S3-MicroPythn-4MB-Flash.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "rgb.py",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-Pico/f0d0562a53e2087eb14d646ff1daa791e47e0aa0/examples/ESP32-S3-Pico-MPY-Example/7-RGB-LED/rgb.py",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "精确S3R2/2MiB身份与官方Octal-PSRAM段落有冲突；4MiB MicroPython软件布局不改变物理16MiB Flash。",
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Pico BOOT is the only mapped physical button; RESET is not a second GPIO control.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-pico-m-micropython",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-pico-m/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-pico"
     }
   ]
 }

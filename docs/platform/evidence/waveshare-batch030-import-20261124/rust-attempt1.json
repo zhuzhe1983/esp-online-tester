@@ -1,0 +1,66 @@
+{
+  "scope": "First local full workspace attempt; compilation completed, suite stopped at the first failing CLI test. This is retained as a failed attempt, not a completed suite.",
+  "sourceCommitLocalUnpublished": "aa74bd27223febb648cdf4595154d5b16bbb6077",
+  "checks": [
+    {
+      "name": "clippy-native",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 30.459,
+      "completedAt": "2026-11-24T09:23:39.649297+00:00",
+      "logSha256": "858aaad8ee53e0a84d359aa7364798b01ce45d59c1a051711b6d8d73767ee0ed"
+    },
+    {
+      "name": "clippy-wasm",
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "-p",
+        "esp32sim-wasm",
+        "--features",
+        "jit-tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "elapsedSeconds": 6.189,
+      "completedAt": "2026-11-24T09:23:45.838954+00:00",
+      "logSha256": "fc3619f6a0d6b71ebf1670450c9caaa6db7e32fe05822754942152ec3d48af19"
+    },
+    {
+      "name": "rust-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--workspace",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "exitCode": 101,
+      "elapsedSeconds": 2016.807,
+      "completedAt": "2026-11-24T11:31:29.923868+00:00",
+      "logSha256": "7d66cf154e9c574249d26163197f1f4481187952a62a18f0f6d7522d25e62d94"
+    }
+  ],
+  "failure": {
+    "path": "cli/tests/classic_wifi_option.rs",
+    "test": "classic_esp32_accepts_the_wifi_option",
+    "reason": "Expected former generic0/2/4/8PSRAM error text after the CLI was intentionally restored to generic0/4.",
+    "correction": "Only align the stale assertion with the restored0/4contract; AP attachment and unsupported-capacity input checks remain."
+  }
+}

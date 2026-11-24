@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "lane": "host",
+  "sourceCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "runtimeSourceSha256": "1ba789a2073818d4306b6f53b502bca67da09fdba4232b8c718048c6b68cc5bf",
+  "runtimeSourceFileCount": 855,
+  "environment": {
+    "architecture": "x86_64",
+    "system": "Linux",
+    "logicalCpus": 9,
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v24.22.3",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "limitations": [
+    "Linux x86_64 only; no native AArch64 CI execution.",
+    "Node/Worker checks do not establish browser WebGL or physical hardware acceptance."
+  ],
+  "steps": [
+    {
+      "id": "host-clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "log": "host-host-clippy-before-c6-boundary-fixture.log",
+      "startedAt": "2026-11-24T07:37:31.565527+00:00",
+      "exitCode": 0,
+      "durationSeconds": 2.083,
+      "finishedAt": "2026-11-24T07:37:33.649431+00:00",
+      "logSha256": "49aaa4037e7ead53fbd32b80f0f65724ac3ffb1eb039a8b653e650233b0d3328",
+      "logBytes": 113
+    },
+    {
+      "id": "host-workspace-build",
+      "command": "cargo build --release --workspace",
+      "log": "host-host-workspace-build-before-c6-boundary-fixture.log",
+      "startedAt": "2026-11-24T07:37:33.864278+00:00",
+      "exitCode": 0,
+      "durationSeconds": 223.048,
+      "finishedAt": "2026-11-24T07:41:16.912715+00:00",
+      "logSha256": "4513bc8feefb6d8d0018f96b090cec6479febf783bbe4b835be97ad6a77529a0",
+      "logBytes": 116
+    },
+    {
+      "id": "host-workspace-tests",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "log": "host-host-workspace-tests-before-c6-boundary-fixture.log",
+      "startedAt": "2026-11-24T07:41:17.081629+00:00",
+      "exitCode": 101,
+      "durationSeconds": 393.195,
+      "finishedAt": "2026-11-24T07:47:50.277763+00:00",
+      "logSha256": "4365301e94f5aaec31c87c49a3b32cf59a61c0128f939d009cef26f164827660",
+      "logBytes": 313251
+    }
+  ],
+  "complete": false,
+  "runtimeSourceFreezeFile": "rust-source-freeze-before-c6-boundary-fixture.json"
+}

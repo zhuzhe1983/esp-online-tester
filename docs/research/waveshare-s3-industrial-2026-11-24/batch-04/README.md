@@ -1,5 +1,18 @@
 # Waveshare S3 core options: final four listing families
 
+**Current model revision.** The model hashes and 36 review images in this
+directory describe the earlier model revision. The published Zero base model
+remains unchanged; the other fifteen current assets have new plans, sources
+and hashes. Their current verification is retained in the
+[batch030 model reports](../../../platform/evidence/waveshare-batch030-models-20261124/),
+with separate `nano-pico/` and `zero-devkit/` reports. These historical model
+images are not acceptance evidence for different current asset hashes.
+The [catalog reconstruction record](../batch-04-catalog-recovery/README.md)
+describes the source, firmware and published-record preservation boundary.
+The electrical facts and original runtime/source receipts below retain their
+own stated scope; no execution or physical-hardware conclusion is inherited
+from the model revision.
+
 This batch completes the exact Nano, Zero, DEV-KIT and Pico options in the
 inspected storefront inventory: **4 families, 16 SKU profiles, 16 models**.
 The original four base model/firmware identities remain; twelve additional

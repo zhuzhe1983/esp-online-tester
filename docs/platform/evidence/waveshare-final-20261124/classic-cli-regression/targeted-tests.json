@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-11-24T07:29:58.387097+00:00",
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "-p",
+    "esp32sim",
+    "--test",
+    "classic_psram_option",
+    "--test",
+    "classic_wifi_option",
+    "--",
+    "--include-ignored"
+  ],
+  "runtimeSource": {
+    "fileCount": 855,
+    "manifestSha256": "1ba789a2073818d4306b6f53b502bca67da09fdba4232b8c718048c6b68cc5bf"
+  },
+  "changedSources": {
+    "cli/src/lib.rs": "79e7a5cc4850e298c666eb8948c2072f358629143b4fe2cdc2a5a181bb3a6376",
+    "cli/tests/classic_psram_option.rs": "6e44ebc4be225e99558982850c6e80ecdb8131bcafbfebd550a641a0dbdda601"
+  },
+  "environment": {
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "esp32simRomDir": "$REPO/web/wasm/fw",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "scope": "CLI memory validation regression: generic classic 0/4 MiB contract, exact Waveshare 2/8 MiB profiles, original guest allocator and Wi-Fi CLI compatibility. No PSRAM bus or WASM implementation changes.",
+  "maskRom": {
+    "path": "web/wasm/fw/esp32_rev300_rom.elf",
+    "bytes": 857500,
+    "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
+  },
+  "exitCode": 0,
+  "finishedAt": "2026-11-24T07:34:02.414131+00:00",
+  "durationSeconds": 243.974,
+  "log": "tests.log",
+  "originalLogSha256": "10b7da12660981964af0f5f6cfa84008fff1b3b7cdd90b24b4c7f42554919dfd",
+  "retainedLogSha256": "2d8c4c95931c5290bce288321ced944479455399b85236171d85e7e9bd681d13",
+  "retainedLogBytes": 1598,
+  "retention": "Paths normalized to $REPO, $CARGO_HOME and $RUSTUP_HOME; other command output preserved.",
+  "sourceUnchangedDuringRun": true,
+  "headCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "sourceBinding": "The tested working tree includes the two recorded CLI edits beyond HEAD; the 855-file runtime manifest and changed-source SHA-256 values identify the actual tested bytes.",
+  "testsPassed": 5,
+  "testsFailed": 0,
+  "testsIgnored": 0
+}

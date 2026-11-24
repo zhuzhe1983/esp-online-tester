@@ -41,6 +41,7 @@ export default {
   "TF · SDMMC 单线": "TF · One-bit SDMMC",
   "BOOT · 退出原厂画板": "BOOT · Exit factory drawing app",
   "USB-C · 编程与供电": "USB-C · Programming and power",
+  "USB-C · 电源/程序下载": "USB-C · Power / programming",
   "I2C 调试焊盘": "I2C debug pads",
   "UART0 调试焊盘": "UART0 debug pads",
   "AXP192 虚拟电源环境": "AXP192 virtual power",

@@ -1,0 +1,757 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-11-24T07:14:17.160078+00:00",
+  "scope": "Manual inspection of the eight current review images, exact retained source hashes, production Three.js CPU loader/geometry checks. No old-byte restoration, browser/WebGL input or text-readability, manufacturing tolerance, physical-fit or hardware acceptance is asserted.",
+  "inspectionBasis": "All four full-resolution four-view images and the two -M dimension overlays were displayed individually; the two bare-board dimension overlays were displayed together at reduced size. The subsequent rebuild changed only source attribution and limitation text, with unchanged construction geometry.",
+  "execution": [
+    {
+      "command": "python3 docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reconstruct.py",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 tools/build-waveshare-models.py waveshare-esp32-s3-nano waveshare-esp32-s3-nano-m waveshare-esp32-s3-pico waveshare-esp32-s3-pico-m --output web/platform/assets",
+      "exitCode": 0
+    },
+    {
+      "command": "node tools/check-waveshare-model-loading.mjs waveshare-esp32-s3-nano waveshare-esp32-s3-nano-m waveshare-esp32-s3-pico waveshare-esp32-s3-pico-m --output docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/loader-checks.json --dump docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/mesh-dumps",
+      "exitCode": 0
+    },
+    {
+      "command": "node docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/check-geometry.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "python3 tools/review-waveshare-models.py --meshes docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/mesh-dumps --output docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews",
+      "exitCode": 0
+    }
+  ],
+  "tools": [
+    {
+      "file": "tools/build-waveshare-models.py",
+      "bytes": 18287,
+      "sha256": "35e45bc46e704659176d9a430d8e6ebacae83a21a33b0d47dbc82696346fd8ef"
+    },
+    {
+      "file": "tools/check-waveshare-model-loading.mjs",
+      "bytes": 17724,
+      "sha256": "42b1b41b71a4236f5d978061287864309a0fc68150d552c847e103f9cf651679"
+    },
+    {
+      "file": "tools/review-waveshare-models.py",
+      "bytes": 11629,
+      "sha256": "1e3243085d9ddb190a3896b3f498d06b5e8000903f6ad51e4bf14f6f510091ae"
+    },
+    {
+      "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reconstruct.py",
+      "bytes": 17848,
+      "sha256": "cd0e0bd87a7907ca1f5be2f80257aaa265d2e4dd16e4018d27099636f261bfb1"
+    },
+    {
+      "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/check-geometry.mjs",
+      "bytes": 4812,
+      "sha256": "6e82906a70c27cb1ca686b9c2cfef9095a9b06a693f7330e8a7b8c3d21e8b2b1"
+    }
+  ],
+  "acceptanceReceipts": [
+    {
+      "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/loader-checks.json",
+      "bytes": 8012,
+      "sha256": "25a169825fe86d6997529899e068db4a4170572b088c715fbd669ea7ebca6e84"
+    },
+    {
+      "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/additional-geometry-checks.json",
+      "bytes": 12083,
+      "sha256": "fd2eb743e6e77964ccf046f7493801beb85ad5dc04fc69284e2d25b9cce40234"
+    }
+  ],
+  "results": [
+    {
+      "id": "waveshare-esp32-s3-nano",
+      "method": "dimension-photo-reconstruction",
+      "status": "source-bounded-visual-review-passed",
+      "artifacts": [
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano/model.json",
+          "bytes": 284757,
+          "sha256": "43f2a4f0c45357738eff5fb52918604b019f0d914447210e285a0d0e201da946"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano/model-plan.json",
+          "bytes": 284588,
+          "sha256": "f1acb1add4748ea870765dae84b297de6214587c98307ad01c546afd1f1468b6"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano/geometry.bin.gz",
+          "bytes": 1162,
+          "sha256": "b239f4b6a5fe7b28710e8fcc41e7e1f52642f868dcf9f763cca4c348512e67ea"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano/source-manifest.json",
+          "bytes": 13468,
+          "sha256": "d691d0f5e3dc0f2f0ff6b96e2b1d69c957d3dfd5db5bf911535e1cbe9fa5526a"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano/SOURCE-RIGHTS.txt",
+          "bytes": 317,
+          "sha256": "1b043ef1af63f3e53c150095047a3af3dd3fa5042daa7c9c483876704b3a4890"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano/build-check.json",
+          "bytes": 1942,
+          "sha256": "843ee42fed1381ed7046bc2fc9f57f7e92a81217ec0b16ea9aa721e21652f7e4"
+        }
+      ],
+      "inspectedReviewImages": [
+        {
+          "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews/waveshare-esp32-s3-nano-four-views.png",
+          "bytes": 78729,
+          "sha256": "b2d3ec11b0926462ff204f5743c1931bb72b097b7441680b5c89391bec1634a8"
+        },
+        {
+          "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews/waveshare-esp32-s3-nano-photo-registration.png",
+          "bytes": 361242,
+          "sha256": "7c7abba620a9a39498080877ead93647937e7a9b332fd73f43afecc7d922835b"
+        }
+      ],
+      "meshDump": {
+        "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/mesh-dumps/waveshare-esp32-s3-nano.json",
+        "bytes": 1587680,
+        "sha256": "f5ba7e18cae07543f844a4a569c8eeb77ea0ba2633cf4334a92bb3c2909c8a30"
+      },
+      "sources": {
+        "count": 12,
+        "retainedAndOriginalHashes": "passed",
+        "nativeCadSearch": {
+          "status": "no-matching-CAD-in-recorded-scope",
+          "inspected": [
+            "overview",
+            "store",
+            "resources-historical"
+          ],
+          "mechanicalFileLinks": [],
+          "result": "The retained canonical Resources HTML links were parsed for STEP/STL/KiCad/Gerber/3MF. None was found in that page; linked software archives and unvisited external locations are not a global absence claim."
+        }
+      },
+      "publishedDimensionChecks": [
+        {
+          "part": "pcb-main",
+          "sizeMm": [
+            17.78,
+            43.18,
+            null
+          ],
+          "toleranceMm": 0.001,
+          "sourceId": "dimension-photo",
+          "measuredMm": [
+            17.780000686645508,
+            43.18000030517578,
+            1.6150000119209298
+          ],
+          "absoluteErrorsMm": [
+            6.866455066756316e-07,
+            3.051757815342171e-07,
+            null
+          ]
+        }
+      ],
+      "photoRegistration": {
+        "front": {
+          "file": "esp32-s3-nano-3.jpg",
+          "pcbPixelBounds": [
+            627,
+            117,
+            1042,
+            1121
+          ],
+          "nominalSizeMm": [
+            17.78,
+            43.18
+          ],
+          "pixelFromModelXY": [
+            [
+              23.340832395950503,
+              0,
+              834.5
+            ],
+            [
+              0,
+              -23.251505326540066,
+              619.0
+            ]
+          ],
+          "uvFromMm": [
+            0.014588020247469064,
+            0,
+            0.5215625,
+            0,
+            0.019376254438783387,
+            0.48416666666666663
+          ],
+          "basis": "Manual PCB substrate boundary landmarks in the retained high-resolution front photograph; USB overhang excluded. Independent official drawing supplies XY. Height and perspective remain uncalibrated."
+        },
+        "review": {
+          "file": "ESP32-S3-Nano-details-size-d435914d61a0d43a84a1c96664de73b1.webp",
+          "pixelFromModelXY": [
+            [
+              0,
+              -15.006947660954145,
+              482
+            ],
+            [
+              -15.016872890888639,
+              0,
+              241.5
+            ]
+          ],
+          "basis": "Independent manufacturer dimension image; affine plane alignment only, no manufactured tolerance claim."
+        }
+      },
+      "observations": [
+        "Front, reverse, edge and oblique views inspected; board silhouette, USB direction and component arrangement agree with the retained official views within the declared photo reconstruction scope.",
+        "Official dimension-image overlay inspected; nominal board outline, USB, physical RESET, principal packages and header-row placement align by the declared manual affine registration.",
+        "Rear UNKNOWN label is visible between the two header rows where present; back layout and component heights remain unverified.",
+        "The physical RESET package and cap are visible and do not carry a fabricated GPIO control.",
+        "Four sourced mounting holes are open; Nano has no BOOT geometry or control and retains RGB/SCK LED slots 0/1.",
+        "Bare variant has open header holes and no pre-soldered header geometry."
+      ],
+      "interactionContract": {
+        "controls": [],
+        "ledIndices": [
+          0,
+          1
+        ],
+        "visibleUnknownLabels": [
+          "pcb-main-unknown-back"
+        ],
+        "shellNames": []
+      },
+      "limitations": [
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Nano has no invented BOOT button and GPIO0 remains an RGB channel.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed."
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-m",
+      "method": "dimension-photo-reconstruction",
+      "status": "source-bounded-visual-review-passed",
+      "artifacts": [
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano-m/model.json",
+          "bytes": 305454,
+          "sha256": "94dd6195654eb89358f31932b674655947b49bb773aea1d8e2e55854c82eec63"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano-m/model-plan.json",
+          "bytes": 303518,
+          "sha256": "d731324cafd139fac9b95301e71d9680b2a4cafd956c4b11ea8881ad427da47f"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano-m/geometry.bin.gz",
+          "bytes": 4180,
+          "sha256": "30b6d1cb358435592f169506387c33dff305cd6fc38a10414f370df114afad2f"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano-m/source-manifest.json",
+          "bytes": 13470,
+          "sha256": "34cc991e5bf2d4a7aea6637509e3318396a77d434d7835d5309b4f6c46db4f74"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano-m/SOURCE-RIGHTS.txt",
+          "bytes": 317,
+          "sha256": "1b043ef1af63f3e53c150095047a3af3dd3fa5042daa7c9c483876704b3a4890"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-nano-m/build-check.json",
+          "bytes": 5721,
+          "sha256": "44215d907042baf7fbbf0752756d0b6d21b1978c42b160edf87683bfb6d6bcec"
+        }
+      ],
+      "inspectedReviewImages": [
+        {
+          "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews/waveshare-esp32-s3-nano-m-four-views.png",
+          "bytes": 83804,
+          "sha256": "f550ae4b49a135604cfbf9dce6c8e4e31ea3295e27f42a56f11796698093ba6b"
+        },
+        {
+          "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews/waveshare-esp32-s3-nano-m-photo-registration.png",
+          "bytes": 373552,
+          "sha256": "b1a59bcd4d32ee0114185e26e1affbd55136ccbf3436302ba3ddad0eecf01d27"
+        }
+      ],
+      "meshDump": {
+        "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/mesh-dumps/waveshare-esp32-s3-nano-m.json",
+        "bytes": 1649646,
+        "sha256": "f027115f8df47982ab1254fa15fd04bbaa3ee35f5c3c4c1eecacb55955c50d0d"
+      },
+      "sources": {
+        "count": 12,
+        "retainedAndOriginalHashes": "passed",
+        "nativeCadSearch": {
+          "status": "no-matching-CAD-in-recorded-scope",
+          "inspected": [
+            "overview",
+            "store",
+            "resources-historical"
+          ],
+          "mechanicalFileLinks": [],
+          "result": "The retained canonical Resources HTML links were parsed for STEP/STL/KiCad/Gerber/3MF. None was found in that page; linked software archives and unvisited external locations are not a global absence claim."
+        }
+      },
+      "publishedDimensionChecks": [
+        {
+          "part": "pcb-main",
+          "sizeMm": [
+            17.78,
+            43.18,
+            null
+          ],
+          "toleranceMm": 0.001,
+          "sourceId": "dimension-photo",
+          "measuredMm": [
+            17.780000686645508,
+            43.18000030517578,
+            1.6150000119209298
+          ],
+          "absoluteErrorsMm": [
+            6.866455066756316e-07,
+            3.051757815342171e-07,
+            null
+          ]
+        }
+      ],
+      "photoRegistration": {
+        "front": {
+          "file": "esp32-s3-nano-3.jpg",
+          "pcbPixelBounds": [
+            627,
+            117,
+            1042,
+            1121
+          ],
+          "nominalSizeMm": [
+            17.78,
+            43.18
+          ],
+          "pixelFromModelXY": [
+            [
+              23.340832395950503,
+              0,
+              834.5
+            ],
+            [
+              0,
+              -23.251505326540066,
+              619.0
+            ]
+          ],
+          "uvFromMm": [
+            0.014588020247469064,
+            0,
+            0.5215625,
+            0,
+            0.019376254438783387,
+            0.48416666666666663
+          ],
+          "basis": "Manual PCB substrate boundary landmarks in the retained high-resolution front photograph; USB overhang excluded. Independent official drawing supplies XY. Height and perspective remain uncalibrated."
+        },
+        "review": {
+          "file": "ESP32-S3-Nano-details-size-d435914d61a0d43a84a1c96664de73b1.webp",
+          "pixelFromModelXY": [
+            [
+              0,
+              -15.006947660954145,
+              482
+            ],
+            [
+              -15.016872890888639,
+              0,
+              241.5
+            ]
+          ],
+          "basis": "Independent manufacturer dimension image; affine plane alignment only, no manufactured tolerance claim."
+        }
+      },
+      "observations": [
+        "Front, reverse, edge and oblique views inspected; board silhouette, USB direction and component arrangement agree with the retained official views within the declared photo reconstruction scope.",
+        "Official dimension-image overlay inspected; nominal board outline, USB, physical RESET, principal packages and header-row placement align by the declared manual affine registration.",
+        "Rear UNKNOWN label is visible between the two header rows where present; back layout and component heights remain unverified.",
+        "The physical RESET package and cap are visible and do not carry a fabricated GPIO control.",
+        "Four sourced mounting holes are open; Nano has no BOOT geometry or control and retains RGB/SCK LED slots 0/1.",
+        "Two 15-pin rows match the exact -M manufacturer photograph; cross-section and pin lengths remain explicit estimates."
+      ],
+      "interactionContract": {
+        "controls": [],
+        "ledIndices": [
+          0,
+          1
+        ],
+        "visibleUnknownLabels": [
+          "pcb-main-unknown-back"
+        ],
+        "shellNames": []
+      },
+      "limitations": [
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Nano has no invented BOOT button and GPIO0 remains an RGB channel.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed."
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-pico",
+      "method": "dimension-photo-reconstruction",
+      "status": "source-bounded-visual-review-passed",
+      "artifacts": [
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico/model.json",
+          "bytes": 343278,
+          "sha256": "f4c6280e4c234e48bf1d6cd5c5b3dbcb682ef90af6e0c03025c3b31b58eedb2e"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico/model-plan.json",
+          "bytes": 344103,
+          "sha256": "6b29be8633575f7f7baa411e5093a8f7f7f9bd03c98311ed1bd3c7cc9cac8aee"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico/geometry.bin.gz",
+          "bytes": 1586,
+          "sha256": "e08e00be3cd8fc1d66e504ddf33773f096d034f34d147e02e4c333e8593425d0"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico/source-manifest.json",
+          "bytes": 14522,
+          "sha256": "cd27884c3ccb9a3e4f5102f121d9850c21011ac1eaa33f263596d25e89ff9eab"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico/SOURCE-RIGHTS.txt",
+          "bytes": 317,
+          "sha256": "1b043ef1af63f3e53c150095047a3af3dd3fa5042daa7c9c483876704b3a4890"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico/build-check.json",
+          "bytes": 2419,
+          "sha256": "e306d9eb9b3a96fe34e1b35e4eebcf6fb725e977909f76e4298c36b729536662"
+        }
+      ],
+      "inspectedReviewImages": [
+        {
+          "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews/waveshare-esp32-s3-pico-four-views.png",
+          "bytes": 80285,
+          "sha256": "03a5cf0a5d07a99db45fec8707ed39683aaff1e817d290f389126cb1a3534e1a"
+        },
+        {
+          "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews/waveshare-esp32-s3-pico-photo-registration.png",
+          "bytes": 267112,
+          "sha256": "527afde68268898bd4139a2aa2813f0a72ebe74ba76c4ca0ad0935802c10c32b"
+        }
+      ],
+      "meshDump": {
+        "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/mesh-dumps/waveshare-esp32-s3-pico.json",
+        "bytes": 1909606,
+        "sha256": "e8bad993d19b77bb0c7624449a5ffcfef240e908fc1b183b74155f513f31e469"
+      },
+      "sources": {
+        "count": 13,
+        "retainedAndOriginalHashes": "passed",
+        "nativeCadSearch": {
+          "status": "no-matching-CAD-in-recorded-scope",
+          "inspected": [
+            "overview",
+            "store",
+            "resources-historical"
+          ],
+          "mechanicalFileLinks": [],
+          "result": "The retained canonical Resources HTML links were parsed for STEP/STL/KiCad/Gerber/3MF. None was found in that page; linked software archives and unvisited external locations are not a global absence claim."
+        }
+      },
+      "publishedDimensionChecks": [
+        {
+          "part": "pcb-main",
+          "sizeMm": [
+            21,
+            51,
+            null
+          ],
+          "toleranceMm": 0.001,
+          "sourceId": "dimension-photo",
+          "measuredMm": [
+            21,
+            51,
+            1.61500001192093
+          ],
+          "absoluteErrorsMm": [
+            0,
+            0,
+            null
+          ]
+        }
+      ],
+      "photoRegistration": {
+        "front": {
+          "file": "esp32-s3-pico-3_5.jpg",
+          "pcbPixelBounds": [
+            584,
+            96,
+            1015,
+            1127
+          ],
+          "nominalSizeMm": [
+            21.0,
+            51.0
+          ],
+          "pixelFromModelXY": [
+            [
+              20.523809523809526,
+              0,
+              799.5
+            ],
+            [
+              0,
+              -20.215686274509803,
+              611.5
+            ]
+          ],
+          "uvFromMm": [
+            0.012827380952380953,
+            0,
+            0.4996875,
+            0,
+            0.01684640522875817,
+            0.4904166666666666
+          ],
+          "basis": "Manual PCB substrate boundary landmarks in the retained high-resolution front photograph; USB overhang excluded. Independent official drawing supplies XY. Height and perspective remain uncalibrated."
+        },
+        "review": {
+          "file": "ESP32-S3-Pico-details-size-3be9159b0ac09d2c718eca4b79f3e03b.webp",
+          "pixelFromModelXY": [
+            [
+              9.571428571428571,
+              0,
+              479.5
+            ],
+            [
+              0,
+              -9.588235294117647,
+              334.5
+            ]
+          ],
+          "basis": "Independent manufacturer dimension image; affine plane alignment only, no manufactured tolerance claim."
+        }
+      },
+      "observations": [
+        "Front, reverse, edge and oblique views inspected; board silhouette, USB direction and component arrangement agree with the retained official views within the declared photo reconstruction scope.",
+        "Official dimension-image overlay inspected; nominal board outline, USB, physical RESET, principal packages and header-row placement align by the declared manual affine registration.",
+        "Rear UNKNOWN label is visible between the two header rows where present; back layout and component heights remain unverified.",
+        "The physical RESET package and cap are visible and do not carry a fabricated GPIO control.",
+        "The sourced BOOT cap is separately modeled and mapped; RGB uses LED slot 0.",
+        "Bare variant has open header holes and no pre-soldered header geometry."
+      ],
+      "interactionContract": {
+        "controls": [
+          {
+            "id": "boot",
+            "type": "button"
+          }
+        ],
+        "ledIndices": [
+          0
+        ],
+        "visibleUnknownLabels": [
+          "pcb-main-unknown-back"
+        ],
+        "shellNames": []
+      },
+      "limitations": [
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Pico BOOT is the only mapped physical button; RESET is not a second GPIO control.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed."
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-pico-m",
+      "method": "dimension-photo-reconstruction",
+      "status": "source-bounded-visual-review-passed",
+      "artifacts": [
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico-m/model.json",
+          "bytes": 370414,
+          "sha256": "f05cbd76b518e91987fca41b7403f4bc361689a6fc3451ac64df9cb6cddbe476"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico-m/model-plan.json",
+          "bytes": 369012,
+          "sha256": "c0882a8ecae8666d41a4c9dcdcc05d8d3b04dc143b53c5d3306d82058afa2732"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico-m/geometry.bin.gz",
+          "bytes": 5558,
+          "sha256": "9fc2621cdf849952fc0b555edb2b35414ae036f5e4cfaa3512636f6548e6c598"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico-m/source-manifest.json",
+          "bytes": 14524,
+          "sha256": "fc42eae93f4a7e84c590609b8cbde69e41c930afc33d27bb96d4c375bd6d1ad3"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico-m/SOURCE-RIGHTS.txt",
+          "bytes": 317,
+          "sha256": "1b043ef1af63f3e53c150095047a3af3dd3fa5042daa7c9c483876704b3a4890"
+        },
+        {
+          "file": "web/platform/assets/waveshare-esp32-s3-pico-m/build-check.json",
+          "bytes": 7361,
+          "sha256": "6012fc90689a28e6f8729e3862ca80b260cf427a37d7a0252d8522524f95970c"
+        }
+      ],
+      "inspectedReviewImages": [
+        {
+          "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews/waveshare-esp32-s3-pico-m-four-views.png",
+          "bytes": 86766,
+          "sha256": "2598fa87dc6235bf089b3bb804d0facee541b758d030d50ec680963d519cd92b"
+        },
+        {
+          "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/reviews/waveshare-esp32-s3-pico-m-photo-registration.png",
+          "bytes": 281255,
+          "sha256": "2a1076d4e2b122ab74524926bab3018424350b2604c78919ed0238123ec8c716"
+        }
+      ],
+      "meshDump": {
+        "file": "docs/platform/evidence/waveshare-batch030-models-20261124/nano-pico/mesh-dumps/waveshare-esp32-s3-pico-m.json",
+        "bytes": 1989546,
+        "sha256": "4983f0a58629c7a32ae414ec657ad53949af69b5455acba10e2bc4dd07f4915d"
+      },
+      "sources": {
+        "count": 13,
+        "retainedAndOriginalHashes": "passed",
+        "nativeCadSearch": {
+          "status": "no-matching-CAD-in-recorded-scope",
+          "inspected": [
+            "overview",
+            "store",
+            "resources-historical"
+          ],
+          "mechanicalFileLinks": [],
+          "result": "The retained canonical Resources HTML links were parsed for STEP/STL/KiCad/Gerber/3MF. None was found in that page; linked software archives and unvisited external locations are not a global absence claim."
+        }
+      },
+      "publishedDimensionChecks": [
+        {
+          "part": "pcb-main",
+          "sizeMm": [
+            21,
+            51,
+            null
+          ],
+          "toleranceMm": 0.001,
+          "sourceId": "dimension-photo",
+          "measuredMm": [
+            21,
+            51,
+            1.61500001192093
+          ],
+          "absoluteErrorsMm": [
+            0,
+            0,
+            null
+          ]
+        }
+      ],
+      "photoRegistration": {
+        "front": {
+          "file": "esp32-s3-pico-3_5.jpg",
+          "pcbPixelBounds": [
+            584,
+            96,
+            1015,
+            1127
+          ],
+          "nominalSizeMm": [
+            21.0,
+            51.0
+          ],
+          "pixelFromModelXY": [
+            [
+              20.523809523809526,
+              0,
+              799.5
+            ],
+            [
+              0,
+              -20.215686274509803,
+              611.5
+            ]
+          ],
+          "uvFromMm": [
+            0.012827380952380953,
+            0,
+            0.4996875,
+            0,
+            0.01684640522875817,
+            0.4904166666666666
+          ],
+          "basis": "Manual PCB substrate boundary landmarks in the retained high-resolution front photograph; USB overhang excluded. Independent official drawing supplies XY. Height and perspective remain uncalibrated."
+        },
+        "review": {
+          "file": "ESP32-S3-Pico-details-size-3be9159b0ac09d2c718eca4b79f3e03b.webp",
+          "pixelFromModelXY": [
+            [
+              9.571428571428571,
+              0,
+              479.5
+            ],
+            [
+              0,
+              -9.588235294117647,
+              334.5
+            ]
+          ],
+          "basis": "Independent manufacturer dimension image; affine plane alignment only, no manufactured tolerance claim."
+        }
+      },
+      "observations": [
+        "Front, reverse, edge and oblique views inspected; board silhouette, USB direction and component arrangement agree with the retained official views within the declared photo reconstruction scope.",
+        "Official dimension-image overlay inspected; nominal board outline, USB, physical RESET, principal packages and header-row placement align by the declared manual affine registration.",
+        "Rear UNKNOWN label is visible between the two header rows where present; back layout and component heights remain unverified.",
+        "The physical RESET package and cap are visible and do not carry a fabricated GPIO control.",
+        "The sourced BOOT cap is separately modeled and mapped; RGB uses LED slot 0.",
+        "Two 20-pin rows match the exact -M manufacturer photograph; cross-section and pin lengths remain explicit estimates."
+      ],
+      "interactionContract": {
+        "controls": [
+          {
+            "id": "boot",
+            "type": "button"
+          }
+        ],
+        "ledIndices": [
+          0
+        ],
+        "visibleUnknownLabels": [
+          "pcb-main-unknown-back"
+        ],
+        "shellNames": []
+      },
+      "limitations": [
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Pico BOOT is the only mapped physical button; RESET is not a second GPIO control.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed."
+      ]
+    }
+  ]
+}

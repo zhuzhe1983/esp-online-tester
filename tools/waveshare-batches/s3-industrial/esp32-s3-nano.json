@@ -1,0 +1,644 @@
+{
+  "listingId": "esp32-s3-nano",
+  "products": [
+    {
+      "id": "waveshare-esp32-s3-nano",
+      "name": "Waveshare ESP32-S3-Nano",
+      "manufacturer": "Waveshare",
+      "sku": "26745",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 8 MiB PSRAM；离散RGB GPIO46/0/45、GPIO48指示灯，无物理BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-nano.json",
+      "family": {
+        "id": "waveshare-esp32-s3-nano",
+        "name": "Waveshare ESP32-S3-Nano"
+      },
+      "runtime": {
+        "board": "waveshare-s3-nano",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "D-",
+              "gpio": 19
+            },
+            {
+              "name": "D+",
+              "gpio": 20
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线行为未模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-nano.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Nano-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Demo-Code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-datasheet",
+          "title": "ROHM LED 封装资料",
+          "url": "https://fscdn.rohm.com/en/products/databook/datasheet/opto/led/chip_multi/smlp34rgb-e.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-pins",
+          "title": "固定版本 Arduino Nano GPIO 映射",
+          "url": "https://raw.githubusercontent.com/espressif/arduino-esp32/bc8ab15634eb0402d39e1e259a5a4a29be3e6e1c/variants/arduino_nano_nora/pins_arduino.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-NANO-Firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "Arduino/0.RTC/sketch_nov13c/sketch_nov13c.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Demo-Code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "实际只有RESET；GPIO0是离散LED通道，不提供虚构BOOT。历史LED封装引脚号与ROHM手册的冲突保留；RGB命名依官方程序及固定Arduino Nano映射，实物光色未校准。",
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Nano has no invented BOOT button and GPIO0 remains an RGB channel.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-nano-official-test",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-nano/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      }
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-m",
+      "name": "Waveshare ESP32-S3-Nano-M",
+      "manufacturer": "Waveshare",
+      "sku": "26752",
+      "chip": "esp32s3",
+      "hardwareRevision": "unspecified",
+      "summary": "16 MiB Flash / 8 MiB PSRAM；离散RGB GPIO46/0/45、GPIO48指示灯，无物理BOOT。",
+      "knowledgeUrl": "./knowledge/waveshare-esp32-s3-nano-m.json",
+      "family": {
+        "id": "waveshare-esp32-s3-nano",
+        "name": "Waveshare ESP32-S3-Nano"
+      },
+      "runtime": {
+        "board": "waveshare-s3-nano-m",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "displayStatus": "none",
+      "display": null,
+      "controls": [],
+      "interfaces": [
+        {
+          "id": "usb-c",
+          "name": "USB-C · 电源/程序下载",
+          "type": "USB-C",
+          "external": true,
+          "pins": [
+            {
+              "name": "D-",
+              "gpio": 19
+            },
+            {
+              "name": "D+",
+              "gpio": 20
+            }
+          ],
+          "sourceIds": [
+            "overview",
+            "schematic"
+          ],
+          "notes": "官方USB-C供电/下载接口；USB总线行为未模拟。 已列GPIO仅表示对应基础板原理图电气网络；插头逐脚三维朝向未验收。"
+        }
+      ],
+      "sources": [
+        {
+          "id": "storefront",
+          "title": "Official exact SKU/options and manufacturer product description",
+          "url": "https://www.waveshare.com/product/esp32-related/esp32-s3-nano.htm",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "overview",
+          "title": "overview.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "resources",
+          "title": "resources.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-guide",
+          "title": "Arduino.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Arduino",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "micropython-guide",
+          "title": "MicroPython.html",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/MicroPython",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "schematic",
+          "title": "ESP32-S3-Nano-Schematic.pdf",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Schematic.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-example",
+          "title": "官方 LED 程序与线序",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Demo-Code.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-datasheet",
+          "title": "ROHM LED 封装资料",
+          "url": "https://fscdn.rohm.com/en/products/databook/datasheet/opto/led/chip_multi/smlp34rgb-e.pdf",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "arduino-pins",
+          "title": "固定版本 Arduino Nano GPIO 映射",
+          "url": "https://raw.githubusercontent.com/espressif/arduino-esp32/bc8ab15634eb0402d39e1e259a5a4a29be3e6e1c/variants/arduino_nano_nora/pins_arduino.h",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "firmware-archive",
+          "title": "厂家链接的原始固件 ZIP",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-NANO-Firmware.zip",
+          "checkedAt": "2026-11-23"
+        },
+        {
+          "id": "led-bsp",
+          "title": "Arduino/0.RTC/sketch_nov13c/sketch_nov13c.ino",
+          "url": "https://files.waveshare.com/wiki/ESP32-S3-Nano/ESP32-S3-Nano-Demo-Code.zip",
+          "checkedAt": "2026-11-23"
+        }
+      ],
+      "limitations": [
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。",
+        "实际只有RESET；GPIO0是离散LED通道，不提供虚构BOOT。历史LED封装引脚号与ROHM手册的冲突保留；RGB命名依官方程序及固定Arduino Nano映射，实物光色未校准。",
+        "New dimension-photo reconstruction; it does not recover the lost old model bytes or inherit the historical batch-04 visual acceptance.",
+        "PCB thickness, component heights, detailed passives, drill metallurgy and connector contact geometry are unmeasured; rear layout and stackup remain visibly UNKNOWN.",
+        "Visible RESET has sourced physical geometry but no 3D GPIO control mapping; use the platform restart capability. Nano has no invented BOOT button and GPIO0 remains an RGB channel.",
+        "Photo projection shows the visible front appearance only; small raised passives remain flat photographic detail and are not exact mechanical or electrical geometry.",
+        "USB is an open approximate metal envelope; tongue, contacts, hole details, insertion depth and cable mating are unverified.",
+        "Header body/pin thickness and length are estimates; row count and documented pitch do not establish a physical-fit tolerance.",
+        "Original manufacturer source images remain independent references; no real hardware acceptance is claimed.",
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      ],
+      "chronology": {
+        "date": null,
+        "basis": "unknown",
+        "sourceId": null,
+        "sourceUrl": null,
+        "confidence": "unknown",
+        "notes": "未确认产品发布日期；文档及固件日期不替代硬件发布日。"
+      },
+      "defaultFirmwareId": "waveshare-esp32-s3-nano-m-official-test",
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/waveshare-esp32-s3-nano-m/model.json",
+        "status": "partial",
+        "provenance": "dimension-photo-reconstruction"
+      },
+      "visualVariantOf": "waveshare-esp32-s3-nano"
+    }
+  ],
+  "firmwares": [
+    {
+      "id": "waveshare-esp32-s3-nano-factory-reference",
+      "name": "ESP32-S3-Nano · 出厂程序调查资料",
+      "productIds": [
+        "waveshare-esp32-s3-nano",
+        "waveshare-esp32-s3-nano-m"
+      ],
+      "version": "source-review",
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unavailable",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "watchlistId": "waveshare-esp32-s3-nano-factory-reference-watch",
+      "sources": [
+        {
+          "title": "Fixed primary source",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+          "checkedAt": "2026-11-24"
+        }
+      ],
+      "limitations": [
+        "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。",
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-official-test",
+      "name": "waveshare-esp32-s3-nano · 官方原始示例（试运行）",
+      "productIds": [
+        "waveshare-esp32-s3-nano"
+      ],
+      "version": "official-archive",
+      "status": "trial",
+      "source": {
+        "manifestUrl": "./firmware-plans/waveshare-esp32-s3-nano-official-test.json",
+        "sha256": "cd37fd5891fb830cc259d9a4f5f83ddcdccaef992b44a277ada8d518255dd84a"
+      },
+      "role": "example",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "watchlistId": "waveshare-esp32-s3-nano-official-test-watch",
+      "sources": [
+        {
+          "title": "Fixed primary source",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+          "checkedAt": "2026-11-24"
+        }
+      ],
+      "limitations": [
+        "原始官方示例或开发镜像；保持已提交清单、原ZIP成员、偏移和hash。仅原基础款有历史原BIN执行记录；新增排针/内存/天线SKU不继承执行结论。",
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-m-official-test",
+      "name": "waveshare-esp32-s3-nano-m · 官方原始示例（试运行）",
+      "productIds": [
+        "waveshare-esp32-s3-nano-m"
+      ],
+      "version": "official-archive",
+      "status": "trial",
+      "source": {
+        "manifestUrl": "./firmware-plans/waveshare-esp32-s3-nano-m-official-test.json",
+        "sha256": "11b192e368caea2090456ccd54e8b9c1fce75631317c7ba2815822c3bcd04439"
+      },
+      "role": "example",
+      "publisher": "Waveshare",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "partial",
+      "publicationUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "watchlistId": "waveshare-esp32-s3-nano-m-official-test-watch",
+      "sources": [
+        {
+          "title": "Fixed primary source",
+          "url": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+          "checkedAt": "2026-11-24"
+        }
+      ],
+      "limitations": [
+        "原始官方示例或开发镜像；保持已提交清单、原ZIP成员、偏移和hash。仅原基础款有历史原BIN执行记录；新增排针/内存/天线SKU不继承执行结论。",
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-uiflow-reference",
+      "name": "UIFlow · ESP32-S3-Nano 精确映射调查",
+      "productIds": [
+        "waveshare-esp32-s3-nano",
+        "waveshare-esp32-s3-nano-m"
+      ],
+      "version": "2.5.5",
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "开源项目",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unavailable",
+      "publicationUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.5",
+      "watchlistId": "waveshare-esp32-s3-nano-uiflow-reference-watch",
+      "sources": [
+        {
+          "title": "Fixed primary source",
+          "url": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.5",
+          "checkedAt": "2026-11-24"
+        }
+      ],
+      "limitations": [
+        "固定上游发布记录未找到这些精确SKU的唯一镜像映射；保留资料入口，不以近似设备名称替代。",
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。"
+      ]
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-xiaozhi-reference",
+      "name": "小智 · ESP32-S3-Nano 精确映射调查",
+      "productIds": [
+        "waveshare-esp32-s3-nano",
+        "waveshare-esp32-s3-nano-m"
+      ],
+      "version": "v2.6.0",
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "78/xiaozhi-esp32",
+      "publisherGroup": "开源项目",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unavailable",
+      "publicationUrl": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+      "watchlistId": "waveshare-esp32-s3-nano-xiaozhi-reference-watch",
+      "sources": [
+        {
+          "title": "Fixed primary source",
+          "url": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+          "checkedAt": "2026-11-24"
+        }
+      ],
+      "limitations": [
+        "固定上游发布记录未找到这些精确SKU的唯一镜像映射；保留资料入口，不以近似设备名称替代。",
+        "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+        "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+        "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。"
+      ]
+    }
+  ],
+  "watchlist": [
+    {
+      "id": "waveshare-esp32-s3-nano-factory-reference-watch",
+      "name": "ESP32-S3-Nano · 出厂程序调查资料",
+      "category": "factory",
+      "metadataProvider": "manual",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Nano",
+      "metadataUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "releaseUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "version": "source-review",
+      "checkedAt": "2026-11-24T07:15:39Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-nano",
+          "waveshare-esp32-s3-nano-m"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "精确SKU的官方产品、资源及开发资料、原始程序ZIP、固定M5Burner公开分类与UIFlow/小智发布记录中，未确认独立出厂恢复镜像。官方示例和MicroPython维持example/development身份。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual exact SKU/source mapping. No automatic cross-capacity, PSRAM or flash-mode substitution; no inherited execution acceptance."
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-official-test-watch",
+      "name": "waveshare-esp32-s3-nano · 官方原始示例（试运行）",
+      "category": "development",
+      "metadataProvider": "manual",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Nano",
+      "metadataUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "releaseUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "version": "official-archive",
+      "checkedAt": "2026-11-24T07:15:39Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-nano"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "原始官方示例或开发镜像；保持已提交清单、原ZIP成员、偏移和hash。仅原基础款有历史原BIN执行记录；新增排针/内存/天线SKU不继承执行结论。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual exact SKU/source mapping. No automatic cross-capacity, PSRAM or flash-mode substitution; no inherited execution acceptance."
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-m-official-test-watch",
+      "name": "waveshare-esp32-s3-nano-m · 官方原始示例（试运行）",
+      "category": "development",
+      "metadataProvider": "manual",
+      "upstreamRepo": "manufacturer:Waveshare/ESP32-S3-Nano",
+      "metadataUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "releaseUrl": "https://docs.waveshare.com/ESP32-S3-Nano/Resources-And-Documents",
+      "version": "official-archive",
+      "checkedAt": "2026-11-24T07:15:39Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-nano-m"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "原始官方示例或开发镜像；保持已提交清单、原ZIP成员、偏移和hash。仅原基础款有历史原BIN执行记录；新增排针/内存/天线SKU不继承执行结论。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual exact SKU/source mapping. No automatic cross-capacity, PSRAM or flash-mode substitution; no inherited execution acceptance."
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-uiflow-reference-watch",
+      "name": "UIFlow · ESP32-S3-Nano 精确映射调查",
+      "category": "development",
+      "metadataProvider": "manual",
+      "upstreamRepo": "m5stack/uiflow-micropython",
+      "metadataUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.5",
+      "releaseUrl": "https://github.com/m5stack/uiflow-micropython/releases/tag/2.5.5",
+      "version": "2.5.5",
+      "checkedAt": "2026-11-24T07:15:39Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-nano",
+          "waveshare-esp32-s3-nano-m"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "固定上游发布记录未找到这些精确SKU的唯一镜像映射；保留资料入口，不以近似设备名称替代。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual exact SKU/source mapping. No automatic cross-capacity, PSRAM or flash-mode substitution; no inherited execution acceptance."
+    },
+    {
+      "id": "waveshare-esp32-s3-nano-xiaozhi-reference-watch",
+      "name": "小智 · ESP32-S3-Nano 精确映射调查",
+      "category": "voice",
+      "metadataProvider": "manual",
+      "upstreamRepo": "78/xiaozhi-esp32",
+      "metadataUrl": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+      "releaseUrl": "https://github.com/78/xiaozhi-esp32/releases/tag/v2.6.0",
+      "version": "v2.6.0",
+      "checkedAt": "2026-11-24T07:15:39Z",
+      "assets": [],
+      "compatibility": {
+        "status": "reference-only",
+        "productIds": [
+          "waveshare-esp32-s3-nano",
+          "waveshare-esp32-s3-nano-m"
+        ],
+        "simulationVerified": false,
+        "hardwareValidated": false,
+        "note": "固定上游发布记录未找到这些精确SKU的唯一镜像映射；保留资料入口，不以近似设备名称替代。"
+      },
+      "storage": "remote-links-only",
+      "catalogTargets": [],
+      "monitoringNote": "Manual exact SKU/source mapping. No automatic cross-capacity, PSRAM or flash-mode substitution; no inherited execution acceptance."
+    }
+  ],
+  "knowledge": [
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-nano.json"
+    },
+    {
+      "path": "web/platform/knowledge/waveshare-esp32-s3-nano-m.json"
+    }
+  ],
+  "boardCapabilities": {
+    "waveshare-s3-nano": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "display": false,
+      "touch": false,
+      "buttons": []
+    },
+    "waveshare-s3-nano-m": {
+      "chip": "esp32s3",
+      "flashMb": 16,
+      "psramMb": 8,
+      "display": false,
+      "touch": false,
+      "buttons": []
+    }
+  },
+  "modelIds": [
+    "waveshare-esp32-s3-nano",
+    "waveshare-esp32-s3-nano-m"
+  ],
+  "sourceReceiptPaths": [
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-nano/sources.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-nano/storefront-identity.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-nano/archive-members.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-nano/firmware-investigation.json",
+    "docs/research/waveshare-s3-industrial-2026-11-24/esp32-s3-nano/runtime-verification.json"
+  ],
+  "tests": [
+    {
+      "command": "cargo test -p esp32s3 --test waveshare_core_skus",
+      "status": "passed",
+      "scope": "Historical retained exact16 digital diagnostics; complete final workspace validation is separately reported.",
+      "evidence": "docs/research/waveshare-s3-industrial-2026-11-24/batch-04/runtime-checks.json"
+    }
+  ],
+  "limitations": [
+    "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
+    "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
+    "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。"
+  ],
+  "integrationNotes": [
+    "Recovered from retained source identities and original firmware manifests; no private first-pass authoring cache required.",
+    "Published391 product objects and all Rust/Cargo sources remain unchanged. Model revisions bind their new evidence rather than inheriting historical image hashes."
+  ]
+}

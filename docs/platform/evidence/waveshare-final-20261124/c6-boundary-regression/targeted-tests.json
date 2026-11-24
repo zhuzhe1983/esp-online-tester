@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "startedAt": "2026-11-24T07:52:11.108026+00:00",
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "-p",
+    "esp32sim-wasm",
+    "--test",
+    "boundaries",
+    "--",
+    "--include-ignored"
+  ],
+  "headCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "sourceBeforeFix": {
+    "fileCount": 855,
+    "manifestSha256": "1ba789a2073818d4306b6f53b502bca67da09fdba4232b8c718048c6b68cc5bf",
+    "freeze": "../rust-source-freeze-before-c6-boundary-fixture.json",
+    "boundaryTestSha256": "46c88070a7031b32dd7c7107de86c69a3608ad40e37d905360042ff76f437204"
+  },
+  "priorFailure": {
+    "log": "../host-host-workspace-tests-before-c6-boundary-fixture.log",
+    "logSha256": "4365301e94f5aaec31c87c49a3b32cf59a61c0128f939d009cef26f164827660",
+    "exitCode": 101,
+    "test": "board_aliases_route_to_the_canonical_chip",
+    "board": "lcd147"
+  },
+  "runtimeSourceAtStart": {
+    "fileCount": 855,
+    "manifestSha256": "7348dc64949ddb04177a42ac70b798358a220e71857239252abbf2d8b08a77bc"
+  },
+  "changedSources": {
+    "wasm/tests/boundaries.rs": "9dd94c73bb5214b0f78135573ed11143763d1098932687274ebf0577fe7d9a29"
+  },
+  "environment": {
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "esp32simRomDir": "$REPO/web/wasm/fw",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "scope": "Only the native integration test fixture changed. LCD147 canonical name and both aliases use sourced 4 MiB Flash/zero PSRAM; their original CPU-frequency and SPI2 routing assertions remain. All three names reject 0/1/2/8/16/32 MiB Flash and 1/2/4/8/16/32 MiB PSRAM. No WASM library or runtime implementation changes.",
+  "sourceBinding": "The tested working tree includes the recorded test-fixture edit and earlier CLI correction beyond headCommitAtStart. The before/after 855-file manifests and changed-source SHA-256 identify the actual tested bytes.",
+  "finishedAt": "2026-11-24T07:53:41.520529+00:00",
+  "durationSeconds": 90.362,
+  "exitCode": 0,
+  "log": "tests.log",
+  "originalLogSha256": "9f9f871d912cee110987c323254548219e5122074e93c0997668fc56669f4f2e",
+  "retainedLogSha256": "6e3046263f10f80387e2f41ca7ddedb881768061cadca672c7ff72440df735ba",
+  "retainedLogBytes": 845,
+  "retention": "Paths normalized to $REPO, $CARGO_HOME and $RUSTUP_HOME; all other command output preserved.",
+  "runtimeSourceAtEnd": {
+    "fileCount": 855,
+    "manifestSha256": "7348dc64949ddb04177a42ac70b798358a220e71857239252abbf2d8b08a77bc"
+  },
+  "sourceUnchangedDuringRun": true,
+  "testsPassed": 8,
+  "testsFailed": 0,
+  "testsIgnored": 0,
+  "diagnosis": {
+    "baselineCommit": "9e0f09c3f5507e0c50be1bb69d5653a40b42a3d4",
+    "failureFixtureIsByteIdenticalToBaseline": true,
+    "finding": "The old chip-routing fixture hardcodes 1 MiB Flash for every board. The exact Waveshare Lcd147 profile now requires its documented 4 MiB Flash and zero PSRAM for the canonical name and both aliases. The aliases still resolve to the same C6 variant; the fixture must supply that real board capacity instead of bypassing or relaxing exact-SKU validation.",
+    "runtimeContractFiles": [
+      "wasm/src/lib.rs",
+      "esp32c6/src/board/waveshare_lcd_family.rs",
+      "esp32c6/src/board/mod.rs"
+    ],
+    "runtimeContractChangedByThisFix": false,
+    "manufacturerSource": {
+      "url": "https://docs.waveshare.com/ESP32-C6-LCD-1.47",
+      "fetchedAt": "2026-11-23T16:31:56Z",
+      "retainedPath": "web/platform/assets/waveshare-esp32-c6-lcd-1-47/overview.html.gz",
+      "retainedBytes": 9694,
+      "retainedSha256": "42919e271b2495cb84d2c1e9353464353e2910e51a1ead80d87a2681186bb286",
+      "originalBytes": 44453,
+      "originalSha256": "00420864a6ce5ed690dd790f40acd42aff0c47bea151e74c43f22ecdb0fd1e8c",
+      "support": "The retained official overview identifies the ESP32-C6FH4 and its integrated 4 MB Flash."
+    }
+  },
+  "diffCheck": {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "wasm/tests/boundaries.rs"
+    ],
+    "exitCode": 0
+  }
+}

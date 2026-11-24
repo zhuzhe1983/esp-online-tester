@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "lane": "host",
+  "sourceCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "runtimeSourceSha256": "eb1e9597b5aac7ffa604bae1f95b945e89cbc98c6b3bd33ecaafe1611766b56c",
+  "runtimeSourceFileCount": 855,
+  "environment": {
+    "architecture": "x86_64",
+    "system": "Linux",
+    "logicalCpus": 9,
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v24.22.3",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "limitations": [
+    "Linux x86_64 only; no native AArch64 CI execution.",
+    "Node/Worker checks do not establish browser WebGL or physical hardware acceptance."
+  ],
+  "steps": [
+    {
+      "id": "host-clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "log": "host-host-clippy-before-classic-cli-fix.log",
+      "startedAt": "2026-11-24T06:51:42.903134+00:00",
+      "exitCode": 0,
+      "durationSeconds": 24.461,
+      "finishedAt": "2026-11-24T06:52:07.365768+00:00",
+      "logSha256": "28e40c4c14bc76bb0ef30860472e9b65c34cfa6993ca722be30ba1bbe3a5aaee",
+      "logBytes": 959
+    },
+    {
+      "id": "host-workspace-build",
+      "command": "cargo build --release --workspace",
+      "log": "host-host-workspace-build-before-classic-cli-fix.log",
+      "startedAt": "2026-11-24T06:52:07.512790+00:00",
+      "exitCode": 0,
+      "durationSeconds": 246.094,
+      "finishedAt": "2026-11-24T06:56:13.606930+00:00",
+      "logSha256": "daa905e8fa8850a8d6c00ac98123816645bd1ea3f19927d9472f84d8c5528c77",
+      "logBytes": 961
+    },
+    {
+      "id": "host-workspace-tests",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "log": "host-host-workspace-tests-before-classic-cli-fix.log",
+      "startedAt": "2026-11-24T06:56:13.792020+00:00",
+      "exitCode": 101,
+      "durationSeconds": 1670.419,
+      "finishedAt": "2026-11-24T07:24:04.211686+00:00",
+      "logSha256": "a775f6c8bb23738153c75caa8d2d26042d94a880b26a5b9f72286338c7ee374b",
+      "logBytes": 299154
+    }
+  ],
+  "complete": false,
+  "runtimeSourceFreezeFile": "rust-source-freeze-before-classic-cli-fix.json"
+}

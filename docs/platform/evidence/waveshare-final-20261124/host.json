@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "lane": "host",
+  "sourceCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "runtimeSourceSha256": "7348dc64949ddb04177a42ac70b798358a220e71857239252abbf2d8b08a77bc",
+  "runtimeSourceFileCount": 855,
+  "environment": {
+    "architecture": "x86_64",
+    "system": "Linux",
+    "logicalCpus": 9,
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v24.22.3",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "limitations": [
+    "Linux x86_64 only; no native AArch64 CI execution.",
+    "Node/Worker checks do not establish browser WebGL or physical hardware acceptance."
+  ],
+  "steps": [
+    {
+      "id": "host-clippy",
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "log": "host-host-clippy.log",
+      "startedAt": "2026-11-24T07:55:00.496528+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.626,
+      "finishedAt": "2026-11-24T07:55:01.123343+00:00",
+      "logSha256": "b4bc8b0bd6aa993d942af6bba301b791cf6b9ca59722d2d286815b712c0f6a1f",
+      "logBytes": 119
+    },
+    {
+      "id": "host-workspace-build",
+      "command": "cargo build --release --workspace",
+      "log": "host-host-workspace-build.log",
+      "startedAt": "2026-11-24T07:55:01.282570+00:00",
+      "exitCode": 0,
+      "durationSeconds": 0.079,
+      "finishedAt": "2026-11-24T07:55:01.362007+00:00",
+      "logSha256": "b69d45bfdcdc451bcbe320d33fee5b3c8e4907ab4bd2fa8702ac266d757fd3da",
+      "logBytes": 74
+    },
+    {
+      "id": "host-workspace-tests",
+      "command": "cargo test --release --workspace -- --include-ignored --skip external_",
+      "log": "host-host-workspace-tests.log",
+      "startedAt": "2026-11-24T07:55:01.520231+00:00",
+      "exitCode": 0,
+      "durationSeconds": 285.002,
+      "finishedAt": "2026-11-24T07:59:46.523014+00:00",
+      "logSha256": "68af74fc3ec3d816741468110406898ed4f4c1b0f09631c5eb67128c8e4c017a",
+      "logBytes": 329193
+    },
+    {
+      "id": "native-vq-tests",
+      "command": "ESP32SIM_VQ_NATIVE=1 cargo test --release -p esp32s3 --test machine --test virtual_stops",
+      "log": "host-native-vq-tests.log",
+      "startedAt": "2026-11-24T07:59:46.688072+00:00",
+      "exitCode": 0,
+      "durationSeconds": 25.503,
+      "finishedAt": "2026-11-24T08:00:12.191655+00:00",
+      "logSha256": "57f8cca016a50dfac9692407976d40a6cbd2a0fdacc92bef2109abda75b1bcc8",
+      "logBytes": 3367
+    },
+    {
+      "id": "candidate-perf-bins",
+      "command": "cargo build --release --bins",
+      "log": "host-candidate-perf-bins.log",
+      "startedAt": "2026-11-24T08:00:12.342215+00:00",
+      "exitCode": 0,
+      "durationSeconds": 229.241,
+      "finishedAt": "2026-11-24T08:04:01.583787+00:00",
+      "logSha256": "44500df0d698467def935b5e9a8fd337608e4dc912c4b535dc4912bb1e543cd5",
+      "logBytes": 357
+    }
+  ],
+  "complete": true,
+  "passed": true
+}

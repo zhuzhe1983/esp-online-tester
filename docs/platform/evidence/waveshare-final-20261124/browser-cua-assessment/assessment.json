@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-11-24T07:45:28.378025+00:00",
+  "scope": "Bounded assessment of the advertised Browser/CUA tool as a supported fallback for local project model QA. No browser security bypass, external publication or firmware execution.",
+  "selectionSha256": "6f613568c12e0d6d0ad7b141622a967b2d53ee8c8ce0ab931d864bd921a8423f",
+  "expectedProfiles": 16,
+  "executedProfiles": 0,
+  "passedProfiles": 0,
+  "status": "blocked-before-model-execution",
+  "target": "http://127.0.0.1:8766/platform/index.html",
+  "existingAttempt": {
+    "directory": "../browser-final16",
+    "unchanged": true,
+    "commandReceiptSha256": "7ac2d93b1d61e2dda046458fba46d22c26e7dc339eb4fe7865f37a068e3bd520"
+  },
+  "capabilityAssessment": {
+    "purposeBuiltBrowserPluginExposed": false,
+    "advertisedFallback": "mcp__cua_repl with documented Browser/CUA APIs",
+    "guidanceRead": [
+      "initial Browser/CUA API and cloud-browser restrictions",
+      "browser-troubleshooting"
+    ],
+    "browser": "Tool-selected cloud Chrome; no browser version was retrieved.",
+    "existingUserTabsEnumerated": false,
+    "authenticationAttempted": false
+  },
+  "steps": [
+    {
+      "action": "Start task-local preview",
+      "command": "python3 -u -m http.server 8766 --bind 127.0.0.1 --directory web",
+      "cwd": "$REPO",
+      "observed": "Serving HTTP on 127.0.0.1 port 8766 (http://127.0.0.1:8766/) ...",
+      "result": "local-server-started"
+    },
+    {
+      "action": "Select advertised Browser with cua.getBrowser({url: preview URL})",
+      "result": "documented cloud Chrome selected; no existing user tabs inspected"
+    },
+    {
+      "action": "Create a new task-specific preview tab using cua.createBrowserTab(selectedBrowser.browserId, preview URL)",
+      "result": "navigation-failed",
+      "observed": "Browser Use cannot open the loopback project URL. Browser reported: net::ERR_CONNECTION_REFUSED"
+    },
+    {
+      "action": "Read browser-troubleshooting and bind only the just-created failed tab to inspect/report the failure using the documented API",
+      "result": "browser-policy-denied",
+      "observed": "Browser Use rejected this action due to browser security policy. The browser URL policy blocks this action. Cloud browser could not acquire authority to observe page content. The URL policy gate did not grant access. The requested URL protocol is not allowed. Allowed protocols: http:, https:.",
+      "policyBoundary": "The tool explicitly prohibited workaround, indirect execution, raw CDP or browser commands, alternate browser surfaces, and policy circumvention. No further browser actions were attempted."
+    },
+    {
+      "action": "Stop only the preview service created for this assessment",
+      "result": "Interrupted the managed execution session that started this task HTTP server; the tool returned process exit code 130.",
+      "exitCode": 130,
+      "otherProcessesStopped": 0
+    }
+  ],
+  "modelBindings": [
+    {
+      "productId": "waveshare-esp32-s3-nano",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-nano/model.json",
+      "modelSha256": "43f2a4f0c45357738eff5fb52918604b019f0d914447210e285a0d0e201da946",
+      "planSha256": "f1acb1add4748ea870765dae84b297de6214587c98307ad01c546afd1f1468b6",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-nano-m",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-nano-m/model.json",
+      "modelSha256": "94dd6195654eb89358f31932b674655947b49bb773aea1d8e2e55854c82eec63",
+      "planSha256": "d731324cafd139fac9b95301e71d9680b2a4cafd956c4b11ea8881ad427da47f",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-zero",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-zero/model.json",
+      "modelSha256": "06e1e214db504e50028dc3c7470575347781698210c640f72616ddaf0ce840ee",
+      "planSha256": "01ee59f6e6012a0bc21428fecab0e0fb601b995399f6adbdebda3a7ad697c7e8",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-zero-m",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-zero-m/model.json",
+      "modelSha256": "da7885c325457622406a70b601ac00d8b930bfafbba1179c0d976426db6b45be",
+      "planSha256": "0dc6514842cfe4f32d7746080be08a567afb6662e674c46551d0ee85a0efa78b",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-zero-n8r8",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-zero-n8r8/model.json",
+      "modelSha256": "df810a3a3e4a5fe1f0dcb7fd440ca69c68a3212d0a06ba1c20300cb518e82a2f",
+      "planSha256": "4cc8c6b97f185db1635e4f799f9adec88c89dedb0fc8942f0de080695833ca6e",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-zero-n8r8-m",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-zero-n8r8-m/model.json",
+      "modelSha256": "35228f7314ec7ccb852d440894ed0bcef411d19edf217c7f3cb22728a51a7b16",
+      "planSha256": "0d220c468703175449aacd0c9a30e35f223f13b1624954f39b6eb4149f34f1ff",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-dev-kit-n8r8",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-dev-kit-n8r8/model.json",
+      "modelSha256": "158909454bf8739d3039d26b07f9ac3ccb914c370047438e8f7d25145252f08c",
+      "planSha256": "abf32c251da328d992ef282a90c4b8baf22a3fb456b4c5fcabb1c6b090aa2d6f",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-dev-kit-n8r8-m",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-dev-kit-n8r8-m/model.json",
+      "modelSha256": "4f288aeea3cdb041b26c7e291b3afb736f4aa1fb2f32d34b6d799d3a672f3ced",
+      "planSha256": "bfdbaa64e8fed76b79f4077c70ccd5ad4267307464a91771f683a5337aa48644",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-dev-kit-n16r8",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-dev-kit-n16r8/model.json",
+      "modelSha256": "af5d91427ee919f861ef490fee0dfb1816d197145c935f53104a55db57fdf07f",
+      "planSha256": "d93cbfe4d7c8a62e2cf2c7ac02c67a495572bbe8b0528aa63b8ea548bf781fbf",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-dev-kit-n16r8-m",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-dev-kit-n16r8-m/model.json",
+      "modelSha256": "c84df302505a711236a2834735a75edbdabe9492374ade33877ef031561ea818",
+      "planSha256": "5db2bd73a5c10b23ec9b808710d38932726851a30a1d9c8ccc449cc35fe56a17",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-dev-kit-n32r16v",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-dev-kit-n32r16v/model.json",
+      "modelSha256": "6c33e995343b879724e83d1065afa14a1fc676c4c88e5e2b13a3f6f0b14b95a3",
+      "planSha256": "82ff0aaece3c7c304d972dfeb2d85e9b9cbacb50ff05eb8a55f9d5503df60b4d",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-dev-kit-n32r16v-m",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-dev-kit-n32r16v-m/model.json",
+      "modelSha256": "79782d7828bed4e3743c5d1630cbd985c4ea3201c96cccad6b0ee0e36042f9e1",
+      "planSha256": "7992cab74fb8d387c52e53032da9ebfd362a4e6055fb28672f01bfb1f312bc1e",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-dev-kit-n16r8-u",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-dev-kit-n16r8-u/model.json",
+      "modelSha256": "3241487ca22f542ff264bc87ac03d7c0a9a444279ca8e183f566fc1cc98fe0bd",
+      "planSha256": "6882a1431cc59057f9082f8334a409334b17d371945b037d8f295e6005791dfe",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-dev-kit-n16r8-um",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-dev-kit-n16r8-um/model.json",
+      "modelSha256": "ea84c21cf5d3b54215ec13f219cbb5bba9c51da6d2d1c5a93a1886fdcdbf3cf4",
+      "planSha256": "6b7361813161852b138642dbe7fb162e09670dc905bd9fd4afadc1f3d70ba640",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-pico",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-pico/model.json",
+      "modelSha256": "f4c6280e4c234e48bf1d6cd5c5b3dbcb682ef90af6e0c03025c3b31b58eedb2e",
+      "planSha256": "6b29be8633575f7f7baa411e5093a8f7f7f9bd03c98311ed1bd3c7cc9cac8aee",
+      "status": "not-executed-browser-blocked"
+    },
+    {
+      "productId": "waveshare-esp32-s3-pico-m",
+      "modelFile": "web/platform/assets/waveshare-esp32-s3-pico-m/model.json",
+      "modelSha256": "f05cbd76b518e91987fca41b7403f4bc361689a6fc3451ac64df9cb6cddbe476",
+      "planSha256": "c0882a8ecae8666d41a4c9dcdcc05d8d3b04dc143b53c5d3306d82058afa2732",
+      "status": "not-executed-browser-blocked"
+    }
+  ],
+  "limitations": [
+    "No model canvas, DOM interaction, screenshot, iframe restoration or browser RPC check was executed by this fallback.",
+    "The connection-refused result does not establish the exact cloud networking topology. The later policy denial is recorded as returned; its internal page URL was not inspected.",
+    "These are environment/tool blockers, not model failures and not passed browser gates. CPU loader, geometric and source-image checks remain separately reported.",
+    "No security policy, network path, sandbox, browser launcher flag or permission was changed. No alternate browser surface or custom CDP transport was tried.",
+    "The previous headless-browser blocked record is preserved, not replaced."
+  ],
+  "cleanupAt": "2026-11-24T07:46:32.269700+00:00",
+  "localPreviewStopped": true
+}

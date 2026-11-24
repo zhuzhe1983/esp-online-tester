@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "lane": "wasm-jit",
+  "sourceCommitAtStart": "61447a576c36f40adcd40810fd9180f137937bdc",
+  "runtimeSourceSha256": "eb1e9597b5aac7ffa604bae1f95b945e89cbc98c6b3bd33ecaafe1611766b56c",
+  "runtimeSourceFileCount": 855,
+  "environment": {
+    "architecture": "x86_64",
+    "system": "Linux",
+    "logicalCpus": 9,
+    "cargoBuildJobs": 2,
+    "cargoIncremental": 0,
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v24.22.3",
+    "updateGoldens": false,
+    "releaseProfileOverrides": false
+  },
+  "limitations": [
+    "Linux x86_64 only; no native AArch64 CI execution.",
+    "Node/Worker checks do not establish browser WebGL or physical hardware acceptance."
+  ],
+  "steps": [
+    {
+      "id": "wasm-jit-differential",
+      "command": "bash tools/wasm-jit-test.sh",
+      "log": "wasm-jit-wasm-jit-differential.log",
+      "startedAt": "2026-11-24T07:01:49.150312+00:00",
+      "exitCode": 0,
+      "durationSeconds": 1413.216,
+      "finishedAt": "2026-11-24T07:25:22.366589+00:00",
+      "logSha256": "b61ad02d0f3400c86f8b8973565abf5a1487d45f256558ccab5e09a4497107d7",
+      "logBytes": 6041
+    },
+    {
+      "id": "wasm-profile-build",
+      "command": ". ./tools/wasm-rustflags.sh; cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile",
+      "log": "wasm-jit-wasm-profile-build.log",
+      "startedAt": "2026-11-24T07:25:22.519074+00:00",
+      "exitCode": 0,
+      "durationSeconds": 73.415,
+      "finishedAt": "2026-11-24T07:26:35.933928+00:00",
+      "logSha256": "5f8ad4528456c5a27881690c52e60ca171630847670672f262c543666e9614ed",
+      "logBytes": 699
+    }
+  ],
+  "complete": true,
+  "productionWasm": {
+    "bytes": 8494328,
+    "sha256": "5b91383f70d44d6a960dc475850a06340dc59e3c0fd830d4a87c5b8606d711a0"
+  },
+  "passed": true
+}
