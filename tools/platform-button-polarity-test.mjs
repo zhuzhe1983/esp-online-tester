@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import {createPlatformRuntime} from '../web/platform/runtime.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
 
@@ -24,7 +25,9 @@ test('physical active-high keys press HIGH and release LOW, including paused rel
     if(reply)queueMicrotask(()=>this.onmessage?.({data:reply}));
   },terminate(){}};
   const runtime=createPlatformRuntime({catalog,workerFactory:()=>transport,baseUrl:origin+'/platform/',assetBaseUrl:origin+'/',fetchImpl:async value=>{
-    const url=new URL(value,origin);assert.equal(url.origin,origin);return new Response(await readFile(new URL(url.pathname.slice(1),root)));
+    const url=new URL(value,origin);assert.equal(url.origin,origin);
+    if(process.env.ESP32SIM_ROM_DIR&&url.pathname==='/wasm/fw/esp32s3_rev0_rom.elf')return new Response(await readFile(join(process.env.ESP32SIM_ROM_DIR,'esp32s3_rev0_rom.elf')));
+    return new Response(await readFile(new URL(url.pathname.slice(1),root)));
   }});
   try{
     await runtime.configure(createDefaultScene(catalog,product.id));

@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import {Worker} from 'node:worker_threads';
 import {createJitHost} from '../web/wasm/jit.mjs';
 import {chipForBoard,chipIdForBoard,validateBoardRevision,isSramOnlyBoard} from '../web/platform/app-image.js';
@@ -64,6 +65,7 @@ test('seven P4 modules/options boot unchanged IDF example using ECO5 ROM through
   const store={indexedDB:null,BroadcastChannel:null,dbName:'waveshare-p4-example-'+Date.now()};
   const runtime=createPlatformRuntime({catalog,workerFactory,baseUrl:origin+'/platform/',assetBaseUrl:origin+'/',deviceStorage:createDeviceStorage(store),sdStorage:createSdCardStorage(store),fetchImpl:async value=>{
     const url=new URL(value,origin);assert.equal(url.origin,origin);requests.push(url.pathname);
+    if(process.env.ESP32SIM_ROM_DIR&&url.pathname==='/wasm/fw/esp32p4_rev300_rom.elf')return new Response(await readFile(join(process.env.ESP32SIM_ROM_DIR,'esp32p4_rev300_rom.elf')));
     return new Response(await readFile(new URL('web'+url.pathname,root)));
   }});
   try{

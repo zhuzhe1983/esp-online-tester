@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-24T05:26:07.386186+00:00",
+  "sourceParent": "ed20d8aad5ee8dc653a8125da5e50a504553b3b1",
+  "sourceFileSha256": {
+    "tools/platform-button-polarity-test.mjs": "d801f838cde7b81749f1903fbebb5bb42a5961a4445e0685a4826a139760a5fe",
+    "tools/platform-waveshare-c6-zero-test.mjs": "af67b868d9aff93540be4b0c708fcdb72fc6a82d4e1878e5629a50133f9590b5",
+    "tools/platform-waveshare-test.mjs": "93d03aa2cfaa20125ebe8a387d9036cde6e273e9850b4e3dc63b868b390749ee"
+  },
+  "failedCi": {
+    "url": "https://github.com/zhuzhe1983/esp-online-tester/actions/runs/45328143259",
+    "rustAndClippySteps": "passed",
+    "failedStep": "Product platform contracts and real worker execution",
+    "platformPassed": 517,
+    "platformFailed": 3,
+    "reason": "Three new fixtures ignored ESP32SIM_ROM_DIR and read ROMs from web/wasm/fw, while CI provides the pinned ELFs under roms/."
+  },
+  "reproduction": {
+    "webRomFilesBeforeAndAfter": 0,
+    "romDirectory": "{checkout}/roms",
+    "setupCommands": [
+      "tools/fetch-rom-elfs.sh roms",
+      "tools/fetch-micropython.sh",
+      "tools/fetch-p4-firmware.sh"
+    ],
+    "wasm": {
+      "source": "Previously verified public Pages production artifact",
+      "bytes": 8506426,
+      "sha256": "f180d12b3ee8161ed8bda40d2420826a32d47d9ae976cef324a05b8093fda0f9"
+    },
+    "roms": {
+      "esp32s3_rev0_rom.elf": {
+        "bytes": 949552,
+        "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      "esp32c6_rev0_rom.elf": {
+        "bytes": 489768,
+        "sha256": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551"
+      },
+      "esp32p4_rev300_rom.elf": {
+        "bytes": 244808,
+        "sha256": "90e723f71fe4701adee7e40bfab6971d8ecf5e356f4d5a81e77743248abc3a97"
+      }
+    },
+    "before": {
+      "failed": 3,
+      "logSha256": "70bb8d128ee08e64b566630502e99197d90a31034bcefb5614ead7b2462b9f92"
+    },
+    "incompleteSetupAttempt": {
+      "failed": 1,
+      "reason": "P4 example bootloader not fetched yet; completed the existing CI fetch-p4-firmware.sh setup before the final run.",
+      "logSha256": "b047dee47bfbb7bcbd27f64c22411ffdeab9b101af688c2ce3bb69cd442b191c"
+    },
+    "after": {
+      "command": "ESP32SIM_ROM_DIR={checkout}/roms node --test tools/platform-*-test.mjs",
+      "passed": 521,
+      "failed": 0,
+      "skipped": 0,
+      "logSha256": "c91cc6dd70585dc690f8a83c41a9d2c275fe4936e65a3317324566bd0d561585"
+    }
+  },
+  "runtimeAndNativeSourcesChanged": false,
+  "correction": "Each fixture reads its exact original pinned ROM from ESP32SIM_ROM_DIR when supplied; the existing web path remains the default. No stub, substitute chip or relaxed guest assertion."
+}

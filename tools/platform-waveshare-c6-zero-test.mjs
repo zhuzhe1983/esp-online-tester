@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {join} from 'node:path';
 import {Worker} from 'node:worker_threads';
 import {createPlatformRuntime} from '../web/platform/runtime.js';
 import {createDefaultScene} from '../web/platform/catalog.js';
@@ -24,6 +25,7 @@ test('three exact C6 Zero capacity/board profiles execute real RMT and BOOT inpu
   const runtime=createPlatformRuntime({catalog,workerFactory,baseUrl:origin+'/platform/',assetBaseUrl:origin+'/',fetchImpl:async value=>{
     const url=new URL(value);assert.equal(url.origin,origin);requests.push(url.pathname);
     if(url.pathname.startsWith('/sram-'))return new Response(waveshareC6ZeroProbe(Number(url.pathname.match(/sram-(\d+)/)[1])));
+    if(process.env.ESP32SIM_ROM_DIR&&url.pathname==='/wasm/fw/esp32c6_rev0_rom.elf')return new Response(await readFile(join(process.env.ESP32SIM_ROM_DIR,'esp32c6_rev0_rom.elf')));
     return new Response(await readFile(new URL('web'+url.pathname,root)));
   }});
   try{
