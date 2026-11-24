@@ -1,0 +1,620 @@
+{
+  "schemaVersion": "1",
+  "id": "cloudzao-claw4",
+  "kind": "product",
+  "catalogId": "cloudzao-claw4",
+  "title": "CloudZao Claw4",
+  "summary": "CloudZao Claw4（原 Metalio Claw4）：ESP32-P4 主控、ESP32-C5 无线协处理器，32 MB Flash / 32 MB PSRAM，3.95 英寸 720×720 MIPI-DSI 屏、GT911 触摸、摄像头与 microSD。本条提供来源可追溯的模型和硬件资料；该板型 MIPI-DSI 与固件执行尚未接入。",
+  "summarySourceIds": [
+    "claw4-readme",
+    "claw4-board"
+  ],
+  "updatedAt": "2026-11-22T17:29:31Z",
+  "hardwareRevision": "unspecified physical revision; pinned default NV3051F build",
+  "identity": {
+    "manufacturer": "CloudZao",
+    "formerBrand": "Metalio",
+    "sku": "Claw4",
+    "upstreamBoard": "metalio-claw-4",
+    "upstreamCommit": "ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950"
+  },
+  "facts": [
+    {
+      "id": "main-controller",
+      "label": "主控与无线协处理器",
+      "value": {
+        "main": "ESP32-P4",
+        "architecture": "dual-core RISC-V",
+        "wirelessCoprocessor": "ESP32-C5",
+        "coprocessorTransport": "ESP-Hosted SDIO slot 1 / 4-bit / 40 MHz"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-sdkconfig"
+      ],
+      "notes": "ESP32-C5 仅承担无线协处理器角色，不能代替主 P4；本次不执行两芯片固件。"
+    },
+    {
+      "id": "memory",
+      "label": "主控存储",
+      "value": {
+        "flash": 32,
+        "psram": 32
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-sdkconfig"
+      ],
+      "unit": "MB",
+      "notes": "README 标称容量；sdkconfig Flash 32 MB、PSRAM HEX/200 MHz。"
+    },
+    {
+      "id": "cpu-clock-conflict",
+      "label": "主频资料冲突",
+      "value": {
+        "readme": 480,
+        "sdkconfig": 360
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-sdkconfig"
+      ],
+      "unit": "MHz",
+      "notes": "保留标称说明与固定源码构建配置的差异，不据此断言所购硬件实际频率。"
+    },
+    {
+      "id": "display",
+      "label": "默认量产显示屏",
+      "value": {
+        "diagonal": 3.95,
+        "diagonalUnit": "inch",
+        "width": 720,
+        "height": 720,
+        "resolutionUnit": "px",
+        "controller": "NV3051F",
+        "panel": "TRULY HE396-040T2BZZ",
+        "bus": "MIPI-DSI",
+        "lanes": 2,
+        "pixels": "RGB888 / 24 bpp",
+        "resetGpio": 3,
+        "backlightGpio": 52
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-config",
+        "claw4-board"
+      ],
+      "notes": "METALIO_CLAW_4_USE_FL7707N=0 默认选择 NV3051F。FL7707N 是源码中的备选，不把它与量产屏合并。"
+    },
+    {
+      "id": "display-build-conflicts",
+      "label": "显示源码版本差异",
+      "value": {
+        "configHeaderLcdBitsPerPixel": 16,
+        "nv3051fInitializationBitsPerPixel": 24,
+        "nv3051fCommentDpiClockMHz": 36,
+        "nv3051fCodeDpiClockMHz": 48,
+        "alternative": "FL7707N"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-config",
+        "claw4-board"
+      ],
+      "notes": "本条目按固定源码默认 NV3051F 初始化记录实际配置，保留头文件宏与注释冲突；未据此生成虚拟屏幕帧。"
+    },
+    {
+      "id": "touch",
+      "label": "触摸与 I2C",
+      "value": {
+        "controller": "GT911",
+        "addresses7bit": [
+          "0x5d",
+          "0x14"
+        ],
+        "controllerPort": 1,
+        "sdaGpio": 7,
+        "sclGpio": 8,
+        "interruptGpio": 33,
+        "swapXY": false,
+        "mirrorX": false,
+        "mirrorY": false
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-config",
+        "claw4-board"
+      ],
+      "notes": "地址在源码中自动探测；物理触摸存在，但模拟器未接入该板型。"
+    },
+    {
+      "id": "buttons",
+      "label": "按键与电源控制",
+      "value": {
+        "sidePowerKey": {
+          "input": "TCA9555 P0.5",
+          "softwareShutdownPulse": "TCA9555 P0.4",
+          "controller": "independent power-management IC"
+        },
+        "boot": {
+          "gpio": 35,
+          "location": "unknown"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-config"
+      ],
+      "notes": "右侧金色按键的可见位置来自宣传图；电源 IC 的长按行为不冒充普通 GPIO。BOOT 位置无可靠外观资料，不添加猜测热点。"
+    },
+    {
+      "id": "io-expander",
+      "label": "I2C 扩展器与电源线",
+      "value": {
+        "device": "TCA9555",
+        "address7bit": "0x20",
+        "p0": {
+          "0": "GPS_POWER",
+          "1": "PA_SWITCH",
+          "2": "CAM_PWDN",
+          "3": "SD",
+          "4": "PWR_KEY_PULSE",
+          "5": "PWR_KEY",
+          "6": "BT_POWER",
+          "7": "RST_4G"
+        },
+        "p1": {
+          "0": "PA",
+          "1": "ACCEL_INT",
+          "2": "USB_INSERT_DET",
+          "3": "WIRELESS_CHARGE_DET"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme"
+      ]
+    },
+    {
+      "id": "sd-card",
+      "label": "microSD 接口",
+      "value": {
+        "bus": "SDMMC slot 0",
+        "width": 4,
+        "clk": 43,
+        "cmd": 44,
+        "d0": 39,
+        "d1": 40,
+        "d2": 41,
+        "d3": 42,
+        "power": "TCA9555 P0.3 active-low",
+        "phyLdoChannel": 4
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-config",
+        "claw4-readme"
+      ],
+      "notes": "针脚是固定官方源码配置；config.h 自身要求对照实物原理图，本轮未找到原理图，不能标为实机验证。平台准备 64 MiB FAT32 卡但未挂载客体。"
+    },
+    {
+      "id": "usb",
+      "label": "USB 共用资源",
+      "value": {
+        "type": "USB-C",
+        "dm": 24,
+        "dp": 25,
+        "functions": [
+          "USB Serial/JTAG",
+          "USB OTG FS / MSC"
+        ],
+        "mutuallyExclusive": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-config",
+        "claw4-readme"
+      ],
+      "notes": "USB 数据功能与供电事实分开，接头精确型号/完整逐针顺序未知；不提供模拟连线。"
+    },
+    {
+      "id": "wireless-sdio",
+      "label": "P4 与 C5 的实际配置引脚",
+      "value": {
+        "slot": 1,
+        "clk": 51,
+        "cmd": 50,
+        "d0": 49,
+        "d1": 34,
+        "d2": 31,
+        "d3": 53,
+        "reset": 54,
+        "clockMHz": 40,
+        "resetActiveHigh": true
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-sdkconfig"
+      ],
+      "notes": "不套用 P4 默认 slot 1 的 GPIO18/19/14–17。"
+    },
+    {
+      "id": "gpio53-conflict",
+      "label": "GPIO53 复用记录",
+      "value": {
+        "configMacro": "USB_CHG_STA_PIN=GPIO53",
+        "hostedSdioData3": "GPIO53"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-config",
+        "claw4-sdkconfig"
+      ],
+      "notes": "源码配置含同脚声明，本轮不猜测未使用宏、版次或实际硬件复用关系。"
+    },
+    {
+      "id": "audio",
+      "label": "音频",
+      "value": {
+        "sampleRateHz": 16000,
+        "ws": 10,
+        "din": 11,
+        "bclk": 12,
+        "dout": 9,
+        "bluetoothUart": {
+          "tx": 26,
+          "rx": 27,
+          "baud": 115200
+        },
+        "codec": "professional Bluetooth audio codec; exact part unknown"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-config"
+      ],
+      "notes": "README 明确替代 ES8311+ES7210，不将旧 codec 拷贝为该设备配置。"
+    },
+    {
+      "id": "camera",
+      "label": "后摄像头",
+      "value": {
+        "sensor": "OV2710",
+        "interface": "MIPI-CSI",
+        "width": 1920,
+        "height": 1080,
+        "fps": 25,
+        "xclkMHz": 24,
+        "xclkGpio": 32,
+        "sccbAddress": "0x36"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme"
+      ]
+    },
+    {
+      "id": "cellular",
+      "label": "4G 与 SIM",
+      "value": {
+        "module": "NT26",
+        "tx": 28,
+        "rx": 29,
+        "mrdy": 13,
+        "srdy": 4,
+        "sim": [
+          "embedded SIM patch",
+          "external SIM slot"
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-config"
+      ],
+      "notes": "不模拟蜂窝网络或云端账号服务。"
+    },
+    {
+      "id": "other-peripherals",
+      "label": "其余已声明外设",
+      "value": {
+        "gps": {
+          "transport": "UART0",
+          "tx": 38,
+          "rx": 37,
+          "baud": 9600,
+          "module": "unknown"
+        },
+        "magnetometer": {
+          "model": "QMC6309",
+          "i2cAddress": "0x7c"
+        },
+        "fuelGauge": {
+          "model": "BQ27220",
+          "i2cAddress": "0x55"
+        },
+        "qiReceiver": {
+          "model": "NU1680",
+          "i2cAddress": "0x60"
+        },
+        "vibration": {
+          "gpio": 22,
+          "transport": "LEDC PWM"
+        },
+        "battery": "single-cell Li-ion; capacity unknown"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme"
+      ]
+    },
+    {
+      "id": "size",
+      "label": "官方外形近似尺寸",
+      "value": {
+        "width": 80,
+        "height": 80,
+        "depth": null
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw4-readme"
+      ],
+      "unit": "mm",
+      "notes": "官方原文约 8×8 cm，不是尺寸图、机械公差或实物量测。模型主体厚度10mm/含盖板10.8mm仅为调试展示估算。"
+    },
+    {
+      "id": "repository-chronology",
+      "label": "官方仓库最早记录（排序代用）",
+      "value": "2026-07-01",
+      "basis": "official",
+      "sourceIds": [
+        "repository-history-20261123"
+      ],
+      "notes": "最早可达提交；不证明上市时间或首次公开披露时间。"
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "claw4-readme",
+      "title": "CloudZao Claw4 README.md",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/README.md",
+      "kind": "manufacturer-documentation",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:13:40Z",
+      "sha256": "28749a972565ac89eda9dadc23397d8d6b993ae2c99630980ad8010bef5aa45d",
+      "bytes": 58517,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "source-readme.md",
+      "revision": {
+        "repository": "CloudZao/MetalioClaw4",
+        "commit": "ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950",
+        "path": "README.md"
+      }
+    },
+    {
+      "id": "claw4-config",
+      "title": "CloudZao Claw4 main/boards/metalio-claw-4/config.h",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/main/boards/metalio-claw-4/config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/main/boards/metalio-claw-4/config.h",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:13:40Z",
+      "sha256": "882c332346ebda82345c5825abf8e24258de2586eff770dca76bbec4ff1cdbdc",
+      "bytes": 2070,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "source-config.h",
+      "revision": {
+        "repository": "CloudZao/MetalioClaw4",
+        "commit": "ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950",
+        "path": "main/boards/metalio-claw-4/config.h"
+      }
+    },
+    {
+      "id": "claw4-board",
+      "title": "CloudZao Claw4 main/boards/metalio-claw-4/metalio-claw-4.cc",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/main/boards/metalio-claw-4/metalio-claw-4.cc",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/main/boards/metalio-claw-4/metalio-claw-4.cc",
+      "kind": "manufacturer-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:13:45Z",
+      "sha256": "583fee2f4f5a10eae9f10a3ff51ef4bfa45fb1b229dda6f3b50892188e8e06bf",
+      "bytes": 33919,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "source-board.cc",
+      "revision": {
+        "repository": "CloudZao/MetalioClaw4",
+        "commit": "ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950",
+        "path": "main/boards/metalio-claw-4/metalio-claw-4.cc"
+      }
+    },
+    {
+      "id": "claw4-sdkconfig",
+      "title": "CloudZao Claw4 sdkconfig",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/sdkconfig",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/sdkconfig",
+      "kind": "manufacturer-build-config",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:13:49Z",
+      "sha256": "3ef1ea575100b4b9c63a099b3c6c6b32791ddb3e580d8d02344ecd41a1b3edc8",
+      "bytes": 122945,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "source-sdkconfig.txt",
+      "revision": {
+        "repository": "CloudZao/MetalioClaw4",
+        "commit": "ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950",
+        "path": "sdkconfig"
+      }
+    },
+    {
+      "id": "claw4-license",
+      "title": "CloudZao Claw4 LICENSE",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/LICENSE",
+      "kind": "repository-license",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:13:40Z",
+      "sha256": "0a5a839033bfe18fe75d32b50d9d028912cf876f69ef59c2791aeb2971335d05",
+      "bytes": 1140,
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "SOURCE-LICENSE.txt",
+      "revision": {
+        "repository": "CloudZao/MetalioClaw4",
+        "commit": "ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950",
+        "path": "LICENSE"
+      }
+    },
+    {
+      "id": "claw4-photo-oblique",
+      "title": "CloudZao Claw4 images/product.jpg",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/images/product.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/images/product.jpg",
+      "kind": "manufacturer-product-illustration",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:13:40Z",
+      "sha256": "1376b481ee0ac9ab455f7734836182f25969e650d37ac2d5716b340855fe00c4",
+      "bytes": 222249,
+      "mediaType": "image/jpeg",
+      "archiveName": "reference-oblique.jpg",
+      "revision": {
+        "repository": "CloudZao/MetalioClaw4",
+        "commit": "ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950",
+        "path": "images/product.jpg"
+      }
+    },
+    {
+      "id": "claw4-photo-front-back",
+      "title": "CloudZao Claw4 images/product2.jpg",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/images/product2.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/images/product2.jpg",
+      "kind": "manufacturer-product-illustration",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:13:40Z",
+      "sha256": "5c7833f5341f4564daa22a9f90359f5c09f78f6ac8eec7aa2523a620d5400ba4",
+      "bytes": 146581,
+      "mediaType": "image/jpeg",
+      "archiveName": "reference-front-back.jpg",
+      "revision": {
+        "repository": "CloudZao/MetalioClaw4",
+        "commit": "ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950",
+        "path": "images/product2.jpg"
+      }
+    },
+    {
+      "id": "repository-history-20261123",
+      "title": "Official repository earliest reachable commit (chronology proxy)",
+      "url": "https://api.github.com/repos/CloudZao/MetalioClaw4/commits/387bb0f5abc1bdf9da3eecb1abca8964933fde38",
+      "resolvedUrl": "https://api.github.com/repos/CloudZao/MetalioClaw4/commits/387bb0f5abc1bdf9da3eecb1abca8964933fde38",
+      "kind": "repository-history",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:18:10Z",
+      "bytes": 7779,
+      "sha256": "0de4a1b0b07b3d52c44c33a899260443d54811eddd63e356b9ceb1174948e432",
+      "mediaType": "application/json; charset=utf-8",
+      "archiveName": "cloudzao-claw4-first-commit.json",
+      "revision": {
+        "commit": "387bb0f5abc1bdf9da3eecb1abca8964933fde38"
+      },
+      "notes": "Only public commit identity and dates are retained; raw account/author fields are omitted. This is not a verified retail release date."
+    }
+  ],
+  "assets": [
+    {
+      "id": "claw4-reference-oblique",
+      "sourceId": "claw4-photo-oblique",
+      "role": "manufacturer-product-illustration",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/images/product.jpg",
+      "localUrl": "./assets/cloudzao-claw4/reference-oblique.jpg"
+    },
+    {
+      "id": "claw4-reference-front-back",
+      "sourceId": "claw4-photo-front-back",
+      "role": "manufacturer-product-illustration",
+      "url": "https://raw.githubusercontent.com/CloudZao/MetalioClaw4/ca3aa3fa027ff7dad2adf0c2d03c4f24aa838950/images/product2.jpg",
+      "localUrl": "./assets/cloudzao-claw4/reference-front-back.jpg"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "hardware-revision",
+      "label": "实物硬件版次",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-board"
+      ],
+      "notes": "固定源码区分默认 NV3051F 与备选 FL7707N，未取得具体出货版次对应关系。"
+    },
+    {
+      "id": "mechanical-cad",
+      "label": "厂家 CAD、PCB 布局与 Gerber",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-board"
+      ],
+      "notes": "固定官方仓库完整树及产品文档未找到 STEP/STL/3MF/PCB 工程；宣传多视角图不能证明内部构造。"
+    },
+    {
+      "id": "thickness-and-mass",
+      "label": "厚度、重量与装配孔位",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-board"
+      ],
+      "notes": "README 仅给近似平面尺寸；展示厚度、相机凸起、插口深度均为估算，不可用于打印装配。"
+    },
+    {
+      "id": "battery-capacity",
+      "label": "电池容量与精确电源 IC",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-board"
+      ],
+      "notes": "未见明确型号/容量一手依据，保留单节锂电及独立电源控制事实。"
+    },
+    {
+      "id": "sensor-revision",
+      "label": "加速度计、蓝牙音频 IC 与 GPS 模块精确型号",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-board"
+      ],
+      "notes": "README 加速度计条目未给具体料号；不能按别的 Metalio 设备推定。"
+    },
+    {
+      "id": "factory-image",
+      "label": "实机出厂固件版本",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw4-readme",
+        "claw4-board"
+      ],
+      "notes": "仓库提供官方固件及烧录资料，具体出货版本未确认；由本次固件审计另列。"
+    }
+  ],
+  "collectionNotes": [
+    "来源时间、字节数和SHA-256来自实际抓取收据，源码URL固定到官方提交。",
+    "品牌显示采用 CloudZao，保留 Metalio 名称作为历史身份；不修改厂家仓库路径。",
+    "宣传多视角图是厂家产品图，未证实是实拍；模型属于外观近似，不是厂家CAD或制造文件。",
+    "P4内核现有DSI地址只有未实现外设标签；不复用Waveshare SPI屏或其他板型。",
+    "官方固件、小智及出厂用途调查由固件目录中的本设备条目和统一审计维护。"
+  ]
+}

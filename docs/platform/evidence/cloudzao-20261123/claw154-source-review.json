@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-11-22T17:24:02.113731+00:00",
+  "scope": [
+    "esp32s3/src/board/cloudzao_claw154.rs",
+    "esp32s3/src/board/lilygo_display.rs",
+    "esp-periph/src/i2c/cst816s.rs",
+    "esp32s3/tests/cloudzao_claw154.rs"
+  ],
+  "method": "Independent read-only source and boundary review; no code changes or new test execution.",
+  "blockingFindings": [],
+  "verifiedBySourceReview": [
+    "SPI3 physical pins SCLK9/MOSI10/CS14/DC8/RESET18 agree with official config.h and board initialization. Sharing a pin-routed SPI implementation does not grant modem/audio support.",
+    "I2C CST816S@0x15 SDA41/SCL42 exactly match source. Official touch initialization sets rst_gpio_num and int_gpio_num to GPIO_NUM_NC; model returns no touch IRQ and does not reset touch on LCD GPIO18.",
+    "Pinned esp_lcd_touch 1.2.1 mirror adjustment is x_max - raw and y_max - raw, so 240 - clamped visible coordinate is correct; subtracting 239 would introduce an off-by-one.",
+    "Official touch_feed classifies cover navigation near transformed x=180/200/220 and y about -360, with int16 conversion. Model raw coordinates (60/40/20,600) reflect that source; they remain logical contacts, not measured mechanical calibration.",
+    "Power GPIO47 active-low and BOOT0 high-idle are correct; GPIO48 hold/power latch and shutdown timing are explicitly unimplemented.",
+    "Shared CST816S state presents only one contact. No fabricated IDs, IRQ pin, ES8311 register device, ML307 transport, SD, or IMU is added by this board."
+  ],
+  "nonblockingFindings": [
+    {
+      "severity": "limitation-to-document",
+      "location": "esp32s3/src/board/lilygo_display.rs: gpio_pwm_at / display",
+      "finding": "LEDC duty is observed, but display() uses light != 0 as a gate. Any nonzero duty shows full framebuffer color; proportional optical dimming and fade curves are not simulated.",
+      "recommendation": "Describe this as source-backed PWM duty observation and backlight on/off gating; do not claim brightness curve or fade validation unless implemented."
+    },
+    {
+      "severity": "limitation-to-document",
+      "location": "esp32s3/src/board/lilygo_display.rs: display / esp-soc/src/devices/dcs_panel.rs",
+      "finding": "The shared panel tracks inversion and MADCTL BGR registers but the framebuffer path copies raw RGB565; new-board optical color calibration/inversion effects are not verified.",
+      "recommendation": "Keep scope at RGB565 command/window/reset/sleep pixel transport and source pin mapping, and list optical inversion/color calibration as unverified."
+    },
+    {
+      "severity": "upstream-boundary-note",
+      "location": "official main/display/touch_feed.cc IsNavKeyYBand / config.h NAV_KEY_Y_MAX",
+      "finding": "Upstream virtual-nav band includes y <= 12. Visible contacts in that band near x=180/200/220 can be classified as navigation by official firmware; the emulator deliberately preserves upstream geometry.",
+      "recommendation": "Do not apply an undocumented frontend coordinate correction. Calibrate only with hardware/official revised mapping."
+    }
+  ],
+  "runtimeValidation": "Existing authored diagnostic tests were inspected; no claim of factory firmware execution or physical hardware validation."
+}

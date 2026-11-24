@@ -14,6 +14,7 @@ pub use esp_soc::board::{Board, BoardEdge, BoardModel, NoBoard, VirtualCycle};
 pub mod atech14;
 pub mod tdisplay_s3;
 mod lilygo_display;
+pub mod cloudzao_claw154;
 mod lilygo_epaper;
 pub mod lilygo_additional;
 pub mod lilygo_io;
@@ -153,6 +154,7 @@ pub fn make_board(name: &str) -> Option<Board> {
         "waveshare-s3-lr1121-oled154" | "waveshare-s3-lr1121-epaper29" => waveshare_lr::make_board(name),
         "waveshare-s3-touch-amoled206" => Some(Box::new(waveshare_amoled_watch::WaveshareAmoledWatch::new(waveshare_amoled_watch::AmoledWatchVariant::TouchAmoled206))),
         "waveshare-s3-touch-amoled143c" => Some(Box::new(waveshare_qspi::WaveshareQspi::new(waveshare_qspi::QspiVariant::TouchAmoled143C))),
+        "cloudzao-claw-154" => Some(Box::new(cloudzao_claw154::Claw154::new())),
         "lilygo-t-keyboard-s3-pro" => Some(Box::new(lilygo_io::LilygoIo::t_keyboard_s3_pro())),
         "lilygo-t-micro32-s3" => Some(Box::new(lilygo_io::LilygoIo::t_micro32_s3())),
         "lilygo-t-panel-s3" => Some(Box::new(lilygo_io::LilygoIo::t_panel_s3())),

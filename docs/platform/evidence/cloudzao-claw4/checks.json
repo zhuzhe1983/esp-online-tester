@@ -1,0 +1,68 @@
+{
+  "productId": "cloudzao-claw4",
+  "checkedAt": "2026-11-22T17:24:25Z",
+  "baseCommit": "4d8f3d892e9171a61e8ff0008a029db6aea0e4bf",
+  "assetHashes": [
+    {
+      "file": "model.json",
+      "sha256": "8e194aa49d1d46494fa1a070798ed71763d1a4b57306e552f215c83c31ec624b"
+    },
+    {
+      "file": "geometry.bin.gz",
+      "sha256": "192f05ff2b52ec5d9e27a9a9c48700a50604e5659f567639a6b3fbc2538fc0b9"
+    },
+    {
+      "file": "rear-logo.png",
+      "sha256": "9b03bfdd5c5029bf232bdbdf92d47bb05637d9d6d5cbe551fc0db16548cb681c"
+    },
+    {
+      "file": "build-check.json",
+      "sha256": "e50b2adf4c43ac8e4d634267c6b91182d881f1b19912c57438a3e3620b045650"
+    }
+  ],
+  "checks": {
+    "sourceAssetHashes": "passed (7 fetched originals plus generated artifact hashes)",
+    "catalogAndKnowledgeSchemas": "passed",
+    "genericThreeJsModelLoader": "passed; local fetch and image-decoding test doubles; no GPU",
+    "inspectionRestore": "passed 5 cycles with exact restored positions",
+    "shellMaterialIsolation": "passed gold/purple states, fixed glass/camera/key/logo unchanged",
+    "unavailableRuntimeAndP4Flashing": "passed policy boundary check",
+    "deterministicOfflineRebuild": "passed exact bytes for model, binary, logo and receipt",
+    "actualBrowser": "blocked before navigation: Chromium process_singleton_posix.cc socket() failed: Operation not permitted",
+    "sameViewVisualReview": "not performed; not claimed",
+    "physicalMeasurements": "not performed",
+    "firmwareExecution": "not performed"
+  },
+  "geometryDimensions": {
+    "bodyApproximateMm": [
+      80,
+      80,
+      10.8
+    ],
+    "completeExportBoundsMm": [
+      [
+        -40.0,
+        -40.099998474121094,
+        -6.650000095367432
+      ],
+      [
+        40.70000076293945,
+        40.0,
+        5.400000095367432
+      ]
+    ],
+    "nominalSquareDisplayMm": 70.94402335644631,
+    "basis": "README 80×80 mm approximate; thickness and protrusions explicitly estimated; 3.95-inch display diagonal yields nominal square."
+  },
+  "knownDeviations": [
+    "Official promotional rendering screen-to-body ratio differs from nominal 3.95-inch screen divided by approximate80mm body; no model stretching used to hide this conflict.",
+    "Only the visible speaker grille region is approximated; exact perforation count, internal threads and unseen slot placements remain unknown.",
+    "USB recess is a hollow visual approximation with no claimed connector SKU or verified cable anchor.",
+    "UNKNOWN board is an estimated fitted layer, not a reconstruction from an electrical schematic."
+  ],
+  "reproduce": [
+    "python tools/build-cloudzao-claw4-model.py --output /tmp/cloudzao-models",
+    "node --test tools/platform-cloudzao-claw4-model-test.mjs",
+    "Run tools/fixtures/cloudzao-claw4-model-check.js on a task-owned local browser after merging the product fragment."
+  ]
+}

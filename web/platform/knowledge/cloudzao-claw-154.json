@@ -1,0 +1,634 @@
+{
+  "schemaVersion": "1",
+  "id": "cloudzao-claw-154",
+  "kind": "product",
+  "catalogId": "cloudzao-claw-154",
+  "title": "CloudZao Claw 1.54",
+  "summary": "原 Metalio-Claw-1.54：ESP32-S3、240×240 ST7789彩屏、CST816S触摸与盖板导航、ES8311音频、ML307蜂窝。平台新增独立SPI3显示/背光/复位、轮询触摸和GPIO按键子集；整包官方固件与真实硬件未验证。",
+  "summarySourceIds": [
+    "claw154-readme",
+    "claw154-board"
+  ],
+  "updatedAt": "2026-11-22T17:30:23Z",
+  "hardwareRevision": "unspecified; source board metalio-claw-1.54 at ba2fcbde5cd7c42e6f684aea64bed63951309684",
+  "identity": {
+    "manufacturer": "CloudZao",
+    "formerBrand": "Metalio",
+    "sku": "Metalio-Claw-1.54",
+    "firmwareBoard": "metalio-claw-1.54"
+  },
+  "facts": [
+    {
+      "id": "chip",
+      "label": "主控",
+      "value": "ESP32-S3 / Xtensa LX7",
+      "basis": "official",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-sdkconfig"
+      ]
+    },
+    {
+      "id": "flash",
+      "label": "Flash容量",
+      "value": 16,
+      "basis": "official",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-sdkconfig"
+      ],
+      "unit": "MiB"
+    },
+    {
+      "id": "psram",
+      "label": "PSRAM容量",
+      "value": 8,
+      "basis": "official",
+      "sourceIds": [
+        "claw154-readme"
+      ],
+      "unit": "MiB",
+      "notes": "官方README明确8 MB Octal PSRAM；配置为80 MHz。"
+    },
+    {
+      "id": "screen",
+      "label": "显示面板",
+      "value": {
+        "diagonalInch": 1.54,
+        "width": 240,
+        "height": 240,
+        "controller": "ST7789",
+        "pixelFormat": "RGB565",
+        "bus": "SPI3",
+        "clockMHz": 40,
+        "spiMode": 3
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-board",
+        "claw154-config"
+      ]
+    },
+    {
+      "id": "screen-pins",
+      "label": "屏幕GPIO",
+      "value": {
+        "mosi": 10,
+        "sclk": 9,
+        "dc": 8,
+        "cs": 14,
+        "reset": 18,
+        "backlight": 13,
+        "backlightActiveLow": false
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw154-config"
+      ]
+    },
+    {
+      "id": "touch",
+      "label": "触控控制器",
+      "value": {
+        "controller": "CST816S",
+        "address": 21,
+        "sda": 41,
+        "scl": 42,
+        "clockHz": 400000,
+        "resetGpio": null,
+        "interruptGpio": null,
+        "mirrorX": true,
+        "mirrorY": true,
+        "swapXY": false
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw154-board",
+        "claw154-config"
+      ]
+    },
+    {
+      "id": "navigation",
+      "label": "盖板导航键固件坐标",
+      "value": {
+        "previousX": 180,
+        "homeX": 200,
+        "nextX": 220,
+        "yMin": -480,
+        "yMax": 12,
+        "representativeY": -360
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw154-config",
+        "claw154-touch-feed-cc"
+      ],
+      "notes": "板级模型使用镜像前原始寄存器坐标 (60/40/20,600)。代表性Y来自源码注释，非实机校准。"
+    },
+    {
+      "id": "buttons",
+      "label": "按键与电源保持GPIO",
+      "value": {
+        "boot": 0,
+        "powerKey": 47,
+        "powerHold": 48,
+        "usbDetect": 1
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw154-config",
+        "claw154-board",
+        "claw154-power"
+      ],
+      "notes": "BOOT是配置定义；电源键事件到GPIO，不把按键输入当作真实断电。"
+    },
+    {
+      "id": "audio",
+      "label": "音频硬件",
+      "value": {
+        "codec": "ES8311",
+        "sampleRateHz": 24000,
+        "mclk": 5,
+        "bclk": 6,
+        "ws": 4,
+        "dout": 15,
+        "din": 17,
+        "paEnable": 21
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw154-config",
+        "claw154-board"
+      ]
+    },
+    {
+      "id": "network",
+      "label": "通信硬件",
+      "value": {
+        "wifi": "ESP32-S3 integrated 2.4 GHz",
+        "cellular": "ML307",
+        "modemUartTx": 12,
+        "modemUartRx": 11,
+        "defaultNetwork": "cellular",
+        "bluetooth": "hardware capability; firmware configuration differs"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-board"
+      ],
+      "notes": "默认4G。完整官方服务依赖未验证；不模拟蜂窝链路。"
+    },
+    {
+      "id": "framework",
+      "label": "开发框架",
+      "value": "ESP-IDF v5.5.4; LVGL; esp_lcd_touch 1.2.1; CST816S driver 1.1.2",
+      "basis": "official",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-dependencies-lock"
+      ]
+    },
+    {
+      "id": "ui-apps",
+      "label": "官方应用入口",
+      "value": [
+        "聊天",
+        "翻译",
+        "AI绘图",
+        "天气",
+        "计算器",
+        "2048",
+        "设置"
+      ],
+      "basis": "official",
+      "sourceIds": [
+        "claw154-readme"
+      ],
+      "notes": "这是官方功能介绍，不是平台实测兼容清单；云服务需要用户配置。"
+    },
+    {
+      "id": "front-envelope-estimate",
+      "label": "前盖照片估算范围",
+      "value": [
+        35.7,
+        42.8
+      ],
+      "unit": "mm",
+      "basis": "image-measurement",
+      "sourceIds": [
+        "claw154-product-photo",
+        "claw154-readme"
+      ],
+      "method": "Planar homography from manually picked display corners to a nominal 1.54-inch square; outer front-cover corner extent only.",
+      "uncertainty": "Single manufacturer oblique promotional photo; active area versus glass margin and render perspective are uncertain. No engineering tolerance, physical calibration, independent back/side view, or thickness measurement."
+    },
+    {
+      "id": "repository-chronology",
+      "label": "官方仓库最早记录（排序代用）",
+      "value": "2026-10-10",
+      "basis": "official",
+      "sourceIds": [
+        "repository-history-20261123"
+      ],
+      "notes": "最早可达提交；不证明上市时间或首次公开披露时间。"
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "claw154-readme",
+      "title": "CloudZao Claw 1.54 · README_zn.md",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/README_zn.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/README_zn.md",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:12:33Z",
+      "bytes": 12178,
+      "sha256": "bc80339d6c17ecaecfc4023862c3d2f10163e5e6ef5ee290745b7f703a04968e",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-readme.source",
+      "revision": {
+        "repository": "CloudZao/Metalio-Claw-1.54",
+        "commit": "ba2fcbde5cd7c42e6f684aea64bed63951309684",
+        "path": "README_zn.md"
+      }
+    },
+    {
+      "id": "claw154-config",
+      "title": "CloudZao Claw 1.54 · main/boards/metalio-claw-1.54/config.h",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/boards/metalio-claw-1.54/config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/boards/metalio-claw-1.54/config.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:12:33Z",
+      "bytes": 2225,
+      "sha256": "024cddea97140ffa653f30f5d2a2c4993b03132cf7a0af93ffee0591c38fda5d",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-config.source",
+      "revision": {
+        "repository": "CloudZao/Metalio-Claw-1.54",
+        "commit": "ba2fcbde5cd7c42e6f684aea64bed63951309684",
+        "path": "main/boards/metalio-claw-1.54/config.h"
+      }
+    },
+    {
+      "id": "claw154-board",
+      "title": "CloudZao Claw 1.54 · main/boards/metalio-claw-1.54/metalio-claw-1.54.cc",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/boards/metalio-claw-1.54/metalio-claw-1.54.cc",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/boards/metalio-claw-1.54/metalio-claw-1.54.cc",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:12:33Z",
+      "bytes": 8148,
+      "sha256": "1ddc9157d4df665dbb240cfdd53462973d392f828739f56af21b109e32b75a29",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-board.source",
+      "revision": {
+        "repository": "CloudZao/Metalio-Claw-1.54",
+        "commit": "ba2fcbde5cd7c42e6f684aea64bed63951309684",
+        "path": "main/boards/metalio-claw-1.54/metalio-claw-1.54.cc"
+      }
+    },
+    {
+      "id": "claw154-power",
+      "title": "CloudZao Claw 1.54 · main/boards/metalio-claw-1.54/power_manager.h",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/boards/metalio-claw-1.54/power_manager.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/boards/metalio-claw-1.54/power_manager.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:12:33Z",
+      "bytes": 11437,
+      "sha256": "458644aa26ad65a287c98c9830cc6d6077d57a52d5d70d1f2f5fe056ad28e7b6",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-power.source",
+      "revision": {
+        "repository": "CloudZao/Metalio-Claw-1.54",
+        "commit": "ba2fcbde5cd7c42e6f684aea64bed63951309684",
+        "path": "main/boards/metalio-claw-1.54/power_manager.h"
+      }
+    },
+    {
+      "id": "claw154-sdkconfig",
+      "title": "CloudZao Claw 1.54 · sdkconfig",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/sdkconfig",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/sdkconfig",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:12:41Z",
+      "bytes": 96578,
+      "sha256": "056205279d842117d5769bbb9c486aa82f5c09f47746a42a2d14f5b30f3b5a52",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-sdkconfig.source",
+      "revision": {
+        "repository": "CloudZao/Metalio-Claw-1.54",
+        "commit": "ba2fcbde5cd7c42e6f684aea64bed63951309684",
+        "path": "sdkconfig"
+      }
+    },
+    {
+      "id": "claw154-license",
+      "title": "CloudZao Claw 1.54 · LICENSE",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/LICENSE",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:12:33Z",
+      "bytes": 1140,
+      "sha256": "0a5a839033bfe18fe75d32b50d9d028912cf876f69ef59c2791aeb2971335d05",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-license.source",
+      "revision": {
+        "repository": "CloudZao/Metalio-Claw-1.54",
+        "commit": "ba2fcbde5cd7c42e6f684aea64bed63951309684",
+        "path": "LICENSE"
+      }
+    },
+    {
+      "id": "claw154-product-photo",
+      "title": "CloudZao Claw 1.54 · images/product.jpg",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/images/product.jpg",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/images/product.jpg",
+      "kind": "manufacturer-photo",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:12:33Z",
+      "bytes": 120896,
+      "sha256": "9c3e494ab297e05139823a08224e34468e128573742eb67069905c824c92285d",
+      "mediaType": "image/jpeg",
+      "archiveName": "claw154-product-photo.source",
+      "revision": {
+        "repository": "CloudZao/Metalio-Claw-1.54",
+        "commit": "ba2fcbde5cd7c42e6f684aea64bed63951309684",
+        "path": "images/product.jpg"
+      }
+    },
+    {
+      "id": "claw154-dependencies-lock",
+      "title": "Official source · dependencies.lock",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/dependencies.lock",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/dependencies.lock",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:15:44Z",
+      "bytes": 15699,
+      "sha256": "53b342ae55fc6a977701adae6cd99139f3a2788a8dda0f0931ada7d842d10ce2",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-dependencies-lock.source"
+    },
+    {
+      "id": "claw154-touch-feed-cc",
+      "title": "Official source · main/display/touch_feed.cc",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/display/touch_feed.cc",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/display/touch_feed.cc",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:15:48Z",
+      "bytes": 11343,
+      "sha256": "64ab8688949c21e5cd6c8c4596313185a9e72b1eb7f7f24ca0e77c38434abc9e",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-touch_feed-cc.source"
+    },
+    {
+      "id": "claw154-lv-adapter-display-cc",
+      "title": "Official source · main/display/lv_adapter_display.cc",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/display/lv_adapter_display.cc",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/display/lv_adapter_display.cc",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:15:54Z",
+      "bytes": 6157,
+      "sha256": "a70e6fa5348571fbecc3581d49b04ad1ae610778129f07fe4ea9a6e8351e1954",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-lv_adapter_display-cc.source"
+    },
+    {
+      "id": "claw154-pwr-key-handler-cc",
+      "title": "Official source · main/display/screen/pwr_key_handler.cc",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/display/screen/pwr_key_handler.cc",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/display/screen/pwr_key_handler.cc",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:15:59Z",
+      "bytes": 7514,
+      "sha256": "3cde215ec90d8fbcce06dc72f280d96b739585c7e63ada04ecb836544233194c",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-pwr_key_handler-cc.source"
+    },
+    {
+      "id": "claw154-idf-component-yml",
+      "title": "Official source · main/idf_component.yml",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/idf_component.yml",
+      "resolvedUrl": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/main/idf_component.yml",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:16:04Z",
+      "bytes": 919,
+      "sha256": "5679ae1a2f8b2e1cc601149bd23c5438d3073b316e9cd9d0de934c460679e6c9",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "claw154-idf_component-yml.source"
+    },
+    {
+      "id": "esp-lcd-touch-coordinates",
+      "title": "Official source · components/lcd_touch/esp_lcd_touch/esp_lcd_touch.c",
+      "url": "https://raw.githubusercontent.com/espressif/esp-bsp/master/components/lcd_touch/esp_lcd_touch/esp_lcd_touch.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-bsp/master/components/lcd_touch/esp_lcd_touch/esp_lcd_touch.c",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:16:33Z",
+      "bytes": 12027,
+      "sha256": "ecde25248240d74451ee2a148ca8599213576c753b81325ee54877b728acdca4",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "esp-lcd-touch-coordinates.source"
+    },
+    {
+      "id": "idf554-gpio-sig-map-h",
+      "title": "Official source · components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/soc/esp32s3/include/soc/gpio_sig_map.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:18:08Z",
+      "bytes": 18749,
+      "sha256": "eede7f33a5b4569dfbc828baf35c2827aacb935602110863e5839e19c5a5a8d9",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "idf554-gpio-sig-map-h.source"
+    },
+    {
+      "id": "idf554-spi-reg-h",
+      "title": "Official source · components/soc/esp32s3/register/soc/spi_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/soc/esp32s3/register/soc/spi_reg.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/soc/esp32s3/register/soc/spi_reg.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:18:08Z",
+      "bytes": 84433,
+      "sha256": "2df49ba69f6fd9f65759b0dbc2065023386efe34833c28724ee28f12413be1c2",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "idf554-spi-reg-h.source"
+    },
+    {
+      "id": "idf554-i2c-reg-h",
+      "title": "Official source · components/soc/esp32s3/register/soc/i2c_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/soc/esp32s3/register/soc/i2c_reg.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/espressif/esp-idf/v5.5.4/components/soc/esp32s3/register/soc/i2c_reg.h",
+      "kind": "official-source",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:18:08Z",
+      "bytes": 62576,
+      "sha256": "42ff10628e96e3ee0a66b10aea8a504deb9bfa42c89f4a3c1fd1c003dd57c203",
+      "mediaType": "text/plain; charset=utf-8",
+      "archiveName": "idf554-i2c-reg-h.source"
+    },
+    {
+      "id": "claw154-repository-tree",
+      "title": "CloudZao Claw 1.54 complete repository tree",
+      "url": "https://api.github.com/repos/CloudZao/Metalio-Claw-1.54/git/trees/main?recursive=1",
+      "resolvedUrl": "https://api.github.com/repos/CloudZao/Metalio-Claw-1.54/git/trees/main?recursive=1",
+      "kind": "official-repository-tree",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:12:03Z",
+      "bytes": 325729,
+      "sha256": "048d1273818c205a0c11e05cab6c4fbbc796b09735cdd80eb97e6c8195b9c338",
+      "mediaType": "application/json; charset=utf-8",
+      "archiveName": "claw154-repository-tree.json",
+      "notes": "Tree inspected for STEP/STL/3MF/KiCad/DXF/IGES/FCStd; no mechanical model found."
+    },
+    {
+      "id": "repository-history-20261123",
+      "title": "Official repository earliest reachable commit (chronology proxy)",
+      "url": "https://api.github.com/repos/CloudZao/Metalio-Claw-1.54/commits/b574e5fdba3f105c14ed2eb6e86dede96c36b192",
+      "resolvedUrl": "https://api.github.com/repos/CloudZao/Metalio-Claw-1.54/commits/b574e5fdba3f105c14ed2eb6e86dede96c36b192",
+      "kind": "repository-history",
+      "status": "fetched",
+      "fetchedAt": "2026-11-22T17:18:18Z",
+      "bytes": 4644,
+      "sha256": "cc10e9f6cd51c8026c9c757a7e39b70223aefcf55827cee61e6a2be2382e96fb",
+      "mediaType": "application/json; charset=utf-8",
+      "archiveName": "cloudzao-claw-154-first-commit.json",
+      "revision": {
+        "commit": "b574e5fdba3f105c14ed2eb6e86dede96c36b192"
+      },
+      "notes": "Only public commit identity and dates are retained; raw account/author fields are omitted. This is not a verified retail release date."
+    }
+  ],
+  "assets": [
+    {
+      "id": "claw154-photo",
+      "sourceId": "claw154-product-photo",
+      "role": "manufacturer reference photo",
+      "url": "https://raw.githubusercontent.com/CloudZao/Metalio-Claw-1.54/ba2fcbde5cd7c42e6f684aea64bed63951309684/images/product.jpg",
+      "localUrl": "./assets/cloudzao-claw-154/reference-front-oblique.jpg"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "physical-dimensions",
+      "label": "实机尺寸与厚度",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "未找到尺寸图；照片推算仅覆盖前盖投影。"
+    },
+    {
+      "id": "physical-button-locations",
+      "label": "BOOT与电源键实物位置",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "官方唯一斜前图未足够展示；不把调试控件位置当成硬件位置。"
+    },
+    {
+      "id": "pcb-layout",
+      "label": "主板布局与装配",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "没有PCB工程、Gerber或机械CAD；UNKNOWN占位不代表真实PCB。"
+    },
+    {
+      "id": "battery",
+      "label": "电池容量与标称电压",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "源码给电池ADC逻辑，未给可核验电池规格。"
+    },
+    {
+      "id": "mass",
+      "label": "整机重量",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "官方检查资料没有重量。"
+    },
+    {
+      "id": "hardware-version",
+      "label": "硬件版次",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "仓库未给明确PCB版本与量产批次。"
+    },
+    {
+      "id": "touch-calibration",
+      "label": "触摸与导航物理标定",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "按官方mirror和导航阈值实现，未进行实机坐标校准。"
+    },
+    {
+      "id": "factory-image",
+      "label": "实际出厂烧录版本",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "官方release来源明确，但未证明设备出厂时烧录版本；role使用official。"
+    },
+    {
+      "id": "optional-imu",
+      "label": "SC7A20H是否实际装配",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "claw154-readme",
+        "claw154-repository-tree"
+      ],
+      "notes": "仓库包含sc7a20h源文件，但本型号board初始化未创建它；不将备用源码当成实物BOM。"
+    }
+  ],
+  "collectionNotes": [
+    "资料抓取以sources中UTC时间和固定commit为准；SKU旧名保留，展示品牌按用户确认改为CloudZao。",
+    "公开树检查未见STEP/STL/3MF/KiCad等模型。只取得单一官方产品图，启用明确标记的外观粗模。",
+    "运行范围：真实S3 SPI3路由→ST7789 framebuffer、GPIO13背光/18复位、I2C41/42@0x15轮询触控、BOOT0/电源47、盖板previous/home/next。",
+    "已运行2项board与3项真实Xtensa寄存器诊断；不是完整官方固件启动报告。",
+    "未实现或未验证：ES8311音频寄存器、ML307蜂窝、云账户/翻译/生成服务、物理关机/电池电量、硬件刷写、手势/扫描时序/实机几何。",
+    "未发现microSD卡槽依据；本型号不声明TF卡，不从其他Claw/INK产品继承。",
+    "官方烧录站另有名称Metalio 1.54、型号id35的不同视角图片，但无精确SKU/硬件版次绑定；仅在model-plan的sourceSearch记录候选，不据此推定机械尺寸或侧键功能。"
+  ]
+}
