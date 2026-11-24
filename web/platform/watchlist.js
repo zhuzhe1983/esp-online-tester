@@ -1,6 +1,8 @@
 // Remote release metadata only. Firmware payloads are never stored by this watchlist.
 const ISSUE_BASE = 'https://github.com/zhuzhe1983/esp-online-tester/issues/new';
 const MAX_METADATA_BYTES = 2 * 1024 * 1024;
+// The local snapshot aggregates every vendor/SKU; it is not one upstream response.
+export const MAX_RELEASE_SNAPSHOT_BYTES = 8 * 1024 * 1024;
 const safeUrl = value => {
   const url = new URL(value);
   if (url.protocol !== 'https:' || url.username || url.password) throw new Error('Watchlist URLs must use HTTPS without credentials.');
@@ -80,10 +82,11 @@ export function validateWatchlist(document) {
   return document;
 }
 
-async function metadataJson(url, { fetchImpl = globalThis.fetch, signal } = {}) {
+async function metadataJson(url, { fetchImpl = globalThis.fetch, signal, maxBytes = MAX_METADATA_BYTES } = {}) {
   const response = await fetchImpl(url, { cache: 'no-store', credentials: 'omit', mode: 'cors', signal });
   if (!response.ok) throw Object.assign(new Error(`Release metadata returned HTTP ${response.status}.`), { code: 'WATCH_METADATA_HTTP', status: response.status });
-  if (Number(response.headers.get('content-length')) > MAX_METADATA_BYTES) throw new Error('Release metadata exceeds 2 MiB.');
+  const oversized = () => new Error(`Release metadata exceeds ${maxBytes / (1024 * 1024)} MiB.`);
+  if (Number(response.headers.get('content-length')) > maxBytes) { await response.body?.cancel(); throw oversized(); }
   const reader = response.body?.getReader();
   if (!reader) throw new Error('Streaming fetch is required for bounded metadata reads.');
   const chunks = []; let length = 0;
@@ -91,7 +94,7 @@ async function metadataJson(url, { fetchImpl = globalThis.fetch, signal } = {}) 
     while (true) {
       const { done, value } = await reader.read(); if (done) break;
       length += value.length;
-      if (length > MAX_METADATA_BYTES) throw new Error('Release metadata exceeds 2 MiB.');
+      if (length > maxBytes) throw oversized();
       chunks.push(value);
     }
   } finally { await reader.cancel().catch(() => {}); }
@@ -178,7 +181,7 @@ export async function checkWatchEntry(entry, { fetchImpl = globalThis.fetch, tim
       metadata:{source:'manual-review',scope:firmwareId||productId?'device':'project',checkedAt:entry.checkedAt,stale:!Number.isFinite(Date.parse(entry.checkedAt))||Date.now()-Date.parse(entry.checkedAt)>48*3600000,refreshError:entry.monitoringNote,matchReason:'manual-review-required'},
       releaseUrl:safeUrl(entry.releaseUrl),upstreamAssets:[],assets:[],state:'attention',issueUrl:null};
     // Visitors read the static snapshot; never consume anonymous API quotas.
-    const snapshot = await metadataJson(new URL('./catalog/firmware-release-snapshot.json', import.meta.url).href, { fetchImpl, signal: controller.signal });
+    const snapshot = await metadataJson(new URL('./catalog/firmware-release-snapshot.json', import.meta.url).href, { fetchImpl, signal: controller.signal, maxBytes: MAX_RELEASE_SNAPSHOT_BYTES });
     if (snapshot?.schemaVersion !== '1' || !Array.isArray(snapshot.entries)) throw new Error('Invalid release metadata snapshot.');
     const saved = snapshot.entries.find(item => item.id === entry.id && item.upstreamRepo === entry.upstreamRepo);
     const selected=selectWatchRelease(entry,saved,selection),latest=selected.latest;

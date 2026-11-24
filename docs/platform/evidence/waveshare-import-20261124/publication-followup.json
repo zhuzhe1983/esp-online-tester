@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-24T04:51:24.021313+00:00",
+  "sourceParent": "8a08cd0d7cbbd3c7841d6c616b670f67cbd5fd6d",
+  "sourceFileSha256": {
+    "web/platform/watchlist.js": "9bf7644ec5b892b84b76c259de6a086d43694baf16574cad84a1ffd482e66ed7",
+    "tools/sync-firmware-catalog.mjs": "e661262b23cfbc109782af7576d7f1ac544119caef474a424861f0eace2aa851",
+    "tools/platform-firmware-sync-test.mjs": "16d7d86d82869629d9d3b6192e18652fc7bedd8c644a72024df9b5304582f511",
+    "tools/platform-watchlist-test.mjs": "7653f3e102160f4ccc81fbcf0170fba6b353f8dd9520a6fa505f0eb8fea91333"
+  },
+  "initialPagesRun": {
+    "url": "https://github.com/zhuzhe1983/esp-online-tester/actions/runs/45328143250",
+    "conclusion": "failure",
+    "failedStep": "Sync metadata and resolve public download addresses without saving firmware",
+    "reason": "The aggregate compact snapshot exceeded the old 2 MiB site snapshot bound; build and deploy were skipped."
+  },
+  "correction": {
+    "aggregateSnapshotByteLimit": 8388608,
+    "ordinaryWatchlistByteLimit": 2097152,
+    "upstreamRequestLimitsChanged": false,
+    "historyOrAssetsDroppedByThisCorrection": false,
+    "headerAndStreamingReadsBoundedAndCancelled": true
+  },
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--test",
+        "tools/platform-firmware-sync-test.mjs",
+        "tools/platform-m5burner-v1-sync-test.mjs",
+        "tools/platform-firmware-download-access-test.mjs",
+        "tools/platform-watchlist-test.mjs"
+      ],
+      "passed": 40,
+      "failed": 0,
+      "logSha256": "71a66a139af63ff5753f3bcbebb1c50db20d5c503758bb875a83c62de4c9165e"
+    },
+    {
+      "command": [
+        "node",
+        "--test",
+        "tools/platform-*-test.mjs"
+      ],
+      "environment": {
+        "ESP32SIM_ROM_DIR": "{checkout}/roms"
+      },
+      "passed": 521,
+      "failed": 0,
+      "skipped": 0,
+      "logSha256": "92f02cee5f911477bc88e59a0c688b1494458f9ca6eb243dd6bfc8ae8eb17dc2"
+    },
+    {
+      "command": [
+        "node",
+        "tools/sync-firmware-catalog.mjs",
+        "--dry-run",
+        "--use-gh-auth"
+      ],
+      "credentialHandling": "Existing gh credential used in memory for GitHub API requests only; no credential value stored.",
+      "exitCode": 0,
+      "result": {
+        "summary": {
+          "watchEntries": 418,
+          "upstreamRepositories": 200,
+          "deviceTargets": 146,
+          "updated": 0,
+          "retained": 447,
+          "firmwareBodiesDownloaded": 0,
+          "firmwaresExecuted": 0,
+          "downloadsResolved": 1,
+          "downloadsNeedVerification": 72,
+          "downloadChecksFailed": 0
+        },
+        "changed": [
+          "web/platform/catalog/firmware-release-snapshot.json",
+          "web/platform/catalog/firmware-catalog-sync-report.json"
+        ],
+        "snapshotBytes": 3736886,
+        "snapshotByteLimit": 8388608,
+        "dryRun": true
+      }
+    }
+  ],
+  "nativeAndWasmSourceChanged": false,
+  "privacy": "Only public source paths, hashes, result counts and the public failed-run link retained. Raw workflow log stays in the ignored private verification cache."
+}

@@ -3,7 +3,7 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
-import {validateWatchlist} from '../web/platform/watchlist.js';
+import {validateWatchlist,MAX_RELEASE_SNAPSHOT_BYTES} from '../web/platform/watchlist.js';
 import {releaseMatchesChannel} from './firmware-release-source.mjs';
 import {syncReleaseMetadata,githubToken,compactReleaseHistory} from './sync-firmware-release-metadata.mjs';
 import {createHash} from 'node:crypto';
@@ -118,7 +118,8 @@ export async function runCatalogSync({base=new URL('../',import.meta.url),fetchI
   // bytes; pretty-printing hundreds of upstream assets can exceed the response
   // limit without adding any release, hash, target or historical information.
   const snapshotText=JSON.stringify(snapshot)+'\n';
-  if(Buffer.byteLength(snapshotText)>2*1024*1024)throw Error('Release snapshot exceeds the browser metadata limit');const manifests={};
+  const snapshotBytes=Buffer.byteLength(snapshotText);
+  if(snapshotBytes>MAX_RELEASE_SNAPSHOT_BYTES)throw Error('Release snapshot exceeds the browser metadata limit');const manifests={};
   for(const target of watchlist.entries.flatMap(e=>e.catalogTargets||[]))if(target.manifestUrl&&!manifests[target.manifestUrl])manifests[target.manifestUrl]=JSON.parse(await readFile(new URL(target.manifestUrl,platform),'utf8'));
   const result=updateFirmwareCatalog({products,firmwares,watchlist,snapshot,manifests,now});
   if(!snapshotOnly)await resolveCatalogDownloads(result,{fetchImpl,now});
@@ -134,9 +135,9 @@ export async function runCatalogSync({base=new URL('../',import.meta.url),fetchI
   const files=new Map([[new URL('firmwares.json',catalog),encoded(result.firmwares)],[new URL('firmware-watchlist.json',catalog),encoded(result.watchlist)],[new URL('firmware-release-snapshot.json',catalog),snapshotText],[reportUrl,encoded(recordedReport)]]);
   for(const[url,manifest]of Object.entries(result.manifests))files.set(new URL(url,platform),encoded(manifest));
   const changed=[];for(const[url,text]of files){let old='';try{old=await readFile(url,'utf8');}catch{}if(old===text)continue;changed.push(fileURLToPath(url).slice(fileURLToPath(base).length));if(!dryRun){await mkdir(dirname(fileURLToPath(url)),{recursive:true});await writeFile(url,text);}}
-  return {report:result.report,changed};
+  return {report:result.report,changed,snapshotBytes,snapshotByteLimit:MAX_RELEASE_SNAPSHOT_BYTES};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
   const result=await runCatalogSync({token:githubToken(),snapshotOnly:process.argv.includes('--snapshot-only'),dryRun:process.argv.includes('--dry-run')});
-  console.log(JSON.stringify({summary:result.report.summary,changed:result.changed,dryRun:process.argv.includes('--dry-run')},null,2));
+  console.log(JSON.stringify({summary:result.report.summary,changed:result.changed,snapshotBytes:result.snapshotBytes,snapshotByteLimit:result.snapshotByteLimit,dryRun:process.argv.includes('--dry-run')},null,2));
 }

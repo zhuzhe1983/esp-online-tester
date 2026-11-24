@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { validateWatchlist, probeFirmwareUrl, checkWatchEntry, buildFirmwareIssueUrl } from '../web/platform/watchlist.js';
+import { validateWatchlist, probeFirmwareUrl, checkWatchEntry, buildFirmwareIssueUrl, loadWatchlist, MAX_RELEASE_SNAPSHOT_BYTES } from '../web/platform/watchlist.js';
 
 const document = validateWatchlist(JSON.parse(await readFile(new URL('../web/platform/catalog/firmware-watchlist.json', import.meta.url), 'utf8')));
 assert.ok(document.entries.length >= 6);
@@ -42,6 +42,23 @@ const report = await checkWatchEntry(entry, { fetchImpl: async (url, options) =>
   : new Response(null, { status: 404 }) });
 assert.equal(report.updateAvailable, true); assert.equal(report.state, 'attention'); assert.ok(report.issueUrl.startsWith('https://github.com/zhuzhe1983/esp-online-tester/issues/new?'));
 assert.equal(report.metadata.source, 'site-snapshot'); assert.equal(report.metadata.stale, false);
+// Aggregated site snapshots can exceed one ordinary catalog's read budget.
+const aggregateEntry={...entry,catalogTargets:[],assets:[]};
+const aggregateBytes=new TextEncoder().encode(JSON.stringify({schemaVersion:'1',padding:'x'.repeat(2*1024*1024),entries:[{id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:new Date().toISOString(),release:{tag_name:'aggregate-release',html_url:entry.releaseUrl,assets:[]}}]}));
+assert.ok(aggregateBytes.length>2*1024*1024&&aggregateBytes.length<MAX_RELEASE_SNAPSHOT_BYTES);
+for(const headers of [{},{'content-length':String(aggregateBytes.length)}]){
+  const aggregated=await checkWatchEntry(aggregateEntry,{fetchImpl:async()=>new Response(aggregateBytes,{headers})});
+  assert.equal(aggregated.error,undefined);assert.equal(aggregated.latestVersion,'aggregate-release');
+}
+for(const headers of [{},{'content-length':String(MAX_RELEASE_SNAPSHOT_BYTES+1)}]){
+  let cancelled=false;
+  const body=new ReadableStream({pull(controller){controller.enqueue(new Uint8Array(65536));},cancel(){cancelled=true;}});
+  const oversized=await checkWatchEntry(aggregateEntry,{fetchImpl:async()=>new Response(body,{headers})});
+  assert.match(oversized.error.message,/exceeds 8 MiB/);assert.equal(cancelled,true);
+}
+let ordinaryCancelled=false;
+await assert.rejects(loadWatchlist({fetchImpl:async()=>new Response(new ReadableStream({cancel(){ordinaryCancelled=true;}}),{headers:{'content-length':String(2*1024*1024+1)}})}),/exceeds 2 MiB/);
+assert.equal(ordinaryCancelled,true);
 const limited = await checkWatchEntry(entry, {fetchImpl:async url => {
   assert.equal(new URL(url).hostname === 'api.github.com', false, 'Visitors must not consume anonymous GitHub API quota');
   return new Response(null,{status:403});

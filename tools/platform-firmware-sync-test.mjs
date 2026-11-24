@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {updateFirmwareCatalog} from './sync-firmware-catalog.mjs';
 import {syncReleaseMetadata,compactReleaseHistory} from './sync-firmware-release-metadata.mjs';
 import {publicReleases,releaseMatchesChannel} from './firmware-release-source.mjs';
-import {validateWatchlist} from '../web/platform/watchlist.js';
+import {validateWatchlist,MAX_RELEASE_SNAPSHOT_BYTES} from '../web/platform/watchlist.js';
 const H='a'.repeat(64),NEXT='b'.repeat(64),NOW='2026-10-27T02:00:00Z';
 const asset=(device,version,hash=NEXT)=>({name:`fw-${version}-${device}.bin`,browser_download_url:`https://example.com/${version}/${device}.bin`,size:100,digest:hash?`sha256:${hash}`:null});
 const release=(version,devices,day,{prerelease=false}={})=>({tag_name:version,html_url:`https://github.com/example/firmware/releases/tag/${version}`,published_at:`2026-10-${day}T00:00:00Z`,prerelease,assets:devices.map(device=>asset(device,version))});
@@ -99,7 +99,22 @@ test('metadata budget counts saved bytes and retains large reference asset inven
   for(const[name,value]of Object.entries({'products.json':f.products,'firmwares.json':f.firmwares,'firmware-watchlist.json':f.watchlist,'firmware-release-snapshot.json':snapshot}))await writeFile(join(catalog,name),JSON.stringify(value));
   await runCatalogSync({base:pathToFileURL(directory+'/'),snapshotOnly:true,now:NOW});const bytes=await readFile(join(catalog,'firmware-release-snapshot.json'));
   assert.ok(bytes.length<2*1024*1024);assert.deepEqual(JSON.parse(bytes).entries[0].release.assets,latest.assets);
-  latest.assets[0].name='x'.repeat(2*1024*1024);await writeFile(join(catalog,'firmware-release-snapshot.json'),JSON.stringify(snapshot));
+  latest.assets[0].name='x'.repeat(MAX_RELEASE_SNAPSHOT_BYTES);await writeFile(join(catalog,'firmware-release-snapshot.json'),JSON.stringify(snapshot));
   await assert.rejects(runCatalogSync({base:pathToFileURL(directory+'/'),snapshotOnly:true,now:NOW}),/exceeds the browser metadata limit/);
+ }finally{await rm(directory,{recursive:true,force:true});}
+});
+
+test('the combined snapshot keeps every device release beyond a single metadata response budget',async()=>{
+ const {mkdtemp,mkdir,writeFile,readFile,rm}=await import('node:fs/promises'),{tmpdir}=await import('node:os'),{join}=await import('node:path'),{pathToFileURL}=await import('node:url');
+ const {runCatalogSync}=await import('./sync-firmware-catalog.mjs');const directory=await mkdtemp(join(tmpdir(),'firmware-aggregate-budget-'));
+ try{
+  const catalog=join(directory,'web/platform/catalog');await mkdir(catalog,{recursive:true});const f=fixture(['one']);f.watchlist.entries[0].catalogTargets=[];
+  f.watchlist.entries=Array.from({length:20},(_,i)=>({...f.watchlist.entries[0],id:`project-${i}`}));
+  const latest=release('2.0.0',['one'],'26');latest.assets=Array.from({length:400},(_,i)=>({...latest.assets[0],name:`reference-${i}.bin`,browser_download_url:`https://cdn.example.com/fixed-release/reference-${i}.bin`}));
+  const snapshot={schemaVersion:'1',generatedAt:NOW,entries:f.watchlist.entries.map(entry=>({id:entry.id,upstreamRepo:entry.upstreamRepo,checkedAt:NOW,release:latest,releases:[latest],error:null}))};
+  const original=JSON.stringify(snapshot)+'\n';assert.ok(Buffer.byteLength(original)>2*1024*1024&&Buffer.byteLength(original)<MAX_RELEASE_SNAPSHOT_BYTES);
+  for(const[name,value]of Object.entries({'products.json':f.products,'firmwares.json':f.firmwares,'firmware-watchlist.json':f.watchlist,'firmware-release-snapshot.json':snapshot}))await writeFile(join(catalog,name),JSON.stringify(value));
+  const result=await runCatalogSync({base:pathToFileURL(directory+'/'),snapshotOnly:true,now:NOW});const bytes=await readFile(join(catalog,'firmware-release-snapshot.json'));
+  assert.equal(result.snapshotBytes,bytes.length);assert.equal(result.snapshotByteLimit,MAX_RELEASE_SNAPSHOT_BYTES);assert.equal(bytes.toString(),original);
  }finally{await rm(directory,{recursive:true,force:true});}
 });
