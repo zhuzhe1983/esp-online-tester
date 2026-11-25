@@ -117,3 +117,8 @@ jobs:
         run: cargo test --release -p xtensa-lx7 -p emu-core
       - name: Golden outputs with the native JIT
         run: ESP32SIM_ROM_DIR=$PWD/roms cargo test --release -p esp32sim --test goldens -- --include-ignored --skip external_
+      - name: Guarded native short calls (explicit opt-in)
+        run: |
+          cargo clippy -p xtensa-lx7 -p esp32s3 -p esp32sim --features native-short-call --all-targets -- -D warnings
+          ESP32SIM_ROM_DIR=$PWD/roms cargo test --release -p xtensa-lx7 -p esp32s3 --features native-short-call -- --include-ignored --skip external_
+          ESP32SIM_ROM_DIR=$PWD/roms cargo test --release -p esp32sim --test goldens --features native-short-call -- --include-ignored --skip external_
