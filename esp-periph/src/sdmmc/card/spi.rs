@@ -5,6 +5,18 @@
 use super::*;
 use std::collections::VecDeque;
 
+/// Cold observations of existing state; counters belong to this card object.
+/// This does not describe guest filesystem mounting or completed MISO delivery.
+#[derive(Clone,Copy,Debug,PartialEq,Eq)]
+pub struct SpiSdObservation {
+    pub spi_mode:bool,pub card_state:CardState,pub capacity_blocks:u64,
+    /// Inner SdCard::command calls, including failures, excluding wrapper-handled SPI commands.
+    pub native_command_calls:u64,
+    /// Successful backing-store loads, before the reply is clocked out or routed to guest MISO.
+    pub storage_blocks_loaded:u64,
+    /// Complete 512-byte backing-store writes; not guest response consumption or FAT flushes.
+    pub storage_blocks_written:u64,
+}
 pub struct SpiSdCard {card:SdCard,command:Vec<u8>,reply:VecDeque<u8>,write:Vec<u8>,write_token:bool,multi_read:bool,multi_write:bool,crc:bool,spi:bool,clocks:u8}
 impl SpiSdCard {
     pub fn new(store:Box<dyn SdStore>,config:SdCardConfig)->Result<Self,String> {
@@ -15,6 +27,9 @@ impl SpiSdCard {
     pub fn power_cycle(&mut self) {self.deselect();self.card.reset();self.crc=false;self.spi=false;self.clocks=0;}
     pub fn describe(&self)->String {self.card.describe()}
     pub fn report(&self)->String {format!("commands={} read-blocks={} written-blocks={}",self.card.commands,self.card.blocks_read,self.card.blocks_written)}
+    /// Copies latched state only: no command, byte transfer, time advance or counter reset.
+    pub fn observation(&self)->SpiSdObservation {SpiSdObservation{spi_mode:self.spi,card_state:self.card.state(),capacity_blocks:self.card.blocks(),
+        native_command_calls:self.card.commands,storage_blocks_loaded:self.card.blocks_read,storage_blocks_written:self.card.blocks_written}}
     pub fn deselect(&mut self) {
         self.command.clear();self.reply.clear();self.write.clear();self.write_token=false;self.multi_read=false;self.multi_write=false;
         self.card.data=Phase::None;if self.spi && self.card.state!=CardState::Idle {self.card.state=CardState::Tran;}
@@ -89,6 +104,29 @@ mod tests {
     use super::*;
     fn command(s:&mut SpiSdCard,c:u8,a:u32)->Vec<u8> {let mut p=vec![0x40|c];p.extend(a.to_be_bytes());p.push(crc7(&p)<<1|1);s.transfer(true,&p,0);s.transfer(true,&[],2)}
     fn ready()->SpiSdCard {let mut s=SpiSdCard::new(Box::new(MemStore(vec![0;1<<20])),Default::default()).unwrap();s.transfer(false,&[255;10],0);assert_eq!(command(&mut s,0,0),[255,1]);assert_eq!(command(&mut s,8,0x1aa),[255,1]);assert_eq!(s.transfer(true,&[],4),[0,0,1,0xaa]);for _ in 0..2 {assert_eq!(command(&mut s,55,0),[255,1]);command(&mut s,41,1<<30);}assert_eq!(s.r1(),0);s}
+    #[test]
+    fn cold_observation_preserves_reply_and_distinguishes_store_load_from_delivery() {
+        let mut s=ready();let base=s.observation();assert!(base.spi_mode);assert_eq!(base.card_state,CardState::Tran);assert_eq!(base.capacity_blocks,2048);
+        assert_eq!(command(&mut s,58,0),[255,0]);
+        for _ in 0..4{assert_eq!(s.observation(),base);}
+        assert_eq!(s.transfer(true,&[],4),[0xc0,0xff,0x80,0],"cold getter must not consume queued OCR bytes; CMD58 bypasses the inner command counter");
+        assert_eq!(command(&mut s,24,3),[255,0]);let mut first=vec![0xfe];first.extend([0x5a;256]);s.transfer(true,&first,0);
+        assert_eq!(s.observation().storage_blocks_written,base.storage_blocks_written,"partial data token cannot count as a committed block");
+        let mut rest=vec![0x5a;256];rest.extend([255,255]);s.transfer(true,&rest,0);let written=s.observation();
+        assert_eq!(written.storage_blocks_written,base.storage_blocks_written+1);assert_eq!(s.transfer(true,&[],1),[5],"snapshot cannot consume the write response");
+        assert_eq!(command(&mut s,17,3),[255,0]);let loaded=s.observation();
+        assert_eq!(loaded.native_command_calls,base.native_command_calls+2);assert_eq!(loaded.storage_blocks_loaded,base.storage_blocks_loaded+1,"store load already happened before the guest clocks the data payload");
+        for _ in 0..4{assert_eq!(s.observation(),loaded);}
+        assert_eq!(s.transfer(true,&[],2),[255,0xfe]);assert_eq!(s.transfer(true,&[],512),vec![0x5a;512]);
+        s.transfer(true,&[],2);s.power_cycle();let reset=s.observation();assert!(!reset.spi_mode);assert_eq!(reset.card_state,CardState::Idle);
+        assert_eq!((reset.native_command_calls,reset.storage_blocks_loaded,reset.storage_blocks_written),(loaded.native_command_calls,loaded.storage_blocks_loaded,loaded.storage_blocks_written));
+    }
+    #[test]
+    fn cold_observation_keeps_full_u64_counters_without_narrowing_or_reset() {
+        let mut s=ready();s.card.commands=u64::MAX;s.card.blocks_read=u64::MAX-1;s.card.blocks_written=9_007_199_254_740_993;
+        let before=s.report();let observed=s.observation();assert_eq!(observed.native_command_calls,u64::MAX);assert_eq!(observed.storage_blocks_loaded,u64::MAX-1);
+        assert_eq!(observed.storage_blocks_written,9_007_199_254_740_993);assert_eq!(s.observation(),observed);assert_eq!(s.report(),before);
+    }
     #[test]
     fn spi_framing_crc_partial_write_and_real_store() {
         let mut s=ready();assert_eq!(command(&mut s,58,0),[255,0]);assert_eq!(s.transfer(true,&[],4),[0xc0,0xff,0x80,0]);

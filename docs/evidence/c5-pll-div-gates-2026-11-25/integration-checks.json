@@ -1,0 +1,169 @@
+{
+  "schema": 1,
+  "baseCommit": "db9a9d5abfcebd20654a5df577dc9cae49382cd6",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "44f447058c2d120ffaa9e84f5ce4799e4e97ce4963b71290c844f6c3730dcea4"
+    },
+    {
+      "path": "esp32c5/src/boot_watchdog_tests.rs",
+      "sha256": "40c570ab24e25851248f00b0d17abad4aac49f22b3727458c49cb56041f05ec2"
+    },
+    {
+      "path": "esp32c5/src/boot_clock.rs",
+      "sha256": "cd7e989141c06ca0ad39a8644622de87f081d5a54cd3eb4a822752538b8821ab"
+    },
+    {
+      "path": "esp32c5/src/clock_tree.rs",
+      "sha256": "7fc8bd3f22b770558265a7eb94ba478c6d8ab9217a85c646425f46cc79d6ab73"
+    },
+    {
+      "path": "esp32c5/src/transport.rs",
+      "sha256": "576f9687bbcaf0ec6de338411865cb8c277cf6199633dc2ff45ba9c70aeb6d02"
+    },
+    {
+      "path": "esp32c5/src/transport_clock_tests.rs",
+      "sha256": "e1384d96d1ad480ae53dfaf7660592ae18af80a38e8dfdd807069462acec30b7"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-pll-gates-c5-suite.log",
+        "sha256": "c5de717226b3b9735761ef49eba3987903cb4a95473f2c3390cde45e3e339c69",
+        "logBytes": 38077
+      },
+      "passed": 348,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-pll-gates-workspace-clippy.log",
+        "sha256": "6a231ec101ba36f1c55f15387aa4c15ce3578fe1538363a7db80d7bd6820a69b",
+        "logBytes": 318
+      }
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-pll-gates-wasm-clippy.log",
+        "sha256": "c45276662eedfd4bc3951b92e9c9764070a0c7bf70eaa922d1a209b748d4fcdd",
+        "logBytes": 241
+      }
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-pll-gates-evidence-privacy.log",
+        "sha256": "c1a6805aedb01c4bcb91823b6ea05951633ea69d0d3e6d2b6b6f5e58cc8d95a7",
+        "logBytes": 130
+      }
+    }
+  ],
+  "integrationContract": [
+    "All3 actual Transport clock publication paths carry the current PLL-divider gate mask; profile-off compatibility uses reset mask0x1ff.",
+    "SPI2 uses its selected160M/120M gate and LEDC its80M gate, always in conjunction with real PLL readiness. MSPI/PSRAM derive from direct SPLL480 and are not withdrawn by disabling the PLL80 tap.",
+    "Normal BootClock MMIO read/write, clock pumping and downstream publication first settle global watchdogs and reject an unapplied reset. Profile-off withdrawal deliberately still clears cached RC/PLL and resets Transport gates after raw ROM deselection."
+  ],
+  "originalFactoryRun": {
+    "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared64MiB card>",
+    "log": {
+      "file": "native-machine-lcd273-pll-gates-reset-barrier.log",
+      "sha256": "dadb8130e55e1216637448d13af118674180699f06f462391f32d0d01149e601",
+      "logBytes": 7100
+    },
+    "runSteps": 24768208,
+    "cpuInstructionCount": 24768208,
+    "nominalCycles": 24768192,
+    "uartBytes": 2194,
+    "psramStride32TestPassed": true,
+    "actualFinalPllDividerGates": "0x21",
+    "availablePllTaps": "0x21",
+    "cpuHz": 80000000,
+    "ahbHz": 40000000,
+    "apbHz": 40000000,
+    "firstFault": {
+      "pc": "0x40809248",
+      "writeAddress": "0x600b0400",
+      "requestedValue": 0
+    },
+    "nextBoundary": "LP_FAST source0 selects RC_FAST; old fixed24MHz subset rejects this write. Low-power source and SWD pulse timing are the next separate task.",
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0
+  },
+  "controls": {
+    "newClockModuleCases": 6,
+    "newTransportPerTapCases": 3,
+    "newBusResetBoundaryCases": 2,
+    "developerInputCasesRun": 6,
+    "recheckedNativeLogBeforeResetGuard": {
+      "file": "native-machine-lcd273-pll-div-gates.log",
+      "sha256": "8b10a4b6478215387c3a501f3b32ed82aa923d5e1d0c21171f17b93c7ba324fb",
+      "logBytes": 7100
+    },
+    "sameNativeStepsAndNextFaultAfterResetGuard": true
+  },
+  "negativeResults": [
+    {
+      "log": {
+        "file": "native-machine-lcd273-pma-next-boundary.log",
+        "sha256": "0dae94d5636e37e0c52694fe66af1854780852f9e085b2e874424c3e06a893ac",
+        "logBytes": 6949
+      },
+      "priorUnimplementedRead": "0x60096128",
+      "pc": "0x4211f8ee",
+      "resolution": "Original guest now completes its7 ordered read-modify-writes and retains taps240M and48M without a PC-specific success path."
+    },
+    {
+      "finding": "Static review found new gate read/write publication could cross pending reset in the preexisting BootClock path. Normal publication now has the owner barrier; raw mode exit still withdraws cached sources even when a reset is pending.",
+      "manualAndOverdueResetFixturesPassed": true,
+      "rawExitWithdrawalFixturePassed": true
+    }
+  ],
+  "independentStaticReview": {
+    "reportSha256": "26d825c6cf5c7e249fc0f8d2ce31f4bc09969bd929fdb57178b831f8c02dd0ba",
+    "unresolvedP1": 0,
+    "unresolvedP2": 0,
+    "resolvedP2": 1,
+    "scope": "Tap consumers, publication ordering, pending reset and raw withdrawal; no independent test execution claimed."
+  },
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "limits": [
+    "Source-pinned virtual PLL tap outputs, not silicon measurement; SDK/TRM disagreement remains documented.",
+    "USB48 withdrawal and disabling the active CPU tap remain explicitly unsupported.",
+    "Focused LTO=false checks do not replace final default-LTO workspace CI, CPU controls, final WASM/browser or original product acceptance.",
+    "No original app_main/LCD/buttons/TF success or C5 publication claimed."
+  ],
+  "curation": "Only facts, commands, numeric samples and source/input/log hashes retained. Ignored originals omit personal paths/process/session inventories from published evidence; measured values unchanged."
+}

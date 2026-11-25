@@ -1,0 +1,682 @@
+{
+  "app_descriptor": {
+    "app_elf_sha256": "51e6bc6c20d2bd2a659a8cf39577fa302e0dbb38f845ff7454352253981a4132",
+    "compile_date": "Nov 25 2026",
+    "compile_time": "07:51:29",
+    "idf_version": "v5.5.3",
+    "magic": "0xabcd5432",
+    "project_name": "01_factory",
+    "secure_version": 0,
+    "version": "v0.3.0-1578-gc6ceccd8"
+  },
+  "artifacts": {
+    "01_factory.bin": {
+      "bytes": 915648,
+      "sha256": "f3508c5a1e73377913fb4c5e357f0ace517b36581d42d8181c1e4985aa8cf0ef"
+    },
+    "01_factory.elf": {
+      "bytes": 10627044,
+      "sha256": "51e6bc6c20d2bd2a659a8cf39577fa302e0dbb38f845ff7454352253981a4132"
+    },
+    "01_factory.map": {
+      "bytes": 5223928,
+      "sha256": "e92c4a7bf24266134f30a1f638ddf7beca6ce153dc7d1613e18aca924b2a8238"
+    },
+    "bootloader/bootloader.bin": {
+      "bytes": 23168,
+      "sha256": "9641a79b17657c59b5f3da78ceb3e28eaccbeb352d25f1efa76c04b302e9e978"
+    },
+    "config/sdkconfig.h": {
+      "bytes": 59482,
+      "sha256": "17aa405414dfa31a99a4f7320a45f01e36ca439f5b382e15511c494fefdaa427"
+    },
+    "flasher_args.json": {
+      "bytes": 1060,
+      "sha256": "2f7390d08464e08ce8b3619e11a579416676ba470b9d4e819642a86d5b0e805d"
+    },
+    "merged.bin": {
+      "bytes": 1046720,
+      "sha256": "16b8762fb108bf8b305d84a9182d1ce7967f0eb94a2204950ae3441653131eb4"
+    },
+    "ota_data_initial.bin": {
+      "bytes": 8192,
+      "sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f"
+    },
+    "partition_table/partition-table.bin": {
+      "bytes": 3072,
+      "sha256": "ebcf7515d4ea98f112f04fd6f3e0d9cb492fe9752268219e0664936c7b626367"
+    },
+    "project_description.json": {
+      "bytes": 473185,
+      "sha256": "72cf3a911e76246c2476a4e38cf107aef718ff89ab62ae9c662166a3996ac4dd"
+    },
+    "sdkconfig.generated": {
+      "bytes": 90677,
+      "sha256": "5cb65d2d95d876a898a7729d3590120c4a87a1b9509be496cdbc1f6eaac94423"
+    }
+  },
+  "builder": {
+    "bytes": 28768,
+    "sha256": "e2d12082dba010c92da8901b391d92d9caa3db3ac15e6c0676c68bd444e18186"
+  },
+  "case": "02_lvgl_demo",
+  "commands": [
+    {
+      "argv": [
+        "$IDF_TOOLS_PATH/tools/riscv32-esp-elf/esp-14.2.0_20251107/riscv32-esp-elf/bin/riscv32-esp-elf-gcc",
+        "--version"
+      ],
+      "phase": "compiler-version"
+    },
+    {
+      "argv": [
+        "$IDF_PYTHON",
+        "$IDF_PATH/tools/idf.py",
+        "--version"
+      ],
+      "phase": "idf-version"
+    },
+    {
+      "argv": [
+        "$IDF_PYTHON",
+        "$IDF_PATH/tools/idf.py",
+        "-C",
+        "$CASE_DIR/project",
+        "-B",
+        "$CASE_DIR/build",
+        "-D",
+        "IDF_TARGET=esp32c5",
+        "-D",
+        "SDKCONFIG=$CASE_DIR/sdkconfig",
+        "reconfigure"
+      ],
+      "phase": "reconfigure"
+    },
+    {
+      "argv": [
+        "$CMAKE",
+        "--build",
+        "$CASE_DIR/build",
+        "--parallel",
+        "8"
+      ],
+      "phase": "build"
+    },
+    {
+      "argv": [
+        "$IDF_PYTHON",
+        "$IDF_PATH/tools/idf.py",
+        "-C",
+        "$CASE_DIR/project",
+        "-B",
+        "$CASE_DIR/build",
+        "merge-bin",
+        "--format",
+        "raw",
+        "-o",
+        "$CASE_DIR/build/merged.bin"
+      ],
+      "phase": "merge"
+    }
+  ],
+  "dependency_lock_unchanged": true,
+  "descriptor_version_origin": "IDF auto-detected git describe of surrounding integration checkout c6ceccd8; not manufacturer revision",
+  "elf": {
+    "byte_order": "little",
+    "class": 32,
+    "entry": "0x408002b0",
+    "machine": 243
+  },
+  "firmware_source_identity": "Original fixed manufacturer project, unchanged source/config/lock; not the prebuilt FactoryOnly image",
+  "flash_files": [
+    {
+      "bytes": 23168,
+      "offset": 8192,
+      "path": "bootloader/bootloader.bin",
+      "sha256": "9641a79b17657c59b5f3da78ceb3e28eaccbeb352d25f1efa76c04b302e9e978"
+    },
+    {
+      "bytes": 3072,
+      "offset": 32768,
+      "path": "partition_table/partition-table.bin",
+      "sha256": "ebcf7515d4ea98f112f04fd6f3e0d9cb492fe9752268219e0664936c7b626367"
+    },
+    {
+      "bytes": 8192,
+      "offset": 53248,
+      "path": "ota_data_initial.bin",
+      "sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f"
+    },
+    {
+      "bytes": 915648,
+      "offset": 131072,
+      "path": "01_factory.bin",
+      "sha256": "f3508c5a1e73377913fb4c5e357f0ace517b36581d42d8181c1e4985aa8cf0ef"
+    }
+  ],
+  "guest_executed": false,
+  "images": {
+    "01_factory.bin": {
+      "appended_sha256": "349944da3b1c84cb1460bfc2131a2d0994b3e2ee9965bfc79d9cf942a5519bce",
+      "checksum": 189,
+      "checksum_offset": 915615,
+      "chip_id": 23,
+      "entry": "0x408002b0",
+      "flash_frequency_code": 15,
+      "flash_mode_code": 2,
+      "flash_size_code": 5,
+      "max_revision_full": 199,
+      "min_revision_full": 100,
+      "segments": [
+        {
+          "bytes": 411348,
+          "file_offset": 32,
+          "load_address": "0x42070020",
+          "sha256": "dcdc4a92bc6096632634dc02d4edfbecb3b2d42e37758d600611471e0c733aee"
+        },
+        {
+          "bytes": 47388,
+          "file_offset": 411388,
+          "load_address": "0x40800000",
+          "sha256": "f58cb5861c3cfba6071bf9d406c7d11e1053bd9b652d6b89af0633dafbc6104a"
+        },
+        {
+          "bytes": 432012,
+          "file_offset": 458784,
+          "load_address": "0x42000020",
+          "sha256": "e6eb4c5227cc6ed27339c6c961fd4533650faa31b782f89a47a170e2d9e97928"
+        },
+        {
+          "bytes": 14568,
+          "file_offset": 890804,
+          "load_address": "0x4080b91c",
+          "sha256": "8814245dedb4b488db9b205e50cb13c1b6a1981f75a7471635708a79d80a8ea5"
+        },
+        {
+          "bytes": 10232,
+          "file_offset": 905380,
+          "load_address": "0x4080f280",
+          "sha256": "fc440edd0779a1f5f6cf3b2570ad2b4a1bf62d206c302083a7da4b06a959ce1a"
+        }
+      ],
+      "trailing_bytes": 0,
+      "validated_image_bytes": 915648
+    },
+    "bootloader/bootloader.bin": {
+      "appended_sha256": "95b83f49221f126275bbe8f211f227042153c96277d25df3437da4f199546e51",
+      "checksum": 163,
+      "checksum_offset": 23135,
+      "chip_id": 23,
+      "entry": "0x4084bbaa",
+      "flash_frequency_code": 15,
+      "flash_mode_code": 2,
+      "flash_size_code": 5,
+      "max_revision_full": 199,
+      "min_revision_full": 100,
+      "segments": [
+        {
+          "bytes": 6160,
+          "file_offset": 32,
+          "load_address": "0x408556b0",
+          "sha256": "df166184a51cc74dd74082b729c9ba73bf42f274d36065f6a027dd481290cff3"
+        },
+        {
+          "bytes": 4012,
+          "file_offset": 6200,
+          "load_address": "0x4084bba0",
+          "sha256": "1efe3ba6177343241d3150ae3638530f30dcf62814408cc1999c091d8191dc9d"
+        },
+        {
+          "bytes": 12900,
+          "file_offset": 10220,
+          "load_address": "0x4084e5a0",
+          "sha256": "7f51ccd0609e87b565cf95462ba236f7eb9c47bb0bd9853b8ec002d6c52a0312"
+        }
+      ],
+      "trailing_bytes": 0,
+      "validated_image_bytes": 23168
+    }
+  },
+  "jobs": 8,
+  "kind": "unchanged-manufacturer-source-built-example",
+  "limitations": [
+    "Compile/static result only; kernel/board/runtime acceptance is separate.",
+    "PSRAM is enabled and detected at runtime; 8MiB capacity and 48MHz XTAL are not forced by this sdkconfig.",
+    "APP name01_factory and inherited auto version do not identify FactoryOnly firmware.",
+    "Compile timestamps, paths in debug metadata and automatic git version mean a fresh build need not be byte-identical."
+  ],
+  "logs": {
+    "build": {
+      "bytes": 260470,
+      "sha256": "c86ec5a2599fdb5c4547cc798dfe754b7a7ddbfdcf70a17fedeae61743bbf759"
+    },
+    "compiler-version": {
+      "bytes": 264,
+      "sha256": "764c3fe545253e30fabbbea7ef56bdee7f61215d2562e62abd6e24eff9a24b70"
+    },
+    "idf-version": {
+      "bytes": 15,
+      "sha256": "542b5769525a2e170a05b7804316d36f7a9f46dee495c55e54432b8fbf84690a"
+    },
+    "merge": {
+      "bytes": 3636,
+      "sha256": "04ad80239a238792e0ae950c2a9a523689ba5cd2233c642126c61777652ef584"
+    },
+    "reconfigure": {
+      "bytes": 28279,
+      "sha256": "39d3691b6846ebd05c5723815a2c545953b19d4c90928c6ab603ec7d1f70a067"
+    }
+  },
+  "nested_bootloader_jobs": 1,
+  "original_dependency_lock": {
+    "bytes": 7066,
+    "sha256": "f6f8e566fddb6b3cfadf2b150913291c31140d469b919c716bf6cde356087d1a"
+  },
+  "original_sdkconfig": {
+    "bytes": 90677,
+    "sha256": "5cb65d2d95d876a898a7729d3590120c4a87a1b9509be496cdbc1f6eaac94423"
+  },
+  "partitions": {
+    "entries": [
+      {
+        "bytes": 16384,
+        "flags": 0,
+        "label": "nvs",
+        "offset": 36864,
+        "subtype": 2,
+        "type": 1
+      },
+      {
+        "bytes": 8192,
+        "flags": 0,
+        "label": "otadata",
+        "offset": 53248,
+        "subtype": 0,
+        "type": 1
+      },
+      {
+        "bytes": 4096,
+        "flags": 0,
+        "label": "phy_init",
+        "offset": 61440,
+        "subtype": 1,
+        "type": 1
+      },
+      {
+        "bytes": 5120000,
+        "flags": 0,
+        "label": "factory",
+        "offset": 131072,
+        "subtype": 0,
+        "type": 0
+      },
+      {
+        "bytes": 3670016,
+        "flags": 0,
+        "label": "ota_0",
+        "offset": 5308416,
+        "subtype": 16,
+        "type": 0
+      },
+      {
+        "bytes": 6291456,
+        "flags": 0,
+        "label": "assets",
+        "offset": 8978432,
+        "subtype": 130,
+        "type": 1
+      }
+    ],
+    "md5_valid": true
+  },
+  "private_summary": {
+    "bytes": 22186,
+    "sha256": "8fb7b70574db3ebd1e1c66f9f0f5499ea70d7cd75c76b38bb51a771b28f21640"
+  },
+  "runtime_acceptance": {
+    "executed_by_this_builder": false,
+    "keys": false,
+    "lcd": false,
+    "sd_fatfs_write_read": false,
+    "wifi_rf": false
+  },
+  "schema": 1,
+  "sdk_revision": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+  "sdk_tracked_clean_before_after": true,
+  "sdkconfig_value_delta": {},
+  "source_hashes": {
+    ".clangd": {
+      "bytes": 37,
+      "git_blob": "437f25545b79cc3e551869a3fdd4b9dcfbf57093",
+      "sha256": "779cb0f49f3ef80e7574d8de600fd797fcb563e2a478e336d53f89a4d017d02c"
+    },
+    "CMakeLists.txt": {
+      "bytes": 107,
+      "git_blob": "a8364ef74ef3fdd40582e15bdbc7603f284f2775",
+      "sha256": "2a66fd44b7ae9f1bf2be31bde41c0b4217baea0aa10a9995b047ba06b6cb4eb3"
+    },
+    "components/atanisoft__esp_lcd_ili9488/.component_hash": {
+      "bytes": 64,
+      "git_blob": "45cac6468c773eccea8f72793d0613d3f1f430c7",
+      "sha256": "bc51ac40a05e55b46eb1ffb056536b51faf36c3efc73598331ca3155d159af76"
+    },
+    "components/atanisoft__esp_lcd_ili9488/.gitignore": {
+      "bytes": 108,
+      "git_blob": "0b226edf83d3b14a9a3e1035508e7187400c8810",
+      "sha256": "9706ca07f513093605c5340ed9d743836ca2082b427dc84a5ce143ad5cf97a5b"
+    },
+    "components/atanisoft__esp_lcd_ili9488/CHANGELOG.md": {
+      "bytes": 3333,
+      "git_blob": "6a9f6b696b75cc7ebc681683c02062a9481aa06f",
+      "sha256": "a95eac316e752883fc7383f7998c0e38f32a2bfdd031b759e9105d94533b75db"
+    },
+    "components/atanisoft__esp_lcd_ili9488/CHECKSUMS.json": {
+      "bytes": 3463,
+      "git_blob": "d7385c53558bc905e1d88e1e153e7472b4377db3",
+      "sha256": "54295098d3a2a452e0a9fdddd610b83cf17cf1f97a1089a13def28645c8f408f"
+    },
+    "components/atanisoft__esp_lcd_ili9488/CMakeLists.txt": {
+      "bytes": 283,
+      "git_blob": "4147c267f3a0b6417ceeefed6034bfcd07b7833f",
+      "sha256": "5046c1f126d8647b6ba74788ec4ce0eb9e03a9ae0248c138a9e3b23ec5b60be4"
+    },
+    "components/atanisoft__esp_lcd_ili9488/LICENSE": {
+      "bytes": 1069,
+      "git_blob": "f45ef323b69a213eea3f236c63ea4c52f335c1e0",
+      "sha256": "21a7c428a2b3cd90ac1f3c9c03ec3eea7d81f4ec01875ae0aa22a00d8cdbb74a"
+    },
+    "components/atanisoft__esp_lcd_ili9488/README.md": {
+      "bytes": 2110,
+      "git_blob": "76a72e8b82160cea4d78f425a4e7a93793301bd3",
+      "sha256": "6b5414b053263e7a64c2d9bf08e8ac4f39632205bede1613fa6c29efc7fe9b84"
+    },
+    "components/atanisoft__esp_lcd_ili9488/esp_lcd_ili9488.c": {
+      "bytes": 16589,
+      "git_blob": "b3a2451fbcbd38d1e364134ecc6cc54317435fcc",
+      "sha256": "b2a51709c091f0a23bdba4cff4b577403d67e74b149ea14adcf048c612efe2c0"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl/CMakeLists.txt": {
+      "bytes": 340,
+      "git_blob": "cd17074ea621f49da7301f3b0e3f77aa084e094f",
+      "sha256": "edbc4c0360ecb2a25d2486add3e3dd08d99651ba8163f39bb27af95632b7c8ce"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl/README.md": {
+      "bytes": 697,
+      "git_blob": "40759542f941a21924c606bc922824eafc635cbd",
+      "sha256": "28be9ece87940290cdeca8d408b496b38816b9ba370f0a9fdad4faec2aa9fa4e"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl/main/CMakeLists.txt": {
+      "bytes": 204,
+      "git_blob": "93b1d050e9e9151e40713a29276f5d04e0ed3fc7",
+      "sha256": "d7aa3edf8f246aa9f75884bdb398ecabcff3d21c919cd7a4b4d8cc47b03e86ff"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl/main/idf_component.yml": {
+      "bytes": 123,
+      "git_blob": "44f953a59f4900f1080299ec041e3d3d0e9eff6f",
+      "sha256": "cf021e2d2e050223ad4dc3556f6df1f365442e25ac7f2f44cc1fd44086fcfe68"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl/main/main.c": {
+      "bytes": 12122,
+      "git_blob": "1469ab1b183378a9206f4ecaba73fa321f7dffca",
+      "sha256": "eccb12945f1e4b5598d0f3c1d0c1c85fdb856555eb916502726c8169f04c178b"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl/sdkconfig.defaults": {
+      "bytes": 97,
+      "git_blob": "d9066d6d632927a8af257d8c46b5210a56674627",
+      "sha256": "e47aba6459e5cfbd369be7ba2a7034f7ffcf75478653b483fffec5e7890dc388"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/CMakeLists.txt": {
+      "bytes": 459,
+      "git_blob": "d8194cf4ebca7f70e7b0b43cc26fe672ae4a6739",
+      "sha256": "0736601c0daca0dcaa4f9d82078056bd703226a7000d79fd89df17a875bfe497"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/README.md": {
+      "bytes": 5411,
+      "git_blob": "163274b530892e798dcea7c40a67b573d17fc27b",
+      "sha256": "1e0be944636a21f85fabcb55e38b9068475f7093f59ecec982681bd5668037f5"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/CMakeLists.txt": {
+      "bytes": 170,
+      "git_blob": "39845d7ae64d7c56f24efaea383a8d67e822cd33",
+      "sha256": "0d284e8213c18ec1e78a16faf2c61ced01f05da0beba366fa3532486fc52767a"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/idf_component.yml": {
+      "bytes": 124,
+      "git_blob": "540d17eb1411e1f371aa6745faa93c690fefc627",
+      "sha256": "b0fc80073b9f85402b0298764bf9007ebfe62ca736ab932f38824cab25b9cc7d"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/images/esp_logo.c": {
+      "bytes": 665334,
+      "git_blob": "96f0ad48cfc2b0021e35ab5369dbb4c7964f863b",
+      "sha256": "b4d98b2448b553ddc39f0feae8be67c443c08c9a180af710c6e6ea3c19310c26"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/images/esp_logo.png": {
+      "bytes": 6639,
+      "git_blob": "510b6a5299bea6eed35247037b09a0d84cdb8aa3",
+      "sha256": "7285c480c14d3899e09890551cfd9b7bc701a07a6f8216ec878f1347c8ceac4a"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/images/esp_text.c": {
+      "bytes": 692534,
+      "git_blob": "5daf2b64f9ef505c5658c9e7069cfda8636c3fae",
+      "sha256": "d6f0bd5993498e233f079c9e65f73fe1cf8bbf787eb03526a18b6a66eb38363e"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/images/esp_text.png": {
+      "bytes": 3217,
+      "git_blob": "1ceebda6008ce9cdcb2b271d228fd0e695b5a0f3",
+      "sha256": "fb6b2f6ba4b0eec47759455b3b91d26334473e0239456389044403e656fdf8d3"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/lvgl_demo_ui.c": {
+      "bytes": 3021,
+      "git_blob": "2fa619cd67943399df156c2178c2d2454ee2b5ed",
+      "sha256": "74fd791876cef0f062cd66011235663a6be8a5478d45e0fc0acab619a4adee60"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/main/lvgl_example_main.c": {
+      "bytes": 8154,
+      "git_blob": "79ea109c651867bb03932886ada71b0bdd9c044f",
+      "sha256": "cea942e1444a70c872a94d3d6657bbba4a0f1c633e7a3baca208ab2656c9f6ce"
+    },
+    "components/atanisoft__esp_lcd_ili9488/examples/lvgl_for_i8080/sdkconfig.defaults": {
+      "bytes": 55,
+      "git_blob": "9f6bf61fdcc9731745232cb2dfa9b53190f8c211",
+      "sha256": "0142249678ca6657e76b71bec7df5d87755346f7ebfbe20123af871dc3ed6fcc"
+    },
+    "components/atanisoft__esp_lcd_ili9488/idf_component.yml": {
+      "bytes": 287,
+      "git_blob": "e51bc292bff8c833a64f388ea0f3079c92e9282f",
+      "sha256": "c5d1f546a3459e175bd131c75a5d2f83f12f6bb1ac98730bdb652568c56f606d"
+    },
+    "components/atanisoft__esp_lcd_ili9488/include/esp_lcd_ili9488.h": {
+      "bytes": 1278,
+      "git_blob": "6ed56b65725877f80e6d7cafdeaa7a5688d4fe55",
+      "sha256": "8aea3f79a3309501a36336f0daf88108b04671562c1f6fc369badae41aa2291a"
+    },
+    "components/io_extension/CMakeLists.txt": {
+      "bytes": 162,
+      "git_blob": "e9d06c548c2a2bc8091de89addc689fb80a000f7",
+      "sha256": "6885cd225205d957018f072421298756c4e0eb8b95b586a3ee134758f070a611"
+    },
+    "components/io_extension/io_extension.c": {
+      "bytes": 7782,
+      "git_blob": "92677ad0952d5f5b8c6684b66f7cc6b656d93494",
+      "sha256": "80acac11b0e69fd402f71012fc5511ef939a31971281716a131f897f66837be5"
+    },
+    "components/io_extension/io_extension.h": {
+      "bytes": 3232,
+      "git_blob": "277ee27c32282c137a9a7ffb56ec046dfdd4bd43",
+      "sha256": "9b7bcf4242559bcccb9ff9ac846d78cce93577f5d6b951bb87036d4e31bfdb88"
+    },
+    "components/shtc3/CMakeLists.txt": {
+      "bytes": 94,
+      "git_blob": "c4780e8723f12986392d9104a8c475cd82c5d62c",
+      "sha256": "644775d1837793c88c15ec761c98e7f26dd3fb0706b4919e9b3a62b31c0862ed"
+    },
+    "components/shtc3/Kconfig": {
+      "bytes": 828,
+      "git_blob": "b45ef4784863cf0207bb0a2db6d75ff084dcf37a",
+      "sha256": "9f0391c4380a9d168e140532fd1431d29be31927a3bf5209c0669efd9060d714"
+    },
+    "components/shtc3/README.md": {
+      "bytes": 1606,
+      "git_blob": "486f0a79e6f86d4c08cbc699f9a055bdfae76826",
+      "sha256": "331eef1d902f74257faa38b31828fca0daaa7e9fb20a9389c02346b0eb23a7ac"
+    },
+    "components/shtc3/examples/shtc3_read/CMakeLists.txt": {
+      "bytes": 240,
+      "git_blob": "6aa0c1577c6183616dfec73802a1f0ecfbf404e8",
+      "sha256": "2c1477abb77076476514d16be335c69cff9e1a7cbfbd6b8f27c7035a4d18d884"
+    },
+    "components/shtc3/examples/shtc3_read/README.md": {
+      "bytes": 163,
+      "git_blob": "90e646fffc0171239f7b7f23d2897fb01ba5b6d5",
+      "sha256": "284e7faa762d4326f306b63df01dd3bdb895476981776b3142c1378f155df9a9"
+    },
+    "components/shtc3/examples/shtc3_read/main/CMakeLists.txt": {
+      "bytes": 81,
+      "git_blob": "ad1cbf4ac048f879540e7e5ef70170cda9b784ff",
+      "sha256": "4e0b8bfeea107b9cf68ab61df529668aaf0ecaa30729c7789d2fd1fd31ac377a"
+    },
+    "components/shtc3/examples/shtc3_read/main/idf_component.yml": {
+      "bytes": 53,
+      "git_blob": "5370a991bbf4ffa248c551d0f787d98d08ef9455",
+      "sha256": "5d3edf6880cf45665b1c49121385e6850c379f6a85cb70e0f23c46aa3626f7fb"
+    },
+    "components/shtc3/examples/shtc3_read/main/shtc3_read.c": {
+      "bytes": 2680,
+      "git_blob": "9d6f84fcf4bb42e4a27268d1a10c6cf9cec01046",
+      "sha256": "bddd33197e5dea0c6af3bd6f82c64c45d00f0dd3f1d0fed11e8bb458fb760f48"
+    },
+    "components/shtc3/idf_component.yml": {
+      "bytes": 602,
+      "git_blob": "8cee22c68a78af3ba4e9d98bd4711f7c9aa73521",
+      "sha256": "f9cde87c187c617170a2c42b68adf36e54fbfdfff95c7a207093a05a5342c400"
+    },
+    "components/shtc3/include/shtc3.h": {
+      "bytes": 4049,
+      "git_blob": "613b4151c04864e5cae73c7976b0cd7b78372110",
+      "sha256": "bff9feff889e7284b6d05c6018228560a465d2c12ed585c932ae6be5243ff2b4"
+    },
+    "components/shtc3/license.txt": {
+      "bytes": 11358,
+      "git_blob": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "components/shtc3/shtc3.c": {
+      "bytes": 3168,
+      "git_blob": "ee2b720705ad5cf364e0f55acb65d1e95835125c",
+      "sha256": "05f2d81041fc1add9533ef3f0f15bb979f196defa79760b017a473a6268b6b61"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/.component_hash": {
+      "bytes": 64,
+      "git_blob": "dd79bde4e2023f1007e22f7388ce0694064af423",
+      "sha256": "4b70f359cdd3b75ba5c571d5dbc55dd34a2dec417fd0f7f13406d66687e10f05"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/CHECKSUMS.json": {
+      "bytes": 1485,
+      "git_blob": "089ac8d27cfc73b52949c08d68022e2f3227703a",
+      "sha256": "3e23f7008cc8ddf34df9df696499fc1723f5134399c50b2d542abc1ea56073e9"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/CMakeLists.txt": {
+      "bytes": 338,
+      "git_blob": "f7c5b4dcf06ca2e924d838e08fc73505f11ff50c",
+      "sha256": "738d9024f0d22b6f4d61b5ae96160f41aa6849c1e275e10fb3da02857e94e7f1"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/Kconfig": {
+      "bytes": 2713,
+      "git_blob": "980b93f37fe8f381fbd8b6e5fdb3952dbf0826aa",
+      "sha256": "a8015a289a2075e1708046af382765c2db317fe0a909c74619c5495930ba835f"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/LICENSE": {
+      "bytes": 11358,
+      "git_blob": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/README.md": {
+      "bytes": 548,
+      "git_blob": "70c95d755def5e7e4c660f2c61adc4d3c0f8fa42",
+      "sha256": "d98e3428027b7b5ca52ad019b06aa8cc7a6f0d26fd6b7f5064e18560d9cab98e"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/esp32_c5_lcd_2_73.c": {
+      "bytes": 18196,
+      "git_blob": "3efafdb57b0b425b66b3a8406b40c2ec79223089",
+      "sha256": "da9f5f075b8976cf3fd76363586e6044f89650f202fc2b87f98dbcb36134183a"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/idf_component.yml": {
+      "bytes": 569,
+      "git_blob": "8d126c97bd6ddb55fae45980b524aa9a6eb61283",
+      "sha256": "460bf3ad52c14759714b799e9121d3c0b6e6542d10c8558fc92febe1436891f1"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/include/bsp/config.h": {
+      "bytes": 575,
+      "git_blob": "927f81493a2aa0033e7b2bdd2061b94e7853f464",
+      "sha256": "9c2b3229543db1cebb75cdc9a1411f24480543b410cc12a6263553dcbfcc9dec"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/include/bsp/display.h": {
+      "bytes": 3208,
+      "git_blob": "86dd80770ed559aabac111fac78d5fdf64f03a60",
+      "sha256": "2735f8f27d2ee8f63fe023a415a34516a85c8948be6638824bb822d8bf3e64f2"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp-bsp.h": {
+      "bytes": 48,
+      "git_blob": "d5337feba0724aa42e27e562fb16c7a7cd85d88f",
+      "sha256": "6000974dc6ecde70b6d2e94086cb96c7db6019bc23669612f9444dab36374e47"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/include/bsp/esp32_c5_lcd_2_73.h": {
+      "bytes": 14369,
+      "git_blob": "b9cd38c9a1524e0d7c5b743464c21c35a30fede4",
+      "sha256": "f35a43b84e9a821c836ccc154fca98b53d7413aa4436d243bf0d0a6463a1a44c"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/include/bsp/touch.h": {
+      "bytes": 257,
+      "git_blob": "f7ae16bf765c50b31ff3747c949a1051e2e4d691",
+      "sha256": "0cc79612f24bee5fe2040b059facdfd0dcc0f2334176ad53a3c9ff9914626904"
+    },
+    "components/waveshare__esp32_c5_lcd_2_73/priv_include/bsp_err_check.h": {
+      "bytes": 1501,
+      "git_blob": "82f3597127dda553069f8ceed2dc94fc560e1583",
+      "sha256": "9270b22036dfca465fc493152099afec5ea455e45fea02c71b8d653723fecaa9"
+    },
+    "dependencies.lock": {
+      "bytes": 7066,
+      "git_blob": "9f777e39be567d871c8af3fed93bf219d856bee8",
+      "sha256": "f6f8e566fddb6b3cfadf2b150913291c31140d469b919c716bf6cde356087d1a"
+    },
+    "main/CMakeLists.txt": {
+      "bytes": 208,
+      "git_blob": "6a101ba5b02adb728c2e78b008c55c4864b98782",
+      "sha256": "b9b47dd0bc8880310ac96af04069f969bd3b707b6541747add5544be0dcaea46"
+    },
+    "main/idf_component.yml": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "main/main.c": {
+      "bytes": 918,
+      "git_blob": "c96c4b28a0877ba073f3bdfac21f2cb0571692d5",
+      "sha256": "d7cdaa690e35557ef7f5ee3cb9c25ab4b51f60440f5c109942168dcb7784f3e1"
+    },
+    "partitions.csv": {
+      "bytes": 336,
+      "git_blob": "c400c3065daba65f5b825c4a1c45077effee4962",
+      "sha256": "d2245d3547e1bf1e117c180d07120f5511705367b3de7b569272db2be8ada1c8"
+    },
+    "sdkconfig": {
+      "bytes": 90677,
+      "git_blob": "c8099e57094cb495884d120ff270e167b1379dfb",
+      "sha256": "5cb65d2d95d876a898a7729d3590120c4a87a1b9509be496cdbc1f6eaac94423"
+    },
+    "sdkconfig.old": {
+      "bytes": 84193,
+      "git_blob": "17c84dcad52dd576479a5b1f258b16898cf63274",
+      "sha256": "acf52093019c2cd1a3eadd12768e8b073a696248e94948b0f5ba81cf9b33d213"
+    }
+  },
+  "static_symbols": {
+    "app_main": "0x4200954a",
+    "bsp_display_backlight_on": "0x42009936",
+    "bsp_display_start": "0x42009af2",
+    "lv_demo_benchmark": "0x42034fee"
+  },
+  "static_verification_passed": true,
+  "vendor_revision": "418de818f4f40c5a04c4292dbe293bfaa1351068"
+}

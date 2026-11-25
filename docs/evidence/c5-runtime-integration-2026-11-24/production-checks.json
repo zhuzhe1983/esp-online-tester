@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "scope": "Production wrapper revalidation of private C5 runtime source; original factory cold setup only, no C5 guest instructions or public enablement.",
+  "sourceCommit": "c88262b565cb6d64e7ce11ccd1efc31217578421",
+  "sourceTree": "0558dc2120fc0394eb969e4121d647eb0a591788",
+  "build": {
+    "command": "CARGO_BUILD_JOBS=1 sh -x tools/wasm-build.sh",
+    "exitCode": 0,
+    "startedAtUTC": "2026-11-24T13:36:21.136199+00:00",
+    "finishedAtUTC": "2026-11-24T13:37:23.085370+00:00",
+    "targetDirectory": "target",
+    "isolation": "Default target directory inside the dedicated runtime worktree, separate from native worktree targets; unchanged wrapper copy path used.",
+    "explicitEnvironment": {
+      "CARGO_BUILD_JOBS": "1"
+    },
+    "inheritedRustflagsOrProfileOverrides": false,
+    "relevantCargoConfigOverrides": false,
+    "toolchain": {
+      "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+      "LLVM": "23.1.5",
+      "target": "wasm32-unknown-unknown",
+      "node": "26.13.0"
+    },
+    "effectiveSettings": {
+      "optLevel": 3,
+      "lto": "fat",
+      "codegenUnits": 1,
+      "debug": 0,
+      "strip": "debuginfo",
+      "rustflags": [
+        "-Cllvm-args=-inline-threshold=2000"
+      ],
+      "features": [
+        "cache-inline",
+        "default"
+      ],
+      "wasmOptRequested": false,
+      "binaryenApplied": false
+    },
+    "settingsEvidence": "Unmodified Cargo release manifest, no environment/config profile overrides, actual wrapper shell trace and actual esp32sim-wasm Cargo fingerprint rustflags.",
+    "policyFiles": [
+      {
+        "file": "tools/wasm-build.sh",
+        "sha256": "a384ccbad27088ef72e2267b6fb0d9b99754119f188c379aea5a446ea7560036"
+      },
+      {
+        "file": "tools/wasm-rustflags.sh",
+        "sha256": "4efde895b6681de70c855e65afc23c0727eecf845e342c8ae2a0492f7264826c"
+      },
+      {
+        "file": "Cargo.toml",
+        "sha256": "d9be55092e3c57172d69af2b01ff85f3ca5907231d6539fe91f63c89eb450b52"
+      }
+    ]
+  },
+  "artifact": {
+    "file": "target/wasm32-unknown-unknown/release/esp32sim_wasm.wasm",
+    "copiedTo": "web/wasm/esp32sim.wasm",
+    "wrapperCopyMatches": true,
+    "bytes": 8573206,
+    "sha256": "18931572bfab8c2decd82d5bf0109024da7f38bbe67f6aee44af8cf6b3f365ce",
+    "committed": false,
+    "productionBuildScriptUsed": true,
+    "dwarfAbsent": true,
+    "nameRetained": true,
+    "customSections": [
+      "name",
+      "producers",
+      "target_features"
+    ]
+  },
+  "checks": [
+    {
+      "command": "node tools/check-wasm-sections.mjs web/wasm/esp32sim.wasm",
+      "exitCode": 0,
+      "dwarfAbsent": true,
+      "nameRetained": true
+    },
+    {
+      "command": "ESP32SIM_C5_ROM=<pinned-ROM.elf> ESP32SIM_C5_FACTORY=<original-LCD273.bin> node --test --test-reporter=tap tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-c5-rom-test.mjs tools/platform-c5-test.mjs tools/platform-local-firmware-test.mjs tools/platform-sd-card-test.mjs",
+      "exitCode": 0,
+      "tests": 36,
+      "pass": 36,
+      "fail": 0,
+      "skipped": 0,
+      "c5ContractCases": 14,
+      "limits": "C5 cases are cold/protocol contracts with unchanged external inputs. The existing runtime suite also runs its established S3/StopWatch fixtures through the new production WASM; no original C5 guest execution is implied."
+    },
+    {
+      "command": "ESP32SIM_C5_WASM=web/wasm/esp32sim.wasm ESP32SIM_C5_ROM=<pinned-ROM.elf> ESP32SIM_C5_FACTORY=<original-LCD273.bin> node --test --test-reporter=tap tools/platform-c5-wasm-test.mjs",
+      "exitCode": 0,
+      "tests": 1,
+      "pass": 1,
+      "fail": 0,
+      "skipped": 0,
+      "actualCompiledWasm": true,
+      "mergedInputKind": 5,
+      "originalC5Instructions": 0,
+      "cyclesAtColdRomStart": 0,
+      "esp32simRunCalled": false,
+      "result": "Unchanged ROM/factory load; corrupt ROM and merged image rejection before mutation; bounded raw restore; ROM/SRAM profile recheck. No original bootloader/app/SD/LCD execution."
+    },
+    {
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "result": "Worker C5 ROM/SRAM mode, restricted capabilities and32MiB Flash page protocol, plus existing channel/snapshot cases pass."
+    },
+    {
+      "command": "node --test tools/wasm-build-policy.test.mjs",
+      "exitCode": 0,
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "skipped": 0
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+      "sourceUnchangedAfterChecks": true,
+      "committed": false
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+      "sourceUnchangedAfterChecks": true,
+      "committed": false
+    }
+  ],
+  "retainedHistoricalArtifact": {
+    "file": "target/c5-runtime-lane/wasm32-unknown-unknown/release/esp32sim_wasm.wasm",
+    "bytes": 37982277,
+    "sha256": "a581505891abc62c763a9fa4cd16d905c2afb7f4a5dc51ba88f882ac9881a5a9",
+    "unchanged": true,
+    "role": "Earlier raw Cargo-release ABI artifact, debug1 and DWARF present; its failed production-section qualification is retained in checks.json. It is not the artifact tested here."
+  },
+  "limits": [
+    "Backend is the private c88262b5 checkpoint. Rebuild after integrating later native backend changes.",
+    "No original C5 guest instruction execution, browser, physical operation, firmware source change/build, CPU benchmark, broad Rust workspace checks or publication.",
+    "No guest Flash writes, SD mount, LCD output or BOOT response established by cold/protocol checks.",
+    "Catalog firmware byte hashes, verification/trial status and public C5 ROM gate are unchanged."
+  ]
+}

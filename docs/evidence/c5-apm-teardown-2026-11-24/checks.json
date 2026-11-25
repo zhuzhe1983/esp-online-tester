@@ -1,0 +1,151 @@
+{
+  "checkedAtUTC": "2026-11-24T16:04:52.715442+00:00",
+  "baseCommit": "87af9095c13ee3ba3cd4e0f16e8fc058d277f494",
+  "command": "python3 docs/evidence/c5-apm-teardown-2026-11-24/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\"",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "host": "aarch64-apple-darwin",
+  "ownedSourceSha256": {
+    "esp32c5/src/boot_apm.rs": "ac3c879798a792777470739a5b6f88f44358d9473c79de9af5d9e44124604123",
+    "docs/evidence/c5-apm-teardown-2026-11-24/run-owned.py": "177c3fba2a8ea8c8b249f8a12fd09063e07530acb129a6ed9d4de2d1da9bee10"
+  },
+  "result": {
+    "passed": 10,
+    "failed": 0,
+    "ignored": 0,
+    "exitCode": 0
+  },
+  "ownedClippyDriver": {
+    "command": "clippy-driver --edition=2021 --test esp32c5/src/boot_apm.rs -o \"$TASK_TMP/boot-apm-clippy-tests\" -D warnings",
+    "exitCode": 0,
+    "scope": "Standalone owned module only; no Cargo/workspace lint claim."
+  },
+  "negativeCheck": {
+    "initialOwnedClippy": "needless_range_loop in test mode_selection_requires_all_four_actual_filter_disables",
+    "correction": "Iterate FUNC directly; no lint allowance or implementation behavior change. Final component lint passed."
+  },
+  "output": "owned-tests.txt",
+  "rawOutputSha256": "ddc3039032061f5de01f0b5187519e7dc6924b3d74b15cebb06c9621fd195755",
+  "normalizedOutputSha256": "76b6df7c5c4aede69b7aa53a7108c540af36a47d164b55afbcc41102570b6d11",
+  "outputNormalization": "Leading/trailing blank lines stripped; test messages unchanged.",
+  "sourcePairs": 20,
+  "identicalSourcePairs": 19,
+  "sourceManifestSha256": "45edafcd6d564e671d0b8ade241cd56b5e32bb978365552c576fd90efb376239",
+  "typedSequenceSha256": "c3691ab608588c23a61da6f1051e816f7726bdd3ca4c4d57bd586b63f0bae030",
+  "porFieldChecks": {
+    "hp_apm": {
+      "fields": 5,
+      "mask": 31,
+      "por": 31
+    },
+    "lp_apm0": {
+      "fields": 1,
+      "mask": 1,
+      "por": 1
+    },
+    "lp_apm": {
+      "fields": 2,
+      "mask": 3,
+      "por": 3
+    },
+    "cpu_apm": {
+      "fields": 2,
+      "mask": 3,
+      "por": 3
+    }
+  },
+  "headerTitleCaveat": "CPU_APM_INT_EN title says M0/1/2/3/4, but actual FUNC fields and apm_defs path count are M0/M1 only; POR mask3 retained.",
+  "inputs": {
+    "esp32c5_rev100_rom.elf": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "lcd273-factory.bin": {
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    "lcd273-sd64m.img": {
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  },
+  "nativeReceipt": {
+    "cacheFile": "native-machine-lcd273-psram-page.log",
+    "bytes": 17324,
+    "sha256": "a53904c4ec11832bd6e22d76aff7eb993ce867440a52f0ffd12ab508ab25ea80",
+    "source": "Parent integration run read only by this component task."
+  },
+  "actualPreIntegrationBoundary": {
+    "instructions": 20820431,
+    "nominalCycles": 20820416,
+    "uartBytes": 2150,
+    "nonzeroPixels": 0,
+    "pc": "0x420710bc",
+    "address": "0x600990c4",
+    "write": true,
+    "width": 4,
+    "actualX10": 0,
+    "mcause": 7,
+    "uartReached": [
+      "Found8MB PSRAM",
+      "Speed80MHz",
+      "Unicore app"
+    ],
+    "acceptedApmStores": 0
+  },
+  "typedDisassembly": {
+    "cacheFile": "research/isa-audit/lcd273-app-seg2-42000020.bin.typed.dis",
+    "sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45"
+  },
+  "trm": {
+    "version": "1.1",
+    "url": "https://www.espressif.com/sites/default/files/documentation/esp32-c5_technical_reference_manual_en.pdf",
+    "pdfSha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "textSha256": "a728dac35943336e6d392584638b9973225385ebd55f25376ee6f0ee23a61a59",
+    "sections": [
+      "18.5.1",
+      "18.5.2.2"
+    ],
+    "effectiveWorldConflictRetained": true
+  },
+  "functionalScope": {
+    "exactWords": 20,
+    "filterPor": [
+      31,
+      1,
+      3,
+      3
+    ],
+    "acceptedWrites": "literal0 only, explicit machine context; worlds only after all four filters really disabled",
+    "prewriteModeRead": "unsupported; no manufactured world POR",
+    "cpuContext": "Caller must provide reliable C5 machine-only execution context, never MSTATUS.MPP. Shared core/observer changes are separate.",
+    "otherMasters": "Unsupported before all filters disabled and real targetTEE0 writes; LP master1 requires HP+LP targets. Parent DMA may require all15HP+LP writes.",
+    "activeFilterRegionReeLockIrq": "unsupported; rejected, not silently allowed",
+    "reset": "Explicit functional retention; CPU retain, HP restores HP/LP0/CPU APM+HP TEE, LP restores LP APM/TEE, Chip all",
+    "pmaPmp": "Separate scope; not implemented here"
+  },
+  "limits": [
+    "Owned module harness only; no full build, original-firmware execution, browser or benchmark.",
+    "Parent owns Bus/Soc/lib/profile routing and reliable constrained CPU/DMA context enforcement.",
+    "This is a teardown/configuration subset, not an active REE permission, denied-read/exception or complete TEE security engine.",
+    "Existing native receipt stops on first attempted APM store; no subsequent APM or PMA execution claim.",
+    "Per-flop reset-domain retention is a declared functional policy, not silicon measurement."
+  ],
+  "staticChecks": {
+    "gitDiffCachedCheck": "passed",
+    "evidenceFilesUnder50000Bytes": true,
+    "sourcePairsHashed": 20,
+    "porFieldMasksChecked": true,
+    "manualPrivacyReview": "Only relevant relative paths, public source URLs, hashes, numeric samples and command templates retained.",
+    "evidencePrivacyPatterns": {
+      "result": "passed",
+      "trackedEvidenceFiles": 3116,
+      "gzipFiles": 95
+    }
+  },
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

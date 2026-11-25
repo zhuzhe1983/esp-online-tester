@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "sourceBase": "80107aefc6abbe904edea60516f5bb950e3bed8d",
+  "scope": "P2 causal correction in the owned cache module. Only a zero-dependency standalone test target and lint; no guest/emulator/WASM/firmware build or benchmark.",
+  "files": [
+    {
+      "file": "esp32c5/src/cache.rs",
+      "bytes": 21307,
+      "sha256": "4503accad07739e80530826120bd3388ee6ccd97a4d0979b8aa6b61ce18c29cd"
+    },
+    {
+      "file": "tools/c5-cache-error-harness/Cargo.toml",
+      "bytes": 167,
+      "sha256": "ee2f4f773d3f24bcefc7de22ba2318bd1c64aa78ba3cc6211f33a5e1e6ead600"
+    },
+    {
+      "file": "tools/c5-cache-error-harness/cache_contract.rs",
+      "bytes": 129,
+      "sha256": "00f4a4d2703a692b6279a87e892be630d4fb88bf47de5a421b8af03b099b966b"
+    },
+    {
+      "file": "tools/c5-cache-error-harness/Cargo.lock",
+      "bytes": 166,
+      "sha256": "40791ea1803817acc23fd067cb3d913595c7026b2f6c37370ee6e01fb7e93812"
+    }
+  ],
+  "checks": [
+    {
+      "check": "clippy",
+      "command": "CARGO_TARGET_DIR=target/c5-cache-errors-lane CARGO_BUILD_JOBS=1 cargo +stable clippy --manifest-path tools/c5-cache-error-harness/Cargo.toml --all-targets -- -D warnings",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T18:59:47.970452+00:00",
+      "finishedAtUTC": "2026-11-24T18:59:48.490978+00:00",
+      "rawLogSha256": "119839e8f37a7edcffecbe2e1bc3f5f50f1037c2b309721cd0b24839394232bc"
+    },
+    {
+      "check": "tests",
+      "command": "CARGO_TARGET_DIR=target/c5-cache-errors-lane CARGO_BUILD_JOBS=1 cargo +stable test --release --manifest-path tools/c5-cache-error-harness/Cargo.toml -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T18:59:48.491297+00:00",
+      "finishedAtUTC": "2026-11-24T18:59:49.173872+00:00",
+      "rawLogSha256": "832d03b10644c09fdb31b07adc0ff46491b89b9a9964d34d8c9bfbe97585aba7"
+    },
+    {
+      "check": "metadata",
+      "command": "CARGO_TARGET_DIR=target/c5-cache-errors-lane CARGO_BUILD_JOBS=1 cargo +stable metadata --no-deps --format-version=1 --manifest-path tools/c5-cache-error-harness/Cargo.toml",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T18:59:49.174195+00:00",
+      "finishedAtUTC": "2026-11-24T18:59:49.194117+00:00",
+      "rawLogSha256": "4811709054f0b4cbe47c28d6f9b36c148d38588fc2c120532171e4cc41e42f6b",
+      "packages": [
+        "c5-cache-error-harness"
+      ],
+      "dependencies": 0
+    }
+  ],
+  "results": {
+    "passed": 15,
+    "existingCases": 8,
+    "failed": 0,
+    "ignored": 0,
+    "filteredOut": 0,
+    "dependencies": 0,
+    "warningsDenied": true,
+    "sharedBusSocChanges": false,
+    "guestExecution": false,
+    "lcdAcceptance": false,
+    "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "revisedErrorCases": 7,
+    "originalEightCasesByteUnchanged": true,
+    "productionEventCauseQualified": false,
+    "testOnlyInternalRawSeed": true
+  },
+  "suppliedNativeNegative": {
+    "file": "native-machine-lcd273-peripheral-disable.log",
+    "bytes": 7741,
+    "sha256": "a4611385128cdf9156e1f70e1b8117687616349ea5c6298711b24cfb1a67840f",
+    "sourceBase": "9dedc474ab35401466c51318dba6ba04b882d200",
+    "sourceTreeLimit": "Parent peripheral-clock Bus/lib/Soc integration was uncommitted at capture; this receipt does not assert an exact committed delivery tree for that run.",
+    "rerunInThisChange": false,
+    "instructions": 26620301,
+    "nominalCycles": 26620288,
+    "uartBytes": 2263,
+    "mepc": "42001118",
+    "readAddress": "600c83d0",
+    "mcause": 5
+  },
+  "integrationContract": {
+    "source": 29,
+    "cpuLineFromOriginalInit": 25,
+    "methods": [
+      "observe_cpu_failure(instruction: bool) -> Result<(), &str>",
+      "irq() -> bool",
+      "source() -> (usize, bool)",
+      "error_report() -> String"
+    ],
+    "callSite": "Actual guest CPU cached-window request rejected by cache itself after PMA/APM; no DMA/host/MMIO/translation/capacity injection.",
+    "enaQualifiedWords": [
+      0,
+      16,
+      31
+    ],
+    "clearQualifiedWords": [
+      0,
+      16,
+      31
+    ],
+    "unknownEnaReadback": "Whole-word31 marks sticky uncertainty until actual cache reset; later0/16 changes only known functional bit4.",
+    "permitted": "cpu_allowed succeeds: Ok and state unchanged.",
+    "blocked": "Every SHUT/clock/reset-blocked cached CPU request, including operational+SHUT+TRACE1: Err and complete state/RAW/IRQ unchanged; parent keeps Unsupported/ModelLimit.",
+    "eventInjection": "No production event/force-IRQ API. RAW stays0 in the normal prefix because no event cause is qualified."
+  },
+  "curation": {
+    "committed": "Aggregate checks, fixed source hashes, five original instruction words and bounded API/unknown-state contract.",
+    "omitted": "Full disassembly, original binary, raw native log, full peripheral stream and personal absolute paths remain ignored.",
+    "captureCopy": "supplied-native-peripheral-disable.log retained in ignored task target."
+  },
+  "historicalResult": {
+    "commit": "80107aefc6abbe904edea60516f5bb950e3bed8d",
+    "checksFileAtCommit": "docs/evidence/c5-cache-errors-2026-11-25/checks.json",
+    "checksSha256": "df984641045b146a7a1df637c36029f8a0bf79b5260eb7504cc60c4b7de977dc",
+    "sourcesFileAtCommit": "docs/evidence/c5-cache-errors-2026-11-25/sources.json",
+    "sourcesSha256": "f23e0bc7c3992e66d49d29cb56d34db466c8890ba23ce84d0025ac281f87a349",
+    "testsPassed": 15,
+    "testLogSha256": "642164295ee3f3804719103b7bd7e0c50ac5e626ece11aa272880edd72fb0b06",
+    "status": "Tests passed, but positive synthetic event cases encoded an unqualified causal assumption. That claim is withdrawn, not hardware evidence.",
+    "withdrawnAssumption": "operational+corresponding bus-shut+TRACE1 causes raw bit4 and a Prohibited guest access.",
+    "originalLogsPreserved": true
+  },
+  "causalReview": "causal-review.json"
+}

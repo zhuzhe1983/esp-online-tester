@@ -1,0 +1,72 @@
+diff --git a/esp32c5/src/i2c.rs b/esp32c5/src/i2c.rs
+index 1ef88ec6..13235e41 100644
+--- a/esp32c5/src/i2c.rs
++++ b/esp32c5/src/i2c.rs
+@@ -3,13 +3,26 @@
+ //! No slave, multi-master collision, stretched clock or timeout simulation.
+ use crate::{bus::{C5Bus,PINS},i2c_regs};
+ use esp_periph::{Device,RegRam,i2c::{I2c,I2cDevice,INT_END_DETECT,INT_TRANS_COMPLETE,INT_NACK,INT_TIMEOUT}};
++// TEMPORARY diagnostic instrumentation; never a production protocol change.
++use std::{rc::Rc,cell::Cell};
++struct ProbeDevice{inner:Box<dyn I2cDevice>,cycle:Rc<Cell<u64>>,address:u8}
++impl I2cDevice for ProbeDevice{
++    fn address(&self,c:u8)->u8{self.inner.address(c)}
++    fn pins(&self)->Option<(u8,u8)>{self.inner.pins()}
++    fn start(&mut self,r:bool)->bool{self.inner.start(r)}
++    fn start_address(&mut self,c:u8,a:u8,r:bool)->bool{self.inner.start_address(c,a,r)}
++    fn start_address_with_clock(&mut self,c:u8,a:u8,r:bool,h:Option<u32>)->bool{let ack=self.inner.start_address_with_clock(c,a,r,h);if c==a{println!("i2c_probe cycle={} address={a:#04x} event=START read={r} nominal_scl_hz={h:?} ack={ack}",self.cycle.get());}ack}
++    fn write(&mut self,b:u8)->bool{let ack=self.inner.write(b);println!("i2c_probe cycle={} address={:#04x} event=WRITE byte={b:#04x} ack={ack}",self.cycle.get(),self.address);ack}
++    fn read(&mut self)->u8{let b=self.inner.read();println!("i2c_probe cycle={} address={:#04x} event=READ byte={b:#04x}",self.cycle.get(),self.address);b}
++    fn stop(&mut self){self.inner.stop();println!("i2c_probe cycle={} address={:#04x} event=STOP",self.cycle.get(),self.address);}
++}
+ // C5 IDF v5.5.3 (2c211b23) / v5.5.4 (73550728) i2c_ll.h:53-74:
+ // MASTER_EVENT_INTR also enables arbitration-lost (bit 5) and timeout (bit 8).
+ // Store those enables; this single-master/no-stretch model produces neither event.
+ const INTERRUPTS:u32=INT_END_DETECT|INT_TRANS_COMPLETE|INT_NACK|INT_TIMEOUT|(1<<5);
+-pub(crate) struct C5I2c{controller:I2c,config:u32,clock:u32,last:u64,remainder:u64,pub deadline:Option<u64>}
++pub(crate) struct C5I2c{controller:I2c,config:u32,clock:u32,last:u64,remainder:u64,pub deadline:Option<u64>,probe_cycle:Rc<Cell<u64>>}
+ impl C5I2c{
+-    pub fn new(now:u64)->Self{let mut s=Self{controller:I2c::new(),config:0,clock:0,last:now,remainder:0,deadline:None};s.reset();s}
++    pub fn new(now:u64)->Self{let mut s=Self{controller:I2c::new(),config:0,clock:0,last:now,remainder:0,deadline:None,probe_cycle:Rc::new(Cell::new(now))};s.reset();s}
+     fn reset(&mut self){
+         // Keep the physically attached device objects. Controller reset is not
+         // a power cycle of the RTC/codec/expander. No synthetic I2C STOP is sent.
+@@ -20,14 +33,17 @@ impl C5I2c{
+             if (0x58..=0x74).contains(&off){self.controller.write(off,reset);}else{self.controller.regs.write(off,reset);}
+         }}self.deadline=None;
+     }
+-    pub fn attach(&mut self,address:u8,device:Box<dyn I2cDevice>){self.controller.attach(address,device);}
++    pub fn attach(&mut self,address:u8,device:Box<dyn I2cDevice>){let device=if matches!(address,0x70|0x6b){Box::new(ProbeDevice{inner:device,cycle:self.probe_cycle.clone(),address})as Box<dyn I2cDevice>}else{device};self.controller.attach(address,device);}
+     pub fn clear_devices(&mut self){self.controller.clear_devices();}
+     pub fn contains(a:u32)->bool{matches!(a,0x6000_4000..=0x6000_41fc|0x6009_6020..=0x6009_6024)}
+     fn enabled(&self)->bool{self.config&3==1&&self.clock&((1<<22)|(1<<20))==1<<22&&self.controller.regs.read(0x54)&(1<<21)!=0}
+     fn plan(&mut self,now:u64){self.deadline=self.controller.next_deadline().map(|n|now.saturating_add(n.saturating_mul(3).saturating_sub(self.remainder)));}
+     pub fn sync(&mut self,bus:&mut C5Bus){
++        self.probe_cycle.set(bus.cycles);
++        let before_raw=self.controller.int_raw;
+         let delta=bus.cycles.wrapping_sub(self.last)+self.remainder;self.last=bus.cycles;self.remainder=delta%3;
+         bus.board.advance_to(bus.cycles);if self.enabled(){self.controller.tick(delta/3);}self.plan(bus.cycles);
++        if self.controller.int_raw!=before_raw{let status=self.controller.read(8)^1;println!("i2c_cpu cycle={} event=INT_RAW_CHANGE before={before_raw:#x} after={:#x} status={status:#x} ena={:#x}",bus.cycles,self.controller.int_raw,self.controller.int_ena);}
+         bus.irq_dirty|=esp_soc::gpio::drain_board_inputs(&mut *bus.board,&mut bus.gpio,&mut bus.gpio_events,bus.cycles);
+     }
+     pub fn irq(&self)->bool{self.config&3==1&&self.controller.irq()}
+@@ -41,7 +57,9 @@ impl C5I2c{
+             if self.config&3!=1{return None;}let off=a&0xfff;Self::register(off)?;
+             // Follow the published C5 ACK polarity, not the older C3/S3
+             // controller's measured inverse RESP_REC convention.
+-            Some(if off==8{(self.controller.read(off)^1)|0xc000}else if matches!(off,0xf8|0x24){self.controller.regs.read(off)}else{self.controller.read(off)})
++            let value=if off==8{(self.controller.read(off)^1)|0xc000}else if matches!(off,0xf8|0x24){self.controller.regs.read(off)}else{self.controller.read(off)};
++            if off==0x1c{println!("i2c_cpu cycle={} event=DATA_READ value={value:#04x} status={:#x} raw={:#x} ena={:#x}",bus.cycles,self.controller.read(8)^1,self.controller.int_raw,self.controller.int_ena);}
++            Some(value)
+         }}
+     }
+     pub fn write(&mut self,a:u32,v:u32,bus:&mut C5Bus)->bool{
+@@ -59,6 +77,8 @@ impl C5I2c{
+                 else if off==0xf8{self.controller.regs.write(off,value);}
+                 else if off==4{
+                     if value&(1<<5)!=0&&!self.controller.is_active(){
++                        let status=self.controller.read(8)^1;let commands=(0..8).map(|n|self.controller.read(0x58+4*n)).collect::<Vec<_>>();
++                        println!("i2c_cpu cycle={} event=TRANS_START status={status:#x} raw={:#x} ena={:#x} commands={commands:08x?}",bus.cycles,self.controller.int_raw,self.controller.int_ena);
+                         if !self.enabled()||value&(1<<4)==0||value&((1<<6)|(1<<7)|(1<<12)|(1<<13))!=0{return false;}
+                         let mut tx=0;let mut rx=0;let mut end=false;
+                         for n in 0..8{let cmd=self.controller.read(0x58+4*n);match(cmd>>11)&7{1=>tx+=cmd&255,3=>rx+=cmd&255,2|4=>{end=true;break;},6=>{},_=>return false,}}

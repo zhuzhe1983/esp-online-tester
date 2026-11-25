@@ -1,0 +1,190 @@
+{
+  "baseCommit": "45d79157da22ee586674d54c1ffb64dae044b6c0",
+  "scope": "Only boot_analog.rs and scoped evidence/owned harness",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "tests": {
+    "passed": 43,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "previous": 37,
+    "new": 6
+  },
+  "lint": "clippy-driver -D warnings PASS; same43 tests PASS",
+  "oldTestChanges": [
+    {
+      "oldNegativeAddress": "0x600a9c0c",
+      "oldValueNowValid": "0x44000000",
+      "replacementInvalidValue": "0x42000000"
+    },
+    {
+      "oldNegativeAddress": "0x600af020",
+      "oldValueNowValid": "0x00400000",
+      "replacementInvalidValue": "0x00200000"
+    }
+  ],
+  "supportedFields": [
+    {
+      "address": "0x600a9c0c",
+      "shift": 28,
+      "initial": 6,
+      "allowed": [
+        0,
+        4,
+        6
+      ]
+    },
+    {
+      "address": "0x600a9c0c",
+      "shift": 24,
+      "initial": 4,
+      "allowed": [
+        0,
+        4
+      ]
+    },
+    {
+      "address": "0x600a9c0c",
+      "shift": 20,
+      "initial": 6,
+      "allowed": [
+        0,
+        4,
+        6
+      ]
+    },
+    {
+      "address": "0x600a9c0c",
+      "shift": 16,
+      "initial": 4,
+      "allowed": [
+        0,
+        4
+      ]
+    },
+    {
+      "address": "0x600a9c0c",
+      "shift": 12,
+      "initial": 6,
+      "allowed": [
+        0,
+        4,
+        6
+      ]
+    },
+    {
+      "address": "0x600a9c0c",
+      "shift": 8,
+      "initial": 4,
+      "allowed": [
+        0,
+        4
+      ]
+    },
+    {
+      "address": "0x600af020",
+      "shift": 28,
+      "initial": 6,
+      "allowed": [
+        0,
+        4,
+        6
+      ]
+    },
+    {
+      "address": "0x600af020",
+      "shift": 24,
+      "initial": 6,
+      "allowed": [
+        0,
+        4,
+        6
+      ]
+    },
+    {
+      "address": "0x600af020",
+      "shift": 20,
+      "initial": 6,
+      "allowed": [
+        0,
+        4,
+        6
+      ]
+    },
+    {
+      "address": "0x600af020",
+      "shift": 16,
+      "initial": 6,
+      "allowed": [
+        0,
+        4,
+        6
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "bytes": 64237,
+      "sha256": "46e25fcc0271a2491bc376ced4b6afa348173f3e7a0bb5fe12feb796e6ed8cb6"
+    },
+    {
+      "path": "docs/evidence/c5-wifi-modem-map-2026-11-25/run-owned.py",
+      "bytes": 1061,
+      "sha256": "ce788dd99842570fff8eb097cbad59497f14d5d448aef8433fee3beaa1cca705"
+    },
+    {
+      "path": "docs/evidence/c5-wifi-modem-map-2026-11-25/sources.json",
+      "bytes": 9699,
+      "sha256": "73c99fce7afa41ccf98e70df7051e4fe8b70f67ee02081d5b623d06e94cd9f70"
+    },
+    {
+      "path": "docs/evidence/c5-wifi-modem-map-2026-11-25/owned-tests.txt",
+      "bytes": 4097,
+      "sha256": "b496fc216a5d34832188fa7b42238f034372cd79847447ceaf3c5ba0129c60cc",
+      "retention": {
+        "kind": "historical_full_stdout",
+        "removedFromCurrentTree": true,
+        "manifest": "../c5-owned-stdout-retention-2026-11-25/manifest.json",
+        "sourceRevision": "daf1df167be8522ce2fd3f516029362f1ceccf40",
+        "gitBlob": "79019b850909952d4fad8174bf7fbd8cef666fde",
+        "privateOutput": "${INTEGRATION_ROOT}/target/c5-owned-stdout-retention-20261125/from-4e1a8474/c5-wifi-modem-map-2026-11-25/owned-tests.txt",
+        "artifactRevision": "4e1a84744765ab87909ff16efee2eda0fac7c588"
+      }
+    },
+    {
+      "path": "docs/evidence/c5-wifi-modem-map-2026-11-25/owned-lint.txt",
+      "bytes": 4097,
+      "sha256": "b496fc216a5d34832188fa7b42238f034372cd79847447ceaf3c5ba0129c60cc",
+      "retention": {
+        "kind": "historical_full_stdout",
+        "removedFromCurrentTree": true,
+        "manifest": "../c5-owned-stdout-retention-2026-11-25/manifest.json",
+        "sourceRevision": "daf1df167be8522ce2fd3f516029362f1ceccf40",
+        "gitBlob": "79019b850909952d4fad8174bf7fbd8cef666fde",
+        "privateOutput": "${INTEGRATION_ROOT}/target/c5-owned-stdout-retention-20261125/from-4e1a8474/c5-wifi-modem-map-2026-11-25/owned-lint.txt",
+        "artifactRevision": "4e1a84744765ab87909ff16efee2eda0fac7c588"
+      }
+    }
+  ],
+  "commands": [
+    "python3 docs/evidence/c5-wifi-modem-map-2026-11-25/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\"",
+    "python3 docs/evidence/c5-wifi-modem-map-2026-11-25/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\" --compiler clippy-driver --lint"
+  ],
+  "limitations": [
+    "Static original callback/table path only; this lane did not execute guest factory code",
+    "No Cargo/native/WASM/browser or benchmark",
+    "No MODEM/SLEEP transition, RF/PHY/calibration/ACK readiness, new clock source or event is implemented",
+    "Existing capture-then-apply and reset retention remain declared functional abstractions; not per-flop silicon/timing verification"
+  ],
+  "evidencePrivacy": "PASS:6 scoped tracked evidence files,0gzip; manual review contains only public source pins, normalized commands and module outputs.",
+  "diffCheck": "PASS; owned code and evidence only",
+  "stdoutRetention": {
+    "policy": "docs/evidence/README.md",
+    "fullStdout": "Moved to ignored target after byte/hash verification; original paths/bytes/hashes in artifacts remain historical identities.",
+    "manifest": "../c5-owned-stdout-retention-2026-11-25/manifest.json",
+    "originalSummarySha256": "aa218c73c8b7f5530ca30c0e5c3ee32019bfafd6d5c183c458834e2c81c89f21",
+    "captureContentChanged": false,
+    "resultCountsAndCommandsChanged": false
+  }
+}

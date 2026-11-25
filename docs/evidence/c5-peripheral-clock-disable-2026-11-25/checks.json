@@ -1,0 +1,119 @@
+{
+  "scope": "Standalone owned module; no Cargo, workspace, native guest, WASM or benchmark",
+  "source": "esp32c5/src/boot_peripheral_clock.rs",
+  "sourceSha256": "79eee5e3cb4100fd04bfa267486c7d87134d6b87ba9c6e2f4f2ca809f604b548",
+  "tools": {
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "clippy-driver": "clippy 0.1.100 (0ef1bc3860 2026-11-09)"
+  },
+  "checks": [
+    {
+      "command": [
+        "rustup",
+        "run",
+        "stable",
+        "rustc",
+        "--edition=2021",
+        "--test",
+        "esp32c5/src/boot_peripheral_clock.rs",
+        "-D",
+        "warnings",
+        "-o",
+        "<owned-output>/peripheral-clock-tests"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalizedOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputFile": "check-0.txt"
+    },
+    {
+      "command": [
+        "<owned-output>/peripheral-clock-tests",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "58ce84e47db4cf7c57bf62215b9d894c8bb58907a2cb9a96dd1a11d3a39b09e8",
+      "normalizedOutputSha256": "58ce84e47db4cf7c57bf62215b9d894c8bb58907a2cb9a96dd1a11d3a39b09e8",
+      "outputFile": "check-1.txt"
+    },
+    {
+      "command": [
+        "rustup",
+        "run",
+        "stable",
+        "clippy-driver",
+        "--edition=2021",
+        "--test",
+        "esp32c5/src/boot_peripheral_clock.rs",
+        "-D",
+        "warnings",
+        "-o",
+        "<owned-output>/peripheral-clock-clippy"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalizedOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputFile": "check-2.txt"
+    }
+  ],
+  "normalization": "Caller-supplied repository/output paths replaced by labels; no other text changed.",
+  "exitCode": 0,
+  "checkedAtUTC": "2026-11-24T18:31:03.675409+00:00",
+  "baseCommit": "7c4f084f4504b8d905084c5ff9a20fabcfc6d44b",
+  "result": {
+    "passed": 12,
+    "failed": 0,
+    "ignored": 0,
+    "typedStoreFixtureCount": 34,
+    "exactWords": 32,
+    "pcrWords": 30
+  },
+  "harnessScriptSha256": "4c102fc38df6e3bfe3598f35338916b0e68313fed735a2b982217b23aaceee09",
+  "sourcesSha256": "616a441386e169ac64b915ee3db32f155e04b0639f6a76f356fd1929f495162a",
+  "actualBoundary": {
+    "source": "Existing integration log, read only; no new native run",
+    "cacheFile": "native-machine-lcd273-fpga-debug-msb.log",
+    "sha256": "cb24d75ae671d82cbac4c2fe46724f86eeeca7d773c46b20fa2a409e0de9c00d",
+    "instructions": 26601352,
+    "nominalCycles": 26601344,
+    "uartBytes": 2194,
+    "pc": "0x42000e20",
+    "address": "0x6009603c",
+    "write": false,
+    "width": 4,
+    "advancedByThisCommit": false,
+    "logBytes": 7331
+  },
+  "typed": {
+    "file": "lcd273-app-seg2-42000020.bin.typed.dis",
+    "sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45"
+  },
+  "limits": [
+    "No Bus/Soc/lib or existing owner changes; parent must wire real strict-profile RMT gates.",
+    "No new native guest, workspace build, Cargo, WASM, browser or benchmark.",
+    "Explicit fixed-SDK named-field virtual POR; TRM conflicts retained.",
+    "No peripheral data, IRQ, timer, RF, LP CPU or reset-completion engine."
+  ],
+  "privacy": "Only public source URLs, relative paths, hashes and numeric results; caller paths normalized by harness.",
+  "staticChecks": {
+    "all32PorValuesMatchFixedHeaderNamedFields": true,
+    "allClearMasksAreNamedRwFields": true,
+    "pairCount": 9,
+    "identicalPairs": 9,
+    "evidencePrivacy": "passed: 3154 tracked evidence files, 95 gzip",
+    "manualPrivacyReview": "Public source URLs/relative files/hashes/counts only; private native log retained outside Git.",
+    "evidenceFilesUnder50000Bytes": true
+  },
+  "curatedTestOutput": {
+    "file": "owned-tests.txt",
+    "rawSha256": "58ce84e47db4cf7c57bf62215b9d894c8bb58907a2cb9a96dd1a11d3a39b09e8",
+    "curatedSha256": "bcf0a94dd28f5198a20e572dc70fef4f4fe0a0beedc6e4cdfc789583bf5f05b4",
+    "normalization": "Leading/trailing blank lines stripped only; test names, counts and result unchanged."
+  },
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

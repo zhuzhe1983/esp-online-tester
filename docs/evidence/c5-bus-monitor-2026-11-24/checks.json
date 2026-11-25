@@ -1,0 +1,146 @@
+{
+  "baseCommit": "449663182aaf53a5b56555b5aaa1aec9a21eed4e",
+  "scope": "Private C5 bus monitor before CPU/Bus integration; no factory success claim",
+  "idfVersion": "v5.5.4",
+  "idfCommit": "735507283d5b2f9fb363a1901172dbd9e847945d",
+  "sourceAuditCompletedBeforeImplementation": true,
+  "sources": [
+    {
+      "path": "components/soc/esp32c5/register/soc/bus_monitor_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/bus_monitor_reg.h",
+      "bytes": 33785,
+      "sha256": "2fa28f8fc597d3364a058692f01d3937e5fb9332333aaac1028c55977be0b26e"
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/bus_monitor_struct.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/bus_monitor_struct.h",
+      "bytes": 21882,
+      "sha256": "212d95572ae546dd19d4d3e54d64ad1e7657516d76e4bd22e122fe953188f1a7"
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/pcr_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/pcr_reg.h",
+      "bytes": 103653,
+      "sha256": "e2537baeb66eabd30ae7e4663ec28b7afeb6cba68ab9cb19d4e33d1d5bd33d3a"
+    },
+    {
+      "path": "components/soc/esp32c5/include/soc/interrupts.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/include/soc/interrupts.h",
+      "bytes": 5869,
+      "sha256": "effb67f529e87e6b18b3aef4429b78e4716eaaf3093681bcfaadb905e36b440a"
+    },
+    {
+      "path": "components/hal/esp32c5/include/hal/assist_debug_ll.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/esp32c5/include/hal/assist_debug_ll.h",
+      "bytes": 4925,
+      "sha256": "f0afb85a5df9c9ab490a5cb7d9649ad548b451771b92c138b92b6773245e7c83"
+    }
+  ],
+  "trm": {
+    "version": "1.1",
+    "url": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+    "sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "sections": [
+      "9.1",
+      "9.2",
+      "20.3",
+      "20.5"
+    ],
+    "printedPages": [
+      383,
+      384,
+      385,
+      811,
+      812,
+      813,
+      814,
+      815
+    ]
+  },
+  "configuration": {
+    "base": "0x600c2000",
+    "pcrAssist": "0x60096100",
+    "irqSource": 27,
+    "recordBits": {
+      "recordEnable": 0,
+      "pdebugEnable": 1
+    },
+    "dateReset": 34640176,
+    "regionMinReset": "0xffffffff",
+    "regionMaxReset": 0,
+    "spMinReset": 0,
+    "spMaxReset": "0xffffffff",
+    "interruptSemantics": "RAW live and MONTR-masked; hidden state samples RAW & INTR_ENA; CLR clears hidden state only",
+    "clockSemantics": "PCR bit0 is bus gate; functional observations use actual CPU_CLK context/transfer samples",
+    "resetSemantics": {
+      "cpuOnly": "clear RCD_EN; retain peripheral config and PC/SP; invalidate current input context",
+      "hpCore": "reset peripheral state/PCR while preserving explicit PDEBUGPC/SP retention",
+      "pcrOrPor": "clear actual module state and captures",
+      "systemLp": "not specified/supported by this block API"
+    }
+  },
+  "openPr335Audit": {
+    "url": "https://github.com/mikroverk/esp32sim/pull/335",
+    "number": 335,
+    "state": "open",
+    "head": "c6-speed-lever-2-main",
+    "headSha": "90567cdd947b75222d2291d290ef82fdd6a29399",
+    "base": "main",
+    "baseSha": "c693fe897f2b6ce39aa93bf14eba7810e17cba40",
+    "updatedAt": "2026-11-23T21:13:07Z",
+    "runtimeChange": "Request inline(always) for step_outcome; no new observer or SP interface."
+  },
+  "existingHookAudit": {
+    "pc": "emu_core::Bus::note_pc in interpreter/block paths",
+    "sp": "Concrete Cpu.x[2] through C5-only Observer with Wants::INSN or typed Bringup loop",
+    "newSharedHookProposed": false,
+    "sharedEdits": false,
+    "memoryOrigin": "caller supplies actual HP CPU Data/Peripheral access; exclude fetch/DMA/host/LP"
+  },
+  "files": [
+    {
+      "path": "esp32c5/src/bus_monitor.rs",
+      "sha256": "e12ccf096ee2c2b87a68ac3a7f3cc05b44e75b13ce95e5d9374e7a969a287daa"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "2a105af0c4a230ec805479c9556ff933947551c73d21a2779a9929b1802bd695"
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "1.100.0 (3acc79c0c 2026-11-05)"
+  },
+  "checks": [
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-bus-monitor-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --lib bus_monitor::tests -- --nocapture",
+      "result": "pass",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 23
+    },
+    {
+      "command": "clippy-driver --edition=2021 --test esp32c5/src/bus_monitor.rs -D warnings -o target/c5-bus-monitor-lane/bus-monitor-lint-tests",
+      "result": "pass"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "filesChecked": 3027,
+      "gzipFiles": 95
+    }
+  ],
+  "limits": [
+    "Functional observation samples, no physical CPU_CLK/interrupt edge timing validation.",
+    "Missing SP stays unavailable, never a dummy captured zero.",
+    "Memory-stall timeout, debugger, trace and CPU/DMA SRAM logging engines unsupported.",
+    "No whole-System/LP-reset capture retention policy.",
+    "No full workspace, bus/observer IRQ-delivery, ROM/factory or benchmark run."
+  ],
+  "privacy": "Private paths/raw tool output omitted; public source facts/hashes and aggregate checks retained."
+}

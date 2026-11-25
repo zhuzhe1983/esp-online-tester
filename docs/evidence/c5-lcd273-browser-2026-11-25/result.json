@@ -1,0 +1,982 @@
+{
+  "captureIsNewRun": false,
+  "cleanup": {
+    "allOwnedBrowserResourcesClosed": true,
+    "allOwnedServersStopped": true,
+    "ownedEphemeralContexts": 2,
+    "ownedListenersRemaining": 0,
+    "ownedProcessesRemaining": 0,
+    "proofArtifactIds": [
+      "anonymous-cleanup-proof-a",
+      "anonymous-cleanup-proof-b"
+    ],
+    "taskOnlyCleanup": true,
+    "userBrowsersNotAttached": true
+  },
+  "curationChecks": {
+    "configuredRepositoryPrivacyPatternsApplied": 6,
+    "manualReviewForPathsIdentifiersAndPayloads": true,
+    "newRuntimeExecution": false,
+    "onlyTwoDraftTextFiles": true,
+    "perFileByteLimit": 50000
+  },
+  "date": "2026-11-25",
+  "inputs": [
+    {
+      "appDirect": false,
+      "applicationMetadata": {
+        "name": "01_factory",
+        "source": "esp-app-description",
+        "version": "v0.3.0-1578-gc6ceccd8"
+      },
+      "bootMode": "rom",
+      "configuredRomStubs": [],
+      "executionMode": "wasm-interpreter",
+      "factoryOnly": false,
+      "id": "03_sd_card",
+      "kind": "unchanged-manufacturer-source-example",
+      "merged": {
+        "bytes": 422096,
+        "sha256": "0f6d7646eaba88caab4708db719412a0b7b261d7cc18c8d601116a7c7c902308"
+      }
+    },
+    {
+      "appDirect": false,
+      "applicationMetadata": {
+        "name": "01_factory",
+        "source": "esp-app-description",
+        "version": "v0.3.0-1578-gc6ceccd8"
+      },
+      "bootMode": "rom",
+      "configuredRomStubs": [],
+      "executionMode": "wasm-interpreter",
+      "factoryOnly": false,
+      "id": "02_lvgl_demo",
+      "kind": "unchanged-manufacturer-source-example",
+      "merged": {
+        "bytes": 1046720,
+        "sha256": "16b8762fb108bf8b305d84a9182d1ce7967f0eb94a2204950ae3441653131eb4"
+      }
+    },
+    {
+      "appDirect": false,
+      "applicationMetadata": {
+        "name": "c5_lcd273_diagnostic",
+        "source": "esp-app-description",
+        "version": "0.1.0"
+      },
+      "bootMode": "rom",
+      "configuredRomStubs": [],
+      "executionMode": "wasm-interpreter",
+      "factoryOnly": false,
+      "id": "c5_lcd273_diagnostic",
+      "kind": "independent-project-diagnostic",
+      "merged": {
+        "bytes": 770832,
+        "sha256": "7009dda577b13fe2ccfe721b415cfd7f88de487fa452cc2f52e5f20a531c0c0f"
+      }
+    }
+  ],
+  "limitations": [
+    "Prepared or host-attached card metadata alone is not guest FAT mount; actual guest UART/file bytes were separately checked.",
+    "SD inner command/backing-store counters do not prove every wire command or consumed MISO byte.",
+    "Persistence covers explicit flush followed by normal same-origin reload within each owned ephemeral context; crash/power-loss safety and independent-profile persistence are unverified.",
+    "The second context explicitly imported an exported disk clone; this is not cross-profile IndexedDB retention.",
+    "The diagnostic proves production input API to GPIO/BSP/debounce/adapter/visible counters, not DOM/3D hitbox clicks or calibrated physical switches.",
+    "Framebuffer and brightness are digital outputs, not physical panel calibration.",
+    "PREV UP queue ACK capture is missing after an observer guard timeout; fresh guest UART and accepted final pixels remain captured.",
+    "Original manufacturer02 disabled performance monitor; no benchmark success or original-example button UI success.",
+    "FactoryOnly, WiFi/RF/network and the future explicit WiFi compatibility profile have no qualification from these observations.",
+    "No speed/performance conclusion; other build/check work could run concurrently.",
+    "The public API exposed cold board display/SD snapshots, not a private kernel coldDiag/referenceObserved endpoint.",
+    "Raw captures and generated firmware binaries are retained privately, not published or remotely downloadable; hashes alone do not let remote reviewers independently inspect their content."
+  ],
+  "manufacturer02": {
+    "actualDisplayMessage": "LV_USE_PERF_MONITOR is not enabled",
+    "actualDisplayState": {
+      "brightness": 247,
+      "displayOn": true,
+      "madctl": 72,
+      "pixelFormat": 102,
+      "pixelsWritten": "3367722",
+      "ramWriteCommands": "230",
+      "resetCount": "1",
+      "resetHigh": true,
+      "sleepOut": true,
+      "visible": true
+    },
+    "benchmarkSuccess": false,
+    "consoleErrors": 0,
+    "factoryOnly": false,
+    "frame": {
+      "frameNumber": 138,
+      "height": 320,
+      "nonBlackRGBPixels": 102135,
+      "pngArtifactId": "manufacturer02-frame",
+      "rgbaBytes": 409600,
+      "rgbaSha256": "af9f53cf64ef2045bcb590c12548293a76bc0ec9c2ae7e9829e28f70276bd39c",
+      "totalPixels": 102400,
+      "uniqueRGBAColors": 18,
+      "width": 320
+    },
+    "originalExampleThreeKeyUISuccess": false,
+    "rawReceiptArtifactId": "manufacturer02-frame-receipt",
+    "uartCaptureArtifactId": "manufacturer02-uart-capture"
+  },
+  "manufacturer03": {
+    "disk": {
+      "afterExportArtifactId": "manufacturer03-after-disk",
+      "byteByByteEqual": true,
+      "bytes": 67108864,
+      "readyReloadExportArtifactId": "manufacturer03-ready-reload-disk",
+      "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a"
+    },
+    "factoryOnly": false,
+    "file": {
+      "analysisArtifactId": "manufacturer03-fat-extraction",
+      "artifactId": "manufacturer03-test-file",
+      "bytes": 71,
+      "extraction": "MBR partition LBA2048 then FAT32 cluster chain",
+      "name": "test.txt",
+      "sha256": "b0944679cf35c8ac6566d654a769567cc9292e0812cdf471e4cae1f2cd45a91c"
+    },
+    "guestObserved": {
+      "appMainReturned": true,
+      "compareResult": "pass",
+      "fatMount": true,
+      "readBytes": 71,
+      "uartCaptureArtifactId": "manufacturer03-uart-capture",
+      "writeBytes": 71
+    },
+    "preparedCard": {
+      "backend": "indexeddb",
+      "bytes": 67108864,
+      "format": "fat32",
+      "pristine": true,
+      "restored": false
+    },
+    "reload": {
+      "board": "waveshare-c5-lcd273",
+      "byteIdenticalFullDisk": true,
+      "indexeddbRestored": true,
+      "namespaceKeyNotPublished": true,
+      "namespacePolicy": "product + board + canonical full-Flash SHA256",
+      "productId": "waveshare-esp32-c5-lcd-2-73",
+      "readyReceiptArtifactId": "manufacturer03-ready-reload-receipt",
+      "readyWithoutStart": true,
+      "sameOrigin": true,
+      "sameOwnedContext": true,
+      "sameProductAndFirmwareInput": true,
+      "statsEmptyObject": true,
+      "uartEmpty": true
+    }
+  },
+  "negativeObservations": [
+    {
+      "countedAsVisibleSuccess": false,
+      "id": "UART-PREDICATE",
+      "result": "WAIT_TIMEOUT",
+      "retained": true,
+      "scopeAndResolution": "Observer requested an absent UART phrase. Actual ILI9488/LVGL logs and framebuffer were independently verified.",
+      "selectedArtifactIds": [
+        "negative-1-capture-1"
+      ]
+    },
+    {
+      "countedAsVisibleSuccess": false,
+      "id": "RELOAD-PREFLIGHT",
+      "result": "ENOENT",
+      "retained": true,
+      "scopeAndResolution": "An observer preflight expected null stats; ready stats was an empty object. Corrected inspection allowed export while firmware remained unstarted.",
+      "selectedArtifactIds": [
+        "negative-2-capture-1"
+      ]
+    },
+    {
+      "countedAsVisibleSuccess": false,
+      "id": "EARLY-DIAGNOSTIC-FRAMES",
+      "result": "stale-frame-observation",
+      "retained": true,
+      "scopeAndResolution": "These captures showed previous GUI state and were excluded. A retained-card reset and repeated sequence supplied accepted event frames.",
+      "selectedArtifactIds": [
+        "negative-3-capture-1",
+        "negative-3-capture-2"
+      ]
+    },
+    {
+      "countedAsVisibleSuccess": false,
+      "id": "EXCESSIVE-FOUR-FRAME-GUARD",
+      "result": "frame-wait-timeout",
+      "retained": true,
+      "scopeAndResolution": "Fresh PREV UP completed, then a 20-second guard requesting four further frames timed out. Recovered actual pixels and UART are preserved; queue ACK was not serialized.",
+      "selectedArtifactIds": [
+        "negative-4-capture-1"
+      ]
+    },
+    {
+      "countedAsVisibleSuccess": false,
+      "id": "PARTIAL-NEXT-FRAME",
+      "result": "partially-updated-frame",
+      "retained": true,
+      "scopeAndResolution": "A first publication had the new counter and previous recent-event text. Kept the same physical level and captured following real publication; no additional press.",
+      "selectedArtifactIds": [
+        "negative-5-capture-1"
+      ]
+    }
+  ],
+  "pixelAnalysis": {
+    "derivation": "Offline decode of original PNGs with chunk CRC validation and PNG unfiltering; normalized RGBA8 without image editing. Decoded SHA256 equals captured RGBA SHA256.",
+    "differenceIsNotSemanticProof": true,
+    "differentPixelDefinition": "Any of four RGBA bytes differs. Previous accepted frame starts at recorded initial baseline, then follows events 1 through 6.",
+    "nonBlackRGBDefinition": "At least one RGB channel nonzero; alpha not used.",
+    "visualCountersAndRecentEventsWereReviewedDuringCompletedRun": true
+  },
+  "projectDiagnostic": {
+    "allKeyEventsUartArtifactId": "diagnostic-six-events-uart",
+    "backingBlocksWrittenAfterEvents": 0,
+    "bootUpTriggeredFreshReadAfterLCDActive": true,
+    "consoleErrors": 0,
+    "diskAfterEvents": {
+      "artifactId": "diagnostic-after-inputs-disk",
+      "byteByByteEqualToImportedDisk": true,
+      "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a"
+    },
+    "events": [
+      {
+        "frame": {
+          "differentRGBAFromInitialPixels": 7649,
+          "differentRGBAFromPreviousAcceptedFramePixels": 7649,
+          "frameNumber": 19,
+          "height": 320,
+          "nonBlackRGBPixels": 102400,
+          "pngArtifactId": "key-01-prev-down-frame",
+          "rgbaBytes": 409600,
+          "rgbaSha256": "a427e802fc7f254a2bc48159fef3af406b3e86527bb15eca5ca89e2e216c9470",
+          "totalPixels": 102400,
+          "uniqueRGBAColors": 69,
+          "width": 320
+        },
+        "rawReceiptArtifactId": "key-01-prev-down-receipt",
+        "request": {
+          "id": "prev",
+          "pressed": true,
+          "type": "button"
+        },
+        "response": {
+          "freshUARTObserved": true,
+          "parsedUART": {
+            "downTotal": 1,
+            "gpio": 2,
+            "key": "PREV",
+            "sequence": 1,
+            "state": "DOWN",
+            "upTotal": 0
+          },
+          "queueAck": {
+            "accepted": true,
+            "delivery": "queued",
+            "guestTimeSeconds": 12.818433275
+          },
+          "queueAckIsNotConsumptionProof": true
+        },
+        "sequence": 1,
+        "visibleResult": {
+          "downTotal": 1,
+          "recentEdge": "DOWN",
+          "recentEventSequence": 1,
+          "recentKey": "PREV",
+          "reviewedDuringCompletedRun": true,
+          "tfFileMatch71Bytes": true,
+          "upTotal": 0
+        }
+      },
+      {
+        "frame": {
+          "differentRGBAFromInitialPixels": 3424,
+          "differentRGBAFromPreviousAcceptedFramePixels": 8777,
+          "frameNumber": 77,
+          "height": 320,
+          "nonBlackRGBPixels": 102400,
+          "pngArtifactId": "key-02-prev-up-frame",
+          "recoveredAfterFrameGuardTimeout": true,
+          "rgbaBytes": 409600,
+          "rgbaSha256": "c11cfdd35df787ffdf0ed0ecf0b344506fc15f0869aff30eadc32d29bf0d2e06",
+          "totalPixels": 102400,
+          "uniqueRGBAColors": 85,
+          "width": 320
+        },
+        "rawReceiptArtifactId": "key-02-prev-up-receipt",
+        "request": {
+          "id": "prev",
+          "pressed": false,
+          "type": "button"
+        },
+        "response": {
+          "ackCaptureLimitation": "Fresh UART response completed; subsequent excessive frame guard timed out before queue ACK serialization. Recovered actual frame and UART support this event; queue ACK remains missing.",
+          "freshUARTObserved": true,
+          "parsedUART": {
+            "downTotal": 1,
+            "gpio": 2,
+            "key": "PREV",
+            "sequence": 2,
+            "state": "UP",
+            "upTotal": 1
+          },
+          "queueAck": null,
+          "queueAckIsNotConsumptionProof": true
+        },
+        "sequence": 2,
+        "visibleResult": {
+          "downTotal": 1,
+          "recentEdge": "UP",
+          "recentEventSequence": 2,
+          "recentKey": "PREV",
+          "reviewedDuringCompletedRun": true,
+          "tfFileMatch71Bytes": true,
+          "upTotal": 1
+        }
+      },
+      {
+        "frame": {
+          "differentRGBAFromInitialPixels": 4821,
+          "differentRGBAFromPreviousAcceptedFramePixels": 1937,
+          "frameNumber": 175,
+          "height": 320,
+          "nonBlackRGBPixels": 102400,
+          "pngArtifactId": "key-03-next-down-frame",
+          "recapturedAfterPartialPublication": true,
+          "rgbaBytes": 409600,
+          "rgbaSha256": "30e833d2ee9ca3860804bf105e0d1f662e09752ddaddf847411b9b840d81aadc",
+          "totalPixels": 102400,
+          "uniqueRGBAColors": 85,
+          "width": 320
+        },
+        "rawReceiptArtifactId": "key-03-next-down-receipt",
+        "request": {
+          "id": "next",
+          "pressed": true,
+          "type": "button"
+        },
+        "response": {
+          "freshUARTObserved": true,
+          "parsedUART": {
+            "downTotal": 1,
+            "gpio": 3,
+            "key": "NEXT",
+            "sequence": 3,
+            "state": "DOWN",
+            "upTotal": 0
+          },
+          "queueAck": {
+            "accepted": true,
+            "delivery": "queued",
+            "guestTimeSeconds": 43.9471929625
+          },
+          "queueAckIsNotConsumptionProof": true
+        },
+        "sequence": 3,
+        "visibleResult": {
+          "downTotal": 1,
+          "recentEdge": "DOWN",
+          "recentEventSequence": 3,
+          "recentKey": "NEXT",
+          "reviewedDuringCompletedRun": true,
+          "tfFileMatch71Bytes": true,
+          "upTotal": 0
+        }
+      },
+      {
+        "frame": {
+          "differentRGBAFromInitialPixels": 8574,
+          "differentRGBAFromPreviousAcceptedFramePixels": 8664,
+          "frameNumber": 213,
+          "height": 320,
+          "nonBlackRGBPixels": 102400,
+          "pngArtifactId": "key-04-next-up-frame",
+          "rgbaBytes": 409600,
+          "rgbaSha256": "3144c485b22170ee962607ca32b4937e31e52f87464eb055ee5d44e1d26285a6",
+          "totalPixels": 102400,
+          "uniqueRGBAColors": 69,
+          "width": 320
+        },
+        "rawReceiptArtifactId": "key-04-next-up-receipt",
+        "request": {
+          "id": "next",
+          "pressed": false,
+          "type": "button"
+        },
+        "response": {
+          "freshUARTObserved": true,
+          "parsedUART": {
+            "downTotal": 1,
+            "gpio": 3,
+            "key": "NEXT",
+            "sequence": 4,
+            "state": "UP",
+            "upTotal": 1
+          },
+          "queueAck": {
+            "accepted": true,
+            "delivery": "queued",
+            "guestTimeSeconds": 52.4662704
+          },
+          "queueAckIsNotConsumptionProof": true
+        },
+        "sequence": 4,
+        "visibleResult": {
+          "downTotal": 1,
+          "recentEdge": "UP",
+          "recentEventSequence": 4,
+          "recentKey": "NEXT",
+          "reviewedDuringCompletedRun": true,
+          "tfFileMatch71Bytes": true,
+          "upTotal": 1
+        }
+      },
+      {
+        "frame": {
+          "differentRGBAFromInitialPixels": 10095,
+          "differentRGBAFromPreviousAcceptedFramePixels": 2107,
+          "frameNumber": 215,
+          "height": 320,
+          "nonBlackRGBPixels": 102400,
+          "pngArtifactId": "key-05-boot-down-frame",
+          "rgbaBytes": 409600,
+          "rgbaSha256": "6d385e0e82bdb4f09974b17e13d4738e64234e41124983b46d31040a559ef927",
+          "totalPixels": 102400,
+          "uniqueRGBAColors": 69,
+          "width": 320
+        },
+        "rawReceiptArtifactId": "key-05-boot-down-receipt",
+        "request": {
+          "id": "boot",
+          "pressed": true,
+          "type": "button"
+        },
+        "response": {
+          "freshUARTObserved": true,
+          "parsedUART": {
+            "downTotal": 1,
+            "gpio": 28,
+            "key": "BOOT",
+            "sequence": 5,
+            "state": "DOWN",
+            "upTotal": 0
+          },
+          "queueAck": {
+            "accepted": true,
+            "delivery": "queued",
+            "guestTimeSeconds": 55.9595944
+          },
+          "queueAckIsNotConsumptionProof": true
+        },
+        "sequence": 5,
+        "visibleResult": {
+          "downTotal": 1,
+          "recentEdge": "DOWN",
+          "recentEventSequence": 5,
+          "recentKey": "BOOT",
+          "reviewedDuringCompletedRun": true,
+          "tfFileMatch71Bytes": true,
+          "upTotal": 0
+        }
+      },
+      {
+        "frame": {
+          "differentRGBAFromInitialPixels": 21590,
+          "differentRGBAFromPreviousAcceptedFramePixels": 17741,
+          "frameNumber": 222,
+          "height": 320,
+          "nonBlackRGBPixels": 102400,
+          "pngArtifactId": "key-06-boot-up-frame",
+          "rgbaBytes": 409600,
+          "rgbaSha256": "5b8800f9e8cf365441ae297aeb0cc306f0f738561def65b49bcba107ad2339f8",
+          "totalPixels": 102400,
+          "uniqueRGBAColors": 85,
+          "width": 320
+        },
+        "rawReceiptArtifactId": "key-06-boot-up-receipt",
+        "request": {
+          "id": "boot",
+          "pressed": false,
+          "type": "button"
+        },
+        "response": {
+          "freshFileReadAfterRelease": {
+            "crc32_le": "31b7aae7",
+            "eof": 1,
+            "lcdAlreadyActive": true,
+            "prefixBytes": 71,
+            "status": "match"
+          },
+          "freshUARTObserved": true,
+          "parsedUART": {
+            "downTotal": 1,
+            "gpio": 28,
+            "key": "BOOT",
+            "sequence": 6,
+            "state": "UP",
+            "upTotal": 1
+          },
+          "queueAck": {
+            "accepted": true,
+            "delivery": "queued",
+            "guestTimeSeconds": 61.07677239583333
+          },
+          "queueAckIsNotConsumptionProof": true
+        },
+        "sequence": 6,
+        "visibleResult": {
+          "downTotal": 1,
+          "recentEdge": "UP",
+          "recentEventSequence": 6,
+          "recentKey": "BOOT",
+          "reviewedDuringCompletedRun": true,
+          "tfFileMatch71Bytes": true,
+          "upTotal": 1
+        }
+      }
+    ],
+    "factoryOnly": false,
+    "hostReset": {
+      "exactInitialFrameMatch": true,
+      "newUartExcludedPriorKeyEvents": true,
+      "pngArtifactId": "diagnostic-reset-frame",
+      "readyAndReadObserved": true,
+      "receiptArtifactId": "diagnostic-reset-receipt",
+      "rgbaSha256": "32af322b20a2170256e26138dbd975acee0a48a8a232ce1e23ad55386d8f0b47",
+      "visibleKeyCountersAllZero": true
+    },
+    "initial": {
+      "frame": {
+        "height": 320,
+        "nonBlackRGBPixels": 102400,
+        "pngArtifactId": "diagnostic-initial-frame",
+        "receiptArtifactId": "diagnostic-initial-frame-receipt",
+        "rgbaBytes": 409600,
+        "rgbaSha256": "32af322b20a2170256e26138dbd975acee0a48a8a232ce1e23ad55386d8f0b47",
+        "totalPixels": 102400,
+        "uniqueRGBAColors": 57,
+        "width": 320
+      },
+      "read": {
+        "crc32_le": "31b7aae7",
+        "eof": 1,
+        "hostCRC32Matches": true,
+        "prefixBytes": 71,
+        "status": "match"
+      },
+      "readyObserved": true
+    },
+    "inputCard": {
+      "bytes": 67108864,
+      "crossContextTransferWasExplicitImport": true,
+      "importReceiptArtifactId": "diagnostic-ready-import-receipt",
+      "importedOnlyAfterReady": true,
+      "newDiagnosticFirmwareNamespace": true,
+      "readonlyClone": true,
+      "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a",
+      "sourceAndCloneUnchanged": true
+    },
+    "license": "MIT",
+    "mainSource": {
+      "bytes": 8001,
+      "sha256": "9dff6bf3031e9aa59a7a10df1582d61fc8bd40e0edbbdadfb0ca0a6303940df8"
+    },
+    "manufacturerExample": false,
+    "name": "c5_lcd273_diagnostic",
+    "normalReload": {
+      "exactInitialFrameMatch": true,
+      "indexeddbRestored": true,
+      "noSecondCardImport": true,
+      "pngArtifactId": "diagnostic-reload-frame",
+      "readyDiskArtifactId": "diagnostic-ready-reload-disk",
+      "readyDiskByteByByteEqual": true,
+      "readyReceiptArtifactId": "diagnostic-ready-reload-receipt",
+      "readyWithoutStart": true,
+      "receiptArtifactId": "diagnostic-reload-receipt",
+      "rgbaSha256": "32af322b20a2170256e26138dbd975acee0a48a8a232ce1e23ad55386d8f0b47",
+      "sameOrigin": true,
+      "sameOwnedContext": true,
+      "statsEmptyObject": true,
+      "subsequentGuestReadObserved": true,
+      "uartEmpty": true
+    },
+    "queueGuestTimeSemantics": "Producer queue receipt virtual seconds; not physical press duration, consumption time or latency.",
+    "readOccurrencesInAcceptedKeySequence": 2,
+    "version": "0.1.0"
+  },
+  "provenance": {
+    "derivation": "Existing completed browser report and private receipt; selected original PNGs decoded offline to RGBA8 for pixel counts. No browser, guest or build started during curation.",
+    "privateCompleteManifest": {
+      "bytesInCanonicalSerialization": 20184,
+      "canonicalization": "UTF-8 JSON of original rawArtifacts object; sort_keys=true; ensure_ascii=false; separators comma/colon; one trailing LF.",
+      "entries": 155,
+      "remoteDownloadAvailable": false,
+      "remotePublished": false,
+      "selectedEntries": 40,
+      "sha256": "0f89b464e04f9ca8ccd0249e843ed9b745cfbd767b9a35a55bb3b83ec891b9c5",
+      "unlistedEntries": 115
+    },
+    "privateOriginalReceipt": {
+      "bytes": 50575,
+      "sha256": "1c12957f6f7892e7d62df27bed2f59361c130330a996684e82481dc726ea7da1"
+    },
+    "privateOriginalReport": {
+      "bytes": 13382,
+      "sha256": "25654a2b771fc6724d49d1193295f90211d1019ecd6b31cc7c3c1ae4fda2cb30"
+    }
+  },
+  "redaction": {
+    "effect": "Input identity and recorded outcomes remain checkable against retained originals. Remote pixel/log reinspection requires access to unpublished raw captures. No raw artifact bytes or historical identity hash was replaced.",
+    "preserved": [
+      "input/source/binary hashes and byte counts",
+      "six parsed guest event sequences, responses and accepted frame identities",
+      "pixel counts derived from original PNGs",
+      "precise SD retention scope",
+      "all recorded negative observations and missing ACK limitation",
+      "anonymous cleanup result",
+      "selected original artifact identities and complete private manifest hash"
+    ],
+    "removed": [
+      "absolute local paths",
+      "process identifiers and process commands",
+      "browser session identifiers and user-agent details",
+      "server addresses and ports",
+      "unrelated inventory",
+      "full UART/console/network and DOM content",
+      "screenshots and disk/file payloads",
+      "full private 155-entry raw manifest listing"
+    ]
+  },
+  "runtimeIdentity": {
+    "browserFetchedIdentityBeforeAndAfterEqual": true,
+    "finalSourceRevision": "a17cc4736cba1be584eecc893d840a8d868d283f",
+    "futureWifiProfileResultsInherited": false,
+    "initialSourceRevision": "99d166829e5835d274a8396bbf2f294b4baa0afd",
+    "kernelRevisionLabelProvidedForCompletedRun": "e6abd2c2",
+    "newExplicitWifiCompatibilityModeEnabled": false,
+    "rom": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "runtime": "headless Chromium using wasm interpreter",
+    "servedSourceFilesByteIdenticalBetweenRevisions": {
+      "web/platform/app.js": {
+        "bytes": 115927,
+        "sha256": "23a5db67d882a9674844dacb2a665568d2ed749da30dc64d977632d3539fcf24"
+      },
+      "web/platform/hardware-diagnostics.js": {
+        "bytes": 11390,
+        "sha256": "9c695118f36f83a577938bf3e854777cab416d3ef4354ded9470a53c2c63a9b0"
+      },
+      "web/platform/runtime.js": {
+        "bytes": 117533,
+        "sha256": "9ab32df98c159db8f93635fa5249369e65dd7d645f0e0c709c1b78e0ea655b55"
+      },
+      "web/platform/sd-card-ui.js": {
+        "bytes": 6429,
+        "sha256": "2bf4f5a5c8ff4b940e700a9ef06fbb2447eec897fedd7c0d2e466a6ecbb409e4"
+      },
+      "web/wasm/worker.js": {
+        "bytes": 32962,
+        "sha256": "a563da54e5f2b64837ddb93f9ecbbf43da32a826edd1abd5700e0621924d7b00"
+      }
+    },
+    "wasm": {
+      "bytes": 8854264,
+      "sha256": "752427fc94772b948e3320fa56ec187d502fc5c537c71d7de02d74955cd86997"
+    }
+  },
+  "schema": 1,
+  "selectedRawArtifactIdentities": [
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17486,
+      "id": "diagnostic-initial-frame",
+      "kind": "png",
+      "sha256": "580417d1a488f5614246d6e90ebc6b2b5f423b90100e54ce962f9756ee1fb83c"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17998,
+      "id": "key-01-prev-down-frame",
+      "kind": "png",
+      "sha256": "7157851f030a20c4c155acbd3cfcab1ed43a4ff82fc58e4dae356023a5e673ba"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 23564,
+      "id": "key-01-prev-down-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "5cbfa734276277dd3e8e387adadb0a02b8eddc993eb0ec2392bea2b97686ee3e"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17654,
+      "id": "key-02-prev-up-frame",
+      "kind": "png",
+      "sha256": "7ea5c8a0ebd775d305334490aa42ca60f56b5b8c3470f2bfdb2164954f783b87"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 23601,
+      "id": "key-02-prev-up-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "1141b2c53e23423078d25817e19565be53162f80e7c32a52ebc3159225cfa03c"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 18049,
+      "id": "key-03-next-down-frame",
+      "kind": "png",
+      "sha256": "6775058ed5add7444d13c72d0d42f47f3054b45957687200f26f20dfb27f8b91"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 23845,
+      "id": "key-03-next-down-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "326d13d88a4c3c62628cc47d3dd0450761a8f004131fc601e3ced3366a000631"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17455,
+      "id": "key-04-next-up-frame",
+      "kind": "png",
+      "sha256": "799953839cc12cfe3168327fe67b3f587f66ab4ebd3e96b2d402b069a6d69209"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 23904,
+      "id": "key-04-next-up-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "c25bcb439db5771f4e5b6a70819bc8aad183587b79c0d43b1b534c6b6b546bf8"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17728,
+      "id": "key-05-boot-down-frame",
+      "kind": "png",
+      "sha256": "4db9968c90169673722ce6a18ec2ce0452998927b131d87f548f9520e75beec2"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 24025,
+      "id": "key-05-boot-down-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "105844e17eb47d3f22406550e7a24c9f09cbf549ccf9f2077f4b2bdf6d888249"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17361,
+      "id": "key-06-boot-up-frame",
+      "kind": "png",
+      "sha256": "4a47f9358e1ffbe5e87dbc8f0c44f746f3e7dfa3eaf3f4d83725d47d772a0131"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 24276,
+      "id": "key-06-boot-up-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "41d922cc79b1ea8c3f1358c3f711cfabd41f1de822215a6dc1a13a1f8b15d1d2"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 4952,
+      "id": "manufacturer03-uart-capture",
+      "kind": "uart-capture",
+      "sha256": "fb3fdee68e7bbe89d3c891d8b12f71598ac3494e0f2e701630b2f24bbc987ab6"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 9761,
+      "id": "manufacturer03-ready-reload-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "4f3ebfeeaac01c41530f4dc4c70585a6045f9b359dbb036f8dcbe908087208fa"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 67108864,
+      "id": "manufacturer03-after-disk",
+      "kind": "disk-image",
+      "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 67108864,
+      "id": "manufacturer03-ready-reload-disk",
+      "kind": "disk-image",
+      "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 71,
+      "id": "manufacturer03-test-file",
+      "kind": "file-content",
+      "sha256": "b0944679cf35c8ac6566d654a769567cc9292e0812cdf471e4cae1f2cd45a91c"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 216,
+      "id": "manufacturer03-fat-extraction",
+      "kind": "structured-file-analysis",
+      "sha256": "ba0889852a42523e035b63bf2eac3321ae999592c9e92b551e68a88796003c35"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 6208,
+      "id": "manufacturer02-frame",
+      "kind": "png",
+      "sha256": "ef41e3968dc8275b3521c5f204f23370de3c7a355b191715a96d41661e2fca88"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 4683,
+      "id": "manufacturer02-uart-capture",
+      "kind": "uart-capture",
+      "sha256": "23bc476389bfc79173507498a9535e180dac49e75ac303d48df7f5aae093a1af"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 21938,
+      "id": "manufacturer02-frame-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "38d6b148bd45e67f6b3c523fd9afc2ec5af1e0b85ee98a7d86ceea9fdffc091e"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 22926,
+      "id": "diagnostic-initial-frame-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "e9560bae57977cafc9ba1e7dbe07ef07b7975db6f89aab0af8cc41dd3580d8aa"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17486,
+      "id": "diagnostic-reset-frame",
+      "kind": "png",
+      "sha256": "580417d1a488f5614246d6e90ebc6b2b5f423b90100e54ce962f9756ee1fb83c"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 22851,
+      "id": "diagnostic-reset-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "99923a46d5c554c1e0cccd78b071df54e5dd0372b09e3f06e670008d851f996b"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17486,
+      "id": "diagnostic-reload-frame",
+      "kind": "png",
+      "sha256": "580417d1a488f5614246d6e90ebc6b2b5f423b90100e54ce962f9756ee1fb83c"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 22852,
+      "id": "diagnostic-reload-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "4e0e2aad8624a2842f9dfa0ec0d575dd62b28212eead40aad6cf0e80b29021ff"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 5419,
+      "id": "diagnostic-six-events-uart",
+      "kind": "uart-capture",
+      "sha256": "3bd5d17bd8a19876d8b4b0861a9bb7c34ccd3f3660b0227c3bf8fba2bb9ad78c"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 67108864,
+      "id": "diagnostic-after-inputs-disk",
+      "kind": "disk-image",
+      "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 67108864,
+      "id": "diagnostic-ready-reload-disk",
+      "kind": "disk-image",
+      "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 10511,
+      "id": "diagnostic-ready-import-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "63dc7be8614240d8b25fe2d93bd78877a741eb7819ef4f90e81b558c383e5a85"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 9755,
+      "id": "diagnostic-ready-reload-receipt",
+      "kind": "structured-raw-observation",
+      "sha256": "5e292ffc5b2fc38610dffd8406544f1ed4fe2fc7acf8c486e27a01066f416d97"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 21893,
+      "id": "negative-1-capture-1",
+      "kind": "private-observation",
+      "sha256": "57ced1af20050aec14665e83717e3ef580d0f98b4b4afa828392463194800c6d"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 151,
+      "id": "negative-2-capture-1",
+      "kind": "private-observation",
+      "sha256": "ea0b5425eeb74867a18ba081944ba1fb47ac01d5b811c3850a82fe8e25756520"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17486,
+      "id": "negative-3-capture-1",
+      "kind": "png",
+      "sha256": "580417d1a488f5614246d6e90ebc6b2b5f423b90100e54ce962f9756ee1fb83c"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 17998,
+      "id": "negative-3-capture-2",
+      "kind": "png",
+      "sha256": "7157851f030a20c4c155acbd3cfcab1ed43a4ff82fc58e4dae356023a5e673ba"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 58,
+      "id": "negative-4-capture-1",
+      "kind": "private-observation",
+      "sha256": "268e1fc0be4254066fa1efce53a39ca8e4ef99b3c06188683e7d3314a37be856"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 18196,
+      "id": "negative-5-capture-1",
+      "kind": "png",
+      "sha256": "01ea5e1fb0d03fc5508cf7dc5c0f1dd19fb20b0270064e5588473f36aa27f54f"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 776,
+      "id": "anonymous-cleanup-proof-a",
+      "kind": "private-cleanup-receipt",
+      "sha256": "04d49be2a8599438c6d901fbf8fe7af59b6dee18341bc840684bdc25f5f73f1f"
+    },
+    {
+      "availability": "private-retained-not-published",
+      "bytes": 1110,
+      "id": "anonymous-cleanup-proof-b",
+      "kind": "private-cleanup-receipt",
+      "sha256": "029381457bfa0fffd3451be2560d622291019622d2a39481cc140f7cf320d7bb"
+    }
+  ],
+  "status": "curated-local-browser-evidence",
+  "title": "C5 IDF 5.5.3 completed browser evidence summary",
+  "curationSourceSummary": {
+    "bytes": 34784,
+    "sha256": "8429ade0eca009ccd0881dfe19c9c12a6d7afe280364372ad2f84cdb9a8a1c2a",
+    "preservedInIgnoredControlDirectory": true,
+    "effect": "Only publication wording and cross-references updated; historical raw artifact hashes and measured values retained."
+  }
+}

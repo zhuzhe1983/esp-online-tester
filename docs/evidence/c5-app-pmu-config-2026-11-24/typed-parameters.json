@@ -1,0 +1,161 @@
+{
+  "factorySha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+  "romElfSha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+  "originalRodata": {
+    "file": "lcd273-app-seg0-42130020.bin",
+    "loadAddress": "0x42130020",
+    "bytes": 1904700,
+    "sha256": "c5624dfebad70d6b546025aaa1d431ef5a1ddde2f3d0b9a5a7e606a7463eef27"
+  },
+  "typedAppDisassembly": {
+    "file": "lcd273-app-seg2-42000020.bin.typed.dis",
+    "bytes": 28946111,
+    "sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45",
+    "hpInit": "0x42003452..0x42003730",
+    "lpInit": "0x42003732..0x42003856",
+    "pmuInit": "0x42003858..0x42003a6c",
+    "firstFaultStore": "0x420034be c.sw a0,0(a5) -> 0x600b0000; observed a0=0"
+  },
+  "parameterTables": [
+    {
+      "name": "hp_power",
+      "address": "0x4214ca1c",
+      "strideBytes": 12,
+      "entries": [
+        [
+          "0x00000000",
+          "0x70000000",
+          "0x80000000"
+        ],
+        [
+          "0x20000000",
+          "0x70000000",
+          "0x80000000"
+        ],
+        [
+          "0x08200000",
+          "0x1c000000",
+          "0x00000000"
+        ]
+      ]
+    },
+    {
+      "name": "hp_clock",
+      "address": "0x4214c9c8",
+      "strideBytes": 16,
+      "entries": [
+        [
+          "0xffffffff",
+          "0xffffffff",
+          "0x80000000",
+          "0x08000000"
+        ],
+        [
+          "0x00100000",
+          "0x00000200",
+          "0x40000000",
+          "0xb8000000"
+        ],
+        [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x30000000"
+        ]
+      ]
+    },
+    {
+      "name": "hp_digital",
+      "address": "0x4214c998",
+      "strideBytes": 4,
+      "entries": [
+        [
+          "0x00000000"
+        ],
+        [
+          "0x31000000"
+        ],
+        [
+          "0x39000000"
+        ]
+      ]
+    },
+    {
+      "name": "hp_analog",
+      "address": "0x4214c950",
+      "strideBytes": 12,
+      "entries": [
+        [
+          "0x02000000",
+          "0xe00478d8",
+          "0x00000000"
+        ],
+        [
+          "0x00000000",
+          "0xe0040000",
+          "0x00000000"
+        ],
+        [
+          "0x00000000",
+          "0x08040000",
+          "0x00000000"
+        ]
+      ]
+    },
+    {
+      "name": "hp_retention",
+      "address": "0x4214c910",
+      "strideBytes": 8,
+      "entries": [
+        [
+          "0x010200a0",
+          "0xffffffff"
+        ],
+        [
+          "0x00100010",
+          "0xffffffff"
+        ],
+        [
+          "0x21100200",
+          "0xffffffff"
+        ]
+      ]
+    },
+    {
+      "name": "lp_power",
+      "address": "0x4214c8d4",
+      "strideBytes": 12,
+      "entries": [
+        [
+          "0x00000000",
+          "0x50000000",
+          "0x00000000"
+        ],
+        [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000"
+        ]
+      ]
+    },
+    {
+      "name": "lp_analog",
+      "address": "0x4214c898",
+      "strideBytes": 12,
+      "entries": [
+        [
+          "0x00000000",
+          "0xe0400000",
+          "0x00000000"
+        ],
+        [
+          "0xc0000000",
+          "0x60400000",
+          "0x00000000"
+        ]
+      ]
+    }
+  ],
+  "unusedFields": "The ACTIVE analog parameter contains INIT=1 and RO-code literals; pmu_hp_system_init never calls their setters. They are not written into the device or treated as calibration.",
+  "runtimeTargets": "HP modes ACTIVE/MODEM and LP_ACTIVE replace the DBIAS target with get_act_*_dbias; unchanged virtual uncalibrated eFuse takes source default28. This is a guest computation, not a host seed."
+}

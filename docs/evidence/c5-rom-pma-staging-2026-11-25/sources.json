@@ -1,0 +1,155 @@
+{
+  "schema": 1,
+  "inheritedSourceReceipt": {
+    "path": "../c5-memory-policy-2026-11-25/sources.json",
+    "helperCommit": "845ca6696e61c48b6b7bc590ea8857acc6ff0caf",
+    "bytes": 10177,
+    "sha256": "54158245afe462ecdaf5b4989fb0ca6a49690f78c1950151801623a8078c69c7",
+    "scope": "Exact IDF5.5.3/5.5.4 csr.h and C5 cpu_region_protect.c, C5 TRM1.1 and privilege specification; existing fetch metadata retained."
+  },
+  "rom": {
+    "release": "https://github.com/espressif/esp-rom-elfs/releases/tag/20260528",
+    "file": "esp32c5_rev100_rom.elf",
+    "bytes": 472300,
+    "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+    "provenance": "Previously pinned cached release input; no new download or invented fetch time."
+  },
+  "listing": {
+    "file": "rom.dis",
+    "bytes": 4313727,
+    "sha256": "67020c332425ad8cb47dbdbb5d49c90e74b749206d0b312a9e2015ab34dbd8b3",
+    "reproduction": "RISCV_OBJDUMP -d -M no-aliases ROM_ELF",
+    "tool": "riscv32-esp-elf-objdump esp-15.2.0_20251204",
+    "scope": "Static .text instructions with ELF symbols. Full listing kept in ignored cache; PC/word pairs checked against fixture."
+  },
+  "staticWritePairs": [
+    {
+      "entry": 12,
+      "address": "140007ff",
+      "cfg": "c0000019",
+      "addressPc": "4003ab62",
+      "addressWord": "bdc79073",
+      "cfgPc": "4003ab6e",
+      "cfgWord": "bcc49073"
+    },
+    {
+      "entry": 13,
+      "address": "1000ffff",
+      "cfg": "c0000015",
+      "addressPc": "4003abb0",
+      "addressWord": "bdd79073",
+      "cfgPc": "4003abb8",
+      "cfgWord": "bcd79073"
+    },
+    {
+      "entry": 14,
+      "address": "1020ffff",
+      "cfg": "c0000019",
+      "addressPc": "4003abfa",
+      "addressWord": "bde79073",
+      "cfgPc": "4003abfe",
+      "cfgWord": "bce49073"
+    },
+    {
+      "entry": 15,
+      "address": "10bfffff",
+      "cfg": "c0000011",
+      "addressPc": "4003ac40",
+      "addressWord": "bdf79073",
+      "cfgPc": "4003ac46",
+      "cfgWord": "bcf41073"
+    },
+    {
+      "entry": 14,
+      "address": "1020ffff",
+      "cfg": "c000001d",
+      "addressPc": "4003ac92",
+      "addressWord": "bde79073",
+      "cfgPc": "4003ac9e",
+      "cfgWord": "bce79073"
+    },
+    {
+      "entry": 15,
+      "address": "10bfffff",
+      "cfg": "c0000015",
+      "addressPc": "4003ace0",
+      "addressWord": "bdf79073",
+      "cfgPc": "4003ace6",
+      "cfgWord": "bcf41073"
+    },
+    {
+      "entry": 15,
+      "address": "10bfffff",
+      "cfg": "c0000015",
+      "addressPc": "4003ad2c",
+      "addressWord": "bdf79073",
+      "cfgPc": "4003ad36",
+      "cfgWord": "bcf79073"
+    },
+    {
+      "entry": 12,
+      "address": "140007ff",
+      "cfg": "c000001d",
+      "addressPc": "4003ad44",
+      "addressWord": "bdc79073",
+      "cfgPc": "4003ad4e",
+      "cfgWord": "bcc79073"
+    },
+    {
+      "entry": 14,
+      "address": "1020ffff",
+      "cfg": "c000001d",
+      "addressPc": "4003ad58",
+      "addressWord": "bde71073",
+      "cfgPc": "4003ad5c",
+      "cfgWord": "bce79073"
+    },
+    {
+      "entry": 12,
+      "address": "140007ff",
+      "cfg": "c000001d",
+      "addressPc": "4003ad6e",
+      "addressWord": "bdc79073",
+      "cfgPc": "4003ad78",
+      "cfgWord": "bcc79073"
+    }
+  ],
+  "staticReadCheckers": [
+    {
+      "entry": 12,
+      "pc": "4003a9f4",
+      "cfg": "c0000019"
+    },
+    {
+      "entry": 13,
+      "pc": "4003aa28",
+      "cfg": "c0000015"
+    },
+    {
+      "entry": 14,
+      "pc": "4003aa5a",
+      "cfg": "c0000019"
+    },
+    {
+      "entry": 15,
+      "pc": "4003aa8c",
+      "cfg": "c0000011"
+    },
+    {
+      "entry": 14,
+      "pc": "4003aabe",
+      "cfg": "c000001d"
+    },
+    {
+      "entry": 15,
+      "pc": "4003aaf0",
+      "cfg": "c0000015"
+    },
+    {
+      "entry": 12,
+      "pc": "4003ab22",
+      "cfg": "c000001d"
+    }
+  ],
+  "interpretationLimit": "CFG A reset2/NA4 conflicts with minimum128-byte/excludes-NA4 feature text. The reset-only128B uncertainty envelope is an explicit bounded functional profile, not complete hardware WARL or NA4 support."
+}

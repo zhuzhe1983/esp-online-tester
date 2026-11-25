@@ -1,0 +1,27 @@
+# C5 shared cache access-error controls
+
+The original unchanged LCD273 ROM/factory run reached `42001118`, read `600c83d0`, and stopped with load-access cause5. The supplied integration capture records26,620,301 instructions,26,620,288 nominal cycles and2263 UART bytes. This owner change follows that boundary; it does not rerun the guest or qualify app/LCD support. The [checks receipt](checks.json) retains the capture hash and its uncommitted-integration provenance limit.
+
+Causal review withdraws the `80107aefc6abbe904edea60516f5bb950e3bed8d` assumption that operational+SHUT+TRACE1 produces RAW bit4 and a Prohibited guest access. Its15 passing tests remain a historical result; their positive synthetic fixtures encoded that assumption and did not establish it. The fixed header says SHUT disables access and describes a fail flag, while+164 mode0 does not propagate access failure. It does not establish whether a SHUT request stalls or fails. Neither LL nor the cited TRM closes that gap, and the original guest had not triggered this case. The receipt preserves the prior receipt hash and withdrawn claim.
+
+`esp_cache_err_int_init` at420010d8 disables CPU interrupt25, routes source29 to it, configures level/priority4, then performs these original requests:
+
+| Guest PC / instruction word | Register / operation |
+| --- | --- |
+| 42001118 / 4ab8 | read CACHE_TRACE_ENA600c83d0 |
+| 42001124 / cab8 | write prior value OR1 |
+| 42001128 / d7f8 | write CACHE_L1_CACHE_ACS_FAIL_INT_CLR600c816c=31 |
+| 4200112a / 57b8 | read CACHE_L1_CACHE_ACS_FAIL_INT_ENA600c8168 |
+| 42001132 / d7b8 | write prior value OR31 |
+
+The fixed IDF5.5.3 and5.5.4 cache header, LL and error-init source are byte-identical; [sources](sources.json) pin both releases. C5's shared L1-Cache CPU access-fail is bit4. The common LL mask is31, while bit2 ENA/CLR/ST is explicitly Reserved and bits0/1/3 have no fields. TRM1.1 distinguishes the4KiB ROM-cache (§6.3.2.1) and shared32KiB external cache (§6.3.3), but supplies no detailed error-register or reserved-readback rules. This change creates no ICACHE2 state or events.
+
+The owner accepts ENA values0/16 and the source's whole-word31. Only bit4 affects the modeled mask. Writing31 marks full architectural ENA readback unknown; subsequent reads return Unsupported through the existing `Option` contract. Later0/16 writes still change the known functional mask, while the readback uncertainty persists until actual cache reset. This preserves the unsupported reserved behavior without pretending that a subsequent whole-word read is known. There is no instruction-PC exception.
+
+CLR0/16/31 clears only the bit4 raw latch. CLR reads remain Unsupported. RAW reads expose the register state; all RAW writes reject, since R/WTC/SS does not justify software-set events. ST is read-only `raw & mask`; its stores have no effect. TRACE bit0 accepts0/1, and nonzero access-fail propagation mode at+164 rejects. Register-component tests seed an internal raw flag only under `cfg(test)` to check masking, clearing, retention and actual PCR reset. This stimulus makes no guest/hardware-event claim. Production has no event injection or force-IRQ API. Normal-prefix RAW remains0 because no event cause is qualified. Gated/reset MMIO retains the existing owner rejection.
+
+`observe_cpu_failure(instruction)` leaves a permitted channel unchanged and returns success. Every request blocked by SHUT, clock gating or reset returns an explicit unqualified error with all state/RAW/IRQ unchanged, including operational+SHUT+TRACE1. TRACE configuration is insufficient to establish error causality. The coherent no-line model has no resident tags, fills or dirty queues: valid synchronous backing accesses do not generate invented miss/fill errors. Performance-counter and line-engine accesses retain their prior Unsupported boundaries.
+
+`irq()` and `source()` expose the register raw/mask level and fixed `ETS_CACHE_INTR_SOURCE=29`; CPU line selection remains the guest's interrupt-matrix operation. `error_report()` explicitly reports unqualified event causality and unsupported blocked requests, together with the ENA-readback limit, without a guest MMIO read. The separate Bus integration must keep a blocked cached request at an Unsupported/ModelLimit boundary. DMA, host inspection, ordinary MMIO, translation/capacity errors and permission failures cannot inject cache events. No blocked request is translated into a claimed architectural cache-error IRQ or Prohibited outcome by this owner.
+
+Only `esp32c5/src/cache.rs`, a standalone test target and this evidence are owned. All eight pre-error-control cases remain unchanged in this causal correction. The seven error-control cases retain the original five configuration requests and reserved-readback checks, reject blocked CPU requests without events, and use explicitly internal test-only raw state for mask/clear/reset component checks. The previous15/15 result and its limitation remain in the receipt. Corrected independent tests also pass15/15 with zero filtered cases, and standalone all-targets Clippy passes with warnings denied; metadata remains one package/zero dependencies. The test target imports the actual owner file; it has no dependencies, firmware inputs, copied implementation, ignored tests or filtered cases. No emulator workspace, native guest, firmware or WASM build, benchmark, browser action, binary commit or publication is part of this correction.

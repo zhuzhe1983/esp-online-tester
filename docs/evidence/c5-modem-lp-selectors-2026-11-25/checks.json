@@ -1,0 +1,124 @@
+{
+  "checkedAtUTC": "2026-11-24T17:57:04.626786+00:00",
+  "baseCommit": "eb5234591a052db0b5e6683f6da524b21e394cab",
+  "command": "python3 docs/evidence/c5-modem-lp-selectors-2026-11-25/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\"",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "host": "aarch64-apple-darwin",
+  "ownedSourceSha256": {
+    "esp32c5/src/modem_lp_clock.rs": "d83f5bf3f2c7f355eac73c133cb23ea887bbbdc56587a9fc82ac847008e6a72e",
+    "esp32c5/src/boot_clock.rs": "86157879ddb726cb49ccee64281197f6b42df457ca269d2f431a98c2c8180e26",
+    "esp32c5/src/clock_tree.rs": "9a9c812e104f9735683b92f0b8f0ed3323497a31fa241aeee6cfc35d9117da50",
+    "docs/evidence/c5-modem-lp-selectors-2026-11-25/run-owned.py": "95590cf9e7c9dd37267b2cf8b1dcf5c4d6c34014744605d8a5deae5cae211433"
+  },
+  "result": {
+    "passed": 31,
+    "clockTests": 24,
+    "selectorTests": 7,
+    "failed": 0,
+    "ignored": 0,
+    "exitCode": 0
+  },
+  "ownedClippy": {
+    "command": "clippy-driver --edition=2021 --test \"$TASK_TMP/c5-modem-lp-harness.rs\" -o \"$TASK_TMP/clippy-tests\" -D warnings",
+    "exitCode": 0,
+    "scope": "Pure owned clock/selector components only, no Bus or firmware execution."
+  },
+  "output": "owned-tests.txt",
+  "rawOutputSha256": "594ef17e4b49f459819ca35f348434a99f49443bd294a5c9d274822b182462f9",
+  "normalizedOutputSha256": "d0d4a0a9e81330ef179485aa8a0c649cfb7c7c82099fd5d0e1b863160a8c014e",
+  "outputNormalization": "Leading/trailing blank lines stripped only.",
+  "sourcesSha256": "db103372f9705dca1a223d7a65819ed1a772d1749d0893ace73d387536651627",
+  "sourcePairs": 5,
+  "identicalPairs": 4,
+  "actualBoundary": {
+    "instructions": 24768743,
+    "nominalCycles": 24768704,
+    "uartBytes": 2194,
+    "nonzeroPixels": 0,
+    "pc": "0x42070cca",
+    "address": "0x600af00c",
+    "write": false,
+    "width": 4,
+    "mcause": 5,
+    "firstSelectorReadAccepted": false,
+    "swdRequestFeedPulse": 0,
+    "dynamicSwdValidated": false
+  },
+  "nativeReceipt": {
+    "cacheFile": "native-machine-lcd273-lp-fast-prepulse-prefix.log",
+    "bytes": 7069,
+    "sha256": "ffb04812ffc146dcbe11dcbed6d1624f184bfa507fc807bea98cb27accfe22db",
+    "source": "Parent bounded60M pre-pulse run, read only."
+  },
+  "typedDisassembly": {
+    "cacheFile": "research/isa-audit/lcd273-app-seg2-42000020.bin.typed.dis",
+    "sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45"
+  },
+  "typedSequence": {
+    "caller": "0x420031f2",
+    "wifiCall": "0x42003200 ->0x42070cc8",
+    "bleRtcCall": "0x4200320e ->0x42070b10",
+    "coexTail": "0x42003220 ->0x42070bec",
+    "clearBitsOrder": [
+      0,
+      1,
+      3,
+      2
+    ],
+    "selectorsOrder": [
+      "0x600af00c",
+      "0x600af004",
+      "0x600af008"
+    ],
+    "expectedWritesByBleCoexWifi": [
+      4,
+      4,
+      4
+    ],
+    "expectedValueFromPorAtEachStore": 0,
+    "executedHere": false
+  },
+  "functionalScope": {
+    "exactAddresses": [
+      "0x600af004",
+      "0x600af008",
+      "0x600af00c"
+    ],
+    "headerFieldMask": "0xffff",
+    "supportedWholeWords": [
+      0,
+      1,
+      2,
+      4
+    ],
+    "divider": 0,
+    "selector32kMultiReserved": "unsupported/rejected",
+    "inputsDefault": "AllNone; actual nominalraw136000/17500000/48000000 only; no fallback",
+    "selectedSource": "Pre-functional-gate observation, no RF/MAC/timer/output readiness",
+    "apb": "Caller must provide applied LP_APB permission; never infer from I2C FORCE or bootstrapNone",
+    "newClockGetters": [
+      "BootClock.rc_fast_osc_hz",
+      "BootClock.rc_slow_osc_hz"
+    ],
+    "reset": "DeclaredfunctionalLPCON policy CPU/LP retain;HP/Chip clear, not per-flop silicon guarantee",
+    "lpTimer600b0c00": "Independent and unmodified"
+  },
+  "limits": [
+    "No Bus/lib/Soc/BootAnalog/LP_TIMER product edits. Parent owns profile, module declaration, routing, actualAPB/source observations and reset dispatch.",
+    "No Cargo/native/WASM/browser/benchmark execution.",
+    "Current realrun stopped before firstselectorread; no12-store/RF/WiFi/app_main/LCD success claim.",
+    "TRM field coverage absent; generic5.5.4 refcount differences retained; fixed5.5.3 image unchanged."
+  ],
+  "staticChecks": {
+    "diffCheck": "passed",
+    "evidencePrivacy": "passed",
+    "manualPrivacyReview": "Only relevant relativepaths/publicURLs/hashes/numeric samples and commandtemplates retained.",
+    "allEvidenceFilesUnder50000Bytes": true
+  },
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

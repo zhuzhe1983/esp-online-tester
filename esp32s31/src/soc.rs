@@ -891,6 +891,7 @@ impl esp_soc::SocBus for SocBus {
 }
 
 impl Bus for SocBus {
+    fn check_atomic32(&mut self, address: u32, read: bool, write: bool) -> Result<(), Fault> { self.inner.check_atomic32(address, read, write) }
     fn reserve(&mut self, address: u32) {
         self.inner.reserve(address);
     }

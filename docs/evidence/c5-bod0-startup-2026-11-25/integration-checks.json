@@ -1,0 +1,268 @@
+{
+  "schema": 1,
+  "baseCommit": "b511e0b2",
+  "moduleCommits": [
+    {
+      "integrated": "feaed296",
+      "original": "80107aefc6abbe904edea60516f5bb950e3bed8d",
+      "scope": "Initial cache controls; SHUT error inference subsequently withdrawn."
+    },
+    {
+      "integrated": "27b2237e",
+      "original": "6fe409b63d89ad4af8106bb48bc5dc410521bd5e",
+      "scope": "Cache causal correction: every blocked request remains unsupported without new RAW/IRQ or architectural abort."
+    },
+    {
+      "integrated": "feef6d77",
+      "original": "6f0dd72efe95e9a7f9aa57b2ad3fd9ac4749023b",
+      "scope": "FROM_CPU0 source23 level."
+    },
+    {
+      "integrated": "d05d8041",
+      "original": "e0935cf3bc15aef5db38b70db9c8aab6b55695e8",
+      "scope": "I2C ENA5a8; no synthetic arbitration or timeout."
+    },
+    {
+      "integrated": "b511e0b2",
+      "original": "fd77b9ea806edce028a625e87aca8df858035e2a",
+      "scope": "BOD0 ideal stable supply and actual code7 transfer qualification."
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_brownout.rs",
+      "sha256": "06f168041cc5c56b370259fad8610285167d990c1e85c75d6f30bf91faf9dce4"
+    },
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "sha256": "9f62ad3f95c11b7821c438499fde1cb4524cbe2060898b1ecb465545380bef10"
+    },
+    {
+      "path": "esp32c5/src/cache.rs",
+      "sha256": "4503accad07739e80530826120bd3388ee6ccd97a4d0979b8aa6b61ce18c29cd"
+    },
+    {
+      "path": "esp32c5/src/software_interrupt.rs",
+      "sha256": "14d5c014effe8335c03043b6121aa6ae942d1cf319c51be5af9582ec3ce8e7b8"
+    },
+    {
+      "path": "esp32c5/src/i2c.rs",
+      "sha256": "78a20aecd82dc83b0c503db26a3889e6fd133a078a470256aeb2b6088f3e06e8"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "1f898436b8bfea5266152aef23780e485d083a9a8c9f342d43bfa5c771af5487"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "e7953c0d0609eabc2258aa2bd5b31b3cb4f3ec0f161285edd6340542f6cacfd5"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "e259e00073813ce978695bf5895f01c6b60d8f6bad094e4141f7cc56fe27cc3f"
+    },
+    {
+      "path": "esp32c5/src/startup_irq_bus_tests.rs",
+      "sha256": "6c38b0219fae89734eb309ea1f2a604eb8bf3c837c2a5d37eaa6c827032e7dc9"
+    },
+    {
+      "path": "esp32c5/src/boot_brownout_bus_tests.rs",
+      "sha256": "ccda716bea10215dc3c27adf7bb76e94fed6ebc483d7cf0d3c2a17e4ed4beb67"
+    },
+    {
+      "path": "esp32c5/tests/cache.rs",
+      "sha256": "0e6199514af28f7cd96ccb8bd984eca48b2852c8b7a6ca72328df407728b5ebf"
+    },
+    {
+      "path": "esp32c5/tests/i2c.rs",
+      "sha256": "9b9f11cc8618d1a2c5706fbcf82a8d9848b9d8db1c4e23dd7e36329d77893b38"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "log": "c5-startup-bod0-ulp-route-c5-suite.log",
+      "exitCode": 0,
+      "sha256": "20862818c5d0c4dc079279ae2a4b7f1a9f1e8db9f8bac53cd219a6f6cb6b38ee",
+      "elapsedSeconds": 18.918,
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "results": {
+        "passed": 452,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      "inputCases": [
+        "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+        "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+        "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+        "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+        "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+        "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+      ],
+      "logBytes": 48622
+    },
+    {
+      "log": "native-machine-lcd273-startup-bod0-ulp-route.log",
+      "exitCode": 0,
+      "sha256": "f21dfe89a413418901d344bc1065c70b46effb614da058cfabcaca8eaaf3ae45",
+      "elapsedSeconds": 3.573,
+      "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned prepared SD>",
+      "logBytes": 9730
+    },
+    {
+      "log": "c5-startup-bod0-ulp-route-workspace-clippy.log",
+      "exitCode": 0,
+      "sha256": "de3230390f37c010d035e2ef274209daa534453f1d864ee59a1a81e826726cb0",
+      "elapsedSeconds": 6.454,
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "logBytes": 318
+    },
+    {
+      "log": "c5-startup-bod0-ulp-route-wasm-clippy.log",
+      "exitCode": 0,
+      "sha256": "ee272a7674e351db938c1fe41cec4425314948fd099c1d89cc5c323c499b0142",
+      "elapsedSeconds": 0.877,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "logBytes": 241
+    },
+    {
+      "log": "c5-startup-bod0-ulp-route-privacy.log",
+      "exitCode": 0,
+      "sha256": "f6704185478ad6e35e414352c4bccc4bb6a63b0f7197afff6fb320d9e7589444",
+      "elapsedSeconds": 0.689,
+      "command": "node tools/check-evidence-privacy.mjs",
+      "logBytes": 130
+    }
+  ],
+  "contracts": [
+    "BOD0 is explicitly selected only with the validated ROM profile and four constant ideal3300mV rails. Code7 nominal2510mV is an approximate SDK setting, not measured or calibrated silicon. Other supply transitions and hardware-reset actions are unsupported.",
+    "BootAnalog slave61/reg5 is a real target transfer through its existing master clock/selector and ULP route. The initial byte0 is explicitly virtual, not asserted as silicon POR. Actual successful code7 write, not read/OCODE/VDET/FORCE, qualifies the threshold.",
+    "Only exact BOD control/HP RAW/ST/ENA/CLR words are owned. BOD1, existing LP interrupt controls and other analog targets keep their owners. Detection enable requires known input; disabled/unqualified RAW/ST becomes ModelLimit instead of a fabricated good rail. Source15 follows the fixed LP_RTC_TIMER enumeration.",
+    "CPU/Core retain BOD LP controls and analog threshold. LP/System clears digital BOD state while retaining the analog byte; Chip withdraws threshold qualification. Raw exit withdraws BOD before the target profile. Pending/overdue watchdog boundaries precede both BOD and target transfers, and failed observations restore Analog/SARADC/BOD state.",
+    "Cache SHUT-to-failure IRQ/abort causality is unqualified. Fetch/load and real mapped-PSRAM LR/SC/AMO uniformly stop with ModelLimit and preserve RAW/IRQ, backing, reservations, destination and guest trap CSRs. Pure raw-bit mask/clear tests use private cfg(test) state seeds only.",
+    "Known whole-word ENA31 leaves full readback unknown in both strict ROM and default SRAM Bringup. Identified error-word failures become Unsupported in both modes. Strict complete cache/PCR access settles watchdog/pending-reset barriers before reset, SHUT, trace or mask mutations.",
+    "Software source23 is delivered as a real CLIC level; the synthetic guest handler writes0 and executes mret. This proves the small fixture, not original FreeRTOS scheduling.",
+    "I2C5a8 saves documented arbitration5/timeout8 enables under the existing single-master/no-stretch controller; it does not create either event or force ACK. Real MMIO tests cover ACK/NACK/RAW/CLR/ENA."
+  ],
+  "controlCases": {
+    "startupIrqBus": 9,
+    "bodBus": 4,
+    "newI2cMmio": 3,
+    "externalCachePositive": 1,
+    "defaultBringupUnknown": true,
+    "realPsramAtomicBoundary": [
+      "LR",
+      "SC with actual earlier LR",
+      "AMO"
+    ],
+    "plainAndPricedChecked": true
+  },
+  "actualNative": {
+    "log": "native-machine-lcd273-startup-bod0-ulp-route.log",
+    "sha256": "f21dfe89a413418901d344bc1065c70b46effb614da058cfabcaca8eaaf3ae45",
+    "runSteps": 26951310,
+    "cpuInstructionCount": 26951310,
+    "nominalCycles": 26951296,
+    "uartBytes": 3415,
+    "pc": "0x4080f804",
+    "writeAddress": "0x60003000",
+    "requestedValue": "0x00040000",
+    "mcause": 7,
+    "bodControl": "0x6ffc02c0",
+    "bodThreshold": 7,
+    "bodHpEnable": "0x80000000",
+    "bodRaw": 0,
+    "bodIrq": false,
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "description": "Original factory executes BOD initialization under the declared ideal input, then stops at the next unsupported SPI1 user transaction. No firmware/ROM bytes or host PC changed.",
+    "logBytes": 9730
+  },
+  "readOnlyMspiTrace": {
+    "log": "native-machine-lcd273-startup-bod0-mspi-trace.log",
+    "sha256": "6e5e0e09c64af7104baa85e506d4235ec8aa68143e14946e16633a612e2117ab",
+    "command": "C5_FACTORY_TRACE_MSPI=1 C5_FACTORY_TRACE_PCS=4080f804 cargo run --release -p esp32c5 --example factory_machine -- <same pinned arguments>",
+    "effect": "Bounded observation only; no bus reads/writes, stop decisions or PC changes. Same steps/cycles/UART boundary.",
+    "actualRequest": {
+      "opcode": "0x5a",
+      "address": "0x000032",
+      "addressBits": 24,
+      "dummyCycles": 8,
+      "misoBits": 8,
+      "mosiBits": 0,
+      "lanes": "STR1-1-1",
+      "chipSelect": 0,
+      "previousJedecBytes": [
+        "20",
+        "40",
+        "19"
+      ],
+      "functionalHz": 80000000
+    },
+    "logBytes": 12723
+  },
+  "reviews": [
+    {
+      "sha256": "9e1c29bf7153abd862e1a8f23d9e10d8e74c4d0fd109d39b899c0741d09e7f7c",
+      "scope": "Cache three causal/Unknown/reset roots (including atomic probe) repaired; read-only source review, no independent execution."
+    },
+    {
+      "sha256": "9ddc81048f6a10832c6309d97ac2cfa9c90b2e5016e2dfd5fd8a16561876a937",
+      "scope": "BOD0 source/glue,8 final source hashes and452 logs checked read-only; no openP1/P2 in scope, not product acceptance."
+    }
+  ],
+  "negativeResults": [
+    {
+      "log": "c5-startup-irq-c5-suite.log",
+      "sha256": "4a8d2899e1e0377a9cc273becc5e16cd1d6b32a401e63f943ab5b3952dbcc467",
+      "description": "Old external cache test still listed newly supported3d0 as absent; other negative assertions retained and a positive/reserved/RAW/reset case added.",
+      "logBytes": 38449
+    },
+    {
+      "log": "c5-startup-irq-cache-contract-c5-suite.log",
+      "sha256": "7d2f3fab9d1e4600eaf33583c4f4a772c85f9ad8969da9cbcb48e23d3d31c3ed",
+      "description": "430 tests passed before independent review found unqualified cache causality, off-mode Unknown and pending-reset gaps; passing result did not prove these semantics.",
+      "logBytes": 46367
+    },
+    {
+      "log": "c5-startup-irq-causal-fix-c5-suite.log",
+      "sha256": "c016414061a2ce7718fc764a1a2f1bd3f14cc2b49acbb6c495faa75372a47e0b",
+      "description": "New atomic fixture initially failed RustE0716 from a temporary array; fixed with a local binding without production semantics changes.",
+      "logBytes": 845
+    },
+    {
+      "log": "c5-startup-bod0-c5-suite.log",
+      "sha256": "20c73320ff39f68bb6d17fbe40441a32942162a0e901dbd57797a7010d14b229",
+      "description": "378 tests passed and4 new BOD fixtures failed because their setup used PLL_ROUTE00ffff7f instead of ULP_ROUTE00fffeff. Setup corrected and a wrong-route rejection added; production qualification unchanged.",
+      "logBytes": 40280
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "limits": [
+    "No app_main/LCD/buttons/TF or original FreeRTOS acceptance. No WiFi/PHY/dynamic-voltage/hardware-reset/physical calibration claim.",
+    "Focused LTO=false checks do not replace final default-LTO full-workspace CI, identical-work CPU controls, production WASM/browser or fresh acceptance.",
+    "Raw logs/private paths/process details are excluded; compact facts, relative artifact names, hashes and aggregate elapsed times are retained."
+  ]
+}

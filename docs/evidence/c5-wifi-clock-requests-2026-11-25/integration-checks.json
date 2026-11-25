@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "sourceBase": "fa520550",
+  "moduleCommit": {
+    "integrated": "fa520550",
+    "original": "c042a56905082716b8ca00536f5aed9bb5f826dc"
+  },
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/modem_wifi_clock.rs",
+      "sha256": "12f3463b26b3c10006174df6b54d803fdc54f393628147093841526a98f4e4c6"
+    },
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "sha256": "a02965bcef960f51caf70be17856f0c97d5370158d4ca18c9c1a74e24f685bac"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "024c1e601d97569a29d7ab8d6dc7805aef355a9b0cc45677b143bd90155f6bb0"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "8268fc4ccc4b333b7dbf190098435b48568ada888c9705f4ad902bc6b2698d77"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "948f303d69a7f56f55e6e03b9233067a592bd943da71a777cff67aa84dff0e60"
+    },
+    {
+      "path": "esp32c5/src/modem_wifi_bus_tests.rs",
+      "sha256": "4c4db8c530ba066fd6d6b1cef417ee5bc8c807e7ba6fcc54c31c2aabd0834d38"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "timingInterpretation": "Diagnostic durations, not controlled performance samples."
+  },
+  "checks": [
+    {
+      "log": "c5-wifi-clock-mac-frontier-integration-c5-suite.log",
+      "exitCode": 0,
+      "sha256": "87997475367b2be847d0d6403401ffbdaa198f0f8636dfa7f90755641672eae5",
+      "elapsedSeconds": 41.485,
+      "bytes": 60369,
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "results": {
+        "passed": 567,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      },
+      "inputCases": [
+        "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+        "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+        "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+        "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+        "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+        "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+      ]
+    },
+    {
+      "log": "native-machine-lcd273-wifi-clock-mac-frontier-integration.log",
+      "exitCode": 0,
+      "sha256": "4fd28a9c02c00ab0590e5402c166d08e48cd25b29989453f6faa4bcdc5023979",
+      "elapsedSeconds": 5.204,
+      "bytes": 13581,
+      "command": "C5_FACTORY_TRACE_USB=1 C5_FACTORY_TRACE_PCS=40800db0,40800d2a,40800d32,40800d4e,40800c70,40800c8a,420cdf36,420cdfc8,420e3fb2,40814bc8,420edf6c,421216ee,4080a1e4,4200aebe cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned SD>"
+    },
+    {
+      "log": "c5-wifi-clock-mac-frontier-integration-workspace-clippy.log",
+      "exitCode": 0,
+      "sha256": "3ff48fbad319abfe339f4593f87987308d0f88b4ea40d465029fb9436d9da254",
+      "elapsedSeconds": 4.94,
+      "bytes": 318,
+      "command": "cargo clippy --workspace --all-targets -- -D warnings"
+    },
+    {
+      "log": "c5-wifi-clock-mac-frontier-integration-wasm-clippy.log",
+      "exitCode": 0,
+      "sha256": "3854eec2f90dd0666e2da93f735019e0d2e4b93c59e00d71ded22793360b0d39",
+      "elapsedSeconds": 0.847,
+      "bytes": 241,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings"
+    },
+    {
+      "log": "c5-wifi-clock-mac-frontier-integration-privacy.log",
+      "exitCode": 0,
+      "sha256": "6a021a3ca0776f3d0ddd7b7f84ef131dd234e40d2b199570d56b929e60f0c0c2",
+      "elapsedSeconds": 1.098,
+      "bytes": 130,
+      "command": "node tools/check-evidence-privacy.mjs"
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "actualNative": {
+    "log": "native-machine-lcd273-wifi-clock-mac-frontier-integration.log",
+    "sha256": "4fd28a9c02c00ab0590e5402c166d08e48cd25b29989453f6faa4bcdc5023979",
+    "runSteps": 44199490,
+    "cpuInstructionCount": 44199490,
+    "nominalCycles": 44199486,
+    "uartBytes": 4536,
+    "stop": "ModelLimit",
+    "pc": "0x408142c6",
+    "readAddress": "0x600ad858",
+    "width": 4,
+    "preservedTrapCsrs": {
+      "mepc": "0x40802bec",
+      "mcause": "0x80000013",
+      "mtval": "0x00000000"
+    },
+    "appMainEntered": true,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "wifiClockStores": [
+      {
+        "pc": "0x40800d32",
+        "nominalCycle": 44199294,
+        "sourceRegister": "a5",
+        "requestedValue": 1024
+      },
+      {
+        "pc": "0x40800d4e",
+        "nominalCycle": 44199358,
+        "sourceRegister": "a5",
+        "requestedValue": 1028
+      },
+      {
+        "pc": "0x40800c70",
+        "nominalCycle": 44199358,
+        "sourceRegister": "a5",
+        "requestedValue": 1540
+      },
+      {
+        "pc": "0x40800c8a",
+        "nominalCycle": 44199358,
+        "sourceRegister": "a4",
+        "requestedValue": 2047
+      }
+    ],
+    "wifiOsiCaller": "0x420e3fb2",
+    "macInitStateMachineEntered": "0x40814bc8",
+    "macWordDataReturned": false
+  },
+  "contracts": [
+    "Only C5 MODEM_SYSCON CLK_CONF1 at600a9c14. Header POR0; independent groups400/4/200/1fb give16 configurations. BB_MISC only0/full group; named FE/BT11..21 and reserved22..31 remain unsupported.",
+    "Actual MODEM_APB accessibility comes only from existing applied BootAnalog permissionsSome&1. WIFI_APB bit10 cannot supply its own grant. Missing/withdrawn provider rejects before read/write or allocation; previously accepted requests remain latched.",
+    "Getter/report are requests only: no effective Hz, WiFi APB engine, MAC/PHY/RF readiness, calibration result, IRQ, event, new advance or deadline work. Old I2C/160MHz/PLL/BOD/SAR behavior is unchanged.",
+    "Exact clock accesses require validated ROM and no earlier pending reset. Old watchdog service precedes partial refusal. CPU reset retains, HP/Chip clear and raw exit drops the optional owner. Strict owned refusals are ModelLimit; adjacent/off-profile words retain prior mapping.",
+    "Four clock fixtures cover provider withdrawal/no self-grant, actual13-instruction four-group RMW under plain/UnitCost, unsupported groups/partial/closed-provider CSR preservation, reset/raw transitions and watchdog precedence.",
+    "MAC600ad858 has no qualified whole-word data contract. The strict exact boundary always rejects after old watchdog service: no0, ACK, MAC allocation, guessed state or fabricated guest access exception. No neighboring MAC address is newly handled.",
+    "Two frontier fixtures check actual LW/SW/SB under plain/UnitCost, destination/CSR/owner preservation, neighboring/off-profile mapping and watchdog precedence. This is error classification for missing hardware, not a MAC implementation."
+  ],
+  "reviews": [
+    {
+      "sha256": "b2aec04623a2be6431444fa53026ced49970285d1e048f06172c9b10a1d2f9ad",
+      "scope": "Nine stable fingerprints before exact MAC-frontier classification; no P1/P2, source-only."
+    },
+    {
+      "sha256": "eeccf9a5f07182611436b0f97a932258fa4e5af9bfef2022a2b9d2280bf14cb7",
+      "scope": "Six stable source fingerprints after exact unsupported boundary/two fixtures; no P1/P2, no runtime prefilled."
+    }
+  ],
+  "retainedPriorBoundary": {
+    "log": "native-machine-lcd273-wifi-clock-requests-integration.log",
+    "bytes": 13556,
+    "sha256": "1d81dad5d60d9d79f47a763dbaae207b8a5220f52a974529611d18bdf6e38a93",
+    "runSteps": 44199490,
+    "cpuInstructionCount": 44199490,
+    "nominalCycles": 44199486,
+    "uartBytes": 4536,
+    "pc": "0x408142c6",
+    "readAddress": "0x600ad858",
+    "mcause": 5,
+    "description": "Earlier known unimplemented MAC read was classified as a guest access fault. The exact new classification stops the model without returning data or changing guest CSR state."
+  },
+  "publicMacCoverage": {
+    "sha256": "16d9a9cc683fe28ca71df15e291eaded15e41bb4988659373274df8eeda69a37",
+    "idfFirmware": "5.5.3 @2c211b236707889e8400c4dc5644dd5c4ee071e0",
+    "idfComparison": "5.5.4 @735507283d5b2f9fb363a1901172dbd9e847945d",
+    "findings": [
+      "C5 TRM1.1 Table6.3-2 p246 marks6009b000..600affff Reserved with no MAC field/POR table. Its p1742 reserved-field advice gives no default for this word.",
+      "Fixed C5 wdev_reg.h exposes RNG only; modem/reg_base.h exposes SYSCON/LPCON, not this MAC block.",
+      "Genuine ROM symbols tsf_hal_set_tbtt_soc_wakeup_enable40008fa6/disable4000900e use slot0 bit29 in600ad858: a TBTT SoC wakeup configuration candidate, without whole-word POR/access/readback/ready/event timing."
+    ],
+    "sources": [
+      {
+        "title": "C5 TRM1.1",
+        "url": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+        "bytes": 14650675,
+        "sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240"
+      },
+      {
+        "title": "Fixed C5 wdev_reg.h",
+        "url": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/include/soc/wdev_reg.h",
+        "bytes": 277,
+        "sha256": "7a0cdf6fc660847f8868435270c7ddb21ea84d44c356914a5b8cc8ad1230f4c2"
+      },
+      {
+        "title": "Fixed C5 ROM pp exports",
+        "url": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/esp_rom/esp32c5/ld/esp32c5.rom.pp.ld",
+        "bytes": 17006,
+        "sha256": "d0e252f19ea67db95babca89dc9992bb21d43ea8ab3081a192d71e21fea3dc30"
+      },
+      {
+        "title": "Original application typed listing",
+        "bytes": 1525607,
+        "sha256": "4696bac57e7e7a848e73c86de7d0513c81e6ce5ec3e9483e41f6866b3cc7ba41",
+        "scope": "Store source registers: a5 at d32/d4e/c70, a4 at c8a."
+      }
+    ]
+  },
+  "negativeResults": [],
+  "limits": [
+    "Original firmware remains blocked before LCD/buttons/SD commands/FAT/persistence/WiFi functionality. No product acceptance or C5 publication.",
+    "ROM symbols and paired RMW cannot justify guessed readback or RF/CAL ready. Later MAC/PHY operations remain static candidates.",
+    "No original input patches, PC jumps, function hooks, forced ACK/ready or host drawing.",
+    "Focused LTO=false checks do not replace final default-LTO full workspace/retained CI/CPU controls/current production WASM/browser/independent product acceptance."
+  ],
+  "curation": {
+    "kept": "Revisions, hashes, commands, bounded stores/counts, prior boundary and limitations.",
+    "omitted": "Raw UART/register/test streams, binary inputs, full SDK/ROM listings and local identities remain outside Git.",
+    "numericOrHistoricalHashesChanged": false
+  },
+  "productionWasmBuild": {
+    "command": "CARGO_BUILD_JOBS=1 sh tools/wasm-build.sh (CARGO_TARGET_DIR and CARGO_PROFILE_RELEASE_LTO unset)",
+    "exitCode": 0,
+    "log": "c5-567-production-wasm-build.log",
+    "logBytes": 1304,
+    "logSha256": "e1fb532e124c5d5fa59abd170f23615c10ecf539a8622629f44697b2dc09fed4",
+    "elapsedSeconds": 53.855,
+    "artifact": {
+      "path": "web/wasm/esp32sim.wasm",
+      "bytes": 8846328,
+      "sha256": "85c451d202bbad9df5ee438d95cc87107960e40bf58a6d53c0277065b0fdfd32"
+    },
+    "validationLimit": "Successful default-release build only; ABI/worker/browser results are separate and not prefilled."
+  }
+}

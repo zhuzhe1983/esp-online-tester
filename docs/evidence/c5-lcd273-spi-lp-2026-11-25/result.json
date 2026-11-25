@@ -1,0 +1,272 @@
+{
+  "schema": 1,
+  "source": {
+    "parentCommit": "e9cfda37",
+    "mainPreserved": "5492cc4c",
+    "files": {
+      "esp32c5/src/bus.rs": {
+        "bytes": 59880,
+        "sha256": "41176e3599c3d7e9883ee69a0aae57dc8779625c5122aa1bc7bd7dca442b9784"
+      },
+      "esp32c5/src/lib.rs": {
+        "bytes": 5692,
+        "sha256": "54d8af14e02b8b3ee91b6db93aa525cdb539565b317bb6127ab5cddb77437364"
+      },
+      "esp32c5/src/transport.rs": {
+        "bytes": 14401,
+        "sha256": "2e32d5e76b5d225f7a24a9130356831c1969c94d555b0c521f84071c91d1b529"
+      },
+      "esp32c5/src/transport_clock_tests.rs": {
+        "bytes": 16049,
+        "sha256": "857a4874ff7835cff28d212e691f75545b86464ad7ef5bb2340c59aff5df25b2"
+      },
+      "esp32c5/src/lp_pad_mux_bus_tests.rs": {
+        "bytes": 2610,
+        "sha256": "ddc8076b5d7986a8c249e14361502507d8bef23c0cf46c4635b4a7e0d165ef6f"
+      },
+      "esp32c5/examples/factory_machine.rs": {
+        "bytes": 5834,
+        "sha256": "5fa402fd700fb11f56f2b6cc8dd0561281b7dece0431e94d91d6d27b0f1c6570"
+      }
+    }
+  },
+  "scope": {
+    "spi": "Allow all inactive DMA slave-segment clear-policy combinations19/20 in master mode with segment18 off. No transfer, RX, IRQ or clock completion bypass.",
+    "lpAon": "600b1028 is LP_AON_GPIO_MUX, SEL[7:0] POR0=HP. Only existing all-HP zero state/fullword zero writes; no active LP pads/clock/IRQ engine.",
+    "diagnostic": "Optional native C5_FACTORY_TRACE_SPI snapshots only, no MMIO/event/device calls."
+  },
+  "commands": {
+    "tests": "CARGO_BUILD_JOBS=8 CARGO_PROFILE_RELEASE_LTO=false CARGO_TARGET_DIR=<isolated target> C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+    "native": "factory_machine waveshare-c5-lcd273 32 8 <pinned ROM> <unchanged reference merged> 250000000 <read-only original64MiB card input>",
+    "clippy": [
+      "cargo clippy --workspace --all-targets -- -D warnings",
+      "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings"
+    ]
+  },
+  "checks": [
+    {
+      "log": "c5-spi-lp-integration-c5-suite.log",
+      "bytes": 62008,
+      "sha256": "b39edb69b046e0451cd3709789943f2c94548aa195e4e5c1b846d86612e83682",
+      "exitCode": 0,
+      "elapsedSeconds": 11.437
+    },
+    {
+      "log": "native-lcd273-idf553-03-sd-card-lp-integration.log",
+      "bytes": 11326,
+      "sha256": "ad401e265f939802bdb188222f4773edfcefeb89a0c88830ba7dd6c7afe19855",
+      "exitCode": 0,
+      "elapsedSeconds": 2.498
+    },
+    {
+      "log": "native-original-factory-spi-lp-integration.log",
+      "bytes": 11700,
+      "sha256": "b61a1d4fc768e31739f03da09e03f9d8755533962c111921426c5f7887a0a2fa",
+      "exitCode": 0,
+      "elapsedSeconds": 4.011
+    },
+    {
+      "log": "c5-spi-lp-integration-workspace-clippy.log",
+      "bytes": 1508,
+      "sha256": "e8c4c6966bc9af36877c7c28a1bfeb7cb42d44b03e9090642bd8276c2b6f6acb",
+      "exitCode": 0,
+      "elapsedSeconds": 4.404
+    },
+    {
+      "log": "c5-spi-lp-integration-wasm-clippy.log",
+      "bytes": 1330,
+      "sha256": "762c8bb7124ac2cd8aa1c820f394fcaa35f948a39dd9124ffe7ea07804203a54",
+      "exitCode": 0,
+      "elapsedSeconds": 2.595
+    }
+  ],
+  "focusedC5": {
+    "passed": 583,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "developerInputs": 6
+  },
+  "componentChecks": {
+    "spi": {
+      "log": "c5-spi-master-policy-focused.log",
+      "bytes": 2142,
+      "sha256": "d1f388f3787fa1004a31ec25eb702e4eed93709fc57ec169946be2aa41d5e004",
+      "exitCode": 0,
+      "elapsedSeconds": 10.728
+    },
+    "spiPassed": 16,
+    "newSpiCases": 5,
+    "lpMux": {
+      "log": "c5-lp-pad-mux-focused.log",
+      "bytes": 762,
+      "sha256": "bc436879b674947469f2fe0b298f9cbaca10df3e69ea39b8ae0059096019aa06",
+      "exitCode": 0,
+      "elapsedSeconds": 10.778
+    },
+    "lpMuxPassed": 3
+  },
+  "actualUnchangedReferences": {
+    "manufacturerCommit": "418de818f4f40c5a04c4292dbe293bfaa1351068",
+    "sdkCommit": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+    "gcc": "esp-14.2.0_20251107 /14.2.0",
+    "sdMergedSha256": "0f6d7646eaba88caab4708db719412a0b7b261d7cc18c8d601116a7c7c902308",
+    "displayMergedSha256": "16b8762fb108bf8b305d84a9182d1ce7967f0eb94a2204950ae3441653131eb4",
+    "notFactoryOnly": true
+  },
+  "nativeSd": {
+    "log": {
+      "name": "native-lcd273-idf553-03-sd-card-lp-integration.log",
+      "bytes": 11326,
+      "sha256": "ad401e265f939802bdb188222f4773edfcefeb89a0c88830ba7dd6c7afe19855"
+    },
+    "stop": "MaxInsns",
+    "firstFault": null,
+    "runSteps": 250000000,
+    "cpuInstructionCount": 250000000,
+    "nominalCycles": 250000000,
+    "uart": {
+      "bytes": 4952,
+      "sha256": "fb3fdee68e7bbe89d3c891d8b12f71598ac3494e0f2e701630b2f24bbc987ab6"
+    },
+    "observedGuestBranches": [
+      "app_main",
+      "mount /sdcard success",
+      "write71/fclose",
+      "read71/ferror and length/memcmp success",
+      "TF CARD TEST PASS",
+      "returned from app_main"
+    ],
+    "payloadBytes": 71,
+    "expectedPayloadSha256": "b0944679cf35c8ac6566d654a769567cc9292e0812cdf471e4cae1f2cd45a91c",
+    "sdImageExportedByNativeProbe": false,
+    "individualPhysicalMisoReadbackNotEstablished": true
+  },
+  "nativeDisplay": {
+    "log": {
+      "name": "native-lcd273-idf553-02-lvgl-demo-lp-aon-mux.log",
+      "bytes": 11844,
+      "sha256": "62ec31ea825c16eb4c9e2903231b3b525d8b1843fed5cc2052bcaab5afe1233b"
+    },
+    "stop": "MaxInsns",
+    "firstFault": null,
+    "requestedBudget": 250000000,
+    "runSteps": 250000061,
+    "cpuInstructionCount": 250000061,
+    "nominalCycles": 250000061,
+    "budgetNote": "Machine scheduler quantum may overshoot requested dispatched-step budget; exact reported values retained. Not retired-instruction counts.",
+    "uart": {
+      "bytes": 4683,
+      "sha256": "23bc476389bfc79173507498a9535e180dac49e75ac303d48df7f5aae093a1af"
+    },
+    "nonzeroFramebufferPixels": 102135,
+    "observedGuestBranches": [
+      "app_main",
+      "ILI9488 Initialization complete",
+      "IoT Button4.1.7 registration",
+      "LVGL task started",
+      "backlight request",
+      "returned from app_main"
+    ],
+    "spiStillPendingAtStop": true,
+    "visualScreenshotChecked": false,
+    "buttonUiResponseVerified": false,
+    "notAPerformanceBenchmark": true
+  },
+  "retainedNegativeBoundaries": {
+    "bothInitialUsr": {
+      "sd": {
+        "bytes": 11184,
+        "sha256": "ca58dfc344b9b5496e61ae55f37408355d3c844f33ec48e3f8b33c1b1d0fcaed"
+      },
+      "display": {
+        "bytes": 11285,
+        "sha256": "dd57a383795003a6c91fcffc34d33e19628234c0a7cccc18f0d8bc0386c27101"
+      },
+      "write": "60081000=01000000 USR24",
+      "inactivePolicyBits": "DMA_CONF19/20 set,18 clear; other observed byte/master/clock guards valid"
+    },
+    "coldDiagnosis": {
+      "sd": {
+        "bytes": 11948,
+        "sha256": "006bd08f09080815bd382c19c7c35f1b935cebc8d632bac2d954e2d652dbc713"
+      },
+      "display": {
+        "bytes": 12049,
+        "sha256": "129bc626ca2c83cd07c6d28c9f3460b6ac92f5e29918e2dc4377244a5395ed1f"
+      },
+      "sourceHz": 160000000,
+      "controllerHz": 80000000,
+      "dmaWords": [
+        "18180003",
+        "10180003"
+      ]
+    },
+    "initialLpMux": {
+      "raw": {
+        "bytes": 12123,
+        "sha256": "d3b6ea49f31a636f0c09a26b086030e13389ef425ac6b96852f1f25fc8f880dd"
+      },
+      "pc": "42052e46",
+      "readAddress": "600b1028"
+    },
+    "actualPadIndex": {
+      "raw": {
+        "bytes": 12260,
+        "sha256": "69bdbc649fa57c6b303e644b96e1c62f976234a4782265fc799cced5486580c6"
+      },
+      "s0": 2,
+      "a2": 2,
+      "gpio": 2,
+      "rtcIndex": 2,
+      "correction": "Initial BOOT28 attribution was an unverified hypothesis; actual call belongs to PREV GPIO2. GPIO28 remains HP-only."
+    }
+  },
+  "sourceReviews": {
+    "c5-spi2-config-update-contract.md": {
+      "bytes": 15918,
+      "sha256": "bcbdad104eeb9610501f6fdfd4826ea7b0f3814a0e64972414bdf2fe2b924e46"
+    },
+    "c5-spi-master-policy-review.md": {
+      "bytes": 6758,
+      "sha256": "d48c413b56bb79162503341e2a3a974d87aaecfe9ec68950dec59f1f1a76c44d"
+    },
+    "c5-lcd273-boot-pad-lpio-contract.md": {
+      "bytes": 11737,
+      "sha256": "f8c571c3db33ca936cb032729dcc6fb19fd7e2ffc7fa05dfef034f9db7b8c75c"
+    },
+    "c5-lp-aon-mux-review.md": {
+      "bytes": 6039,
+      "sha256": "8a9ff424a200deaec71a7ae52b721929e6e13e1df175eb1874e83fe99c6df041"
+    }
+  },
+  "unchangedOriginalFactory": {
+    "stop": "ModelLimit",
+    "pc": "408142c6",
+    "read": "600ad858",
+    "runSteps": 44199490,
+    "cpuInstructionCount": 44199490,
+    "nominalCycles": 44199486,
+    "uartBytes": 4536,
+    "uartSha256": "f6aae87b2bcd45efc1595ba51ae1ebfb76331b3d9a95fefcf0b848357f0f79ad",
+    "originalUiAccepted": false
+  },
+  "remainingGates": [
+    "New production WASM and actual worker reference execution/exported-card verification",
+    "Real browser framebuffer/input/reset/persistence verification",
+    "Full default-release combined native workspace and controlled main CPU comparisons",
+    "Original factory private WiFi MAC remains unsupported; no full factory acceptance",
+    "Curated history/main integration, publication and Pages confirmation"
+  ],
+  "limits": [
+    "SPI UPDATE23 configuration shadow synchronization remains a separate existing limitation; USR24 is a real transfer.",
+    "No active slave/segment/QPI/DDR/subbyte/overflow/unknown-clock modes were enabled. Missing DMA data still waits without fabricated bytes/done.",
+    "Native SD pass executes guest source success branch; FATFS caching means it does not prove every payload byte traversed MISO again. No exported card/browser durability claim yet.",
+    "Framebuffer nonzero count proves guest-written buffer content, not a completed visual/UI/button test.",
+    "Only zero LP mux state exists, so general LP pad ownership and physical reset/retention are unimplemented."
+  ],
+  "goldensRegenerated": false,
+  "productAccepted": false,
+  "published": false,
+  "curation": "Raw stdout/register/UART/pixel/process streams remain ignored. Commit retains fixed inputs/sources, numeric values, failures, hashes and scope; personal paths/identities omitted. No historical value/hash rewritten."
+}

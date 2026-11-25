@@ -1,0 +1,261 @@
+{
+  "schema": 1,
+  "kind": "c5-validated-rom-internal-scalar-unaligned",
+  "source": {
+    "parentCommit": "528c68d9",
+    "files": {
+      "esp32c5/src/bus.rs": {
+        "bytes": 59245,
+        "sha256": "75e23bdd50b9ff3ddadfe0fcf9eea2a8ceedd15abeb4c9a12abe585b4900fa54"
+      },
+      "esp32c5/src/lib.rs": {
+        "bytes": 5653,
+        "sha256": "f58004d9fdf7681ab92b357810cbcd7150d55d1ca326eb5de1e4e8c8ab0e52a7"
+      },
+      "esp32c5/src/unaligned_bus_tests.rs": {
+        "bytes": 6485,
+        "sha256": "4bbe9217b8a0910a7b536888d24858cf50f67f192dd063ad0834c95944dafa89"
+      }
+    },
+    "baselineImplementation": "95da422c",
+    "scope": "C5 only; ordinary data spans wholly in one internal backing, validated-ROM profile only. No firmware/PC/SDK whitelist."
+  },
+  "hardwareSource": {
+    "trmVersion": "1.1",
+    "section": "HP2.12.1.2, printed p123",
+    "url": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+    "pdfBytes": 14650675,
+    "pdfSha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "precision": "Functional little-endian scalar memory effects; no physical splitting latency, asynchronous error pipeline or hardware memory-counter model. LP counters are not used as HP evidence."
+  },
+  "focusedChecks": {
+    "command": "CARGO_BUILD_JOBS=8 CARGO_PROFILE_RELEASE_LTO=false CARGO_TARGET_DIR=<isolated target> C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+    "passed": 575,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "developerInputsIncluded": 6,
+    "checks": [
+      {
+        "log": "c5-internal-unaligned-c5-suite.log",
+        "bytes": 61175,
+        "sha256": "a8578c5a93826b03b6aae662b38840bc0a8cec8501776dd21538806bc0283eae",
+        "exitCode": 0,
+        "elapsedSeconds": 11.346
+      },
+      {
+        "log": "native-machine-lcd273-internal-unaligned.log",
+        "bytes": 11700,
+        "sha256": "b61a1d4fc768e31739f03da09e03f9d8755533962c111921426c5f7887a0a2fa",
+        "exitCode": 0,
+        "elapsedSeconds": 4.032
+      },
+      {
+        "log": "c5-internal-unaligned-workspace-clippy.log",
+        "bytes": 318,
+        "sha256": "bf6de3526bcebf50acb6d82da539916e9b7b9fc0f901a0354b06837175dcf4ce",
+        "exitCode": 0,
+        "elapsedSeconds": 1.147
+      },
+      {
+        "log": "c5-internal-unaligned-wasm-clippy.log",
+        "bytes": 241,
+        "sha256": "2e7a578b4f42702943c94efe6db3a60aa1b8d5f1e9742ae9d1db90a0ea0c9135",
+        "exitCode": 0,
+        "elapsedSeconds": 0.727
+      }
+    ]
+  },
+  "ownedTests": {
+    "passed": 8,
+    "scope": [
+      "Halfword/word byte lanes in synthetic ROM/HP SRAM/LP SRAM backings",
+      "Little-endian stores and unchanged neighbors",
+      "Actual GCC15 packed-header LHU instructions in plain/priced execution",
+      "Signed load extension and real guest stores",
+      "Whole-span PMP rejection with original bytes retained",
+      "Unknown PMA ModelLimit with guest CSRs/data registers retained",
+      "Unsupported MMIO/cache/cross-backing spans before device or partial-memory effects",
+      "Fetch halfword alignment, natural-alignment atomic guards and unselected legacy behavior"
+    ],
+    "final": {
+      "log": "c5-internal-unaligned-focused-final.log",
+      "bytes": 1256,
+      "sha256": "682ad5a420192b105ee4576e6c44c0f39cae16a013013e33a841eafd77959cc2",
+      "exitCode": 0,
+      "elapsedSeconds": 10.545
+    },
+    "retainedEarlierFailures": [
+      {
+        "log": "c5-internal-unaligned-focused-initial.log",
+        "bytes": 8284,
+        "sha256": "83be6186361ae474c97ad7a2af338ebde5819099278e015f08d58fe6ac97749d",
+        "exitCode": 101,
+        "elapsedSeconds": 1.444,
+        "explanation": "Test compilation failed: missing trait import and incorrect Machine Stop assertion API. No runtime case executed."
+      },
+      {
+        "log": "c5-internal-unaligned-focused-fixed.log",
+        "bytes": 1899,
+        "sha256": "91bfa54435039b1cfc3c2801a543108b7a90358cb83ff13ffd4f393d1fb63a92",
+        "exitCode": 101,
+        "elapsedSeconds": 10.928,
+        "explanation": "Seven runtime cases passed; the synthetic ROM fixture incorrectly tried to reselect a withdrawn cold profile."
+      },
+      {
+        "log": "c5-internal-unaligned-focused-fixture-fixed.log",
+        "bytes": 1899,
+        "sha256": "17633289762fc0d5a90a66ada810613693855801548a7f29aa1af03c51ec5067",
+        "exitCode": 101,
+        "elapsedSeconds": 10.531,
+        "explanation": "Seven cases passed; fresh ROM loading still correctly withdrew the cold profile before re-selection. Fixed only synthetic fixture setup; real ROM untouched."
+      }
+    ]
+  },
+  "actualIdf602Input": {
+    "sdkCommit": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
+    "compiler": "esp-15.2.0_20251204 / GCC15.2.0",
+    "merged": {
+      "bytes": 200944,
+      "sha256": "a84d3ce0a8ad44525706a67c596e9bf0007c2040d6280fb2cf8abf2f0a93b8a5"
+    },
+    "elf": {
+      "bytes": 3597104,
+      "sha256": "2043dc07c96cf7e9ccc1b357397af279c8bfe3ac62132a9d8b99740009a2611a"
+    },
+    "map": {
+      "bytes": 2395129,
+      "sha256": "e9db6f63b3ae77b6874494b333ac6c0cb1c6c0207e97480b8a335c5bf434f50d"
+    },
+    "originalsUnchanged": true
+  },
+  "realIdf602Before": {
+    "capture": {
+      "log": "native-idf602-nonwifi-hello-initial.log",
+      "bytes": 5898,
+      "sha256": "4892829f3c0cc2b3f945ff7b2e0ea96b31cd59ef4299958c28c44ebb6f410cc4",
+      "exitCode": 0,
+      "elapsedSeconds": 0.075,
+      "binary": {
+        "bytes": 1557440,
+        "sha256": "8e406183764839ca45f04fe4fa51e9473eb283d515af0012c3f790bef11c4bf5"
+      },
+      "maxSteps": 250000000,
+      "sourceCheckpoint": "95da422c",
+      "compiledCodeUnchangedSinceCheckpoint": true,
+      "directExistingExecutable": true
+    },
+    "status": "failed-before-app-main",
+    "pc": "0x4084eeaa",
+    "instruction": "00f4d903 lhu s2,15(s1)",
+    "address": "0x408556ab",
+    "width": 2,
+    "mepc": "0x4084eeaa",
+    "mcause": 5,
+    "mtval": "0x408556ab",
+    "runSteps": 522744,
+    "cpuInstructionCount": 522744,
+    "nominalCycles": 522688,
+    "uartBytes": 400
+  },
+  "realIdf602After": {
+    "checks": [
+      {
+        "log": "c5-internal-unaligned-example-build.log",
+        "bytes": 156,
+        "sha256": "120a2981f35668cf51014fba707367c3a219acd63f7928ad1baf2e9ba1305fa5",
+        "exitCode": 0,
+        "elapsedSeconds": 3.988
+      },
+      {
+        "log": "native-idf602-nonwifi-hello-internal-unaligned.log",
+        "bytes": 6082,
+        "sha256": "013de8d65b9136c19cfaeb00ae8e9c363590e54bc6717ffa6a6072376c8e558d",
+        "exitCode": 0,
+        "elapsedSeconds": 0.383
+      }
+    ],
+    "binary": {
+      "bytes": 1557296,
+      "sha256": "a8bbf55c710ee3d9b0dd597ae946277d14294dfbc181ffbf9251f7bb76c9b921"
+    },
+    "sourceIdentity": {
+      "trackedHEAD": "528c68d9ab3cae52e47234af3c0dfeed8724c733",
+      "dirtyFiles": {
+        "esp32c5/src/bus.rs": {
+          "bytes": 59245,
+          "sha256": "75e23bdd50b9ff3ddadfe0fcf9eea2a8ceedd15abeb4c9a12abe585b4900fa54"
+        },
+        "esp32c5/src/lib.rs": {
+          "bytes": 5653,
+          "sha256": "f58004d9fdf7681ab92b357810cbcd7150d55d1ca326eb5de1e4e8c8ab0e52a7"
+        },
+        "esp32c5/src/unaligned_bus_tests.rs": {
+          "bytes": 6485,
+          "sha256": "4bbe9217b8a0910a7b536888d24858cf50f67f192dd063ad0834c95944dafa89"
+        }
+      },
+      "explanation": "WIP source hashes identify the new implementation; no clean tracked-HEAD build claim."
+    },
+    "status": "failed-at-next-unmodeled-peripheral",
+    "pc": "0x4084f616",
+    "address": "0x6000e058",
+    "register": "APB_SARADC_APB_TSENS_CTRL_REG",
+    "operation": "Temperature-sensor disabled configuration backup in bootloader_random_enable; no entropy claim",
+    "runSteps": 568934,
+    "cpuInstructionCount": 568934,
+    "nominalCycles": 568896,
+    "uartBytes": 583,
+    "mepc": "0x4084f616",
+    "mcause": 5,
+    "mtval": "0x6000e058",
+    "appMainReached": false,
+    "helloObserved": false
+  },
+  "unchangedFactoryRegression": {
+    "status": "partial-same-MAC-ModelLimit",
+    "pc": "0x408142c6",
+    "address": "0x600ad858",
+    "runSteps": 44199490,
+    "cpuInstructionCount": 44199490,
+    "nominalCycles": 44199486,
+    "uart": {
+      "bytes": 4536,
+      "sha256": "f6aae87b2bcd45efc1595ba51ae1ebfb76331b3d9a95fefcf0b848357f0f79ad"
+    },
+    "workAndUartMatchBaseline": true,
+    "mepc": "0x40802bec",
+    "mcause": "0x80000013",
+    "mtval": 0,
+    "lcdPixelsWritten": 0,
+    "sdCommands": 0,
+    "originalUiAccepted": false
+  },
+  "independentSourceReview": {
+    "report": {
+      "bytes": 6850,
+      "sha256": "c608fa7a5b6c8287c6e85a7181ca0d5e2e01d4a9e9f41ee50187aa54a9952a19"
+    },
+    "contract": {
+      "bytes": 12689,
+      "sha256": "eb1c2e20145d0ffd854605fe73d9a59e5dd3a58fb8420a1f8e79c3c182d870a4"
+    },
+    "noOpenP1P2WithinScope": true,
+    "notAnIndependentBuildOrProductAcceptance": true
+  },
+  "limitations": [
+    "Unaligned external cache/MMU, MMIO and cross-backing operations remain unsupported; no partial split-device transaction model.",
+    "ROM writes remain unsupported; no memory permissions were widened.",
+    "Fetch, DMA and atomic alignment behavior is unchanged. Preexisting C5 LR.W misalignment cause4 versus TRM6 remains a separate gap.",
+    "The 24-byte unit header and synthetic memory patterns are fixtures; actual unmodified firmware continuation is a separate retained run.",
+    "IDF551 Key Manager memory-off reset remains ModelLimit; IDF602 TSENS/ADC sequence needs its own version-correct model.",
+    "This source has not yet replaced the older recorded production WASM. Latest-main integration, full default-release workspace, controlled CPU checks and complete factory device acceptance remain separate gates."
+  ],
+  "curation": {
+    "rawCaptures": "Retained in ignored task cache/output; no raw register/UART/process/host stream committed.",
+    "kept": "Source/input/artifact/log hashes, commands, numeric results, actual failure frontiers, negative fixture results and limitations.",
+    "removed": "Personal checkout/tool paths and volatile process/session identities; no measured result or historical log hash changed."
+  },
+  "productAccepted": false,
+  "published": false
+}

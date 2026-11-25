@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "baseCommit": "e5cd1fb4",
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "logSha256": "4e2ac22481e084bb02900b3bb824acaaf9f983668f4e45cfa792cbca8692e60c",
+      "passed": 194,
+      "failed": 0,
+      "ignored": 0,
+      "environment": {
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_BUILD_JOBS": "1"
+      },
+      "scope": "Focused C5 functional suite; default-LTO full-workspace release tests remain pending."
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "logSha256": "6dffd8c90e4ebbd5f3475e7f687f1438ff5ec45704344e4e53c131de39b7309e"
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "logSha256": "70215064cafad77c611d0ade3a9bb907a3571e46d13ea6983e249de305773672"
+    }
+  ],
+  "sourceManifest": {
+    "fileCount": 852,
+    "sha256": "eff2215d5b44d78c7e24244b32b519bc56c26947fd71b1561340fcabb18b5157",
+    "format": "sorted relative path, NUL, SHA256, LF; tracked Rust/Cargo files at checked working tree"
+  },
+  "nativeUnchangedFactory": {
+    "board": "waveshare-c5-lcd273",
+    "flashMiB": 32,
+    "psramMiB": 8,
+    "xtalMHz": 48,
+    "preparedFat32MiB": 64,
+    "steps": 573867,
+    "cycles": 573824,
+    "faultPc": "0x40021216",
+    "faultAddress": "0x600b1c00",
+    "operation": "write",
+    "requestedConfig": "0x4007ea00",
+    "priorConfig": "0x0007ea00",
+    "uartBytes": 582,
+    "mode": "QIO",
+    "flashClockMHz": 80,
+    "pllReady": true,
+    "pllCalibrations": 1,
+    "regi2cReads": 13,
+    "regi2cWrites": 15,
+    "cpuConfigHz": 80000000,
+    "ahbConfigHz": 40000000,
+    "apbConfigHz": 40000000,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "applicationEntered": false,
+    "logSha256": "f7117a8c8ea826946d6386bc1d26b5726ee04dc601e581bb31c874aee6e97a20"
+  },
+  "negativeHistory": [
+    {
+      "log": "native-machine-lcd273-context.log",
+      "sha256": "509043288ffb63a91150177b0851fe1771e3b0555c45dfdc419c5d33124779ce",
+      "logBytes": 1578
+    },
+    {
+      "log": "native-machine-lcd273-swd.log",
+      "sha256": "c79d67f698a0368e14c02df3a6b1f8eb605e8b30986ee50d9259870ee5cd1872",
+      "logBytes": 1781
+    },
+    {
+      "log": "native-machine-lcd273-lp-mux.log",
+      "sha256": "97a5c40c1555df347db9299ad97f98c58aa367690bf22506fe55a23935d47eb6",
+      "logBytes": 1781
+    },
+    {
+      "log": "native-machine-lcd273-modem-domain.log",
+      "sha256": "d5cb712f7478f635d70ca7ca6e96f9a7a9ec639b8bffbdfc439f2be04545de81",
+      "logBytes": 1825
+    },
+    {
+      "log": "native-machine-lcd273-fosc.log",
+      "sha256": "95ad9197813d9aa27b06a1f5eef3d251fb829838e5c9356487f468feca552600",
+      "logBytes": 3007
+    },
+    {
+      "log": "native-machine-lcd273-pll.log",
+      "sha256": "46fb31a70fbc974c18bd8a206886bc631ad8ed9fcd00b052a4a48094c11afeba",
+      "logBytes": 3071
+    },
+    {
+      "log": "native-machine-lcd273-bias.log",
+      "sha256": "8aefefced5cacc9c01ffe89d96cab7ca46d8c41aef27a216881f8df551790124",
+      "logBytes": 2368
+    },
+    {
+      "log": "native-machine-lcd273-irq-disable.log",
+      "sha256": "bb0e4d16eda53beafc2a626b5e07ed7fd9ab0c3ca9795ec4cbc2ca4f31aa1c9c",
+      "logBytes": 2546
+    },
+    {
+      "log": "clock-pll-observer-c5-suite.log",
+      "sha256": "0c6c24faffd76c141699c9b02cf681a58ee1cb1b8af6d8aef658a969cbf952cb",
+      "logBytes": 11021
+    },
+    {
+      "log": "clock-pll-observer-c5-suite-retry.log",
+      "sha256": "49f762ad5bd46c851f4a3fb45b2074712c101e85e9d5e9c03718a68afa2e8c89",
+      "logBytes": 11103
+    },
+    {
+      "log": "clock-pll-transport-c5-suite.log",
+      "sha256": "3c8ddbfe947ecf1fb5ea1caf53a591abda39bbe3c129d65dab562fd0d47f23da",
+      "logBytes": 15497
+    }
+  ],
+  "corrections": [
+    "CPU-only reset retains HP/LP/analog state; all documented Core causes retain monitor PC/SP.",
+    "Late observer stops clear chip-private CPU context before host inspection.",
+    "SWD fixture isolates the independent POR calibration deadline; it compares the actual retained LP deadline across Core Reset.",
+    "Transport rate fixtures exercise the component API with supplied observations; the production Bus always supplies actual analog/clock observations.",
+    "Ordinary MSPI reset regression renamed to avoid CI external_ substring filtering."
+  ],
+  "limits": [
+    "Nominal240MHz scheduling timeline; configured DFS values do not establish physical cycle timing.",
+    "PLL100us, USB supply and bias-code mirrors are explicit functional virtual profiles, not measured voltage or calibrated silicon lock time.",
+    "No application entry, LCD, button or guest TF filesystem acceptance.",
+    "Full default-LTO workspace tests, CPU controls, production WASM/browser, fresh final acceptance and publication remain pending."
+  ]
+}

@@ -2,7 +2,7 @@
 
 use crate::bus::{Bus, Fault};
 use crate::decode::{decode_for, Insn, Op};
-use crate::state::{csr, exc, ext_ill, Cpu};
+use crate::state::{csr, exc, ext_ill, mstatus, Cpu};
 use emu_core::{CacheOperation, ControlEvent, ControlEventKind, StepKind, StepOutcome};
 
 pub use emu_core::Trap;
@@ -11,15 +11,16 @@ macro_rules! ld {
     ($cpu:expr, $bus:expr, $f:ident, $addr:expr, $pc:expr) => {
         match $bus.$f($addr) {
             Ok(v) => v,
+            Err(Fault::Unsupported) => return Err(Trap::ModelLimit($pc)),
             Err(_) => { $cpu.trap(exc::LOAD_ACCESS_FAULT, $addr, $pc); return Err(Trap::Exception(exc::LOAD_ACCESS_FAULT)); }
         }
     };
 }
 macro_rules! st {
     ($cpu:expr, $bus:expr, $f:ident, $addr:expr, $v:expr, $pc:expr) => {
-        if $bus.$f($addr, $v).is_err() {
-            $cpu.trap(exc::STORE_ACCESS_FAULT, $addr, $pc);
-            return Err(Trap::Exception(exc::STORE_ACCESS_FAULT));
+        if let Err(f) = $bus.$f($addr, $v) {
+            if f==Fault::Unsupported{return Err(Trap::ModelLimit($pc));}
+            $cpu.trap(exc::STORE_ACCESS_FAULT, $addr, $pc);return Err(Trap::Exception(exc::STORE_ACCESS_FAULT));
         }
     };
 }
@@ -49,6 +50,13 @@ fn clic_take<B: Bus>(cpu: &mut Cpu, bus: &mut B, irq: u32, pc: u32) -> StepOutco
     use crate::state::{mcause, mstatus};
     let level = (irq >> CLIC_IRQ_LEVEL_SHIFT) & 0xff;
     let (line, id) = (irq & 0x1f, (irq & 0x1f) + CLIC_EXT_OFFSET);
+    let entry=cpu.mtvt.wrapping_add(4*id);
+    let vector=if irq&CLIC_IRQ_SHV!=0{
+        match bus.read32(entry){
+            Err(Fault::Unsupported)=>return StepOutcome{pc,next_pc:pc,bytes:None,length:0,kind:StepKind::TrapBefore(Trap::ModelLimit(pc)),control:None},
+            result=>Some(result),
+        }
+    }else{None};
     cpu.insn_count += 1; cpu.cycle_count += 1;
     cpu.mepc = pc;
     cpu.mtval = 0;
@@ -57,9 +65,8 @@ fn clic_take<B: Bus>(cpu: &mut Cpu, bus: &mut B, irq: u32, pc: u32) -> StepOutco
     cpu.mstatus = (cpu.mstatus & !(mstatus::MIE | mstatus::MPIE)) | mpie | mstatus::MPP;
     cpu.mcause = mcause::INTERRUPT | cpu.mil << mcause::MPIL_SHIFT | id;
     cpu.mil = level;
-    if irq & CLIC_IRQ_SHV != 0 {
-        let entry = cpu.mtvt.wrapping_add(4 * id);
-        match bus.read32(entry) {
+    if let Some(vector)=vector {
+        match vector {
             Ok(target) => cpu.pc = target & !1,
             Err(_) => {
                 cpu.trap(exc::INSN_ACCESS_FAULT, entry, entry);
@@ -104,8 +111,10 @@ pub fn step_outcome<B: Bus>(cpu: &mut Cpu, bus: &mut B) -> StepOutcome {
                 {
                     // any presented interrupt ends a WFI: the privileged ISA lets WFI resume for
                     // any reason, and a core left asleep could not be woken by a lower one
-                    cpu.waiting = false;
-                    if cpu.mie_enabled() && (line >> CLIC_IRQ_LEVEL_SHIFT) & 0xff > cpu.mil.max(cpu.mintthresh) { return clic_take(cpu, bus, line, pc); }
+                    let waiting=cpu.waiting;cpu.waiting = false;
+                    if cpu.mie_enabled() && (line >> CLIC_IRQ_LEVEL_SHIFT) & 0xff > cpu.mil.max(cpu.mintthresh) {
+                        let outcome=clic_take(cpu,bus,line,pc);if matches!(outcome.kind,StepKind::TrapBefore(Trap::ModelLimit(_))){cpu.waiting=waiting;}return outcome;
+                    }
                 }
             } else {
                 cpu.waiting = false;
@@ -125,6 +134,9 @@ pub fn step_outcome<B: Bus>(cpu: &mut Cpu, bus: &mut B) -> StepOutcome {
     bus.note_pc(pc);
     let bytes = match bus.fetch(pc) {
         Ok(b) => b,
+        Err(Fault::Unsupported) => {
+            return StepOutcome { pc, next_pc: pc, bytes: None, length: 0, kind: StepKind::TrapBefore(Trap::ModelLimit(pc)), control: None };
+        }
         Err(_) => {
             cpu.insn_count += 1; cpu.cycle_count += 1;
             cpu.trap(exc::INSN_ACCESS_FAULT, pc, pc);
@@ -218,13 +230,20 @@ pub(crate) fn exec_insn_inline<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc:
 
         // RV32A. The core keeps its own reservation; the bus says whether another hart's store
         // has broken it (one hart: never).
-        LrW => { let v = ld!(cpu, bus, read32, a, pc); cpu.reservation = Some(a); bus.reserve(a); cpu.set(i.rd, v); }
+        LrW => {
+            if let Err(f)=bus.check_atomic32(a,true,false){if f==Fault::Unsupported{return Err(Trap::ModelLimit(pc));}let cause=fault_cause(f,false);cpu.trap(cause,a,pc);return Err(Trap::Exception(cause));}
+            let v = ld!(cpu, bus, read32, a, pc); cpu.reservation = Some(a); bus.reserve(a); cpu.set(i.rd, v);
+        }
         ScW => {
             let held = bus.reservation_held(a);
-            if cpu.reservation == Some(a) && held { st!(cpu, bus, write32, a, b, pc); cpu.set(i.rd, 0); } else { cpu.set(i.rd, 1); }
+            if cpu.reservation == Some(a) && held {
+                if let Err(f)=bus.check_atomic32(a,false,true){if f==Fault::Unsupported{return Err(Trap::ModelLimit(pc));}let cause=fault_cause(f,true);cpu.trap(cause,a,pc);return Err(Trap::Exception(cause));}
+                st!(cpu, bus, write32, a, b, pc); cpu.set(i.rd, 0);
+            } else { cpu.set(i.rd, 1); }
             cpu.reservation = None;
         }
         AmoSwapW | AmoAddW | AmoXorW | AmoAndW | AmoOrW | AmoMinW | AmoMaxW | AmoMinuW | AmoMaxuW => {
+            if let Err(f)=bus.check_atomic32(a,true,true){if f==Fault::Unsupported{return Err(Trap::ModelLimit(pc));}let cause=fault_cause(f,true);cpu.trap(cause,a,pc);return Err(Trap::Exception(cause));}
             let old = ld!(cpu, bus, read32, a, pc);
             let new = match i.op {
                 AmoSwapW => b, AmoAddW => old.wrapping_add(b), AmoXorW => old ^ b, AmoAndW => old & b, AmoOrW => old | b,
@@ -279,7 +298,12 @@ pub(crate) fn exec_insn_inline<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc:
 
         Ecall => { cpu.trap(exc::ECALL_M, 0, pc); return Err(Trap::Exception(exc::ECALL_M)); }
         Ebreak => { cpu.trap(exc::BREAKPOINT, pc, pc); return Err(Trap::Ebreak(pc)); }
-        Mret => { cpu.mret(); return Ok(()); }
+        Mret => {
+            if cpu.machine_only && cpu.mstatus & mstatus::MPP != mstatus::MPP {
+                cpu.trap(exc::ILLEGAL_INSN, i.raw, pc);return Err(Trap::Exception(exc::ILLEGAL_INSN));
+            }
+            cpu.mret();return Ok(());
+        }
         Wfi => { cpu.waiting = true; }
 
         Csrrw | Csrrs | Csrrc | Csrrwi | Csrrsi | Csrrci => {
@@ -297,13 +321,20 @@ pub(crate) fn exec_insn_inline<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc:
             let src = if matches!(i.op, Csrrwi | Csrrsi | Csrrci) { i.rs1 as u32 } else { a };
             // A read is only skipped for csrrw with rd = x0; a write only for set/clear with a
             // zero source operand — which is how firmware reads a CSR without disturbing it.
-            let old = if matches!(i.op, Csrrw | Csrrwi) && i.rd == 0 { 0 } else { cpu.read_csr(n) };
+            let old = if matches!(i.op, Csrrw | Csrrwi) && i.rd == 0 { 0 } else {
+                match cpu.try_read_csr(n){Ok(v)=>v,Err(e)=>{cpu.note_c5_memory_unsupported(e);return Err(Trap::ModelLimit(pc));}}
+            };
             let write = match i.op {
                 Csrrw | Csrrwi => Some(src),
                 Csrrs | Csrrsi => if i.rs1 != 0 { Some(old | src) } else { None },
                 _ => if i.rs1 != 0 { Some(old & !src) } else { None },
             };
-            if let Some(v) = write { cpu.write_csr(n, v); }
+            if let Some(v) = write {
+                if cpu.machine_only&&n==csr::MSTATUS&&v&mstatus::MPRV!=0 {
+                    cpu.trap(exc::ILLEGAL_INSN, i.raw, pc);return Err(Trap::Exception(exc::ILLEGAL_INSN));
+                }
+                if let Err(e)=cpu.try_write_csr(n,v){cpu.note_c5_memory_unsupported(e);return Err(Trap::ModelLimit(pc));}
+            }
             cpu.set(i.rd, old);
         }
 

@@ -1,0 +1,118 @@
+{
+  "baseCommit": "a00343fa48c6d0975d5ac9621495b2ba215e1aea",
+  "scope": "C5-only read/reload module, before bus wiring; no ROM/factory success claim",
+  "idfVersion": "v5.5.4",
+  "idfCommit": "735507283d5b2f9fb363a1901172dbd9e847945d",
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "1.100.0 (3acc79c0c 2026-11-05)"
+  },
+  "sources": [
+    {
+      "path": "components/soc/esp32c5/register/soc/efuse_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/efuse_reg.h",
+      "bytes": 199011,
+      "sha256": "82444403d06505442aa8ba354252e0d981f82e89b183186139791e13367fd7fe"
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/efuse_struct.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/efuse_struct.h",
+      "bytes": 131506,
+      "sha256": "2a114af7d6f5fe8ab85bddc8093f2e07a7db00d39024b788d1457392c3fc2f26"
+    },
+    {
+      "path": "components/efuse/esp32c5/esp_efuse_table.csv",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/efuse/esp32c5/esp_efuse_table.csv",
+      "bytes": 31367,
+      "sha256": "d09e6fb707106d17ebb8ca8553b2649db319cff29eb4b1fbb2af92c3e9905f5f"
+    },
+    {
+      "path": "components/efuse/esp32c5/esp_efuse_fields.c",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/efuse/esp32c5/esp_efuse_fields.c",
+      "bytes": 1507,
+      "sha256": "33978baa500d53a1345850492b7e5a41f6c35ddd9e8051bdee30404dd11edbf5"
+    },
+    {
+      "path": "components/hal/esp32c5/include/hal/efuse_ll.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/esp32c5/include/hal/efuse_ll.h",
+      "bytes": 6826,
+      "sha256": "a45ae7965e993cf4f2910f2df7afec6bde208bb95e1e88f0714d3c61241fc108"
+    },
+    {
+      "path": "components/soc/esp32c5/include/soc/efuse_defs.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/include/soc/efuse_defs.h",
+      "bytes": 271,
+      "sha256": "1128f3738270d685ba00318e8dad1791465b171c0ba160e6bc5b1edd6be336b3"
+    },
+    {
+      "path": "components/hal/esp32c5/efuse_hal.c",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/esp32c5/efuse_hal.c",
+      "bytes": 2580,
+      "sha256": "b743e35aaf3279748d3f750e7e7b7fa627cd766a44bcb9a12d71484ee4409bef"
+    },
+    {
+      "path": "components/esp_rom/esp32c5/include/esp32c5/rom/efuse.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/esp_rom/esp32c5/include/esp32c5/rom/efuse.h",
+      "bytes": 9138,
+      "sha256": "bdc270255143e98856eb7192f7b2a4167178e9a31be2940a26f78c5c2f56d1fd"
+    }
+  ],
+  "trm": {
+    "version": "1.1",
+    "url": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+    "sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "sections": [
+      "7.3.1.2",
+      "7.3.3"
+    ],
+    "printedPages": [
+      256,
+      260,
+      261
+    ]
+  },
+  "files": [
+    {
+      "path": "esp32c5/src/efuse.rs",
+      "sha256": "60a8ead0484059b1b804825dff203a818553825d4a2131a8d2f243d2be433779"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "0b5e7895f81461cdc45d2973df90673f063ee4b5c30d278300d3482ee6f58b88"
+    }
+  ],
+  "checks": [
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-efuse-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --lib efuse::tests -- --nocapture",
+      "result": "pass",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 4
+    },
+    {
+      "command": "clippy-driver --edition=2021 --test esp32c5/src/efuse.rs -D warnings -o target/c5-efuse-lane/efuse-lint-tests",
+      "initialResult": "failed on two test-only needless_range_loop diagnostics",
+      "correction": "Replaced indexing test loops with mutable enumerated iterators.",
+      "result": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "filesChecked": 3023,
+      "gzipFiles": 95
+    }
+  ],
+  "limits": [
+    "Functional synchronous read; no APB/analog latency or programmed-fuse timing.",
+    "Immutable valid decoded logical OTP profile; no physical parity/correction/error injection.",
+    "No burn, key-manager, APB2OTP, RS-bypass or forced SRAM power-down support.",
+    "No bus/IRQ-delivery/ROM/factory test or benchmark in isolated lane.",
+    "Private module is unused until integration; standalone module Clippy does not claim full-crate lint success."
+  ],
+  "privacy": "Committed evidence omits private absolute paths and raw compiler logs; MAC is explicitly synthetic, not a device capture."
+}

@@ -1,0 +1,161 @@
+{
+  "baseline": "abb80621eab8dfc4b1ea4833677b950f2db889af",
+  "ownedSource": "esp32c5/src/modem_lp_clock.rs",
+  "ownedSourceSha256": "e90e40ab3158c94b27e139d6d66c9d1431db1b349129dd954464973d7f66cb0a",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "edition": "2021",
+  "target": "aarch64-apple-darwin",
+  "standaloneCommand": "python3 docs/evidence/c5-coex-divider-2026-11-25/run-owned-checks.py --output \"$TASK_TMP/final-checks\"",
+  "results": {
+    "tests": 14,
+    "passed": 14,
+    "failed": 0,
+    "ignored": 0,
+    "previousTests": 7,
+    "newFocusedTests": 7,
+    "clippyDriverWarningsDeniedExit": 0,
+    "lintAllowances": []
+  },
+  "outputSha256": {
+    "check-0.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check-1.txt": "e836360cfd47e663140411401ea475c8a30100beb8a904fc5c23ee5114cfb686",
+    "check-2.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "parentNativeBoundary": {
+    "logSha256": "1876d9008ce7b3bcda492650152c79f40014b44594707702312f0c521ec9daa8",
+    "logBytes": 12037,
+    "steps": 27103952,
+    "nominalCycles": 27103936,
+    "faultPC": "0x420b8864",
+    "address": "0x600af008",
+    "write": true,
+    "width": 4,
+    "requestedValue": "0x314",
+    "mcause": 7,
+    "uartBytes": 3955,
+    "retainedCOEXWordBeforeFailure": "0x4",
+    "retainedRawXTALObservationHz": 48000000,
+    "writesBLE_COEX_WIFI": [
+      4,
+      5,
+      10
+    ],
+    "newDividerWriteExecuted": false
+  },
+  "typedInput": {
+    "file": "lcd273-app-seg2-42000020.bin.typed.dis",
+    "sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45"
+  },
+  "staticSequence": [
+    {
+      "pc": "0x420b866a",
+      "op": "a1=50 true divisor"
+    },
+    {
+      "pc": "0x420b866e",
+      "op": "a0=4 XTAL selector"
+    },
+    {
+      "pc": "0x420b8670",
+      "op": "call420b8824"
+    },
+    {
+      "pc": "0x420b8848",
+      "op": "READ COEX"
+    },
+    {
+      "pc": "0x420b884a",
+      "op": "subtract1 from true divisor"
+    },
+    {
+      "pc": "0x420b8852",
+      "op": "STORE oldDivider|selector4"
+    },
+    {
+      "pc": "0x420b8856",
+      "op": "READ COEX"
+    },
+    {
+      "pc": "0x420b8864",
+      "op": "STORE preserved selector plus encoded NUM49"
+    },
+    {
+      "pc": "0x420b8784/8786",
+      "op": "extract12bit NUM in conversion routine"
+    },
+    {
+      "pc": "0x420b8798",
+      "op": "add1 for XTAL division conversion; RC_FAST branch420b87ee also adds1"
+    }
+  ],
+  "numericSamples": [
+    {
+      "word": "0x314",
+      "rawSourceHz": 48000000,
+      "divNum": 49,
+      "divisor": 50,
+      "ratio": [
+        48000000,
+        50
+      ],
+      "integerHz": 960000
+    },
+    {
+      "word": "0x310",
+      "sourceDisabled": true,
+      "divNum": 49,
+      "rate": null
+    },
+    {
+      "word": "0xfff4",
+      "ratio": [
+        48000000,
+        4096
+      ],
+      "integerHz": null
+    },
+    {
+      "word": "0x22",
+      "ratio": [
+        17500000,
+        3
+      ],
+      "integerHz": null
+    },
+    {
+      "word": "0x2f4",
+      "ratio": [
+        48000000,
+        48
+      ],
+      "integerHz": 1000000
+    }
+  ],
+  "oldContractAdjustments": [
+    "Original successful divider0 source reads/report/reset/APB cases preserved.",
+    "One old negative fixture now separates newly valid COEX0x10/0x11/0xfff0 from BLE/WIFI, which still reject them. All multiple-source/32k/reserved negatives remain."
+  ],
+  "negativeResults": [
+    {
+      "sourceLookup": "Incorrect register/modem header path and guessed common HAL C path returned404; retained in ignored connector receipts. Correct fixed header is components/soc/esp32c5/include/modem/modem_lpcon_reg.h."
+    },
+    {
+      "versionBoundary": "modem_clock.c differs553/554, so full-file identity is false. The two relevant source-select/deselect functions were compared separately and are identical."
+    }
+  ],
+  "limits": [
+    "Actual module standalone rustc/clippy only; no shared Cargo/native/WASM/browser/benchmark/push.",
+    "Parent fault proves the source4 STORE occurred but divider0x314 was rejected. New successful write/rate observations are component fixtures until integration rerun.",
+    "Only COEX nonzero divider configuration is added. BLE/WIFI remain divider0.",
+    "Raw selected_source_hz remains pre-divider. Ratio and exact integerHz are pre-functional-gate candidate observations, not proof of RF/PHY/COEX timer/IRQ readiness or progress.",
+    "Input frequencies remain caller-provided strict virtual nominal sources; no physical oscillator accuracy is claimed.",
+    "Unsupported controls returnfalse/None as a simulator boundary, not a documented silicon fault."
+  ],
+  "privacy": {
+    "command": "node tools/check-evidence-privacy.mjs",
+    "exit": 0,
+    "trackedFiles": 3223,
+    "gzipFiles": 95,
+    "manualReview": "New source, JSON, Markdown and harness reviewed; no personal paths, process inventories or raw private streams committed."
+  }
+}

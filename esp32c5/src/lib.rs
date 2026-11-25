@@ -14,21 +14,65 @@ mod transport_dma;
 mod transport_regs;
 mod lp_peri;
 mod lp_wdt;
+mod lp_timer;
+mod timg_wdt;
 mod i2c;
 mod i2c_regs;
 mod cache;
+mod sha;
+#[cfg(test)] mod factory_tests;
+#[cfg(test)] mod boot_watchdog_tests;
+#[cfg(test)] mod boot_saradc_tests;
+#[cfg(test)] mod lp_timer_bus_tests;
+#[cfg(test)] mod boot_pmu_bus_tests;
+#[cfg(test)] mod boot_ocode_bus_tests;
+#[cfg(test)] mod boot_apm_bus_tests;
+#[cfg(test)] mod memory_policy_bus_tests;
+#[cfg(test)] mod modem_lp_bus_tests;
+#[cfg(test)] mod boot_peripheral_bus_tests;
+#[cfg(test)] mod startup_irq_bus_tests;
+#[cfg(test)] mod boot_brownout_bus_tests;
+#[cfg(test)] mod ordinary_wdt_bus_tests;
+#[cfg(test)] mod security_clock_bus_tests;
+#[cfg(test)] mod boot_security_bus_tests;
+#[cfg(test)] mod usb_monitor_bus_tests;
+#[cfg(test)] mod coex_gate_bus_tests;
+#[cfg(test)] mod modem_wifi_bus_tests;
+#[cfg(test)] mod unaligned_bus_tests;
+#[cfg(test)] mod lp_pad_mux_bus_tests;
+mod boot_analog;
+mod boot_clock;
+mod modem_lp_clock;
+mod modem_wifi_clock;
+mod boot_bias;
+mod boot_pmu;
+mod boot_apm;
+mod boot_peripheral_clock;
+mod boot_brownout;
+mod boot_security;
+mod software_interrupt;
+mod boot_saradc;
+mod clock_tree;
+mod clock_calibration;
+mod efuse;
+mod usb_detached;
+mod systimer;
+mod bus_monitor;
+mod cpu_monitor;
 use riscv_rv32::{Cpu, Trap};
 pub use bus::C5Bus;
-pub use soc::{machine, Machine, C5};
+pub use soc::{machine, rom_machine, load_rom, Machine, C5};
 
 pub(crate) fn core() -> Cpu {
     let mut cpu = Cpu::new_rv32imac(); cpu.clic = true; cpu.clic_std = true; cpu.user_counters = true;
+    // Explicit functional subset, not a claim that C5 silicon lacks U mode.
+    cpu.machine_only=true;
     cpu.pc = bus::ROM_BASE; cpu
 }
 
 pub struct Bringup { pub cpu: Cpu, pub bus: C5Bus }
 #[derive(Debug, PartialEq, Eq)]
-pub enum Stop { Budget, Waiting, Trap(Trap) }
+pub enum Stop { Budget, Waiting, Reset(u32), Trap(Trap) }
 pub struct Run { pub steps: u64, pub stop: Stop }
 impl Default for Bringup { fn default() -> Self { Self::new() } }
 impl Bringup {
@@ -48,27 +92,30 @@ impl Bringup {
         self.bus.check_ram(elf.entry, 2)?;
         if !elf.segments.iter().any(|s| elf.entry >= s.vaddr && elf.entry.checked_add(2).zip(s.vaddr.checked_add(s.memsz)).is_some_and(|(entry_end, end)| entry_end <= end)) { return Err("ELF entry is outside its loaded segments".into()); }
         for s in &elf.segments { self.bus.load_ram(s.vaddr, &s.data, s.memsz as usize)?; }
-        self.cpu.pc = elf.entry; Ok(())
+        self.cpu.pc = elf.entry; self.bus.rom_boot=false; self.bus.deselect_validated_rom_profile(); Ok(())
     }
     /// Load the official MP ROM and reconstruct only its ELF-declared initializers.
     /// The guest reset loop performs the copies. Neither instructions nor return values change.
     pub fn load_rom_elf(&mut self, bytes: &[u8]) -> Result<(), String> {
-        if bytes.get(18..20) != Some(&[0xf3, 0][..]) { return Err("C5 ROM needs a RISC-V ELF32".into()); }
-        let elf = esp_soc::elf::parse(bytes)?;
-        if elf.entry != bus::ROM_BASE { return Err("C5 ROM entry must be 0x40000000".into()); }
-        // The beta rev0 has a different CLIC contract. Accept only the audited MP
-        // ROM layout; receipts additionally pin the complete public ELF SHA-256.
-        if elf.by_name.get("_data_table_start") != Some(&0x4003_b154) || elf.by_name.get("_data_table_end") != Some(&0x4003_b340) { return Err("C5 requires the audited rev100 ROM layout; beta rev0 is unsupported".into()); }
-        let image = rom::image(&elf)?;
-        self.bus.rom.copy_from_slice(&image); self.cpu.pc = elf.entry; Ok(())
+        let (elf,image)=rom::decode(bytes)?;
+        if self.bus.reset_requested{return Err("C5 ROM replacement requires applying the pending reset first".into());}
+        self.cpu.c5_machine_context().map_err(|e|format!("C5 cold ROM needs supported Machine context: {e:?}"))?;
+        self.bus.select_validated_rom_profile()?;
+        self.cpu.enable_c5_memory_protection().map_err(|e|format!("C5 CPU memory policy unavailable: {e:?}"))?;
+        self.bus.rom.copy_from_slice(&image); self.cpu.pc = elf.entry; self.bus.rom_boot=true; self.bus.cpu_monitor(); Ok(())
     }
     pub fn run(&mut self, budget: u64) -> Run {
         for steps in 0..budget {
+            if self.bus.reset_requested{return Run{steps,stop:Stop::Reset(self.bus.reset_cause&0x1f)};}
             self.cpu.irq = self.bus.refresh_irq(self.cpu.mintthresh);
             if self.cpu.waiting && self.cpu.irq.is_none() { return Run { steps, stop: Stop::Waiting }; }
             emu_core::Bus::note_pc(&mut self.bus, self.cpu.pc);
+            let pc=self.cpu.pc;
+            if let Some(m)=&self.bus.monitor{m.borrow_mut().begin_core(pc,&self.cpu);}
             let result = riscv_rv32::step(&mut self.cpu, &mut self.bus);
+            if let Some(m)=&self.bus.monitor{let mut m=m.borrow_mut();if let Err(trap)=&result{m.trap(pc,trap);}else{m.end();}}
             self.bus.advance(1);
+            if self.bus.reset_requested{return Run{steps:steps+1,stop:Stop::Reset(self.bus.reset_cause&0x1f)};}
             if let Err(trap) = result {
                 if let Trap::Interrupt(line) = trap { self.bus.interrupt_taken(line); continue; }
                 return Run { steps: steps + 1, stop: Stop::Trap(trap) };
@@ -77,3 +124,6 @@ impl Bringup {
         Run { steps: budget, stop: Stop::Budget }
     }
 }
+
+mod wifi_compat;
+pub use wifi_compat::enable_wifi_driver_compat;

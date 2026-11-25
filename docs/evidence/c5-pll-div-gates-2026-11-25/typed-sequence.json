@@ -1,0 +1,58 @@
+{
+  "identification": "Static fixed-source/typed match of esp_clk_tree_initialize, not original ELF symbols; no firmware edits.",
+  "entry": "0x4211f8a0",
+  "currentBranch": "CPU root source3=PLL240; CPU80MHz from/3, AHB/APB40MHz",
+  "faultRead": {
+    "pc": "0x4211f8ee",
+    "instructionWord": "0x1287a703",
+    "instruction": "lw a4,296(a5)",
+    "address": "0x60096128",
+    "observedValue": null
+  },
+  "selectedVirtualHeaderPor": "0x1ff",
+  "expectedRmw": [
+    {
+      "clearBit": 1,
+      "expectedWord": "0x1fd"
+    },
+    {
+      "clearBit": 2,
+      "expectedWord": "0x1f9"
+    },
+    {
+      "clearBit": 3,
+      "expectedWord": "0x1f1"
+    },
+    {
+      "clearBit": 4,
+      "expectedWord": "0x1e1"
+    },
+    {
+      "clearBit": 6,
+      "expectedWord": "0x1a1"
+    },
+    {
+      "clearBit": 7,
+      "expectedWord": "0x121"
+    },
+    {
+      "clearBit": 8,
+      "expectedWord": "0x21"
+    }
+  ],
+  "preservedBits": {
+    "0": "activePLL240 CPU tap",
+    "5": "PLL48 USB conditional clear absent in actual image"
+  },
+  "sharedFirstStorePc": "0x4211f906",
+  "actualExecution": "The read faulted before supplying a value. None of these subsequent RMW writes is claimed executed.",
+  "negativeFixtures": [
+    "ActiveCPU tap withdrawal rejected",
+    "USB48 withdrawal rejected until consumer modeled",
+    "Reservedbits9+ rejected",
+    "Closedtap staging rejected",
+    "Previously staged root cannot commit after tap closure",
+    "Gate alone never suppliesPLLready"
+  ],
+  "mspi": "DirectSPLL480/6 independent ofPLL80 gate"
+}

@@ -1,5 +1,6 @@
 import {hasFlight,FLIGHT_MODEL,parseFlightSnapshot} from './flight-state.js';
 import {parseHardwareDiagnostics} from './hardware-diagnostics.js';
+import {C5_WIFI_DRIVER_COMPAT_PROFILE,c5WifiDriverCompatIssue} from './c5-wifi-driver-compat.js';
 import {validServoSnapshot} from './servo-state.js';
 import {hasMotorOutput,parseMotorSnapshot,STAMPFLY_MOTORS} from './motor-state.js';
 import {selectBleProfile,loadBleProfile,verifyBleStoredPages} from './ble-profile.js';
@@ -29,7 +30,7 @@ import {firmwareDownloadUrl} from './firmware-relay.js';
 import {checkFirmwareDownloadResponse} from './firmware-download-access.js';
 import { assembleLocalFirmware } from './local-firmware.js';
 import {firmwareMetadata} from './firmware-metadata.js';
-import {chipForBoard,chipIdForBoard,isP4Rev3Board,validateAppImage,validateBoardRevision,isSramOnlyBoard,isS2Board,isH2Board,isC61Board,isS31Board,C5_SRAM_RANGES,S2_SRAM_RANGES,H2_SRAM_RANGES} from './app-image.js';
+import {chipForBoard,chipIdForBoard,isP4Rev3Board,validateAppImage,validateBoardRevision,isC5Board,isSramOnlyBoard,isS2Board,isH2Board,isC61Board,isS31Board,C5_SRAM_RANGES,S2_SRAM_RANGES,H2_SRAM_RANGES} from './app-image.js';
 import { createDeviceStorage, deviceStorageScope } from './device-storage.js';
 import {UIFLOW2_PARTITION,virtualConfigurationPlan,encodeVirtualConfiguration,replaceConfigurationPages} from './virtual-firmware-configuration.js';
 
@@ -42,6 +43,8 @@ const error = (code, message, details) => Object.assign(new Error(message), { co
 const requireValue = (condition, code, message, details) => { if (!condition) throw error(code, message, details); };
 const failure = e => ({ code: e.code || 'RUNTIME_ERROR', message: e.message || String(e), ...(e.details ? { details: e.details } : {}) });
 const bytesOf = data => data instanceof ArrayBuffer ? new Uint8Array(data) : new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
+const sramAppDirect = cfg => isSramOnlyBoard(cfg.board)||isC5Board(cfg.board)&&cfg.appDirect===true;
+const restrictedIO = board => isC5Board(board)||isSramOnlyBoard(board);
 const keyboardForBoard = board => LILYGO_BOARD_CAPABILITIES[board]?.keyboard || (['cardputer','cardputer-adv','tdeck'].includes(board) ? {
   rows:4,columns:board==='tdeck'?10:14,
   model:board==='tdeck'?'esp32c3-i2c-raw':board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:board,
@@ -169,7 +172,7 @@ function mergedPartitions(bytes, flashBytes, partitionTableOffset) {
 
 // A URL ending in .bin does not establish that it contains a bootable flash image.
 function validateMergedImageAt(data, board, flashBytes, partitionTableOffset) {
-  const bytes = bytesOf(data), bootOffset = [0,2].includes(chipIdForBoard(board)) ? 0x1000 : [18,32].includes(chipIdForBoard(board)) ? 0x2000 : 0;
+  const bytes = bytesOf(data), bootOffset = [0,2].includes(chipIdForBoard(board)) ? 0x1000 : [18,23,32].includes(chipIdForBoard(board)) ? 0x2000 : 0;
   requireValue(Number.isSafeInteger(partitionTableOffset) && partitionTableOffset >= 0x8000 && partitionTableOffset % 0x1000 === 0 && partitionTableOffset + 0x1000 <= flashBytes, 'INVALID_PARTITION_TABLE', 'Partition-table offset is outside flash or not sector aligned.');
   requireValue(bytes.length <= flashBytes, 'FLASH_OVERFLOW', 'Merged firmware exceeds the selected product flash size.');
   requireValue(bytes.length > partitionTableOffset + 32 && bytes[bootOffset] === 0xe9 && bytes[partitionTableOffset] === 0xaa && bytes[partitionTableOffset + 1] === 0x50,
@@ -201,7 +204,7 @@ function validateMergedImageAt(data, board, flashBytes, partitionTableOffset) {
 }
 
 export function mergedImageLayout(data,board,flashBytes,{partitionTableOffset}={}) {
-  const bytes=bytesOf(data),bootloaderOffset=[0,2].includes(chipIdForBoard(board))?0x1000:[18,32].includes(chipIdForBoard(board))?0x2000:0;
+  const bytes=bytesOf(data),bootloaderOffset=[0,2].includes(chipIdForBoard(board))?0x1000:[18,23,32].includes(chipIdForBoard(board))?0x2000:0;
   requireValue(bytes.length<=flashBytes,'FLASH_OVERFLOW','Merged firmware exceeds the selected product flash size.');
   if(partitionTableOffset===undefined){
     const candidates=[];
@@ -221,14 +224,16 @@ export function validateMergedImage(data,board,flashBytes,options) {
   mergedImageLayout(data,board,flashBytes,options);return true;
 }
 
-const romFor = board => isP4Rev3Board(board)?'esp32p4_rev300_rom.elf':({esp32:'esp32_rev300_rom.elf',esp32c3:'esp32c3_rev3_rom.elf',esp32s3:'esp32s3_rev0_rom.elf',esp32c6:'esp32c6_rev0_rom.elf',esp32p4:'esp32p4_rev0_rom.elf',esp32c61:'esp32c61_rev100_rom.elf',esp32s31:'esp32s31_rev0_rom.elf',esp32c5:null,esp32s2:null,esp32h2:null})[chipForBoard(board)];
+// espressif/esp-rom-elfs 20260528; backend ROM decoder independently checks it.
+const C5_ROM_SHA256='49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a';
+const romFor = board => isP4Rev3Board(board)?'esp32p4_rev300_rom.elf':({esp32:'esp32_rev300_rom.elf',esp32c3:'esp32c3_rev3_rom.elf',esp32s3:'esp32s3_rev0_rom.elf',esp32c6:'esp32c6_rev0_rom.elf',esp32p4:'esp32p4_rev0_rom.elf',esp32c61:'esp32c61_rev100_rom.elf',esp32s31:'esp32s31_rev0_rom.elf',esp32c5:'esp32c5_rev100_rom.elf',esp32s2:null,esp32h2:null})[chipForBoard(board)];
 
 export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchImpl = globalThis.fetch, workerFactory = url => new Worker(url, { type: 'module' }), baseUrl = globalThis.location?.href || new URL('./', import.meta.url).href, assetBaseUrl = new URL('../', import.meta.url).href, requestTimeout = 30000, deviceStorage = createDeviceStorage(), sdStorage = createSdCardStorage() } = {}) {
   let catalog = initialCatalog, scene = null, product = null, status = 'idle', worker = null, aborter = null;
   let lastError = null, firmware = null, loaded = null, frame = null, frameNumber = 0, serial = '', serialByPort = {}, stats = {}, hostPace = {}, queue = Promise.resolve();
   const emptyStorage = () => ({status:'unloaded', scope:null, backend:null, restored:false, pristine:true, revision:0, epoch:0, lastSavedAt:null, changedPages:0, error:null});
   const emptySd=()=>({slot:false,supported:false,present:false,mounted:false,scope:null,bytes:0,format:null,status:'unloaded',backend:null,restored:false,pristine:true,changedPages:0,error:null});
-  let sdCard=emptySd(),sdSession=null,sdPrepared=null,leds=[],servos=[],servoSupply=null,motors=[],motorOutput=null,hardwareDiagnostics=null;
+  let sdCard=emptySd(),sdSession=null,sdPrepared=null,leds=[],servos=[],servoSupply=null,motors=[],motorOutput=null,hardwareDiagnostics=null,driverCompatibility=null;
   let flight=null,flightEpoch=0;
   let bleNearby=[];
   let powerEnvironment=null,thermalEnvironment=null;
@@ -250,7 +255,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let imu = defaultImu(), imuPreviousAt = null, imuGeneration = 0;
   const observedImu=()=>!imuModel()?null:!flightEnabled()?clone(imu):{enabled:true,source:'flight',quaternion:null,accelG:flight?clone(flight.sensors.rawAccelG):null,gyroDps:flight?clone(flight.sensors.rawGyroDps):null,delivery:flight?'register-state':'configured',guestTime:flight?.guestTime??null};
   const pending = new Map(), listeners = new Set(onEvent ? [onEvent] : []);
-  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), powerEnvironment:clone(powerEnvironment), thermalEnvironment:clone(thermalEnvironment), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), firmwareConfiguration:configurationReceipt(), sdCard:clone(sdCard),leds:clone(leds),servos:clone(servos),servoSupply,motors:clone(motors),motorOutput:clone(motorOutput),flight:clone(flight),hardwareDiagnostics:clone(hardwareDiagnostics), imu: observedImu(), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
+  const snapshot = () => ({ version: API_VERSION, status, audio:audio.snapshot(), network:network.snapshot(), scene: clone(scene), powerEnvironment:clone(powerEnvironment), thermalEnvironment:clone(thermalEnvironment), accessoryInputs: clone(accessoryInputs), accessoryOutputs: clone(accessoryOutputs), product: clone(product), firmware: clone(firmware), serial, serialByPort: { ...serialByPort }, stats: clone(stats), storage: clone(storage), firmwareConfiguration:configurationReceipt(), sdCard:clone(sdCard),leds:clone(leds),servos:clone(servos),servoSupply,motors:clone(motors),motorOutput:clone(motorOutput),flight:clone(flight),hardwareDiagnostics:clone(hardwareDiagnostics), driverCompatibility:clone(driverCompatibility), imu: observedImu(), frame: frame ? { width: frame.width, height: frame.height, frameNumber } : null, lastError: clone(lastError) });
   const emit = event => { for (const listener of listeners) { try { listener(['hardware-diagnostics','motors','flight'].includes(event.type)?clone(event):event); } catch (e) { console.error('ESP tester event handler:', e); } } };
   const loadReporter = (loadId, signal) => {
     let fileIndex = 0;
@@ -277,9 +282,15 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   const resolve = (key, value) => { const item = pending.get(key); if (!item) return; pending.delete(key); clearTimeout(item.timeout); item.resolve(value); };
   const rejectPending = e => { for (const item of pending.values()) { clearTimeout(item.timeout); item.reject(e); } pending.clear(); };
   const clearHardwareDiagnostics = () => { if(hardwareDiagnostics!==null){hardwareDiagnostics=null;emit({type:'hardware-diagnostics',hardwareDiagnostics:null});} };
+  const clearDriverCompatibility = () => { if(driverCompatibility!==null){driverCompatibility=null;emit({type:'driver-compatibility',driverCompatibility:null});} };
+  const receiveDriverCompatibility = value => {
+    if(value===null){clearDriverCompatibility();return;}
+    if(value?.enabled!==true || value.profile!==loaded?.cfg.c5WifiDriverCompat || value.nativeWifi!==false || value.associated!==false || value.hasIp!==false || value.storage!=='session-RAM' || typeof value.hookCalls!=='string' || !/^(0|[1-9][0-9]*)$/.test(value.hookCalls))return;
+    if(JSON.stringify(value)!==JSON.stringify(driverCompatibility)){driverCompatibility=clone(value);emit({type:'driver-compatibility',driverCompatibility:clone(driverCompatibility)});}
+  };
   const clearMotors = () => {motors=[];motorOutput=null;emit({type:'motors',motors:[],motorOutput:null});};
   const clearFlight=()=>{flight=null;emit({type:'flight',flight:null});};
-  const stopWorker = () => { clearFlight();clearMotors(); clearHardwareDiagnostics();network.detach(); audio.reset(); worker?.terminate(); worker = null; rejectPending(error('SESSION_REPLACED', 'The emulator session was replaced.')); booted = false; imuPreviousAt = null; imu.gyroDps = [0,0,0]; imu.delivery = 'configured'; imu.guestTime = null; };
+  const stopWorker = () => { clearFlight();clearMotors(); clearHardwareDiagnostics();clearDriverCompatibility();network.detach(); audio.reset(); worker?.terminate(); worker = null; rejectPending(error('SESSION_REPLACED', 'The emulator session was replaced.')); booted = false; imuPreviousAt = null; imu.gyroDps = [0,0,0]; imu.delivery = 'configured'; imu.guestTime = null; };
   const ask = (key, message, transfer = []) => new Promise((resolveRequest, reject) => {
     requireValue(worker, 'NOT_READY', 'The emulator worker is not ready.');
     requireValue(!pending.has(key), 'BUSY', 'A worker command is already pending.');
@@ -333,7 +344,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
           motors=next.motors;motorOutput=next.motorOutput;emit({type:'motors',motors:clone(motors),motorOutput:clone(motorOutput)});
         }
       }
-      else if (text.t === 'hardware-diagnostics' && ['stopwatch','corematrix'].includes(product?.runtime?.board)) {
+      else if (text.t === 'hardware-diagnostics' && ['stopwatch','corematrix','waveshare-c5-lcd273'].includes(product?.runtime?.board)) {
         const next=parseHardwareDiagnostics(text);
         if(next?.board===product.runtime.board && JSON.stringify(next)!==JSON.stringify(hardwareDiagnostics)) {hardwareDiagnostics=next;emit({type:'hardware-diagnostics',hardwareDiagnostics:clone(next)});}
       }
@@ -364,6 +375,8 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (message.sdDelta) {try{receiveSd(message.sdDelta);}catch(e){sdFailure(e);}}
     if (message.sdReply !== undefined) resolve(`sd:${message.sdReply}`,message);
     if (message.bleReply !== undefined) resolve(`ble:${message.bleReply}`,message);
+    if (message.c5DriverCompatReply !== undefined) resolve(`c5-driver-compat:${message.c5DriverCompatReply}`,message);
+    if (message.driverCompatibility !== undefined) receiveDriverCompatibility(message.driverCompatibility);
     if (message.created !== undefined) resolve('created', message);
     if (message.loaded !== undefined) resolve(`loaded:${message.loaded}`, message);
     if (message.started !== undefined) resolve('started', message);
@@ -436,7 +449,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   };
   const initializeStorage = async (bundle, supported, progress) => {
     detachStorage();
-    if(isSramOnlyBoard(bundle.cfg.board)) {storage.status='unsupported';storage.pristine=null;storageEvent();return;}
+    if(sramAppDirect(bundle.cfg)) {storage.status='unsupported';storage.pristine=null;storageEvent();return;}
     if (!supported) { storage.status='error'; storage.pristine=null; storage.error={code:'STORAGE_UNSUPPORTED',message:'This emulator build does not expose writable Flash snapshots.'}; storageEvent(); return; }
     storage.status='loading'; storageEvent(); progress.prepare('device-storage');
     const snapshot = await flashAsk('flash-snapshot'), baseline = new Uint8Array(snapshot.data);
@@ -500,7 +513,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     // SRAM-only applications have no writable Flash snapshot. Their checked
     // application digest still isolates SD media by exact executable bytes.
     // Keep the existing Flash-baseline identity for every ROM/Flash profile.
-    const firmwareSha256=isSramOnlyBoard(bundle.cfg.board)&&bundle.receipt.artifacts.length===1
+    const firmwareSha256=sramAppDirect(bundle.cfg)&&bundle.receipt.artifacts.length===1
       ?bundle.receipt.artifacts[0].sha256:storage.scope?.firmwareSha256;
     requireValue(/^[a-f0-9]{64}$/.test(firmwareSha256||''),'SD_STORAGE_SCOPE','SD requires a loaded firmware identity.');
     const key=`v1:${product.id}:${persistentBoard(product.id,bundle.cfg.board)}:${firmwareSha256}`;
@@ -550,14 +563,16 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   globalThis.document?.addEventListener('visibilitychange',visibilitySave);
   const runtimeConfig = () => {
     const runtime = product?.runtime || {};
+    const compatIssue=c5WifiDriverCompatIssue(scene,product);
+    requireValue(!compatIssue,compatIssue?.code,compatIssue?.message);
     requireValue(runtime.board, 'UNSUPPORTED_PRODUCT', 'This product has catalog metadata but no executable board model yet.');
     // Official StopWatch V0.5 enters a non-responsive JIT path in its IMU page.
     // The same unmodified firmware passes through the WASM CPU interpreter.
-    const sramOnly=isSramOnlyBoard(runtime.board);
-    const cfg={ board: runtime.board, flash_mb: runtime.flashMb ?? (sramOnly?4:8), psram_mb: runtime.psramMb ?? (sramOnly?0:2), ...(runtime.board === 'stopwatch'||sramOnly||isS31Board(runtime.board) ? {jit: false} : {}) };
+    const sramOnly=restrictedIO(runtime.board);
+    const cfg={ ...(scene.c5WifiDriverCompat?{c5WifiDriverCompat:scene.c5WifiDriverCompat}:{}), board: runtime.board, flash_mb: runtime.flashMb ?? (sramOnly?4:8), psram_mb: runtime.psramMb ?? (sramOnly?0:2), ...(runtime.board === 'stopwatch'||sramOnly||isS31Board(runtime.board) ? {jit: false} : {}) };
     const physical=WAVESHARE_BOARD_CAPABILITIES[runtime.board];
     const flashMb=physical?.flashMb??(runtime.board==='lilygo-t-dongle-c5'?16:4),psramMb=physical?.psramMb??0;
-    requireValue(!sramOnly||cfg.flash_mb===flashMb&&cfg.psram_mb===psramMb,'MEMORY_MISMATCH','This SRAM board requires its documented Flash and PSRAM capacity.');return cfg;
+    requireValue(!sramOnly||cfg.flash_mb===flashMb&&cfg.psram_mb===psramMb,'MEMORY_MISMATCH','This board requires its documented Flash and PSRAM capacity.');return cfg;
   };
   const readArtifact = async (entry, root, progress, kind, maxBytes = MAX_FILE, archiveCache = null) => {
     const item = typeof entry === 'string' ? { url: entry } : entry;
@@ -594,9 +609,9 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const archiveCache={current:null};
     const loadArtifact=(entry,root,kind,maxBytes)=>readArtifact(entry,root,progress,kind,maxBytes,archiveCache);
     requireValue(source && typeof source === 'object', 'FIRMWARE_REQUIRED', 'Select a firmware manifest or merged flash image first.');
-    const cfg = runtimeConfig(), sramOnly=isSramOnlyBoard(cfg.board), sramChip=isS2Board(cfg.board)?'S2':isH2Board(cfg.board)?'H2':'C5', files = [], receipts = [];
+    const cfg = runtimeConfig(), c5=isC5Board(cfg.board), sramOnly=isSramOnlyBoard(cfg.board), sramChip=isS2Board(cfg.board)?'S2':isH2Board(cfg.board)?'H2':'C5', files = [], receipts = [];
     requireValue(source.bootMode===undefined||['rom','app-direct'].includes(source.bootMode),'INVALID_BOOT_MODE','Unknown firmware boot mode.');
-    requireValue(!source.bootMode||!source.manifestUrl&&!source.files&&(source.url&&!source.file||sramOnly&&source.file&&!source.url),'INVALID_BOOT_MODE','Explicit boot mode needs a remote raw image, or a local SRAM application.');
+    requireValue(!source.bootMode||!source.manifestUrl&&!source.files&&(source.url&&!source.file||(sramOnly||c5)&&source.file&&!source.url),'INVALID_BOOT_MODE','Explicit boot mode needs a remote raw image, or a local C5/SRAM image.');
     requireValue(source.archive===undefined||validFirmwareArchive(source)&&!source.file&&!source.files,'INVALID_FIRMWARE_ARCHIVE','ZIP 固件必须指定唯一 BIN 文件名及其 SHA-256。');
     requireValue(!sramOnly||source.bootMode!=='rom'&&!['build','segments','merged'].includes(source.format),`${sramChip}_SRAM_REQUIRED`,'This board accepts one SRAM application with app-direct startup; merged ROM/IDF builds are unsupported.');
     let total = 0;
@@ -617,13 +632,18 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(!manifest.board || firmwareBoardMatches(manifest.board,cfg.board), 'BOARD_MISMATCH', 'Manifest board does not match the selected product.', { selected: cfg.board, manifest: manifest.board });
       for (const [key, expected] of [['flash_mb', cfg.flash_mb], ['psram_mb', cfg.psram_mb]]) if (manifest[key] != null) requireValue(manifest[key] === expected, 'MEMORY_MISMATCH', `Manifest ${key} does not match this product.`, { expected, actual: manifest[key] });
       requireValue(manifest.files && typeof manifest.files === 'object' && !Array.isArray(manifest.files), 'INVALID_MANIFEST', 'Manifest must list its firmware files.');
-      if(sramOnly) {
+      if(sramOnly||c5&&manifest.app_direct===true) {
         requireValue(manifest.app_direct===true&&Object.keys(manifest.files).length===1&&[].concat(manifest.files.app||[]).length===1&&!Object.keys(manifest.flash_at||{}).length,`${sramChip}_SRAM_REQUIRED`,'A SRAM manifest must declare app_direct:true and exactly one files.app image; no ROM or flash layout.');
         requireValue(!manifest.wifi&&(!manifest.stubs||Array.isArray(manifest.stubs)&&manifest.stubs.length===0),`${sramChip}_FEATURE_UNSUPPORTED`,'This SRAM runtime does not support WiFi configuration or ROM stubs.');
       }
+      if(c5)requireValue(!manifest.wifi&&(!manifest.stubs||Array.isArray(manifest.stubs)&&manifest.stubs.length===0),'C5_FEATURE_UNSUPPORTED','C5 does not support WiFi configuration or ROM stubs.');
       const pinned = entry => typeof entry === 'string' ? { url: entry, sha256: manifest.artifact_sha256?.[entry] } : entry;
       const manifestArtifact = async (kind,entry) => {
-        const item=pinned(entry);
+        let item=pinned(entry);
+        if(c5&&kind==='rom') {
+          requireValue(item?.sha256==null||typeof item.sha256==='string'&&item.sha256.toLowerCase()===C5_ROM_SHA256,'HASH_MISMATCH','C5 requires the pinned MP revision100 ROM SHA-256.');
+          item={...item,sha256:C5_ROM_SHA256};
+        }
         try {return await loadArtifact(item,manifestUrl,kind);}
         catch(cause) {
           // Recovery is bound to this already hash-verified manifest and one
@@ -651,7 +671,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       }
       requireValue(files.some(f => f.kind === 'app' || f.kind === 'flash'), 'INCOMPLETE_IMAGE', 'Manifest contains no app or flash image.');
       cfg.appDirect = manifest.app_direct === true;
-      if(sramOnly)sramApp=await validateAppImage(files[0].data,cfg.board,cfg.flash_mb*MIB);
+      if(sramOnly||c5&&cfg.appDirect)sramApp=await validateAppImage(files[0].data,cfg.board,cfg.flash_mb*MIB);
       if (!cfg.appDirect && !files.some(f => f.kind === 'flash')) requireValue(files.some(f => f.kind === 'bootloader') && files.some(f => f.kind === 'ptable'), 'INCOMPLETE_IMAGE', 'ROM boot needs both a bootloader and a partition table.');
       cfg.stubs = manifest.stubs || [];
       requireValue(Array.isArray(cfg.stubs) && cfg.stubs.length <= 64 && cfg.stubs.every(s => typeof s === 'string' && s.length < 256), 'INVALID_MANIFEST', 'Invalid manifest stub list.');
@@ -683,29 +703,54 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         requireValue(source.file||source.bootMode==='app-direct'||sramApp.applicationDescriptor,`${sramChip}_APP_DIRECT_REQUIRED`,'For a bare-metal URL, choose SRAM app-direct or set bootMode:"app-direct" explicitly.');
         cfg.appDirect=true;
       } else if(source.bootMode==='app-direct') {
-        await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);cfg.appDirect=true;
+        const app=await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);if(c5)sramApp=app;cfg.appDirect=true;
       } else {
         try {flashLayout=mergedImageLayout(artifact.data,cfg.board,cfg.flash_mb*MIB);}
         catch(cause) {
-          if(cause.code!=='INCOMPLETE_IMAGE'||source.file||source.format==='merged'||source.bootMode==='rom')throw cause;
+          if(cause.code!=='INCOMPLETE_IMAGE'||source.file&&!c5||source.format==='merged'||source.bootMode==='rom')throw cause;
           // Inspect the same downloaded bytes before initializing any worker.
           // Never reinterpret a failed download/hash check or a bootloader as an app.
-          try {await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);}
+          try {const app=await validateAppImage(artifact.data,cfg.board,cfg.flash_mb*MIB);if(c5)sramApp=app;}
           catch(appError){if(appError.code==='APP_IMAGE_INVALID')throw cause;throw appError;}
+          if(c5)requireValue(source.file||sramApp.applicationDescriptor,'C5_APP_DIRECT_REQUIRED','For a bare-metal URL, choose SRAM app-direct or set bootMode:"app-direct" explicitly.');
           cfg.appDirect=true;
         }
       }
       add(cfg.appDirect?'app':'flash', artifact);
     }
+    if(c5&&!cfg.appDirect) {
+      // files.app has no physical offset. Never guess a factory/OTA slot or
+      // inherit the generic0x10000 app staging address for C5 ROM manifests.
+      requireValue(!files.some(file=>file.kind==='app'),'C5_FLASH_LAYOUT_REQUIRED','C5 ROM apps need a merged image or explicit flash_at offsets; files.app is for SRAM app-direct.');
+      const parts=files.filter(file=>['flash','bootloader','ptable'].includes(file.kind));
+      requireValue(parts.length>0,'INCOMPLETE_IMAGE','C5 ROM boot needs a complete Flash layout.');
+      if(parts.length!==1||parts[0].kind!=='flash'||(parts[0].at??0)!==0) {
+        const segments=parts.map(file=>({...file,at:file.kind==='bootloader'?0x2000:file.kind==='ptable'?0x8000:file.at})).sort((a,b)=>a.at-b.at);
+        let end=0;
+        for(const file of segments) {
+          requireValue(Number.isSafeInteger(file.at)&&file.at>=end&&file.at%0x1000===0&&file.at+file.data.length<=cfg.flash_mb*MIB,'FLASH_SEGMENT_OVERLAP','C5 ROM segments need distinct sector-aligned physical offsets within Flash.');
+          end=file.at+file.data.length;
+        }
+        const data=new Uint8Array(end).fill(0xff);for(const file of segments)data.set(file.data,file.at);
+        flashLayout=mergedImageLayout(data,cfg.board,cfg.flash_mb*MIB);
+        files.splice(0,files.length,...files.filter(file=>!parts.includes(file)),{kind:'flash',data});
+      }
+    }
     if(!cfg.appDirect&&!flashLayout&&!localLayout){
       const images=files.filter(file=>file.kind==='flash');
       if(images.length===1&&(images[0].at??0)===0&&!files.some(file=>['bootloader','ptable','app'].includes(file.kind)))flashLayout=mergedImageLayout(images[0].data,cfg.board,cfg.flash_mb*MIB);
     }
-    if (!sramOnly && (!cfg.appDirect || !manifest) && !files.some(f => f.kind === 'rom')) add('rom', await loadArtifact(new URL(`wasm/fw/${romFor(cfg.board)}`, assetBaseUrl).href, baseUrl, 'rom'));
+    if (!sramOnly && (c5?!cfg.appDirect:!cfg.appDirect||!manifest) && !files.some(f => f.kind === 'rom')) {
+      const url=new URL(`wasm/fw/${romFor(cfg.board)}`,assetBaseUrl).href;
+      add('rom',await loadArtifact(c5?{url,sha256:C5_ROM_SHA256}:url,baseUrl,'rom'));
+    }
+    requireValue(!cfg.c5WifiDriverCompat || c5&&!cfg.appDirect,'C5_DRIVER_COMPAT_UNSUPPORTED','Wi-Fi driver compatibility requires the fixed LCD273 ROM/Flash profile.');
+    if(c5){cfg.appDirect=cfg.appDirect===true;files.sort((a,b)=>Number(b.kind==='rom')-Number(a.kind==='rom'));}
     if(isC61Board(cfg.board)||isS31Board(cfg.board))cfg.jit=false;
-    return { cfg, files, receipt: { manifestUrl, manifestHash, metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), ...(flashLayout?{flashLayout}:{}), ...(sramApp?{sramApp,bootMode:'app-direct',resetMode:'reload-same-sram-image'}:{}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
+    return { cfg, files, receipt: { manifestUrl, manifestHash, ...(cfg.c5WifiDriverCompat?{c5WifiDriverCompat:cfg.c5WifiDriverCompat}:{}), metadata:firmwareMetadata(files,manifest), source: source.file || localLayout ? 'local' : 'remote', ...(localLayout ? {localLayout} : {}), ...(flashLayout?{flashLayout}:{}), ...(sramApp?{sramApp,bootMode:'app-direct',resetMode:'reload-same-sram-image'}:c5?{bootMode:'rom',resetMode:'rom-reset'}:{}), artifacts: receipts, appDirect: !!cfg.appDirect, stubs: cfg.stubs || [], executionMode: cfg.jit === false ? 'wasm-interpreter' : 'wasm-jit' } };
   };
   const initialize = async (bundle, progress) => {
+    const signal=aborter.signal,generation=progressGeneration;
     stopWorker();
     const wasmUrl = new URL('wasm/esp32sim.wasm', assetBaseUrl).href;
     const wasm = await fetchBytes(wasmUrl, { fetchImpl, maxBytes: MAX_FILE, signal: aborter.signal, onProgress: progress.file('wasm', wasmUrl) });
@@ -713,13 +758,14 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     alive();
     requireValue(!aborter.signal.aborted, 'FETCH_ABORTED', 'Firmware load was cancelled.');
     const current = workerFactory(new URL('wasm/worker.js', assetBaseUrl)); worker = current;
+    const active=()=>{alive();requireValue(!signal.aborted&&!loadCancelled,'FETCH_ABORTED','Firmware load was cancelled.');requireValue(worker===current&&generation===progressGeneration,'SESSION_REPLACED','The firmware load belongs to a replaced session.');};
     current.onmessage = event => { if (worker === current) receive(event.data); };
-    current.onerror = event => { const e = error('WORKER_ERROR', event.message || 'WebAssembly worker failed.'); rejectPending(e); report(e); setStatus('error'); };
+    current.onerror = event => { if(worker!==current)return;const e=error('WORKER_ERROR',event.message||'WebAssembly worker failed.');rejectPending(e);stopWorker();report(e);setStatus('error'); };
     const wasmBuffer = wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength);
     await ask('ready', { op: 'init', wasm: wasmBuffer, frameAck: true }, [wasmBuffer]);
     const result = await ask('created', { op: 'create', ...bundle.cfg, audioStreaming:true, ...(flightEnabled()?{flight:scene.flight,flightEpoch:++flightEpoch}:{}) });
     requireValue(result.created, 'CREATE_FAILED', 'Cannot create the selected emulator board.');
-    audio.reset(!isSramOnlyBoard(bundle.cfg.board)&&result.audioAvailable===true);
+    audio.reset(!restrictedIO(bundle.cfg.board)&&result.audioAvailable===true);
     for (const file of bundle.files) {
       const data = file.data.slice().buffer;
       const result = await ask(`loaded:${file.at === undefined ? KINDS[file.kind] : `at${file.at}`}`, { op: 'load', ...(file.at === undefined ? { kind: KINDS[file.kind] } : { at: file.at }), data }, [data]);
@@ -727,6 +773,13 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }
     await initializeStorage(bundle, result.flashStorage, progress);
     await initializeSd(bundle);
+    if(bundle.cfg.c5WifiDriverCompat){
+      const requestId=++inputSequence,reply=await ask(`c5-driver-compat:${requestId}`,{op:'c5-driver-compat',requestId,profile:bundle.cfg.c5WifiDriverCompat});
+      requireValue(reply.ok,'C5_DRIVER_COMPAT_REJECTED',reply.error||'The offline driver profile rejected this firmware.');
+      const value=reply.driverCompatibility;
+      requireValue(value?.enabled===true&&value.profile===bundle.cfg.c5WifiDriverCompat&&value.nativeWifi===false&&value.associated===false&&value.hasIp===false&&value.storage==='session-RAM','C5_DRIVER_COMPAT_REJECTED','The worker did not confirm the selected offline driver profile.');
+      active();driverCompatibility=clone(value);emit({type:'driver-compatibility',driverCompatibility:clone(driverCompatibility)});active();
+    }
     const selectedBle = selectBleProfile(bundle.cfg.board, bundle.files, bundle.receipt.artifacts);
     if (selectedBle) {
       progress.prepare('ble-controller');
@@ -740,7 +793,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       bundle.receipt.ble = adapter.receipt;
     }
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
-    if(isSramOnlyBoard(bundle.cfg.board))await network.attach({available:false});
+    if(restrictedIO(bundle.cfg.board))await network.attach({available:false});
     else if(result.networkAvailable&&chipForBoard(bundle.cfg.board)!=='esp32p4')await network.attach({available:true,softApAvailable:!isS31Board(bundle.cfg.board),manifestWifi:bundle.cfg.wifi});
     else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
     if (imuModel()&&!flightEnabled()) await applyImu();
@@ -753,7 +806,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (thermalEnvironment) await queueInput({t:'thermal-environment',...thermalEnvironment});
     resetAccessoryInputs();
     for(const route of accessoryInputs.filter(route=>!route.hub)) await sendAccessory(route);
-    emit({type:'accessories',accessoryInputs:clone(accessoryInputs)});
+    emit({type:'accessories',accessoryInputs:clone(accessoryInputs)});active();return active;
   };
   const applyBleNearby=async nearby=>{
     const requestId=++inputSequence,reply=await ask(`ble:${requestId}`,{op:'ble-nearby',requestId,spec:nearby.join('\n')});
@@ -859,7 +912,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(Number.isInteger(event.x) && Number.isInteger(event.y) && event.x >= 0 && event.y >= 0 && event.x < width && event.y < height && typeof event.down === 'boolean', 'INVALID_INPUT', 'Touch coordinates must be integer native display pixels within the panel.');
       message = { t: 'touch', x: event.x, y: event.y, down: event.down ? 1 : 0 };
     } else if (event.type === 'serial') {
-      requireValue(!isSramOnlyBoard(product?.runtime?.board)||event.port==='uart0','UNSUPPORTED_PORT','This SRAM runtime currently exposes UART0 input only.');
+      requireValue(!restrictedIO(product?.runtime?.board)||event.port==='uart0','UNSUPPORTED_PORT','This runtime currently exposes UART0 input only.');
       requireValue(!isS31Board(product?.runtime?.board)||['usb','uart0'].includes(event.port),'UNSUPPORTED_PORT','S31 runtime currently exposes USB and UART0 input only.');
       requireValue(['usb', 'uart0', 'uart1'].includes(event.port), 'UNSUPPORTED_PORT', 'Supported input ports are usb, uart0 and uart1; UART2 input is not exposed by upstream.');
       const maxBytes = event.port === 'usb' ? 4096 : 128;
@@ -1006,27 +1059,27 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     readAudio(options){return exclusive(async()=>{await audio.refresh();return audio.read(options);});},
     async capabilities() {
       const powerAvailable = hasPowerEnvironment(product), thermalAvailable = hasThermalEnvironment(product);
-      const sramOnly=isSramOnlyBoard(product?.runtime?.board),s2=isS2Board(product?.runtime?.board),h2=isH2Board(product?.runtime?.board),c61=isC61Board(product?.runtime?.board),s31=isS31Board(product?.runtime?.board);
+      const sramOnly=isSramOnlyBoard(product?.runtime?.board),c5=isC5Board(product?.runtime?.board),s2=isS2Board(product?.runtime?.board),h2=isH2Board(product?.runtime?.board),c61=isC61Board(product?.runtime?.board),s31=isS31Board(product?.runtime?.board),limited=sramOnly||c5;
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
-        execution: {mode: product?.runtime?.board === 'stopwatch'||sramOnly||c61||s31 ? 'wasm-interpreter' : 'wasm-jit', reason: s31?'S31 uses the dual-hart RV32 interpreter.':sramOnly?`${s2?'S2':h2?'H2':'C5'} SRAM app-direct only; no ROM/IDF startup or JIT.`:c61?'C61 uses the RV32 interpreter.':product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null,...(sramOnly?{bootModes:['app-direct'],romBoot:false,resetMode:'reload-same-sram-image',counterSemantics:s2?'interpreter-instructions':'interpreter-slots-including-wfi-idle',sramRanges:clone(s2?S2_SRAM_RANGES:h2?H2_SRAM_RANGES:C5_SRAM_RANGES),...(s2?{sramPhysicalBytes:320*1024,sramAliased:true}:{})}:{})},
-        sdCard:{available:hasSdCard(product?.runtime?.board),slot:hasTfSlot(product),configurable:hasTfSlot(product),defaultInserted:hasTfSlot(product),defaultBytes:DEFAULT_SD_BYTES,maxBytes:MAX_SD_BYTES,formats:[...SD_FORMATS,'raw-image'],blankCapacitiesMiB:[...SD_CAPACITIES],scope:'product-board-canonical-flash-sha256',preparedScope:'product',autoSaveIntervalMs:1500,crashSafe:false},
+        execution: {...(product?.runtime?.board==='waveshare-c5-lcd273'?{c5WifiDriverCompat:scene?.c5WifiDriverCompat??null,c5WifiDriverCompatProfiles:[C5_WIFI_DRIVER_COMPAT_PROFILE]}:{}),mode: product?.runtime?.board === 'stopwatch'||limited||c61||s31 ? 'wasm-interpreter' : 'wasm-jit', reason: c5?'C5 uses the RV32 interpreter; ROM boot requires the pinned MP revision100 image.':s31?'S31 uses the dual-hart RV32 interpreter.':sramOnly?`${s2?'S2':h2?'H2':'C5'} SRAM app-direct only; no ROM/IDF startup or JIT.`:c61?'C61 uses the RV32 interpreter.':product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null,...(limited?{bootModes:c5?['rom','app-direct']:['app-direct'],romBoot:c5,resetMode:c5&&!loaded?.cfg.appDirect?'rom-reset':'reload-same-sram-image',counterSemantics:s2?'interpreter-instructions':c5&&scene?.c5WifiDriverCompat?'interpreter-slots-including-wfi-idle-and-driver-compat':'interpreter-slots-including-wfi-idle',sramRanges:clone(s2?S2_SRAM_RANGES:h2?H2_SRAM_RANGES:C5_SRAM_RANGES),...(s2?{sramPhysicalBytes:320*1024,sramAliased:true}:{})}:{})},
+        sdCard:{available:hasSdCard(product?.runtime?.board),slot:hasTfSlot(product),configurable:hasTfSlot(product),defaultInserted:hasTfSlot(product),defaultBytes:DEFAULT_SD_BYTES,maxBytes:MAX_SD_BYTES,formats:[...SD_FORMATS,'raw-image'],blankCapacitiesMiB:[...SD_CAPACITIES],scope:loaded&&sramAppDirect(loaded.cfg)?'product-board-application-sha256':'product-board-canonical-flash-sha256',preparedScope:'product',autoSaveIntervalMs:1500,crashSafe:false},
         ble:{available:c61,model:c61?'c61-legacy-digital-radio':null,physicalRf:false,connections:false,recording:false,shares:false,maxNearby:32,maxQueuedPackets:256,methods:c61?['configureBle','readBle']:[]},
-        network:sramOnly?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&chipForBoard(product.runtime.board)!=='esp32p4',transport:s31?'ethernet-websocket':'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&(c61||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),automaticProvisioning:c61||s31?[]:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
+        network:limited?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&chipForBoard(product.runtime.board)!=='esp32p4',transport:s31?'ethernet-websocket':'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&(c61||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),automaticProvisioning:c61||s31?[]:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
         audio:isStickPlusBoard(product?.runtime?.board) ? {
           input:{available:false,ports:[],reason:'Browser PCM is output-only for StickC-Plus.'},
           output:{available:true,channels:1,format:'s16le',source:'guest-routed-ledc-g2',sampleRate:16000},
           methods:['readAudio'],
-        } : sramOnly?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&chipForBoard(product.runtime.board)!=='esp32p4',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||s31||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
+        } : limited?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&chipForBoard(product.runtime.board)!=='esp32p4',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||s31||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
         environment:{power:{available:powerAvailable,virtual:true,measured:false,inputType:'power-environment',unit:'microvolt',fields:powerAvailable?[...POWER_KEYS]:[],defaultInput:powerAvailable?powerParameters():null,boundsUv:powerAvailable?clone(POWER_BOUNDS_UV):null,recording:powerAvailable,shares:'initial-scene-and-recorded-inputs',adcSource:'guest-time-AXP192-registers'}},
         ...(thermalAvailable?{thermal:{model:'lepton3-cci-raw14-subset',sceneUnits:'raw14-counts',defaultScene:'deterministic-synthetic-hotspot',environmentInput:'input:thermal-environment',calibrated:false,hardwareValidated:false,recordable:true,shareable:true}}:{}),
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
-        firmware: { manifest: true, mergedImage: !sramOnly, localFile: true, localSegments: !sramOnly, localBuild: !sramOnly, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true,...(sramOnly?{sramAppDirect:true,ota:false,targetRevision:s2?0:h2?null:100}:{}) },
-        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,pins,addresses,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),...(pins?{pins,addresses}:{}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:product.runtime.board==='seeed-sensecap-watcher'?20:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || boardButton(c)).map(c => c.id) : [], touch: !!(product?.runtime?.board && supportsTouch()), keyboard:keyboardForBoard(product?.runtime?.board), serialPorts: sramOnly?['uart0']:s31?['usb','uart0']:['usb', 'uart0', 'uart1'] },
+        firmware: { manifest: true, mergedImage: !sramOnly, localFile: true, localSegments: !sramOnly, localBuild: !sramOnly, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true,...(limited?{sramAppDirect:true,ota:false,targetRevision:s2?0:h2?null:100}:{}) },
+        input: { accessories: accessoryInputs.map(({accessoryId,model,port,pin,pins,addresses,control,hub,viaAccessoryId,portId})=>({accessoryId,model,port,...(pin===undefined?{}:{pin}),...(pins?{pins,addresses}:{}),controls:control?[control]:[],...(hub?{hub:true}:{}),...(viaAccessoryId?{viaAccessoryId,portId}:{})})), encoders: product?.runtime?.encoder ? controls().filter(c => c.type === 'encoder').map(c => ({id:c.id,detents:c.detents,stepsPerMessage:64,phaseMs:product.runtime.board==='seeed-sensecap-watcher'?20:2,direction:'positive-clk-first'})) : [], buttons: product?.runtime?.board ? controls().filter(c => Number.isInteger(c.pin ?? c.gpio) || boardButton(c)).map(c => c.id) : [], touch: !!(product?.runtime?.board && supportsTouch()), keyboard:keyboardForBoard(product?.runtime?.board), serialPorts: limited?['uart0']:s31?['usb','uart0']:['usb', 'uart0', 'uart1'] },
         servos:{available:product?.runtime?.board==='stackchan',axes:product?.runtime?.board==='stackchan'?['pan','tilt']:[],source:'guest-uart-feedback',unit:'degrees',hardwareValidated:false},
         motors:{available:hasMotorOutput(product?.runtime?.board),axes:hasMotorOutput(product?.runtime?.board)?STAMPFLY_MOTORS.map(({id})=>id):[],source:'guest-routed-pwm',unit:'normalized-duty',rpmAvailable:false,flightSimulated:false,hardwareValidated:false},
         flight:{available:hasFlight(product?.runtime?.board),enabled:flightEnabled(),model:FLIGHT_MODEL,calibrated:false,source:'guest-pwm-rigid-body',methods:['configureFlight','readFlight'],recording:false,shares:'configuration-only',worldFrame:'NED',bodyFrame:'FRD'},
-        hardwareDiagnostics:{available:['stopwatch','corematrix'].includes(product?.runtime?.board),source:'guest-registers',hardwareValidated:false},
+        hardwareDiagnostics:{available:['stopwatch','corematrix','waveshare-c5-lcd273'].includes(product?.runtime?.board),source:product?.runtime?.board==='waveshare-c5-lcd273'?'guest-registers-and-device-transactions':'guest-registers',hardwareValidated:false},
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { available:gpsSupported(),mode: gpsSupported()?'logical-uart1-nmea':null, physicalRouting: false, baudTiming: false, hardwareValidated: false },
         lora:{available:!!loraForBoard(product?.runtime?.board),model:loraForBoard(product?.runtime?.board)?.model||'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
@@ -1077,7 +1130,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       const progress = loadReporter(loadId, aborter.signal);
       try {
         const selected = source || scene.firmware, bundle = await prepare(selected, progress);
-        await initialize(bundle, progress); loaded = bundle; firmware = bundle.receipt;
+        const confirmActive=await initialize(bundle, progress);confirmActive();loaded = bundle; firmware = bundle.receipt;
         if (bundle.receipt.source === 'remote') scene.firmware = bundle.receipt.manifestUrl
           ? { manifestUrl: bundle.receipt.manifestUrl, sha256: bundle.receipt.manifestHash }
           : { url: bundle.receipt.artifacts[0].url, sha256: bundle.receipt.artifacts[0].sha256, ...(selected.archive?{archive:clone(selected.archive)}:{}), ...(bundle.receipt.appDirect?{bootMode:'app-direct'}:selected.bootMode?{bootMode:'rom'}:{}) };
@@ -1104,7 +1157,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(loaded, 'NOT_READY', 'Load firmware before resetting.');
       if (worker && status==='running') await ask('stopped',{op:'stop'});
       await preserveStorage();
-      clearMotors(); clearHardwareDiagnostics(); loadCancelled = false; aborter = new AbortController(); serial = ''; serialByPort = {}; stats = {}; hostPace = {}; frame = null; frameNumber = 0; lastError = null;leds=[];servos=[];servoSupply=null; setStatus('loading');
+      clearMotors(); clearHardwareDiagnostics();clearDriverCompatibility(); loadCancelled = false; aborter = new AbortController(); serial = ''; serialByPort = {}; stats = {}; hostPace = {}; frame = null; frameNumber = 0; lastError = null;leds=[];servos=[];servoSupply=null; setStatus('loading');
       try { await initialize(loaded, loadReporter(loadId, aborter.signal)); setStatus('ready'); return await start(); }
       catch (e) { stopWorker(); if (status !== 'disposed') setStatus(loadCancelled ? 'configured' : 'error'); if (loadCancelled) throw error('FETCH_ABORTED', 'Firmware load was cancelled.'); throw e; }
     }); },

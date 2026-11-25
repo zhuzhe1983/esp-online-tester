@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "baseCommit": "26f35c8a497629bc43135a9debbc2308562a9bbd",
+  "purpose": "Diagnose the real original-firmware PSRAM connectivity failure after successful OCODE; no runtime success claim.",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/mspi.rs",
+      "sha256": "54f523397ed001e98bf04f5da5896d461a27808cca1e5c662275cb3fd592b729"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "a1cf3b18eabc267cec8c215177b4553ae2e53eb76854287c35b1b2e682c863ad"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "0b8decf24a6d958c7b5cd099009e7da0daa056b6feb469595f852fe92db96b6b"
+    }
+  ],
+  "command": "C5_FACTORY_TRACE_ARM_PC=4080a400 C5_FACTORY_TRACE_MSPI=1 C5_FACTORY_TRACE_PCS=4080a400,4002c51c,4002c51e,4002c4da,4002c4dc,4080a422,4080a44e,4080a46e,4080a472 cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared FAT32 card>",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "nativeLog": {
+    "file": "native-machine-lcd273-psram-connectivity.log",
+    "sha256": "bb0a962ef749c39209f39603e26874ecff08d34bb3d98c5efe52ff92ffe07155",
+    "logBytes": 14524
+  },
+  "observedRun": {
+    "steps": 20748961,
+    "cycles": 20748928,
+    "uartBytes": 2046,
+    "firstFault": null,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "trapMepc": "0x4080ae8e",
+    "trapMcause": 2,
+    "trapMtval": 0,
+    "sameStepsCyclesUartAsWithoutPsramSnapshots": true
+  },
+  "commonTransactionState": {
+    "pcrConfig": "0x00000005",
+    "pcrClock": "0x00000605",
+    "spi1Clock": "0x00030103",
+    "sourceSelector": 2,
+    "fastDividerField": 5,
+    "serialN": 3,
+    "modelFunctionalHzBeforeFix": 480000000,
+    "modelSerialHzBeforeFix": 120000000,
+    "nativePads": "0x00768000",
+    "qpi": false,
+    "ioMux": {
+      "15": "0x800",
+      "17": "0x700",
+      "18": "0x500",
+      "20": "0x500",
+      "21": "0x500",
+      "22": "0x700"
+    },
+    "control2": "0x003ff7fc",
+    "spi1Ddr": "0x00000020",
+    "chipSelectWhileCommand": "CS1 only; MISC=1"
+  },
+  "selectedProtocolObservations": [
+    {
+      "stage": "QPI exit F5",
+      "cycle": 20719168,
+      "beforePc": "0x4002c51c",
+      "afterPc": "0x4002c51e",
+      "ctrl": "0x012c210c",
+      "user": "0x80008000",
+      "user1": "0x00000000",
+      "user2": "0x700000f5",
+      "psram0BeforeAfter": "00000000",
+      "qpiBeforeAfter": false
+    },
+    {
+      "stage": "SPI write02, address0,32bits",
+      "cycle": 20719424,
+      "ctrl": "0x002c000c",
+      "user": "0xc8000000",
+      "user1": "0x5c000000",
+      "user2": "0x70000002",
+      "mosiDlen": 31,
+      "address": 0,
+      "w0": "0x5a6b7c8d",
+      "psram0BeforeAfter": "00000000"
+    },
+    {
+      "stage": "SPI read03, address0,32bits",
+      "cycle": 20719744,
+      "ctrl": "0x002c000c",
+      "user": "0xd0000000",
+      "user1": "0x5c000000",
+      "user2": "0x70000003",
+      "misoDlen": 31,
+      "address": 0,
+      "w0Before": "0x5a6b7c8d",
+      "w0After": "0xffffffff",
+      "psram0BeforeAfter": "00000000"
+    }
+  ],
+  "actualGuestCompare": {
+    "pc": "0x4080a472",
+    "cycle": 20719808,
+    "x14Readback": "0xffffffff",
+    "x15Reference": "0x5a6b7c8d",
+    "result": "not equal; original error branch, ID read is later"
+  },
+  "checks": [
+    {
+      "command": "cargo clippy -p esp32c5 --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "psram-probe-clippy.log",
+      "sha256": "19a03c4c7ad3469899914e685254573c57f6920e58a23a76c3de5882ffe6afe0",
+      "logBytes": 154
+    }
+  ],
+  "diagnosticContract": "Getter reads existing fields/RegRam/host backing only, with no guest Bus accesses, mutation, firmware patch, target ACK or runtime hot-path counters. Caller supplies arm/PC list; four snapshots per PC maximum. Disabled observer adds no runtime profile work.",
+  "limits": [
+    "These are selected numeric protocol summaries; full raw console/observations remain in ignored cache.",
+    "The before-fix clock calculation is an observed model result, not a valid silicon clock claim. A separate fixed-LL audit and code change will determine the correct divider behavior.",
+    "No full PSRAM selftest, app_main, LCD/buttons/TF/Wi-Fi result or C5 publication is claimed."
+  ],
+  "inputsAfterRun": [
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    },
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    }
+  ]
+}

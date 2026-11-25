@@ -13,6 +13,9 @@ pub enum Trap {
     Interrupt(u32),
     /// instruction not implemented by the emulator (pc, raw word)
     Unimplemented(u32, u32),
+    /// A model boundary at this pc, without taking an architectural exception.
+    /// No instruction word is claimed when fetch itself could not be qualified.
+    ModelLimit(u32),
     /// `simcall` — Xtensa semihosting request
     Simcall,
     /// `ebreak` — a panic, an assert, or a debugger breakpoint in a RISC-V guest

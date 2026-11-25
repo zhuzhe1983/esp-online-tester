@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "baseCommit": "ae15a7ec",
+  "problem": "CPU-only reset reconstructed HP peripherals; Core causes other than03 lost required PC/SP retention.",
+  "correction": "CPU-only causes0b/0c/0d/11/18/1a preserve HP/LP/analog, reset core-local CLIC/context. All eight documented HP Core causes retain monitor PC/SP. SRAM app-direct retains documented host recopy contract.",
+  "source": "C5 TRM1.1 Table9.1-1 and section20.5.2; existing module source hashes retained.",
+  "checks": [
+    {
+      "command": "cargo test --release -p esp32c5 --test cpu_monitor --test boot_controls --test machine",
+      "passed": 20,
+      "failed": 0,
+      "logSha256": "2743732ab9bcd13ef25349f45e8070af1d3a4d46e69be473d135eed2c70ac8fa"
+    },
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> cargo test --release -p esp32c5 --lib factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag -- --include-ignored",
+      "passed": 1,
+      "failed": 0,
+      "logSha256": "13fb9809233505135faf63b4b391cba7db46bef09f9d879663d95e07bcfed8fa",
+      "note": "The integration targets included on this filtered attempt ran zero tests; the separate unfiltered command above covers them."
+    },
+    {
+      "command": "cargo clippy -p esp32c5 --all-targets -- -D warnings",
+      "exitCode": 0,
+      "logSha256": "19a03c4c7ad3469899914e685254573c57f6920e58a23a76c3de5882ffe6afe0"
+    }
+  ],
+  "initialTestCorrection": {
+    "logSha256": "1d6f553afdda8500de21697cf37e29d3aff7790409d858ba9e006cae43aa8c14",
+    "result": "New regression initially expected live RAW=1 after CPU reset. Source-backed cpu_reset clears live CPU conditions; corrected expectation is RAW0 with the sampled IRQ retained until actual resampling. No production workaround."
+  }
+}

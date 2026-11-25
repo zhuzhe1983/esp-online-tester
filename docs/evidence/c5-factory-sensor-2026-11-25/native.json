@@ -1,0 +1,468 @@
+{
+  "schemaVersion": 1,
+  "kind": "c5-original-factory-sensor-negative-diagnostic",
+  "date": "2026-11-25",
+  "status": "diagnosed-no-production-model-change",
+  "sourceBase": "bb8cfef839dd0fd01c9b72f4f6c5ba0eab99d406",
+  "productionChanges": false,
+  "board": "waveshare-c5-lcd273",
+  "wifiDriverProfile": "waveshare-lcd273-idf553-offline-v1",
+  "inputs": {
+    "esp32c5_rev100_rom.elf": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "lcd273-factory.bin": {
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    "lcd273-photo-fixture.img": {
+      "bytes": 67108864,
+      "sha256": "f29e47c7fca119caf71353f311cfb7bcbb4ccff2c26f6afcf9c80c9805dba80f"
+    }
+  },
+  "sourceFiles": {
+    "esp32c5/src/i2c.rs": {
+      "bytes": 5697,
+      "sha256": "78a20aecd82dc83b0c503db26a3889e6fd133a078a470256aeb2b6088f3e06e8"
+    },
+    "esp32c5/src/board/waveshare_lcd273.rs": {
+      "bytes": 9724,
+      "sha256": "b81b2aeeaa7a915fc6e9f2937a0cd210d834ef494adb8faff6313fed51dd0fe4"
+    },
+    "esp-periph/src/i2c/shtc3.rs": {
+      "bytes": 11931,
+      "sha256": "cedf67dd9efdbd5a9d51c8b39ccd6abf47afbdb95d0e52632ff3344b5fa62411"
+    },
+    "esp-soc/src/devices/qmi8658.rs": {
+      "bytes": 23329,
+      "sha256": "0364ebc6a54fd12cbdbb22ca4f1622408121aee61d62968c76f131a106f4a927"
+    },
+    "factory-shtc3.c": {
+      "bytes": 3168,
+      "sha256": "05f2d81041fc1add9533ef3f0f15bb979f196defa79760b017a473a6268b6b61"
+    },
+    "factory-shtc3.h": {
+      "bytes": 4049,
+      "sha256": "bff9feff889e7284b6d05c6018228560a465d2c12ed585c932ae6be5243ff2b4"
+    },
+    "factory-compass_ui.c": {
+      "bytes": 10075,
+      "sha256": "78368de44e75570faaae8840a292f8d78fd250ceb63a1aa43603671d2a3fe592"
+    },
+    "waveshare-qmi8658-1.0.1.c": {
+      "bytes": 13605,
+      "sha256": "74f022dda11d2aff0519e9a77a72e17c5a3bbd9050e0d9d7e935369698ae1ee0"
+    },
+    "waveshare-qmi8658-1.0.1.h": {
+      "bytes": 6199,
+      "sha256": "8df80e3666a5cd1112c093e9e86bb0599f8b8cfdd7ec997971f9c36e718adf89"
+    }
+  },
+  "probe": {
+    "inputMethod": "Real public GPIO active-low NEXT3 once then BOOT28, from cold original ROM/factory boot.",
+    "initialMenuCycles": 500000000,
+    "eachButtonLowCycles": 31200000,
+    "eachButtonHighCycles": 50400000,
+    "postInputCycles": 156000000,
+    "finalCycles": 819200000,
+    "finalCpuSchedulerSlots": 819200000,
+    "retired": 346962007,
+    "exceptions": 0,
+    "firstFault": null,
+    "uartBytes": 5914,
+    "interrupts": 10351,
+    "guestApp1Clicked": true,
+    "hostInvokedGuestFunctions": false,
+    "guestFirmwareRomAndCardModified": false,
+    "hostSensorEnvironmentChanged": false,
+    "hostSensorReadyOrClockChanged": false,
+    "cycleMeaning": "Nominal240MHz scheduler cycles, not wall-time or physical timing measurements."
+  },
+  "instrumentation": {
+    "scope": "Temporary C5-only transparent I2cDevice delegates for existing0x70/0x6b devices, existing controller status/cmd observation and cold native instruction observer.",
+    "sharedTraitOrVtableModified": false,
+    "callbacksForwarded": [
+      "address",
+      "pins",
+      "start",
+      "start_address",
+      "start_address_with_clock",
+      "write",
+      "read",
+      "stop"
+    ],
+    "extraControllerReadOffsets": [
+      "0x08 status (pure)",
+      "0x58..0x74 commands (pure)"
+    ],
+    "guestDataRegistersReadOnlyAsGuestExecutes": true,
+    "observerGuestBufferMethod": "Bounded read-only host slice of already-written internal SRAM, not another CPU bus access.",
+    "actualRunSourceManifest": {
+      "patch": {
+        "bytes": 6318,
+        "sha256": "e048d05aca54e1784a5ed8fd7346a8b02ec1e4b77d27234b91ba3448c4f53dc1"
+      },
+      "instrumentedI2c": {
+        "bytes": 8037,
+        "sha256": "3271e5eef07c2ac2df939c550df58c6e4575b494e944d2054f1db70154a4bbbf"
+      },
+      "harness": {
+        "bytes": 4694,
+        "sha256": "d3ea7010ae0aafce8ba26d06bdbd2e547d3a6789ef4a154d582a6e0d44f5acbf"
+      }
+    },
+    "actualRunSourceManifestFile": {
+      "bytes": 369,
+      "sha256": "92ada28b016abd2157e88182695b55fb72aeacb6cfe3af9f371652d5c23b8567"
+    },
+    "intermediateManifestRetained": {
+      "patch": {
+        "bytes": 6318,
+        "sha256": "e048d05aca54e1784a5ed8fd7346a8b02ec1e4b77d27234b91ba3448c4f53dc1"
+      },
+      "instrumentedI2c": {
+        "bytes": 8037,
+        "sha256": "3271e5eef07c2ac2df939c550df58c6e4575b494e944d2054f1db70154a4bbbf"
+      },
+      "harness": {
+        "bytes": 4573,
+        "sha256": "4ea4cecf2dc180ba0690d0eafc1eff1405c9d915430e7e69b59a90767ff7f49a"
+      }
+    },
+    "intermediateManifestFile": {
+      "bytes": 369,
+      "sha256": "2a521b0d561f644eb4d8d1ccc49e80133035a258942286aeec469e9ed5ef3fd3"
+    },
+    "manifestDistinction": "The intermediate file named diagnostic-final-source.json describes the4573B/4ea4 harness compiled before WAKE_TX_RETURN was added. It is not the source of the actual run. diagnostic-ready-source.json and the run manifest explicitly describe the4694B/d3ea harness used.",
+    "actualBinarySha256": "9e92a2082e143bfc36556f887d7593489bea5810171f8fc659484b89cb52b935",
+    "initialCompileFailureRetained": {
+      "exitCode": 101,
+      "kind": "Temporary diagnostic logger Rust borrow error, before any emulator run.",
+      "correctedBeforeRun": true
+    },
+    "restoredSource": {
+      "base": "bb8cfef839dd0fd01c9b72f4f6c5ba0eab99d406",
+      "restoredI2cSha256": "78a20aecd82dc83b0c503db26a3889e6fd133a078a470256aeb2b6088f3e06e8",
+      "trackedAndUntrackedClean": true,
+      "diagnosticHarnessPreserved": true,
+      "diagnosticPatchPreserved": true,
+      "noProductionChange": true
+    }
+  },
+  "shtc3": {
+    "factoryCommand": "0x7866 normal, temperature first, no SCL stretch",
+    "nominalSclHzObserved": 100000,
+    "modelEnvironment": {
+      "temperatureC": 25,
+      "relativeHumidity": 50,
+      "origin": "Explicit virtual input; not measured ambient."
+    },
+    "modelNormalConversionUs": 12100,
+    "datasheetTypicalUs": 10800,
+    "datasheetMaximumUs": 12100,
+    "datasheet": {
+      "title": "Sensirion SHTC3 Version4 December2022",
+      "url": "https://sensirion.com/media/documents/643F9C8E/63A5A436/Datasheet_SHTC3.pdf",
+      "sha256": "dbe979c975fe520663606b5c278d2b9130f4e402e6d9d943ca06c4e4f38e63d9"
+    },
+    "startupId": {
+      "wakeAck": true,
+      "wakeTransmitReturn": "0x0",
+      "idCommand": "efc8",
+      "idReadAck": true,
+      "actualReadHex": "0807",
+      "idCrcWasRead": false
+    },
+    "polls": [
+      {
+        "poll": 1,
+        "wakeLastByteAckCycle": 691525971,
+        "measureLastByteAckCycle": 691656243,
+        "measureTransmitReturnCycle": 691659603,
+        "measureTransmitReturn": "0x0",
+        "vTaskDelayReturnCycle": 694325411,
+        "vTaskDelayRequestedTicks": 2,
+        "measureTransmitReturnToDelayReturnCycles": 2665808,
+        "measureTransmitReturnToDelayReturnMs": 11.107533333333333,
+        "readAddressCycle": 694351779,
+        "elapsedFromMeasurementStartCycles": 2695536,
+        "elapsedFromMeasurementStartMs": 11.2314,
+        "modeledConversionDeadline": 694560243,
+        "readEarlyCycles": 208464,
+        "readEarlyMs": 0.8686,
+        "readAddressAck": false,
+        "rawInterrupt": "0x402",
+        "statusAfterNack": "0x1",
+        "rxFifoCount": 0,
+        "receiveReturnCycle": 694352739,
+        "receiveReturn": "0x103",
+        "guestReceiveBuffer": "0x408559f8",
+        "guestReceiveLength": 6,
+        "guestReceiveBufferBeforeHex": "000000000000",
+        "guestReceiveBufferAfterHex": "000000000000",
+        "dataReadCallbacksDuringReceive": 0,
+        "sleepAddressCycle": 694379235,
+        "sleepAddressAck": false,
+        "sleepTransmitReturn": "0x103",
+        "getThCallerReturnCycle": 694388451,
+        "getThCallerReturn": "0x0",
+        "guestTemperature": -45.0,
+        "guestHumidity": 0.0
+      },
+      {
+        "poll": 2,
+        "wakeLastByteAckCycle": 763522323,
+        "measureLastByteAckCycle": 763652595,
+        "measureTransmitReturnCycle": 763655955,
+        "measureTransmitReturn": "0x0",
+        "vTaskDelayReturnCycle": 766325411,
+        "vTaskDelayRequestedTicks": 2,
+        "measureTransmitReturnToDelayReturnCycles": 2669456,
+        "measureTransmitReturnToDelayReturnMs": 11.122733333333333,
+        "readAddressCycle": 766351779,
+        "elapsedFromMeasurementStartCycles": 2699184,
+        "elapsedFromMeasurementStartMs": 11.2466,
+        "modeledConversionDeadline": 766556595,
+        "readEarlyCycles": 204816,
+        "readEarlyMs": 0.8534,
+        "readAddressAck": false,
+        "rawInterrupt": "0x402",
+        "statusAfterNack": "0x1",
+        "rxFifoCount": 0,
+        "receiveReturnCycle": 766352739,
+        "receiveReturn": "0x103",
+        "guestReceiveBuffer": "0x408559f8",
+        "guestReceiveLength": 6,
+        "guestReceiveBufferBeforeHex": "000000000000",
+        "guestReceiveBufferAfterHex": "000000000000",
+        "dataReadCallbacksDuringReceive": 0,
+        "sleepAddressCycle": 766379235,
+        "sleepAddressAck": false,
+        "sleepTransmitReturn": "0x103",
+        "getThCallerReturnCycle": 766388323,
+        "getThCallerReturn": "0x0",
+        "guestTemperature": -45.0,
+        "guestHumidity": 0.0
+      }
+    ],
+    "guestAbi": {
+      "getThEntry": "0x420189e4",
+      "wakeTransmitReturn": "0x420188c4",
+      "measureTransmitReturn": "0x42018a2e",
+      "vTaskDelayReturn": "0x42018a38",
+      "receiveEntry": "0x4211e748",
+      "receiveReturnBeforeA0Overwrite": "0x42018a4a",
+      "sleepTransmitReturn": "0x42018b56",
+      "getThCallerReturn": "0x4200dc46",
+      "frameSp": "0x408559f0",
+      "receiveBufferOffset": 8,
+      "temperatureOutput": "0x40855a38",
+      "humidityOutput": "0x40855a3c"
+    },
+    "abiLimits": [
+      "Wake is an optimized static .isra.0 function: a0 at0x42018a1c is not a reliable esp_err_t; the transmit return at0x420188c4 is.",
+      "vTaskDelay is void; its returned a0 is only an observed raw register, not status.",
+      "get_th unconditionally returns ESP_OK after ignoring individual transaction failures; it does not prove a successful reading."
+    ],
+    "conclusion": "Both measurement commands ACK normally. Each receive address is issued before the declared maximum conversion deadline and correctly NACKs. No six-byte measurement response reaches the guest. The unchanged zero buffer is converted by the original driver to-45C/0%RH.",
+    "modelAction": "Keep12.1ms, busy NACK and actual guest errors. No sensor ready/data/profile adjustment.",
+    "realHardwareLimit": "This proves failure under the stated maximum-conversion virtual profile. It does not establish that every physical sensor fails; a typical10.8ms conversion can finish before the observed reads.",
+    "timingInference": "The original request is2RTOS ticks, but the observed delay interval is about11.1ms. A tick-based delay request is not a guarantee of20ms elapsed conversion time."
+  },
+  "qmi8658": {
+    "address": "0x6b",
+    "actualConfigurationWrites": [
+      {
+        "register": "0x02 CTRL1",
+        "value": "0x60",
+        "allBytesAck": true
+      },
+      {
+        "register": "0x03 CTRL2",
+        "value": "0x24 final (earlier0x23)",
+        "allBytesAck": true
+      },
+      {
+        "register": "0x04 CTRL3",
+        "value": "0x43",
+        "allBytesAck": true
+      },
+      {
+        "register": "0x08 CTRL7",
+        "value": "0x03",
+        "allBytesAck": true
+      }
+    ],
+    "samples": [
+      {
+        "firstRegister": "0x35",
+        "length": 12,
+        "readStartCycle": 691251276,
+        "wireHex": "000000001000000000000000",
+        "addressAck": true
+      },
+      {
+        "firstRegister": "0x33",
+        "length": 2,
+        "readStartCycle": 691339452,
+        "wireHex": "1900",
+        "addressAck": true
+      },
+      {
+        "firstRegister": "0x35",
+        "length": 12,
+        "readStartCycle": 763251210,
+        "wireHex": "000000001000000000000000",
+        "addressAck": true
+      },
+      {
+        "firstRegister": "0x33",
+        "length": 2,
+        "readStartCycle": 763339386,
+        "wireHex": "1900",
+        "addressAck": true
+      }
+    ],
+    "currentModelInterpretation": {
+      "ctrl1Bit5EndianSwap": true,
+      "accelRangeG": 8,
+      "accelLsbPerG": 4096,
+      "zRawBigEndian": 4096,
+      "zG": 1,
+      "temperatureRawBigEndian": 6400,
+      "temperatureC": 25
+    },
+    "factoryLittleEndianInterpretation": {
+      "zRaw": 16,
+      "oneGConstant": 9.807,
+      "accelLsbPerG": 4096,
+      "zMetresPerSecondSquared": 0.03830859375,
+      "temperatureRaw": 25,
+      "temperatureC": 0.09765625,
+      "displayAccelZ": "0.04",
+      "displayTemperature": "0.10"
+    },
+    "conclusion": "The observed bytes and the factory LE parse explain the display. The chip-level validity of the existing BE interpretation is qualified by the separate protocol source audit, not by this trace alone.",
+    "modelAction": "No raw values, register semantics or host sample changed."
+  },
+  "frame": {
+    "width": 320,
+    "height": 320,
+    "nonzeroPixels": 102188,
+    "rgb565": {
+      "bytes": 204800,
+      "sha256": "44d2846e699b87bae898eff6e84e6c394dff8a3a5622811cbd9d1da53442cbdd"
+    },
+    "png": {
+      "bytes": 8718,
+      "sha256": "4d2cb0dd7dcd82b0ea9523e9d12706b3f8e08766d27a1c67be341d5dde371b70"
+    },
+    "visuallyObserved": [
+      "Sensor page",
+      "QMI AccelZ0.04, Temp0.10",
+      "SHTC3 Temp-45.00, Humi0.00",
+      "real back button"
+    ],
+    "browserFrameBitIdentityClaim": false
+  },
+  "artifacts": {
+    "source-before.json": {
+      "bytes": 186,
+      "sha256": "85520c25f3728430e2d261d59ddfd9cb5a84c5b99e2e4d702e10da9c9c48e4ef"
+    },
+    "i2c-original.rs": {
+      "bytes": 5697,
+      "sha256": "78a20aecd82dc83b0c503db26a3889e6fd133a078a470256aeb2b6088f3e06e8"
+    },
+    "diagnostic.patch": {
+      "bytes": 6237,
+      "sha256": "30bb5d4d392199831cb184d424d5934e1e97b719338b523dcffac05930b28cb5"
+    },
+    "diagnostic-source.json": {
+      "bytes": 369,
+      "sha256": "6b8f7939aff088d1205fa8b042dc5176d99061aa5c55586156f64e22a59d656e"
+    },
+    "diagnostic-final.patch": {
+      "bytes": 6318,
+      "sha256": "e048d05aca54e1784a5ed8fd7346a8b02ec1e4b77d27234b91ba3448c4f53dc1"
+    },
+    "diagnostic-final-source.json": {
+      "bytes": 369,
+      "sha256": "2a521b0d561f644eb4d8d1ccc49e80133035a258942286aeec469e9ed5ef3fd3"
+    },
+    "diagnostic-ready-source.json": {
+      "bytes": 369,
+      "sha256": "92ada28b016abd2157e88182695b55fb72aeacb6cfe3af9f371652d5c23b8567"
+    },
+    "factory_sensor_boundary.rs": {
+      "bytes": 4573,
+      "sha256": "4ea4cecf2dc180ba0690d0eafc1eff1405c9d915430e7e69b59a90767ff7f49a"
+    },
+    "factory_sensor_boundary-final.rs": {
+      "bytes": 4694,
+      "sha256": "d3ea7010ae0aafce8ba26d06bdbd2e547d3a6789ef4a154d582a6e0d44f5acbf"
+    },
+    "factory_sensor_boundary-worktree-copy.rs": {
+      "bytes": 4694,
+      "sha256": "d3ea7010ae0aafce8ba26d06bdbd2e547d3a6789ef4a154d582a6e0d44f5acbf"
+    },
+    "build.log": {
+      "bytes": 2933,
+      "sha256": "d84e1f8e315ab791b66deab3b9ae30c1e172bebdd0da7f9c34e6ab63a130f74c"
+    },
+    "build-final.log": {
+      "bytes": 171,
+      "sha256": "e077ad0835eedee86c397a7ab49e6f6314a3a80eaa74ac1ee4137474ff640672"
+    },
+    "build-ready.log": {
+      "bytes": 171,
+      "sha256": "82fb232212fdf0e2ddec6f4bc2d20eeb08e46c88fa3978e1f2be7fcfd9c6a8a8"
+    },
+    "run.log": {
+      "bytes": 34729,
+      "sha256": "c287dd715c3b909dc0d5ba3439a9b6dbc9d08e21fae4d3e64f820a5f9069d758"
+    },
+    "qmi-transactions.json": {
+      "bytes": 5050,
+      "sha256": "a0d5e209b536109d06772c26b695fa80611acd11acf3578e4fa48a9b4cc8dd89"
+    },
+    "restored.json": {
+      "bytes": 288,
+      "sha256": "46b1cba3bc9c887a9cbffa62c63d6bb512c5423b7a90e3ad546cfa4056488615"
+    },
+    "frame.rgb565": {
+      "bytes": 204800,
+      "sha256": "44d2846e699b87bae898eff6e84e6c394dff8a3a5622811cbd9d1da53442cbdd"
+    },
+    "frame.png": {
+      "bytes": 8718,
+      "sha256": "4d2cb0dd7dcd82b0ea9523e9d12706b3f8e08766d27a1c67be341d5dde371b70"
+    },
+    "uart0.txt": {
+      "bytes": 5914,
+      "sha256": "5413eb211fd81698b09a890cf42cc2db2fda12d753c29560771169a2e067e187"
+    },
+    "hardware.json": {
+      "bytes": 1177,
+      "sha256": "25b171c3abd4362020d9f9c45f96cd065939fd4a883443ef5037c1b040d547dd"
+    },
+    "driver-compatibility.json": {
+      "bytes": 833,
+      "sha256": "28c8dfc4af856bf8fbc0a2a048a413855e45e801e13f8db4f3dfcef05b7544f5"
+    }
+  },
+  "reproduction": [
+    "Use sourceBase with the retained diagnostic-final.patch and actual4694B final harness; do not substitute the older4573B intermediate harness.",
+    "CARGO_TARGET_DIR=<TASK_TARGET> cargo build --release -p esp32c5 --example factory_sensor_boundary",
+    "<TASK_TARGET>/release/examples/factory_sensor_boundary <ROM_ELF> <ORIGINAL_FACTORY_BIN> <F29_CARD_IMG> <FRESH_OUTPUT_DIR>",
+    "Restore the exact original i2c.rs and retain the diagnostic harness outside the production tree."
+  ],
+  "limits": [
+    "One instrumented native run with two ordinary Sensor callbacks; no repeat or new correctness/CPU suite was run.",
+    "No performance result is inferred from this logging probe.",
+    "The native route selects Sensor directly from the initial menu; it does not replay the earlier browser Photo/Back path or establish browser framebuffer bit identity.",
+    "No raw process inventory, identifiers or absolute paths are embedded; original inputs, full log, source/patch snapshots and hashes are retained separately.",
+    "The original Sensor output remains incorrect as a measurement; successful UI execution must not be reported as sensor-value compatibility."
+  ]
+}

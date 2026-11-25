@@ -43,9 +43,78 @@ fn initialize(b:&mut C5Bus){
 }
 #[test]fn lcd273_does_not_inherit_touch_audio_pmic_or_analog_ack(){
  let mut b=fixture();assert_eq!(transfer(&mut b,0x6b,&[0],1).unwrap(),[5]);assert!(transfer(&mut b,0x51,&[0],1).is_ok());
- for a in[0x6a,0x20,0x15,0x38,0x58,0x18,0x34,0x70]{assert!(transfer(&mut b,a,&[0],1).is_err());}
+ for a in[0x6a,0x20,0x15,0x38,0x58,0x18,0x34]{assert!(transfer(&mut b,a,&[0],1).is_err());}
  for reg in[6,7,255]{assert!(transfer(&mut b,0x24,&[reg],1).is_err());}
  transfer(&mut b,0x24,&[2,1,0x80],0).unwrap();transfer(&mut b,0x24,&[3,1,0x80],0).unwrap();assert_eq!(transfer(&mut b,0x24,&[4],2).unwrap()[1]&0x80,0x80);
  put(&mut b,0x6009_6020,3);put(&mut b,0x6009_6020,1);assert_eq!(transfer(&mut b,0x24,&[4],2).unwrap()[1]&0x80,0x80,"C5I2C controller reset does not erase board MCU state");
  pin(&mut b,27,256);pin(&mut b,0,47);put(&mut b,0x6009_12d4+4*47,0x100);assert!(transfer(&mut b,0x24,&[4],2).is_err());
+}
+fn sensor_timing(b:&mut C5Bus){put(b,I,239);put(b,I+0x38,240);for o in[0x40,0x44,0x48,0x4c]{put(b,I+o,0);}}
+// Deadline-sized advances exercise the real C5Bus -> C5I2c::sync -> board
+// guest-time path; a large catch-up before the first address could hide POR.
+fn sensor_transfer(b:&mut C5Bus,address:u8,bytes:&[u8],count:u32)->Result<Vec<u8>,()>{
+ put(b,I+0x24,0x7ffff);put(b,I+0x18,0x408b|(3<<12));let mut cmd=0x58;
+ put(b,I+cmd,6<<11);cmd+=4;
+ if !bytes.is_empty()||count==0{
+  put(b,I+0x1c,u32::from(address)<<1);for &byte in bytes{put(b,I+0x1c,u32::from(byte));}
+  put(b,I+cmd,(1<<11)|(1<<8)|(bytes.len()as u32+1));cmd+=4;
+  if count!=0{put(b,I+cmd,6<<11);cmd+=4;}
+ }
+ if count!=0{
+  put(b,I+0x1c,(u32::from(address)<<1)|1);put(b,I+cmd,(1<<11)|(1<<8)|1);cmd+=4;
+  if count>1{put(b,I+cmd,(3<<11)|(count-1));cmd+=4;}put(b,I+cmd,(3<<11)|(1<<10)|1);cmd+=4;
+ }
+ put(b,I+cmd,2<<11);put(b,I+4,(1<<4)|(1<<5));
+ for _ in 0..20000{
+  let raw=get(b,I+0x20);if raw&(1<<10)!=0{return Err(());}
+  if raw&(1<<7)!=0{return Ok((0..count).map(|_|get(b,I+0x1c)as u8).collect());}
+  b.advance(b.next_deadline().unwrap_or(1).clamp(1,256));
+ }panic!("SHTC3 MMIO transaction did not terminate");
+}
+fn sensor_crc(bytes:&[u8])->u8{let mut rem=0xffu16;for &byte in bytes{rem^=u16::from(byte);for _ in 0..8{rem<<=1;if rem&0x100!=0{rem^=0x131;}}}rem as u8}
+#[test]fn lcd273_shtc3_factory_commands_use_real_guest_waits_and_crc(){
+ let mut b=fixture();sensor_timing(&mut b);put(&mut b,I+0x28,0x5a8);
+ assert!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],2).is_err(),"first address precedes 240us power-up");
+ b.advance(240_000);sensor_transfer(&mut b,0x70,&[0x35,0x17],0).unwrap();
+ assert!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],2).is_err(),"wake has a real 240us deadline");
+ b.advance(57_600);assert_eq!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],2).unwrap(),[8,7]);
+ assert_eq!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],3).unwrap(),[8,7,sensor_crc(&[8,7])]);
+ sensor_transfer(&mut b,0x70,&[0x78,0x66],0).unwrap();assert!(sensor_transfer(&mut b,0x70,&[],6).is_err(),"busy read must NACK");
+ b.advance(2_904_000);let bytes=sensor_transfer(&mut b,0x70,&[],6).unwrap();assert_eq!(bytes,[0x66,0x66,sensor_crc(&[0x66,0x66]),0x80,0,sensor_crc(&[0x80,0])]);
+ assert!(sensor_transfer(&mut b,0x70,&[],6).is_err(),"reread without a fresh command is outside the subset");
+ sensor_transfer(&mut b,0x70,&[0xb0,0x98],0).unwrap();assert!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],2).is_err());
+ sensor_transfer(&mut b,0x70,&[0x35,0x17],0).unwrap();b.advance(57_600);assert_eq!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],2).unwrap(),[8,7]);
+ assert!(b.board.report().contains("SHTC3@70 timed-no-stretch virtual25C/50%RH"));
+}
+#[test]fn lcd273_shtc3_controller_cpu_reset_and_bad_routes_preserve_truthful_state(){
+ let mut b=fixture();sensor_timing(&mut b);b.advance(57_600);sensor_transfer(&mut b,0x70,&[0x78,0x66],0).unwrap();
+ put(&mut b,0x6009_6020,3);put(&mut b,0x6009_6020,1);sensor_timing(&mut b);
+ let cycle=b.cycles;b.request_reset(0x0c);assert_eq!(b.reboot([0;6]),0x0c);assert_eq!(b.cycles,cycle);
+ assert!(sensor_transfer(&mut b,0x70,&[],6).is_err(),"controller and CPU reset do not finish or discard a powered sensor's conversion");
+ b.advance(2_904_000);assert_eq!(&sensor_transfer(&mut b,0x70,&[],6).unwrap()[..2],&[0x66,0x66]);
+ sensor_transfer(&mut b,0x70,&[0xb0,0x98],0).unwrap();put(&mut b,0x6009_6020,3);put(&mut b,0x6009_6020,1);sensor_timing(&mut b);
+ assert!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],2).is_err(),"controller reset must not wake the sensor");
+ sensor_transfer(&mut b,0x70,&[0x35,0x17],0).unwrap();b.advance(57_600);
+ for address in[0x71,0x44,0x45]{assert!(sensor_transfer(&mut b,address,&[0xef,0xc8],2).is_err());}
+ pin(&mut b,27,46);pin(&mut b,26,47);put(&mut b,0x6009_12d4+4*47,0x11a);put(&mut b,0x6009_12d4+4*46,0x11b);
+ assert!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],2).is_err());
+ pin(&mut b,27,47);pin(&mut b,26,46);put(&mut b,0x6009_12d4+4*47,0x11b);put(&mut b,0x6009_12d4+4*46,0x11a);
+ assert_eq!(sensor_transfer(&mut b,0x70,&[0xef,0xc8],2).unwrap(),[8,7]);assert!(sensor_transfer(&mut b,0x70,&[0,0],1).is_err());
+}
+#[test]fn lcd273_hardware_snapshot_is_cold_and_retains_real_lcd_latches(){
+ let mut b=fixture();initialize(&mut b);b.attach_sd_card(Box::new(esp_periph::sdmmc::MemStore(vec![0;1<<20])),Default::default()).unwrap();
+ let before=(b.cycles,b.board.display_version(),b.board.display_frames(),b.board.report(),b.board.display().unwrap());
+ let json=b.board.hardware_diagnostics().unwrap();assert!(json.contains("\"counterEncoding\":\"u64-decimal\""));
+ assert!(json.contains("\"resetHigh\":true,\"sleepOut\":true,\"displayOn\":true,\"visible\":true,\"brightness\":255"));
+ assert!(json.contains("\"present\":true,\"transport\":\"spi2-sdhc\",\"card\":{\"spiMode\":false,\"cardState\":\"Idle\""));
+ assert!(json.contains("\"nativeCommandCalls\":\"0\",\"storageBlocksLoaded\":\"0\",\"storageBlocksWritten\":\"0\""));
+ for _ in 0..8{assert_eq!(b.board.hardware_diagnostics().unwrap(),json);}
+ assert_eq!((b.cycles,b.board.display_version(),b.board.display_frames(),b.board.report(),b.board.display().unwrap()),before);
+ transfer(&mut b,0x24,&[5,0],0).unwrap();let dim=b.board.hardware_diagnostics().unwrap();assert!(dim.contains("\"displayOn\":true,\"visible\":false,\"brightness\":0"));
+ assert_eq!(b.board.display_frames(),before.2,"observing brightness changes does not create an LCD RAMWR");
+ let mut unattached=C5Bus::new();unattached.attach_board(esp32c5::board::make_board("waveshare-c5-lcd273").unwrap());
+ assert!(unattached.board.hardware_diagnostics().unwrap().contains("\"present\":false,\"transport\":\"spi2-sdhc\",\"card\":null"));
+ for name in["waveshare-c5-lcd147","waveshare-c5-touch35","stamp-c5"]{
+  let other=esp32c5::board::make_board(name).unwrap();assert!(other.hardware_diagnostics().is_none(),"unselected board must keep its existing no-observation behavior");
+ }
 }

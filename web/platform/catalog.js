@@ -10,6 +10,7 @@ import {isPressControl} from './control-input.js';
 // Static catalog and portable scene contract. No application server is required.
 import {isShellFinish} from './appearance.js';
 import {validateFirmwareTargets} from './firmware-target.js';
+import {c5WifiDriverCompatIssue} from './c5-wifi-driver-compat.js';
 export const SCHEMA_VERSION = '1';
 export const MAX_SCENE_BYTES = 64 * 1024;
 // Release metadata grows independently of portable scenes and private imports.
@@ -140,12 +141,15 @@ export function validateScene(scene, catalog) {
   const errors = [], warnings = [];
   try { checkedJson(scene); } catch (error) { return {valid: false, errors: [issue(error.code, '/', error.message)], warnings}; }
   if (!record(scene)) return {valid: false, errors: [issue('SCENE', '/', 'Scene must be an object.')], warnings};
-  allowedKeys(scene, ['schemaVersion', 'productId', 'firmware', 'accessories', 'keyMapping', 'view', 'localAccessories', 'flight', 'environment', 'thermalEnvironment'], '', errors);
+  allowedKeys(scene, ['schemaVersion', 'productId', 'firmware', 'accessories', 'keyMapping', 'view', 'localAccessories', 'flight', 'environment', 'thermalEnvironment', 'c5WifiDriverCompat'], '', errors);
   if (scene.schemaVersion !== SCHEMA_VERSION) errors.push(issue('SCHEMA_VERSION', '/schemaVersion', 'Only scene schema version 1 is supported.'));
   const product = catalog.products.find(item => item.id === scene.productId);
   if (!product) errors.push(issue('UNKNOWN_PRODUCT', '/productId', `Unknown product: ${scene.productId}`));
   else if (product.runtime.status === 'unavailable') warnings.push(issue('MODEL_UNAVAILABLE', '/productId', product.model ? 'This product has metadata and a visual preview; its board model is not implemented.' : 'This product has catalog metadata; its board model and visual preview are not implemented.'));
   else if (product.runtime.status === 'partial') warnings.push(issue('PARTIAL_MODEL', '/productId', 'The board model is partial. Firmware compatibility requires an actual execution test.'));
+  const compatIssue = c5WifiDriverCompatIssue(scene, product);
+  if (compatIssue) errors.push(compatIssue);
+  else if (scene.c5WifiDriverCompat !== undefined) warnings.push(issue('C5_WIFI_DRIVER_COMPAT_OFFLINE', '/c5WifiDriverCompat', 'Explicit offline Wi-Fi driver compatibility mode. No hotspot or network connection; Wi-Fi settings last only for this run. This is not strict hardware simulation.'));
   if (scene.environment !== undefined && (!hasPowerEnvironment(product) || !validPowerScene(scene.environment))) {
     errors.push(issue('POWER_ENVIRONMENT', '/environment', 'StickC-Plus requires a complete virtual power environment.'));
   }

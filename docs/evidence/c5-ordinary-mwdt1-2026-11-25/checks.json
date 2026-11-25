@@ -1,0 +1,85 @@
+{
+  "baseline": "5ae6002bc21b190bd23f01d274094d258931f184",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "edition": "2021",
+  "target": "aarch64-apple-darwin",
+  "ownedSource": "esp32c5/src/timg_wdt.rs",
+  "ownedSourceSha256": "585037ebdab1a829ed1f74cc6208dff33f6463f464cfe277d3d4bdf75ba0c07d",
+  "otherActualModules": {
+    "esp32c5/src/lp_wdt.rs": "67a1bc2033d386325da368ae679f7c76cb5229e34429fd336831e4b940b1be3a",
+    "esp32c5/src/lp_wdt_rwdt.rs": "c7a94c5e4347f67a95245d7152760b76c72c1b6a1d347c9860675d377e6136df"
+  },
+  "standaloneCommand": "python3 docs/evidence/c5-ordinary-mwdt1-2026-11-25/run-owned-checks.py --output \"$TASK_TMP/final-checks\"",
+  "results": {
+    "tests": 65,
+    "passed": 65,
+    "failed": 0,
+    "ignored": 0,
+    "timgTests": 25,
+    "unchangedLpTests": 37,
+    "jointFixtures": 3,
+    "rustcExit": 0,
+    "testsExit": 0,
+    "clippyDriverWarningsDeniedExit": 0,
+    "lintAllowances": []
+  },
+  "outputSha256": {
+    "check-0.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check-1.txt": "39696ca209a787229eccec34bb79a9a45c140aa15b2d8ee6514b77d49cc3dfb5",
+    "check-2.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "old14Tests": {
+    "baselineSectionSha256": "843c16e7ddc17bed40e883725ac77db5560c4d732d7b746c96647fc0a4f42540",
+    "retainedSectionSha256": "dd6f32230eb13fac19e856104528e083c17d8037d9a82e13dc808dca7ccff00a",
+    "onlyChange": "New exact TG1 IRQ+7c is known; the unknown-address negative fixture now uses still-unsupported TG0 IRQ+7c. All 14 other bodies/count expectations unchanged."
+  },
+  "independentNumericSamples": {
+    "sourceHz": 48000000,
+    "prescale": 24000,
+    "nominalSchedulerHz": 240000000,
+    "oneTickCycles": 120000,
+    "initialIRQDeltaFromPhaseZeroFeed": 1200000000,
+    "initialCore8Delta": 2400000000,
+    "runtimeIRQDeltaFromPhaseZeroFeed": 72000000,
+    "runtimeCore8Delta": 216000000,
+    "maxPrescaleHoldIRQCycles": 1407353408389125,
+    "maxPrescaleHoldCore8Cycles": 2814706816778250,
+    "fractionSample": {
+      "cycle1Phase": 48000000,
+      "cycle1FeedIRQDeadline": 10,
+      "cycle2DivResetIRQDeadline": 12,
+      "noneAt3ResumeAt10000IRQDeadline": 10009,
+      "shortHoldCommitAt34CoreDeadline": 130
+    }
+  },
+  "negativeResults": [
+    {
+      "run": "initial standalone module fixtures",
+      "passed": 23,
+      "failed": 1,
+      "reason": "Maximum-hold expected integer was transcribed incorrectly. Actual 1407353408389125 was confirmed by independent Python multiplication 4294967295 * 65535 * 5. Corrected expected value; no implementation change for this failure.",
+      "wrongIRQExpected": 1407353803969125,
+      "correctIRQExpected": 1407353408389125
+    },
+    {
+      "kind": "static audit correction",
+      "reason": "Earlier ignored 38-row static list omitted the repeated tick-hook KEY unlock. New actual-module fixture performs the initial 30 writes and the runtime KEY/stage0 triple/stage1 triple/FEED/lock sequence (9 writes). Earlier ignored receipt is retained; it was not a native trace."
+    }
+  ],
+  "limits": [
+    "Actual modules only; no Cargo/workspace/native/WASM/browser/benchmark run.",
+    "No claim that unchanged factory has reached or executed IWDT/FreeRTOS/app_main.",
+    "Synchronous UPDATE/read0 and functional divider-phase preservation are declared virtual contracts; no physical pulse/synchronization accuracy.",
+    "Active subset TG1 only: source0 XTAL48M, positive prescale/holds, INT->Core8, later stages OFF, flashboot0. TG0 ordinary still rejects in this commit.",
+    "None pauses ordinary TG1 edges and preserves phase; conflicting known rates fail. Cold TG0 keeps its original sticky None clock-fault contract.",
+    "Shared IRQ writes require unlocked KEY in this qualified subset; locked protection interaction is unresolved and explicitly rejected. General timer bit0/reserved writes reject.",
+    "Parent owns Bus/Soc sources, reset arbitration/dispatch and native acceptance."
+  ],
+  "privacyCheck": {
+    "command": "node tools/check-evidence-privacy.mjs",
+    "exitCode": 0,
+    "trackedEvidenceFiles": 3168,
+    "gzipFiles": 95,
+    "manualReview": "Only scoped source/curated receipts/harnesses; no private paths, raw streams or process inventories retained."
+  }
+}

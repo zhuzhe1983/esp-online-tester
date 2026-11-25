@@ -11,6 +11,8 @@ pub enum Stop {
     Halted,
     Breakpoint(u32),
     Unimplemented(u32, u32),
+    /// A model boundary; guest exception state has not been manufactured.
+    ModelLimit { core: usize, pc: u32 },
     /// a chip reset was requested (software, watchdog): `reboot()` and run again
     SwReset,
     /// `simcall` — Xtensa semihosting
@@ -48,6 +50,9 @@ pub trait Soc: 'static {
     const BOOTLOADER_OFFSET: usize = 0;
     /// The mask ROM ELF's file name in espressif/esp-rom-elfs.
     const ROM_ELF: &'static str;
+    /// A chip-specific, transactional ROM loader can replace the default ELF
+    /// staging path. This cold hook may also attach that chip's observers.
+    fn load_rom_override(_machine: &mut crate::machine::Machine<Self>, _bytes: &[u8]) -> Option<Result<(), String>> where Self: Sized { None }
     const CPU_HZ: u64;
     const CORES: usize;
     /// How far time jumps when every core sleeps (at most; deadlines and limits cut it).
@@ -95,10 +100,16 @@ pub trait Soc: 'static {
     /// addresses to learn whose they are.
     #[inline(always)]
     fn select_core(_bus: &mut Self::Bus, _core: usize) {}
+    /// An observer ended the instruction callback chain. Drop any chip-private
+    /// transient CPU context before returning control to the host.
+    fn observer_stopped(_bus: &mut Self::Bus) {}
     /// Refuse a bootloader or application image (an `esp_image_header_t` first) this model cannot
     /// run, such as one built for another silicon revision; the error completes "the image ...".
     /// The front ends call it for the images they load, before the first instruction.
     fn check_image(_image: &[u8]) -> Result<(), String> { Ok(()) }
+    /// Optional cold image validation with actual capacity, mode and placement.
+    /// Raw Flash page writes/restores do not use this image-only hook.
+    fn check_image_at(_bus: &Self::Bus, _kind: crate::load::LoadKind, _offset: usize, _data: &[u8]) -> Option<Result<(), String>> { None }
 }
 
 /// Programmed GPIO state, not the resolved electrical level or peripheral-matrix output.

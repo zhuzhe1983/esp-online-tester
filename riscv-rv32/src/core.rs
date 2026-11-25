@@ -55,7 +55,8 @@ impl emu_core::Core for Cpu {
         s
     }
     fn dump(&self, core: usize, sym: &dyn Fn(u32) -> String) -> String {
-        format!("core{}: pc={:#010x} {}  mtvec={:#010x} mcause={:#010x} mepc={:#010x} mstatus={:#010x} insns={}\n", core, self.pc, sym(self.pc), self.mtvec, self.mcause, self.mepc, self.mstatus, self.insn_count)
+        let mut out=format!("core{}: pc={:#010x} {}  mtvec={:#010x} mcause={:#010x} mepc={:#010x} mstatus={:#010x} insns={}\n", core, self.pc, sym(self.pc), self.mtvec, self.mcause, self.mepc, self.mstatus, self.insn_count);
+        if let Some(e)=self.c5_memory_unsupported(){out.push_str(&format!("C5 memory policy model limit: {e:?}\n"));}out
     }
     fn has_trap_handler(&self) -> bool { self.mtvec != 0 }
     fn probe_args<B: emu_core::Bus>(&self, _bus: &mut B) -> String { format!("a0={:#x} a1={:#x} a2={:#x}", self.x[10], self.x[11], self.x[12]) }

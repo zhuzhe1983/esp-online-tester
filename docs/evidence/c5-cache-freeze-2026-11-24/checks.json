@@ -1,0 +1,180 @@
+{
+  "baseCommit": "70c6478ac529d25357c49dd30ef97920bc201a5c",
+  "integrationEquivalent": "8f2b6a2d",
+  "scope": "Private mode0 freeze lifecycle over coherent no-line cache; real CPU/backing data tests; no full-ROM or physical miss-timing claim",
+  "sourceAuditCompletedBeforeImplementation": true,
+  "sourceVersions": {
+    "v5.5.3": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+    "v5.5.4": "735507283d5b2f9fb363a1901172dbd9e847945d"
+  },
+  "sourceReceipt": "../c5-cache-boot-2026-11-24/checks.json",
+  "sources": [
+    {
+      "name": "cache_reg.h",
+      "sha256": "763acb8902916afcbc5dd9c113618c6828b612575aecd4b8799b1dfb5edf7fa8",
+      "byteIdenticalVersions": true
+    },
+    {
+      "name": "cache_struct.h",
+      "sha256": "6685eb262f64c821dc859da3ab6430f55b2df4afe08b7fddd4a386cc8089fc33",
+      "byteIdenticalVersions": true
+    },
+    {
+      "name": "cache_ll.h",
+      "sha256": "cfbcd7c32d6f50b3fdb5a0be6d68c13b2f2abff9c7be62ae91ed8b42a2a9717c",
+      "byteIdenticalVersions": true
+    },
+    {
+      "name": "cache.h",
+      "sha256": "96c73b0054ecd7cae8dbed8686b6006bf8b2a53c5c62ec6b6e3d9acd159a2a9e",
+      "byteIdenticalVersions": true
+    }
+  ],
+  "trm": {
+    "version": "1.1",
+    "sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "scope": "Audited material supplies no resolving cache-freeze description"
+  },
+  "sourceConflict": {
+    "registerMode0": "miss access does not stick",
+    "registerMode1": "miss access sticks",
+    "romEnumMode0": "ACK_BUSY on cache miss",
+    "romEnumMode1": "ACK_ERROR, wrong data and error on cache miss",
+    "romFunctionComment": "mode0 assert busy, mode1 assert hit",
+    "resolvedPhysicalMissSemantics": false,
+    "mode1Support": false
+  },
+  "romAudit": {
+    "function": "Cache_Freeze_Enable(0)",
+    "enablePc": "0x4002c6ca",
+    "enableStorePc": "0x4002c6e4",
+    "pollPc": "0x4002c6e6",
+    "disablePc": "0x4002c702",
+    "disableStorePc": "0x4002c70e",
+    "clearPollPc": "0x4002c714",
+    "disassemblySha256": "475522d8b3a29739dbb3a7d79ed35769e6de12aa323919cdb0d86ad5befc1dc7",
+    "modeReadPc": "0x4002c6d0",
+    "modeClearStorePc": "0x4002c6d8"
+  },
+  "contract": {
+    "register": "0x600c8028",
+    "enableBit": 16,
+    "unsupportedModeBit": 17,
+    "readOnlyDoneBit": 18,
+    "resetRead": 0,
+    "enabledAndQuiescentRead": "0x50000",
+    "lifecycle": [
+      "Disabled",
+      "Quiescing",
+      "Frozen"
+    ],
+    "quiescence": "All previous backing accesses completed synchronously in CoherentPassthrough; no resident/dirty cache lines or pending fill/writeback queues",
+    "cacheLineAllocations": 0,
+    "statusReadCreatesCompletion": false,
+    "reservedUnknownAndMode1Writes": "reject before mutation",
+    "readOnlyDoneStore": "ignored; cannot create acknowledgement",
+    "disable": "clearEN clearsDONE",
+    "clockGate": "retain state, block cache/CPU access",
+    "pcrReset": "clear freeze state",
+    "physicalAckBusyErrorOrTimingAccuracy": false
+  },
+  "nativeBaselineBeforeFollowUp": {
+    "log": "ignored common/native-machine-lcd273-cache.log",
+    "sha256": "2450f68380fafa4d93670f0f45c17ff9a085181c11bec82fd5114d4990102b85",
+    "steps": 277440,
+    "firstFault": {
+      "pc": "0x4002c6d0",
+      "address": "0x600c8028",
+      "write": false,
+      "width": 4
+    },
+    "uartBytes": 101,
+    "nonzeroPixels": 0,
+    "fullRomAfterThisPatchExecuted": false,
+    "logBytes": 1380
+  },
+  "realCpuBackingTest": {
+    "firstInstruction": "0x02500513 addi a0,zero,37",
+    "firstResult": 37,
+    "frozenResultBeforeProgram": 37,
+    "realSPI1Program": "WREN then PP4 bytes, one-to-zero flash programming",
+    "programmedInstruction": "0x00000513 addi a0,zero,0",
+    "frozenResultAfterProgram": 0,
+    "preloadAndAutoload": "disabled, no fill request",
+    "checks": [
+      "actual flash bytes",
+      "CPU register result",
+      "CPU data read",
+      "freeze readback",
+      "transactional mode1 rejection",
+      "bus masks",
+      "disable",
+      "reboot preserves flash but clears freeze"
+    ]
+  },
+  "files": [
+    {
+      "path": "esp32c5/src/cache.rs",
+      "sha256": "7d30c06946790cb56768dc1646feeea79cbd2d274f7544543c170bd3df25ed4d"
+    },
+    {
+      "path": "esp32c5/tests/cache.rs",
+      "sha256": "f0e7e1100ee07cfc3ba0691b32bcf550046b673812d90892756df0e26a635b0c"
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "1.100.0 (3acc79c0c 2026-11-05)"
+  },
+  "checks": [
+    {
+      "command": "clippy-driver --edition=2021 --test esp32c5/src/cache.rs -D warnings -o <lane-target>/cache-unit-clippy",
+      "result": "pass",
+      "allowancesAdded": false
+    },
+    {
+      "command": "<lane-target>/cache-unit-clippy --nocapture",
+      "result": "pass",
+      "passed": 8,
+      "failed": 0
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-cache-boot-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --lib cache::tests -- --nocapture",
+      "result": "pass",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 42
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-cache-boot-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --test cache -- --nocapture",
+      "result": "pass",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "command": "clippy-driver --edition=2021 --crate-name c5_cache_controls --test esp32c5/tests/cache.rs -D warnings -o <lane-target>/cache-integration-clippy --extern esp32c5=<built-rlib> --extern emu_core=<built-rlib> --extern esp_periph=<built-rlib> --extern esp_soc=<built-rlib> --extern riscv_rv32=<built-rlib> -L dependency=<each-built-rlib-directory>",
+      "result": "pass"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "filesChecked": 3035,
+      "gzipFiles": 95
+    }
+  ],
+  "integrationRequirement": "Parent retains PCR/cache glue ownership; ordinary library in lane still warns about two unwired PCR methods. No warning allowance added.",
+  "limits": [
+    "Bounded functional mode0 lifecycle only; contradictory physical miss response is unresolved.",
+    "No cache-line allocation/fills, cache-hit/miss counters or physical timing model.",
+    "Mode1, reserved/unknown freeze fields, tag/lock/trace and active preload/autoload remain unsupported.",
+    "No bus/soc/shared edits, broad tests, benchmarks or publication.",
+    "Original factory/native/Worker acceptance awaits integration."
+  ],
+  "privacy": "Public source facts/hashes and aggregate checks only; personal paths/raw captures omitted."
+}

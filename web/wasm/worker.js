@@ -16,6 +16,8 @@ let wasm = null, emu = 0, running = false, t0 = 0, resyncs = 0, lastStat = { wal
 let loopGeneration = 0, booted = false, catchupTurns = 0;
 let runCycles=null,flight=null;
 let flashShadow = null, flashWatchId = null, flashScanAt = 0;
+let flashStorageAllowed=false,ioRestricted=false,c5AppDirect=null;
+let c5DriverCompatProfile=null,c5DriverCompatEnabled=false,c5DriverCompatLast='',c5DriverCompatAt=-Infinity;
 const FLASH_PAGE = 4096;
 let sdShadow=null,sdWatchId=null,sdScanAt=0;
 let motionEnabled=false,motionLast='',motionAt=0;
@@ -44,6 +46,25 @@ function collectHardwareDiagnostics(force=false) {
   } catch { /* An unsupported or malformed diagnostic snapshot must not stop firmware. */ }
   finally {wasm.esp32sim_free(p,capacity);}
 }
+// Explicit offline driver observation; never polls an unselected/strict session.
+function readC5DriverCompatibility() {
+  if(!emu||!wasm.esp32sim_c5_wifi_driver_compat_state)throw new Error('C5 driver compatibility observations unavailable');
+  const capacity=32768,p=wasm.esp32sim_alloc(capacity);
+  try {
+    const n=wasm.esp32sim_c5_wifi_driver_compat_state(emu,p,capacity);
+    if(!Number.isInteger(n)||n<=0||n>capacity)throw new Error('Invalid C5 driver compatibility snapshot');
+    const value=JSON.parse(dec.decode(mem().subarray(p,p+n)));
+    if(value?.enabled!==true||value.profile!==c5DriverCompatProfile||value.nativeWifi!==false||value.associated!==false||value.hasIp!==false||value.storage!=='session-RAM'||typeof value.hookCalls!=='string'||!/^(0|[1-9][0-9]*)$/.test(value.hookCalls))throw new Error('Unexpected C5 offline driver state');
+    return value;
+  } catch(error){if(c5DriverCompatEnabled){c5DriverCompatEnabled=false;c5DriverCompatLast='';postMessage({driverCompatibility:null});}throw error;}
+  finally {wasm.esp32sim_free(p,capacity);}
+}
+function collectC5DriverCompatibility(force=false) {
+  if(!c5DriverCompatEnabled||!force&&performance.now()-c5DriverCompatAt<250)return;
+  c5DriverCompatAt=performance.now();
+  const value=readC5DriverCompatibility(),json=JSON.stringify(value);
+  if(json!==c5DriverCompatLast){c5DriverCompatLast=json;postMessage({driverCompatibility:value});}
+}
 function sdBytes() {if(!emu||!wasm.esp32sim_sd_len)throw new Error('SD images unsupported by this WASM');return mem().subarray(wasm.esp32sim_sd_ptr(emu),wasm.esp32sim_sd_ptr(emu)+wasm.esp32sim_sd_len(emu));}
 function collectSd(force=false) {
   if(!sdShadow||!force&&performance.now()-sdScanAt<1500)return;sdScanAt=performance.now();
@@ -53,6 +74,7 @@ function collectSd(force=false) {
   if(pages.length)postMessage({sdDelta:{watchId:sdWatchId,pages}},pages.map(p=>p.data));
 }
 function flashBytes() {
+  if (!flashStorageAllowed) throw new Error('Flash snapshots require a ROM/Flash session');
   if (!emu || !wasm.esp32sim_flash_ptr || !wasm.esp32sim_flash_len) throw new Error('Flash snapshots are unsupported by this WASM build');
   const bytes = mem().subarray(wasm.esp32sim_flash_ptr(emu), wasm.esp32sim_flash_ptr(emu) + wasm.esp32sim_flash_len(emu));
   const length = wasm.esp32sim_ble_hci_flash_len?.(emu) || 0;
@@ -137,8 +159,8 @@ function loop(generation = loopGeneration) {
     if (inputTraceIds.length) postMessage({ touchTrace: { stage: 'run-exit', ids: inputTraceIds, atMs: traceNow(), cycles: cur } });
     pacing.observe(cur - previous, performance.now() - before);
     drain();drainNetwork();
-    collectFlash();collectSd();collectMotion();collectHardwareDiagnostics();
-    if (rc !== 0) { running = false;collectHardwareDiagnostics(true); postMessage({ stopped: rc }); return; }
+    collectFlash();collectSd();collectMotion();collectHardwareDiagnostics();collectC5DriverCompatibility();
+    if (rc !== 0) { running = false;collectHardwareDiagnostics(true);collectC5DriverCompatibility(true); postMessage({ stopped: rc }); return; }
     if (performance.now() - now >= turnMs) break;                       // let messages flow, come back
   }
   const aheadMs = cur / CPU_HZ * 1000 - (performance.now() - t0);
@@ -209,40 +231,43 @@ onmessage = async (ev) => {
     }
     if (m.op === 'init') { frameAck = m.frameAck === true; traceEnabled = !!m.touchTrace; const r = await WebAssembly.instantiate(m.wasm, imports); wasm = r.instance.exports;  postMessage({ ready: true }); }
     else if (m.op === 'create') {
+      if(m.c5WifiDriverCompat!==undefined&&(m.board!=='waveshare-c5-lcd273'||m.appDirect!==false||m.c5WifiDriverCompat!=='waveshare-lcd273-idf553-offline-v1'))throw new Error('Unsupported C5 Wi-Fi driver compatibility profile');
       running = false; loopGeneration++; booted = false;ethernetRelay=false;softApEnabled=false;softApLastStatus='';softApStatusAt=0;
       flashShadow = null; flashWatchId = null;
       // Keep credits for already posted frames until their ACKs arrive, but never send
       // a retained frame from the emulator being replaced.
       pendingFrame = null;sdShadow=null;sdWatchId=null;
       motionEnabled=['stackchan','stampfly','stampfly-v11'].includes(m.board);motionLast='';motionAt=0;
-      hardwareChecksEnabled=m.board==='stopwatch'||m.board==='corematrix';hardwareChecksLast='';hardwareChecksAt=-Infinity;
+      hardwareChecksEnabled=m.board==='stopwatch'||m.board==='corematrix'||m.board==='waveshare-c5-lcd273';hardwareChecksLast='';hardwareChecksAt=-Infinity;
       pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
       flight?.dispose();flight=null;runCycles=wasm.esp32sim_run;
       if (emu) { wasm.esp32sim_delete(emu); emu = 0; }
       emu = withBytes(enc.encode(m.board), (p, n) => wasm.esp32sim_new(p, n, m.flash_mb | 0, m.psram_mb | 0));
-      if (emu !== 0) wasm.esp32sim_set_jit(emu, m.jit === false ? 0 : 1);
+      // Keep low-level Worker callers under the same mode/capability boundary.
+      // Unknown board names remain the WASM factory's responsibility.
+      const c5=m.board.startsWith('waveshare-c5-')||['esp32c5','stamp-c5','stamp-c5-dip','lilygo-t7-c5','lilygo-t-dongle-c5'].includes(m.board);
+      const sramOnly=['esp32h2','waveshare-h2-zero','waveshare-h2-dev-kit-n4','esp32s2','waveshare-s2-pico','waveshare-s2-lcd096','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(m.board);
+      c5DriverCompatProfile=m.c5WifiDriverCompat??null;c5DriverCompatEnabled=false;c5DriverCompatLast='';c5DriverCompatAt=-Infinity;
+      ioRestricted=c5||sramOnly;c5AppDirect=c5?m.appDirect!==false:null;flashStorageAllowed=!sramOnly&&(!c5||m.appDirect===false);
+      if (emu !== 0) wasm.esp32sim_set_jit(emu, ioRestricted||m.jit === false ? 0 : 1);
       setupError = null;
       experiments = m.experiments === undefined ? [] : m.experiments;
       smoothDisplay = m.smoothDisplay === true;
       if (emu !== 0 && wasm.esp32sim_cpu_hz) CPU_HZ = wasm.esp32sim_cpu_hz(emu);
-      const audioOutputAvailable=!!(emu&&wasm.esp32sim_audio_output_streaming&&wasm.esp32sim_audio_output_streaming(emu,m.audioStreaming?1:0)===0);
-      const audioAvailable=audioOutputAvailable||!!(emu&&wasm.esp32sim_audio_input_state&&wasm.esp32sim_audio_input_state(emu,0)>0);
+      const audioOutputAvailable=!!(!ioRestricted&&emu&&wasm.esp32sim_audio_output_streaming&&wasm.esp32sim_audio_output_streaming(emu,m.audioStreaming?1:0)===0);
+      const audioAvailable=audioOutputAvailable||!!(!ioRestricted&&emu&&wasm.esp32sim_audio_input_state&&wasm.esp32sim_audio_input_state(emu,0)>0);
       if(m.flight?.enabled){
         if(!['stampfly','stampfly-v11'].includes(m.board)||m.flight.model!=='stampfly-rigid-body-v1')throw new Error('Unsupported flight configuration');
         flight=createFlightRunner({wasm,emu,clockHz:CPU_HZ,epoch:m.flightEpoch||0,publish:flight=>postMessage({flight})});
         runCycles=(...args)=>{try{return flight.run(...args);}catch(e){postMessage({flightError:e.message});return 1;}};
         flight.publish(true);
       }
-      // Every registered Waveshare C5 currently has the same SRAM-only loader
-      // boundary. The WASM factory already rejects unknown names; keep this
-      // low-level Worker independent of the product UI and its catalog modules.
-      const sramOnly = m.board.startsWith('waveshare-c5-') || ['esp32h2','waveshare-h2-zero','waveshare-h2-dev-kit-n4'].includes(m.board) || ['stamp-c5','stamp-c5-dip','lilygo-t7-c5','lilygo-t-dongle-c5','esp32s2','waveshare-s2-pico','waveshare-s2-lcd096','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(m.board);
-      postMessage({ created: emu !== 0, clockHz:CPU_HZ, audioAvailable, networkAvailable:!sramOnly&&!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: !sramOnly&&!!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
+      postMessage({ created: emu !== 0, clockHz:CPU_HZ, audioAvailable, networkAvailable:!ioRestricted&&!!wasm.esp32sim_softap_configure&&!!wasm.esp32sim_ethernet_relay, flashStorage: flashStorageAllowed&&!!wasm.esp32sim_flash_ptr && !!wasm.esp32sim_flash_len });
     }
     else if(m.op.startsWith('network-')) {
       try {
-        if(!emu||!wasm.esp32sim_ethernet_relay)throw new Error('Ethernet transport unavailable');
+        if(ioRestricted||!emu||!wasm.esp32sim_ethernet_relay)throw new Error('Ethernet transport unavailable');
         if(m.op==='network-setup') {
           if(booted)throw new Error('Configure virtual Wi-Fi before boot');
           if(withBytes(enc.encode(m.spec),(p,n)=>wasm.esp32sim_wifi(emu,p,n))!==0)throw new Error('Virtual router configuration rejected');
@@ -265,7 +290,7 @@ onmessage = async (ev) => {
     }
     else if (m.op.startsWith('audio-')) {
       try {
-        if(!emu||!wasm.esp32sim_audio_input_configure)throw new Error('PCM audio is unsupported by this WASM build');
+        if(ioRestricted||!emu||!wasm.esp32sim_audio_input_configure)throw new Error('PCM audio is unsupported by this WASM build');
         if(![0,1].includes(m.port))throw new Error('Invalid I2S port');
         let acceptedFrames,droppedFrames=0,skippedFrames=0;
         if(m.op==='audio-configure') {if(wasm.esp32sim_audio_input_configure(emu,m.port,m.sampleRate)!==0)throw new Error('PCM input configuration rejected');}
@@ -296,6 +321,7 @@ onmessage = async (ev) => {
     else if (m.op === 'flash-watch') { flashShadow = flashBytes().slice(); flashWatchId = m.requestId; flashScanAt = performance.now(); postMessage({flashReply: m.requestId, ok: true}); }
     else if (m.op === 'flash-flush') { collectFlash(true); postMessage({flashReply: m.requestId, ok: true}); }
     else if (m.op === 'flash-restore') {
+      if(c5DriverCompatEnabled)throw new Error('Restore Flash before enabling C5 driver compatibility; use a fresh session.');
       if (running || booted) throw new Error('Restore Flash only before boot');
       const size = flashBytes().length, seen = new Set();
       if (!Array.isArray(m.pages) || m.pages.length > size / FLASH_PAGE) throw new Error('Invalid Flash restore pages');
@@ -306,7 +332,10 @@ onmessage = async (ev) => {
       for (const {offset, data} of m.pages) if (withBytes(new Uint8Array(data), (p, n) => wasm.esp32sim_load_at(emu, offset, p, n)) !== 0) throw new Error('Flash restore failed');
       postMessage({flashReply: m.requestId, ok: true});
     }
-    else if (m.op === 'load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => m.at !== undefined ? wasm.esp32sim_load_at(emu, m.at >>> 0, p, n) : wasm.esp32sim_load(emu, m.kind, p, n)); postMessage({ loaded: m.at !== undefined ? 'at' + m.at : m.kind, ok: rc === 0 }); }
+    else if (m.op === 'load') {
+      if(c5DriverCompatEnabled){postMessage({loaded:m.at!==undefined?'at'+m.at:m.kind,ok:false,error:'Load all ROM and Flash inputs before enabling C5 driver compatibility; use a fresh session.'});return;}
+      const rc=withBytes(new Uint8Array(m.data),(p,n)=>m.at!==undefined?wasm.esp32sim_load_at(emu,m.at>>>0,p,n):wasm.esp32sim_load(emu,m.kind,p,n));postMessage({loaded:m.at!==undefined?'at'+m.at:m.kind,ok:rc===0});
+    }
     else if (m.op === 'ble-hci') {
       try {
         if (!emu || booted || running) throw new Error('Configure virtual HCI only before boot');
@@ -335,16 +364,28 @@ onmessage = async (ev) => {
         }
       } catch(error) {postMessage({bleReply:m.requestId,ok:false,error:error.message});}
     }
-    else if (m.op === 'stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_stub_spec(emu, p, n)) !== 0) setupError ||= 'invalid stub: ' + m.spec; }
-    else if (m.op === 'wifi') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_wifi(emu, p, n)) !== 0) setupError ||= 'invalid WiFi configuration (see console)'; }
+    else if(m.op==='c5-driver-compat') {
+      try {
+        if(!emu||booted||c5AppDirect!==false||!c5DriverCompatProfile||m.profile!==c5DriverCompatProfile)throw new Error('Select the C5 offline driver profile before boot');
+        if(c5DriverCompatEnabled)throw new Error('C5 driver compatibility is already enabled');
+        if(!wasm.esp32sim_c5_wifi_driver_compat||withBytes(enc.encode(m.profile),(p,n)=>wasm.esp32sim_c5_wifi_driver_compat(emu,p,n))!==0)throw new Error('C5 offline driver rejected this firmware or ROM; see emulator log');
+        const value=readC5DriverCompatibility();c5DriverCompatEnabled=true;c5DriverCompatLast=JSON.stringify(value);
+        postMessage({c5DriverCompatReply:m.requestId,ok:true,driverCompatibility:value});
+      } catch(error){postMessage({c5DriverCompatReply:m.requestId,ok:false,error:error.message});}
+    }
+    else if (m.op === 'stub') { if (ioRestricted||withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_stub_spec(emu, p, n)) !== 0) setupError ||= 'invalid stub: ' + m.spec; }
+    else if (m.op === 'wifi') { if (ioRestricted||withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_wifi(emu, p, n)) !== 0) setupError ||= 'invalid WiFi configuration (see console)'; }
     else if (m.op === 'start') {
+      if(c5AppDirect!==null&&!!m.appDirect!==c5AppDirect)throw new Error('C5 boot mode must match the created session');
       // Optional timing-model exports (`?timing=hw`), applied after the loads and before the first instruction.
       running = false; loopGeneration++; booted = false;
       if (!emu) throw new Error('no emulator to start');
       if (setupError) throw new Error(setupError);
+      if(c5DriverCompatProfile&&!c5DriverCompatEnabled)throw new Error('The selected C5 driver compatibility profile has not been enabled');
+      if(c5DriverCompatEnabled)readC5DriverCompatibility();
       applyExperiments(wasm, emu, experiments);
       if (smoothDisplay && (!wasm.esp32sim_set_smooth_display || wasm.esp32sim_set_smooth_display(emu, 1) !== 0)) throw new Error('smooth display publication is unsupported');
-      const rc = wasm.esp32sim_boot(emu, m.appDirect ? 1 : 0);collectHardwareDiagnostics(true); if (rc === 0) { running = true; booted = true; t0 = performance.now(); lastStat = { wall: t0, insns: wasm.esp32sim_insns(emu), cycles: wasm.esp32sim_cycles(emu) }; loop(); } postMessage({ started: rc === 0 }); }
+      const rc = wasm.esp32sim_boot(emu, m.appDirect ? 1 : 0);collectHardwareDiagnostics(true);collectC5DriverCompatibility(true); if (rc === 0) { running = true; booted = true; t0 = performance.now(); lastStat = { wall: t0, insns: wasm.esp32sim_insns(emu), cycles: wasm.esp32sim_cycles(emu) }; loop(); } postMessage({ started: rc === 0 }); }
     else if (m.op === 'resume') {
       if (!emu || !booted) throw new Error('no booted emulator to resume');
       if (!running) {
@@ -357,7 +398,7 @@ onmessage = async (ev) => {
       postMessage({ resumed: true });
     }
     else if (m.op === 'net-create') {
-      motionEnabled=false;motionLast='';hardwareChecksEnabled=false;hardwareChecksLast='';
+      motionEnabled=false;motionLast='';hardwareChecksEnabled=false;hardwareChecksLast='';c5DriverCompatProfile=null;c5DriverCompatEnabled=false;
       flashShadow = null; flashWatchId = null;sdShadow=null;sdWatchId=null;
       setupError = null;
       running = false; loopGeneration++; booted = false;
@@ -382,7 +423,7 @@ onmessage = async (ev) => {
     else if (m.op === 'net-load') { const rc = withBytes(new Uint8Array(m.data), (p, n) => wasm.esp32sim_net_load(net, m.node, m.kind, p, n)); postMessage({ loaded: 'n' + m.node + ':' + m.kind, ok: rc === 0 }); }
     else if (m.op === 'net-stub') { if (withBytes(enc.encode(m.spec), (p, n) => wasm.esp32sim_net_stub_spec(net, m.node, p, n)) !== 0) setupError ||= 'invalid stub for node ' + m.node + ': ' + m.spec; }
     else if (m.op === 'net-start') { if (setupError) throw new Error(setupError); const rc = wasm.esp32sim_net_boot(net); if (rc === 0) { running = true; netT0 = performance.now(); netLoop(); } postMessage({ started: rc === 0 }); }
-    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true);collectMotion(true);collectHardwareDiagnostics(true);flight?.publish(true); postMessage({ stopped: 0 }); }
+    else if (m.op === 'stop') { if(emu&&wasm.esp32sim_audio_output_flush){wasm.esp32sim_audio_output_flush(emu);drain();} running = false; loopGeneration++; collectFlash(true);collectSd(true);collectMotion(true);collectHardwareDiagnostics(true);collectC5DriverCompatibility(true);flight?.publish(true); postMessage({ stopped: 0 }); }
     else if (m.op === 'imu') {
       const values = [...(m.accelG || []), ...(m.gyroDps || [])];
       const ok = !flight && !!emu && values.length === 6 && values.every(Number.isFinite) && !!wasm.esp32sim_set_imu_sample
@@ -431,5 +472,5 @@ onmessage = async (ev) => {
       }
       withBytes(data, (p, n) => wasm.esp32sim_in_bin(emu, p, n));
     }
-  } catch (err) { postMessage({ log: '[worker] ' + (err && err.stack || err) }); running = false; loopGeneration++; if (m.op === 'start' || m.op === 'net-start') postMessage({ started: false, error: err.message || String(err) }); else if (m.op === 'resume') postMessage({ resumed: false, error: err.message || String(err) }); else if (m.op.startsWith('sd-')) postMessage({sdReply:m.requestId,ok:false,error:err.message||String(err)}); else if (m.op.startsWith('flash-')) postMessage({flashReply: m.requestId, ok: false, error: err.message || String(err)}); else postMessage({ stopped: 1 }); }
+  } catch (err) { postMessage({ log: '[worker] ' + (err && err.stack || err) }); running = false; loopGeneration++; if(m.op==='create')postMessage({created:false,error:err.message||String(err)});else if (m.op === 'start' || m.op === 'net-start') postMessage({ started: false, error: err.message || String(err) }); else if (m.op === 'resume') postMessage({ resumed: false, error: err.message || String(err) }); else if (m.op.startsWith('sd-')) postMessage({sdReply:m.requestId,ok:false,error:err.message||String(err)}); else if (m.op.startsWith('flash-')) postMessage({flashReply: m.requestId, ok: false, error: err.message || String(err)}); else postMessage({ stopped: 1 }); }
 };

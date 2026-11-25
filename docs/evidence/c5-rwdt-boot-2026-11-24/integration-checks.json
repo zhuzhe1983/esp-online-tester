@@ -1,0 +1,140 @@
+{
+  "schema": 1,
+  "baseCommit": "8778a1bd2ee8a02215fc20c2bf7bf113341c974d",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "9b2397c46b7c6d0d75fb4e141f076495de9a037fc78e63cd9003d829f8db825b"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "3838ed9190de06a23aae30917840c5e2affd031055976d62b8a41e25c6c54ed4"
+    },
+    {
+      "path": "esp32c5/src/lp_wdt.rs",
+      "sha256": "e62db89786ff1691ccd6812cf34c100dc92e5f313ea2e042daa87e50029c3229"
+    },
+    {
+      "path": "esp32c5/src/lp_wdt_rwdt.rs",
+      "sha256": "c7a94c5e4347f67a95245d7152760b76c72c1b6a1d347c9860675d377e6136df"
+    },
+    {
+      "path": "esp32c5/src/efuse.rs",
+      "sha256": "9ebc0879227b4939874ab62744a0e91e079dd2035c8f88eeb29cb00618defc4b"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "413f4b5f235a739426721bdbe4fab93257ed35f28fb07c26f3d41d511fa17019"
+    },
+    {
+      "path": "esp32c5/src/factory_tests.rs",
+      "sha256": "41a93261a2135c956523785f9012f7311fb0c8aa76a52891e78df9e5f3c25e24"
+    },
+    {
+      "path": "esp32c5/src/boot_watchdog_tests.rs",
+      "sha256": "560f27bf7c529aa115c825402912ae7f638a9ffb06f61a406139c700c94e4d2c"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "b18df6437f29901fedef2a7f1ed1ff685666f91a0bf2585d384e1a573a1c4030"
+    }
+  ],
+  "inputsAfterNativeRun": [
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": "rwdt-integration-c5-final.log",
+      "logSha256": "653c64b948b05598259e3f1164ee26ac172e9cbbaa8f2b601c206f2d72495c07",
+      "passed": 211,
+      "failed": 0,
+      "ignored": 0,
+      "environment": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false"
+      },
+      "scope": "Focused C5 suite including all four developer-input tests; default-LTO full-workspace tests remain pending.",
+      "logBytes": 24273
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "rwdt-integration-workspace-clippy.log",
+      "logSha256": "2ff56ae6b40a0e152a6815aa39615721f79d5a4acfd0e98d42d7d2a1b8a353a6",
+      "logBytes": 318
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": "rwdt-integration-wasm-clippy.log",
+      "logSha256": "dd25e9bd0d48fb7c85d0ecde50d7e466c3488cacbe81082f671a5086f9865ec4",
+      "logBytes": 241
+    }
+  ],
+  "nativeUnchangedFactory": {
+    "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 10000000 <prepared FAT32 card>",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_PROFILE_RELEASE_LTO": "false"
+    },
+    "steps": 573914,
+    "cycles": 573888,
+    "uartBytes": 582,
+    "faultPc": "0x400212f2",
+    "faultAddress": "0x60008064",
+    "operation": "write TIMG0_WDTWPROTECT",
+    "rwdtConfig": "0xc007ea00",
+    "rwdtHold0": 612000,
+    "rwdtKeyAfterGuestLock": 0,
+    "rwdtSourceHz": 136000,
+    "rwdtFeeds": 1,
+    "rwdtTimeouts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "applicationEntered": false,
+    "logSha256": "9dc90958db9eee29d6483279b7df89392f9e9a23d804fca8ea4b992f86af3680"
+  },
+  "corrections": [
+    "Typed SWD/RWDT reset requests select actual C5 CPU/Core/System causes. A dispatched request freezes further watchdog pumping until reboot applies its domains.",
+    "Simultaneous SWD/RWDT at228M nominal cycles preserves SWD0x12 across repeated clock refresh, MMIO and advance.",
+    "Validated profile selection/exit explicitly invalidates cached IRQ state; asserted RWDT source18 is removed from CLIC input23 after raw-ROM replacement.",
+    "Both Machine and Bringup loaders reject replacing a validated ROM while a reset awaits application, before profile/observer/ROM/PC/mode mutation.",
+    "RWDT follows actual DIG_REG DCAP128 and LP slow-clock selection; DCAP129 withdraws its source rather than retaining a fallback. Core reset preserves LP controller; System/SWD reset clears it."
+  ],
+  "negativeHistory": [
+    {
+      "log": "native-machine-lcd273-rwdt-wired.log",
+      "sha256": "13ef643884122a3d8158257238be698943ada551caf78afa09fde7411449d312",
+      "outcome": "Initial native integration reached the same TIMG0 boundary but warned that the alternative Bringup loader ignored the new Result. The loader and its regression were corrected; final suite and both Clippy checks have no allowance.",
+      "logBytes": 4047
+    }
+  ],
+  "limits": [
+    "Functional nominal240MHz scheduler, not physical DFS/reset-pulse timing. Cold RWDT prefix has no reconstructed ticks until its actual supported slow-clock input is known.",
+    "LP_CLKRST CPU-reset permission remains fixed header POR false; its conflicting TRM polarity is documented and unsupported writes fault.",
+    "TIMG0 flashboot watchdog is the next unimplemented actual boundary; no ordinary MWDT execution support is claimed.",
+    "No application entry, original LCD framebuffer, buttons, guest TF mount or Wi-Fi acceptance.",
+    "Default-LTO full workspace tests, CPU controls, production WASM/browser and fresh final release acceptance remain pending. C5 changes are private; public SRAM-only policy remains."
+  ]
+}

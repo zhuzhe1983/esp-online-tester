@@ -1,6 +1,6 @@
 //! Non-touch C5 LCD2.73, official revision418de818. Physical32F8P; ILI9488
 //! serial RGB666, CH32V00616-bit firmware, SD and three real GPIO keys.
-use esp_periph::{i2c::I2cDevice,sdmmc::{SdCardConfig,SdStore,card::spi::SpiSdCard}};
+use esp_periph::{i2c::{I2cDevice,shtc3::{Shtc3,Shtc3State,SHTC3_ADDRESS}},sdmmc::{SdCardConfig,SdStore,card::spi::SpiSdCard}};
 use esp_soc::{BoardModel,board::SpiQspiPins,devices::{imu_motion::ImuMotion,
     qmi8658::Qmi8658,pcf85063::{Pcf85063,Pcf85063State}},pins::PinRoutes};
 use std::{cell::RefCell,rc::Rc,sync::{Arc,Mutex,atomic::Ordering}};
@@ -16,7 +16,7 @@ impl I2cDevice for RoutedDevice {
 }
 pub struct Lcd273 {
     panel:Ili9488,port:Arc<Mutex<Ch32V006Port>>,dc:Option<bool>,backlight:u8,lcd_reset_high:bool,lcd_falling:u64,
-    generation:u64,rejected:u64,devices:Vec<(u8,PersistentDevice)>,motion:Arc<ImuMotion>,rtc:Arc<Mutex<Pcf85063State>>,sd:Option<SpiSdCard>,
+    generation:u64,rejected:u64,devices:Vec<(u8,PersistentDevice)>,motion:Arc<ImuMotion>,rtc:Arc<Mutex<Pcf85063State>>,sht:Arc<Mutex<Shtc3State>>,sd:Option<SpiSdCard>,
 }
 impl Default for Lcd273{fn default()->Self{Self::new()}}
 impl Lcd273 {
@@ -26,14 +26,18 @@ impl Lcd273 {
         // this explicit USB-powered/no-battery scene. Header inputs are low.
         port.lock().unwrap().inputs=0x0f;
         let motion=Arc::new(ImuMotion::default());let rtc=Arc::new(Mutex::new(Pcf85063State::new(crate::bus::CPU_HZ)));
+        // Schematic U7 uses the same SDA27/SCL26 bus and nominal 3V3.
+        // Explicit virtual 25C/50%RH, timed no-stretch subset; no host ambient input.
+        let sht=Arc::new(Mutex::new(Shtc3State::new(crate::bus::CPU_HZ)));
         let parts:Vec<(u8,Box<dyn I2cDevice>)>=vec![
             (0x24,Box::new(Ch32V006::new(port.clone()))),
             // Canonical resources linkQMI8658C.pdf; schematic SA0=GND,6B.
             (0x6b,Box::new(Qmi8658::new_c(motion.clone(),crate::bus::CPU_HZ))),
             (0x51,Box::new(Pcf85063::new(rtc.clone()))),
+            (SHTC3_ADDRESS,Box::new(Shtc3::new(sht.clone()))),
         ];
         Self{panel:Ili9488::new(),port,dc:None,backlight:0,lcd_reset_high:false,lcd_falling:0,generation:1,rejected:0,
-            devices:parts.into_iter().map(|(a,d)|(a,Rc::new(RefCell::new(d)))).collect(),motion,rtc,sd:None}
+            devices:parts.into_iter().map(|(a,d)|(a,Rc::new(RefCell::new(d)))).collect(),motion,rtc,sht,sd:None}
     }
     fn sync_ports(&mut self){
         let p=self.port.lock().expect("CH32V006 state");let(high,falling,brightness)=(p.level(0)==Some(true),p.falling_edges(0),p.pwm.unwrap_or(0));drop(p);
@@ -47,7 +51,7 @@ impl BoardModel for Lcd273 {
     fn named_pin(&self,name:&str)->Option<u8>{match name{"boot"|"button"=>Some(28),"prev"=>Some(2),"next"=>Some(3),_=>None}}
     fn input_levels(&self)->Vec<(u8,bool)>{vec![(28,true),(2,true),(3,true)]}
     fn i2c_devices(&mut self)->Vec<(u8,u8,Box<dyn I2cDevice>)>{self.devices.iter().map(|(a,d)|(0,*a,Box::new(RoutedDevice(d.clone()))as Box<dyn I2cDevice>)).collect()}
-    fn advance_to(&mut self,cycle:u64){self.motion.cycle.store(cycle,Ordering::Relaxed);self.rtc.lock().expect("PCF85063 state").advance_to(cycle);self.sync_ports();}
+    fn advance_to(&mut self,cycle:u64){self.motion.cycle.store(cycle,Ordering::Relaxed);self.rtc.lock().expect("PCF85063 state").advance_to(cycle);self.sht.lock().expect("SHTC3 state").advance_to(cycle);self.sync_ports();}
     fn set_imu_motion(&mut self,mode:u32)->bool{self.motion.mode.store(mode,Ordering::Relaxed);true}
     fn imu_motion(&self)->u32{self.motion.mode.load(Ordering::Relaxed)}
     fn uses_gpio_routes(&self)->bool{true}
@@ -90,5 +94,20 @@ impl BoardModel for Lcd273 {
     fn display_version(&self)->u64{self.generation}
     fn display_frames(&self)->u64{self.panel.frames}
     fn gram(&self)->Option<(Vec<u16>,usize,usize)>{Some((self.panel.gram.iter().map(|&v|Ili9488::rgb565(v)).collect(),320,480))}
-    fn report(&self)->String{format!("[waveshare-c5-lcd273] ILI9488 DBI-RGB666 320x320/GRAM320x480 pixels={} RAMWR={} duty={}/255 rejected={}; CH32V00624 EX0=LCD; QMI8658C6b PCF85063A51; PREV2 NEXT3 BOOT28; SD {}; virtual USB3V3/no-battery; factory/RF/ADC/SHTC3/power-key/TE unverified",self.panel.pixels_written,self.panel.frames,self.backlight,self.rejected,self.sd.as_ref().map_or_else(||"absent".into(),SpiSdCard::report))}
+    fn hardware_diagnostics(&self)->Option<String>{
+        // Cold snapshot of existing latches only. In particular, do not call
+        // sync_ports/advance or read the card to make an observation look ready.
+        let p=&self.panel;let visible=self.lcd_reset_high&&self.backlight!=0&&p.on&&!p.sleeping;
+        let card=self.sd.as_ref().map_or_else(||"null".into(),|sd|{let s=sd.observation();format!("{{\"spiMode\":{},\"cardState\":\"{:?}\",\"capacityBlocks\":\"{}\",\"nativeCommandCalls\":\"{}\",\"storageBlocksLoaded\":\"{}\",\"storageBlocksWritten\":\"{}\"}}",s.spi_mode,s.card_state,s.capacity_blocks,s.native_command_calls,s.storage_blocks_loaded,s.storage_blocks_written)});
+        Some(format!(concat!("{{\"schemaVersion\":1,\"board\":\"waveshare-c5-lcd273\",\"counterEncoding\":\"u64-decimal\",\"state\":{{",
+            "\"display\":{{\"resetHigh\":{},\"sleepOut\":{},\"displayOn\":{},\"visible\":{},\"brightness\":{},\"pixelFormat\":{},\"madctl\":{},\"pixelsWritten\":\"{}\",\"ramWriteCommands\":\"{}\",\"resetCount\":\"{}\"}},",
+            "\"boardRejectedTransactions\":\"{}\",\"sd\":{{\"present\":{},\"transport\":\"spi2-sdhc\",\"card\":{}}}}},\"limits\":[",
+            "\"nativeCommandCalls counts inner SdCard::command calls including failures, excluding SPI wrapper-handled commands; not all wire CMDs.\",",
+            "\"storageBlocksLoaded counts backing-store loads before reply completion and valid MISO delivery; guest-consumed reads are unobserved.\",",
+            "\"storageBlocksWritten counts complete backing-store writes; guest response consumption, FAT mount and file flush are unobserved.\",",
+            "\"CardState and presence do not establish FAT mounting or browser persistence; electrical timing and physical panel response are unverified.\",",
+            "\"SD counters belong to the card object: CMD0 and power_cycle retain totals; a new attached card starts a new epoch.\"]}}"),
+            self.lcd_reset_high,!p.sleeping,p.on,visible,self.backlight,p.colmod,p.madctl,p.pixels_written,p.frames,p.resets,self.rejected,self.sd.is_some(),card))
+    }
+    fn report(&self)->String{format!("[waveshare-c5-lcd273] ILI9488 DBI-RGB666 320x320/GRAM320x480 pixels={} RAMWR={} duty={}/255 rejected={}; CH32V00624 EX0=LCD; QMI8658C6b PCF85063A51 SHTC3@70 timed-no-stretch virtual25C/50%RH; PREV2 NEXT3 BOOT28; SD {}; virtual USB3V3/no-battery; factory/RF/ADC/power-key/TE unverified",self.panel.pixels_written,self.panel.frames,self.backlight,self.rejected,self.sd.as_ref().map_or_else(||"absent".into(),SpiSdCard::report))}
 }

@@ -1,0 +1,624 @@
+{
+  "schemaVersion": 1,
+  "kind": "lcd273-idf553-source-reference-runtime-compact",
+  "publicationStatus": "curated-local-evidence",
+  "executionSourceRevision": "99d166829e5835d274a8396bbf2f294b4baa0afd",
+  "originalFactoryAccepted": false,
+  "originalFactory": {
+    "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+    "bytes": 3346992,
+    "accepted": false,
+    "scope": "These independently source-built examples do not establish acceptance of the unchanged FactoryOnly image."
+  },
+  "provenance": {
+    "binaryBuildProvenanceVerified": false,
+    "runtimeHelperScope": "Checks caller-pinned bytes, actual ROM/merged loading and runtime observations; it does not reconstruct or attest the binary-to-source build chain.",
+    "independentStaticBuildEvidence": {
+      "artifact": "docs/evidence/c5-lcd273-idf553-examples-2026-11-25/inputs.json",
+      "bytes": 36896,
+      "sha256": "febdc7c7046e49c2517a4cbe3dbd705d352ecce088e00e835f3cce1e095d18ae"
+    },
+    "staticChecks": {
+      "artifact": "docs/evidence/c5-lcd273-idf553-examples-2026-11-25/static-checks-config-bytes.json",
+      "bytes": 2563,
+      "sha256": "8d84797720c30484ae4f586347afa106f545c29b896c77d72b7dd4c3cedb1e7f"
+    },
+    "staticEvidenceScope": "Separate fixed-source/config/lock/toolchain and artifact receipts; their builder did not execute a guest. This compact receipt hashes and reads that existing evidence, without rebuilding.",
+    "manufacturer": {
+      "repository": "https://github.com/waveshareteam/ESP32-C5-LCD-2.73",
+      "commit": "418de818f4f40c5a04c4292dbe293bfaa1351068",
+      "rootGitTree": "5282f0112760f1d53a79092548303df96602d4b8",
+      "recursiveTreeCapture": {
+        "bytes": 685546,
+        "sha256": "ce4bda26e748697b1f2953864ba9a66c4e5ec556492589e2e96b06093e0cafa5"
+      },
+      "commitMetadataCapture": {
+        "bytes": 10266,
+        "sha256": "d85fb983f14a1f18f881b81a7a1997d38b0d591d3e0fc77b5ccbbdd66a7d2e96"
+      },
+      "identityNote": "418de818 is the commit; 5282f011 is the root Git tree. The older tree-API capture retained the requested commit in its top-level sha field."
+    },
+    "sdk": {
+      "repository": "https://github.com/espressif/esp-idf",
+      "revision": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+      "version": "5.5.3",
+      "tracked_clean_before_after": true,
+      "submodule_count": 27
+    },
+    "compiler": {
+      "gcc_version": "riscv32-esp-elf-gcc (crosstool-NG esp-14.2.0_20251107) 14.2.0",
+      "artifact": {
+        "bytes": 288327120,
+        "sha256": "cedfcdaf8f165bd3e11ca4ee46b71d5b561fab93407eb8203812f9c14b1c7714",
+        "url": "https://github.com/espressif/crosstool-NG/releases/download/esp-14.2.0_20251107/riscv32-esp-elf-14.2.0_20251107-aarch64-apple-darwin.tar.xz"
+      },
+      "gcc_executable": {
+        "bytes": 1709376,
+        "sha256": "69e796c3a3e35ab36b256209e2d40f21cc946bf842718b4fc6d45159208d7910"
+      }
+    },
+    "originalAndGeneratedSdkconfig": {
+      "bytes": 90677,
+      "sha256": "5cb65d2d95d876a898a7729d3590120c4a87a1b9509be496cdbc1f6eaac94423"
+    },
+    "dependencyLock": {
+      "bytes": 7066,
+      "sha256": "f6f8e566fddb6b3cfadf2b150913291c31140d469b919c716bf6cde356087d1a"
+    },
+    "appIdentityLimit": "Both projects are named 01_factory and inherit an integration git-describe version; neither name nor descriptor identifies FactoryOnly. Fresh builds can differ because of timestamps, paths and automatic version."
+  },
+  "commonInputs": {
+    "wasm": {
+      "bytes": 8854264,
+      "sha256": "752427fc94772b948e3320fa56ec187d502fc5c537c71d7de02d74955cd86997",
+      "expectedSha256": "752427fc94772b948e3320fa56ec187d502fc5c537c71d7de02d74955cd86997",
+      "hashMatched": true
+    },
+    "rom": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+      "expectedSha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+      "hashMatched": true
+    },
+    "sd": {
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+      "expectedSha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+      "hashMatched": true
+    }
+  },
+  "executionProfile": {
+    "board": "waveshare-c5-lcd273",
+    "flashMiB": 32,
+    "psramMiB": 8,
+    "bootMode": "rom",
+    "resetMode": "rom-reset",
+    "appDirect": false,
+    "jit": false,
+    "executionMode": "wasm-interpreter",
+    "nominalCounterHz": 240000000,
+    "xtal": {
+      "requiredHz": 48000000,
+      "liveObserved": false
+    },
+    "flashOffsets": {
+      "bootloader": "0x2000",
+      "partitionTable": "0x8000",
+      "otaInitialData": "0xd000",
+      "factoryApp": "0x20000"
+    },
+    "runtimeEnvironment": "Node memory storage with the production platform runtime and real worker; no browser persistence claim."
+  },
+  "implementation": {
+    "executedReferenceHarness": {
+      "path": "tools/c5-lcd273-reference-run.mjs",
+      "sourceRevision": "99d166829e5835d274a8396bbf2f294b4baa0afd",
+      "bytes": 27804,
+      "sha256": "7a23691ff707978feb4152afe21808c05eb293fb51f229a3ea6ca3169348c1dd"
+    },
+    "correctedTextHarnessSnapshot": {
+      "path": "tools/c5-lcd273-reference-run.mjs",
+      "bytes": 27879,
+      "sha256": "ad9e2f3701c22f2f418439dff088a39025076a87619bf12e9c6262a19eb892bf",
+      "scope": "Later wording-only correction; not the bytes used for these two executions."
+    },
+    "counterHelper": {
+      "path": "tools/c5-lcd273-acceptance.mjs",
+      "bytes": 40735,
+      "sha256": "c320560dde910fdeea4570b28b998620282890f4963343b5ce742e47bce50bbf"
+    },
+    "runtimeSources": {
+      "web/platform/runtime.js": {
+        "bytes": 117533,
+        "sha256": "9ab32df98c159db8f93635fa5249369e65dd7d645f0e0c709c1b78e0ea655b55"
+      },
+      "web/platform/hardware-diagnostics.js": {
+        "bytes": 11390,
+        "sha256": "9c695118f36f83a577938bf3e854777cab416d3ef4354ded9470a53c2c63a9b0"
+      },
+      "web/wasm/worker.js": {
+        "bytes": 32962,
+        "sha256": "a563da54e5f2b64837ddb93f9ecbbf43da32a826edd1abd5700e0621924d7b00"
+      }
+    }
+  },
+  "cases": {
+    "sd": {
+      "sourceIdentity": {
+        "project": "example/ESP-IDF-V553/03_sd_card",
+        "tree": "f3a52a48572bffab114f5ce2065ab2fb83c7a7a2",
+        "mainSha256": "8c4b53d535a2714c2a82d77eef2133417a99bbc43abc452380e6eae68d021a49",
+        "repository": "waveshareteam/ESP32-C5-LCD-2.73",
+        "revision": "418de818f4f40c5a04c4292dbe293bfaa1351068",
+        "sdkRevision": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+        "sdkVersion": "5.5.3",
+        "binaryBuildProvenanceVerified": false
+      },
+      "status": "reference-observed",
+      "referenceObserved": true,
+      "originalFactoryAccepted": false,
+      "buildReceipt": {
+        "artifact": "docs/evidence/c5-lcd273-idf553-examples-2026-11-25/03-sd-card.json",
+        "bytes": 25979,
+        "sha256": "a3847a70fcb854c07216b904ce583f0270059e8c6cd105d35bf1c130af1f7238"
+      },
+      "mergedInput": {
+        "bytes": 422096,
+        "sha256": "0f6d7646eaba88caab4708db719412a0b7b261d7cc18c8d601116a7c7c902308",
+        "expectedSha256": "0f6d7646eaba88caab4708db719412a0b7b261d7cc18c8d601116a7c7c902308",
+        "hashMatched": true
+      },
+      "buildArtifactsFromStaticReceipt": {
+        "01_factory.bin": {
+          "bytes": 291024,
+          "sha256": "66df4330cefc5f6b5f617fe8b3fbc79bac66f4ac8125a9ac3fa6812822c41399"
+        },
+        "01_factory.elf": {
+          "bytes": 5414120,
+          "sha256": "9032775e689027e030458437db46e40641342050a223289905b9f92e876ac544"
+        },
+        "01_factory.map": {
+          "bytes": 5055669,
+          "sha256": "a170471fcc037316ce0176df247d678263af7f168fd8803e23f061bced813882"
+        },
+        "bootloader/bootloader.bin": {
+          "bytes": 23168,
+          "sha256": "9fe7130e39748de5c8aa102cd13f61711bff141e03bd7c119cc47572115f7595"
+        },
+        "partition_table/partition-table.bin": {
+          "bytes": 3072,
+          "sha256": "ebcf7515d4ea98f112f04fd6f3e0d9cb492fe9752268219e0664936c7b626367"
+        },
+        "ota_data_initial.bin": {
+          "bytes": 8192,
+          "sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f"
+        },
+        "flasher_args.json": {
+          "bytes": 1060,
+          "sha256": "2f7390d08464e08ce8b3619e11a579416676ba470b9d4e819642a86d5b0e805d"
+        }
+      },
+      "load": {
+        "abiVerified": true,
+        "appMainObserved": true,
+        "oneCreation": true,
+        "actualLoadedKinds": [
+          0,
+          5
+        ],
+        "loadedHashesMatchPins": true
+      },
+      "stopReason": "source-routine-pass-marker",
+      "uartFacts": {
+        "appMain": true,
+        "guestReportedMount": true,
+        "guestReportedWriteReadComparePass": true,
+        "errorMarkers": [],
+        "fatalRuntimeOutputObserved": false,
+        "truncated": false,
+        "transportCompletionProven": false,
+        "orderedSourcePassMarkersObserved": true
+      },
+      "display": {
+        "realNonzeroFrame": false,
+        "panelVisible": false,
+        "panelPixelsWritten": "0",
+        "panelRamWriteCommands": "0",
+        "buttonResponseVerified": false,
+        "speedMeasured": false
+      },
+      "sd": {
+        "before": {
+          "bytes": 67108864,
+          "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+          "testFile": {
+            "status": "not-found",
+            "path": "/test.txt",
+            "geometry": {
+              "partitionStartSector": 2048,
+              "sectorBytes": 512,
+              "clusterBytes": 512
+            }
+          }
+        },
+        "after": {
+          "bytes": 67108864,
+          "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a",
+          "changedFromInput": true,
+          "testFile": {
+            "status": "observed",
+            "path": "/test.txt",
+            "bytes": 71,
+            "sha256": "b0944679cf35c8ac6566d654a769567cc9292e0812cdf471e4cae1f2cd45a91c",
+            "matchesExpectedPayload": true,
+            "geometry": {
+              "partitionStartSector": 2048,
+              "sectorBytes": 512,
+              "clusterBytes": 512
+            },
+            "guestMountInferred": false
+          }
+        },
+        "publishedSnapshotDelta": {
+          "status": "observed",
+          "counterEncoding": "u64-decimal",
+          "meaning": "difference-of-published-snapshots",
+          "nativeCommandCalls": "48",
+          "storageBlocksLoaded": "8",
+          "storageBlocksWritten": "6"
+        },
+        "deltaScope": "Qualified differences of published snapshots only. Not all wire commands, completed MISO delivery, ACK consumption, FAT mount or flush.",
+        "guestPayload": {
+          "bytes": 71,
+          "sha256": "b0944679cf35c8ac6566d654a769567cc9292e0812cdf471e4cae1f2cd45a91c",
+          "sourceChecks": "PASS follows fwrite length, fclose success, fread length/error checks and actual guest memcmp in unchanged 03_sd_card main.c."
+        },
+        "independentFatFileCheck": {
+          "path": "/test.txt",
+          "status": "observed",
+          "bytes": 71,
+          "sha256": "b0944679cf35c8ac6566d654a769567cc9292e0812cdf471e4cae1f2cd45a91c",
+          "matchesExpectedPayload": true,
+          "partitionStartSector": 2048,
+          "sectorBytes": 512,
+          "clusterBytes": 512,
+          "directoryEntryByteOffset": 2081824,
+          "fileClusterChain": [
+            4
+          ],
+          "scope": "Read-only parsing of the exported host image; not a guest transport-completion proof."
+        }
+      },
+      "cleanup": {
+        "runtimeDisposed": true,
+        "activeWorkers": 0,
+        "workersExited": true,
+        "workerExitCode": 1,
+        "harnessProcessExitCode": 0,
+        "originalFailureFieldPresent": false,
+        "cliFailureValue": null,
+        "lastRuntimeError": null,
+        "interpretation": "Worker exitCode1 was recorded during explicit runtime disposal/Worker.terminate; the helper exited0, workers all exited, and no harness/runtime failure was recorded. It is not a guest failure code."
+      },
+      "durations": {
+        "runtimeOperationWallSeconds": 3.976,
+        "harnessProcessWallSeconds": 4.055,
+        "lastObservedGuestSeconds": 0.52,
+        "performanceMeasurement": false
+      },
+      "rawArtifactHashes": {
+        "emulator.log": {
+          "artifact": "$SD_OUTPUT/emulator.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "frame-0.rgba": {
+          "artifact": "$SD_OUTPUT/frame-0.rgba",
+          "bytes": 409600,
+          "sha256": "b71fb8a8fde8a131571999a1a08b626a4dd74c0bb0c46f427f919a9afad79dff"
+        },
+        "result.json": {
+          "artifact": "$SD_OUTPUT/result.json",
+          "bytes": 27825,
+          "sha256": "15b367e8b3c2a6a89e4b61bee94154894d058a79c5dce5f22a612ab8d06880c7"
+        },
+        "sd-after.img": {
+          "artifact": "$SD_OUTPUT/sd-after.img",
+          "bytes": 67108864,
+          "sha256": "96b5f64b1cda080bd1047055731ef945e52652808b478a134a29661550b3565a"
+        },
+        "uart0.log": {
+          "artifact": "$SD_OUTPUT/uart0.log",
+          "bytes": 4952,
+          "sha256": "fb3fdee68e7bbe89d3c891d8b12f71598ac3494e0f2e701630b2f24bbc987ab6"
+        }
+      },
+      "harnessStdout": {
+        "artifact": "$RAW_CHECKS/c5-583-real-worker-sd.log",
+        "bytes": 125,
+        "sha256": "137aecc1b6817bbe7491429e3b2ece55f733e8fb911b2694241ccac6dd502b48"
+      }
+    },
+    "display": {
+      "sourceIdentity": {
+        "project": "example/ESP-IDF-V553/02_lvgl_demo",
+        "tree": "6d9c1ecd1b899ab2e545fa48bfb002f8c6d49bdf",
+        "mainSha256": "d7cdaa690e35557ef7f5ee3cb9c25ab4b51f60440f5c109942168dcb7784f3e1",
+        "repository": "waveshareteam/ESP32-C5-LCD-2.73",
+        "revision": "418de818f4f40c5a04c4292dbe293bfaa1351068",
+        "sdkRevision": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+        "sdkVersion": "5.5.3",
+        "binaryBuildProvenanceVerified": false
+      },
+      "status": "reference-observed",
+      "referenceObserved": true,
+      "originalFactoryAccepted": false,
+      "buildReceipt": {
+        "artifact": "docs/evidence/c5-lcd273-idf553-examples-2026-11-25/02-lvgl-demo.json",
+        "bytes": 25459,
+        "sha256": "98642fcf0204ad426dc661537bb6072e4aa39309bd9ac3cd198a86fdd156a8bb"
+      },
+      "mergedInput": {
+        "bytes": 1046720,
+        "sha256": "16b8762fb108bf8b305d84a9182d1ce7967f0eb94a2204950ae3441653131eb4",
+        "expectedSha256": "16b8762fb108bf8b305d84a9182d1ce7967f0eb94a2204950ae3441653131eb4",
+        "hashMatched": true
+      },
+      "buildArtifactsFromStaticReceipt": {
+        "01_factory.bin": {
+          "bytes": 915648,
+          "sha256": "f3508c5a1e73377913fb4c5e357f0ace517b36581d42d8181c1e4985aa8cf0ef"
+        },
+        "01_factory.elf": {
+          "bytes": 10627044,
+          "sha256": "51e6bc6c20d2bd2a659a8cf39577fa302e0dbb38f845ff7454352253981a4132"
+        },
+        "01_factory.map": {
+          "bytes": 5223928,
+          "sha256": "e92c4a7bf24266134f30a1f638ddf7beca6ce153dc7d1613e18aca924b2a8238"
+        },
+        "bootloader/bootloader.bin": {
+          "bytes": 23168,
+          "sha256": "9641a79b17657c59b5f3da78ceb3e28eaccbeb352d25f1efa76c04b302e9e978"
+        },
+        "partition_table/partition-table.bin": {
+          "bytes": 3072,
+          "sha256": "ebcf7515d4ea98f112f04fd6f3e0d9cb492fe9752268219e0664936c7b626367"
+        },
+        "ota_data_initial.bin": {
+          "bytes": 8192,
+          "sha256": "7d2c7ac4888bfd75cd5f56e8d61f69595121183afc81556c876732fd3782c62f"
+        },
+        "flasher_args.json": {
+          "bytes": 1060,
+          "sha256": "2f7390d08464e08ce8b3619e11a579416676ba470b9d4e819642a86d5b0e805d"
+        }
+      },
+      "load": {
+        "abiVerified": true,
+        "appMainObserved": true,
+        "oneCreation": true,
+        "actualLoadedKinds": [
+          0,
+          5
+        ],
+        "loadedHashesMatchPins": true
+      },
+      "stopReason": "real-frame-observed",
+      "uartFacts": {
+        "appMain": true,
+        "guestReportedMount": false,
+        "guestReportedWriteReadComparePass": false,
+        "errorMarkers": [],
+        "fatalRuntimeOutputObserved": false,
+        "truncated": false,
+        "transportCompletionProven": false
+      },
+      "display": {
+        "realNonzeroFrame": true,
+        "panelVisible": true,
+        "panelPixelsWritten": "134400",
+        "panelRamWriteCommands": "10",
+        "buttonResponseVerified": false,
+        "speedMeasured": false,
+        "renderedText": "LV_USE_PERF_MONITOR is not enabled",
+        "ui": "configuration-warning page",
+        "benchmarkUiVerified": false,
+        "observedFrame": {
+          "width": 320,
+          "height": 320,
+          "nonBlackPixels": 102135,
+          "uniqueRgbColors": 18,
+          "rgbaSha256": "b757eb324a2a424bf422c6501890043620e8ed0d05e30bd209945fb6090853dc"
+        },
+        "initialBlankFrameRetained": true,
+        "pngDecodedRgbaMatchesRawFrame": true,
+        "fixedConfig": {
+          "CONFIG_LV_USE_SYSMON": "not set",
+          "CONFIG_LV_USE_DEMO_BENCHMARK": "y",
+          "CONFIG_ESP_LVGL_ADAPTER_ENABLE_BUTTON": "y"
+        }
+      },
+      "sd": {
+        "before": {
+          "bytes": 67108864,
+          "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+          "testFile": {
+            "status": "not-found",
+            "path": "/test.txt",
+            "geometry": {
+              "partitionStartSector": 2048,
+              "sectorBytes": 512,
+              "clusterBytes": 512
+            }
+          }
+        },
+        "after": {
+          "bytes": 67108864,
+          "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+          "changedFromInput": false,
+          "testFile": {
+            "status": "not-found",
+            "path": "/test.txt",
+            "geometry": {
+              "partitionStartSector": 2048,
+              "sectorBytes": 512,
+              "clusterBytes": 512
+            }
+          }
+        },
+        "publishedSnapshotDelta": {
+          "status": "observed",
+          "counterEncoding": "u64-decimal",
+          "meaning": "difference-of-published-snapshots",
+          "nativeCommandCalls": "0",
+          "storageBlocksLoaded": "0",
+          "storageBlocksWritten": "0"
+        },
+        "deltaScope": "Qualified differences of published snapshots only. Not all wire commands, completed MISO delivery, ACK consumption, FAT mount or flush."
+      },
+      "cleanup": {
+        "runtimeDisposed": true,
+        "activeWorkers": 0,
+        "workersExited": true,
+        "workerExitCode": 1,
+        "harnessProcessExitCode": 0,
+        "originalFailureFieldPresent": false,
+        "cliFailureValue": null,
+        "lastRuntimeError": null,
+        "interpretation": "Worker exitCode1 was recorded during explicit runtime disposal/Worker.terminate; the helper exited0, workers all exited, and no harness/runtime failure was recorded. It is not a guest failure code."
+      },
+      "durations": {
+        "runtimeOperationWallSeconds": 7.157,
+        "harnessProcessWallSeconds": 7.237,
+        "lastObservedGuestSeconds": 0.56,
+        "performanceMeasurement": false
+      },
+      "rawArtifactHashes": {
+        "actual-lvgl-frame.png": {
+          "artifact": "$DISPLAY_OUTPUT/actual-lvgl-frame.png",
+          "bytes": 2200,
+          "sha256": "e304f9499b46ce8f2b77c1b1215a409b0bd1c752fda7f6fdc385ddd0b576345c"
+        },
+        "emulator.log": {
+          "artifact": "$DISPLAY_OUTPUT/emulator.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "frame-0.rgba": {
+          "artifact": "$DISPLAY_OUTPUT/frame-0.rgba",
+          "bytes": 409600,
+          "sha256": "b71fb8a8fde8a131571999a1a08b626a4dd74c0bb0c46f427f919a9afad79dff"
+        },
+        "frame-1.rgba": {
+          "artifact": "$DISPLAY_OUTPUT/frame-1.rgba",
+          "bytes": 409600,
+          "sha256": "b757eb324a2a424bf422c6501890043620e8ed0d05e30bd209945fb6090853dc"
+        },
+        "result.json": {
+          "artifact": "$DISPLAY_OUTPUT/result.json",
+          "bytes": 30350,
+          "sha256": "671f8937cc98e40061b31b4a555990345aedf2ada226afdb293c16aad56d6802"
+        },
+        "sd-after.img": {
+          "artifact": "$DISPLAY_OUTPUT/sd-after.img",
+          "bytes": 67108864,
+          "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+        },
+        "uart0.log": {
+          "artifact": "$DISPLAY_OUTPUT/uart0.log",
+          "bytes": 4638,
+          "sha256": "9a3274e09902354d3df7f4d83c77cc9aba3967953e4522d27e5750f7ef298da8"
+        }
+      },
+      "harnessStdout": {
+        "artifact": "$RAW_CHECKS/c5-583-real-worker-display.log",
+        "bytes": 125,
+        "sha256": "137aecc1b6817bbe7491429e3b2ece55f733e8fb911b2694241ccac6dd502b48"
+      }
+    }
+  },
+  "rawDescriptionCorrection": {
+    "field": "limits[5] in both original runtime result.json files",
+    "originalText": "02 executes its unchanged benchmark UI; this run makes no speed measurement or button-response assertion.",
+    "assessment": "The benchmark-UI description is incorrect for the observed fixed configuration.",
+    "correctedFact": "02 calls lv_demo_benchmark(), but the fixed configuration renders the LV_USE_PERF_MONITOR-is-not-enabled warning page. No functioning benchmark UI, benchmark speed or button response was verified.",
+    "originalResultBytesPreserved": true,
+    "buttonPlanningLimit": "BSP registration of PREV/NEXT/ENTER does not establish an interactive three-key UI. These runs injected no keys; buttonResponseVerified remains false. No failed three-key execution is invented."
+  },
+  "checks": {
+    "rustWorkspace": {
+      "source": "99d166829e5835d274a8396bbf2f294b4baa0afd",
+      "log": "c5-583-default-lto-full-workspace.log",
+      "bytes": 392692,
+      "sha256": "7c96a060b0fe24a92256bd81a46e420f7120c86aa3a0a5e9950888a199ebee0a",
+      "exitCode": 0,
+      "elapsedSeconds": 408.659,
+      "totals": {
+        "passed": 3488,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 169
+      },
+      "concurrentConditions": "Other correctness browser/input firmware work may overlap; not performance evidence.",
+      "receipt": {
+        "artifact": "$RAW_CHECKS/c5-583-default-full-ci-checks.json",
+        "bytes": 462,
+        "sha256": "99ad2bcbcb61273e7878a4afbdc30dd84a2921506928e6a1f81422d76ed96a12"
+      },
+      "logArtifact": "$RAW_CHECKS/c5-583-default-lto-full-workspace.log",
+      "argv": [
+        "cargo",
+        "test",
+        "--release",
+        "--workspace",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "environment": {
+        "ESP32SIM_ROM_DIR": "$C5_RUNTIME_ROOT/web/wasm/fw",
+        "CARGO_BUILD_JOBS": "8"
+      },
+      "unsetEnvironment": [
+        "CARGO_TARGET_DIR",
+        "RUSTFLAGS",
+        "CARGO_ENCODED_RUSTFLAGS",
+        "CARGO_PROFILE_RELEASE_LTO"
+      ],
+      "releaseProfile": "default release, fat LTO; no LTO override",
+      "independentLogSummaryCount": 247,
+      "elapsedScope": "Build plus tests operation duration; concurrent correctness/browser/input-build work may overlap. Not CPU-performance evidence."
+    },
+    "finalNode": "separate current-source combined validation; this receipt covers Node reference runs only",
+    "finalBrowser": "see ../c5-lcd273-browser-2026-11-25/result.json",
+    "finalCpuComparison": "not measured by this reference runner",
+    "overallFinalAcceptance": "not claimed by this reference-only receipt"
+  },
+  "retainedNegativeResults": {
+    "staticBuildEvidence": "The existing inputs.json retains the failed esptool constraint check and first dependency-acquisition failure, with their historical hashes. The existing static-checks files retain rejection fixtures; this receipt does not replace or erase them.",
+    "display": "Initial blank frame retained; final frame is a configuration-warning page. Button response and benchmark speed remain unverified.",
+    "sd": "Transport completion, freshly received MISO data, ACK consumption, flush and cross-process/browser durability remain unproven."
+  },
+  "curation": {
+    "rawArtifactsRetained": "Ignored local output/cache only; not copied into this draft and not publicly uploaded. Artifact aliases below are caller-assigned locations, not download URLs.",
+    "omitted": [
+      "full UART and emulator streams",
+      "RGBA and PNG pixel data",
+      "64 MiB SD images",
+      "full hardware snapshot/event arrays",
+      "absolute private paths",
+      "worker/session identifiers",
+      "process IDs and unrelated process details"
+    ],
+    "effect": "Hashes, byte counts, measured values, outcomes, fixed revisions and reproduction commands are retained. Omitted raw bytes limit remote independent inspection until the matching artifacts are supplied.",
+    "verification": "Read-only SHA-256/byte checks, bounded independent FAT32 target-file inspection, RGBA metrics, PNG-to-RGBA byte comparison, UART marker review and Rust log totals. No builds, guests, Node commands, browser or benchmark executed while preparing this draft."
+  },
+  "curationSourceSummary": {
+    "bytes": 25240,
+    "sha256": "eb62b5d8c7f5ce472696da276dee123c648a80188903b46487926b9e70f3c2ac",
+    "preservedInIgnoredControlDirectory": true,
+    "effect": "Only publication wording and cross-references updated; historical raw artifact hashes and measured values retained."
+  }
+}

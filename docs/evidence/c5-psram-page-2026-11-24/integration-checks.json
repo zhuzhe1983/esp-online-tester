@@ -1,0 +1,145 @@
+{
+  "schema": 1,
+  "baseCommit": "87af9095c13ee3ba3cd4e0f16e8fc058d277f494",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/mspi.rs",
+      "sha256": "1d1b7228489ba1f7650981a356be9b05cff6c67f1eca9b8cb2148f7633b9327d"
+    },
+    {
+      "path": "esp32c5/src/quad_psram.rs",
+      "sha256": "b5dc47fd10fec29b118e1d5b98aedbdb852f30c5ff7e3396a1a14f0b2cbd3e5f"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "a1cf3b18eabc267cec8c215177b4553ae2e53eb76854287c35b1b2e682c863ad"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "3cb7dbfeea37b871cfa84b60cf4842a5e52edbfac138d60dc56945d704840784"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": "psram-integrated-c5-suite.log",
+      "logSha256": "095d31ebdaca7e9d573897bc86c3122dfbfe01706130910ed92b41f833208222",
+      "passed": 318,
+      "failed": 0,
+      "ignored": 0,
+      "inputDependentTestsRun": 5,
+      "logBytes": 35043
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "psram-integrated-workspace-clippy.log",
+      "logSha256": "8b24254a43bbb5b0a2ba3e2cd3e432eabf11820fb86836aff7edb4659ae14349",
+      "logBytes": 318
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": "psram-integrated-wasm-clippy.log",
+      "logSha256": "1547c511cf64ca5c19471228a725e9761d2170646a472cc03a5b82a888114860",
+      "logBytes": 241
+    }
+  ],
+  "nativeProbes": [
+    {
+      "sourceCommit": "9f555085",
+      "log": "native-machine-lcd273-psram-divider.log",
+      "sha256": "5242252d9856ca16f9e6ba5215d377fcbfa0983c55ded8fc562cd3b0b907b434",
+      "steps": 20721394,
+      "cycles": 20721344,
+      "uartBytes": 1928,
+      "sourceSelector": 2,
+      "rawPllHz": 480000000,
+      "pcrDividerField": 5,
+      "mspiCoreHz": 80000000,
+      "spi1SerialHz": 20000000,
+      "connectionWriteReadPassed": true,
+      "connectionBackingBytes": "8d7c6b5a",
+      "idWord": "0x00425d0d",
+      "qpi": true,
+      "firstFault": {
+        "pc": "0x4080a572",
+        "address": "0x60002174",
+        "write": false
+      },
+      "interpretation": "PLL divider fixed the original real array write/read check and allowed ID/QPI; next exact page word still unsupported.",
+      "logBytes": 17063
+    },
+    {
+      "sourceCommit": "87af9095",
+      "log": "native-machine-lcd273-psram-page.log",
+      "sha256": "a53904c4ec11832bd6e22d76aff7eb993ce867440a52f0ffd12ab508ab25ea80",
+      "steps": 20820431,
+      "cycles": 20820416,
+      "uartBytes": 2150,
+      "qpi": true,
+      "mspiCoreHz": 80000000,
+      "spi1SerialHz": 80000000,
+      "connectionBackingBytes": "8d7c6b5a",
+      "page1024ByteConfigAccepted": true,
+      "guestMessages": [
+        "Enter psram timing tuning",
+        "tuning fail, best point is fallen back to index4",
+        "Found8MB PSRAM device",
+        "Speed80MHz",
+        "Unicore app"
+      ],
+      "firstFault": {
+        "pc": "0x420710bc",
+        "address": "0x600990c4",
+        "write": true,
+        "width": 4,
+        "sourceRegister": 10,
+        "value": "0x00000000"
+      },
+      "trap": {
+        "mepc": "0x420710bc",
+        "mcause": 7,
+        "mtval": "0x600990c4"
+      },
+      "interpretation": "Original startup progresses past PSRAM initialization into access-permission initialization; full memory selftest and app_main remain pending.",
+      "logBytes": 17324
+    }
+  ],
+  "nativeCommand": "C5_FACTORY_TRACE_ARM_PC=4080a400 C5_FACTORY_TRACE_MSPI=1 C5_FACTORY_TRACE_PCS=4080a400,4002c51c,4002c51e,4080a422,4080a44e,4080a46e,4080a472 cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared FAT32 card>",
+  "inputsAfterNativeRun": [
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    },
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    }
+  ],
+  "contracts": [
+    "PLL source2 remains a raw480MHz tap, divided by FAST_DIV+1 before SPI serial N+1. Actual605/30103 is20MHz. PLL readiness and all gates remain required.",
+    "Low-speed NUM2 retains the legacy header-based /4 subset, with explicit unresolved SDK getter /3 conflict; no independent low-NUM2 silicon validation is claimed.",
+    "Only SPI0+174 page size is exposed; ECC enables17/20, SPI1 alias and neighboring unimplemented engine addresses still reject transactionally. The register does not report memory-test success.",
+    "Optional terminal MSPI snapshots are pure host state, occur after execution, and cannot change guest steps, cycles, arrays or interrupts."
+  ],
+  "limits": [
+    "Declared compatible virtual8MiB die ID is not an actual package identity or hardware capture. Recognition is separate from testing every byte.",
+    "The actual tuning routines still emit fallback-to-index4 warnings; physical sampling windows, cache burst/CS timing and ECC are not modeled or claimed.",
+    "Full8MiB original memory selftest, app_main, LCD/buttons/TF/Wi-Fi are not passed. No pixels or SD commands yet.",
+    "Focused release uses explicit LTO=false. Default-LTO workspace CI, CPU controls, final production WASM/browser and fresh release acceptance remain pending. No C5 publication."
+  ],
+  "curation": "Compact numeric summaries and hashes only; raw console/snapshots remain in ignored cache. No personal paths, process inventories or raw capture arrays committed; original inputs unchanged."
+}

@@ -2,6 +2,7 @@ import {validIlluminance} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
 import {POWER_PRODUCT_ID,POWER_KEYS,powerParameters,validPowerEnvironment,validPowerScene} from './power-environment.js';
 import {THERMAL_PRODUCT_ID,THERMAL_FIELDS,validThermal,thermalParameters} from './thermal-input.js';
+import {C5_WIFI_DRIVER_COMPAT_PROFILE,C5_WIFI_DRIVER_COMPAT_PRODUCT_IDS} from './c5-wifi-driver-compat.js';
 // Portable semantic input recordings. Guest acknowledgements are evidence of delivery,
 // not cycle-exact scheduling or a guarantee of identical firmware behavior.
 import {encodeScene, decodeScene} from './catalog.js';
@@ -14,7 +15,7 @@ const object = value => value !== null && typeof value === 'object' && !Array.is
 const err = (code, message, details) => Object.assign(new Error(message), {code, details});
 const canonical = value => Array.isArray(value) ? value.map(canonical) : object(value) ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value;
 const json = value => JSON.stringify(canonical(value));
-const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || [],flight:scene.flight||null,environment:scene.environment||null,thermalEnvironment:scene.thermalEnvironment||null});
+const config = scene => ({schemaVersion:scene.schemaVersion,productId:scene.productId,firmware:scene.firmware,accessories:scene.accessories,localAccessories:scene.localAccessories || [],flight:scene.flight||null,environment:scene.environment||null,thermalEnvironment:scene.thermalEnvironment||null,c5WifiDriverCompat:scene.c5WifiDriverCompat??null});
 const sameScene = (a,b) => !!a && !!b && json(config(a)) === json(config(b));
 const hashPattern = /^[a-f0-9]{64}$/i;
 const pressInput=event=>{
@@ -24,9 +25,9 @@ const pressInput=event=>{
 };
 const pressId=event=>event.type==='accessory-button'?`accessory:${event.accessoryId}:${event.id}`:event.type==='matrix-key'?`matrix:${event.row}:${event.column}`:`button:${event.id}`;
 const sourceUrl=value=>{try{const url=new URL(value);return typeof value==='string'&&value.length<=4096&&!url.username&&!url.password&&(url.protocol==='https:'||(url.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(url.hostname)));}catch{return false;}};
-const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,executionMode:firmware.executionMode || 'wasm-jit',stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
+const fingerprint = firmware => json({manifestHash:firmware.manifestHash ?? null,appDirect:!!firmware.appDirect,executionMode:firmware.executionMode || 'wasm-jit',c5WifiDriverCompat:firmware.c5WifiDriverCompat??null,stubs:firmware.stubs || [],artifacts:firmware.artifacts.map(({kind,sha256,bytes,at}) => ({kind,sha256,bytes,...(at === undefined ? {} : {at})}))});
 // Descriptive browser metadata is not part of the portable execution receipt.
-const recordingFirmware = firmware => clone(Object.fromEntries(['source','manifestUrl','manifestHash','artifacts','appDirect','stubs','executionMode'].filter(key=>firmware[key]!==undefined).map(key=>[key,firmware[key]])));
+const recordingFirmware = firmware => clone(Object.fromEntries(['source','manifestUrl','manifestHash','artifacts','appDirect','stubs','executionMode','c5WifiDriverCompat'].filter(key=>firmware[key]!==undefined).map(key=>[key,firmware[key]])));
 
 export function validateRecording(recording, {scene} = {}) {
   const errors = [], add = (code,path,message) => errors.push({code,path,message});
@@ -41,7 +42,8 @@ export function validateRecording(recording, {scene} = {}) {
   if (recording.schemaVersion !== '1') add('RECORDING_VERSION','/schemaVersion','Unsupported recording version.');
   if (!object(recording.scene) || recording.scene.schemaVersion !== '1' || typeof recording.scene.productId !== 'string' || !object(recording.scene.firmware)) add('RECORDING_SCENE','/scene','Recording needs its configured scene and remote firmware source.');
   else {
-    keys(recording.scene,['schemaVersion','productId','firmware','accessories','keyMapping','view','localAccessories','flight','environment','thermalEnvironment'],'/scene');
+    keys(recording.scene,['schemaVersion','productId','firmware','accessories','keyMapping','view','localAccessories','flight','environment','thermalEnvironment','c5WifiDriverCompat'],'/scene');
+    if(recording.scene.c5WifiDriverCompat!==undefined && (recording.scene.c5WifiDriverCompat!==C5_WIFI_DRIVER_COMPAT_PROFILE||!C5_WIFI_DRIVER_COMPAT_PRODUCT_IDS.includes(recording.scene.productId)||recording.scene.firmware.bootMode==='app-direct'))add('RECORDING_C5_WIFI_DRIVER_COMPAT','/scene/c5WifiDriverCompat','The offline driver profile requires an explicit LCD273 ROM-startup scene.');
     if(recording.scene.environment!==undefined && (recording.scene.productId!==POWER_PRODUCT_ID||!validPowerScene(recording.scene.environment)))add('RECORDING_POWER','/scene/environment','Invalid initial virtual power environment.');
     if(recording.scene.thermalEnvironment!==undefined && (recording.scene.productId!==THERMAL_PRODUCT_ID||!validThermal(recording.scene.thermalEnvironment)))add('RECORDING_THERMAL','/scene/thermalEnvironment','Invalid initial Raw14 stimulus.');
     keys(recording.scene.firmware,['manifestUrl','url','sha256','bootMode'],'/scene/firmware');
@@ -60,7 +62,8 @@ export function validateRecording(recording, {scene} = {}) {
   const fw = recording.firmware;
   if (!object(fw) || fw.source !== 'remote' || !Array.isArray(fw.artifacts) || !fw.artifacts.length || fw.artifacts.length > 32) add('RECORDING_FIRMWARE','/firmware','A remote firmware receipt with 1–32 artifacts is required.');
   else {
-    keys(fw,['source','manifestUrl','manifestHash','artifacts','appDirect','stubs','executionMode'],'/firmware');
+    keys(fw,['source','manifestUrl','manifestHash','artifacts','appDirect','stubs','executionMode','c5WifiDriverCompat'],'/firmware');
+    if((fw.c5WifiDriverCompat!==undefined && fw.c5WifiDriverCompat!==C5_WIFI_DRIVER_COMPAT_PROFILE)||(fw.c5WifiDriverCompat??null)!==(recording.scene?.c5WifiDriverCompat??null)||(fw.c5WifiDriverCompat!==undefined&&fw.appDirect!==false))add('RECORDING_C5_WIFI_DRIVER_COMPAT','/firmware/c5WifiDriverCompat','The firmware receipt and scene must use the same explicit offline driver profile with ROM startup.');
     if(fw.executionMode!==undefined&&!['wasm-jit','wasm-interpreter'].includes(fw.executionMode))add('RECORDING_FIRMWARE','/firmware/executionMode','Invalid WASM execution mode.');
     if(fw.manifestUrl!==null&&!sourceUrl(fw.manifestUrl))add('RECORDING_SOURCE','/firmware/manifestUrl','Invalid manifest receipt URL.');
     if(typeof fw.appDirect!=='boolean'||!Array.isArray(fw.stubs)||fw.stubs.length>64||fw.stubs.some(s=>typeof s!=='string'||s.length>255))add('RECORDING_FIRMWARE','/firmware','Invalid execution-mode receipt.');

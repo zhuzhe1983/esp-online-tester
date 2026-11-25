@@ -2,9 +2,16 @@
 
 `waveshare-c5-lcd273` is a source-wired, experimental C5 profile with **32 MiB
 flash and 8 MiB PSRAM**, a non-touch 320×320 ILI9488 display, three GPIO keys
-and SPI microSD. The project's original SRAM diagnostic has exercised those
-register paths. The manufacturer's unchanged factory image remains a separate
-reference because ROM startup stops before its application.
+and SPI microSD. Normal ROM startup now executes the manufacturer's unchanged
+IDF5.5.3 SD and LCD reference examples, separately from the project's original
+SRAM diagnostic. The SD example mounts FAT32 and verifies a71-byte file; the
+LCD example produces its real LVGL configuration-warning screen. The unchanged
+FactoryOnly image reaches `app_main` in strict mode and stops during Wi-Fi
+MAC initialization. An explicit offline driver compatibility profile now runs
+its original menu, all three GPIO keys and Photo JPEG reads/decoding/display
+from the virtual TF card in native and production browser execution. The ROM
+loader remains experimental; the original Sensor page has known timing and
+byte-order failures, and complete factory or RF compatibility is not accepted.
 
 ## Exact hardware and source boundary
 
@@ -32,7 +39,8 @@ redistributed in the source tree.
 | Native view | Actual bundled `mirror(false,false)` sets MX. Final source MADCTL48/BGR and INVON define this profile's reference view, with no gap. Other guest MX/MY/inversion values remain observable. Physical color and scan calibration are unverified. |
 | CH32V006 | I²C24h on SDA27/SCL26. Sixteen-bit little-endian direction02, output03, input04; byte PWM05. Upper and lower startup direction/output bytes remain unknown until explicitly written. |
 | QMI8658C | I²C6Bh, grounded SA0. The canonical resource identifies the C variant. The shared protocol advances in guest time; the diagnostic checks WHO_AM_I only. No physical axis calibration is claimed. |
-| PCF85063A | I²C51h, guest-cycle clock. STOP is forwarded to release burst snapshots. No RTC application was exercised in this batch. |
+| PCF85063A | I²C51h, guest-cycle clock. STOP releases burst snapshots. The original factory logs successful initialization; calendar/application behavior remains unverified. |
+| SHTC3 | I²C70h on SDA27/SCL26. Timed no-stretch subset with a declared virtual25°C/50%RH environment, product ID0807 and word CRC. Original factory wake/ID now succeeds; full UI/environment behavior remains unverified. |
 | PREV | Active-low GPIO2, schematic KEY_L, 10 kΩ pullup. Host control `prev`. |
 | NEXT | Active-low GPIO3, schematic KEY_R, 10 kΩ pullup. Host control `next`. |
 | BOOT/ENTER | Active-low GPIO28, 10 kΩ pullup. Host control `boot` or `button`. |
@@ -53,8 +61,19 @@ scene supplies USB-derived nominal3V3 without a battery. LCD reset has the
 schematic pullup; quiet sensor/RTC interrupts and charge-detect are high in
 the declared scene; unattached header inputs are low. These are explicit
 virtual inputs, not an analog charger simulation or measured hardware defaults.
-SHTC3 and power-key behavior are absent. No AXP2101, FT6336, CST3530 or codec
-is inherited from the superficially similar Touch3.5 board.
+Power-key behavior is absent. No AXP2101, FT6336, CST3530 or codec is inherited
+from the superficially similar Touch3.5 board.
+
+The [SHTC3 model and source receipt](../evidence/c5-shtc3-2026-11-25/README.md)
+use guest cycles for startup/wake/reset240µs, normal conversion12.1ms and
+low-power conversion0.8ms, choosing the datasheet maximums as an explicit
+deterministic timing policy. The sample is latched when measurement starts;
+busy addresses NACK. CPU/controller resets preserve the powered sensor.
+Stretch commands, general call, serial-number queries and result retries
+without a fresh command are outside this subset. The I²C callback interface
+does not model per-byte master ACK waves, and large controller catch-up uses
+the current guest-time horizon rather than calibrated byte phases. A fixed
+virtual environment and successful ID response are not physical calibration.
 
 ## ILI9488 implementation
 
@@ -109,13 +128,48 @@ exercise wrong routes, absent device addresses, unsupported CH32 commands,
 reset/backlight effects, all three electrical inputs, RGB666 partial pixels,
 window overflow and unsupported pixel modes.
 
-The final targeted C5 release suite passed53 tests, including its actual ROM
+The November23 targeted C5 release suite passed53 tests, including its actual ROM
 test. Release all-target Clippy passed with warnings denied. These are C5
 checks, not a whole-workspace gate or CPU performance comparison. The
 [compact receipt](../evidence/waveshare-c5-lcd273-2026-11-23/inputs-and-hashes.json)
 binds source/input hashes and execution counts. Raw images, RGB565 buffers,
 UART and test logs remain under ignored `target/c5-lcd273-2026-11-23/`, with
 a reproducer and hashes in Git. No remote archive upload is claimed.
+
+## Normal ROM references with the original IDF5.5.3 BSP
+
+The fixed manufacturer's `example/ESP-IDF-V553/03_sd_card` and `02_lvgl_demo`
+were built without changing their source, effective sdkconfig, dependency lock
+or BSP. Both happen to use the CMake project name `01_factory`; that name does
+not identify the separately distributed FactoryOnly binary. The
+[exact build inputs and full BIN/ELF/map hashes](../evidence/c5-lcd273-idf553-examples-2026-11-25/README.md)
+pin SDK5.5.3, its recommended GCC14.2 toolchain, button4.1.7 and LVGL9.5.0.
+Their normal ROM/bootloader startup uses32MiB Flash and all8MiB of PSRAM;
+no app-direct mode, ROM stubs or firmware-function hooks are selected.
+
+The unmodified SD program mounts the prepared64MiB FAT32 card, writes71 bytes
+to `/test.txt`, closes it, reopens it, reads the file, checks the length/error
+and compares its content before printing `TF CARD TEST PASS`. The exported
+card contains that exact71-byte payload. A real browser run also flushes the
+changed pages to IndexedDB; reloading the same origin and reselecting the
+same firmware restores a byte-identical card before starting another guest.
+This verifies virtual file I/O and browser retention for this particular
+program, rather than all SD commands or physical electrical timing.
+
+The unmodified LCD program initializes ILI9488, the original display buffers,
+LVGL and brightness control and produces a real320×320 framebuffer. Its
+original configuration disables `LV_USE_PERF_MONITOR`, so the actual screen
+says **“LV_USE_PERF_MONITOR is not enabled”**. This is basic display output,
+not a functioning LVGL benchmark or a three-button application. Keep that
+configuration and this limitation when reproducing the reference.
+
+The SPI and zero-only HP-selected LP_AON mux fixes that enable these unchanged
+programs are documented in the
+[source contracts and native results](../evidence/c5-lcd273-spi-lp-2026-11-25/README.md).
+SD diagnostic counters count inner command calls and backing-store loads or
+writes. They do not count every SPI wire command, prove response consumption
+or replace the guest file comparison and exported-card checks. Published
+snapshots may precede the final paused CPU state.
 
 ## Factory boundary and separate firmware roles
 
@@ -129,14 +183,63 @@ C5 chipID23/revision100–199. The app identifies IDFv5.5.3, July24,2026.
 Shared C5 register models cite separately preserved IDFv5.5.4 sources; this
 batch does not claim complete factory compatibility between SDK versions.
 
-Raw native placement at0 with the unchanged revision100 ROM executes6831
+The initial November23 raw native placement at0 with the unchanged revision100 ROM executes6831
 instructions, then faults reading PMU600b00e4 at PC4001df26 in
 `pmu_enable_unhold_pads`. No UART bytes or display pixels were produced.
 The [factory record](../evidence/waveshare-c5-lcd273-2026-11-23/factory-validation.json)
-keeps that failure distinct from SRAM diagnostic success. The public loader
-remains SRAM-only, and the factory stays `reference`.
+keeps that historical failure distinct from SRAM diagnostic success.
+
+The later [native integration checkpoint](../evidence/c5-coex-gate-2026-11-25/integration.md)
+executes the unchanged ROM, bootloader and application through the full PSRAM
+test, real FreeRTOS ticks, ordinary watchdog initialization and `app_main`.
+RTC/QMI initialization and the sourced virtual SHTC3 ID0807 are observed.
+The subsequent [Wi-Fi clock checkpoint](../evidence/c5-wifi-clock-requests-2026-11-25/integration.md)
+executes all four MODEM_SYSCON `CLK_CONF1` requests (`600a9c14`), then
+stops as a ModelLimit at `408142c6`, reading private MAC word `600ad858`.
+Its whole-word POR/readback contract is not publicly documented in the
+checked C5 sources, so the model does not invent a value. Both these
+requests and the earlier LPCON COEX/WIFIPWR request are retained without
+synthesizing RF/PHY readiness.
+In default strict mode this original image still stops before LCD or SD
+output. Complete revision100 C5 Flash images can be loaded through the
+experimental ROM path; SRAM application direct startup remains separate.
+The catalog entry stays `trial`; the opt-in results below do not certify
+strict hardware, other C5 products or every factory application.
 
 No exact LCD2.73 asset was found among the retrieved Xiaozhi v2.6.0 release's
 200 assets. No exact UIFlow package was found in the inspected fixed README,
 firmware instructions and canonical overview/resources. These are bounded
 search results; another chip or touch model is not substituted.
+
+## Explicit offline driver compatibility
+
+Select **Wi-Fi 驱动兼容（离线）** and apply the mode before reloading the fixed
+factory image. Strict mode remains the default. The
+[configuration and API contract](c5-wifi-driver-compat.md) describes the pinned
+`waveshare-lcd273-idf553-offline-v1` profile and its visible runtime badge.
+
+The unchanged original ROM, bootloader and factory application now produce
+their real menu. Guest-timed PREV/NEXT/BOOT GPIO pulses change visible focus,
+open Photo and return through its Back control. On a separate prepared64MiB
+FAT32 card, the original application reads a5200-byte JPEG, decodes it and
+sends the resulting picture and controls through SPI to ILI9488. Native and
+production-browser RGB565 frames match exactly; the browser's normal reload
+preserves the complete card without another import. See the
+[separate browser runs and retained failures](../evidence/c5-factory-browser-2026-11-25/README.md)
+and [cached-memory correction](../evidence/c5-factory-photo-2026-11-25/README.md).
+
+This is driver-assisted offline execution, with no hotspot association or IP.
+Wi-Fi configuration is session-only RAM. It does not modify BIN/ROM bytes,
+clear guest NVS/card data or supply host-drawn images. The API signatures,
+physical Flash mapping guards and differences from the original driver are
+recorded in the [ABI contract](../evidence/c5-wifi-driver-compat-2026-11-25/README.md).
+
+The original Sensor page opens, but its displayed measurements are not
+accepted as correct. Two actual SHTC3 reads occur about11.23ms after the
+measurement command, before this model's declared12.1ms maximum conversion
+deadline. The sensor NACKs; the factory driver ignores the failed receive
+and converts its untouched zero buffer to−45°C/0%RH. For QMI8658, the original
+code selects big-endian output but decodes little-endian, giving about0.04m/s²
+and0.10°C for the model's+1g and25°C bytes. The model keeps its sourced timing,
+NACK and byte-order behavior; [source and actual transaction evidence](../evidence/c5-factory-sensor-2026-11-25/README.md)
+retain these failures. They are separate from Photo and key acceptance.

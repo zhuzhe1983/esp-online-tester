@@ -33,7 +33,7 @@ test('newest LilyGO C5 boards execute real SRAM GPIO firmware and expose only im
     for(const productId of ['lilygo-t-dongle-c5','lilygo-t7-c5']){
       const scene=createDefaultScene(catalog,productId);scene.firmware=null;await runtime.configure(scene);
       const capabilities=await runtime.capabilities();
-      assert.deepEqual(capabilities.execution.bootModes,['app-direct']);
+      assert.deepEqual(capabilities.execution.bootModes,['rom','app-direct']);
       assert.equal(capabilities.sdCard.available,false);assert.equal(capabilities.deviceStorage.available,false);assert.equal(capabilities.network.available,false);
       await runtime.loadFirmware({file:new File([lilygoC5Probe()],'lilygo-c5-sram.bin')});await runtime.start();
       const dongle=productId==='lilygo-t-dongle-c5';

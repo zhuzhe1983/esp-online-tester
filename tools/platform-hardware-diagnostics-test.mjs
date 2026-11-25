@@ -7,6 +7,7 @@ import {createDefaultScene} from '../web/platform/catalog.js';
 import {parseHardwareDiagnostics} from '../web/platform/hardware-diagnostics.js';
 import {createPacing} from '../web/wasm/pacing.mjs';
 import {applyExperiments} from '../web/wasm/experiments.mjs';
+import {c5Lcd273Snapshot} from './fixtures/c5-lcd273-diagnostics.mjs';
 
 const catalog=Object.fromEntries(await Promise.all(['products','accessories','firmwares'].map(async name=>[name,JSON.parse(await readFile(new URL(`../web/platform/catalog/${name}.json`,import.meta.url))).items])));
 const coreMatrixSnapshot=()=>({schemaVersion:1,board:'corematrix',state:{controllerPowered:true,matrix:{powered:true,enabled:true,pwmSteps:16,frames:12,bytesWritten:512},buzzer:{frequencyHz:1000,duty4095:2048,supplyEnabled:true},grove5vEnabled:false,sdPresent:true}});
@@ -49,6 +50,7 @@ function fixture(){
       if(m.op==='load')response={loaded:m.at===undefined?m.kind:`at${m.at}`,ok:true};
       if(m.op==='start')response={started:true};if(m.op==='resume')response={resumed:true};if(m.op==='stop')response={stopped:0};
       if(m.op==='imu')response={imuApplied:m.inputId,ok:true,time:0};
+      if(['sd-attach','sd-watch','sd-flush'].includes(m.op))response={sdReply:m.requestId,ok:true};
       if(response)queueMicrotask(()=>w.onmessage?.({data:response}));
     }};workers.push(w);return w;
   };
@@ -78,6 +80,26 @@ test('runtime keeps findings immutable, ignores malformed/duplicate messages, an
   }finally{await f.runtime.dispose();}
 });
 
+test('C5 LCD273 runtime exposes only its matching cold observation and keeps other C5 boards unavailable',async()=>{
+  const f=fixture();try{
+    await f.runtime.configure(createDefaultScene(catalog,'waveshare-esp32-c5-lcd-2-73'));
+    assert.deepEqual((await f.runtime.capabilities()).hardwareDiagnostics,{available:true,source:'guest-registers-and-device-transactions',hardwareValidated:false});
+    const bytes=await readFile(new URL('../web/platform/firmware/waveshare-c5-lcd273-probe.bin',import.meta.url));
+    await f.runtime.loadFirmware({file:new Blob([bytes]),bootMode:'app-direct'});
+    f.send(snapshot());assert.equal((await f.runtime.observe()).hardwareDiagnostics,null);
+    f.send(c5Lcd273Snapshot());const observed=await f.runtime.observe();assert.deepEqual(observed.hardwareDiagnostics,c5Lcd273Snapshot());
+    observed.hardwareDiagnostics.state.sd.card.storageBlocksLoaded='99';assert.equal((await f.runtime.observe()).hardwareDiagnostics.state.sd.card.storageBlocksLoaded,'4');
+    const old=f.workers.at(-1);await f.runtime.loadFirmware({file:new Blob([bytes]),bootMode:'app-direct'});f.send(c5Lcd273Snapshot(),old);
+    assert.equal((await f.runtime.observe()).hardwareDiagnostics,null,'old worker data must not enter the new card epoch');
+    f.send(c5Lcd273Snapshot());const invalid=c5Lcd273Snapshot();invalid.state.sd.card.nativeCommandCalls=7;f.send(invalid);
+    assert.equal((await f.runtime.observe()).hardwareDiagnostics.state.sd.card.nativeCommandCalls,'6');
+    for(const id of ['waveshare-esp32-c5-lcd-1-47','waveshare-esp32-c5-touch-lcd-3-5']){
+      await f.runtime.configure(createDefaultScene(catalog,id));assert.equal((await f.runtime.observe()).hardwareDiagnostics,null);
+      assert.deepEqual((await f.runtime.capabilities()).hardwareDiagnostics,{available:false,source:'guest-registers',hardwareValidated:false});
+    }
+  }finally{await f.runtime.dispose();}
+});
+
 test('actual worker observes at cold publication points, throttles, force-refreshes stop and isolates other boards',async()=>{
   const source=(await readFile(new URL('../web/wasm/worker.js',import.meta.url),'utf8')).replace(/^import .*;\n/gm,'');
   let wall=0,cycles=0,calls=0,raw=JSON.stringify(snapshot());const messages=[],timers=[];
@@ -98,4 +120,8 @@ test('actual worker observes at cold publication points, throttles, force-refres
   assert.equal(messages.filter(m=>m.text?.includes('hardware-diagnostics')).length,2,'stop bypasses throttling');
   raw='{malformed';await send({op:'stop'});assert.equal(messages.at(-1).stopped,0,'bad diagnostic data cannot stop the guest with an error');
   await send({op:'create',board:'stackchan'});await send({op:'start'});wall=1000;await send({op:'stop'});assert.equal(calls,4,'other boards do not query the diagnostic export');
+  raw=JSON.stringify(c5Lcd273Snapshot());await send({op:'create',board:'waveshare-c5-lcd273',appDirect:true});await send({op:'start',appDirect:true});assert.equal(calls,5);
+  assert.equal(JSON.parse(messages.filter(m=>m.text?.includes('hardware-diagnostics')).at(-1).text).board,'waveshare-c5-lcd273');
+  await send({op:'stop'});assert.equal(calls,6,'C5 stop force-refreshes the existing cold export');
+  await send({op:'create',board:'waveshare-c5-lcd147',appDirect:true});await send({op:'start',appDirect:true});await send({op:'stop'});assert.equal(calls,6,'other C5 boards remain unobserved');
 });

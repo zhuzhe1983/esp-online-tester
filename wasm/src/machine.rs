@@ -3,6 +3,7 @@ use super::log;
 use esp_soc::observers::{BlockProfile, Coverage, IrqLatency};
 use esp_soc::web::{json_escape, WebServer};
 use esp_soc::{Machine, Soc, SocBus, Stop};
+use xtensa_lx7::Core;
 
 /// The chip-neutral operations the ABI uses.
 pub(super) trait MachineApi {
@@ -34,7 +35,7 @@ impl<S: Soc> MachineApi for Machine<S> {
     }
     fn write_flash(&mut self, off: usize, d: &[u8]) -> Result<(), String> { Machine::write_flash(self, off, d) }
     fn boot(&mut self, app_direct: bool) -> Result<(), String> {
-        if matches!(S::NAME, "esp32c5" | "esp32s2" | "esp32h2") && !app_direct { return Err(format!("{} currently supports SRAM app-direct images; ROM/Flash boot is not implemented", S::NAME)); }
+        if matches!(S::NAME, "esp32s2" | "esp32h2") && !app_direct { return Err(format!("{} currently supports SRAM app-direct images; ROM/Flash boot is not implemented", S::NAME)); }
         // A ROM boot can come back up through the ROM, so the page's `reset` message is honoured (run_slice reboots on
         // the reset; the flash and the strap survive). An app-mode run has no ROM to take a reset through.
         self.web_restart = !app_direct;
@@ -50,6 +51,7 @@ impl<S: Soc> MachineApi for Machine<S> {
                 Stop::Halted | Stop::MaxInsns => return 0,
                 Stop::SwReset => reboot(self),
                 Stop::Unimplemented(pc, raw) => { log(&format!("[emu] unimplemented instruction at {:08x} {} (raw {:#x})", pc, self.sym(pc), raw)); return 2; }
+                Stop::ModelLimit { core, pc } => { log(&format!("[emu] model limit at {pc:08x}, core{core}; {}{}",self.cores[core].dump(core,&|a|self.sym(a)),self.bus.report()));return 2; }
                 Stop::Ebreak(pc) => { log(&format!("[emu] ebreak at {:08x} {}", pc, self.sym(pc))); return 3; }
                 Stop::Breakpoint(_) => return 3,
                 Stop::Exceptions(_) => return 4,
@@ -81,7 +83,7 @@ impl<S: Soc> MachineApi for Machine<S> {
     fn approximate_jit_timing(&mut self, cpi: u32, quantum: u32) -> u32 {
         match self.set_approximate_jit_timing(cpi, quantum) { Ok(()) => 0, Err(reason) => { log(&reason); 1 } }
     }
-    fn set_jit(&mut self, enabled: bool) { for core in &mut self.cores { xtensa_lx7::Core::set_jit(core, enabled && !matches!(S::NAME, "esp32s2" | "esp32h2")); } }
+    fn set_jit(&mut self, enabled: bool) { for core in &mut self.cores { xtensa_lx7::Core::set_jit(core, enabled && !matches!(S::NAME, "esp32c5" | "esp32s2" | "esp32h2")); } }
 }
 
 /// A load kind or flash offset with this bit set goes to the co-processor (`esp32sim_load`,
@@ -163,6 +165,14 @@ pub(super) enum MachineKind {
 }
 
 impl MachineKind {
+    pub fn boot(&mut self, app_direct: bool) -> Result<(), String> {
+        // The flag on Emu records a past successful load, but SRAM startup can
+        // disable the audited MP profile afterwards. Ask the actual C5 bus.
+        if let Self::C5(m) = self {
+            if !app_direct && !m.bus.has_validated_rom() { return Err("C5 ROM boot requires the validated MP revision100 mask ROM at a fresh VM/chip epoch; after SRAM app-direct, create a fresh VM before loading the ROM".into()); }
+        }
+        std::ops::DerefMut::deref_mut(self).boot(app_direct)
+    }
     /// Read-only primary-chip flash export; a co-processor has its own flash and is not
     /// included. No guest instruction, tick or cache state changes.
     pub fn flash(&self) -> &[u8] {

@@ -1,0 +1,216 @@
+{
+  "schema": 1,
+  "baseCommit": "abb80621",
+  "moduleCommits": [
+    {
+      "integrated": "abb80621",
+      "original": "9a8b77bf2e664ebb5a27f2e80921e105b919b500",
+      "scope": "Five exact KM-init/DPA configuration words and explicit virtual reset event"
+    },
+    {
+      "integrated": "31909504",
+      "original": "daf1df167be8522ce2fd3f516029362f1ceccf40",
+      "scope": "Existing ten modem ICG fields, witnessed0/4/6 configuration, no RF ready"
+    },
+    {
+      "integrated": "b7de9cd2",
+      "original": "6b0e6c8b293f79688ddbe3373c5f2382821d3fe1",
+      "scope": "Helper cold snapshots and same-publication/card-epoch u64 differences; acceptance remains false"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_security.rs",
+      "sha256": "749d6da50701e9b923a1ffca12653996e8539b1f2a922554b0a2cb9fc7bcccf3"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "a60603e700e83ff06e9913614ffd46e19564742e743d79a75dcc4f8134954f61"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "e9d82d85d4f6d390d329cfefe87731aee937f51efa7d44b9936ee241fdf2315b"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "ff320bc164414d56208d97e0ddcd2629d0c089d77d1bcafe0ec1988ab0a86714"
+    },
+    {
+      "path": "esp32c5/src/efuse.rs",
+      "sha256": "7ce8090955d54f54362d81a74ef4ab18bd6f5cf2f8a16068d9f4f3ff9d900023"
+    },
+    {
+      "path": "esp32c5/src/boot_security_bus_tests.rs",
+      "sha256": "1bb2860e881bb97ec15e157433a81b27f0f30631c8bf46d35a5a2710376f4de0"
+    },
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "sha256": "46e25fcc0271a2491bc376ced4b6afa348173f3e7a0bb5fe12feb796e6ed8cb6"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "log": "c5-keymgr-modem-integration-c5-suite.log",
+      "exitCode": 0,
+      "sha256": "9092dd4740566bca5f1bd3cca647740e3b9290ff3277dc0220802b46d42cf710",
+      "elapsedSeconds": 39.055,
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "results": {
+        "passed": 518,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      },
+      "inputCases": [
+        "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+        "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+        "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+        "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+        "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+        "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+      ],
+      "newControlCases": {
+        "keyManagerBus": 7,
+        "efuseShadowPolicy": 1,
+        "modemMapModuleAdditions": 6,
+        "keyManagerModule": 13
+      },
+      "logBytes": 55416
+    },
+    {
+      "log": "native-machine-lcd273-keymgr-modem-integration.log",
+      "exitCode": 0,
+      "sha256": "1876d9008ce7b3bcda492650152c79f40014b44594707702312f0c521ec9daa8",
+      "elapsedSeconds": 3.469,
+      "command": "C5_FACTORY_TRACE_PCS=40817696,42002592,420025a4,420025b2,420025c2,4002132c,4200aebe cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned prepared SD>",
+      "logBytes": 12037
+    },
+    {
+      "log": "c5-keymgr-modem-integration-workspace-clippy.log",
+      "exitCode": 0,
+      "sha256": "9edfe9746fb57bc29e9ba058c625347affa09abc654b2bad9fd1e9cb0fedef77",
+      "elapsedSeconds": 5.546,
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "logBytes": 318
+    },
+    {
+      "log": "c5-keymgr-modem-integration-wasm-clippy.log",
+      "exitCode": 0,
+      "sha256": "c27d29211d4573f94eb57ca60e6da85f75b37233f543690310f576855a8299b6",
+      "elapsedSeconds": 0.618,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "logBytes": 241
+    },
+    {
+      "log": "c5-keymgr-modem-integration-privacy.log",
+      "exitCode": 0,
+      "sha256": "5162b606ad6940c6e4f77e981fa420f4bdd9975618614779b2bb297656397861",
+      "elapsedSeconds": 0.676,
+      "command": "node tools/check-evidence-privacy.mjs",
+      "logBytes": 130
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "actualNative": {
+    "log": "native-machine-lcd273-keymgr-modem-integration.log",
+    "sha256": "1876d9008ce7b3bcda492650152c79f40014b44594707702312f0c521ec9daa8",
+    "runSteps": 27103952,
+    "cpuInstructionCount": 27103952,
+    "nominalCycles": 27103936,
+    "uartBytes": 3955,
+    "pc": "0x420b8864",
+    "writeAddress": "0x600af008",
+    "requestedValue": "0x00000314",
+    "mcause": 7,
+    "keyManager": {
+      "phase": "Complete",
+      "control": "0x5",
+      "memoryPower": "0x2",
+      "static": "0x1e2",
+      "dpaConfig": "0x5",
+      "assertAt": 27039936,
+      "releaseAt": 27039936,
+      "virtualCompletionAt": 27040176,
+      "firstIdleTraceAt": 27040192,
+      "reads": [
+        67,
+        2,
+        1,
+        2,
+        2
+      ],
+      "writes": [
+        3,
+        2,
+        1,
+        0,
+        2
+      ],
+      "asserts": 1,
+      "releases": 1,
+      "completions": 1,
+      "cancellations": 0,
+      "latencyPolicy": "Explicit virtual protocol240 nominal cycles; no physical time/KM-edge/crypto claim."
+    },
+    "coexRawSelectedSourceHz": 48000000,
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "ordinaryWatchdogStartupExecuted": false,
+    "description": "The unchanged original guest polls READY, executes both original IDLE checks, selects the eFuse source and writes DPA4 then5. It later logs sleep-GPIO/coexistence versions and reaches a currently unsupported COEX clock-divider request before app_main.",
+    "logBytes": 12037
+  },
+  "contracts": [
+    "The strict cold/ideal-awake HP domain is explicitly modeled functional availability, checked independently of APB and pre-DPA source; safe PMU target words do not prove physical power or settling. Missing owner, pending reset or unknown input does not grant the domain.",
+    "Actual unprovisioned logical eFuse shadow words supply DPA[21:20],CRYPT_CNT[18:16] parity and forced-KM flash/PSRAM bit11. The pure getter does not issue READ_CMD, touch OTP, change IRQ/read-done or create a valid key.",
+    "Key Manager release requires actual SRAM PU without PD, local gate, real reset assertion/release, known source/APB/domain and known-off policies. A finite declared virtual240-cycle event supplies completion; constructor/header READY or guest RO writes cannot supply runtime IDLE.",
+    "PMU materialization and clock/analog updates publish old/new observations at the same boundary. Input loss cancels a pending event and requires a new reset; restoration does not backfill completion.",
+    "CPU reset preserves the autonomous pending event. HP reset clears it at reset_at; raw profile exit drops it and its deadline. Earlier WDT service commits only KM events strictly before the reset; an equal-time reset wins. Subword MMIO cannot bypass that reset barrier or force a control write.",
+    "Exact owned refusals are Unsupported/ModelLimit with plain/UnitCost CSR/destination/controller preservation. Adjacent and off-profile unknown words keep their prior mapping.",
+    "The small plain/UnitCost guest actually writes power/gate/reset, polls READY, reads STATE once and ORs/writes STATIC. The original unchanged firmware separately executes its two IDLE checks, seen in bounded traces and STATE read count2.",
+    "Completed configuration/IDLE history may remain latched while unavailable power/gate/source hides runtime observations; restoring their known qualification can expose that prior IDLE. This bounded invariant with no accepted START is not SRAM retention, physical power-ready or a usable key.",
+    "DPA named configuration0..7 is recorded without a divider engine. DPA5 after completion retains digital IDLE/configuration but cannot qualify a new reset event or any crypto/key/START/data consumer.",
+    "The pre-integrated modem ICG maps and helper counters do not provide COEX execution, RF/PHY readiness, guest SD-read completion, FAT mount, durable storage or product acceptance."
+  ],
+  "reviews": [
+    {
+      "sha256": "4b7e06b2ba46722b5716d78d71d1ea5f66a5b681dde4aaabd8cbda977dcd65b0",
+      "scope": "Independent read-only owner/glue/seven fixture review; no P1/P2 in the declared virtual scope. READY polling plus single STATE fixture read differs from the original two IDLE loops; no independent execution."
+    },
+    {
+      "sha256": "c399cb51748142e8aa059b2c153dd6535cc9ccac482f765f9148b4bb39229723",
+      "scope": "Read-only exact eFuse/awake-domain input and old-WDT/reset-at audit; no physical power-ready inference. Parent subsequent implementation and tests are separately recorded."
+    },
+    {
+      "sha256": "1d6e7d97dfec563265d35a0257d063e33499b0dc6830a1fdde73b7a997f805d7",
+      "scope": "Read-only helper same-card/publication/u64 observation review, two source fingerprints stable; no P1/P2, no new runtime execution."
+    }
+  ],
+  "negativeResults": [],
+  "limits": [
+    "The latest original boundary is a known COEX word with an unsupported nonzero divider. No app_main/FreeRTOS ordinary-watchdog/LCD/buttons/TF or RF/PHY success claim.",
+    "These focused LTO=false checks do not replace final native default-LTO workspace CI, controlled CPU comparisons, updated production WASM/browser or fresh product acceptance.",
+    "The previous default-release production WASM artifact and platform result were measured before KM/modem/helper integration; they are historical, not validation of this new backend.",
+    "Raw logs/private paths are omitted. Original input bytes and measured numeric/log hashes remain unchanged."
+  ]
+}

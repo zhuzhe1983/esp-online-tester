@@ -1,0 +1,334 @@
+{
+  "schema": 1,
+  "baseCommit": "9dedc474ab35401466c51318dba6ba04b882d200",
+  "integratedModules": [
+    {
+      "original": "4e78c08fb5959b765b5be8116db5df28986cacd2",
+      "integrated": "5518f20d"
+    },
+    {
+      "original": "60ed68ae0ae1a787ff7781e05faa7913ef53bdc4",
+      "integrated": "71c3361a"
+    },
+    {
+      "original": "a4e666d8c2e7b521e42a34f5a9d1ef7b704fa6ff",
+      "integrated": "9dedc474"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_peripheral_clock.rs",
+      "sha256": "79eee5e3cb4100fd04bfa267486c7d87134d6b87ba9c6e2f4f2ca809f604b548"
+    },
+    {
+      "path": "esp32c5/src/boot_clock.rs",
+      "sha256": "729765e6912dc2bfab4bab08b13bd7765f7285fb4f93e5652e890c9c247b2bd2"
+    },
+    {
+      "path": "esp32c5/src/clock_tree.rs",
+      "sha256": "bf0e95902afa495b980403dfa0e946c6afae1c1b7b9f4f93ec3a41234c4eea20"
+    },
+    {
+      "path": "esp32c5/src/boot_apm.rs",
+      "sha256": "d68d51bbcb5ecffd6de05da45652fb5095c6745083e28af94648664214a5ab3a"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "d2fff88289d21ae82a27774a6265f94d0a4e0ae4ef417474c6288982b140de46"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "5d196369acaa8ba9ef346d2d2a0e90009fb20b32ba91953c1175045eda11ea4d"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "22ee55af05d429b0e3ba8a7c5ca76ed0693a00be3f1a9690a88da0cea80d3c2d"
+    },
+    {
+      "path": "esp32c5/src/boot_peripheral_bus_tests.rs",
+      "sha256": "adce1c2e89a0852b2013e1e4a00c5b5747e29ae4123780f8a03a41317aafb7ec"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "log": "c5-peripheral-disable-reset-barrier-c5-suite.log",
+      "exitCode": 0,
+      "sha256": "b681b6992f5f14723c9f66e8af4a68b84e1cfca1aae7170db68b6609e80aa368",
+      "elapsedSeconds": 39.154,
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "results": {
+        "passed": 407,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 0
+      },
+      "inputCases": [
+        "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+        "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+        "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+        "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+        "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+        "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+      ],
+      "logBytes": 44093
+    },
+    {
+      "log": "native-machine-lcd273-peripheral-disable-reset-barrier.log",
+      "exitCode": 0,
+      "sha256": "a4611385128cdf9156e1f70e1b8117687616349ea5c6298711b24cfb1a67840f",
+      "elapsedSeconds": 3.235,
+      "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned prepared SD>",
+      "logBytes": 7741
+    },
+    {
+      "log": "c5-peripheral-disable-reset-barrier-workspace-clippy.log",
+      "exitCode": 0,
+      "sha256": "f25dd6313e6fbc0441a6e200684d68a15faeb8dcf1f2cd2013ec28d108171855",
+      "elapsedSeconds": 4.038,
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "logBytes": 318
+    },
+    {
+      "log": "c5-peripheral-disable-reset-barrier-wasm-clippy.log",
+      "exitCode": 0,
+      "sha256": "3e27febb837407d6e2b3af6ab755b886d9d6be6e90be2836247d2f78bc4ace42",
+      "elapsedSeconds": 0.615,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "logBytes": 241
+    },
+    {
+      "log": "c5-peripheral-disable-reset-barrier-privacy.log",
+      "exitCode": 0,
+      "sha256": "2dae2c708bdf3e541b1cad609f1021a3f3d967958e4b5f8422c4db2a808e5ebc",
+      "elapsedSeconds": 0.43,
+      "command": "node tools/check-evidence-privacy.mjs",
+      "logBytes": 130
+    }
+  ],
+  "ownerContracts": [
+    "New scalar owner covers exactly30 PCR words and LP_UART/LP_GPIO. Other UART/I2C/Transport/SARADC/SHA/BootClock/APM owners remain responsible for their real engines. SDK named-field POR is an explicit virtual profile; known TRM1.1 disagreements remain in the source receipt.",
+    "Only named clock closes, idempotent current writes, PAU held-reset assertion and zero-only CLK_OUT/LP_GPIO are accepted. Reserved/source/divider/RO mutations, reset release or enabling unimplemented engines reject transactionally.",
+    "Strict selected ROM eagerly creates the peripheral owner. RMT MMIO/ticks/IRQ/completed-frame draining/scheduler deadlines all honor actual stored gate bits. Unsupported strict RMT MMIO becomes Fault::Unsupported/ModelLimit with guest exception CSRs unchanged. The unselected SRAM path keeps existing RMT behavior.",
+    "First selection refuses an active/IRQ/pending-frame legacy RMT controller before creating profile state. CPU retains; HP restores PCR; LP restores LP_UART/LP_GPIO; raw deselection drops the owner even with pending reset.",
+    "TG1 APB/reset low bits publish to actual TimgWdt inputs after the previous watchdog/reset boundary. TG0/TG1 ordinary timer clocks are independent from MWDT functional sources; APB closure blocks registers without stopping the separately clocked watchdog.",
+    "Six APM register clock modes select automatic0/always-on1, preserve actual constrained Machine qualification and all filter/TEE/CPU/DMA decisions, and have distinct HP/LP declared reset groups.",
+    "LP clock-to-pad zero does not change internal LP_FAST/SLOW/PLL/CPU/watchdog/timer clocks. The real LP_IO close loop observes both LPPERI27 and LP_GPIO0; RNG24 closure prevents later samples.",
+    "Core/HP reset preserves the complete LPPERI owner: LP_IO/RNG clock, reset/config, deterministic sample count and sequence. Only declared LP/Chip reset restores its POR.",
+    "Strict LPPERI reads/writes settle the old watchdog timeline and reject pending/overdue-reset access before changing gates or requesting another sample. Unselected legacy behavior remains unchanged."
+  ],
+  "controls": {
+    "newScalarPureCases": 12,
+    "newClockPureCases": 4,
+    "newApmPureCases": 5,
+    "newBusGuestCases": 10,
+    "legacyApmRangeCount": "18 to21 because three newly supported exact clock words fall within the old enumerated interval; other old assertions retained",
+    "oldClockFixtureBodiesUnchanged": 25
+  },
+  "actualNative": {
+    "stop": "Exceptions(1)",
+    "runSteps": 26620301,
+    "cpuInstructionCount": 26620301,
+    "nominalCycles": 26620288,
+    "uartBytes": 2263,
+    "pc": "0x42001118",
+    "readAddress": "0x600c83d0",
+    "mcause": 5,
+    "bulkPcrWrites": 31,
+    "bulkLpWrites": 3,
+    "pauHeldReset": true,
+    "clkOut": 0,
+    "lpUart": 0,
+    "lpGpio": 0,
+    "rmtClocked": false,
+    "apmClockModes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "apmClockWrites": 6,
+    "apmTeardownWrites": [
+      4,
+      15,
+      1
+    ],
+    "cpuHz": 240000000,
+    "ahbHz": 40000000,
+    "apbHz": 40000000,
+    "lpFastHz": 17500000,
+    "lpSlowHz": 136000,
+    "pllDivGateMask": "0x23",
+    "originalPsramTestLogStillPresent": true,
+    "consolePinsReconfigured": [
+      12,
+      11
+    ],
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "description": "Unchanged firmware executes the full peripheral shutdown and later UART reconfiguration, then stops at the next unimplemented cache-error interrupt setup word. Native exitCode0 is a completed diagnostic probe, not product acceptance."
+  },
+  "negativeResults": [
+    {
+      "log": "native-machine-lcd273-fpga-debug-msb.log",
+      "sha256": "cb24d75ae671d82cbac4c2fe46724f86eeeca7d773c46b20fa2a409e0de9c00d",
+      "boundary": "Before this change, original read6009603c at42000e20 stopped after26601352steps/26601344cycles/UART2194.",
+      "logBytes": 7331
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "limits": [
+    "No app_main, LCD, buttons, TF or radio execution acceptance. Clock configuration is not a physical readiness/calibration claim.",
+    "Focused LTO=false checks do not replace final default-LTO full-workspace CI, CPU controls, production WASM/browser validation or fresh acceptance.",
+    "Raw captures and personal paths are excluded; commands use named pinned inputs. Aggregate elapsed times and measured counts are retained."
+  ],
+  "priorValidation": [
+    {
+      "scope": "Initial eight-case integration; passed405 tests and both Clippy, but did not cover complete LPPERI HP retention or pending-reset boundaries. Independent review found two P2 defects despite passing checks.",
+      "checks": [
+        {
+          "log": "c5-peripheral-disable-c5-suite.log",
+          "exitCode": 0,
+          "sha256": "a70177c397110ed87a8ad793d688c80e4faeae905f84a6b6ef2e950d2b0ea1ec",
+          "elapsedSeconds": 39.201,
+          "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+          "results": {
+            "passed": 405,
+            "failed": 0,
+            "ignored": 0,
+            "measured": 0,
+            "filtered": 0
+          },
+          "inputCases": [
+            "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+            "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+            "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+            "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+            "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+            "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+          ],
+          "logBytes": 43863
+        },
+        {
+          "log": "native-machine-lcd273-peripheral-disable.log",
+          "exitCode": 0,
+          "sha256": "a4611385128cdf9156e1f70e1b8117687616349ea5c6298711b24cfb1a67840f",
+          "elapsedSeconds": 3.201,
+          "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned prepared SD>",
+          "logBytes": 7741
+        },
+        {
+          "log": "c5-peripheral-disable-workspace-clippy.log",
+          "exitCode": 0,
+          "sha256": "a6f802114aab96a8cd64d40ea670ba447fc91278f1b2c45a40d413c3d05d231d",
+          "elapsedSeconds": 5.671,
+          "command": "cargo clippy --workspace --all-targets -- -D warnings",
+          "logBytes": 318
+        },
+        {
+          "log": "c5-peripheral-disable-wasm-clippy.log",
+          "exitCode": 0,
+          "sha256": "06b7e28506f79189a00e0e8a9268a76b70144d80f78a8ef07cf35590a4c3b813",
+          "elapsedSeconds": 0.656,
+          "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+          "logBytes": 241
+        },
+        {
+          "log": "c5-peripheral-disable-privacy.log",
+          "exitCode": 0,
+          "sha256": "2dae2c708bdf3e541b1cad609f1021a3f3d967958e4b5f8422c4db2a808e5ebc",
+          "elapsedSeconds": 0.439,
+          "command": "node tools/check-evidence-privacy.mjs",
+          "logBytes": 130
+        }
+      ]
+    },
+    {
+      "scope": "First whole-LPPERI retention repair, one new case;406 tests/two Clippy/privacy passed, original native log byte-identical. A second pending-reset issue was still open.",
+      "checks": [
+        {
+          "log": "c5-peripheral-disable-lp-retention-c5-suite.log",
+          "exitCode": 0,
+          "sha256": "94e07c2c27b92edb2417687f2e9c7d3bb16a869dbe4e04ced51bc99a94e7299e",
+          "elapsedSeconds": 37.574,
+          "logBytes": 43967
+        },
+        {
+          "log": "native-machine-lcd273-peripheral-disable-lp-retention.log",
+          "exitCode": 0,
+          "sha256": "a4611385128cdf9156e1f70e1b8117687616349ea5c6298711b24cfb1a67840f",
+          "elapsedSeconds": 3.187,
+          "logBytes": 7741
+        },
+        {
+          "log": "c5-peripheral-disable-lp-retention-workspace-clippy.log",
+          "exitCode": 0,
+          "sha256": "559468eda29220a937b238b23919629a8ed827a9fdf44bee446e021b508c67c7",
+          "elapsedSeconds": 4.53,
+          "logBytes": 318
+        },
+        {
+          "log": "c5-peripheral-disable-lp-retention-wasm-clippy.log",
+          "exitCode": 0,
+          "sha256": "c27d29211d4573f94eb57ca60e6da85f75b37233f543690310f576855a8299b6",
+          "elapsedSeconds": 0.62,
+          "logBytes": 241
+        },
+        {
+          "log": "c5-peripheral-disable-lp-retention-privacy.log",
+          "exitCode": 0,
+          "sha256": "2dae2c708bdf3e541b1cad609f1021a3f3d967958e4b5f8422c4db2a808e5ebc",
+          "elapsedSeconds": 0.435,
+          "logBytes": 130
+        }
+      ]
+    }
+  ],
+  "reviewRepairs": [
+    {
+      "id": "P2-1",
+      "before": "HP reset reconstructed LPPERI while preserving LP_GPIO, reopening LP_IO/RNG and reseeding the virtual sample source.",
+      "after": "Non-LP reset transfers the complete prior LP owner. A real-MMIO control compares both latches and RNG count/sequence against an unreset controller; LP reset restores POR."
+    },
+    {
+      "id": "P2-2",
+      "before": "Strict LPPERI read/write bypassed the old-watchdog/pending-reset barrier.",
+      "after": "Both access directions settle and check the reset boundary before invoking the owner. Actual MMIO cases cover manual pending and overdue130M MWDT and preserve unselected behavior."
+    }
+  ],
+  "independentReadonlyReview": {
+    "artifactSha256": "0ca9c5a99af64baf3a538337bfc955db707daa841d12b59b777367e1f2f9ca32",
+    "sourceHashesAndLogHashesMatched": true,
+    "initialP2": 2,
+    "unresolvedP1": 0,
+    "unresolvedP2": 0,
+    "repairs": [
+      "Whole LP owner retention",
+      "Strict LPPERI reset barriers"
+    ],
+    "limits": "Read-only source/log review; no independent build/native/WASM/browser and not final product acceptance."
+  }
+}

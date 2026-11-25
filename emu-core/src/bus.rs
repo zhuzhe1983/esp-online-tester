@@ -10,6 +10,8 @@ pub enum Fault {
     Prohibited,
     /// address is not aligned for this access width
     Misaligned,
+    /// The emulator cannot qualify this access; this is not a guest permission fault.
+    Unsupported,
 }
 
 /// Number of entries in a bus's software TLB and the write-version page size, fixed here
@@ -146,6 +148,12 @@ pub trait Bus {
     /// The pc of the instruction about to execute, for buses that attribute accesses to code.
     #[inline(always)]
     fn note_pc(&mut self, pc: u32) { let _ = pc; }
+    /// Probe policy before an actual 32-bit atomic access, without reading or
+    /// writing a device or consuming its data. Wrappers must forward this.
+    /// The default adds no policy; concrete buses can reject unsupported
+    /// atomic targets or combined read/write permissions before any effects.
+    #[inline(always)]
+    fn check_atomic32(&mut self, addr: u32, read: bool, write: bool) -> Result<(), Fault> { let _ = (addr, read, write); Ok(()) }
     /// A load-reserved by the running core at `addr`, for a bus shared by several harts: their
     /// stores to the reservation set must break it (RISC-V unprivileged ISA, "Zalrsc"). Wrappers
     /// must forward it.

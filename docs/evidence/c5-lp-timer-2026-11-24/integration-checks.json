@@ -1,0 +1,184 @@
+{
+  "schema": 1,
+  "baseCommit": "0f0d15b57899cce458e77343b65f65af4cda6c73",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/lp_timer.rs",
+      "sha256": "f57d011fd911c0eb1e9c6b7c29a46bed70f11032e57d96b839cf54a550c84dbf"
+    },
+    {
+      "path": "esp32c5/src/lp_timer_bus_tests.rs",
+      "sha256": "0270d0438a02e1fcc42af0bb72f073d1c6f1a642efeb5b7c2275bcb79ce9e110"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "f721b6f5d3e830cd83383a840d01985c1e22a3b5b7e6556c4c63293bf648c95b"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "ae943038d5876f0f4603d9497ff18a15e6c09ee11748821da71992e371715ff8"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "4acc0d137f98c801ac58c68a177e36648c1a8bea4de98ca7141bfdf80f2fa42a"
+    },
+    {
+      "path": "esp32c5/src/factory_tests.rs",
+      "sha256": "bf7c2e5940cc5dd3e7a4815323bebf34ec9013e23048540525dbdecb57a2e780"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "5743524c947dbd588ded25c4cfd3b3b168611b48cb8bb9191a4b3f09d85dbc6d"
+    },
+    {
+      "path": "esp32c5/src/boot_saradc.rs",
+      "sha256": "0a11b9a2575bffe95fa183e43f37124fc478a6786d5688e36851edbc905c580d"
+    }
+  ],
+  "inputsAfterNativeRun": [
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": "lp-timer-integrated-c5-suite.log",
+      "logSha256": "8f671a790a06fda0a385bfa95e1dd2102bbefe5a2e83c2887ccc6f10c0b7fb54",
+      "passed": 281,
+      "failed": 0,
+      "ignored": 0,
+      "inputDependentTestsRun": 5,
+      "environment": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false"
+      },
+      "scope": "Focused C5 release, not default-LTO full workspace CI.",
+      "logBytes": 31260
+    },
+    {
+      "command": "cargo test --release -p esp32c5 -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "log": "lp-timer-ci-filtered-c5-suite.log",
+      "logSha256": "93572781e9fcc673b2a74361f24ba6f36d43e5937e2ae26ab29aa3c8777d3ac6",
+      "passed": 276,
+      "failed": 0,
+      "ignored": 0,
+      "inputDependentTestsFiltered": 5,
+      "ordinaryPublicPatternRejectionIncluded": true,
+      "environment": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false"
+      },
+      "scope": "Overlaps full281; do not add counts.",
+      "logBytes": 30791
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "lp-timer-integrated-workspace-clippy.log",
+      "logSha256": "d05341e5bb856c73b5b22cf97216005e844cbd186194ea0c4d1daba7849be035",
+      "logBytes": 318
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": "lp-timer-integrated-wasm-clippy.log",
+      "logSha256": "f70e43217d021d8bbb70153703f143a40664eb55442b69b8f731aeadad41182f",
+      "logBytes": 241
+    }
+  ],
+  "postFullSuiteTestRename": "Renamed one ordinary SAR test from external_patterns to public_adc_patterns so the CI substring filter cannot silently omit it. Test logic is unchanged; the CI-filtered276 runs the renamed case.",
+  "originalApplicationEntryRegression": {
+    "input": "unchanged original LCD273 factory and pinned rev100 ROM",
+    "entry": "0x408002b0",
+    "stop": "real Breakpoints observer before first application instruction",
+    "ramSegments": 3,
+    "ramBytesCompared": 121016,
+    "mappedSegments": 2,
+    "mappedBytesCompared": 3094800,
+    "comparison": "all segment bytes through actual SRAM arrays or CPU bus readback after guest bootloader work",
+    "hostAppDirectUsed": false,
+    "appOffsetField": null,
+    "firstFault": null,
+    "appMainEntered": false,
+    "boardPeripheralsExercised": false
+  },
+  "nativeUnchangedFactory": {
+    "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared FAT32 card>",
+    "steps": 20443825,
+    "cycles": 20443776,
+    "uartBytes": 1814,
+    "allFiveAppSegmentsLoaded": true,
+    "applicationStartupExecuted": true,
+    "appMainEntered": false,
+    "faultPc": "0x420034be",
+    "faultAddress": "0x600b0000",
+    "operation": "write PMU_HP_ACTIVE_DIG_POWER",
+    "requestedValue": "0x00000000",
+    "storeInstruction": "C.SW a0,0(a5), decoded from original instruction halfword after trap",
+    "storeSourceRegister": 10,
+    "trapPc": "0x40800000",
+    "lpTimer": {
+      "sourceHz": 136000,
+      "counter48LastObserved": 11313,
+      "lastObservationCycle": 20387712,
+      "captures": 8,
+      "wraps": 0
+    },
+    "sarTimerDisabledByGuest": true,
+    "sarVirtualTriggers": 9899,
+    "sarCaptures": [
+      4950,
+      4949
+    ],
+    "sarClockFault": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "logSha256": "a941347ad0a5e549e9446e232e95213a9a9836f8441de4dffac7cd8f6bee4904"
+  },
+  "negativeBudgetHistory": [
+    {
+      "log": "native-machine-lcd273-lp-timer.log",
+      "sha256": "672f72b54a395c19c81c29c60e2fc0d7d86a2a3f2aa44f8e65412d6f7cd59da3",
+      "budget": 10000000,
+      "stop": "MaxInsns",
+      "pc": "0x40850850",
+      "firstFault": null,
+      "interpretation": "ordinary original image checksum work; not a hardware fault or application success. Raising only the budget reaches app startup and the real PMU boundary.",
+      "logBytes": 4496
+    },
+    {
+      "log": "native-machine-lcd273-lp-timer-250m.log",
+      "sha256": "4a5c1b546035f472478176208652514dd06c48e158ee40c032400c1b0410d315",
+      "stop": "same PMU boundary before generic store-source diagnostic was added",
+      "logBytes": 5469
+    }
+  ],
+  "contracts": [
+    "LP counter is selected at the strict cold epoch, not first MMIO. Actual DIG DCAP128 observation enables136kHz at its real service boundary; unknown prefix is never backfilled.",
+    "Old-rate ticks integrate before source updates. None freezes; unknown-source UPDATE rejects before state mutation. UPDATE27 captures actual counter48 and shifts previous capture without any invented VALID or counter-enable bit.",
+    "Clock refresh services joint watchdogs first, then publishes slow source only with no pending reset. LP timer MMIO also guards global pending reset before internal advancement.",
+    "CPU/Core retain LP counter/phase/captures; LP/System clears at actual watchdog_reset_at then catches up. The late300M service/130M TG/228M SWD regression captures40800ticks after the applied LP reset. Chip withdraws its analog source.",
+    "Raw/SRAM mode deselects LP timing. No alarm/IRQ/sleep/DATE-as-counter-gate interface is claimed."
+  ],
+  "limits": [
+    "Virtual epoch0, nominal240MHz scheduler and bounded RCslow/DCAP profile; no absolute silicon uptime or physical oscillator accuracy.",
+    "Report counter_at is the lazy last integration point, not necessarily the current Bus cycle. Only watchdog/LP reset ordering described here is timestamped; whole-machine asynchronous reset accuracy is not claimed.",
+    "Original application entry/startup is verified, but app_main, full8MiB PSRAM test, LCD/buttons/TF/Wi-Fi remain pending. First real gap is app PMU configuration.",
+    "Default-LTO workspace tests, CPU controls, final integrated production WASM/raw ABI/browser and fresh release acceptance remain pending. No C5 publication."
+  ]
+}

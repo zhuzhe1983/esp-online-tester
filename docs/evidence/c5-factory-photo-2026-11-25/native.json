@@ -1,0 +1,610 @@
+{
+  "schemaVersion": 1,
+  "kind": "c5-factory-photo-cached-unaligned-functional-validation",
+  "date": "2026-11-25",
+  "status": "native-photo-read-and-display-passed-browser-validation-separate",
+  "commits": {
+    "baseline": "7625addbe0c5164c80b60bb0e142be91134c7a23",
+    "productionFix": "6b3a68062010e3b00de1841472cd873aee89978d",
+    "diagnosticOnlyFollowup": "bb8cfef839dd0fd01c9b72f4f6c5ba0eab99d406"
+  },
+  "board": "waveshare-c5-lcd273",
+  "flashBytes": 33554432,
+  "psramBytes": 8388608,
+  "wifiDriverCompatibilityProfile": "waveshare-lcd273-idf553-offline-v1",
+  "inputs": {
+    "esp32c5_rev100_rom.elf": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "lcd273-factory.bin": {
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    "lcd273-photo-fixture.img": {
+      "bytes": 67108864,
+      "sha256": "f29e47c7fca119caf71353f311cfb7bcbb4ccff2c26f6afcf9c80c9805dba80f"
+    },
+    "test.jpg": {
+      "bytes": 5200,
+      "sha256": "6af0bed529e583dc696a07c3d01088667efff5c4bb0d99932e7d71f42c6b53b6"
+    }
+  },
+  "sourceFiles": {
+    "esp32c5/src/bus.rs": {
+      "bytes": 63382,
+      "sha256": "428e05b3e36c04b15b1d591c57321df1289d05f49889a88da5235b648a05d834"
+    },
+    "esp32c5/src/mspi.rs": {
+      "bytes": 46890,
+      "sha256": "093ef86e5a6224f121cef027635171e1469d2472b0b79a3b542557015b500457"
+    },
+    "esp32c5/src/unaligned_bus_tests.rs": {
+      "bytes": 12362,
+      "sha256": "6fcbc23674b7e0cf6a3180045850f1056eede0a8cf1b2ac8594ec9601ed0377b"
+    },
+    "esp32c5/examples/factory_photo_boundary.rs": {
+      "bytes": 4922,
+      "sha256": "914b95f7d13076f770959ca5d5aa3627504ef79e295267ad03123b5443aef028"
+    }
+  },
+  "hardwareSources": {
+    "trmVersion": "1.1",
+    "pdfUrl": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+    "pdfBytes": 14650675,
+    "pdfSha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "textSha256": "a728dac35943336e6d392584638b9973225385ebd55f25376ee6f0ee23a61a59",
+    "sections": [
+      "HP2.12.1.2 printed123 ordinary misaligned split and asynchronous bus errors",
+      "6.3.3.1/2 printed242 external cache/MMU window and32B cache block",
+      "2.9.2 printed100–104 full PMA permissions and attributes",
+      "2.6.4.3–5 printed81–82 LR/SC/AMO natural4B alignment",
+      "Reg2.13 printed60 available mcause values"
+    ]
+  },
+  "baseline": {
+    "stop": "ModelLimit",
+    "pc": "0x4201ed26",
+    "instructionBytesHex": "83572700",
+    "instruction": "LHU a5,2(a4)",
+    "width": 2,
+    "write": false,
+    "a4": "0x42318109",
+    "effectiveAddress": "0x4231810b",
+    "cpuSchedulerSlots": 701545724,
+    "cycles": 701545724,
+    "retired": 341829785,
+    "sp": "0x40855870",
+    "gpr": {
+      "0": "0x00000000",
+      "1": "0x4201ee54",
+      "2": "0x40855870",
+      "3": "0x40818c04",
+      "4": "0x40855b10",
+      "5": "0x40038640",
+      "6": "0x00000040",
+      "7": "0xa0002818",
+      "8": "0x408411a4",
+      "9": "0x0000ffdb",
+      "10": "0x00000000",
+      "11": "0x4231814a",
+      "12": "0x00000000",
+      "13": "0x000013f7",
+      "14": "0x42318109",
+      "15": "0x00000003",
+      "16": "0x422d0dec",
+      "17": "0x422d0eac",
+      "18": "0x00000000",
+      "19": "0x408558e4",
+      "20": "0x408558ec",
+      "21": "0x0200eeee",
+      "22": "0x000000da",
+      "23": "0x00000041",
+      "24": "0x00000000",
+      "25": "0x000000ff",
+      "26": "0x00000019",
+      "27": "0x00000001",
+      "28": "0x0000000f",
+      "29": "0x422d1000",
+      "30": "0x40841e1e",
+      "31": "0x40841da0"
+    },
+    "trapCsrs": {
+      "mepc": "0x40801c2c",
+      "mcause": "0x80000014",
+      "mtval": "0x00000000",
+      "mstatus": "0x00001889"
+    },
+    "trapCsrLimit": "Previous IRQ state, not the scalar access fault. Unsupported does not enter a guest exception.",
+    "initialMappingObservation": "Not recorded by the baseline harness; do not project later diagnostics into this run.",
+    "hostBinaryHashRecorded": false,
+    "harnessSourceHashIsExact": true,
+    "historicNativeSlotsLabel": "The original log used nativeSlots for cpu.insn_count. It includes idle and virtual slots; only retired is the separate retired counter.",
+    "spi2": {
+      "pcrConf": "0x1",
+      "pcrClock": "0x501000",
+      "sourceHz": 160000000,
+      "controllerHz": 80000000,
+      "pending": false,
+      "rejected": 0
+    }
+  },
+  "implementation": {
+    "ordinaryWidths": [
+      2,
+      4
+    ],
+    "eligibility": "Existing validated-ROM selection; independent of WiFi mode, PC, JPEG markers and image contents.",
+    "onlyMisalignedBranchUsesNewHelper": true,
+    "fullSpanChecks": [
+      "original CPU address and whole width APM/PMA/PMP before memory effects",
+      "current MMU page; each translated byte has the same target and consecutive physical offset",
+      "complete physical backing capacity",
+      "existing cache and MSPI clock/AXI/power state",
+      "PSRAM Quad die QPI, physical pads, read/write phase configuration and source clock"
+    ],
+    "directBackingSlice": true,
+    "recursiveBusByteSplitting": false,
+    "flashStoresAllowed": false,
+    "crossMmuPageAllowed": false,
+    "mmioSplitAllowed": false,
+    "fetchAlignmentChanged": false,
+    "atomicAlignmentChanged": false,
+    "physicalSplitTimingOrAtomicityClaim": false
+  },
+  "nativeInputs": {
+    "romBoot": true,
+    "factoryUnchanged": true,
+    "cardUnchanged": true,
+    "guestCallsInvokedByHost": false,
+    "hostWritesIntoGuestData": false,
+    "inputMethod": "SocBus::gpio_set_input, active-low NEXT GPIO3 twice then BOOT GPIO28",
+    "initialCycles": 500000000,
+    "eachButtonDownCycles": 31200000,
+    "eachButtonUpCycles": 50400000,
+    "additionalDecodeCycles": 240000000,
+    "cycleMeaning": "Nominal240MHz guest scheduler cycles; not wall-clock duration or a physical timing qualification.",
+    "trace": [
+      {
+        "stage": "menu",
+        "cycles": 500000000,
+        "cpuSchedulerSlots": 500000000,
+        "pc": "0x420339e6"
+      },
+      {
+        "stage": "next-one-down",
+        "cycles": 531200000,
+        "cpuSchedulerSlots": 531200000,
+        "pc": "0x408078d6"
+      },
+      {
+        "stage": "next-one-up",
+        "cycles": 581600000,
+        "cpuSchedulerSlots": 581600000,
+        "pc": "0x408078d6"
+      },
+      {
+        "stage": "next-two-down",
+        "cycles": 612800000,
+        "cpuSchedulerSlots": 612800000,
+        "pc": "0x4080c5a2"
+      },
+      {
+        "stage": "next-two-up",
+        "cycles": 663200000,
+        "cpuSchedulerSlots": 663200000,
+        "pc": "0x408078d6"
+      },
+      {
+        "stage": "boot-down",
+        "cycles": 694400000,
+        "cpuSchedulerSlots": 694400000,
+        "pc": "0x4205d896"
+      },
+      {
+        "stage": "boot-up",
+        "cycles": 744800000,
+        "cpuSchedulerSlots": 744800000,
+        "pc": "0x4080da7e"
+      },
+      {
+        "stage": "photo-decode",
+        "cycles": 984800000,
+        "cpuSchedulerSlots": 984800000,
+        "pc": "0x408078d6"
+      }
+    ]
+  },
+  "preOriginalFaultInstruction": {
+    "pc": "0x4201ed26",
+    "a4": "0x42318109",
+    "effectiveAddress": "0x4231810b",
+    "width": 2,
+    "write": false,
+    "pageBytes": 65536,
+    "mmuIndex": 49,
+    "mmuEntry": "0x600",
+    "mmuPower": "0x13200004",
+    "target": "PSRAM",
+    "physicalOffset": "0x810b",
+    "mspiConfig": "0x5",
+    "mspiClock": "0x605",
+    "axiRegister": "0x40000005",
+    "cacheFetchAllowed": true,
+    "cacheDataAllowed": true,
+    "psramReadQualified": true,
+    "psramWriteQualified": true,
+    "quadQpi": true,
+    "nativePads": "0x00768000",
+    "neighbor": {
+      "virtualStart": "0x42318103",
+      "physicalStart": "0x8103",
+      "bytes": 16,
+      "hex": "141812141514ffdb0043010304040504",
+      "sha256": "1ec9092db1863279f6e898429b187ba8fe0cb7d1d951e2f786e5a77d8aa28459"
+    },
+    "observationMeaning": "Pure metadata and existing backing inspection immediately before the original odd LHU; it neither performs guest loads nor changes permissions.",
+    "functionalHzInferredFromPrintedConfig": 80000000,
+    "psramHzAtFinalSnapshot": 80000000,
+    "gateEvidence": "The pre-LHU psram_access predicates directly qualify all required gates. Explicit QPI/pad and PSRAM-Hz fields are also printed by the final pure snapshot; config and clock are printed at the pre-LHU point."
+  },
+  "guestJpegInput": {
+    "ioStruct": "0x408558ec",
+    "ioBytes": 20,
+    "layout": "RV32 esp_new_jpeg1.0.2 jpeg_dec_io_t: inbuf@0, inbuf_len@4, inbuf_remain@8, outbuf@12, out_size@16",
+    "base": "0x423180b0",
+    "length": 5200,
+    "physicalOffset": "0x80b0",
+    "sha256": "6af0bed529e583dc696a07c3d01088667efff5c4bb0d99932e7d71f42c6b53b6",
+    "prefixHex": "ffd8ffe000104a464946000101000001",
+    "equalsCardJpeg": true,
+    "observedAt": [
+      "original jpeg_dec_parse_header entry0x4201eb40 using a1",
+      "original odd LHU0x4201ed26 using s4"
+    ],
+    "observationMeaning": "Read-only host slices of firmware-populated internal SRAM and contiguous PSRAM backing, not a second CPU fread. The original firmware fopen/fread/decoder path executes normally."
+  },
+  "nativeResult": {
+    "source": "bb8cfef839dd0fd01c9b72f4f6c5ba0eab99d406",
+    "firstFault": null,
+    "exceptions": 0,
+    "interrupts": 12152,
+    "cycles": 984800000,
+    "cpuSchedulerSlots": 984800000,
+    "retired": 393868634,
+    "finalPc": "0x408078d6",
+    "uartBytes": 5774,
+    "uartContainsApp2Clicked": true,
+    "sd": {
+      "commandCalls": 54,
+      "backingBlocksLoaded": 20,
+      "backingBlocksWritten": 0
+    },
+    "display": {
+      "width": 320,
+      "height": 320,
+      "nonzeroPixels": 102400,
+      "pixelsWritten": 581696,
+      "ramWriteCommands": 153,
+      "visuallyObserved": "Three-color32px checker tiles from test.jpg with bottom <, Back and > buttons.",
+      "hostRgbaConversion": "Each RGB565 channel expanded with Math.round(channel*255/channel_max), alpha255.",
+      "rgbaBytes": 409600,
+      "rgbaSha256": "668d3017ab8ba7806c87b1f6e5e1ddb5e42446566a09c7a205bfe816f77e5f5a",
+      "geometryCheck": {
+        "sampleMethod": "centers of10 columns x9 rows of32px tiles, before bottom button overlay",
+        "samples": 90,
+        "correctPaletteClasses": 90,
+        "expectedPaletteClassRule": "(row + column) %3",
+        "actualRows": [
+          [
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0
+          ],
+          [
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1
+          ],
+          [
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0
+          ],
+          [
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1
+          ],
+          [
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2
+          ],
+          [
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0
+          ],
+          [
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1
+          ],
+          [
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2,
+            0,
+            1,
+            2
+          ]
+        ],
+        "maxAbsRgbDifferenceToHostJpegAtCenters": [
+          15,
+          7,
+          15
+        ],
+        "bitIdenticalToHostJpegClaim": false
+      }
+    },
+    "driverCompatibility": {
+      "enabled": true,
+      "profile": "waveshare-lcd273-idf553-offline-v1",
+      "mode": "compatible-driver-assisted",
+      "state": "started-offline",
+      "nativeWifi": false,
+      "associated": false,
+      "hasIp": false,
+      "storage": "session-RAM",
+      "hookCalls": "10",
+      "virtualSlots": "15",
+      "eventPosts": "5",
+      "eventPostFailures": "0",
+      "connectAttempts": "4",
+      "noApFailuresQueued": "4",
+      "pendingCalls": 0,
+      "epoch": "0",
+      "failureDelayCycles": "0",
+      "failureReason": 201,
+      "bssidMeasured": false,
+      "rssiMeasured": false,
+      "lastError": null,
+      "apiCalls": {
+        "esp_wifi_init": "1",
+        "esp_wifi_get_mode": "0",
+        "esp_wifi_get_mac": "1",
+        "esp_wifi_set_mode": "1",
+        "esp_wifi_start": "1",
+        "esp_wifi_connect": "4",
+        "esp_wifi_set_config": "1",
+        "esp_wifi_internal_reg_netstack_buf_cb": "1",
+        "esp_wifi_stop": "0",
+        "esp_wifi_deinit": "0",
+        "esp_wifi_disconnect": "0",
+        "esp_wifi_scan_start": "0",
+        "esp_wifi_scan_get_ap_records": "0",
+        "esp_wifi_get_config": "0"
+      }
+    },
+    "gpr": {
+      "0": "0x00000000",
+      "1": "0x408078c4",
+      "2": "0x40842870",
+      "3": "0x40818c04",
+      "4": "0x408428c0",
+      "5": "0x4002d624",
+      "6": "0x40807f9e",
+      "7": "0x00000000",
+      "8": "0x4083f000",
+      "9": "0x4083f000",
+      "10": "0x00000000",
+      "11": "0x4084284f",
+      "12": "0x408428d4",
+      "13": "0x00000001",
+      "14": "0x00000000",
+      "15": "0x600c2000",
+      "16": "0x00000000",
+      "17": "0x00000000",
+      "18": "0x4084217c",
+      "19": "0x4081e000",
+      "20": "0x00000000",
+      "21": "0x00000000",
+      "22": "0x00000000",
+      "23": "0x00000000",
+      "24": "0x00000000",
+      "25": "0x00000000",
+      "26": "0x00000000",
+      "27": "0x00000000",
+      "28": "0x00000000",
+      "29": "0x00000000",
+      "30": "0x00000000",
+      "31": "0x00000000"
+    }
+  },
+  "retainedDiagnosticLimit": {
+    "firstPositiveCommit": "6b3a68062010e3b00de1841472cd873aee89978d",
+    "firstPositiveLogSha256": "fe264693b80dd1a1e71c2dd0146ff7e06d32c67462f4d4fad224170f91b78303",
+    "firstPositiveProbeMistake": "The first occurrence of PC0x4201ed26 parsed an aligned JFIF length. That observation was not the odd DQT access.",
+    "followup": "bb8cfef8 restricts observation to odd a4. No production memory behavior changed.",
+    "sameBetweenPositiveRuns": [
+      "all staged cycle/PC results",
+      "final cycle/slot/retired counters",
+      "rawRGB565 frame",
+      "UART",
+      "board hardware snapshot",
+      "driver compatibility snapshot"
+    ]
+  },
+  "checks": [
+    {
+      "command": "ESP32SIM_ROM_DIR=<ROM_DIR> CARGO_TARGET_DIR=<TASK_TARGET> cargo test --release -p esp32c5 -- --include-ignored --skip external_",
+      "source": "6b3a68062010e3b00de1841472cd873aee89978d",
+      "passed": 597,
+      "failed": 0,
+      "ignored": 0,
+      "groups": 18,
+      "exitCode": 0,
+      "ordinaryScalarContractTests": [
+        "cached_atomic_fetch_unselected_and_unconstrained_context_guards_stay_intact",
+        "instruction_atomic_and_unselected_paths_keep_their_alignment_guards",
+        "ordinary_internal_reads_cover_every_halfword_and_word_offset",
+        "gcc15_packed_image_revision_loads_execute_without_guest_or_data_patches",
+        "cached_span_refuses_cross_page_invalid_encrypted_and_capacity_paths",
+        "cached_unaligned_accesses_keep_cache_mspi_and_quad_die_gates",
+        "ordinary_internal_stores_preserve_neighbor_bytes_and_little_endian_order",
+        "unmodeled_split_domains_are_rejected_before_any_device_or_partial_store_effect",
+        "original_jpeg_header_lhu_executes_at_an_odd_cached_address",
+        "unaligned_load_sign_extension_and_store_use_real_guest_memory",
+        "unknown_pma_on_an_unaligned_access_remains_a_model_limit",
+        "unaligned_store_still_checks_the_whole_pmp_span_before_changing_memory",
+        "cached_scalar_loads_and_psram_stores_cover_offsets_without_neighbor_changes",
+        "cached_unaligned_stores_check_whole_pmp_and_pma_before_any_byte_changes"
+      ]
+    },
+    {
+      "command": "CARGO_TARGET_DIR=<TASK_TARGET> cargo clippy -p esp32c5 --all-targets -- -D warnings",
+      "source": "bb8cfef839dd0fd01c9b72f4f6c5ba0eab99d406",
+      "exitCode": 0
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "source": "bb8cfef839dd0fd01c9b72f4f6c5ba0eab99d406",
+      "exitCode": 0,
+      "trackedFiles": 3300,
+      "gzipFiles": 95
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "1.100.0 (3acc79c0c 2026-11-05)"
+  },
+  "artifacts": {
+    "baseline-native-boundary.log": {
+      "bytes": 8146,
+      "sha256": "c138882378e228df82ece7f857443a1aefee2631e4d874425c6f244b1147e530"
+    },
+    "baseline-harness.rs": {
+      "bytes": 3224,
+      "sha256": "77fa58620b761434c63b723c0c822c225ba1ca29c9dd8c7a9502e0ce3dc0293f"
+    },
+    "6b3-first-native-photo.log": {
+      "bytes": 10155,
+      "sha256": "fe264693b80dd1a1e71c2dd0146ff7e06d32c67462f4d4fad224170f91b78303"
+    },
+    "bb8-native-photo.log": {
+      "bytes": 10159,
+      "sha256": "c4ad74e28e217196ba7921875105a2c33831d15ce8005e5dc052bdd6167ea0ad"
+    },
+    "frame.rgb565": {
+      "bytes": 204800,
+      "sha256": "81c3850416e159a29fb669a0b58ac59490b5f81444de92f4dd284c8253ae9b03"
+    },
+    "frame.png": {
+      "bytes": 3593,
+      "sha256": "2dbac0bd2e9c9eb9daf83c7ba7f7e70f831501c9c9b95471224c938ebb3b9865"
+    },
+    "uart0.txt": {
+      "bytes": 5774,
+      "sha256": "932887ee4281466470410bfd4dba7c3c998683c8c947de8c24ca344ec9322a8d"
+    },
+    "board-hardware.json": {
+      "bytes": 1178,
+      "sha256": "0bec88fda53e1d088521d7516a613094499144f7bff3922859e288eb881ad137"
+    },
+    "driver-compatibility.json": {
+      "bytes": 833,
+      "sha256": "28c8dfc4af856bf8fbc0a2a048a413855e45e801e13f8db4f3dfcef05b7544f5"
+    },
+    "c5-tests.log": {
+      "bytes": 63489,
+      "sha256": "bfdecf0b06fb7ca4e8b417dd9d945b112a6b4fb048ef4d93a439d7bcc4a4aabf"
+    },
+    "clippy.log": {
+      "bytes": 169,
+      "sha256": "a7a23be4cf9cd9e1e810b8b08fb30d354665fda620c9ad51b412db5acbad06d2"
+    },
+    "privacy.log": {
+      "bytes": 130,
+      "sha256": "2e0b64453d10ec71e3dc41896531b08a05541df3b4dc2af3fbddc9e155c8ab6e"
+    }
+  },
+  "limitations": [
+    "This is one original factory image, one deterministic baseline JPEG, one prepared FAT32 card and one product. It does not certify all JPEG variants or C5 products.",
+    "Card command/load counters alone do not prove mounting or fread; this result combines the real firmware path, byte-identical decoder input and actual rendered file contents.",
+    "No SD write or browser persistence was exercised by this native read-only Photo run.",
+    "The filename text is not established by the captured display; the card path is known from the fixture and firmware source.",
+    "The90 tile-center palette classes match; pixel colors are not claimed bit-identical to a host JPEG decoder (maximum sampled channel differences15/7/15).",
+    "Cross-MMU-page ordinary unaligned operations deliberately remain ModelLimit, even with contiguous mappings.",
+    "Physical cache-line fills, split bus-error timing and atomicity are unmodeled; LR/SC/AMO keep4B natural alignment.",
+    "WiFi remains an explicit offline HLE profile: no AP, association, IP or RF; WiFi driver settings are session RAM, separate from unchanged guest NVS.",
+    "No CPU speed claim is made; correctness probes were not quiet CPU benchmarks.",
+    "The native browser/WASM validation and full-workspace release checks are separate integration receipts.",
+    "Raw logs, input images and binaries are not embedded; logical artifact names, hashes and commands are retained. Baseline binary hash was not collected."
+  ]
+}

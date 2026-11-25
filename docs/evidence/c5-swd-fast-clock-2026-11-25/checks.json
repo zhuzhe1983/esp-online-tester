@@ -1,0 +1,174 @@
+{
+  "baseCommit": "db9a9d5a",
+  "scope": "Only LP_WDT SWD digital feed pulse source observation, owned standalone harness and additive evidence; RWDT and shared owners unchanged",
+  "API": {
+    "signature": "set_fast_clock(cycle:u64,hz:Option<u32>)->bool",
+    "acceptedHz": [
+      null,
+      17500000,
+      24000000,
+      48000000
+    ],
+    "defaultHz": 24000000,
+    "strictProfileRequired": true,
+    "invalidInput": "Reject before pumping or changing state",
+    "boundary": "Pump old rate first; pending/dispatched change rejects, same source remains idempotent"
+  },
+  "sourceBasis": {
+    "priorReceipt": "../c5-swd-boot-2026-11-24/checks.json",
+    "idfCommits": {
+      "v5.5.3": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+      "v5.5.4": "735507283d5b2f9fb363a1901172dbd9e847945d"
+    },
+    "sources": [
+      {
+        "path": "components/soc/esp32c5/register/soc/lp_wdt_reg.h",
+        "sha256": "1c76e103cf1a8ec2d6a0a09af63aa8a0247400e81391113db520f594da7784a3",
+        "bytes": 15801,
+        "byteIdenticalVersions": true,
+        "urls": {
+          "v5.5.3": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/lp_wdt_reg.h",
+          "v5.5.4": "https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/lp_wdt_reg.h"
+        }
+      },
+      {
+        "path": "components/soc/esp32c5/register/soc/lp_clkrst_reg.h",
+        "sha256": "3d5baaf4b5bd5bd933a611cbfa681a613c1da4cf01a7d8722ab17cbd8e72ce1b",
+        "bytes": 19882,
+        "byteIdenticalVersions": true,
+        "urls": {
+          "v5.5.3": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/lp_clkrst_reg.h",
+          "v5.5.4": "https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/lp_clkrst_reg.h"
+        }
+      }
+    ],
+    "TRM": {
+      "version": "1.1",
+      "url": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+      "sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+      "sections": [
+        "9.1 reset domains/Table9.1-1 reason0x12",
+        "9.2.4.2 LP_DYN_FAST active source",
+        "16.3 analog SWD workflow",
+        "16.6 registers16.8..16.13"
+      ]
+    },
+    "freshFetchClaimed": false
+  },
+  "virtualTiming": {
+    "nominalCPUHz": 240000000,
+    "analogRequestCycles": 204000000,
+    "analogExpiryCycles": 228000000,
+    "analogRateChanged": false,
+    "physicalOscillatorPhaseClaimed": false,
+    "newAutoPulsePhase": "Functional restart for each pulse",
+    "fresh300TickPulseCycles": {
+      "17500000": 4115,
+      "24000000": 3000,
+      "48000000": 1500,
+      "unavailable": null
+    }
+  },
+  "numericBoundary": {
+    "initialScaledRemaining": 72000000000,
+    "afterOne24MCycle": 71976000000,
+    "afterOneAdditional17_5MCycle": 71958500000,
+    "then48MCompletionCycle": 1502,
+    "remainingAt1501": 6500000,
+    "lost17_5MAtCycle1Remaining": 71982500000,
+    "resume48MAt2000000Completion": 2001500
+  },
+  "resetDomains": {
+    "CPU_HP": "Retain pulse/rate/analog age",
+    "LP": "Clear pulse, retain external rate and analog age; clock owner refreshes at reset_at",
+    "analog": "Default24MHz and fresh analog age",
+    "earlierRWDTEvents": [
+      2,
+      7
+    ],
+    "earlierRWDTLeaksFutureSWDFeed": false
+  },
+  "legacyValidation": {
+    "originalTestBodiesUnchanged": true,
+    "originalTestBodiesSHA256": "d61874471bc2e55ca763f63526857354ff9b751c818fbccdc8b65412c7e4f078",
+    "originalFixtureCount": 28,
+    "defaultReportLiteralPreserved": true,
+    "unchangedFiles": [
+      {
+        "path": "docs/evidence/c5-swd-boot-2026-11-24/checks.json",
+        "sha256": "24cba91fa78194ade2920b63870df8b6280b69989ce162d635faad8e611f0c49",
+        "unchangedFromBase": true
+      },
+      {
+        "path": "docs/evidence/c5-swd-boot-2026-11-24/integration-checks.json",
+        "sha256": "5b717ee8d4c98435a866a55ab2a7741e422d6dca6568bb417cdc497747ef5260",
+        "unchangedFromBase": true
+      },
+      {
+        "path": "docs/evidence/c5-watchdog-order-2026-11-24/checks.json",
+        "sha256": "9fb1ecbe298701ecd0e8b0b13357ea88a4d5768f6674058f56260c35fef73b64",
+        "unchangedFromBase": true
+      },
+      {
+        "path": "esp32c5/src/lp_wdt_rwdt.rs",
+        "sha256": "c7a94c5e4347f67a95245d7152760b76c72c1b6a1d347c9860675d377e6136df",
+        "unchangedFromBase": true
+      }
+    ]
+  },
+  "checks": [
+    {
+      "command": "python3 docs/evidence/c5-swd-fast-clock-2026-11-25/run-owned-checks.py --output <owned-output>",
+      "testCount": 37,
+      "newTests": 9,
+      "passed": 37,
+      "failed": 0,
+      "rustc": "1.100.0 stable",
+      "edition": 2021,
+      "testThreads": 1,
+      "ownedClippyWarningsDenied": true,
+      "lintAllowances": false
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0
+    }
+  ],
+  "negativeResults": [
+    {
+      "kind": "New fixture first run",
+      "passed": 35,
+      "total": 36,
+      "expectation": "SWD would complete after acknowledging only the first repeating RWDT reset",
+      "observed": "The retained RWDT produces another real Core event at7, so the barrier correctly prevents that feed",
+      "correction": "Assert the event at7 and no SWD feed, apply the owner reset, explicitly deselect RWDT, then verify completion at4115",
+      "implementationRelaxed": false
+    },
+    {
+      "kind": "Standalone lint with the wrong edition",
+      "edition": 2024,
+      "diagnosticGroups": 6,
+      "diagnostics": [
+        "possible_missing_else in the new reset assignment",
+        "collapsible_if on legacy and new nested conditions"
+      ],
+      "resolution": "Use actual repository edition2021; combine the new reset assignment with its existing else branch and simplify the new request predicate. No legacy lint rewrite or allowance added."
+    }
+  ],
+  "additionalFixedGap": {
+    "oldCase": "A software pulse crossing REQUEST could suppress that analog warning and leave the warning deadline due; a clockless pulse could miss analog expiry",
+    "newCase": "REQUEST rises once while the pulse is active; expiry<=completion resets; neither analog timestamp changes"
+  },
+  "unrun": [
+    "Cargo/full workspace build",
+    "native firmware",
+    "WASM",
+    "browser",
+    "benchmark"
+  ],
+  "privacy": "Only source versions/hashes, reproducible commands, numeric samples and aggregate results retained; no host inventory or private raw capture."
+}

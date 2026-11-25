@@ -4,6 +4,18 @@
 //! No instruction replacement or host-side execution of that copy loop occurs.
 use crate::bus::{ROM_BASE, ROM_SIZE, SRAM_BASE, SRAM_SIZE};
 use esp_soc::elf::Elf;
+pub(crate) fn decode(bytes:&[u8])->Result<(Elf,Vec<u8>),String>{
+    if bytes.get(18..20)!=Some(&[0xf3,0][..]){return Err("C5 ROM needs a RISC-V ELF32".into());}
+    if bytes.len()!=472300{return Err("C5 requires the exact audited 472300-byte Espressif rev100 ROM ELF".into());}
+    // The bounded opaque SPI0 bootstrap profile belongs to these exact public
+    // mask-ROM bytes, not any ELF that copies its layout/table symbol names.
+    const MP_SHA256:[u8;32]=[0x49,0x69,0x3d,0x74,0x5e,0xb4,0xb4,0xe6,0xe6,0xc7,0x7b,0xe4,0xf5,0x21,0x37,0x65,0xd5,0x45,0xd8,0xc7,0xa1,0xd9,0x74,0x2a,0x8a,0x61,0x9b,0xf5,0x96,0xc4,0xe2,0x7a];
+    if crate::image::sha256(bytes).as_slice()!=MP_SHA256{return Err("C5 requires the exact audited Espressif 20260528 rev100 ROM SHA-256; modified/unknown ROM is unsupported".into());}
+    let elf=esp_soc::elf::parse(bytes)?;
+    if elf.entry!=ROM_BASE{return Err("C5 ROM entry must be 0x40000000".into());}
+    if elf.by_name.get("_data_table_start")!=Some(&0x4003_b154)||elf.by_name.get("_data_table_end")!=Some(&0x4003_b340){return Err("C5 requires the audited rev100 ROM layout; beta rev0 is unsupported".into());}
+    let image=image(&elf)?;Ok((elf,image))
+}
 fn range(address: u32, size: usize, base: u32, capacity: usize) -> Result<std::ops::Range<usize>, String> {
     let start = address.checked_sub(base).ok_or_else(|| format!("ROM initializer address {address:#x} below {base:#x}"))? as usize;
     let end = start.checked_add(size).filter(|&end| end <= capacity).ok_or("ROM initializer range exceeds window")?;

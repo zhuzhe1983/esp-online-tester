@@ -1,0 +1,251 @@
+{
+  "schema": 1,
+  "baseCommit": "aac053f097f22727bfa2b7a2b631e1e8718acd56",
+  "moduleCommits": [
+    {
+      "integrated": "e7cba7b1",
+      "original": "c1ddfd885862ea1b49d1027bf95a1aa6bfa8852f",
+      "scope": "COEX 12-bit divider and pre-gate rational observation; no RF clock execution."
+    },
+    {
+      "integrated": "c33bf928",
+      "original": "3570031d7162834a786486ce0e5896edd613c8e8",
+      "scope": "Initial detached SOF monitor; post-TX Unknown result retained."
+    },
+    {
+      "integrated": "aac053f0",
+      "original": "79759cea419d25123f24a800a0cd732ac052be45",
+      "scope": "RAW3 sticky history inferred from C5 SS/SC/WTC contract; no new host producer."
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/usb_detached.rs",
+      "sha256": "7b667cc00e801e94782656c5f9c2094b0554a3561035440ee5b43027fb926b13"
+    },
+    {
+      "path": "esp32c5/src/modem_lp_clock.rs",
+      "sha256": "e90e40ab3158c94b27e139d6d66c9d1431db1b349129dd954464973d7f66cb0a"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "8ced3b65d8e2fc9a75a0d9197935aef4a3997c7edc9fe54c74f5740225e4b6db"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "423d20b10649f7592ab653eed4ca52d08f8e07b7c26dbd9ef51dba00113b61b0"
+    },
+    {
+      "path": "esp32c5/src/modem_lp_bus_tests.rs",
+      "sha256": "9b2a494e4cfa68b7243b5d7b154f3793c2b7d83255720cf5903728cb2259080f"
+    },
+    {
+      "path": "esp32c5/src/usb_monitor_bus_tests.rs",
+      "sha256": "3ec60c63cfbc3b976ad84f5552e9c088cc4d6e73713e7d5e24fcdc48aa3ba627"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "b2bbaae7244a02798edba1ce66b1d97b3586f2ac27edeebc3409b3616dc361dd"
+    },
+    {
+      "path": "esp32c5/src/boot_clock.rs",
+      "sha256": "8c3372f74535ad8808d5efc2f27c76123c9283fcbaee79d2d65d99be8768d293"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "timingInterpretation": "Elapsed durations are diagnostic check timings, not controlled performance samples."
+  },
+  "checks": [
+    {
+      "log": "c5-usb-sticky-raw-source-contract-c5-suite.log",
+      "exitCode": 0,
+      "sha256": "149495cba3eca12f4de3b1c1b7bba9e4b8c6777903edc5ac69a4bcfe27514d71",
+      "elapsedSeconds": 38.277,
+      "bytes": 57761,
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "results": {
+        "passed": 541,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      },
+      "inputCases": [
+        "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+        "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+        "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+        "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+        "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+        "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+      ]
+    },
+    {
+      "log": "native-machine-lcd273-usb-sticky-raw-source-contract.log",
+      "exitCode": 0,
+      "sha256": "8f98e07c231537eab58961783c0cef03ad29a1d6727b4bce384eda0eb273608d",
+      "elapsedSeconds": 4.746,
+      "bytes": 14746,
+      "command": "C5_FACTORY_TRACE_USB=1 C5_FACTORY_TRACE_PCS=420b8864,4002132c,40801c8e,40801c90,40801c98,42121cb0,4200aebe cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned SD>"
+    },
+    {
+      "log": "c5-usb-sticky-raw-source-contract-workspace-clippy.log",
+      "exitCode": 0,
+      "sha256": "ed3310f4e438f269d590e346b16dc3d874ed7bd798fab8f2d144ac26d9a7de3f",
+      "elapsedSeconds": 4.295,
+      "bytes": 318,
+      "command": "cargo clippy --workspace --all-targets -- -D warnings"
+    },
+    {
+      "log": "c5-usb-sticky-raw-source-contract-wasm-clippy.log",
+      "exitCode": 0,
+      "sha256": "0eabc2c6a79634854c19ca3dbcb0c7872638c05f4c2a2aabdec407d03851a329",
+      "elapsedSeconds": 0.689,
+      "bytes": 241,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings"
+    },
+    {
+      "log": "c5-usb-sticky-raw-source-contract-privacy.log",
+      "exitCode": 0,
+      "sha256": "f02ce81768584302b12e0f615062779d317dc3fbd1287f12f30d2c8ec92c2983",
+      "elapsedSeconds": 0.426,
+      "bytes": 130,
+      "command": "node tools/check-evidence-privacy.mjs"
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "actualNative": {
+    "log": "native-machine-lcd273-usb-sticky-raw-source-contract.log",
+    "sha256": "8f98e07c231537eab58961783c0cef03ad29a1d6727b4bce384eda0eb273608d",
+    "runSteps": 44200045,
+    "cpuInstructionCount": 44200045,
+    "nominalCycles": 44199998,
+    "uartBytes": 4657,
+    "appMainEntered": true,
+    "appMainPc": "0x4200aebe",
+    "appMainCallerPc": "0x42121cb0",
+    "appMainNominalCycle": 38867584,
+    "firstTickNominalCycle": 29524992,
+    "observedTickNominalCycles": [
+      29524992,
+      31924992,
+      34324992,
+      36724992
+    ],
+    "tickRawValue": 8,
+    "tickClearMask": 2,
+    "ordinaryTg1EnableNominalCycle": 27104576,
+    "ordinaryTg0EnableNominalCycle": 38862272,
+    "stopPc": "0x40800db0",
+    "writeAddress": "0x600af018",
+    "requestedValue": "0x00000003",
+    "mcause": 7,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "rtcInitializationLogged": true,
+    "qmi8658InitializationLogged": true,
+    "shtc3WakeAndIdFailed": true,
+    "printedShtIdIsNotEvidence": "0x2638 follows failed reads and is not an identified sensor response.",
+    "usb": {
+      "qualified": true,
+      "rawWithoutClockGuard": 8,
+      "rawQualified": 8,
+      "ena": 0,
+      "txDataFree": 0,
+      "apbHz": 40000000,
+      "pll48Hz": 48000000
+    },
+    "description": "The unchanged original continues through genuine tick interrupts, main_task and app_main, then RTC/QMI initialization and Wi-Fi startup. It stops on the next unimplemented clock-gate combination; LCD/SD remain untouched.",
+    "logBytes": 14746
+  },
+  "contracts": [
+    "COEX NUM49 with XTAL48 gives divisor50 and exact pre-gate ratio48000000/50=960000Hz. This is source/divider configuration, not a modeled COEX/RF/MAC clock or ready signal.",
+    "USB exact offsets08/0c/10/14 are qualified by validated ROM, explicit cold profile, known APB and PLL48, and no pending reset. The named cold PCR_USB CLK_EN1/RST_EN0 is immutable because every PCR_USB+94 access rejects.",
+    "USB RAW3 is a sticky latch with cold value1, separately from FIFO occupancy. C5 TRM R/WTC/SS without SC and closure of all16 named events support retention across TX/WR_DONE. No host, token, SOF, physical line, bus-reset or IRQ producer is added.",
+    "Only SOF ENA/CLR masks0/2 are accepted. RAW write, CLR3, ENA3, CLR read, unknown offsets/clocks and unsupported PCR mutators reject before mutation. No packet is consumed by a monitor read or clear.",
+    "Exact owned refusals in the strict profile are ModelLimit and preserve guest destination/CSR state; adjacent and off-profile unknown words retain prior mapping. Old-watchdog service precedes partial monitor/divider writes.",
+    "CPU reset retains USB digital history; the declared HP fresh reset restores it. This does not model physical USB reset, PHY settling, host enumeration or CLR3 reassertion timing.",
+    "Positive plain/UnitCost guests execute RAW read, CLR2 store and RAW read with both pristine and real Bus-prepared sealed FIFO states. Preparing TX/WR_DONE is fixture setup, not part of that three-instruction guest.",
+    "The pure optional native USB observation runs after guest stop without MMIO, pumping, time advancement or FIFO/flag mutation.",
+    "The next MODEM_LPCON CLK_CONF value3 requests COEX_EN bit1 and WIFIPWR_EN bit0, leaving I2C_MST_EN bit2 clear. It does not select the SYSCON+04 bit12 160MHz source; no new readiness is inferred."
+  ],
+  "reviews": [
+    {
+      "sha256": "21a3208660a37e0dfa1fa4b57691a5f8307e0672356a03a22ebf7291d8842499",
+      "scope": "COEX divider, exact strict refusal and partial-store watchdog barrier; source-only before original continuation.",
+      "finding": "No P1/P2 within the stated scope."
+    },
+    {
+      "sha256": "a01f18e2bae62c08e02d1cf791f68bc8ae0e0eb9fefbe14fdf039d09af9a5d0b",
+      "scope": "Earlier conservative monitor integration and fixture correction; retained historical scope.",
+      "finding": "No P1/P2 within the stated scope."
+    },
+    {
+      "sha256": "d4a4eae7c9db20a4b81aa9ab1bfab9a420b32a56f849fba7cffecbd67166e81c",
+      "scope": "Sticky RAW event closure, clock guard and eight unchanged review fingerprints; no new execution or prefilled success.",
+      "finding": "No P1/P2 within the stated scope."
+    }
+  ],
+  "negativeResults": [
+    {
+      "kind": "Fixture assumption",
+      "log": {
+        "log": "c5-coex-usb-monitor-integration-c5-suite.log",
+        "bytes": 47874,
+        "sha256": "885a6cd1fb32c2f5b2d2a00335899415f1a7c3e735cdfb6140d9d384784caa4d"
+      },
+      "result": "468 library cases passed and1 failed because a new fixture assumed PCR+128=0x1df could disable mandatory PLL48 bit5.",
+      "correction": "Only the fixture changed: it now asserts the existing Unsupported response/mask0x1ff and republishes independent clock observations. Production ClockTree acceptance was not widened."
+    },
+    {
+      "kind": "Original conservative USB boundary",
+      "logs": [
+        {
+          "log": "native-machine-lcd273-coex-usb-cold-clock-contract.log",
+          "bytes": 12386,
+          "sha256": "78385b45fb412b1d8b7e1adb1249a19ce3e70c419473e01c0bca2266bfd9b034"
+        },
+        {
+          "log": "native-machine-lcd273-coex-usb-cold-observation.log",
+          "bytes": 11653,
+          "sha256": "61197cba9c2fa2546a959bcbfb18c6a43c15afb59179343cbfcf0a22b698328b"
+        },
+        {
+          "log": "native-machine-lcd273-usb-early-tx-observation.log",
+          "bytes": 12610,
+          "sha256": "b5bd6d72a686557cc24326a206ac3e7b8e14d65f11482fec22adcc73b7df4697"
+        }
+      ],
+      "result": "The prior540-case checkpoint reached main_task but stopped at the first tick RAW read40801c8e:29525038 steps/instruction count,29524992 cycles,3991 UART bytes. Both qualified and unguarded monitor reads were Unknown despite known clocks and occupied FIFO.",
+      "newSourceEvidence": "The preserved owner receipt and sources.json explain the stronger sticky RAW3 invariant; earlier evidence bytes are unchanged."
+    }
+  ],
+  "limits": [
+    "No C5 product acceptance or publication: LCD nonzero pixels0, SD commands0, buttons/TF persistence unverified.",
+    "RTC/QMI initialization logs do not establish all sensor functions; SHTC3 still fails and its printed ID is not a success.",
+    "The next strict owned CLK_CONF rejection currently appears as a cause7 access fault; exact ModelLimit classification and supported COEX gate request are separate pending changes.",
+    "The541 focused checks and both Clippy runs do not replace final default-LTO workspace CI, identical-work CPU controls, new production WASM, real browser validation or independent product acceptance.",
+    "The prior production WASM artifact predates this source checkpoint. No performance or physical clock/USB/RF behavior is claimed."
+  ],
+  "curation": {
+    "kept": "Source revisions, commands, bounded actual PC/cycle facts, original input and raw-log hashes, numeric results, negative results and limitations.",
+    "omitted": "Private paths, raw register/UART/test streams, binary inputs and full SDK/disassembly listings remain outside Git.",
+    "numericOrHistoricalLogHashesChanged": false
+  }
+}

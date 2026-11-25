@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "scope": "Unwired private C5 CPU memory-policy helper plus a standalone no-dependency harness. No emulator/guest execution.",
+  "sourceBase": "da36ded692b31dfb24d58542bfc95687f84d6d4b",
+  "files": [
+    {
+      "file": "riscv-rv32/src/c5_memory_protection.rs",
+      "bytes": 19058,
+      "sha256": "3ab9b105d3e0bd09a174d33ef8715f72df3156618b0456608b7375e79c2dbe5d"
+    },
+    {
+      "file": "tools/c5-memory-protection-harness/src/lib.rs",
+      "bytes": 165,
+      "sha256": "b3fd9506a4d31cccd458e1b0ec1a5fd7da7b1465820060f6bdf535a98e1cb05c"
+    },
+    {
+      "file": "tools/c5-memory-protection-harness/tests/policy.rs",
+      "bytes": 17149,
+      "sha256": "331360c600328a55da6f46e96806fe635732602a1362450950b3f71ac7425f16"
+    },
+    {
+      "file": "tools/c5-memory-protection-harness/tests/fixtures/factory.rs",
+      "bytes": 3044,
+      "sha256": "e6f52987b0656d970592e0b6aacc5491131637192a240f7486d5145511570094"
+    }
+  ],
+  "checks": [
+    {
+      "check": "tests",
+      "command": "CARGO_TARGET_DIR=target/c5-memory-policy-lane CARGO_BUILD_JOBS=1 cargo +stable test --release --manifest-path tools/c5-memory-protection-harness/Cargo.toml",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T16:33:40.598080+00:00",
+      "finishedAtUTC": "2026-11-24T16:33:41.367509+00:00"
+    },
+    {
+      "check": "clippy",
+      "command": "CARGO_TARGET_DIR=target/c5-memory-policy-lane CARGO_BUILD_JOBS=1 cargo +stable clippy --manifest-path tools/c5-memory-protection-harness/Cargo.toml --all-targets -- -D warnings",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T16:33:41.367706+00:00",
+      "finishedAtUTC": "2026-11-24T16:33:41.522587+00:00"
+    },
+    {
+      "command": "cargo +stable metadata --no-deps --format-version=1 --manifest-path tools/c5-memory-protection-harness/Cargo.toml",
+      "exitCode": 0,
+      "workspacePackages": [
+        "c5-memory-protection-harness"
+      ],
+      "dependencies": 0
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-memory-policy-lane CARGO_BUILD_JOBS=1 cargo +stable test --release --manifest-path tools/c5-memory-protection-harness/Cargo.toml -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "internalTests": 2,
+      "contractTests": 18,
+      "testsPassed": 20,
+      "filteredOut": 0,
+      "hermeticTestNamesAvoidExternalSubstring": true
+    }
+  ],
+  "results": {
+    "internalTests": 2,
+    "contractTests": 18,
+    "testsPassed": 20,
+    "failed": 0,
+    "ignored": 0,
+    "measured": 0,
+    "warningsDenied": true,
+    "metadataStandalone": true,
+    "toolchain": "Rust1.100.0 stable",
+    "instructionExecution": false,
+    "framebufferClaim": false
+  },
+  "fixture": {
+    "pmaWriteRequests": 64,
+    "pmaEntries": 16,
+    "pmpEntries": 16,
+    "source": "sources.json",
+    "dynamicHeapBytes": [
+      0,
+      8388608
+    ],
+    "dynamicHeapStatus": "explicit test parameters H, not measured guest returns",
+    "romDromStart": 1074043904,
+    "idramSplit": "enabled/non-OCD",
+    "expectedPackedPmpCfg": [
+      "8089809f",
+      "8d808b8d",
+      "808b8980",
+      "9b8b8d8b"
+    ],
+    "checks": [
+      "RAM code write denied and DRAM fetch denied",
+      "ROM RX and DROM R restrictions",
+      "flash code RX, rodata R, parameterized PSRAM RW",
+      "LP RW/non-executable and peripheral RW/non-executable",
+      "PMA invalid gaps deny; no-match remains non-authorizing",
+      "replay without reset cannot unlock; core reset clears locks",
+      "immutable snapshot/live share one rule implementation"
+    ],
+    "returnObservation": {
+      "functionReturnPc": "420716f2",
+      "callerPostCallPc": "42000934",
+      "callerCallPc": "42000930",
+      "wrapperTailJumpPc": "4206e924",
+      "heapGetterPc": "42006840",
+      "heapCallPc": "42071650",
+      "heapReturnPc": "42071654",
+      "heapReturnRegister": "a0",
+      "heapContextAddress": "4081e400",
+      "heapMeaning": "esp_psram_get_heap_size_to_protect: chip-init/heap-init flags; initialized heap sizes, or effective mapping minus extBSS/noinit. No actual guest value inferred."
+    }
+  },
+  "boundaries": [
+    "52 recognized CSRs; GuardedMachineContext requires caller machine_only and no MPRV. MPP is not actual mode.",
+    "PMA TYPE0 denies matching accesses; OFF is no match. Guest NA4 and unsupported fields reject transactionally.",
+    "PMA POR A2/type0/addr0 remains tagged and its low128B window is unsupported.",
+    "Unaligned TOR edges, sub128B NAPOT and the UINT32MAX tail have local unsupported windows; ambiguous address readback is unsupported.",
+    "PMA overlap priority and an unlocked predecessor of a locked PMA TOR are not guessed.",
+    "PMP lowest matching entry covers the entire access; locked TOR also freezes predecessor address. XL remains unsupported.",
+    "AtomicRead/LR requiresR, AtomicWrite/SC requiresW, AtomicRmw requiresRW; Bus decides whether a target supports atomics.",
+    "Attrs are diagnostic for a coherent no-line model; no physical cache/tap/latency claim.",
+    "Snapshots are bounded/read-only with epoch/generation; no restore API or user-metadata construction.",
+    "No shared lib/state/exec/Bus wiring, DMA permission application, WASM build, full emulator/native run, benchmark, golden update or publication in this change."
+  ]
+}

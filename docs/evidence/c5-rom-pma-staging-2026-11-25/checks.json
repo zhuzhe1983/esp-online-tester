@@ -1,0 +1,136 @@
+{
+  "schema": 1,
+  "sourceBase": "845ca6696e61c48b6b7bc590ea8857acc6ff0caf",
+  "scope": "Pure owned helper and independent hermetic harness only; no native guest, full workspace, firmware, WASM or benchmark run.",
+  "files": [
+    {
+      "file": "riscv-rv32/src/c5_memory_protection.rs",
+      "bytes": 19441,
+      "sha256": "dd55db1685e919bfdb5bffb45d4336b3c7dc57da8591deffd7c2f64d2f4b1adf"
+    },
+    {
+      "file": "tools/c5-memory-protection-harness/tests/policy.rs",
+      "bytes": 24364,
+      "sha256": "281cd6f0fe515f4a0e642d50de3a12dfa3fd0da85baba1887642613e573cd451"
+    },
+    {
+      "file": "tools/c5-memory-protection-harness/tests/fixtures/rom.rs",
+      "bytes": 1942,
+      "sha256": "e886c806babcfd892a5e443a703e8390f2e86c4d5b3a7cf0aaf50686bdc5d4a3"
+    }
+  ],
+  "checks": [
+    {
+      "check": "rom-staging-tests",
+      "command": "CARGO_TARGET_DIR=target/c5-memory-policy-lane CARGO_BUILD_JOBS=1 cargo +stable test --release --manifest-path tools/c5-memory-protection-harness/Cargo.toml -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T17:09:36.622789+00:00",
+      "finishedAtUTC": "2026-11-24T17:09:38.307281+00:00",
+      "rawLogSha256": "3b972d83343c3af3431cee6ade9ddbddeeb92a56e3e3ad575b393b8b40cc7c25"
+    },
+    {
+      "check": "rom-staging-clippy",
+      "command": "CARGO_TARGET_DIR=target/c5-memory-policy-lane CARGO_BUILD_JOBS=1 cargo +stable clippy --manifest-path tools/c5-memory-protection-harness/Cargo.toml --all-targets -- -D warnings",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T17:09:38.307579+00:00",
+      "finishedAtUTC": "2026-11-24T17:09:38.628649+00:00",
+      "rawLogSha256": "f7b6391345da426e159a545dc02f6fb33068923d442eb758db99711f28b00045"
+    },
+    {
+      "check": "rom-staging-metadata",
+      "command": "CARGO_TARGET_DIR=target/c5-memory-policy-lane CARGO_BUILD_JOBS=1 cargo +stable metadata --no-deps --format-version=1 --manifest-path tools/c5-memory-protection-harness/Cargo.toml",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T17:09:38.628851+00:00",
+      "finishedAtUTC": "2026-11-24T17:09:38.646971+00:00",
+      "rawLogSha256": "251ef45bf295ca200aaae5c022769cd740fccb3423a9ac6e67bff46ce2c534f4",
+      "workspacePackages": [
+        "c5-memory-protection-harness"
+      ],
+      "dependencies": 0
+    }
+  ],
+  "results": {
+    "internalTests": 2,
+    "canonicalContractTests": 22,
+    "testsPassed": 24,
+    "failed": 0,
+    "ignored": 0,
+    "filteredOut": 0,
+    "warningsDenied": true,
+    "workspacePackages": 1,
+    "dependencies": 0,
+    "newGuestExecution": false,
+    "lcdQualification": false
+  },
+  "negativeHelperRegression": {
+    "sourceHelper": "845ca6696e61c48b6b7bc590ea8857acc6ff0caf",
+    "test": "por_address_staging_moves_only_the_reset_a2_window_and_keeps_readback_unqualified",
+    "exitCode": 101,
+    "expected": "Ok(Changed)",
+    "actual": "Err(PorAddressWrite(0))",
+    "rawLog": {
+      "file": "rom-staging-negative.log",
+      "bytes": 1406,
+      "sha256": "bbb51d8f3dcfab4887c68fc5e6125ef1b1550f65b532f2b362e18cf4616112ab"
+    }
+  },
+  "suppliedNativeNegative": {
+    "rerunInThisChange": false,
+    "sourceRevision": null,
+    "sourceRevisionLimit": "Original integration capture did not record its source revision; used only to identify the failing first CSR request.",
+    "rawLogs": [
+      {
+        "file": "native-machine-lcd273-memory-policy-return.log",
+        "bytes": 3522,
+        "sha256": "1689bc046a23d10c24756b741945bcb2204ad61230201bf6b0f6fb5910b3e6f2"
+      },
+      {
+        "file": "native-machine-lcd273-rom-pma-address.log",
+        "bytes": 4527,
+        "sha256": "84ee0ddd005848467b394af706c00f747c85e25e2220f5fb78ba63b48398027f"
+      }
+    ],
+    "steps": 5938,
+    "instructions": 5938,
+    "nominalCycles": 5888,
+    "uartBytes": 0,
+    "nonzeroPixels": 0,
+    "busFirstFault": null,
+    "mepc": "4003ab62",
+    "mcause": 2,
+    "mtval": "bdc79073",
+    "x15": "140007ff",
+    "preWriteSnapshot": {
+      "epoch": 1,
+      "generation": 1,
+      "pmaCfgAll": "80000000",
+      "pmaAddrAll": 0,
+      "pmaPorMask": "ffff",
+      "pmpCfgAll": 0,
+      "pmpAddrAll": 0
+    }
+  },
+  "fixtureChecks": {
+    "romPmaWriteWordsMatchedPinnedListing": 20,
+    "initialEntries": [
+      12,
+      13,
+      14,
+      15
+    ],
+    "newPmaA2WritesRejected": true,
+    "porReadbackNonzeroUnsupported": true,
+    "movingWindowBytes": 128,
+    "noFutureA3Inference": true,
+    "appPmaWriteRequests": 64,
+    "pmpEntries": 16,
+    "heapFixtureBytes": 8388608,
+    "heapFixtureMeaning": "Explicit hermetic parameter, no measured guest H value.",
+    "appLockedRomReplayIgnored": true
+  },
+  "curation": {
+    "committed": "Aggregate outcomes, relevant PC/word/value facts, bounded source and capture hashes.",
+    "omitted": "Raw logs, full disassembly, original third-party bytes, absolute paths and complete peripheral snapshots remain in ignored cache.",
+    "historicalReceiptChanged": false
+  }
+}

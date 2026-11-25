@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "baseCommit": "3b57e6053b2ce75f319726769c1862c100fe833a",
+  "moduleCommits": [
+    {
+      "integrated": "95650461",
+      "original": "3ddfd6393b13db89f12e92bed7327298e9ce289a",
+      "scope": "strict ordinary TG1 IWDT"
+    },
+    {
+      "integrated": "ded956ac",
+      "original": "dfbcc1966d292c15370707e32b6c0fa1183e4858",
+      "scope": "shared ordinary TG0/TG1 controller with committed cold handoff"
+    },
+    {
+      "integrated": "3b57e605",
+      "original": "7b26df3746937e95635a261ca1650f9a8bae926f",
+      "scope": "fixed XMC32MiB published SFDP read window"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/timg_wdt.rs",
+      "sha256": "a8179e3dac287012307f002110e29608f3731d567a4fb346e730536ae5bc6289"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "1c0079d21127df9a74a45766e7ed5902fda1b08a1c6ff6e9ddd238a0c803eb5d"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "5fd3e8068798257f75fb6a7d5b6dd9c9ab7fe9e35d8ebdd0cd31843b2684cd55"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "e259e00073813ce978695bf5895f01c6b60d8f6bad094e4141f7cc56fe27cc3f"
+    },
+    {
+      "path": "esp32c5/src/ordinary_wdt_bus_tests.rs",
+      "sha256": "dd7f4979a4af53c003da4c81e4c26d29732deb78cfcfbebed1c27b105dda5dce"
+    },
+    {
+      "path": "esp32c5/src/mspi.rs",
+      "sha256": "4b1c698189a986ad676c1f00a11c5f7d79bfb664e3bc1ba701e74600979481d5"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "log": "c5-ordinary-wdt-sfdp-model-limit-c5-suite.log",
+      "exitCode": 0,
+      "sha256": "3cd34d9ff28c437b4100e808e881cf9170fd0660d52a99bb5666392f632adfeb",
+      "elapsedSeconds": 39.516,
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "results": {
+        "passed": 481,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      },
+      "inputCases": [
+        "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+        "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+        "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+        "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+        "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+        "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+      ],
+      "ordinaryBusCases": [
+        "ordinary_wdt_bus_tests::functional_gate_preserves_phase_and_apb_gate_does_not_stop_the_counter",
+        "ordinary_wdt_bus_tests::emitted_reset_and_cpu_reset_retention_precede_late_feed_clear_and_clock_writes",
+        "ordinary_wdt_bus_tests::late_joint_catchup_keeps_cause8_and_commits_lp_only_through_the_earlier_core_reset",
+        "ordinary_wdt_bus_tests::a_waiting_guest_is_woken_by_the_watchdog_and_its_handler_really_feeds_and_clears",
+        "ordinary_wdt_bus_tests::real_stage_deadlines_publish_both_sources_and_mark_the_irq_input_dirty",
+        "ordinary_wdt_bus_tests::real_tg0_handoff_is_required_and_a_group_reset_cannot_grant_it",
+        "ordinary_wdt_bus_tests::same_cycle_lp_reset_rank_is_preserved_for_the_new_tg1_core_reason",
+        "ordinary_wdt_bus_tests::unsupported_watchdog_operations_stop_without_a_fabricated_guest_exception"
+      ],
+      "logBytes": 51563
+    },
+    {
+      "log": "native-machine-lcd273-ordinary-wdt-sfdp-model-limit.log",
+      "exitCode": 0,
+      "sha256": "343092d814921b0232115aec3a51a9539fb9b4f35dc02c5ba9c7edebbdb60097",
+      "elapsedSeconds": 3.515,
+      "command": "C5_FACTORY_TRACE_PCS=40817696,4002132c,4200aebe cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned prepared SD>",
+      "logBytes": 10127
+    },
+    {
+      "log": "c5-ordinary-wdt-sfdp-model-limit-workspace-clippy.log",
+      "exitCode": 0,
+      "sha256": "fd0c322515cc16fafa0f49e3fe821ca4c2c63283f7480a880c8c44ed789920e6",
+      "elapsedSeconds": 4.605,
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "logBytes": 318
+    },
+    {
+      "log": "c5-ordinary-wdt-sfdp-model-limit-wasm-clippy.log",
+      "exitCode": 0,
+      "sha256": "2076cf94ffbea9a13e400afdfa6d43b05c8c6b6e2ea04d62ea60f996ab571c51",
+      "elapsedSeconds": 0.766,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "logBytes": 241
+    },
+    {
+      "log": "c5-ordinary-wdt-sfdp-model-limit-privacy.log",
+      "exitCode": 0,
+      "sha256": "4996f26904734298db94ff3f39691cab12e320ae564503280e62e1219680a942",
+      "elapsedSeconds": 0.675,
+      "command": "node tools/check-evidence-privacy.mjs",
+      "logBytes": 130
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "actualNative": {
+    "log": "native-machine-lcd273-ordinary-wdt-sfdp-model-limit.log",
+    "sha256": "343092d814921b0232115aec3a51a9539fb9b4f35dc02c5ba9c7edebbdb60097",
+    "runSteps": 27039905,
+    "cpuInstructionCount": 27039905,
+    "nominalCycles": 27039872,
+    "uartBytes": 3711,
+    "stop": "Exceptions(1)",
+    "pc": "0x42002542",
+    "readAddress": "0x6009613c",
+    "mcause": 5,
+    "sfdpReturnByte": "f3",
+    "sfdpReturnTracePc": "0x40817696",
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "ordinaryWatchdogStartupExecuted": false,
+    "description": "The unchanged original firmware completes the SFDP capability query, then reaches an unimplemented PCR SEC_CONF read. Diagnostic guest fixtures establish ordinary watchdog behavior separately.",
+    "logBytes": 10127
+  },
+  "contracts": [
+    "Bus publishes ordinary watchdog sources58/60 and marks IRQ inputs dirty when a real stage event changes their levels; next_deadline includes IRQ and reset deadlines. No host feed or interrupt injection.",
+    "Joint fixed-size LP/TIMG previews select the earliest reset, use TRM priority only at equal timestamps, and commit real controllers only through the winning timestamp. The module resolves equal TG0/TG1 to cause7. Cause8 and event time are preserved.",
+    "A TG1 WFI diagnostic guest in plain and UnitCost modes wakes through source60 to CPUline1/id17 with non-vectored CLIC. Its real handler unlocks, writes FEED, clears RAW, locks and executes mret. It does not prove factory SHV, CPU24 panic, original FreeRTOS, or a TG0 guest handler.",
+    "Ordinary TG0 qualification requires a real committed cold FLASHBOOT clear; group reset alone cannot grant it. Functional gating pauses phase; APB closure blocks MMIO without stopping the timer. Clear does not feed.",
+    "CPU reset preserves TIMG; Core/HP clears it and retains LP. A deliberately late Core8@25 is followed after reboot by independently retained SWD12@228000000, rather than advancing LP past the early reset before it is applied.",
+    "In the strict TIMG profile, exact owned-word refusal is Unsupported/ModelLimit, not fabricated cause5/7. Plain/UnitCost negative guests preserve trap CSRs, destination, exception count and controller state for locked IRQ clear, unowned timer enablebit, active unsupported source and APB-closed RAW read. Adjacent unknown6c and off-profile mapping remain unchanged.",
+    "SFDP byte32=f3 is the published XMC C-series digital response, not forced successful capability flags. Input originals are unchanged."
+  ],
+  "negativeResults": [
+    {
+      "log": "c5-ordinary-wdt-sfdp-c5-suite.log",
+      "sha256": "96a840dc6d8afb4c27949e73b5dae5fc8251482ce7d24681966545401b6ebccc",
+      "description": "New fixture initially failed compilation: Vec<usize> was compared to Vec<u32>; fixed expected integer type without production change.",
+      "logBytes": 1455
+    },
+    {
+      "log": "c5-ordinary-wdt-sfdp-source-type-c5-suite.log",
+      "sha256": "bae5af1af055f75c41dcae5bd477536eb7aed1fc4655503fb5e2979006710e03",
+      "description": "408 tests passed, two new fixtures failed: an unmodeled run budget of1 does not skip239999 idle cycles, and late Core reset must retain the later LP SWD timeline. Fixture expectations corrected; production chronology unchanged.",
+      "logBytes": 42233
+    },
+    {
+      "log": "c5-ordinary-wdt-sfdp-scheduler-contract-c5-suite.log",
+      "sha256": "c89267c473f468ae71057027af91d6e984639c67a6185cb562d78de08264eb96",
+      "description": "480 tests passed before independent review found model refusal mapped to an architectural TIMG access fault; passing result did not cover that missing causal distinction.",
+      "logBytes": 51452
+    },
+    {
+      "log": "c5-ordinary-wdt-sfdp-scheduler-contract-workspace-clippy.log",
+      "sha256": "d4586a938a390e1ee629e60e965f13fa4fe3fcf286abd5b78e5ac78a77743665",
+      "description": "Warnings-denied Clippy rejected needless_range_loop in the new fixture; replaced with BASE.into_iter().enumerate().",
+      "logBytes": 1137
+    }
+  ],
+  "limits": [
+    "Focused LTO=false checks are not the final full default-LTO workspace CI or production WASM/browser/CPU acceptance.",
+    "Original execution remains before app_main/LCD/buttons/TF and before ordinary watchdog initialization. No RF/PHY, physical clock/reset-pulse or complete product support claim.",
+    "Read-only trace PCs record bounded observations without Bus reads/writes, instruction/stop changes or PC mutation. Raw logs, private paths and unrelated system details are excluded."
+  ],
+  "reviews": [
+    {
+      "sha256": "86e1f3bcda52078c8972849a795ccd2b296f8b08abd8656fc11dac2bbeb30b41",
+      "scope": "Independent read-only Bus/Soc/owner/fixture review; one model-refusal-to-architectural-fault P2 repaired and verified against source fingerprints and481-test logs; no remaining P1/P2 in the scoped glue. No independent execution or final product acceptance."
+    }
+  ]
+}

@@ -36,12 +36,13 @@ pub(crate) fn exec<B: Bus>(cpu: &mut Cpu, bus: &mut B, i: &Insn, pc: u32) -> Res
             let ad = cpu.get(i.rs1).wrapping_add(i.imm as u32);
             match bus.read32(ad) {
                 Ok(v) => write_f(cpu, i.rd, v),
+                Err(emu_core::Fault::Unsupported)=>return Err(Trap::ModelLimit(pc)),
                 Err(_) => { cpu.trap(exc::LOAD_ACCESS_FAULT, ad, pc); return Err(Trap::Exception(exc::LOAD_ACCESS_FAULT)); }
             }
         }
         Fsw => {
             let ad = cpu.get(i.rs1).wrapping_add(i.imm as u32);
-            if bus.write32(ad, b).is_err() { cpu.trap(exc::STORE_ACCESS_FAULT, ad, pc); return Err(Trap::Exception(exc::STORE_ACCESS_FAULT)); }
+            if let Err(f)=bus.write32(ad,b){if f==emu_core::Fault::Unsupported{return Err(Trap::ModelLimit(pc));}cpu.trap(exc::STORE_ACCESS_FAULT,ad,pc);return Err(Trap::Exception(exc::STORE_ACCESS_FAULT));}
         }
         // Sign injection and the moves copy bits: no flags, NaN payloads kept.
         FsgnjS => write_f(cpu, i.rd, (a & !SIGN) | (b & SIGN)),

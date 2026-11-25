@@ -1,0 +1,183 @@
+{
+  "baseRevision": "f20a0241",
+  "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+  "buildJobs": 1,
+  "profile": "release",
+  "virtualSchedulerHz": 240000000,
+  "ledcReferenceHz": 80000000,
+  "factoryFirmwareExecutionClaim": false,
+  "checks": [
+    {
+      "command": "cargo +stable test --release -p esp32c5 --lib --test transport --test lcd273 -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "passedByTarget": {
+        "lib": 101,
+        "transport": 8,
+        "lcd273": 2
+      },
+      "filteredExternalUnitTests": 3,
+      "includedTransportClockUnitTests": 8
+    },
+    {
+      "command": "cargo +stable clippy --release -p esp32c5 --lib --tests -- -D warnings",
+      "exitCode": 101,
+      "diagnosticGroups": 7,
+      "diagnostics": [
+        "dead_code: transport::Transport::set_clock_sources needs production caller",
+        "dead_code: pre-existing boot_analog methods",
+        "dead_code: pre-existing boot_analog_pll methods",
+        "dead_code: pre-existing boot_clock profile field",
+        "dead_code: pre-existing boot_clock methods",
+        "dead_code: pre-existing clock_tree fields",
+        "dead_code: pre-existing clock_tree methods"
+      ],
+      "integratedStrictClippyStillRequired": true
+    },
+    {
+      "command": "cargo +stable clippy --release -p esp32c5 --lib --tests -- -D warnings -A dead_code",
+      "exitCode": 0,
+      "scope": "diagnostic lint pass only; does not replace strict integrated Clippy"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    }
+  ],
+  "serialFloorSamples": [
+    {
+      "selector": 0,
+      "pcrDivider": 1,
+      "spiClockDivider": 2,
+      "dataBits": 32,
+      "expectedMinimumCpuCycles": 320
+    },
+    {
+      "selector": 1,
+      "pcrDivider": 1,
+      "spiClockDivider": 2,
+      "dataBits": 32,
+      "expectedMinimumCpuCycles": 96
+    },
+    {
+      "selector": 2,
+      "pcrDivider": 1,
+      "spiClockDivider": 2,
+      "dataBits": 32,
+      "expectedMinimumCpuCycles": 878
+    },
+    {
+      "selector": 3,
+      "pcrDivider": 1,
+      "spiClockDivider": 2,
+      "dataBits": 32,
+      "expectedMinimumCpuCycles": 128
+    },
+    {
+      "selector": 1,
+      "pcrDivider": 4,
+      "spiClockDivider": 2,
+      "dataBits": 32,
+      "expectedMinimumCpuCycles": 384
+    },
+    {
+      "selector": 3,
+      "pcrDivider": 256,
+      "spiClockDivider": 2,
+      "dataBits": 32,
+      "expectedMinimumCpuCycles": 32768
+    }
+  ],
+  "phaseSamples": [
+    {
+      "oldXtalCpuCycles": 1,
+      "newLedcSelector": 2,
+      "newSourceHz": 80000000,
+      "newSourceCpuCycles": 1000,
+      "independentNumeratorCpuCyclesTimesHz": 80048000000,
+      "expectedTimerCountResolution10": 333,
+      "expectedFractionModulo3": 2,
+      "firstStaticDutyWrapCpuCycle": 3073
+    },
+    {
+      "oldXtalCpuCycles": 1,
+      "newLedcSelector": 1,
+      "newSourceHz": 17500000,
+      "newSourceCpuCycles": 1000,
+      "independentNumeratorCpuCyclesTimesHz": 17548000000,
+      "expectedTimerCountResolution10": 73,
+      "expectedFractionModulo3": 1,
+      "firstStaticDutyWrapCpuCycle": 14042
+    },
+    {
+      "oldXtalCpuCycles": 2,
+      "newLedcSelector": 2,
+      "newSourceHz": 80000000,
+      "newSourceCpuCycles": 1000,
+      "independentNumeratorCpuCyclesTimesHz": 80096000000,
+      "expectedTimerCountResolution10": 333,
+      "expectedFractionModulo3": 2,
+      "firstStaticDutyWrapCpuCycle": 3073
+    },
+    {
+      "oldXtalCpuCycles": 2,
+      "newLedcSelector": 1,
+      "newSourceHz": 17500000,
+      "newSourceCpuCycles": 1000,
+      "independentNumeratorCpuCyclesTimesHz": 17596000000,
+      "expectedTimerCountResolution10": 73,
+      "expectedFractionModulo3": 1,
+      "firstStaticDutyWrapCpuCycle": 14040
+    }
+  ],
+  "boundaryCoverage": {
+    "sourceTransitions": [
+      "XTAL48MHz to PLL80MHz",
+      "XTAL48MHz to RC_FAST17.5MHz"
+    ],
+    "oldSourcePartialCpuCycles": [
+      1,
+      2
+    ],
+    "perCycleAssertionsPerTransition": 1000,
+    "sourceLossPauseCpuCycles": 777,
+    "functionalGatePauseCpuCycles": 2,
+    "resumeChecks": true,
+    "programmedSpiClockPreservedOnCancel": true,
+    "noCancelledBoardTransferOrDoneIrq": true,
+    "dmaWaitingRequestCancellation": true,
+    "unrelatedSourceLossKeepsPendingTransfer": true,
+    "pendingDutyLossHasNoIrqAndResumeReplans": true
+  },
+  "retainedData": "Reproducible commands, source hashes, aggregate check results and numeric expectations only; no private captures or host inventories retained.",
+  "initialImplementationRevision": "84a3820abff966fead9855e85d77f7643198736d",
+  "componentFixture": {
+    "sourceObservations": "Explicit caller-supplied rates and PLL availability at the Transport boundary",
+    "transportRegisters": "Transport::read/write with take, pump and restore using the real C5Bus",
+    "rootBusOperations": [
+      "GPIO",
+      "memory",
+      "virtual scheduling",
+      "DMA",
+      "board callbacks"
+    ],
+    "productionClockProviderOverridden": false,
+    "productionFilesChangedByFixtureFix": false,
+    "actualAnalogReadinessProvenByComponentFixture": false,
+    "checks": [
+      {
+        "command": "cargo +stable test --release -p esp32c5 --lib transport::clock_tests -- --nocapture",
+        "exitCode": 0,
+        "passed": 8
+      },
+      {
+        "command": "cargo +stable clippy --release -p esp32c5 --lib --tests -- -D warnings -A dead_code",
+        "exitCode": 0,
+        "scope": "diagnostic pass on unintegrated component base; strict integrated Clippy remains separate"
+      }
+    ]
+  }
+}

@@ -1,0 +1,555 @@
+{
+  "actual_build_driver": {
+    "bytes": 21549,
+    "sha256": "ea8e71a5d96c62d9477f5297ad0d192c37231963bc9c689611815e4b83229f56"
+  },
+  "build_and_static_scope": {
+    "app_descriptor": {
+      "app_elf_sha256": "2043dc07c96cf7e9ccc1b357397af279c8bfe3ac62132a9d8b99740009a2611a",
+      "compile_date": "Nov 25 2026",
+      "compile_time": "07:21:45",
+      "idf_version": "v6.0.2",
+      "magic": "0xabcd5432",
+      "project_name": "hello_world",
+      "secure_version": 0,
+      "version": "v0.3.0-1577-g68182adf-dirty"
+    },
+    "artifacts": {
+      "bootloader/bootloader.bin": {
+        "bytes": 22272,
+        "sha256": "437778c24be2001339097e42b5cfa9165d9e83279f6a6ff2f3e35d756e427149"
+      },
+      "config/sdkconfig.h": {
+        "bytes": 38328,
+        "sha256": "2a086a0dfe504dd4574f79259575f87eb1c09010fc4195b61d04dbf1a6534069"
+      },
+      "flasher_args.json": {
+        "bytes": 921,
+        "sha256": "e3883e56fa86912937258e7dfa312b35db93d08e9c41b3d3357c1380860748c3"
+      },
+      "hello_world.bin": {
+        "bytes": 135408,
+        "sha256": "adc8c8cf9e760b7611f75249ea14bfaddf6a67f8e5cef131f73d7a412215841d"
+      },
+      "hello_world.elf": {
+        "bytes": 3597104,
+        "sha256": "2043dc07c96cf7e9ccc1b357397af279c8bfe3ac62132a9d8b99740009a2611a"
+      },
+      "hello_world.map": {
+        "bytes": 2395129,
+        "sha256": "e9db6f63b3ae77b6874494b333ac6c0cb1c6c0207e97480b8a335c5bf434f50d"
+      },
+      "merged.bin": {
+        "bytes": 200944,
+        "sha256": "a84d3ce0a8ad44525706a67c596e9bf0007c2040d6280fb2cf8abf2f0a93b8a5"
+      },
+      "partition_table/partition-table.bin": {
+        "bytes": 3072,
+        "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+      },
+      "project_description.json": {
+        "bytes": 156104,
+        "sha256": "49a41b87fd41986e166cda494995d183daaa95e5adc095979bff195dc27b9c6c"
+      },
+      "sdkconfig": {
+        "bytes": 59502,
+        "sha256": "673dc23a0f421a9a483b5912508070ecae9e6d575e330b405c3f7b618ee96fe8"
+      }
+    },
+    "builder": {
+      "bytes": 21549,
+      "sha256": "ea8e71a5d96c62d9477f5297ad0d192c37231963bc9c689611815e4b83229f56"
+    },
+    "commands": [
+      {
+        "argv": [
+          "$GCC_BIN/riscv32-esp-elf-gcc",
+          "--version"
+        ],
+        "phase": "compiler-version"
+      },
+      {
+        "argv": [
+          "$IDF_PYTHON",
+          "$IDF_PATH/tools/idf.py",
+          "--version"
+        ],
+        "phase": "idf-version-and-dependencies"
+      },
+      {
+        "argv": [
+          "$IDF_PYTHON",
+          "$IDF_PATH/tools/idf.py",
+          "-C",
+          "$REFERENCE_DIR/project",
+          "set-target",
+          "esp32c5"
+        ],
+        "phase": "configure-c5"
+      },
+      {
+        "argv": [
+          "$CMAKE",
+          "--build",
+          "$REFERENCE_DIR/project/build",
+          "--parallel",
+          "8"
+        ],
+        "phase": "build-jobs8"
+      },
+      {
+        "argv": [
+          "$IDF_PYTHON",
+          "$IDF_PATH/tools/idf.py",
+          "-C",
+          "$REFERENCE_DIR/project",
+          "merge-bin",
+          "--format",
+          "raw",
+          "-o",
+          "$REFERENCE_DIR/project/build/merged.bin"
+        ],
+        "phase": "merge-bin-jobs8"
+      }
+    ],
+    "configuration": {
+      "psram_enabled": false,
+      "selected": {
+        "CONFIG_COMPILER_LTO": null,
+        "CONFIG_ESPTOOLPY_FLASHFREQ": "80m",
+        "CONFIG_ESPTOOLPY_FLASHMODE": "dio",
+        "CONFIG_ESPTOOLPY_FLASHSIZE": "32MB",
+        "CONFIG_ESP_CONSOLE_UART_DEFAULT": "y",
+        "CONFIG_ESP_CONSOLE_UART_NUM": "0",
+        "CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ": "240",
+        "CONFIG_IDF_TARGET": "esp32c5",
+        "CONFIG_XTAL_FREQ": "0",
+        "CONFIG_XTAL_FREQ_AUTO": "y"
+      },
+      "xtal_runtime_note": "C5 uses ROM/pin/eFuse autodetection; this is not a runtime XTAL measurement"
+    },
+    "elf": {
+      "byte_order": "little",
+      "class": 32,
+      "entry": "0x408006b8",
+      "machine": 243
+    },
+    "flash_files": [
+      {
+        "bytes": 22272,
+        "offset": 8192,
+        "path": "bootloader/bootloader.bin",
+        "sha256": "437778c24be2001339097e42b5cfa9165d9e83279f6a6ff2f3e35d756e427149"
+      },
+      {
+        "bytes": 3072,
+        "offset": 32768,
+        "path": "partition_table/partition-table.bin",
+        "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+      },
+      {
+        "bytes": 135408,
+        "offset": 65536,
+        "path": "hello_world.bin",
+        "sha256": "adc8c8cf9e760b7611f75249ea14bfaddf6a67f8e5cef131f73d7a412215841d"
+      }
+    ],
+    "guest_executed": false,
+    "images": {
+      "bootloader/bootloader.bin": {
+        "appended_sha256": "a371f1263773ff55a6ddcf8fe92f2b793e3840aa255e76863a62f595c120601a",
+        "checksum": 182,
+        "checksum_offset": 22239,
+        "chip_id": 23,
+        "entry": "0x4084bbaa",
+        "flash_frequency_code": 15,
+        "flash_mode_code": 2,
+        "flash_size_code": 5,
+        "max_revision_full": 199,
+        "min_revision_full": 100,
+        "segments": [
+          {
+            "bytes": 5736,
+            "file_offset": 32,
+            "load_address": "0x408556c0",
+            "sha256": "f0f3842f31fb7e5461722f3ec448050f3b3a7c5fc6e3f1f079e27ddbe649074e"
+          },
+          {
+            "bytes": 3504,
+            "file_offset": 5776,
+            "load_address": "0x4084bba0",
+            "sha256": "75ff1c0d3288955d9798845e498fdeba8534690d1262583e4002d31a099010d0"
+          },
+          {
+            "bytes": 12936,
+            "file_offset": 9288,
+            "load_address": "0x4084e5a0",
+            "sha256": "209800ec32585bc05ab052770fb0a141e044ab57b2d8832d3358f4f19831b9cd"
+          }
+        ],
+        "trailing_bytes": 0,
+        "validated_image_bytes": 22272
+      },
+      "hello_world.bin": {
+        "appended_sha256": "b700f5df9fa5339540fc0ad5a9e61343524d1271ea667702b24265d9e4800582",
+        "checksum": 201,
+        "checksum_offset": 135375,
+        "chip_id": 23,
+        "entry": "0x408006b8",
+        "flash_frequency_code": 15,
+        "flash_mode_code": 2,
+        "flash_size_code": 5,
+        "max_revision_full": 199,
+        "min_revision_full": 100,
+        "segments": [
+          {
+            "bytes": 26400,
+            "file_offset": 32,
+            "load_address": "0x42010020",
+            "sha256": "17a322dc183bde3b598c986433f4f6ae3ab3782650816bb4b537e8961c24e45b"
+          },
+          {
+            "bytes": 39120,
+            "file_offset": 26440,
+            "load_address": "0x40800000",
+            "sha256": "c86daba920e96b9cb3c232144e330d14eb25b6097b8e8d31f38c8465d7e7fd54"
+          },
+          {
+            "bytes": 61824,
+            "file_offset": 65568,
+            "load_address": "0x42000020",
+            "sha256": "fc7273ae95acbe3e1492efb408f9ebecd2ce84c7c711ad3fb4ef75d486262397"
+          },
+          {
+            "bytes": 1060,
+            "file_offset": 127400,
+            "load_address": "0x408098d0",
+            "sha256": "7d6aab90b60cf1415726bc0b03ef614e2bc7bf6302ad3aabb07b0f77d02e3165"
+          },
+          {
+            "bytes": 6904,
+            "file_offset": 128468,
+            "load_address": "0x40809d00",
+            "sha256": "3175df0f954cd280dda5b8b37dacf3d129ffd8162c448070611355b95ca52ec2"
+          }
+        ],
+        "trailing_bytes": 0,
+        "validated_image_bytes": 135408
+      }
+    },
+    "jobs": 8,
+    "kind": "independent-c5-idf602-hello-reference",
+    "limitations": [
+      "No guest/emulator execution or timing measurement",
+      "Independent IDF 6.0.2 reference, not FactoryOnly IDF 5.5.3 or its ELF",
+      "No PSRAM enabled; no WiFi/RF/LCD/SD/input acceptance",
+      "Hello counts down then intentionally restarts; runtime verification remains separate"
+    ],
+    "map_text_contains": {
+      "app_main": true,
+      "esp_restart": true,
+      "esp_wifi_init": false,
+      "vTaskDelay": true
+    },
+    "nested_bootloader_jobs": 1,
+    "partitions": {
+      "entries": [
+        {
+          "bytes": 24576,
+          "flags": 0,
+          "label": "nvs",
+          "offset": 36864,
+          "subtype": 2,
+          "type": 1
+        },
+        {
+          "bytes": 4096,
+          "flags": 0,
+          "label": "phy_init",
+          "offset": 61440,
+          "subtype": 1,
+          "type": 1
+        },
+        {
+          "bytes": 1048576,
+          "flags": 0,
+          "label": "factory",
+          "offset": 65536,
+          "subtype": 0,
+          "type": 0
+        }
+      ],
+      "md5_valid": true
+    },
+    "private_capture_note": "Raw logs, sources, ELF/map and binaries remain under ignored target/; paths are aliased here",
+    "schema": 1,
+    "sdk": {
+      "repository": "https://github.com/espressif/esp-idf",
+      "revision": "7101770dc6db2667b3c477cc31365dd1acd6db4e",
+      "submodules": [
+        " 24c60e243580c7868f4334a1ba3123481fe1aa48 components/bootloader/subproject/components/micro-ecc/micro-ecc (v1.1)",
+        " b4b7c54b1eab6a844789b69e56322ef5736eddc8 components/bt/controller/lib_esp32 (b4b7c54)",
+        " 6a5c0b8bfca1a2e984e89431b8ebf9b521dad5ea components/bt/controller/lib_esp32c2/esp32c2-bt-lib (heads/main)",
+        " 0a08c4b32f3666003080b662a1a61794da24ff0f components/bt/controller/lib_esp32c3_family (heads/master)",
+        " c328228f53fe167cc9fbd05b5bef37158f64956d components/bt/controller/lib_esp32c5/esp32c5-bt-lib (c328228)",
+        " e7be018522c85e67c298effc8ffa7f5b84887a7b components/bt/controller/lib_esp32c6/esp32c6-bt-lib (e7be018)",
+        " b2b8fd009c31816497d55726af297761147beb07 components/bt/controller/lib_esp32h2/esp32h2-bt-lib (b2b8fd0)",
+        " e44762384ed104a0ebc78f134eeba5f3ab648ddc components/bt/esp_ble_mesh/lib/lib (e447623)",
+        " 5d8b70207a6324f45d9f548ff57ec3b154afccdd components/bt/host/nimble/nimble (nimble_1_6_0_tag-428-g5d8b7020)",
+        " eeecc49ce8af123cf8ad40efdb9673e37b56230f components/cmock/CMock (v2.5.2-2-geeecc49)",
+        " 71b47be7c950f1bf5f7e5303779fa99a16224bb6 components/cmock/CMock/vendor/c_exception (71b47be)",
+        " cf949f45ca6d172a177b00da21310607b97bc7a7 components/cmock/CMock/vendor/unity (v2.5.1)",
+        " 79e618f033e926d134decc6d95bb1b1850bd032c components/esp_coex/lib (79e618f)",
+        " 59c1234e929212aec0fdda75769b759951235536 components/esp_phy/lib (59c1234)",
+        " bb69e7e609c9a9a909ddd1ed175f36df2bd13801 components/esp_wifi/lib (bb69e7e6)",
+        " 2867f6883a12920b1969ff9624c0ab0e4185c2ce components/heap/tlsf (2867f68)",
+        " fd432e4ee2cfb7f7f1c7eb7227e0173412e7b84e components/lwip/lwip (fd432e4e)",
+        " 6cc42afad309e861f4c07e6f106e2ab14a9cb8e5 components/mbedtls/mbedtls (mbedtls-4.1.0-19-g6cc42afad)",
+        " 9467fb320782855dff84add294039bfa0bcbbf4b components/openthread/lib (9467fb3)",
+        " a98813b30ae58f9a95ece680b9cc46c3874de6ea components/openthread/openthread (thread-reference-20250612-950-ga98813b30)",
+        " e185d7fd85499c8ce5ca2a54f5cf8fe7dbe3f8df components/openthread/openthread/third_party/mbedtls/repo (v3.6.0-1747-ge185d7fd8)",
+        " 457996474728cb8e968ed21953b72f74d2f536b2 components/openthread/openthread/third_party/mbedtls/repo/framework (mbedtls-4.0.0_tf-psa-crypto-1.0.0)",
+        " abc67a11c6db271bedbb9f58be85d6f4e2ea8389 components/protobuf-c/protobuf-c (v1.4.1)",
+        " ad902cadceb39d0825a97e25ecb5867641f606ba components/spiffs/spiffs (0.2-265-gad902ca)",
+        " bf560290f6020737eafaa8b5cbd2177c3956c03f components/unity/unity (v2.6.0_RC1)"
+      ],
+      "tracked_clean_before_after": true,
+      "version": "6.0.2"
+    },
+    "sdk_profile": "idf602",
+    "source": {
+      "defaults": "CONFIG_ESPTOOLPY_FLASHSIZE_32MB=y\n# CONFIG_SPIRAM is not set\n",
+      "defaults_sha256": "61774d47d5d901db821941331bbb4257b10d0345df9f7f0abfb6a52972529d4e",
+      "key_manager_sources_sha256": {
+        "components/esp_hal_security/esp32c5/include/hal/key_mgr_ll.h": "9b0247c5bbca44453b0c76849dad38af990df665c3d629d450b4539358ff9a95",
+        "components/esp_security/src/init.c": "0ec3693522cf58c738383e1a13110f6179631e5685c60397d4f72b9267393667"
+      },
+      "main_license": "CC0-1.0",
+      "path": "examples/get-started/hello_world",
+      "sdk_license": {
+        "bytes": 11358,
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      "unchanged_sha256": {
+        "CMakeLists.txt": "5df271e4d0dd84f1d4765b274c6d53179cf33ca3f9c5eb5d21de69d88310d721",
+        "main/CMakeLists.txt": "116b04da44200b6ddeee8aed45c9fbfb5e487d727c7d29b028e79807e76137cc",
+        "main/hello_world_main.c": "b2d1c8573307e010d276d2d0df537f1fe752416f8422e267aa8b1661c1744595"
+      }
+    },
+    "static_verification_passed": true,
+    "toolchain": {
+      "compiler_version_line": "riscv32-esp-elf-gcc (crosstool-NG esp-15.2.0_20251204) 15.2.0",
+      "esptool_version": "5.3.1 (observed in build stdout)",
+      "idf_python_version": "Python 3.11.7",
+      "recommended_version": "esp-15.2.0_20251204"
+    }
+  },
+  "build_repository_base": "68182adf354639aba07aac4844dff4fa0fd7479e",
+  "checks": [
+    {
+      "canary_and_tree_unchanged": true,
+      "check": "existing directory",
+      "error": "work path already exists; all existing data is preserved",
+      "rejected": true
+    },
+    {
+      "canary_and_tree_unchanged": true,
+      "check": "existing file",
+      "error": "work path already exists; all existing data is preserved",
+      "rejected": true
+    },
+    {
+      "canary_and_tree_unchanged": true,
+      "check": "symlink",
+      "error": "work path already exists; all existing data is preserved",
+      "rejected": true
+    },
+    {
+      "canary_and_tree_unchanged": true,
+      "check": "dangling symlink",
+      "error": "work path already exists; all existing data is preserved",
+      "rejected": true
+    },
+    {
+      "canary_and_tree_unchanged": true,
+      "check": "symlink ancestor",
+      "error": "work parent must not be a symlink",
+      "rejected": true
+    },
+    {
+      "canary_and_tree_unchanged": true,
+      "check": "target root",
+      "error": "work directory must not be the target root",
+      "rejected": true
+    },
+    {
+      "canary_and_tree_unchanged": true,
+      "check": "parent traversal",
+      "error": "work path must not contain parent traversal",
+      "rejected": true
+    },
+    {
+      "canary_and_tree_unchanged": true,
+      "check": "outside target",
+      "error": "work directory must be inside this checkout's ignored target/",
+      "rejected": true
+    },
+    {
+      "check": "atomic fresh reservation refuses second writer",
+      "rejected": true
+    },
+    {
+      "check": "appended RAW byte",
+      "error": "merged image has bytes after the last flash file",
+      "rejected": true
+    },
+    {
+      "check": "RAW prefix mutation",
+      "error": "merged prefix/gap is not erased FF",
+      "rejected": true
+    },
+    {
+      "check": "RAW gap mutation",
+      "error": "merged prefix/gap is not erased FF",
+      "rejected": true
+    },
+    {
+      "check": "missing bootloader",
+      "error": "expected one C5 bootloader at 0x2000",
+      "rejected": true
+    },
+    {
+      "check": "overlapping flash inputs",
+      "error": "flash ranges overlap",
+      "rejected": true
+    },
+    {
+      "check": "segment XOR mutation",
+      "error": "image XOR checksum mismatch",
+      "rejected": true
+    },
+    {
+      "check": "appended SHA mutation",
+      "error": "appended image SHA256 mismatch",
+      "rejected": true
+    },
+    {
+      "check": "oversized segment",
+      "error": "truncated segment payload",
+      "rejected": true
+    },
+    {
+      "check": "partition MD5 mutation",
+      "error": "partition table MD5 mismatch",
+      "rejected": true
+    },
+    {
+      "check": "non-RISC-V ELF",
+      "error": "ELF machine is not RISC-V",
+      "rejected": true
+    },
+    {
+      "check": "read-only inspect and all retained artifact hashes 5.5.1",
+      "passed": true
+    },
+    {
+      "check": "read-only inspect and all retained artifact hashes 6.0.2",
+      "passed": true
+    }
+  ],
+  "compiled_key_manager_static": {
+    "clear_force_pd_store_pc": "0x4200055c",
+    "entry": "0x4200053e",
+    "executed_in_initial_native_run": false,
+    "object": "esp_security/libesp_security.a(init.c.obj)",
+    "power_address": "0x60096168",
+    "power_read_pc": "0x42000556",
+    "reset_call_pc": "0x42000580",
+    "set_force_pu_store_pc": "0x42000568",
+    "state_address": "0x60087028",
+    "state_poll_pc": "0x42000586",
+    "static_address": "0x60087018",
+    "static_efuse_flash_store_pc": "0x42000596",
+    "symbol": "esp_key_mgr_init"
+  },
+  "key_manager_source_audit": {
+    "bytes": 12734,
+    "file": "parallel/c5-idf551-keymgr-contract.md",
+    "sha256": "869653b45fa2f1543571e9803ce9577b93732239b1460e0fa8d3f1c98bf4ab57"
+  },
+  "operational_build_flags": {
+    "nested_bootloader_jobs": 1,
+    "outer_ninja_jobs": 8,
+    "peak_total_concurrency_measured": false,
+    "performance_measurement": false
+  },
+  "post_review_verification_helper": {
+    "bytes": 23718,
+    "sha256": "6857c3312e4117867d89a6689016ff9eb3245de3d413f9c94b559f9dc837a3b3"
+  },
+  "private_captures": {
+    "keymgr_disassembly": {
+      "bytes": 1707,
+      "path_alias": "$REFERENCE_DIR/keymgr-init.dis",
+      "sha256": "9fea500c55c181132854e470153ff520e6d13dde4865d16afb9a051c80d63734"
+    },
+    "retention": "Raw stdout, PIDs/PGIDs, copied source/licenses, ELF/map and binaries are not committed",
+    "state": {
+      "bytes": 3072,
+      "path_alias": "$REFERENCE_DIR/state.json",
+      "sha256": "ae5a3ad81cadcd94a6e83558b5bcfc81601f0738bbbc66d8db868170e762af14"
+    },
+    "stdout": {
+      "bytes": 103242,
+      "path_alias": "$REFERENCE_DIR/build.stdout.log",
+      "sha256": "01f02dd8b5de43a5b393f3c22bf0d5fe56c82f2682ff59322cede9c72ca7adf9"
+    }
+  },
+  "reproduction_limits": [
+    "Compile timestamp, staging paths/debug info and containing-repository PROJECT_VER affect hashes; bit-identical rebuilds are not claimed.",
+    "Actual build driver was retained unchanged. The later helper repairs only output guards and static inspection; no firmware was rebuilt to bypass runtime failures."
+  ],
+  "retained_idf551": {
+    "artifacts": {
+      "hello_world.elf": {
+        "bytes": 3282636,
+        "sha256": "18f5a36486fbb13b8527bfae5db2b6c1a0d8306c3e59bbf12006dd79d0e585cc"
+      },
+      "hello_world.map": {
+        "bytes": 1895846,
+        "sha256": "380a12f63ad73eb81c348ab1441dd2865e2c16df5126e5ec94aff0ed538b36bb"
+      },
+      "merged.bin": {
+        "bytes": 223280,
+        "sha256": "17be53de095e731e8a2068df6e138caefe2ae4e19f83b489983736ce93f20cd9"
+      }
+    },
+    "commit": "68182adf354639aba07aac4844dff4fa0fd7479e",
+    "initial_runtime_limit": "Key Manager reset-release at PC42002112 / PCR60096164 with memory POWER4; no model widening",
+    "native_log_sha256": "1fc1c815f468cb501b95860ff24e0c7429c82d7a11f3bdf04419ecc7da7635ce"
+  },
+  "schema": 2,
+  "separate_native_observation": {
+    "bytes": 5898,
+    "cpu_instructions": 522744,
+    "input_merged_sha256": "a84d3ce0a8ad44525706a67c596e9bf0007c2040d6280fb2cf8abf2f0a93b8a5",
+    "key_manager_reached": false,
+    "log_file": "native-idf602-nonwifi-hello-initial.log",
+    "mcause": "0x00000005",
+    "mepc": "0x4084eeaa",
+    "mtval": "0x408556ab",
+    "nominal_cycles": 522688,
+    "nonzero_pixels": 0,
+    "operation": "lhu s2,15(s1), packed minimum-revision RAM read, width2",
+    "runtime_pass": false,
+    "scope": "Separate runtime result; not executed by the build helper",
+    "sha256": "4892829f3c0cc2b3f945ff7b2e0ea96b31cd59ef4299958c28c44ebb6f410cc4",
+    "steps": 522744,
+    "stop": "Exceptions(1)",
+    "uart_bytes": 400
+  },
+  "static_check_reproducer": {
+    "bytes": 5794,
+    "sha256": "9773a689dd9a4464395d0fa531f753a82ebf07b7f75c138073d9cf120cc83f0b"
+  }
+}
