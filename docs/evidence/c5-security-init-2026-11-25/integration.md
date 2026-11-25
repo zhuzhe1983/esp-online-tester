@@ -1,0 +1,13 @@
+# C5 Key Manager integration and coexistence boundary
+
+The unchanged original LCD273 firmware now executes the complete bounded Key Manager initialization path: actual power/gate/reset writes, READY polling, both original IDLE checks, eFuse source selection and DPA configuration4 then5. The model records one assertion, one release and one completion, STATIC1e2,67 control reads and two STATE reads. This executes a declared virtual initialization protocol; it does not implement valid keys, data encryption, deployment or physical timing.
+
+The current original boundary is PC420b8864 writing COEX LP clock word600af008=314. Native output includes sleep-GPIO configuration and coexistence firmware/version logs, but no app_main, ordinary watchdog startup, LCD pixels or SD commands. Counts are **27,103,952 scheduling steps/CPU insn_count,27,103,936 nominal cycles,3,955 UART bytes**. They are not measured retired counts.
+
+The combined suite passes **518 C5 tests**, including all six pinned-input cases,13 owner protocol tests, seven new Bus/guest cases, one eFuse policy test and six modem-map additions. Workspace/all-target and release-WASM/jit-tests Clippy pass with warnings denied; privacy passes. Native focused checks use jobs1/LTO=false. A fresh production WASM/browser and final default-LTO workspace/CPU acceptance remain required.
+
+Parent inputs use the actual logical eFuse shadows and a separately declared strict/ideal-awake HP-domain contract. PMU configuration is not physical power-ready evidence. APB, pre-DPA source, local gate and SRAM-power/reset conditions remain independent. The explicit virtual latency240 nominal cycles is not a KM clock edge, a measured1us delay or a480MHz consumer rate. Unknown policies do not qualify completion. Source loss cancels pending initialization and restoration cannot replay it.
+
+The seven Bus cases cover actual initialization and DPA limitations, late PMU qualification, CPU retention/HP reset/raw exit, KM-vs-WDT earlier/equal/later ordering, genuine SEC-source withdrawal, real plain/UnitCost guest execution and unqualified access preserving trap/controller state. The small guest loops on READY and reads STATE once; it does not copy the original two IDLE wait loops. Those two original checks are separately observed at420025a4/25b2 after the real virtual-completion event.
+
+Independent read-only owner/glue and input reviews found no scoped P1/P2. Completed digital IDLE/configuration history can survive a temporary qualification loss; that does not claim SRAM retention or a usable key. `integration-checks.json` keeps exact source/input/log/review hashes, event/counter samples, commands and remaining limitations. No ROM/factory bytes, host PC, forced ACK or host completion shortcut changed.

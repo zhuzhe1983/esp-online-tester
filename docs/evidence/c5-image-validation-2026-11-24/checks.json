@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "scope": "Host-side C5 image structure and integrity only; no guest firmware execution or public ROM enablement.",
+  "baseCommit": "692a02544d0a9833d16884dbf468817cd739e607",
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "1.100.0",
+    "rustupCheck": "current stable"
+  },
+  "buildEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_TARGET_DIR": "target/c5-images-lane"
+  },
+  "checks": [
+    {
+      "command": "cargo +stable clippy --release -p esp32c5 --all-targets -- -D warnings",
+      "exitCode": 0,
+      "result": "passed"
+    },
+    {
+      "command": "cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32c5 --lib -- -D warnings",
+      "exitCode": 0,
+      "result": "passed"
+    },
+    {
+      "command": "cargo +stable test --release -p esp32c5 --lib image::tests -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "passed": 12,
+      "failed": 0
+    },
+    {
+      "command": "ESP32SIM_C5_LCD273_FACTORY=<factory.bin> cargo +stable test --release -p esp32c5 --lib image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct -- --ignored --exact",
+      "exitCode": 0,
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "cargo +stable test --release -p esp32c5 --test machine sram_app_contract_rejects_wrong_chip_flash_segments_integrity_and_revision -- --exact",
+      "exitCode": 0,
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "cargo +stable test --release -p esp32c5 --test machine app_header_padding_alignment_and_trailing_data_are_bounded -- --exact",
+      "exitCode": 0,
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "git diff --cached --check",
+      "exitCode": 0,
+      "result": "passed"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0,
+      "files": 3036,
+      "gzipFiles": 95,
+      "result": "no configured privacy patterns; new evidence manually reviewed"
+    }
+  ],
+  "sramParsePreservation": {
+    "comparedWith": "8f2b6a2d:esp32c5/src/image.rs",
+    "scope": "pub fn parse body including signature",
+    "byteIdentical": true,
+    "sha256": "b3ef9e2814e42564dc399f8e9db0a4ea80ccba073a2b8391f21041db877129a6",
+    "shaHelperVisibility": "pub(crate)"
+  },
+  "originalFactory": {
+    "repositoryCommit": "418de818f4f40c5a04c4292dbe293bfaa1351068",
+    "file": "ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+    "bytes": 3346992,
+    "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+    "physicalFlashBytes": 33554432,
+    "bootloaderOffset": "0x2000",
+    "bootloaderImageBytes": "0x5a80",
+    "partitionTableOffset": "0x8000",
+    "populatedApps": [
+      {
+        "offset": "0x20000",
+        "size": "0x4e2000",
+        "subtype": "0x00",
+        "imageBytes": "0x311230",
+        "entry": "0x408002b0"
+      }
+    ],
+    "sramAppDirect": "rejected"
+  },
+  "limits": [
+    "Synthetic format tests and read-only parsing of the unchanged manufacturer image.",
+    "No firmware modification/build/execution, browser run, CPU benchmark or golden update.",
+    "No secure-boot signature/encryption/eFuse/rollback/active-OTA or guest MMU/peripheral acceptance claim.",
+    "Source binaries and downloaded source bodies remain uncommitted."
+  ]
+}

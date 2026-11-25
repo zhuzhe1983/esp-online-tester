@@ -1,0 +1,224 @@
+{
+  "schema": 1,
+  "baseCommit": "da36ded692b31dfb24d58542bfc95687f84d6d4b",
+  "sourceFiles": [
+    {
+      "path": "riscv-rv32/src/state.rs",
+      "sha256": "06d93999b139111960cd5f047ef36e00c5e2d983e4c81f62958808cb537ab19f"
+    },
+    {
+      "path": "riscv-rv32/src/exec.rs",
+      "sha256": "c4858e5926f4e67f5b81c45d355c7d3e668e6aebb922acc6004ac36771034ac4"
+    },
+    {
+      "path": "riscv-rv32/tests/machine_only.rs",
+      "sha256": "4c858f9c0a6c9634acc3d2585a6563d547f18a9dd92c0fbfe1558647f4120dc8"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "c18292d46f517e8a02e53c4c714cc14f2cd624c21795f26001575c2f47658d41"
+    },
+    {
+      "path": "esp32c5/src/cpu_monitor.rs",
+      "sha256": "ee51db3fc394649168987712439317c9914a10ccb35e98ba8dade07969d8aea9"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "6f3ee6ae8ddcb72160325e3592ecc768b6740f7f283878c2827c60f80bf51bd4"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "ceb5050711246b089415cdd4103dbe4c2f2a57279dfe01e541cd8175fd449659"
+    },
+    {
+      "path": "esp32c5/src/transport_dma.rs",
+      "sha256": "2fc58a780973cdbf330793aa218a0f72263f746e81ff7f4f4dce7c7ebcffd562"
+    },
+    {
+      "path": "esp32c5/src/boot_apm.rs",
+      "sha256": "ac3c879798a792777470739a5b6f88f44358d9473c79de9af5d9e44124604123"
+    },
+    {
+      "path": "esp32c5/src/boot_apm_bus_tests.rs",
+      "sha256": "dc301405c9351759a7262917377ad31dfea5775d534114ab571ab35fb3b3f149"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "2fc7aabe9d75eb5065d32732ec50c1c7e0e850c10e3af29e19a778db569f3c15"
+    }
+  ],
+  "macroSources": [
+    {
+      "url": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/riscv/include/riscv/encoding.h",
+      "sha256": "7729876c876907ea25758b6aab4641d8e999e5756dfd068049052be882519c67",
+      "MPP": "0x00001800",
+      "MPRV": "0x00020000"
+    },
+    {
+      "url": "https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/riscv/include/riscv/encoding.h",
+      "sha256": "7729876c876907ea25758b6aab4641d8e999e5756dfd068049052be882519c67",
+      "MPP": "0x00001800",
+      "MPRV": "0x00020000"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "command": "cargo test --release -p riscv-rv32 -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "log": "apm-integrated-riscv-suite.log",
+      "logSha256": "f9b5c67c9c5060506ffbd4d75fdcce9a9e4e34216b9b8fd29390717109a59628",
+      "passed": 90,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 2,
+      "logBytes": 7070
+    },
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": "apm-integrated-c5-suite.log",
+      "logSha256": "dfae7dc59837796cfa84d0290b978bbe32f4c1499e36b95d284d9bbe7af9d4be",
+      "passed": 331,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "logBytes": 36337
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "apm-integrated-workspace-clippy.log",
+      "logSha256": "038a3a2c0299bc3cacf4760c4dec34c52ea39b88c1e0e5562fb3b4d840a128e6",
+      "logBytes": 902
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": "apm-integrated-wasm-clippy.log",
+      "logSha256": "bbc34a76596331488cddab7404f47f2769a6cf3b4bbc5c2533cd427f12a516fa",
+      "logBytes": 825
+    }
+  ],
+  "fullInputC5CasesRun": 5,
+  "machineOnlyProfile": {
+    "defaultForSharedCpu": false,
+    "enabledByC5Constructor": true,
+    "definition": "Explicit M-mode execution subset, not a statement that C5 silicon lacks lower privilege.",
+    "guestBoundaries": [
+      "MRET with saved MPP other than3 traps before return.",
+      "MSTATUS writes retaining MPRV1 trap before CSR or destination-register commit.",
+      "CSR reads, clearing MPRV and staged saved-MPP changes do not create a lower-privilege mode.",
+      "Reset preserves the selected profile. Non-C5 defaults retain prior behavior."
+    ],
+    "unitTests": 4,
+    "modeEvidence": "Actual Cpu policy flag and absence of MPRV, supplied before the instruction; never infer current privilege from saved MPP.",
+    "machinePrefixLog": {
+      "file": "native-machine-lcd273-machine-only-prefix.log",
+      "sha256": "bb1172f1b9bc3915489525603cf575b4b53080580a314f5b19d7055496d6c32d",
+      "steps": 20820431,
+      "cycles": 20820416,
+      "uartBytes": 2150,
+      "sameAsBeforeGuard": true,
+      "logBytes": 7170
+    }
+  },
+  "cpuHostDmaBoundaries": [
+    "Actual guest contextSome(false) rejects in CPU memory/access paths. ContextNone remains host/component inspection, not a granted CPU world. APM registers themselves still requireSome(true).",
+    "All modeled DMA descriptor and payload accesses use the independent DmaMemory guard, requiring all4 filters disabled and all15 HP plus LP TEE targets actually selected. No CPU observer attribution is used for DMA.",
+    "Legacy SRAM/raw profileNone retains its previous DMA conditions; no APM object is allocated outside strict validated-ROM selection.",
+    "APM MMIO services earlier watchdogs and rejects pending reset before mutation. CPU retains, HP/LP/Chip applies the declared module domains; raw deselection withdraws this limited profile."
+  ],
+  "nativeUnchangedFactory": {
+    "command": "C5_FACTORY_STOP_PC=420713ac cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared FAT32 card>",
+    "log": "native-machine-lcd273-apm-pma-entry.log",
+    "logSha256": "1b0bcd99ec47a63288431109d7bebf043770d9349fb01c86540d0201b8b2244f",
+    "stop": "Real Breakpoint at0x420713ac before first PMA function instruction",
+    "runSteps": 20820883,
+    "cpuInstructionCount": 20820882,
+    "nominalCycles": 20820864,
+    "pc": "0x420713ac",
+    "firstFault": null,
+    "uartBytes": 2150,
+    "func": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "hpTeeWrittenMask": "0x03ce017f",
+    "lpTeeWritten": true,
+    "allTeeSelected": true,
+    "actualWrites": {
+      "filter": 4,
+      "hpTee": 15,
+      "lpTee": 1
+    },
+    "pmaFunctionExecuted": false,
+    "pmpOrPmaHardwareSupportClaimed": false,
+    "fullPsramSelftestPassed": false,
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "logBytes": 6418
+  },
+  "inputHashesAfterRun": [
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    },
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    }
+  ],
+  "negativeTestHistory": {
+    "log": "c5-machine-only-tests.log",
+    "sha256": "6540556f62d6fa12e59b90ef097fde4e644180cc5d4d4b876943693d178e962c",
+    "passed": 3,
+    "failed": 1,
+    "reason": "A new test incorrectly assumed existing M-only mret clears savedMPP to0. It retainsMPP3.",
+    "fix": "Use an actual csrw mstatus,zero after legal machine return, then execute the next instruction to show savedMPP0 does not identify current privilege. Implementation was unchanged for this correction.",
+    "correctedLog": "c5-machine-only-tests-reviewed.log",
+    "correctedSha256": "e9d1829340933b75848f377b1d25f4cdcfa5fb114eba4cbc40c541fa9e58be3b",
+    "logBytes": 1301,
+    "correctedLogBytes": 752
+  },
+  "openSharedPrReview": {
+    "repositories": [
+      "mikroverk/esp32sim",
+      "zhuzhe1983/esp-online-tester"
+    ],
+    "openPrNumbers": [
+      386,
+      385,
+      382,
+      372,
+      335,
+      263
+    ],
+    "forkOpenPrCount": 0,
+    "overlap": {
+      "url": "https://github.com/mikroverk/esp32sim/pull/335",
+      "head": "72639f00a0cd5eabfe944b9073d823849a341900",
+      "file": "riscv-rv32/src/exec.rs",
+      "change": "Only inline(always) on step_outcome; no APM/PMA/PMP state or policy implementation. Unmerged optimization not adopted."
+    }
+  },
+  "limits": [
+    "APM teardown/TEE selection subset only. Active REE, region/lock/IRQ security engines and lower-privilege execution remain unsupported.",
+    "PMA/PMP configuration is the next separately audited stage. No generic csr_other latch is treated as memory protection; native observation stops before that function.",
+    "Focused tests use explicit LTO=false. Final default-LTO workspace CI, CPU controls, integrated production WASM/browser, full product execution and fresh release acceptance remain pending. No C5 publication."
+  ],
+  "curation": "Compact facts/hashes only. Raw logs remain in ignored cache; personal paths, process/session inventories and raw captures are omitted, with no measured values altered."
+}

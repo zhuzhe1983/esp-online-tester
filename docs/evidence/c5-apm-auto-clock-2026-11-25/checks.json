@@ -1,0 +1,137 @@
+{
+  "baseCommit": "7c4f084f4504b8d905084c5ff9a20fabcfc6d44b",
+  "scope": "BootApm six automatic register-clock mode latches only; no Bus/Soc/lib/BootClock/shared changes",
+  "api": "Existing contains/read(address,cpu_machine)/write(address,value,cpu_machine)/reset_domains(hp,lp,analog) preserved",
+  "words": [
+    {
+      "address": "0x60098ff8",
+      "POR": 1,
+      "allowedValues": [
+        0,
+        1
+      ],
+      "meaning": "automatic0/always-on1; never a protection disable",
+      "resetDomain": "HP",
+      "typedReadPC": "0x42000f1c",
+      "typedStorePC": "0x42000f20"
+    },
+    {
+      "address": "0x600b34f8",
+      "POR": 1,
+      "allowedValues": [
+        0,
+        1
+      ],
+      "meaning": "automatic0/always-on1; never a protection disable",
+      "resetDomain": "LP",
+      "typedReadPC": "0x42000f2a",
+      "typedStorePC": "0x42000f2e"
+    },
+    {
+      "address": "0x600997f8",
+      "POR": 1,
+      "allowedValues": [
+        0,
+        1
+      ],
+      "meaning": "automatic0/always-on1; never a protection disable",
+      "resetDomain": "HP",
+      "typedReadPC": "0x42000f38",
+      "typedStorePC": "0x42000f3c"
+    },
+    {
+      "address": "0x6009a7f8",
+      "POR": 1,
+      "allowedValues": [
+        0,
+        1
+      ],
+      "meaning": "automatic0/always-on1; never a protection disable",
+      "resetDomain": "HP",
+      "typedReadPC": "0x42000f46",
+      "typedStorePC": "0x42000f4a"
+    },
+    {
+      "address": "0x600b38ec",
+      "POR": 1,
+      "allowedValues": [
+        0,
+        1
+      ],
+      "meaning": "automatic0/always-on1; never a protection disable",
+      "resetDomain": "LP",
+      "typedReadPC": "0x42001072",
+      "typedStorePC": "0x42001076"
+    },
+    {
+      "address": "0x600998dc",
+      "POR": 1,
+      "allowedValues": [
+        0,
+        1
+      ],
+      "meaning": "automatic0/always-on1; never a protection disable",
+      "resetDomain": "HP bridge",
+      "typedReadPC": "0x42001080",
+      "typedStorePC": "0x42001084"
+    }
+  ],
+  "typedSource": {
+    "path": "lcd273-app-seg2-42000020.bin.typed.dis",
+    "sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45",
+    "bytes": 28946111,
+    "executionClaimed": false
+  },
+  "originalTenTests": {
+    "preservedExceptOneMechanicalAddressCount": true,
+    "oldCount": 18,
+    "newCount": 21,
+    "reason": "Three newly owned exact clock words lie inside the prior scan range",
+    "baseModuleSHA256": "071cf53c03d40c20005298e986865cc2ab894a53afc16339fad2b26a497f5491",
+    "currentModuleSHA256": "558f229d3c7f79dc137a5501d08c47d4e1d9c7a9d6656b3644a8e2beb6ccbd41",
+    "normalizedEqualityVerified": true
+  },
+  "checks": [
+    {
+      "command": "python3 docs/evidence/c5-apm-auto-clock-2026-11-25/run-owned.py --repo <repo> --output-dir <task-temp>",
+      "result": "pass",
+      "tests": 15,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "clippy": "pass -D warnings; no allowances",
+      "outputSHA256": "f357012f9e27e95846945864dcd5bb31a9be2563e9710940190d34d6e2e6855e"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "trackedEvidenceFiles": 3153,
+      "gzipFiles": 95,
+      "manualReview": "Public source pins, hashes and module-only results; no local identities or raw private captures."
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "clippy": "0.1.100 (0ef1bc3860 2026-11-09)"
+  },
+  "resetLimit": "Declared functional owners; not measured per-flop retention. CPU retains; HP/LP restore their words; Chip restores all and clears diagnostics. HP/LP retain aggregate write history.",
+  "limits": [
+    "No original firmware, full Cargo, native guest, WASM, browser or benchmark run",
+    "No security world/filter/MMU/PMA/CPU model changes; all access decisions independent of clock modes",
+    "Parent retains strict-profile/pending-reset/raw-disposal integration ownership"
+  ],
+  "files": [
+    {
+      "path": "esp32c5/src/boot_apm.rs",
+      "sha256": "d68d51bbcb5ecffd6de05da45652fb5095c6745083e28af94648664214a5ab3a"
+    },
+    {
+      "path": "docs/evidence/c5-apm-auto-clock-2026-11-25/run-owned.py",
+      "sha256": "b23f3f8c5f465177479b155b1ddfe61c4f9daab0a0cf0762281b3ccf6a6c6a0f"
+    }
+  ]
+}

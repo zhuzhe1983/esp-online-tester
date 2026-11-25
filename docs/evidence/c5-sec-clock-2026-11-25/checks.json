@@ -1,0 +1,98 @@
+{
+  "baseline": "3b57e6053b2ce75f319726769c1862c100fe833a",
+  "ownedSource": "esp32c5/src/boot_clock.rs",
+  "ownedSourceSha256": "8c3372f74535ad8808d5efc2f27c76123c9283fcbaee79d2d65d99be8768d293",
+  "unchangedActualModules": {
+    "esp32c5/src/clock_tree.rs": "bf0e95902afa495b980403dfa0e946c6afae1c1b7b9f4f93ec3a41234c4eea20",
+    "esp32c5/src/clock_calibration.rs": "6f9f050812832b417ed087777717f40716d922e639b1e23c8169dde50ea971de"
+  },
+  "previous29TestSectionSha256": "f43bc681c3b54e8bdbefa18636ae2aa96a4c2a65fed694ce02e91e0a8002f2fa",
+  "previous29TestsByteIdentical": true,
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "edition": "2021",
+  "target": "aarch64-apple-darwin",
+  "command": "python3 docs/evidence/c5-sec-clock-2026-11-25/run-owned-checks.py --output \"$TASK_TMP/final-checks\"",
+  "results": {
+    "tests": 35,
+    "passed": 35,
+    "failed": 0,
+    "ignored": 0,
+    "rustcExit": 0,
+    "testsExit": 0,
+    "clippyDriverWarningsDeniedExit": 0,
+    "lintAllowances": []
+  },
+  "outputSha256": {
+    "check-0.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check-1.txt": "4b6753822238037849a993750e6d3c74bf315fbcf9569351c02107e2dbbf4028",
+    "check-2.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "parentNativeBoundary": {
+    "logSha256": "343092d814921b0232115aec3a51a9539fb9b4f35dc02c5ba9c7edebbdb60097",
+    "logBytes": 10127,
+    "steps": 27039905,
+    "nominalCycles": 27039872,
+    "faultPC": "0x42002542",
+    "address": "0x6009613c",
+    "write": false,
+    "width": 4,
+    "mcause": 5,
+    "uartBytes": 3711,
+    "newMuxWriteExecuted": false
+  },
+  "staticNextInstructions": [
+    {
+      "pc": "0x42002544",
+      "op": "AND value with ~3"
+    },
+    {
+      "pc": "0x42002546",
+      "op": "OR2"
+    },
+    {
+      "pc": "0x4200254a",
+      "op": "STORE PCR_SEC_CONF"
+    }
+  ],
+  "interface": {
+    "sec_source_hz": "Option<u32>: pre-DPA selected input only;0=48M XTAL,2=480M SPLL if actual ClockInputs.pll_ready, otherwise None. Never a downstream CRYPTO/KEYMNG rate.",
+    "sec_clock_source": "Option<u8>: raw qualified selector0/2; None while strict profile is absent.",
+    "contains": "Only adds exact0x6009613c; RST2, selector1/3 and reserved writes unsupported."
+  },
+  "negativeResults": [
+    {
+      "run": "first focused run",
+      "passed": 33,
+      "failed": 1,
+      "wrongExpectation": 65000000,
+      "correctDefaultDeadline": 167772160,
+      "reason": "Fixture copied a shortened RTC timeout value from another setup. Fresh POR timeout33554431 plus terminal edge at48MHz is33554432*5=167772160 nominal cycles. Corrected only expected value."
+    },
+    {
+      "run": "first strict lint after35th fixture preparation",
+      "testsPassed": 34,
+      "lintExit": 1,
+      "reason": "possible_missing_else on two independent reset-domain if statements on one line. Split the line; no lint allowance or behavior change."
+    },
+    {
+      "sourceSearch": "Initial guessed XTS/SEC LL paths returned404 and were retained only in ignored connector receipts. Correct fixed setter is components/esp_security/src/esp32c5/esp_crypto_clk.h. Latest-branch search was discovery only, not hardware contract evidence."
+    },
+    {
+      "contractCorrection": "Initial sec_clock_hz naming could imply480M consumer timing. TRM CRYPTO_CLK up to160MHz with random DPA divider. Final API is sec_source_hz and report explicitly pre-DPA input. Key Manager neighbors are not XTS_AES and remain unowned here."
+    }
+  ],
+  "limits": [
+    "Only BootClock and new scoped evidence/harness changed; no shared Bus/Soc/lib/ClockTree changes.",
+    "No Cargo/workspace/native/WASM/browser/benchmark/push performed.",
+    "Parent boundary proves the failed READ only; following selector2 STORE is static until parent rerun.",
+    "SEC source availability does not implement consumer encryption/decryption, Key Manager reset/READY or DPA distribution/timing.",
+    "Unsupported helper return values are emulator limits, not evidence of a silicon access-fault behavior."
+  ],
+  "privacyCheck": {
+    "command": "node tools/check-evidence-privacy.mjs",
+    "exitCode": 0,
+    "trackedEvidenceFiles": 3202,
+    "gzipFiles": 95,
+    "manualReview": "Only scoped source/curated source pins/harnesses; no private paths, raw stream or personal inventory retained."
+  }
+}

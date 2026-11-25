@@ -1,0 +1,124 @@
+{
+  "baseRevision": "026948c4",
+  "priorEvidenceBeforeCorrectionSHA256": {
+    "README.md": "3aa22396fb5fc4d4d1be503b11294702a5487b7ca900cb9282aed4a53d59bb02",
+    "checks.json": "3e02e79b68b6c35f38b0679f3879e97d09e8eff86e35aa7ba3cb03878bc7b0d5"
+  },
+  "negativeOriginalImageReceipt": {
+    "path": "../c5-ocode-handshake-2026-11-24/psram-connectivity-probe.json",
+    "sha256": "c9cc2efde8fd9bad8f3e2c194e20318f86e1bb5b21d1681bccc7586a972ffe43",
+    "oldFunctionalHz": 480000000,
+    "oldSerialHz": 120000000,
+    "PCRClock": "0x605",
+    "serialClock": "0x00030103",
+    "writeReference": "0x5a6b7c8d",
+    "readback": "0xffffffff",
+    "memoryPrefixAfterWrite": "00000000",
+    "firstFault": null
+  },
+  "correctedClock": {
+    "rootTapHz": 480000000,
+    "fastDivider": 6,
+    "moduleHz": 80000000,
+    "serialDivider": 4,
+    "serialHz": 20000000
+  },
+  "typedAppDisassembly": {
+    "artifact": "lcd273-app-seg1-40800000.bin.typed.dis",
+    "bytes": 1525607,
+    "sha256": "4696bac57e7e7a848e73c86de7d0513c81e6ce5ec3e9483e41f6866b3cc7ba41",
+    "PCRNum5WritePC": "0x408084ac",
+    "SPI1Clock30103WritePC": "0x4080850a",
+    "enterLowSpeedCallPC": "0x4080a3fc",
+    "SPI1UsrStorePC": "0x4002c51c",
+    "SPI1UsrSuccessorPC": "0x4002c51e",
+    "connectionComparePC": "0x4080a472"
+  },
+  "checks": [
+    {
+      "kind": "Owned module harness",
+      "modules": [
+        "mspi.rs",
+        "mspi_regs.rs",
+        "quad_psram.rs"
+      ],
+      "rustc": "1.100.0 stable",
+      "options": [
+        "--test",
+        "-C lto=thin",
+        "-C codegen-units=1"
+      ],
+      "executionOptions": [
+        "--test-threads=1"
+      ],
+      "existingDependencySourcesUnchangedFrom": "f20a0241",
+      "passed": 16,
+      "failed": 0
+    },
+    {
+      "kind": "Owned module Clippy metadata",
+      "options": [
+        "--test",
+        "--emit=metadata",
+        "-D warnings"
+      ],
+      "exitCode": 0,
+      "deadCodeScope": "The standalone harness allows dead_code because it excludes the production Bus owner; no production lint allowance was added."
+    }
+  ],
+  "regressionCases": [
+    {
+      "PCRClock": "0x605",
+      "serialHz": 20000000,
+      "nativePadsPresent": true,
+      "addressBits": 24,
+      "pllReady": true,
+      "writeReadMatches": true
+    },
+    {
+      "PCRClock": "0x603",
+      "serialHz": 30000000,
+      "nativePadsPresent": true,
+      "addressBits": 24,
+      "pllReady": true,
+      "writeReadMatches": true
+    },
+    {
+      "PCRClock": "0x600",
+      "serialHz": 120000000,
+      "nativePadsPresent": true,
+      "addressBits": 24,
+      "pllReady": true,
+      "writeReadMatches": false
+    },
+    {
+      "PCRClock": "0x605",
+      "serialHz": 20000000,
+      "nativePadsPresent": false,
+      "addressBits": 24,
+      "pllReady": true,
+      "writeReadMatches": false
+    },
+    {
+      "PCRClock": "0x605",
+      "serialHz": 20000000,
+      "nativePadsPresent": true,
+      "addressBits": 23,
+      "pllReady": true,
+      "writeReadMatches": false
+    },
+    {
+      "PCRClock": "0x605",
+      "serialHz": null,
+      "nativePadsPresent": true,
+      "addressBits": 24,
+      "pllReady": false,
+      "writeReadMatches": false
+    }
+  ],
+  "factoryFirmwareExecutedInThisLane": false,
+  "originalMemtestModified": false,
+  "dieFrequencyLimitsOrPhasesRelaxed": false,
+  "lowSpeedBehaviorChanged": false,
+  "scope": "Only MSPI PLL divider, its focused tests and source-conflict correction evidence. Actual original-image rerun remains the parent integration check."
+}

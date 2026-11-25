@@ -1,0 +1,141 @@
+{
+  "checkedAtUTC": "2026-11-24T15:27:22.205326+00:00",
+  "baseCommit": "3c7b1d997caa9f6244758e9df695ffba6f970c5e",
+  "command": "python3 docs/evidence/c5-ocode-handshake-2026-11-24/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\"",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "target": "aarch64-apple-darwin",
+  "ownedSourceSha256": {
+    "esp32c5/src/boot_analog.rs": "cb42282dcb950f682aa4617a7898f7620a00d1f38241fdc045a9552b9a2c9b91",
+    "esp32c5/src/boot_analog_ocode.rs": "3029f28465da3859afd285b6efb8cfb22ff910b0420d5c52681c8ea28d3ef7a3",
+    "esp32c5/src/boot_analog_pll.rs": "7e6433830fc09905cefe860c2413c90a68d9264d68412c0e6494545fbd89140c",
+    "docs/evidence/c5-ocode-handshake-2026-11-24/run-owned.py": "95eafe2449a254fd6851442066aabc0ea9fae50955af438b4411417180bee5a0"
+  },
+  "result": {
+    "passed": 30,
+    "newOcodeTests": 12,
+    "existingAnalogTests": 18,
+    "failed": 0,
+    "ignored": 0,
+    "exitCode": 0
+  },
+  "output": "owned-tests.txt",
+  "rawOutputSha256": "b8e34430302bf8945cffcb20981325742a6276ad1b7ae1f17cbcd7d1f9bf8f84",
+  "normalizedOutputSha256": "8766e67fb1a6eff67ed75de63d6db8f47bc05f005d1723a0d55a880af5279c23",
+  "outputNormalization": "Only leading/trailing blank lines stripped; raw and normalized hashes retained.",
+  "negativeCheck": {
+    "initialRun": {
+      "passed": 27,
+      "failed": 1
+    },
+    "reason": "A new assertion incorrectly expected a supplied RO controller BUSY25 bit to reject. Existing controller contract ignores that bit and completes the actual command with BUSY0. Assertion corrected; implementation semantics unchanged."
+  },
+  "sourceManifestSha256": "408d745454c0dc9081b6ec2115cde3470d72378f81d07c0b0a98c0ab610267be",
+  "auditReceipt": {
+    "file": "parallel/ocode-contract-audit-receipt.json",
+    "sha256": "981446be08ffd18db319001faeb4638f62889a469da53d2d8404e29119fac173",
+    "scope": "Read-only fixed source and typed disassembly audit; existing native run only read."
+  },
+  "inputs": {
+    "esp32c5_rev100_rom.elf": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "lcd273-factory.bin": {
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    }
+  },
+  "trm": {
+    "version": "1.1",
+    "pdf_sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "text_sha256": "a728dac35943336e6d392584638b9973225385ebd55f25376ee6f0ee23a61a59",
+    "search_absences": [
+      "OCODE",
+      "O_CODE",
+      "ODONE",
+      "BG_O_DONE",
+      "I2C_ULP",
+      "bandgap",
+      "REGI2C"
+    ],
+    "note": "O-CODE matches are the substring in pseudo-code, not calibration docs; I2C_ANA_MST mentions are LP map and LP_TEE controls."
+  },
+  "typedDisassembly": [
+    {
+      "path": "research/isa-audit/lcd273-app-seg1-40800000.bin.typed.dis",
+      "sha256": "4696bac57e7e7a848e73c86de7d0513c81e6ce5ec3e9483e41f6866b3cc7ba41"
+    },
+    {
+      "path": "research/isa-audit/lcd273-app-seg2-42000020.bin.typed.dis",
+      "sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45"
+    }
+  ],
+  "actualPreIntegrationBoundary": {
+    "path": "native-machine-lcd273-pmu-config.log",
+    "sha256": "92a730fe45679369e47789724644260b9834a2196f4934b34715f20db1599d0d",
+    "source": "parent integration run, only read by this lane",
+    "insns": 20622671,
+    "nominal_cycles": 20622656,
+    "uart_bytes": 1814,
+    "first_fault": {
+      "pc": "0x40802da6",
+      "address": "0x600af81c",
+      "width": 4,
+      "write": true,
+      "source_gpr": "x15",
+      "value": "0x00fffeff"
+    },
+    "target_transactions_executed": false,
+    "computed_timeout": {
+      "observed_raw_xtal_cycles": 35294,
+      "source_xtal_mhz": 48,
+      "source_slow_cycles": 100,
+      "inferred_period_q19": 3855046,
+      "inferred_timeout_slow_ticks": 1360,
+      "note": "Arithmetic inference from fixed source/raw count; guest returned period/cycle0 not directly captured."
+    },
+    "logBytes": 5836
+  },
+  "functionalScope": {
+    "newMmioAddresses": [],
+    "target": "0x61",
+    "acceptedBytes": "reg0 RESETB0 reads/writes, reg3 O_DONE0/BG_O_DONE3 reads only",
+    "virtualInputs": "Explicit ideal stable reference/target clock; initial RESETB byte0=0 is virtual, not silicon POR; 24000 nominal-cycle completion policy",
+    "numericResultForcedCodeEfuse": "unsupported/unmodified",
+    "cpuGuard": "Actual committed CPU root XTAL observation, default false",
+    "quietGuard": "Managed actual power_latches & 0x0d == 0; not !pll_ready",
+    "transaction": "Real target transfer before synchronous BUSY0; controller clock/route does not drive target timer",
+    "retention": "Explicit functional policy, no silicon retention guarantee"
+  },
+  "limits": [
+    "Owned component harness only; no Cargo/shared build, original ROM execution or benchmark.",
+    "Native route request is the observed pre-integration boundary; target RESETB/flag transactions have not executed in that run.",
+    "Parent owns committed CPU source observations, Bus/Soc/profile routing and deadline/reset arbitration.",
+    "Watchdog earlier/same-cycle reset must be handled before pumping to or beyond that reset; module does not retroactively roll back time.",
+    "No numeric OCODE, voltage, physical convergence, eFuse calibration, memory result/IRQ or entropy supplied.",
+    "No physical CPU DFS timing claim; scheduler uses nominal240MHz cycles."
+  ],
+  "ownedClippyDriver": {
+    "command": "clippy-driver --edition=2021 --test esp32c5/src/boot_analog.rs -o \"$TASK_TMP/boot-analog-clippy-tests\" -D warnings",
+    "exitCode": 0,
+    "scope": "Only the standalone owned module harness; no Cargo/workspace lint claim."
+  },
+  "staticChecks": {
+    "gitDiffCheck": "passed",
+    "sourcePairsHashed": 16,
+    "identicalSourcePairs": 15,
+    "evidenceFilesUnder50KiB": true,
+    "manualPrivacyReview": "Only relevant relative paths, public source URLs, hashes, numeric samples and command templates retained.",
+    "evidencePrivacyPatterns": {
+      "result": "passed",
+      "trackedEvidenceFiles": 3102,
+      "gzipFiles": 95
+    }
+  },
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

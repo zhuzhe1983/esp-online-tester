@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "baseCommit": "8c1d4626b8541b896754c7457b0974ea03f23ea2",
+  "integratedModule": {
+    "original": "3badc40f2b7fb6fccac367fa4e12da81dee31b5b",
+    "integrated": "8c1d4626"
+  },
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "sha256": "d66b631c4f8e3e236fc5d9bcd5a2c7a79fe633c9209881406716970298b40666"
+    },
+    {
+      "path": "esp32c5/src/boot_clock.rs",
+      "sha256": "490aff1e06fe7d5d9d7d214e3dd00776e53582612c290dc9d5c0d00f03f1ab13"
+    },
+    {
+      "path": "esp32c5/src/clock_tree.rs",
+      "sha256": "9a9c812e104f9735683b92f0b8f0ed3323497a31fa241aeee6cfc35d9117da50"
+    },
+    {
+      "path": "esp32c5/src/modem_lp_clock.rs",
+      "sha256": "d83f5bf3f2c7f355eac73c133cb23ea887bbbdc56587a9fc82ac847008e6a72e"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "7829eb3f0a008a0e4eefc6d1f764488eb557084b6fcfba5b3ed999b59406b072"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "fd36ad6f0fcaf31f45888d9606c818e1dae8e1304db31bba5fe2647c837c65a1"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "646e3bafc8337daebabb87bfe088adf30bfe89ccc9599bb1c938b782101d8d73"
+    },
+    {
+      "path": "esp32c5/src/modem_lp_bus_tests.rs",
+      "sha256": "32a6c22724bf92dccadbd49a2f1cb1dfd029c5df55721db14b76f99ba2d59c6b"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-modem-lp-startup-c5-suite.log",
+        "sha256": "f7dbc4667ee00e96820397ec8152989db5d5723da4451757a53b0c91452eeac2",
+        "logBytes": 40832
+      },
+      "passed": 376,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-modem-lp-startup-workspace-clippy.log",
+        "sha256": "c521e7fbfa215d965bfc6b352da83aa6712b713b315721700512736369f20158",
+        "logBytes": 318
+      }
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-modem-lp-startup-wasm-clippy.log",
+        "sha256": "c45276662eedfd4bc3951b92e9c9764070a0c7bf70eaa922d1a209b748d4fcdd",
+        "logBytes": 241
+      }
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-modem-lp-startup-evidence-privacy.log",
+        "sha256": "de30ffa6e5cebe8ba666c023c346cb9eb9a1e15b486aca4ebeb64ec14c09ba1e",
+        "logBytes": 130
+      }
+    }
+  ],
+  "ownerContracts": [
+    "MODEM_LPCON selectors are exact600af004/008/00c, independently owned from LP_TIMER, existing I2C gate and domain-map registers. Access needs validated cold-ROM profile, a settled watchdog boundary, and an actually applied LP_APB permission. I2C functional clock/FORCE and bootstrap unknown permissions do not grant selector APB access.",
+    "Only one named raw source with divider0 is supported. Raw RC observations are independent of HP bridge and selected LP_FAST mux; unsupported32k/multi-source/divider/reserved settings reject.",
+    "CPU retains selectors; declared HP/Chip reset clears; raw deselection removes their owner. A pending reset blocks reads/writes before state changes.",
+    "WIFIPWR_EN bit0 is a documented configuration request, distinct from I2C_MST_EN2. MODEM_CLK mask0x5 accepts that request without changing FORCE mask0x4, inventing ST_MAP permissions, granting master/APB access, or creating RF readiness/IRQ/packets. A stopped, locked SPLL does not need the I2C controller to stay clocked.",
+    "The original esp_perip_clk_init uses LP clock select/enable before generic modem_clock_module_enable initializes ACTIVE|MODEM map0x6. Current and standard RTC calibration use their independent PCR/TIMG source graph; the WiFi request is not a timing source for it.",
+    "PCR_FPGA_DEBUG at60096ff4 is a separate strict-profile configuration subset. Fixed SDK PORffffffff and only MSB31 toggles are qualified; lower31 changes reject. CPU/SYSCLK state and timer rates are unaffected, and FPGA hardware behavior is not claimed."
+  ],
+  "additionalSources": [
+    {
+      "commit": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+      "url": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/pcr_reg.h",
+      "register": "PCR_FPGA_DEBUG_REG+ff4",
+      "headerPor": "0xffffffff",
+      "qualifiedWrite": "MSB31 only"
+    },
+    {
+      "commit": "735507283d5b2f9fb363a1901172dbd9e847945d",
+      "url": "https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/pcr_reg.h",
+      "register": "PCR_FPGA_DEBUG_REG+ff4",
+      "headerPor": "0xffffffff",
+      "qualifiedWrite": "MSB31 only"
+    }
+  ],
+  "gateSourceAudit": {
+    "sha256": "8d47fad5ff06c809e96e62500c9dfee99af96ac68baf97f77247af9735bef686",
+    "scope": "Fixed SDK HAL/generic API and typed caller interpretation. Public EN/FORCE/ICG truth-table gaps retained; no RF functional output or silicon behavior inferred."
+  },
+  "actualNativeProgress": [
+    {
+      "log": {
+        "file": "native-machine-lcd273-modem-lp-selectors.log",
+        "sha256": "5e2988f20f09d5fbfe42004d230c55bca8ce5d3a3fdf70c4a5aa0e58009f7555",
+        "logBytes": 7304
+      },
+      "runSteps": 26601132,
+      "nominalCycles": 26601088,
+      "pc": "0x42070dc4",
+      "writeAddress": "0x600af018",
+      "requestedValue": 1,
+      "selectors": {
+        "BLE": 0,
+        "COEX": 0,
+        "WIFI": 1
+      },
+      "writes": [
+        4,
+        4,
+        10
+      ],
+      "selectedWifiPregateHz": 136000,
+      "description": "New selectors execute, followed by the next unsupported WiFi LP enable request."
+    },
+    {
+      "log": {
+        "file": "native-machine-lcd273-wifi-lp-enable-request.log",
+        "sha256": "ec9eaa248cf3cc0f7fb7278c84cd3e5efea8d4dfad9170bd20fe9b70dd6ac022",
+        "logBytes": 7331
+      },
+      "runSteps": 26601301,
+      "nominalCycles": 26601280,
+      "pc": "0x42000d96",
+      "readAddress": "0x60096ff4",
+      "description": "Documented enable configuration accepted; original firmware proceeds to FPGA_DEBUG MSB clear."
+    },
+    {
+      "log": {
+        "file": "native-machine-lcd273-fpga-debug-msb.log",
+        "sha256": "cb24d75ae671d82cbac4c2fe46724f86eeeca7d773c46b20fa2a409e0de9c00d",
+        "logBytes": 7331
+      },
+      "runSteps": 26601352,
+      "cpuInstructionCount": 26601352,
+      "nominalCycles": 26601344,
+      "uartBytes": 2194,
+      "pc": "0x42000e20",
+      "readAddress": "0x6009603c",
+      "description": "Original debug-MSB sequence passes; next boundary is PCR_RMT_CONF in peripheral clock-disable initialization.",
+      "appMainEntered": false,
+      "nonzeroPixels": 0,
+      "sdCommands": 0
+    }
+  ],
+  "controls": {
+    "canonicalSelectorCases": 7,
+    "newOwnerBusCases": 3,
+    "newWifiRequestVsMasterPllCase": 1,
+    "newFpgaRegisterCase": 1,
+    "sixPinnedInputC5CasesRun": true,
+    "selectionOnlySuite": {
+      "file": "c5-modem-lp-selectors-c5-suite.log",
+      "sha256": "514abda505e0f63355fd4edf313d0687ae2d565d216735ddf1557b1dab379ba5",
+      "logBytes": 40602
+    },
+    "originalFactoryGuestPsramTestRemainsPassed": true
+  },
+  "negativeResults": [
+    "The first real selector read at600af00c was unsupported in the preceding LP clock checkpoint. It now executes actual guest writes, without a PC bypass.",
+    "The next actual WIFIPWR_EN request1 was rejected by the previous I2C-only mask4. The documented bit0 configuration is added with independent no-grant and retained-PLL tests.",
+    "The former unknown-bit test value5 is now a supported combination of bits0/2; its invalid-control check now uses6 (unsupported COEX bit1) and the newly valid combination has positive coverage."
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "limits": [
+    "Only selected raw clocks and an enable request are represented. WiFi/COEX/BLE functional gates, RF/MAC/IRQ/sleep execution remain unsupported.",
+    "FPGA_DEBUG configuration does not implement an FPGA.",
+    "The original guest still stops before app_main/LCD/buttons/TF. No C5 product acceptance/publication claimed.",
+    "Focused LTO=false checks do not replace final default-LTO workspace CI, CPU controls or final production WASM/browser validation."
+  ],
+  "curation": "Compact facts, commands, source/input/log hashes retained. Ignored raw captures and private paths/process/session details omitted from publication without changing measured values."
+}

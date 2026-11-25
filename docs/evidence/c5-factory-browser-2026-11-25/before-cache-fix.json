@@ -1,0 +1,915 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-25",
+  "caseId": "before-cache-fix-9e0f",
+  "status": "menu-and-five-input-responses-observed; original-and-fixture-card-retention-observed; fixture-photo-model-limit",
+  "execution": {
+    "wasm": {
+      "bytes": 8896114,
+      "sha256": "9e0f3c286fe90894a717786867667d0bc19bd3484cd36d4887409cdc7fd2b0c4"
+    },
+    "rom": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "firmware": {
+      "manifestUrl": null,
+      "manifestHash": null,
+      "c5WifiDriverCompat": "waveshare-lcd273-idf553-offline-v1",
+      "metadata": {
+        "name": "01_factory",
+        "version": "1",
+        "source": "esp-app-description"
+      },
+      "source": "remote",
+      "flashLayout": {
+        "bootloaderOffset": 8192,
+        "partitionTableOffset": 32768
+      },
+      "bootMode": "rom",
+      "resetMode": "rom-reset",
+      "artifacts": [
+        {
+          "kind": "flash",
+          "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+          "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+          "bytes": 3346992
+        },
+        {
+          "kind": "rom",
+          "url": "web/wasm/fw/esp32c5_rev100_rom.elf",
+          "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+          "bytes": 472300
+        }
+      ],
+      "appDirect": false,
+      "stubs": [],
+      "executionMode": "wasm-interpreter"
+    },
+    "profileObservedEnabled": "waveshare-lcd273-idf553-offline-v1",
+    "driverAssisted": true,
+    "appDirect": false,
+    "customStubs": [],
+    "counterSemanticsObserved": {
+      "value": "interpreter-slots-including-wfi-idle",
+      "stage": "Fresh selected product, before profile activation; captured capabilities snapshot.",
+      "receipt": {
+        "id": "before-initial-capabilities",
+        "bytes": 14845,
+        "sha256": "f8baecdfcc8a0a52a9705c80b53e595b189d3f66a7faadfe0287b193fa24c8d8"
+      },
+      "limitation": "The old label omits driver compatibility. Actual enabled snapshots separately report virtualSlots; do not treat insns as physical instructions or backfill the later label."
+    },
+    "driverSamples": {
+      "initial": {
+        "enabled": true,
+        "profile": "waveshare-lcd273-idf553-offline-v1",
+        "mode": "compatible-driver-assisted",
+        "state": "started-offline",
+        "nativeWifi": false,
+        "associated": false,
+        "hasIp": false,
+        "storage": "session-RAM",
+        "hookCalls": "10",
+        "virtualSlots": "15",
+        "eventPosts": "5",
+        "eventPostFailures": "0",
+        "connectAttempts": "4",
+        "noApFailuresQueued": "4",
+        "pendingCalls": 0,
+        "epoch": "0",
+        "failureDelayCycles": "0",
+        "failureReason": 201,
+        "bssidMeasured": false,
+        "rssiMeasured": false,
+        "lastError": null,
+        "apiCalls": {
+          "esp_wifi_init": "1",
+          "esp_wifi_get_mode": "0",
+          "esp_wifi_get_mac": "1",
+          "esp_wifi_set_mode": "1",
+          "esp_wifi_start": "1",
+          "esp_wifi_connect": "4",
+          "esp_wifi_set_config": "1",
+          "esp_wifi_internal_reg_netstack_buf_cb": "1",
+          "esp_wifi_stop": "0",
+          "esp_wifi_deinit": "0",
+          "esp_wifi_disconnect": "0",
+          "esp_wifi_scan_start": "0",
+          "esp_wifi_scan_get_ap_records": "0",
+          "esp_wifi_get_config": "0"
+        }
+      },
+      "afterOriginalScenario": {
+        "enabled": true,
+        "profile": "waveshare-lcd273-idf553-offline-v1",
+        "mode": "compatible-driver-assisted",
+        "state": "started-offline",
+        "nativeWifi": false,
+        "associated": false,
+        "hasIp": false,
+        "storage": "session-RAM",
+        "hookCalls": "22",
+        "virtualSlots": "39",
+        "eventPosts": "17",
+        "eventPostFailures": "0",
+        "connectAttempts": "16",
+        "noApFailuresQueued": "16",
+        "pendingCalls": 0,
+        "epoch": "0",
+        "failureDelayCycles": "0",
+        "failureReason": 201,
+        "bssidMeasured": false,
+        "rssiMeasured": false,
+        "lastError": null,
+        "apiCalls": {
+          "esp_wifi_init": "1",
+          "esp_wifi_get_mode": "0",
+          "esp_wifi_get_mac": "1",
+          "esp_wifi_set_mode": "1",
+          "esp_wifi_start": "1",
+          "esp_wifi_connect": "16",
+          "esp_wifi_set_config": "1",
+          "esp_wifi_internal_reg_netstack_buf_cb": "1",
+          "esp_wifi_stop": "0",
+          "esp_wifi_deinit": "0",
+          "esp_wifi_disconnect": "0",
+          "esp_wifi_scan_start": "0",
+          "esp_wifi_scan_get_ap_records": "0",
+          "esp_wifi_get_config": "0"
+        }
+      }
+    }
+  },
+  "sourceEpoch": {
+    "initialSourceCommit": "6e4581a17f41eebb07cbcdec4f24023e97ce2886",
+    "sourceCommitAtFinalAssetCheck": "06a8bad6e92ff0a5c5c999566ae3995d094dfeb1",
+    "scope": "Only the listed served assets were compared. A later repository HEAD is not another guest run.",
+    "assetChecks": [
+      {
+        "path": "web/platform/index.html",
+        "httpStatus": 200,
+        "bytes": 19770,
+        "sha256": "ab65ff0b506b6606b0865226db2212dbd9d582a1898e14f6c25ef0512f22b22c",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "ab65ff0b506b6606b0865226db2212dbd9d582a1898e14f6c25ef0512f22b22c",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/platform/bootstrap.js",
+        "httpStatus": 200,
+        "bytes": 1899,
+        "sha256": "0d69d90677dd9cbef41faf147005a9580ecb3b71cfba2030455450520eec68f7",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "0d69d90677dd9cbef41faf147005a9580ecb3b71cfba2030455450520eec68f7",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/platform/app.js",
+        "httpStatus": 200,
+        "bytes": 117298,
+        "sha256": "ed14d6ca2e79cc925404181e0f5f1d79eda56a48cba3341c5bba7faf47c41e4e",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "ed14d6ca2e79cc925404181e0f5f1d79eda56a48cba3341c5bba7faf47c41e4e",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/platform/styles.css",
+        "httpStatus": 200,
+        "bytes": 50079,
+        "sha256": "fa3204c47da71f6f628510b728b35f5dbf055d102944e8b878dac4b29f403010",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "fa3204c47da71f6f628510b728b35f5dbf055d102944e8b878dac4b29f403010",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/platform/runtime.js",
+        "httpStatus": 200,
+        "bytes": 120571,
+        "sha256": "6bc5d18958730f33278393e360b5d1529c20d2867b1247ae1c752c3ce5fce9c6",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "6bc5d18958730f33278393e360b5d1529c20d2867b1247ae1c752c3ce5fce9c6",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/platform/automation.js",
+        "httpStatus": 200,
+        "bytes": 8440,
+        "sha256": "1a1767ee751d2318816d31a27ebfaecce5764c851ba56e9a5aab22536b5cd723",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "1a1767ee751d2318816d31a27ebfaecce5764c851ba56e9a5aab22536b5cd723",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/platform/c5-wifi-driver-compat.js",
+        "httpStatus": 200,
+        "bytes": 2148,
+        "sha256": "dd8f34a6e4b4ef64295cf86997806b70bc9a992e6776c999955b42586f07e603",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "dd8f34a6e4b4ef64295cf86997806b70bc9a992e6776c999955b42586f07e603",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/platform/c5-wifi-driver-compat-ui.js",
+        "httpStatus": 200,
+        "bytes": 4430,
+        "sha256": "eda3302e1724f3087265f58d6515fd259b75d1464303d9181e106eecadc40d93",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "eda3302e1724f3087265f58d6515fd259b75d1464303d9181e106eecadc40d93",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/wasm/worker.js",
+        "httpStatus": 200,
+        "bytes": 36487,
+        "sha256": "258ca929134ef98821de5ce9b822495f10bb8ad7ebea7f1223ecdf2b4c5084a9",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": true,
+        "initialHeadSha256": "258ca929134ef98821de5ce9b822495f10bb8ad7ebea7f1223ecdf2b4c5084a9",
+        "equalsInitialHead": true
+      },
+      {
+        "path": "web/wasm/esp32sim.wasm",
+        "httpStatus": 200,
+        "bytes": 8896114,
+        "sha256": "9e0f3c286fe90894a717786867667d0bc19bd3484cd36d4887409cdc7fd2b0c4",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": false
+      },
+      {
+        "path": "web/wasm/fw/esp32c5_rev100_rom.elf",
+        "httpStatus": 200,
+        "bytes": 472300,
+        "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+        "equalsServedDisk": true,
+        "trackedAtInitialHead": false
+      }
+    ]
+  },
+  "ui": {
+    "defaultStrictNoProfile": true,
+    "selectionBeforeApplyDidNotEnableScene": true,
+    "appliedBeforeLoadDidNotClaimEnabled": true,
+    "actualEnabledBadge": "Wi-Fi 驱动兼容（离线） · 本次运行已启用",
+    "notice": "离线模式，无热点/网络连接；Wi-Fi配置仅本次运行保留。",
+    "remoteCatalogue": {
+      "httpStatus": 200,
+      "corsAllowOrigin": "*",
+      "crossOriginResourcePolicy": "cross-origin",
+      "localFirmwareFallbackUsed": false
+    }
+  },
+  "initialFrame": {
+    "name": "00-menu",
+    "width": 320,
+    "height": 320,
+    "pngSha256": "ddfb00c72bfcc55b0c176e1370740487d2eb59f1f7b3a07aac22edb8aed85cf8",
+    "rgbaSha256": "34536dcc4f36b80d593f61697c9bdaac6983c37f8b6eae95b6a308c318e5d161",
+    "goldThresholdPixelCounts": {
+      "settings": 568,
+      "sensor": 0,
+      "photo": 0
+    }
+  },
+  "inputMethod": {
+    "sameLevelRequestRepeats": true,
+    "requestedLowGuestSeconds": 0.12,
+    "requestedReleasedGuestSeconds": 0.2,
+    "lowBoundSeconds": 0.4,
+    "hostApplicationPumpOrFocus": false,
+    "ackAloneUsedAsConsumptionProof": false,
+    "realResponseRequired": true,
+    "sourceTimingReference": "Button4.1.6 / esp_lvgl_adapter0.4.1 source oracle; source-to-BIN exact equivalence unverified"
+  },
+  "events": [
+    {
+      "id": "01-next-sensor",
+      "key": "next",
+      "down": {
+        "firstGuestTime": 4.863167441666667,
+        "lastGuestTime": 4.985032758333333,
+        "elapsedGuestSeconds": 0.12186531666666678
+      },
+      "up": {
+        "firstGuestTime": 4.993404991666667,
+        "lastGuestTime": 5.194236429166667,
+        "elapsedGuestSeconds": 0.20083143749999977
+      },
+      "actualLowGuestSeconds": 0.13023755000000037,
+      "downReceipts": 2626,
+      "upReceipts": 2665,
+      "result": "settings→Sensor gold focus",
+      "frame": {
+        "width": 320,
+        "height": 320,
+        "frameNumber": 197,
+        "rgbaSha256": "1be49dbd943b2b4be8d947910ae75ec98d008a73dce463dc413168e44c0c7c3b"
+      },
+      "pixelCheck": {
+        "width": 320,
+        "height": 320,
+        "pngSha256": "7746ddff81fbe9fd81f7e0123bdefe96f1ae7f2a0ffc639a6e7501c5108c130a",
+        "rgbaSha256": "1be49dbd943b2b4be8d947910ae75ec98d008a73dce463dc413168e44c0c7c3b",
+        "goldThresholdPixelCounts": {
+          "settings": 0,
+          "sensor": 568,
+          "photo": 0
+        }
+      },
+      "guestUart": {
+        "beforeBytes": 5735,
+        "afterBytes": 5735,
+        "observedMarkers": []
+      },
+      "rawReceipt": {
+        "id": "before-01-next-sensor-receipt",
+        "bytes": 1115369,
+        "sha256": "bab0768f6810454b1ade3d98a5a93a6cfbaa998cac91a56572d8af47e2341c48"
+      }
+    },
+    {
+      "id": "02-next-photo",
+      "key": "next",
+      "down": {
+        "firstGuestTime": 9.507429345833334,
+        "lastGuestTime": 9.628745741666666,
+        "elapsedGuestSeconds": 0.12131639583333254
+      },
+      "up": {
+        "firstGuestTime": 9.643545829166667,
+        "lastGuestTime": 9.843686345833333,
+        "elapsedGuestSeconds": 0.2001405166666661
+      },
+      "actualLowGuestSeconds": 0.1361164833333337,
+      "downReceipts": 2098,
+      "upReceipts": 2189,
+      "result": "Sensor→Photo gold focus",
+      "frame": {
+        "width": 320,
+        "height": 320,
+        "frameNumber": 389,
+        "rgbaSha256": "ee9cb6b566969c498c07cc6dd573bc6988c8c12056f67faea860e398ba6b2baa"
+      },
+      "pixelCheck": {
+        "width": 320,
+        "height": 320,
+        "pngSha256": "b6fcec0ba7d9e92bf6557d0b55d437f49b94bb459fb5157509726ced77c367ce",
+        "rgbaSha256": "ee9cb6b566969c498c07cc6dd573bc6988c8c12056f67faea860e398ba6b2baa",
+        "goldThresholdPixelCounts": {
+          "settings": 0,
+          "sensor": 0,
+          "photo": 564
+        }
+      },
+      "guestUart": {
+        "beforeBytes": 5735,
+        "afterBytes": 5735,
+        "observedMarkers": []
+      },
+      "rawReceipt": {
+        "id": "before-02-next-photo-receipt",
+        "bytes": 914465,
+        "sha256": "8b40caa2a613e83b177b0e0ba999965624e537ca9d3d7e4ac1d25b7c756a0070"
+      }
+    },
+    {
+      "id": "03-boot-photo",
+      "key": "boot",
+      "down": {
+        "firstGuestTime": 11.9307028375,
+        "lastGuestTime": 12.0508716375,
+        "elapsedGuestSeconds": 0.12016880000000008
+      },
+      "up": {
+        "firstGuestTime": 12.051209920833333,
+        "lastGuestTime": 12.254141229166667,
+        "elapsedGuestSeconds": 0.2029313083333335
+      },
+      "actualLowGuestSeconds": 0.12050708333333304,
+      "downReceipts": 2156,
+      "upReceipts": 1685,
+      "result": "App2 entry; No /sdcard/photo folder message page",
+      "frame": {
+        "width": 320,
+        "height": 320,
+        "frameNumber": 484,
+        "rgbaSha256": "9a0b85ec63b4c06381ac79b31807064af769bcb5e05c462f79b130933bb6907f"
+      },
+      "pixelCheck": {
+        "width": 320,
+        "height": 320,
+        "pngSha256": "ad1240335765703bd39fa0f677b2a83e0906c3b09fa51c360d42396c523eccf9",
+        "rgbaSha256": "9a0b85ec63b4c06381ac79b31807064af769bcb5e05c462f79b130933bb6907f",
+        "goldThresholdPixelCounts": {
+          "settings": 0,
+          "sensor": 0,
+          "photo": 0
+        }
+      },
+      "guestUart": {
+        "beforeBytes": 6244,
+        "afterBytes": 6284,
+        "observedMarkers": [
+          "App 2 clicked!"
+        ]
+      },
+      "rawReceipt": {
+        "id": "before-03-boot-photo-receipt",
+        "bytes": 836977,
+        "sha256": "b6e0438394cd7aa58fd1497f63270d89ac0afe6469f40d6bffc6bf6a687949fb"
+      }
+    },
+    {
+      "id": "04-boot-back",
+      "key": "boot",
+      "down": {
+        "firstGuestTime": 17.160631075,
+        "lastGuestTime": 17.286274620833332,
+        "elapsedGuestSeconds": 0.1256435458333307
+      },
+      "up": {
+        "firstGuestTime": 17.286489945833335,
+        "lastGuestTime": 17.4866938625,
+        "elapsedGuestSeconds": 0.20020391666666626
+      },
+      "actualLowGuestSeconds": 0.12585887083333347,
+      "downReceipts": 208,
+      "upReceipts": 2581,
+      "result": "Photo deinitialized; complete returned menu recaptured after partial publication",
+      "frame": {
+        "width": 320,
+        "height": 320,
+        "frameNumber": 757,
+        "rgbaSha256": "43929a93c4c29aacb340cc7564d52f7a7f6758f39dc98f18de24f24d28b0549b"
+      },
+      "pixelCheck": {
+        "width": 320,
+        "height": 320,
+        "pngSha256": "242985a04185ebd9168669f369b983465853eff970854ea60371117a0fb0b901",
+        "rgbaSha256": "43929a93c4c29aacb340cc7564d52f7a7f6758f39dc98f18de24f24d28b0549b",
+        "goldThresholdPixelCounts": {
+          "settings": 0,
+          "sensor": 0,
+          "photo": 564
+        }
+      },
+      "guestUart": {
+        "beforeBytes": 6284,
+        "afterBytes": 6838,
+        "observedMarkers": [
+          "Photo player deinitialized",
+          "Wi-Fi failure retries remained offline"
+        ]
+      },
+      "rawReceipt": {
+        "id": "before-04-boot-back-receipt",
+        "bytes": 623082,
+        "sha256": "914d0c76a76d3054030b539c741cdd38b7acf9a7f17b572d9a309f1c43e910e9"
+      }
+    },
+    {
+      "id": "05-prev-sensor",
+      "key": "prev",
+      "down": {
+        "firstGuestTime": 24.426583766666667,
+        "lastGuestTime": 24.546747525,
+        "elapsedGuestSeconds": 0.1201637583333337
+      },
+      "up": {
+        "firstGuestTime": 24.5469529375,
+        "lastGuestTime": 24.7470568125,
+        "elapsedGuestSeconds": 0.20010387499999993
+      },
+      "actualLowGuestSeconds": 0.12036917083333165,
+      "downReceipts": 1457,
+      "upReceipts": 1479,
+      "result": "Photo→Sensor gold focus",
+      "frame": {
+        "width": 320,
+        "height": 320,
+        "frameNumber": 793,
+        "rgbaSha256": "eb5e99c60e4a93e0b21dccd90470fbcdfcab94d28c870e67f3aa5252d74d3433"
+      },
+      "pixelCheck": {
+        "width": 320,
+        "height": 320,
+        "pngSha256": "e32623c3c5e9e100d4ad5e89edcdc9de57ee7320bfa5e45fce720eb4d42f4e98",
+        "rgbaSha256": "eb5e99c60e4a93e0b21dccd90470fbcdfcab94d28c870e67f3aa5252d74d3433",
+        "goldThresholdPixelCounts": {
+          "settings": 0,
+          "sensor": 568,
+          "photo": 0
+        }
+      },
+      "guestUart": {
+        "beforeBytes": 6838,
+        "afterBytes": 6838,
+        "observedMarkers": []
+      },
+      "rawReceipt": {
+        "id": "before-05-prev-sensor-receipt",
+        "bytes": 649676,
+        "sha256": "75a78168f584082c1026d10f1450ed0f8c7608701ddc1bf153cdcaabe6c5258e"
+      }
+    }
+  ],
+  "originalCard": {
+    "bytes": 67108864,
+    "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+    "originalMasterAndCloneUnchanged": true,
+    "hostFatAnalysisRootEmpty": true,
+    "guestNoFolderPage": "No /sdcard/photo folder",
+    "guestNoFolderLimit": "opendir NULL can have any cause; no file payload/decode consumption established",
+    "transportAfterNoFolder": {
+      "present": true,
+      "transport": "spi2-sdhc",
+      "card": {
+        "spiMode": true,
+        "cardState": "Tran",
+        "capacityBlocks": "131072",
+        "nativeCommandCalls": "22",
+        "storageBlocksLoaded": "4",
+        "storageBlocksWritten": "0"
+      }
+    },
+    "fullImagesEqual": true,
+    "guestNotStartedForReloadReadyExport": true,
+    "storageRestoreReported": {
+      "slot": true,
+      "supported": true,
+      "present": true,
+      "mounted": true,
+      "scope": "product-firmware",
+      "bytes": 67108864,
+      "format": "fat32",
+      "status": "clean",
+      "backend": "indexeddb",
+      "restored": true,
+      "pristine": false,
+      "changedPages": 0,
+      "error": null
+    },
+    "scope": {
+      "productId": "waveshare-esp32-c5-lcd-2-73",
+      "board": "waveshare-c5-lcd273",
+      "chip": "esp32c5",
+      "flashBytes": 33554432,
+      "firmwareSha256": "f58acdaca4c0591e7f45ffbf7eabbaed0a403d72806e1c5e29e94f0054effdd8",
+      "key": "v1:waveshare-esp32-c5-lcd-2-73:waveshare-c5-lcd273:esp32c5:33554432:f58acdaca4c0591e7f45ffbf7eabbaed0a403d72806e1c5e29e94f0054effdd8"
+    },
+    "persistenceLimit": "Normal reload in same origin and same ephemeral browser context only; original equals prepared default, not unique changed-data proof; no crash-safety/cross-profile/cross-origin claim",
+    "exports": [
+      {
+        "id": "before-original-0",
+        "bytes": 67108864,
+        "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+      },
+      {
+        "id": "before-original-1",
+        "bytes": 67108864,
+        "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+      }
+    ]
+  },
+  "resetAndReload": {
+    "reset": {
+      "name": "06-reset-menu",
+      "width": 320,
+      "height": 320,
+      "pngSha256": "260f673b7fbc301fb08afc141da883f71bb68fccc55478930fa599e115a2e88a",
+      "rgbaSha256": "65c4c9f1c3f69933ed7004a49751f8daf1ab528baf90da116c7debdd018a9589",
+      "goldThresholdPixelCounts": {
+        "settings": 568,
+        "sensor": 0,
+        "photo": 0
+      }
+    },
+    "reload": {
+      "name": "07-reload-menu",
+      "width": 320,
+      "height": 320,
+      "pngSha256": "0306ad4d7bb17f426be60c80ff892c72f493ef3b7a4e1896bba7f810951e4c66",
+      "rgbaSha256": "1994d78d5b04d6c5ad618e6bd03b2972049fd279da746fcffc60f44b18528732",
+      "goldThresholdPixelCounts": {
+        "settings": 568,
+        "sensor": 0,
+        "photo": 0
+      }
+    },
+    "initialSettingsGoldCount": 568,
+    "backgroundOnlyRoi": {
+      "rectangles": [
+        {
+          "x": 0,
+          "y": 176,
+          "width": 40,
+          "height": 144
+        },
+        {
+          "x": 280,
+          "y": 176,
+          "width": 40,
+          "height": 144
+        }
+      ],
+      "packing": "for each row, left stripe then right stripe",
+      "bytes": 46080,
+      "sha256": "049c169be5fc8680a5b401b6615b1f8157dfeb6d33840ba30115039df6e0f57f"
+    },
+    "fullFrameBitEqualityAsserted": false,
+    "readyGuestUartBytes": 0,
+    "readyHookCalls": "0"
+  },
+  "fixturePhoto": {
+    "separateEphemeralContext": true,
+    "defaultPreparedProductCardNotOverwritten": true,
+    "importedInActiveFirmwareNamespaceAtReady": true,
+    "card": {
+      "bytes": 67108864,
+      "sha256": "f29e47c7fca119caf71353f311cfb7bcbb4ccff2c26f6afcf9c80c9805dba80f"
+    },
+    "jpeg": {
+      "path": "/photo/test.jpg",
+      "bytes": 5200,
+      "sha256": "6af0bed529e583dc696a07c3d01088667efff5c4bb0d99932e7d71f42c6b53b6",
+      "format": "320x320 baseline 4:4:4 JPEG; three-color 32px checker; no EXIF"
+    },
+    "readyBeforeGuest": {
+      "status": "ready",
+      "stats": {},
+      "hookCalls": "0"
+    },
+    "menuOpened": true,
+    "nextSensorAndPhotoFramesObserved": true,
+    "bootGuestMarker": "I (3428) butmenu_core: App 2 clicked!",
+    "outcome": "host ModelLimit before filename/decode/success image; no JPEG success",
+    "transportAtStop": {
+      "present": true,
+      "transport": "spi2-sdhc",
+      "card": {
+        "spiMode": true,
+        "cardState": "Tran",
+        "capacityBlocks": "131072",
+        "nativeCommandCalls": "54",
+        "storageBlocksLoaded": "20",
+        "storageBlocksWritten": "0"
+      }
+    },
+    "driverAtStop": {
+      "enabled": true,
+      "profile": "waveshare-lcd273-idf553-offline-v1",
+      "mode": "compatible-driver-assisted",
+      "state": "started-offline",
+      "nativeWifi": false,
+      "associated": false,
+      "hasIp": false,
+      "storage": "session-RAM",
+      "hookCalls": "10",
+      "virtualSlots": "15",
+      "eventPosts": "5",
+      "eventPostFailures": "0",
+      "connectAttempts": "4",
+      "noApFailuresQueued": "4",
+      "pendingCalls": 0,
+      "epoch": "0",
+      "failureDelayCycles": "0",
+      "failureReason": 201,
+      "bssidMeasured": false,
+      "rssiMeasured": false,
+      "lastError": null,
+      "apiCalls": {
+        "esp_wifi_init": "1",
+        "esp_wifi_get_mode": "0",
+        "esp_wifi_get_mac": "1",
+        "esp_wifi_set_mode": "1",
+        "esp_wifi_start": "1",
+        "esp_wifi_connect": "4",
+        "esp_wifi_set_config": "1",
+        "esp_wifi_internal_reg_netstack_buf_cb": "1",
+        "esp_wifi_stop": "0",
+        "esp_wifi_deinit": "0",
+        "esp_wifi_disconnect": "0",
+        "esp_wifi_scan_start": "0",
+        "esp_wifi_scan_get_ap_records": "0",
+        "esp_wifi_get_config": "0"
+      }
+    },
+    "afterNormalSameOriginReloadReadyNoReimport": {
+      "status": "ready",
+      "guestUartBytes": 0,
+      "stats": {},
+      "hookCalls": "0",
+      "sd": {
+        "slot": true,
+        "supported": true,
+        "present": true,
+        "mounted": true,
+        "scope": "product-firmware",
+        "bytes": 67108864,
+        "format": "fat32",
+        "status": "clean",
+        "backend": "indexeddb",
+        "restored": true,
+        "pristine": false,
+        "changedPages": 0,
+        "error": null
+      }
+    },
+    "allWholeCardImagesEqualDistinctFixture": true,
+    "blockedPhotoBlindlyRerun": false,
+    "wholeCardExports": [
+      {
+        "id": "before-fixture-0",
+        "bytes": 67108864,
+        "sha256": "f29e47c7fca119caf71353f311cfb7bcbb4ccff2c26f6afcf9c80c9805dba80f"
+      },
+      {
+        "id": "before-fixture-1",
+        "bytes": 67108864,
+        "sha256": "f29e47c7fca119caf71353f311cfb7bcbb4ccff2c26f6afcf9c80c9805dba80f"
+      },
+      {
+        "id": "before-fixture-2",
+        "bytes": 67108864,
+        "sha256": "f29e47c7fca119caf71353f311cfb7bcbb4ccff2c26f6afcf9c80c9805dba80f"
+      }
+    ],
+    "modelLimit": {
+      "pc": "0x4201ed26",
+      "core": 0,
+      "instructionsFromCoreDump": 773269652,
+      "mtvec": "0x40800003",
+      "mcause": "0x80000013",
+      "mepc": "0x4002155e",
+      "mstatus": "0x00001889",
+      "raw": "unavailable from browser first-fault ABI",
+      "primaryError": "Emulator stopped with code 2",
+      "laterLastError": "NOT_RUNNING from best-effort release after stop; not primary failure",
+      "rgbaSha256": "139235bdfdfd045b97ebd9020cb56faacd15784de8f10b79bbc063f407099518",
+      "availableDumpHashes": [
+        {
+          "id": "before-model-limit-core-and-device-dump.txt",
+          "bytes": 6190,
+          "sha256": "95fa2e0fbb3d2b5d52c5fcbedc6a983d63fabd29ff8d91058242b3c790060a41"
+        },
+        {
+          "id": "before-model-limit-uart0.txt",
+          "bytes": 5774,
+          "sha256": "bf1e714358081565c9fa96e0597183aca6a8b856b1259cb69be5bf8cdd7a949c"
+        },
+        {
+          "id": "before-model-limit-serial-combined.txt",
+          "bytes": 12098,
+          "sha256": "e63338e95f43af9693e01ad85f26d70ab6e530449618c02bba20c0fdd407db76"
+        },
+        {
+          "id": "before-model-limit-hardware-diagnostics.json",
+          "bytes": 1430,
+          "sha256": "7b1bdb402ec2bf6d0e9395848fc27eb3cdd38c6d0d30dcc75289d9c6c152216e"
+        },
+        {
+          "id": "before-03-photo-model-limit.png",
+          "bytes": 122420,
+          "sha256": "8272760d0fa48ae4a9ff4e494896d88fdc596966d1cb45d07a4605f1104447d7"
+        }
+      ]
+    }
+  },
+  "observerNegatives": [
+    {
+      "kind": "partial-publication",
+      "detail": "Initial return-from-Photo frame still had lower Photo page; preserved first capture, then waited for complete menu."
+    },
+    {
+      "kind": "bad-observation-gate",
+      "detail": "Reset nonblack>=100000 initially accepted all-gray startup; retained gray and partial captures, no success from those."
+    },
+    {
+      "kind": "overstrict-observation-gate",
+      "detail": "Exact lower ROI after reset included animated Weather text and timed out despite full menu; retained timeout/probe; background-only side stripes used for subsequent reload."
+    },
+    {
+      "kind": "host-notice-vs-guest-UART",
+      "detail": "Ready combined serial includes offline host notice; corrected empty guest-UART preflight; no start at ready export."
+    },
+    {
+      "kind": "fixture-runtime-failure",
+      "detail": "Real Photo App2 entry then ModelLimit4201ed26; no filename/decode/checker. BOOT helper incomplete due host stop; release then rejected NOT_RUNNING."
+    },
+    {
+      "kind": "host-only-evidence-tool",
+      "detail": "System Python lacked Pillow; used standard-library lossless PNG decode and cross-checked every decoded RGBA SHA with capture receipt; no package installed."
+    },
+    {
+      "kind": "host-only-file-discovery",
+      "detail": "Probe for configuration-abi.js returned404; worker has no such import, not a browser runtime failure."
+    }
+  ],
+  "console": {
+    "originalContextErrors": 0,
+    "photoContextErrors": 0,
+    "hostModelLimitStillFailure": true
+  },
+  "cleanup": {
+    "ownedEphemeralContexts": 2,
+    "allClosedWithWrapper": true,
+    "ownedBrowserAndServerProcessesEnded": true,
+    "listenerAbsent": true,
+    "unrelatedBrowsersPreserved": true
+  },
+  "limits": [
+    "Explicit offline driver-assisted profile only; no strict-mode qualification inherited.",
+    "nativeWifi=false, associated=false, hasIp=false; no AP, RF, IP or Internet success.",
+    "No qualifications inherited from separate source-built03/02 or project7009 diagnostic firmware.",
+    "No performance, physical-silicon or calibrated optical/color claim.",
+    "Card retention is normal reload in the same origin and existing ephemeral context; no crash-safe/cross-profile/cross-origin claim.",
+    "Raw binaries, PNGs, UART and IMG are not included or publicly downloadable from this draft."
+  ],
+  "privateRawManifest": {
+    "files": 168,
+    "id": "before-raw-manifest",
+    "bytes": 29023,
+    "sha256": "f5d11cda00f7b83fc6a37ef39c47efabe7691fd62663a88531e776f7c4bdc45f"
+  },
+  "selectedArtifactHashes": [
+    {
+      "id": "before-selected-before-apply.json",
+      "bytes": 9360,
+      "sha256": "8d15d6664380a40aabb14b136e4504f7aeaf1c1d2a268c82f7effe5dcad8f2bc"
+    },
+    {
+      "id": "before-applied-not-enabled.json",
+      "bytes": 9372,
+      "sha256": "35579df3f7e10af0e5330442c918457ada3aaf7af7ea99fa9ff83fcac83c5285"
+    },
+    {
+      "id": "before-00-menu-profile-ui.png",
+      "bytes": 328323,
+      "sha256": "485957d312292806792ceb31a0fb6ceed2b9e138945c96ba966bfbc064df5729"
+    },
+    {
+      "id": "before-04-boot-back-first-publication.png",
+      "bytes": 49252,
+      "sha256": "fb260905f9b64346fa63de925b2ebde11b5390eed77e28273558de9135fb62ef"
+    },
+    {
+      "id": "before-06-reset-menu-gray-first-publication.png",
+      "bytes": 3369,
+      "sha256": "af16e934ca7030119cb6386edf89c1eef14a667ba811f47f2f3f6289de44acf9"
+    },
+    {
+      "id": "before-06-reset-menu-partial-second-publication.png",
+      "bytes": 63725,
+      "sha256": "7cb14d37a35228ec5a6eb01a17128a8e78773e1270010f7548e4ea77ddc7b394"
+    },
+    {
+      "id": "before-reset-menu-stable-roi-command.log",
+      "bytes": 159,
+      "sha256": "3ebd2092c993c3d521127dab6b784c8d27c64a002e8735086ac81a6562920c05"
+    },
+    {
+      "id": "before-reset-stable-roi-probe.json",
+      "bytes": 52981,
+      "sha256": "eaf69db44935fdbbc771e4f9d05b24b9f1e4a03c015a91643ec3934afd47bce9"
+    },
+    {
+      "id": "before-06-reset-menu.png",
+      "bytes": 123081,
+      "sha256": "260f673b7fbc301fb08afc141da883f71bb68fccc55478930fa599e115a2e88a"
+    },
+    {
+      "id": "before-07-reload-menu.png",
+      "bytes": 122744,
+      "sha256": "0306ad4d7bb17f426be60c80ff892c72f493ef3b7a4e1896bba7f810951e4c66"
+    },
+    {
+      "id": "before-03-photo-model-limit.json",
+      "bytes": 38637,
+      "sha256": "3bfb8b7d9d60a806b0f443b6807e51c1d95db50ceec1a495a3ec3251f3dc59a7"
+    },
+    {
+      "id": "before-lifecycle.json",
+      "bytes": 1765,
+      "sha256": "365f28ee44542df3cabc97e038594e768dc76fbdb5bca533000965691d569206"
+    }
+  ],
+  "reproduction": {
+    "serve": "python3 -m http.server \"$PORT\" --bind \"$BIND\" --directory \"$SERVE_ROOT\"",
+    "open": "\"$PWCLI\" --session \"$TASK_SESSION\" open \"$BASE_URL/web/platform/index.html\" --browser chrome",
+    "ui": "Select Waveshare / waveshare-c5-lcd273; explicitly select waveshare-lcd273-idf553-offline-v1 and Apply.",
+    "load": "await espTester.loadFirmware(); // uses the selected pinned catalogue source; ready only",
+    "import": "Use Device storage → Upload IMG with the matching hash; active firmware namespace, not user/master media.",
+    "export": "await espTester.pause(); await espTester.flushSdCard(); const disk = await espTester.exportSdCard();",
+    "pulse": "Repeated await espTester.input({type:\"button\",id,pressed:true}) until last guestTime−first≥0.12; then repeat pressed:false until≥0.2. Record actual first-UP−first-DOWN, actual frame and guest output. Do not substitute host delay or acknowledgement for application response.",
+    "reload": "Normal reload; reselect product/profile, Apply, loadFirmware to ready; do not import again or start before ready export.",
+    "close": "\"$PWCLI\" --session \"$TASK_SESSION\" close; verify only owned browser/server processes and listener have ended."
+  }
+}

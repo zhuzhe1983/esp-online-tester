@@ -25,6 +25,7 @@ pub mod pie;
 pub mod hwlp;
 pub mod softfloat;
 pub mod state;
+pub mod c5_memory_protection;
 
 pub use emu_core::{Bus, Core, Fault, FlatRam};
 pub use decode::{decode, decode_for, Insn, Op};

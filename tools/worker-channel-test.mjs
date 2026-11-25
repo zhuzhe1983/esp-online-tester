@@ -382,3 +382,42 @@ console.log('worker smooth display configuration tests passed');
   } finally {h.close();}
 }
 console.log('worker flash snapshot, page deltas, forced flush order and replacement tests passed');
+
+// A C5 ROM session may use the existing Flash watcher without inheriting any
+// generic JIT, audio or network exports. These are Worker protocol tests only.
+for(const board of ['esp32c5','stamp-c5','waveshare-c5-lcd273'])for(const appDirect of [undefined,true,false]){
+  const jit=[],calls={audio:0,network:0,boot:0,stub:0};
+  const h=await harness(0,[],[],{
+    esp32sim_set_jit(_emu,on){jit.push(on);},esp32sim_flash_ptr:()=>4096,esp32sim_flash_len:()=>8192,
+    esp32sim_audio_output_streaming(){calls.audio++;return 0;},esp32sim_audio_input_state(){calls.audio++;return 1;},esp32sim_audio_input_configure(){calls.audio++;return 0;},
+    esp32sim_softap_configure(){calls.network++;return 0;},esp32sim_ethernet_relay(){calls.network++;return 0;},esp32sim_wifi(){calls.network++;return 0;},
+    esp32sim_boot(){calls.boot++;return 0;},
+    esp32sim_stub_spec(){calls.stub++;return 0;},
+  });
+  try{
+    calls.audio=0;await h.send({op:'create',board,appDirect,jit:true,audioStreaming:true});
+    const created=h.messages.at(-1);assert.equal(created.created,true);assert.equal(created.flashStorage,appDirect===false);assert.equal(created.audioAvailable,false);assert.equal(created.networkAvailable,false);assert.equal(jit.at(-1),0);
+    await h.send({op:'network-setup',requestId:51,spec:'not-routed',softAp:{enabled:true}});assert.equal(h.messages.at(-1).ok,false);
+    await h.send({op:'audio-configure',requestId:52,port:0,sampleRate:48000});assert.equal(h.messages.at(-1).ok,false);
+    assert.equal(calls.audio,0);assert.equal(calls.network,0);
+    await h.send({op:'flash-snapshot',requestId:53});assert.equal(h.messages.at(-1).ok===false,appDirect!==false);
+    await h.send({op:'start',appDirect:appDirect===false});assert.equal(h.messages.at(-1).started,false);assert.equal(calls.boot,0);assert.equal(h.runs.length,0);
+    await h.send({op:'stub',spec:'rom_fn=0'});await h.send({op:'start',appDirect:appDirect!==false});assert.equal(h.messages.at(-1).started,false);assert.equal(calls.boot,0);assert.equal(calls.stub,0);
+  }finally{h.close();}
+}
+{
+  const size=32*1024*1024,base=4096,memory=new WebAssembly.Memory({initial:514}),bytes=new Uint8Array(memory.buffer);bytes.fill(255,base,base+size);
+  const h=await harness(0,[],[],{memory,esp32sim_flash_ptr:()=>base,esp32sim_flash_len:()=>size,
+    esp32sim_load_at(_emu,offset,pointer,length){bytes.copyWithin(base+offset,pointer,pointer+length);return 0;},
+  });
+  try{
+    await h.send({op:'create',board:'waveshare-c5-lcd273',appDirect:false});assert.equal(h.messages.at(-1).flashStorage,true);
+    await h.send({op:'flash-watch',requestId:61});bytes[base+size-17]=0x5a;await h.send({op:'flash-flush',requestId:62});
+    const delta=h.messages.find(m=>m.flashDelta).flashDelta;assert.equal(delta.pages.length,1);assert.equal(delta.pages[0].offset,size-4096);assert.equal(new Uint8Array(delta.pages[0].data)[4096-17],0x5a);
+    const page=new Uint8Array(4096);page[31]=97;await h.send({op:'flash-restore',requestId:63,pages:[{offset:size,data:page.buffer}]});assert.equal(h.messages.at(-1).ok,false);
+    await h.send({op:'flash-restore',requestId:64,pages:[{offset:size-4096,data:page.buffer}]});assert.equal(h.messages.at(-1).ok,true);
+    await h.send({op:'flash-snapshot',requestId:65});const snapshot=new Uint8Array(h.messages.at(-1).data);assert.equal(snapshot.length,size);assert.equal(snapshot[size-4096+31],97);assert.equal(h.runs.length,0);
+    await h.send({op:'create',board:'waveshare-c5-lcd273',appDirect:true});await h.send({op:'flash-snapshot',requestId:66});assert.equal(h.messages.at(-1).ok,false);
+  }finally{h.close();}
+}
+console.log('worker C5 ROM/SRAM mode, restricted capabilities and32MiB Flash page protocol tests passed');

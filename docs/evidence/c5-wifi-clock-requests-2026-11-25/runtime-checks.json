@@ -1,0 +1,326 @@
+{
+  "schema": 1,
+  "implementationCommit": "95da422c",
+  "documentationOnlyFollowup": "beb97707",
+  "sourceIdentity": {
+    "helperCapturedHEAD": "fa52055098bccd92380f3050739e928e363197d7",
+    "explanation": "The worker started before the source checkpoint commit. The six compiled-source SHA256 entries in integration-checks.json and exact WASM hash pin the dirty source composition that was committed as95da422c; no clean fa520550 build is claimed."
+  },
+  "productionWasmBuild": {
+    "command": "CARGO_BUILD_JOBS=1 sh tools/wasm-build.sh (CARGO_TARGET_DIR and CARGO_PROFILE_RELEASE_LTO unset)",
+    "exitCode": 0,
+    "log": "c5-567-production-wasm-build.log",
+    "logBytes": 1304,
+    "logSha256": "e1fb532e124c5d5fa59abd170f23615c10ecf539a8622629f44697b2dc09fed4",
+    "elapsedSeconds": 53.855,
+    "artifact": {
+      "path": "web/wasm/esp32sim.wasm",
+      "bytes": 8846328,
+      "sha256": "85c451d202bbad9df5ee438d95cc87107960e40bf58a6d53c0277065b0fdfd32"
+    }
+  },
+  "nodeChecks": {
+    "log": "c5-567-platform-and-actual-wasm-tests.log",
+    "bytes": 6482,
+    "sha256": "82b8748d62647770bd9b0667e4f67a9ee1502324cfb559d36bcf1b8e61ceee04",
+    "exitCode": 0,
+    "elapsedSeconds": 5.183,
+    "command": "ESP32SIM_C5_WASM=<pinned WASM> ESP32SIM_C5_ROM=<pinned ROM> ESP32SIM_C5_FACTORY=<pinned factory> node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-c5-rom-test.mjs tools/platform-c5-wasm-test.mjs tools/platform-c5-lcd273-diagnostics-parser-test.mjs",
+    "passed": 20,
+    "failed": 0,
+    "skipped": 0,
+    "scope": "Seven files: real compiled C5 cold-load ABI/corruption checks, loader/namespace protocols, diagnostics parsing and platform config/runtime/input/view checks. The ABI test does not execute firmware; the worker run below does."
+  },
+  "realProductionWorker": {
+    "check": {
+      "log": "c5-567-real-worker-original-factory.log",
+      "bytes": 367,
+      "sha256": "9485e53e96511d6ee3237b692db0f09ba2b2faf9722d9eb139a1e681b018864c",
+      "exitCode": 3,
+      "elapsedSeconds": 6.381,
+      "command": "node tools/c5-lcd273-acceptance.mjs --run --runtime-root <runtime checkout> --wasm <pinned WASM> --wasm-sha256 85c451d202bbad9df5ee438d95cc87107960e40bf58a6d53c0277065b0fdfd32 --rom <pinned ROM> --factory <pinned factory> --sd <pinned64MiB card> --out <new ignored output> --wall-timeout-ms 120000 --save-uart --save-sd"
+    },
+    "rawReceipt": {
+      "bytes": 29587,
+      "sha256": "44660260d8b43370f6bbd4481f122d23ce2df9929fa3fac740b4953ef221dcce"
+    },
+    "execution": "public-runtime-production-worker-wasm-in-node",
+    "status": "partial",
+    "acceptancePassed": false,
+    "failure": {
+      "phase": "boot",
+      "code": "GUEST_BLOCKED",
+      "message": "Emulator stopped with code 2.",
+      "observedDiagnosticTokens": [
+        "pc=0x408142c6",
+        "0x40800003",
+        "0x80000013",
+        "0x40802bec",
+        "0x00001889",
+        "0x50000000",
+        "0x00fffeff",
+        "0x00000000",
+        "0x01070561",
+        "0x70000000",
+        "0x03ce017f",
+        "BOD0",
+        "0x6ffc02c0",
+        "0x80000000"
+      ]
+    },
+    "uart": {
+      "bytes": 4536,
+      "sha256": "f6aae87b2bcd45efc1595ba51ae1ebfb76331b3d9a95fefcf0b848357f0f79ad",
+      "retainedTailCodeUnits": 4536,
+      "privateTailFile": "uart0.log"
+    },
+    "emulatorLog": {
+      "bytes": 6360,
+      "sha256": "a24a7a4e932f356211c5183e7074929975c359c198e9a1941e16791424352770",
+      "retainedTailCodeUnits": 6360,
+      "privateTailFile": "emulator.log"
+    },
+    "markers": {
+      "appMain": true,
+      "psramTest": true,
+      "shtId": true
+    },
+    "mode": {
+      "boot": "rom",
+      "appDirect": false,
+      "loadKinds": [
+        0,
+        5
+      ],
+      "stubs": []
+    },
+    "sd": {
+      "bytes": 67108864,
+      "inputSha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+      "afterStopSha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+      "changedSectors": 0,
+      "changedBytes": 0,
+      "guestWritebackObserved": false,
+      "guestFilesystemMount": "unavailable",
+      "durablePersistence": "not-tested",
+      "backend": "memory"
+    },
+    "cleanup": {
+      "runtimeDisposed": true,
+      "activeTaskWorkers": 0,
+      "workersExited": true
+    }
+  },
+  "realBrowser": {
+    "browserChannel": "chrome",
+    "headless": true,
+    "rawObservation": {
+      "bytes": 3721,
+      "sha256": "4fba1903eeb77d86d07f48e3d9f75564cd3dfa7434f273e1aac87d03b553104d"
+    },
+    "actions": [
+      "Configure the exact LCD273 product using the documented public API.",
+      "Select Local file, open the actual file chooser and upload the unchanged factory BIN.",
+      "Observe complete merged-image recognition, then click Load and run.",
+      "Observe real guest PSRAM/app_main/SHT ID markers and exact MAC stop PC."
+    ],
+    "status": "error",
+    "lastError": {
+      "code": "EMULATOR_STOPPED",
+      "message": "Emulator stopped with code 2."
+    },
+    "markers": {
+      "appMain": true,
+      "psramTest": true,
+      "shtId": true,
+      "macStopPc": true,
+      "obsoleteSramError": false
+    },
+    "firmware": {
+      "flashSha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+      "romSha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+      "bootMode": "rom",
+      "executionMode": "wasm-interpreter",
+      "appDirect": false,
+      "stubs": []
+    },
+    "flash": {
+      "backend": "indexeddb",
+      "pristine": true,
+      "changedPages": 0
+    },
+    "sdCard": {
+      "bytes": 67108864,
+      "format": "fat32"
+    },
+    "hardwareDiagnostics": {
+      "schemaVersion": 1,
+      "board": "waveshare-c5-lcd273",
+      "counterEncoding": "u64-decimal",
+      "state": {
+        "display": {
+          "resetHigh": false,
+          "sleepOut": false,
+          "displayOn": false,
+          "visible": false,
+          "brightness": 0,
+          "pixelFormat": 6,
+          "madctl": 0,
+          "pixelsWritten": "0",
+          "ramWriteCommands": "0",
+          "resetCount": "0"
+        },
+        "boardRejectedTransactions": "0",
+        "sd": {
+          "present": true,
+          "transport": "spi2-sdhc",
+          "card": {
+            "spiMode": false,
+            "cardState": "Idle",
+            "capacityBlocks": "131072",
+            "nativeCommandCalls": "0",
+            "storageBlocksLoaded": "0",
+            "storageBlocksWritten": "0"
+          }
+        }
+      },
+      "limits": [
+        "nativeCommandCalls counts inner SdCard::command calls including failures, excluding SPI wrapper-handled commands; not all wire CMDs.",
+        "storageBlocksLoaded counts backing-store loads before reply completion and valid MISO delivery; guest-consumed reads are unobserved.",
+        "storageBlocksWritten counts complete backing-store writes; guest response consumption, FAT mount and file flush are unobserved.",
+        "CardState and presence do not establish FAT mounting or browser persistence; electrical timing and physical panel response are unverified.",
+        "SD counters belong to the card object: CMD0 and power_cycle retain totals; a new attached card starts a new epoch."
+      ]
+    },
+    "modelStatus": "ready",
+    "screenshot": {
+      "file": "original-mac-boundary.png",
+      "bytes": 276582,
+      "sha256": "116ec24008f4a10e99082ecd96417c253341ee848308b4887d78bb8399714e55"
+    },
+    "javascriptConsoleErrors": 0,
+    "javascriptConsoleWarnings": 0,
+    "cleanup": {
+      "runtimeDisposed": true,
+      "browserClosed": true,
+      "browserSessionAbsentVerified": true,
+      "taskStaticServerExited": true,
+      "taskPortHasNoListener": true
+    },
+    "limits": [
+      "Stats and diagnostics are last publications, not live final CPU counters. Volatile pacing/speed figures are omitted; no performance claim.",
+      "The ready3D model is visual presentation, not firmware output. The original has no visible LCD frame and SD nativeCommandCalls0.",
+      "Browser IndexedDB Flash is pristine, but no guest SD write/mount/reload-persistence scenario was reached.",
+      "Exact chooser/modal action and original close banners are executor tool observations; retained pre/post snapshots and current absence corroborate the outcome. The empty chooser YAML is not evidence."
+    ],
+    "cleanupProvenance": {
+      "postcheck": {
+        "bytes": 657,
+        "sha256": "6d057bb28e4eb5945e6e77df99d7f981de3df2721534621d14a07c966c470ebb"
+      },
+      "originalCloseAndServerOutput": "Observed in original tool transcript only; no dedicated raw file retained. The retained postcheck proves later absence, not original close stdout."
+    },
+    "retainedUiStates": [
+      {
+        "file": "page-2026-11-24T22-12-40-710Z.yml",
+        "bytes": 22297,
+        "sha256": "c7dda478e2cab633799534ab209c17d0953bdc18507dc999089f3c24e59b04c1",
+        "scope": "Local-file controls before selection"
+      },
+      {
+        "file": "page-2026-11-24T22-13-16-908Z.yml",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "scope": "Empty chooser snapshot; not relied on as proof of the chooser"
+      },
+      {
+        "file": "page-2026-11-24T22-13-22-264Z.yml",
+        "bytes": 22191,
+        "sha256": "292088fe4757470cbbf37af87261e404c7d92cc09396d7c91a77ead1b7c79b9c",
+        "scope": "Selected file and complete merged-image recognition"
+      },
+      {
+        "file": "page-2026-11-24T22-13-47-178Z.yml",
+        "bytes": 23184,
+        "sha256": "40130e4ce610cbe7b6f82b8b0fd6f6ff3014b273073dee93021dfbc703b5696d",
+        "scope": "After Load/start"
+      }
+    ],
+    "consoleCapture": {
+      "bytes": 146,
+      "sha256": "d661ed30e6fc86ee945c5e96f84976e23781a402e63e115b7dbf8100d567d54e",
+      "scope": "One DOM verbose entry, no logged JS error/warning. Separate CLI console summary was observed in tool output."
+    }
+  },
+  "outcome": {
+    "status": "partial",
+    "originalBootPrefixVerified": true,
+    "originalMacInitializationBlocked": true,
+    "originalUiAccepted": false,
+    "buttonsAccepted": false,
+    "tfAccepted": false,
+    "productAccepted": false,
+    "published": false
+  },
+  "curation": {
+    "kept": "Exact input/source/artifact hashes, commands, measured marker/counter facts, preserved card bytes and failure/cleanup outcome.",
+    "omitted": "Raw captures, UART/register streams, full browser state and image remain in ignored outputs. No local server/session/PID/user identity is committed.",
+    "effect": "Omitting volatile browser pacing data does not change any boot, hardware or storage conclusion."
+  },
+  "independentCheckpointReview": {
+    "status": "passed",
+    "scope": "Round002 startup/runtime evidence checkpoint only; no overall device, release or publication acceptance.",
+    "resultBytes": 2284,
+    "resultSha256": "9c968adc744b9fd68c52dcd8ec8a2d94d3795f25ad3b7e178886e007ad822019",
+    "verdictBytes": 4093,
+    "verdictSha256": "80b537daf0a49a11b32fed2d87dc3c619832bc218afde35d49ab8c4315f5b585",
+    "validation": "Independent source/metadata/raw-capture/header review; no compiler reconstruction, new guest/browser or benchmark."
+  },
+  "defaultReleaseWorkspace": {
+    "log": "c5-567-default-lto-full-workspace.log",
+    "bytes": 389517,
+    "sha256": "901323914b142fb97b1757992a4c102e4dfe70c67cf6f5ec35a630d17e0c4995",
+    "exitCode": 0,
+    "elapsedSeconds": 2667.14,
+    "command": "ESP32SIM_ROM_DIR=<pinned ROM directory> CARGO_BUILD_JOBS=1 cargo test --release --workspace -- --include-ignored --skip external_",
+    "toolchain": "stable Rust 1.100.0 (rustup update stable reported unchanged)",
+    "targetAndLtoOverrides": "unset",
+    "buildJobs": 1,
+    "passed": 3459,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 144,
+    "filterNote": "CI intentionally skips names containing external_; the separate focused C5 run includes all six available developer-input cases.",
+    "goldensRegenerated": false,
+    "coordinatedCompilerPauseSeconds": 747.404,
+    "timingScope": "Operational wall time includes compiler pauses; no benchmark conclusion. Planned8-job change was not performed: the suite had already finished, with no signal or restart."
+  },
+  "productionWasmDemos": {
+    "log": "c5-567-production-wasm-demos.log",
+    "bytes": 1694,
+    "sha256": "53c39200f8a33480d23022d3beee39dad31ec755ff4ba6383068ba5d932a791b",
+    "exitCode": 0,
+    "elapsedSeconds": 46.892,
+    "passedDemos": 14,
+    "failedDemos": 0,
+    "jitHandoffPassed": true,
+    "demos": [
+      "hello",
+      "c3-hello",
+      "c6-hello",
+      "c6-xiao",
+      "p4-hello",
+      "p4-c6-hosted",
+      "p4-lcd35-synth",
+      "c6-energy-scan",
+      "c6-contiki",
+      "c6-contiki-net",
+      "c6-rpl-net",
+      "panel",
+      "tdisplay-prices",
+      "tdisplay-schematik"
+    ],
+    "timingScope": "Regression correctness only; printed rates are not controlled performance evidence.",
+    "reproductionCommand": "ESP32SIM_ROM_DIR=<pinned ROM directory> node tools/wasm-test.mjs hello c3-hello c6-hello c6-xiao p4-hello p4-c6-hosted p4-lcd35-synth c6-energy-scan c6-contiki c6-contiki-net c6-rpl-net panel tdisplay-prices tdisplay-schematik"
+  }
+}

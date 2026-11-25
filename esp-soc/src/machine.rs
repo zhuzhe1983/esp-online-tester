@@ -237,6 +237,7 @@ impl<S: Soc> Machine<S> {
 
     // ------------------------------------------------------------------ images
     pub fn load_rom(&mut self, rom_elf: &[u8]) -> Result<(), String> {
+        if let Some(result) = S::load_rom_override(self, rom_elf) { return result; }
         let e = elf::parse(rom_elf)?;
         for s in &e.segments {
             if s.data.is_empty() { continue; }
@@ -459,6 +460,7 @@ impl<S: Soc> Machine<S> {
             Some(Trap::Exception(_)) => { self.exceptions += 1; }
             Some(Trap::Interrupt(irq)) => { self.interrupts += 1; self.irq_hist[core][(irq & 31) as usize] += 1; S::interrupt_taken(&mut self.bus, core, irq); }
             Some(Trap::Unimplemented(p, raw)) => { if self.dbg.stop_on_unimplemented { return Some(Stop::Unimplemented(p, raw)); } }
+            Some(Trap::ModelLimit(pc)) => return Some(Stop::ModelLimit { core, pc }),
             Some(Trap::Simcall) => return Some(Stop::Simcall(pc)),
             Some(Trap::Ebreak(p)) => { self.exceptions += 1; if !self.cores[core].has_trap_handler() { return Some(Stop::Ebreak(p)); } }
         }
@@ -474,7 +476,7 @@ impl<S: Soc> Machine<S> {
             if enabled && cpu.waiting() && !cpu.irq_pending() {
                 for observer in &mut self.observers {
                     if observer.wants().contains(Wants::IDLE_PC) {
-                        if let Some(stop) = observer.on_insn(&cx, i, cpu, &mut self.bus, cpu.pc()) { return Some(stop); }
+                        if let Some(stop) = observer.on_insn(&cx, i, cpu, &mut self.bus, cpu.pc()) { S::observer_stopped(&mut self.bus); return Some(stop); }
                     }
                 }
             }
@@ -501,7 +503,7 @@ impl<S: Soc> Machine<S> {
         }
         {
             let cx = Ctx { symbols: &self.symbols, cycles: self.bus.cycles(), cpu_hz: S::CPU_HZ };
-            for o in &mut self.observers { if o.wants().contains(Wants::INSN) { if let Some(stop) = o.on_insn(&cx, core, &self.cores[core], &mut self.bus, pc) { return Some(stop); } } }
+            for o in &mut self.observers { if o.wants().contains(Wants::INSN) { if let Some(stop) = o.on_insn(&cx, core, &self.cores[core], &mut self.bus, pc) { S::observer_stopped(&mut self.bus); return Some(stop); } } }
         }
         let cpu = &mut self.cores[core];
         self.bus.note_pc(pc);
@@ -510,7 +512,7 @@ impl<S: Soc> Machine<S> {
         self.refresh_irq();
         {
             let cx = Ctx { symbols: &self.symbols, cycles: self.bus.cycles(), cpu_hz: S::CPU_HZ };
-            for o in &mut self.observers { if o.wants().contains(Wants::INSN) { if let Some(stop) = o.after_insn(&cx, core, &self.cores[core], &mut self.bus) { return Some(stop); } } }
+            for o in &mut self.observers { if o.wants().contains(Wants::INSN) { if let Some(stop) = o.after_insn(&cx, core, &self.cores[core], &mut self.bus) { S::observer_stopped(&mut self.bus); return Some(stop); } } }
         }
         if self.exceptions >= self.dbg.stop_after_exceptions { return Some(Stop::Exceptions(self.exceptions)); }
         None

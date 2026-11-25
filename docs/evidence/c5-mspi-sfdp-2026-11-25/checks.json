@@ -1,0 +1,144 @@
+{
+  "schema": 1,
+  "sourceBase": "b511e0b23e618af88adcce80f1f04c10d4cedd1d",
+  "scope": "Only mspi.rs plus a direct owned-module test/lint harness. No Cargo/dependency build, emulator/native guest/WASM/firmware run or benchmark.",
+  "files": [
+    {
+      "file": "esp32c5/src/mspi.rs",
+      "bytes": 45452,
+      "sha256": "4b1c698189a986ad676c1f00a11c5f7d79bfb664e3bc1ba701e74600979481d5"
+    },
+    {
+      "file": "tools/c5-mspi-sfdp-harness.rs",
+      "bytes": 718,
+      "sha256": "902a4501d63ad2ed44a93212d2cae96c509c1eb57183e206f880450aee9ad066"
+    }
+  ],
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "prebuiltDependency": {
+    "file": "libesp_periph-9fc2a9e31d510bb1.rlib",
+    "bytes": 4536240,
+    "sha256": "5647b1b1e44d2c643e69c9e577ca4d5aa87418d387a47109e45eb0fd4bcd6968",
+    "searchDirectories": 5,
+    "sourceFile": "esp-periph/src/spi_mem.rs",
+    "sourceGitBlob": "f64b8c8a3990fb538c8a03be216bf47df81da44a",
+    "limit": "Existing native parent artifact linked as a dependency; not rebuilt here."
+  },
+  "checks": [
+    {
+      "check": "compile",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T19:36:34.428514+00:00",
+      "finishedAtUTC": "2026-11-24T19:36:34.610651+00:00",
+      "rawLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command": "rustc +stable --edition=2021 --test tools/c5-mspi-sfdp-harness.rs --extern esp_periph=<caller-rlib> <caller -L dependency dirs> -o <isolated-test>"
+    },
+    {
+      "check": "tests",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T19:36:34.610834+00:00",
+      "finishedAtUTC": "2026-11-24T19:36:35.025095+00:00",
+      "rawLogSha256": "072b1d8bb0c089284d76cd12ef57069116f6345d6444b309217dd60e66f44d55",
+      "command": "<isolated-test> --include-ignored --skip external_ --test-threads=1"
+    },
+    {
+      "check": "clippy",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T19:36:35.025433+00:00",
+      "finishedAtUTC": "2026-11-24T19:36:35.219346+00:00",
+      "rawLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "command": "<stable-clippy-driver> --edition=2021 --test tools/c5-mspi-sfdp-harness.rs --extern esp_periph=<caller-rlib> <caller -L dependency dirs> -D warnings -o <isolated-lint>"
+    }
+  ],
+  "results": {
+    "passed": 21,
+    "priorCases": 17,
+    "newCases": 4,
+    "priorTestsByteUnchanged": true,
+    "failed": 0,
+    "ignored": 0,
+    "filteredOut": 0,
+    "warningsDenied": true,
+    "lintAllowances": false,
+    "guestExecution": false,
+    "lcdAcceptance": false
+  },
+  "negativeRegression": {
+    "sourceHandler": "b511e0b23e618af88adcce80f1f04c10d4cedd1d",
+    "case": "mspi::tests::factory_sfdp_probe_reads_xmc_c_byte_without_claiming_d_series_caps",
+    "compileExitCode": 0,
+    "testExitCode": 101,
+    "failure": "The original exact phase write returns false for5a before the added read window.",
+    "rawLog": {
+      "bytes": 618,
+      "sha256": "ef93f78783da4dbdaa4f0e937a8ce62f7453711148373e3eaa44593a2a41443b"
+    }
+  },
+  "suppliedNative": {
+    "rerunInThisChange": false,
+    "sourceBase": "b511e0b23e618af88adcce80f1f04c10d4cedd1d",
+    "sourceTreeLimit": "Parent BOD0/route glue was under review at capture; exact committed capture tree is not asserted by this owner receipt.",
+    "instructions": 26951310,
+    "nominalCycles": 26951296,
+    "uartBytes": 3415,
+    "nonzeroPixels": 0,
+    "mepc": "4080f804",
+    "mcause": 7,
+    "mtval": "60003000",
+    "startValue": "00040000",
+    "logs": [
+      {
+        "file": "native-machine-lcd273-startup-bod0-ulp-route.log",
+        "bytes": 9730,
+        "sha256": "f21dfe89a413418901d344bc1065c70b46effb614da058cfabcaca8eaaf3ae45"
+      },
+      {
+        "file": "native-machine-lcd273-startup-bod0-mspi-trace.log",
+        "bytes": 12723,
+        "sha256": "6e5e0e09c64af7104baa85e506d4235ec8aa68143e14946e16633a612e2117ab"
+      }
+    ]
+  },
+  "actualTransaction": {
+    "first9fNominalCycle": 26935680,
+    "second9fNominalCycle": 26936064,
+    "observedPriorJedecW0": "00194020",
+    "sfdpStartNominalCycle": 26951296,
+    "pcrConfig": "00000005",
+    "pcrClock": "00000605",
+    "wireHz": 80000000,
+    "spi1": {
+      "addr": "00000032",
+      "ctrl": "00000000",
+      "user": "f0000000",
+      "user1": "5c000007",
+      "user2": "7000005a",
+      "mosiDlen": "00000000_inactive",
+      "misoDlen": "00000007",
+      "misc": "00000002",
+      "ddr": "00000020"
+    },
+    "target": "CS0 virtual XMC32MiB; CS1 PSRAM unselected."
+  },
+  "boundaries": {
+    "knownRange": "30..38 exclusive, request must fit wholly",
+    "jedec": "20/40/19 and exact32MiB array",
+    "maxSerialHz": 80000000,
+    "mode": "Actual Mode0 STR user shape only",
+    "unsupported": "Other SFDP ranges/capacities, invalid phases, high buffer, BUSY/SUS/pending/deep power-down, held-CS, DTR, unknown engines",
+    "rejectCombinations": 26,
+    "wrongCapacityRejectMiB": 16,
+    "rxTailPreserved": true,
+    "statusWelQeProtectionPreserved": true,
+    "rdStatusMmuArraysPreserved": true,
+    "noWriteCommandsAdded": true,
+    "validDeliveredReadCancelsResetEnable": true,
+    "endBits": "0x18 only after actual byte copy",
+    "separateCSRoutingUnchanged": true
+  },
+  "curation": {
+    "committed": "Bounded transaction parameters, eight vendor register bytes, source/input/artifact hashes and aggregate correctness results.",
+    "omitted": "Raw UART/peripheral/probe streams, binary, complete disassembly and absolute local identities remain ignored.",
+    "publication": false
+  }
+}

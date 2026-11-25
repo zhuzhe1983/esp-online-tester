@@ -1,0 +1,100 @@
+{
+  "baseCommit": "2232484e38f66ff8af2775ae9c7d9e67aa340215",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "tests": {
+    "passed": 58,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "previousBootAnalog": 49,
+    "newProvider": 1,
+    "newRequestModule": 7,
+    "crossModule": 1
+  },
+  "lint": "clippy-driver -D warnings PASS; same58 tests PASS",
+  "outputs": [
+    {
+      "privateOutput": "${INTEGRATION_ROOT}/target/c5-wifi-clock-requests-owned/owned-tests.txt",
+      "bytes": 6191,
+      "sha256": "a8e5e049518280f267057102e7822bf47ca5050a391e695019da85201e6352d4",
+      "retainedOutsideGit": true
+    },
+    {
+      "privateOutput": "${INTEGRATION_ROOT}/target/c5-wifi-clock-requests-owned/owned-lint.txt",
+      "bytes": 6191,
+      "sha256": "a8e5e049518280f267057102e7822bf47ca5050a391e695019da85201e6352d4",
+      "retainedOutsideGit": true
+    }
+  ],
+  "commands": [
+    "python3 docs/evidence/c5-wifi-clock-requests-2026-11-25/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\"",
+    "python3 docs/evidence/c5-wifi-clock-requests-2026-11-25/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\" --compiler clippy-driver --lint"
+  ],
+  "parentObservedBoundary": {
+    "logSha256": "ba136ac655cdb8ed3ff7644c9c4990ff97cfb64d69e7109db5ca5f1f746a0cfe",
+    "instructions": 44199355,
+    "nominalCycles": 44199294,
+    "uartBytes": 4536,
+    "pc": "0x40800d2a",
+    "address": "0x600a9c14",
+    "read": true,
+    "cause": 5,
+    "executedByThisLane": false
+  },
+  "staticRmwSequence": {
+    "groups": [
+      "0x400",
+      "0x4",
+      "0x200",
+      "0x1fb"
+    ],
+    "valuesFromPor0": [
+      "0x400",
+      "0x404",
+      "0x604",
+      "0x7ff"
+    ],
+    "writePcs": [
+      "0x40800d32",
+      "0x40800d4e",
+      "0x40800c70",
+      "0x40800c8a"
+    ],
+    "notRuntimeObservation": true
+  },
+  "artifacts": [
+    {
+      "path": "esp32c5/src/modem_wifi_clock.rs",
+      "bytes": 5830,
+      "sha256": "12f3463b26b3c10006174df6b54d803fdc54f393628147093841526a98f4e4c6"
+    },
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "bytes": 70943,
+      "sha256": "a02965bcef960f51caf70be17856f0c97d5370158d4ca18c9c1a74e24f685bac"
+    },
+    {
+      "path": "docs/evidence/c5-wifi-clock-requests-2026-11-25/owned-harness.rs",
+      "bytes": 1881,
+      "sha256": "ec4aa5f547989216fe1390d7778ba3274821a8823ff9a6833a1112632f821f4e"
+    },
+    {
+      "path": "docs/evidence/c5-wifi-clock-requests-2026-11-25/run-owned.py",
+      "bytes": 1117,
+      "sha256": "02415bf8afbb2c142870c0bf62e2f70248cfb3f1cc09027874c3a1f4825e0fef"
+    },
+    {
+      "path": "docs/evidence/c5-wifi-clock-requests-2026-11-25/sources.json",
+      "bytes": 5553,
+      "sha256": "46cc7bf2e32ceba46546eadb86548dd94b3325ceb4433dfcee9ba0e0f9b1e804"
+    }
+  ],
+  "limits": [
+    "No lib/Bus/Soc/reset/profile/ModelLimit integration in this commit",
+    "No Cargo/native/WASM/browser/benchmark or post-integration original guest run",
+    "Only request state; no running WiFi/PHY/MAC engine"
+  ],
+  "negativeResults": "No failed owned run; unsupported modes and false-provider cases tested transactionally",
+  "evidencePrivacy": "PASS:5 scoped tracked evidence files,0gzip; complete stdout remains outside Git. Manual scope review retains only source pins/compact results/reproduction helpers.",
+  "diffCheck": "PASS"
+}

@@ -1,0 +1,119 @@
+{
+  "scope": "Standalone owned module; no Cargo, workspace, native guest, WASM or benchmark",
+  "source": "esp32c5/src/software_interrupt.rs",
+  "sourceSha256": "14d5c014effe8335c03043b6121aa6ae942d1cf319c51be5af9582ec3ce8e7b8",
+  "tools": {
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "clippy-driver": "clippy 0.1.100 (0ef1bc3860 2026-11-09)"
+  },
+  "checks": [
+    {
+      "command": [
+        "rustup",
+        "run",
+        "stable",
+        "rustc",
+        "--edition=2021",
+        "--test",
+        "esp32c5/src/software_interrupt.rs",
+        "-D",
+        "warnings",
+        "-o",
+        "<owned-output>/software-interrupt-tests"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalizedOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputFile": "check-0.txt"
+    },
+    {
+      "command": [
+        "<owned-output>/software-interrupt-tests",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "ab885c303fc2575f5a31a1917ebc510b437bd3ecfde8a5266c228b3063c2ae34",
+      "normalizedOutputSha256": "ab885c303fc2575f5a31a1917ebc510b437bd3ecfde8a5266c228b3063c2ae34",
+      "outputFile": "check-1.txt"
+    },
+    {
+      "command": [
+        "rustup",
+        "run",
+        "stable",
+        "clippy-driver",
+        "--edition=2021",
+        "--test",
+        "esp32c5/src/software_interrupt.rs",
+        "-D",
+        "warnings",
+        "-o",
+        "<owned-output>/software-interrupt-clippy"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalizedOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputFile": "check-2.txt"
+    }
+  ],
+  "normalization": "Caller-supplied repository/output paths replaced by labels; no other text changed.",
+  "exitCode": 0,
+  "checkedAtUTC": "2026-11-24T18:51:47.702326+00:00",
+  "baseCommit": "9dedc474ab35401466c51318dba6ba04b882d200",
+  "result": {
+    "passed": 8,
+    "failed": 0,
+    "ignored": 0,
+    "exactWords": 1,
+    "acceptedValues": [
+      0,
+      1
+    ],
+    "matrixSource": 23,
+    "level": true
+  },
+  "harnessScriptSha256": "1a520dd5ed53e1f7f875ed11da477752f7602fe20fac542f2f88be07c4ea5027",
+  "sourcesSha256": "30f32b577dc976ab6540fb05a75df9e9386269e719ccff7ad0463306591995e5",
+  "sourcePairs": 4,
+  "identicalPairs": 4,
+  "staticChecks": {
+    "source23EnumCheckedBothVersions": true,
+    "registerPor0Bit0Rw": true,
+    "reservedAtomicReject": true,
+    "diffCheck": "passed",
+    "evidencePrivacy": "passed: 3166 tracked evidence files, 95 gzip",
+    "manualPrivacyReview": "Public URLs, relative files, source hashes and counts only; caller paths normalized.",
+    "evidenceFilesUnder50000Bytes": true
+  },
+  "typed": {
+    "file": "lcd273-app-seg1-40800000.bin.typed.dis",
+    "sha256": "4696bac57e7e7a848e73c86de7d0513c81e6ce5ec3e9483e41f6866b3cc7ba41",
+    "staticSequence": [
+      "4080c154 calls40802bf2/40802b92",
+      "40802be8 stores1 to600c5090",
+      "4080c174 conditional ordinary read",
+      "40802b48 handler stores0"
+    ],
+    "nativeExecutedByThisCommit": false
+  },
+  "resetContract": "Declared functional CPU/LP retain; HP/Chip clear. No per-flop silicon guarantee.",
+  "curatedTestOutput": {
+    "file": "owned-tests.txt",
+    "rawSha256": "ab885c303fc2575f5a31a1917ebc510b437bd3ecfde8a5266c228b3063c2ae34",
+    "curatedSha256": "0129d87ce8cce62433d2736e83c8751227de02ea83b86782e63f2747a70d4906",
+    "normalization": "Leading/trailing blank lines stripped only."
+  },
+  "limits": [
+    "No Bus/lib/Soc/Clock/CLIC changes; parent owns strict-profile routing and lifecycle.",
+    "No native guest, Cargo/workspace, WASM, browser or benchmark.",
+    "FROM_CPU1..3, DATE/CLOCK_GATE and every other word remain unsupported.",
+    "Existing CPU_CLK/HP APB4 clock premise only; no new gate/power/settling model.",
+    "No host yield, preselected CPU line, PC/SP rewrite, autoack or context-switch claim."
+  ],
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "snapshotRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+  "scope": "Static curation verification only; no compiler, guest, component tests, browser or benchmark executed",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "docs/evidence/c5-evidence-retention-final-2026-11-25/verify.py",
+        "--repo",
+        "${REPO}",
+        "--integration-root",
+        "${INTEGRATION_ROOT}",
+        "--cache-root",
+        "${C5_CACHE_ROOT}"
+      ],
+      "exitCode": 0,
+      "outputBytes": 430,
+      "outputSha256": "f3e326ced700ab4a11342132dfb13ef646bc3f6c0d17a5e170c725d1ff9d9467",
+      "privateOutput": "${INTEGRATION_ROOT}/target/c5-evidence-retention-final-20261125/from-df8a8bf5/verification/check-0.txt"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "outputBytes": 0,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "privateOutput": "${INTEGRATION_ROOT}/target/c5-evidence-retention-final-20261125/from-df8a8bf5/verification/check-1.txt"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exitCode": 0,
+      "outputBytes": 0,
+      "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "privateOutput": "${INTEGRATION_ROOT}/target/c5-evidence-retention-final-20261125/from-df8a8bf5/verification/check-2.txt"
+    },
+    {
+      "command": [
+        "node",
+        "tools/check-evidence-privacy.mjs",
+        "docs/evidence/c5-apm-teardown-2026-11-24",
+        "docs/evidence/c5-app-pmu-config-2026-11-24",
+        "docs/evidence/c5-atomic-policy-2026-11-25",
+        "docs/evidence/c5-bod0-startup-2026-11-25",
+        "docs/evidence/c5-boot-analog-2026-11-24",
+        "docs/evidence/c5-cache-boot-2026-11-24",
+        "docs/evidence/c5-cache-freeze-2026-11-24",
+        "docs/evidence/c5-evidence-retention-final-2026-11-25",
+        "docs/evidence/c5-lp-fast-mux-2026-11-25",
+        "docs/evidence/c5-lp-timer-2026-11-24",
+        "docs/evidence/c5-memory-policy-integration-2026-11-25",
+        "docs/evidence/c5-modem-domain-2026-11-24",
+        "docs/evidence/c5-modem-lp-selectors-2026-11-25",
+        "docs/evidence/c5-mspi-boot-2026-11-24",
+        "docs/evidence/c5-mspi-clock-2026-11-24",
+        "docs/evidence/c5-ocode-handshake-2026-11-24",
+        "docs/evidence/c5-ordinary-watchdog-glue-2026-11-25",
+        "docs/evidence/c5-peripheral-clock-disable-2026-11-25",
+        "docs/evidence/c5-pll-boot-2026-11-24",
+        "docs/evidence/c5-pll-div-gates-2026-11-25",
+        "docs/evidence/c5-psram-page-2026-11-24",
+        "docs/evidence/c5-rom-factory-2026-11-24",
+        "docs/evidence/c5-rwdt-boot-2026-11-24",
+        "docs/evidence/c5-saradc-entropy-2026-11-24",
+        "docs/evidence/c5-sec-clock-2026-11-25",
+        "docs/evidence/c5-security-init-2026-11-25",
+        "docs/evidence/c5-sha-boot-2026-11-24",
+        "docs/evidence/c5-software-interrupt-2026-11-25",
+        "docs/evidence/c5-swd-boot-2026-11-24",
+        "docs/evidence/c5-timg-wdt-disable-2026-11-24",
+        "docs/evidence/c5-usb-sticky-raw-2026-11-25"
+      ],
+      "exitCode": 0,
+      "outputBytes": 128,
+      "outputSha256": "c0fd07328a249754f5da94f87b16f933326e3141f89cccc5c1ce6eadc71fd1e4",
+      "privateOutput": "${INTEGRATION_ROOT}/target/c5-evidence-retention-final-20261125/from-df8a8bf5/verification/check-3.txt"
+    }
+  ],
+  "results": {
+    "scope": "static metadata/capture verification only",
+    "jsonOldValuesPreserved": 42,
+    "readmeEditsReplayed": 11,
+    "stdoutArchives": 12,
+    "stdoutBytes": 22791,
+    "logReferences": 164,
+    "distinctLogHashes": 143,
+    "componentHashReferences": 47,
+    "componentBytesKnown": 34,
+    "componentBytesUnknown": 13,
+    "privateOldReceiptsVerified": 53,
+    "privateStdoutVerified": 12,
+    "privateLogArtifactsVerified": 143,
+    "privateComponentContentsVerified": 34
+  },
+  "privacyScope": "Recorded privacy pass covers the listed tracked directories before this result receipt was added; this new receipt is manually reviewed and the same scoped check is repeated before commit",
+  "manualPrivacyReview": "Caller labels, relative paths, public revisions, source/input/artifact hashes and compact results only; no identities or raw streams",
+  "originalReceiptMapping": "receipt-hash-mapping.json",
+  "limitations": [
+    "13 historical raw/output hashes have unknown bytes in inspected roots; original hash/results/commands retained",
+    "No new firmware outcome or functional/performance claim",
+    "No raw artifact contents or private originals committed"
+  ]
+}

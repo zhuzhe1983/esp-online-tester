@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "scope": "C5 ABI fresh-epoch recovery text and native/future-WASM regression correction only. No frontend/backend expansion or firmware execution.",
+  "sourceBase": "f7a30105115fc98d1487cd972e7e5d069eae4eea",
+  "sourceFiles": [
+    {
+      "file": "wasm/src/machine.rs",
+      "sha256": "0f16cc119fc42a90d2e90b46292dab77245e2620112e41eb25f95f5aea8745fb"
+    },
+    {
+      "file": "wasm/src/c5_tests.rs",
+      "sha256": "f12bceefa2b78097107073dab5323c2c16f696909e604c35dbc0ebbe78216f33"
+    },
+    {
+      "file": "tools/platform-c5-wasm-test.mjs",
+      "sha256": "af157df8030f2e04b68585fee8c588d93ba6730eef82f584b2d75d853d9171f1"
+    }
+  ],
+  "contract": {
+    "sameHandleAfterSram": "Reject ROM reload and ROM boot even with zero cycles; do not recreate withdrawn cold profile.",
+    "freshHandle": "Accept pinned ROM at a new VM/chip epoch and select ROM reset PC with zero instructions/cycles.",
+    "backendChanged": false,
+    "historicalReceiptsChanged": false,
+    "localInputIgnoredCases": [
+      "external_c5_abi_checks_exact_rom_and_requires_fresh_epoch_after_sram_boot",
+      "external_c5_original_lcd273_inputs_validate_through_the_public_abi_without_execution"
+    ],
+    "preservedChecks": [
+      "corrupt ROM rejection before mutation",
+      "original kind5 merged factory validation and corrupt image rejection",
+      "32MiB Flash final-page raw restore and bounds rejection",
+      "strict SRAM app-direct startup",
+      "zero original guest instructions and zero cycles"
+    ]
+  },
+  "checks": [
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-cold-abi-lane CARGO_BUILD_JOBS=1 CARGO_PROFILE_RELEASE_LTO=false ESP32SIM_ROM_DIR=<pinned-input-directory> ESP32SIM_C5_FACTORY=<original-LCD273.bin> cargo +stable test --release -p esp32sim-wasm --lib c5_tests:: -- --include-ignored",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T14:04:21.635811+00:00",
+      "finishedAtUTC": "2026-11-24T14:05:20.060827+00:00",
+      "tests": 5,
+      "pass": 5,
+      "fail": 0,
+      "ignored": 0,
+      "c5Cases": 3,
+      "sharedHelperCases": 2,
+      "toolchain": "stable Rust1.100.0",
+      "targetDirectory": "target/c5-cold-abi-lane",
+      "profile": "native release opt3/debug1/codegen1, explicit CARGO_PROFILE_RELEASE_LTO=false for this focused test only; not a production WASM build",
+      "originalC5Instructions": 0,
+      "cyclesAtColdSetup": 0
+    },
+    {
+      "command": "ESP32SIM_C5_ROM=<pinned-ROM.elf> ESP32SIM_C5_FACTORY=<original-LCD273.bin> node --test --test-reporter=tap tools/platform-c5-rom-test.mjs tools/platform-c5-test.mjs",
+      "exitCode": 0,
+      "tests": 14,
+      "pass": 14,
+      "fail": 0,
+      "skipped": 0,
+      "requiresCompiledWasm": false,
+      "kind": "source/protocol contracts with controlled Worker ABI doubles; no old WASM binary used"
+    },
+    {
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "requiresCompiledWasm": false,
+      "result": "existing channel/snapshot and C5 mode/restricted-capability/32MiB-page source-Worker contracts pass with controlled ABI doubles"
+    },
+    {
+      "command": "node --check tools/platform-c5-wasm-test.mjs",
+      "exitCode": 0,
+      "result": "syntax only; updated actual-WASM semantic assertions are pending final integrated WASM rebuild"
+    },
+    {
+      "command": "Inspect every #[ignore] function in wasm/src/c5_tests.rs for external_ prefix",
+      "exitCode": 0,
+      "matched": 2
+    }
+  ],
+  "pending": [
+    {
+      "command": "ESP32SIM_C5_WASM=<new-final-WASM> ESP32SIM_C5_ROM=<pinned-ROM.elf> ESP32SIM_C5_FACTORY=<original-LCD273.bin> node --test tools/platform-c5-wasm-test.mjs",
+      "state": "not run in this change",
+      "reason": "No new WASM build was authorized for this focused correction. The earlier production artifact predates the new backend fresh-epoch contract."
+    }
+  ],
+  "historicalWasm": {
+    "bytes": 8573206,
+    "sha256": "18931572bfab8c2decd82d5bf0109024da7f38bbe67f6aee44af8cf6b3f365ce",
+    "sourceCommit": "c88262b565cb6d64e7ce11ccd1efc31217578421",
+    "role": "earlier production wrapper artifact; retained as history and not used to validate the new assertions",
+    "receipt": "../c5-runtime-integration-2026-11-24/production-checks.json"
+  },
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+      "committed": false,
+      "sourceUnchangedAfterChecks": true
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+      "committed": false,
+      "sourceUnchangedAfterChecks": true
+    }
+  ],
+  "limits": [
+    "No new WASM build or execution of the updated raw-WASM assertions; final integrated artifact must rerun them.",
+    "No original C5 guest instruction execution, physical operation, browser, broad workspace checks, CPU benchmark or publication.",
+    "Source/protocol Node tests do not prove original application, Flash programming, SD mount or LCD output.",
+    "Public catalog byte hashes, trial/verification state and C5 ROM qualification are unchanged."
+  ]
+}

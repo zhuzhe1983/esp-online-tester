@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "review": "P2: missing C5 cause/effect contract for SHUT -> cache error",
+  "reviewedCommit": "80107aefc6abbe904edea60516f5bb950e3bed8d",
+  "withdrawnClaim": "operational+corresponding bus-shut+TRACE1 causes raw bit4 and a Prohibited guest access.",
+  "evidenceGap": {
+    "source": "Fixed553/554 C5 cache_reg.h; matching sha256 763acb8902916afcbc5dd9c113618c6828b612575aecd4b8799b1dfb5edf7fa8",
+    "fields": [
+      {
+        "offset": "004",
+        "lines": "37-45",
+        "fact": "SHUT disables bus access; no defined stall-versus-fail outcome."
+      },
+      {
+        "offset": "168",
+        "lines": "1095-1099",
+        "fact": "Bit4 enables CPU L1-Cache access-fail IRQ; it does not establish SHUT as a cause."
+      },
+      {
+        "offset": "164",
+        "lines": "1075-1082",
+        "fact": "Mode0 does not propagate failure to a request; this does not justify a synthesized Prohibited result."
+      }
+    ],
+    "llAndTrm": "No additional qualifying causal rule found in the fixed sources cited in sources.json.",
+    "native": "The supplied original guest prefix only configured detection; it did not trigger this failure case."
+  },
+  "correction": {
+    "production": "observe_cpu_failure preserves every field for allowed and blocked channels; allowed Ok, blocked Err. No force/event injection method.",
+    "configuration": "TRACE, ENA0/16/31 with sticky unknown whole-word readback, CLR, RAW write rejection, ST, source29 and cache reset unchanged.",
+    "componentTestStimulus": "Private seed_raw_for_register_component inside cfg(test) only. This tests mask/clear/retention/reset for an assumed raw latch state, not hardware or guest event causality."
+  },
+  "checks": {
+    "passed": 15,
+    "failed": 0,
+    "ignored": 0,
+    "filteredOut": 0,
+    "originalEightTestsByteUnchanged": true,
+    "clippyWarningsDenied": true,
+    "fullBuildOrGuestRun": false
+  },
+  "history": {
+    "originalChecksSha256": "df984641045b146a7a1df637c36029f8a0bf79b5260eb7504cc60c4b7de977dc",
+    "originalSourcesSha256": "f23e0bc7c3992e66d49d29cb56d34db466c8890ba23ce84d0025ac281f87a349",
+    "immutableOriginal": "80107aefc6abbe904edea60516f5bb950e3bed8d",
+    "refPreserved": "codex/c5-cache-errors-causal-review-base-20261125"
+  }
+}

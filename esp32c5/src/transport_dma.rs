@@ -134,6 +134,7 @@ impl<'a>DmaMemory<'a>{
     fn new(bus:&'a mut C5Bus,start:u32,end:u32,conf:u32)->Self{Self{bus,start,end,burst:(conf>>8)&3}}
     fn at(address:u32,len:usize,base:u32,size:usize)->Option<usize>{let n=address.checked_sub(base)? as usize;n.checked_add(len).filter(|&end|end<=size).map(|_|n)}
     fn range_valid(&self,address:u32,len:usize,write:bool)->bool {
+        if !self.bus.dma_apm_supported(){return false;}
         if len==0{return address>=self.start&&address<=self.end;}
         let Some(last)=address.checked_add(len as u32-1)else{return false;};
         if address<self.start||last>self.end{return false;}

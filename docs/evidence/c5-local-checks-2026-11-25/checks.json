@@ -1,0 +1,1096 @@
+{
+  "schema": 1,
+  "kind": "local-functional-validation-public-draft",
+  "source": {
+    "privateIntegrationRevision": "c8232bfcc3464bd62bdafbc93c18d096c169d6f5",
+    "tree": "9761c4662bf79e332da300c21536e7492a8d6b1e",
+    "publicRevision": null,
+    "publicRevisionMapping": "to-be-supplied-separately",
+    "baselineMain": "930731a2fb52cfecb9eb43fd4c2651c7c74e1e70",
+    "cleanBeforeAndAfter": true,
+    "sourceFiles": [
+      {
+        "path": "Cargo.toml",
+        "bytes": 403,
+        "sha256": "d9be55092e3c57172d69af2b01ff85f3ca5907231d6539fe91f63c89eb450b52"
+      },
+      {
+        "path": "Cargo.lock",
+        "bytes": 2433,
+        "sha256": "1736a291b7301718c9483f86933b1aa1ba1a800c287ac5c6e273c46ab4835c22"
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "bytes": 6469,
+        "sha256": "79b500d6d778bf4a5a8d14e9fb1b2bcc548f0c0c5ac7d3f3ea0df55e79804e4e"
+      },
+      {
+        "path": "tools/wasm-rustflags.sh",
+        "bytes": 1045,
+        "sha256": "4efde895b6681de70c855e65afc23c0727eecf845e342c8ae2a0492f7264826c"
+      },
+      {
+        "path": "tools/wasm-build.sh",
+        "bytes": 1177,
+        "sha256": "a384ccbad27088ef72e2267b6fb0d9b99754119f188c379aea5a446ea7560036"
+      },
+      {
+        "path": "tools/wasm-jit-test.sh",
+        "bytes": 527,
+        "sha256": "6066c531bce54e6a90507cfc4d76b067c3851712f4256bb1f6d44f83f2a73ab5"
+      },
+      {
+        "path": "esp32c5/src/wifi_compat_external_tests.rs",
+        "bytes": 5820,
+        "sha256": "1f615bdab7102e437b176ebdd46ed8f88472b2dfc4d44bb71603bff7aede8158"
+      }
+    ]
+  },
+  "environment": {
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+    "node": "v26.13.0",
+    "python": "Python 3.15.2",
+    "ciNodeMajor": 24,
+    "localNodeDiffersFromCI": true,
+    "nativeAndWasmBuildJobs": 8,
+    "nativeBuildOverridesAbsent": [
+      "RUSTFLAGS",
+      "CARGO_TARGET_DIR",
+      "CARGO_PROFILE_RELEASE_LTO",
+      "CARGO_PROFILE_RELEASE_DEBUG",
+      "CARGO_PROFILE_RELEASE_CODEGEN_UNITS"
+    ],
+    "nativeReleaseProfileFromPinnedCargoToml": {
+      "opt-level": 3,
+      "debug": 1,
+      "lto": "fat",
+      "codegen-units": 1
+    },
+    "wasmScriptDefaults": {
+      "RUSTFLAGS": "-Cllvm-args=-inline-threshold=2000",
+      "CARGO_PROFILE_RELEASE_DEBUG": "0",
+      "CARGO_PROFILE_RELEASE_STRIP": "debuginfo",
+      "WASM_OPT": "not recorded in the raw environment; script defaults to 0 unless caller sets 1"
+    },
+    "nodePolicy": {
+      "sequentialGroups": true,
+      "testConcurrency": 1,
+      "reporter": "tap",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "ESP32SIM_ROM_DIR": "$CHECKOUT/web/wasm/fw",
+      "ESP32SIM_WASM": "$CHECKOUT/web/wasm/esp32sim.wasm",
+      "ESP_NETWORK_BACKEND": "$CHECKOUT/target/release/esp-network-backend"
+    },
+    "privateInputEnvironment": {
+      "C5_ROM_ELF": "$INPUT_DIR/esp32c5_rev100_rom.elf",
+      "C5_LCD273_FACTORY": "$INPUT_DIR/lcd273-factory.bin",
+      "C5_SD_IMG": "$INPUT_DIR/lcd273-sd64m.img",
+      "ESP32SIM_C5_ROM": "$INPUT_DIR/esp32c5_rev100_rom.elf",
+      "ESP32SIM_C5_FACTORY": "$INPUT_DIR/lcd273-factory.bin",
+      "ESP32SIM_C5_WASM": "$CHECKOUT/web/wasm/esp32sim.wasm"
+    },
+    "hardwareOsAndCpuMeasurements": "not captured in these validation receipts; no performance claim"
+  },
+  "inputs": {
+    "C5_ROM_ELF": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "C5_LCD273_FACTORY": {
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    "C5_SD_IMG": {
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6",
+      "provenance": "Pinned assertion in the actual named native case; distinct from the Photo fixture image."
+    }
+  },
+  "summary": {
+    "nativeWorkspace": {
+      "passed": 3513,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 170
+    },
+    "actualNamedNativeCase": {
+      "passed": 1,
+      "failed": 0,
+      "filtered": 603,
+      "explicitOfflineAssistance": true
+    },
+    "nativeVq": {
+      "passed": 44,
+      "failed": 0
+    },
+    "bothClippyWarningsDeniedPassed": true,
+    "nodeGroups": {
+      "completed": 26,
+      "processFailures": 0
+    },
+    "platformSuite": {
+      "fileCount": 136,
+      "passed": 554,
+      "failed": 0,
+      "skipped": 0,
+      "privateC5InputCasesActuallyPassed": 4
+    },
+    "networkRelay": {
+      "passed": 8,
+      "failed": 0,
+      "conditionalSkipped": 2
+    },
+    "wasmDifferential": {
+      "cases": 111126,
+      "isolatedGroups": 78,
+      "gpioCasesSeparate": 24
+    },
+    "uniqueGrandTotal": "not computed; suites overlap and case kinds differ"
+  },
+  "artifacts": {
+    "productionWasm": {
+      "bytes": 8902103,
+      "sha256": "dee308ca758e02e5574d1888b3b68d7f7b7071da6d0f193347a4cf8628ceb28f"
+    },
+    "productionWasmUnchangedAcrossNodeAndExtraChecks": true,
+    "nativeBinaries": {
+      "esp32sim": {
+        "bytes": 8863384,
+        "sha256": "8058f4da08131f2538fe1b8aecb3ac7cbd0b82e26879bc31ee59ba0716b40e2c"
+      },
+      "esp32sim-c3": {
+        "bytes": 8863432,
+        "sha256": "50fc51b59d9e61da88177014e333951852f19e7417f21a4d5f6c66bf1d324911"
+      },
+      "esp32sim-c6": {
+        "bytes": 8863432,
+        "sha256": "b0d1d07ec1d05729ad7cbbed52395777bf38e43bebf16d37f734cc0c27bad2f6"
+      },
+      "esp32sim-p4": {
+        "bytes": 8863432,
+        "sha256": "30c7c1129322514355cd4b1ab8a21643fb6cee1489c06cc523415bcbd5524969"
+      },
+      "esp-network-backend": {
+        "bytes": 613360,
+        "sha256": "f7593fb0230204a92f10227efd1072ca6d6157143de0c014b8228f99a1852f90"
+      }
+    }
+  },
+  "nativeChecks": [
+    {
+      "name": "native-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environmentDelta": {},
+      "exitCode": 0,
+      "functionalWallSeconds": 1.241,
+      "rawLog": {
+        "name": "c5-photo-final-native-clippy.log",
+        "bytes": 318,
+        "sha256": "256f760f677afddeb70b13bf36f9627dfe10cb493ad00657f9c42a561ce963c3"
+      }
+    },
+    {
+      "name": "build-workspace",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--workspace"
+      ],
+      "environmentDelta": {},
+      "exitCode": 0,
+      "functionalWallSeconds": 76.135,
+      "rawLog": {
+        "name": "c5-photo-final-build-workspace.log",
+        "bytes": 422,
+        "sha256": "f207673347d773db1d2d6cb246e05b32d541594d3565267a253a743c1719eb71"
+      }
+    },
+    {
+      "name": "workspace",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--workspace",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "environmentDelta": {},
+      "exitCode": 0,
+      "functionalWallSeconds": 196.254,
+      "rawLog": {
+        "name": "c5-photo-final-workspace.log",
+        "bytes": 394050,
+        "sha256": "4a25cc6b38c9a70295bd8ed13eebe6037c80d4150b6b28ae49b5cd49a3d5d7e8"
+      },
+      "totals": {
+        "passed": 3513,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 170
+      },
+      "nonFailingBuildWarnings": [
+        "Example targets esp32s31::bringup and esp32c5::bringup share output filenames bringup and bringup.dSYM."
+      ]
+    },
+    {
+      "name": "actual-factory-driver",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp32c5",
+        "external_original_factory_offline_driver_reaches_its_menu_with_real_event_queue",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "environmentDelta": {},
+      "exitCode": 0,
+      "functionalWallSeconds": 71.059,
+      "rawLog": {
+        "name": "c5-photo-final-actual-factory-driver.log",
+        "bytes": 4039,
+        "sha256": "ecd898e8e94bc29dd0e679aad657946c988b8a80cbe53b5d89236990ace7f485"
+      },
+      "totals": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 603
+      },
+      "actualNamedCasePassed": true,
+      "mode": "explicit-offline-driver-compatibility",
+      "strictHardwareAcceptance": false
+    },
+    {
+      "name": "native-vq",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp32s3",
+        "--test",
+        "machine",
+        "--test",
+        "virtual_stops"
+      ],
+      "environmentDelta": {
+        "ESP32SIM_VQ_NATIVE": "1"
+      },
+      "exitCode": 0,
+      "functionalWallSeconds": 20.445,
+      "rawLog": {
+        "name": "c5-photo-final-native-vq.log",
+        "bytes": 3377,
+        "sha256": "34592ae9ec7d02eef6c5122ccf4e203533d80903c03fe67a1f15c9eb3befddd0"
+      },
+      "totals": {
+        "passed": 44,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      }
+    },
+    {
+      "name": "matched-cli",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "-p",
+        "esp32sim",
+        "--bins"
+      ],
+      "environmentDelta": {},
+      "exitCode": 0,
+      "functionalWallSeconds": 69.758,
+      "rawLog": {
+        "name": "c5-photo-final-matched-cli.log",
+        "bytes": 154,
+        "sha256": "afa4499818debddc41bb710aaee82eaec29a0ff14481cfea7caec29d6b7c52f7"
+      }
+    }
+  ],
+  "wasmChecks": [
+    {
+      "name": "wasm-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "-p",
+        "esp32sim-wasm",
+        "--features",
+        "jit-tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exitCode": 0,
+      "functionalWallSeconds": 1.747,
+      "rawLog": {
+        "name": "c5-photo-final-wasm-clippy.log",
+        "bytes": 416,
+        "sha256": "13b296e3895047dd20ddf9d44b6b0f6e2ef952b4f8788d44e95f55fddf4b5c18"
+      }
+    },
+    {
+      "name": "wasm-build",
+      "command": [
+        "tools/wasm-build.sh"
+      ],
+      "exitCode": 0,
+      "functionalWallSeconds": 30.669,
+      "rawLog": {
+        "name": "c5-photo-final-wasm-build.log",
+        "bytes": 478,
+        "sha256": "9007cd901d19fffbdd6476bd0024082740735a941c83eed1655a750917869808"
+      }
+    },
+    {
+      "name": "wasm-jit-differential",
+      "command": [
+        "tools/wasm-jit-test.sh"
+      ],
+      "exitCode": 0,
+      "functionalWallSeconds": 76.198,
+      "rawLog": {
+        "name": "c5-photo-final-wasm-jit-differential.log",
+        "bytes": 6005,
+        "sha256": "979e4f7324726e4da2ac0e34c195c15cffcfc585ffae440c09c793246679992c"
+      },
+      "observedCounts": {
+        "differentialCases": 111126,
+        "isolatedGroups": 78,
+        "compiledModulesReleased": 99679,
+        "gpioWaveformCases": 24,
+        "gpioCompiledModulesReleased": 738,
+        "derivation": "explicit final PASS lines; group case sum independently matched"
+      }
+    },
+    {
+      "name": "wasm-profile-build",
+      "command": [
+        "sh",
+        "-c",
+        ". ./tools/wasm-rustflags.sh\ncargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile"
+      ],
+      "exitCode": 0,
+      "functionalWallSeconds": 78.711,
+      "rawLog": {
+        "name": "c5-photo-final-wasm-profile-build.log",
+        "bytes": 459,
+        "sha256": "cc0b4646a3c1f4d0f7fa9b3c6202347dfaeb0b483afca474610f616d223c3dd9"
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "index": 0,
+      "name": "privacy",
+      "command": [
+        "node",
+        "tools/check-evidence-privacy.mjs",
+        "docs/evidence",
+        "docs/platform/evidence/seeed*"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-00-privacy.log",
+        "bytes": 131,
+        "sha256": "1ee338c4d84906ea782fe7bcee6bac308cca771496749bff653c217318eb2aa3"
+      },
+      "evidenceFilesChecked": 3655,
+      "gzipFilesChecked": 182,
+      "manualReviewStillRequired": true
+    },
+    {
+      "index": 1,
+      "name": "x5-results-test",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 21,
+        "suites": 0,
+        "pass": 21,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-01-x5-results-test.log",
+        "bytes": 2924,
+        "sha256": "641235fd2c9d89e18ff64073ce816a3c004ed8abc0bec42533a729ac5fbc3c62"
+      }
+    },
+    {
+      "index": 2,
+      "name": "x5-results-verify",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/verify-results.mjs"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-02-x5-results-verify.log",
+        "bytes": 432,
+        "sha256": "31657f825ccc5cb0b9347641ef7a3af3b4b206c74983a23444cc3a6c9be5703b"
+      }
+    },
+    {
+      "index": 3,
+      "name": "x5-m1-test",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 32,
+        "suites": 0,
+        "pass": 32,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-03-x5-m1-test.log",
+        "bytes": 4587,
+        "sha256": "e594f952a968b4f50df3eb7019a6305dec40d7914471ae84f778216116d64d40"
+      }
+    },
+    {
+      "index": 4,
+      "name": "x5-m1-verify",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-04-x5-m1-verify.log",
+        "bytes": 58,
+        "sha256": "e5303cb3c85b0fec6e9ece9a4a3f020551f39a027924f08248f3b701e555728a"
+      }
+    },
+    {
+      "index": 5,
+      "name": "x5-historical-test",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 30,
+        "suites": 0,
+        "pass": 30,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-05-x5-historical-test.log",
+        "bytes": 4308,
+        "sha256": "75956601de50c65e8bf0f3455d64a11bb02c99abd749cdaece526ffb9152d965"
+      }
+    },
+    {
+      "index": 6,
+      "name": "x5-historical-verify",
+      "command": [
+        "node",
+        "docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-06-x5-historical-verify.log",
+        "bytes": 57,
+        "sha256": "91b0afc0937d8b8638406cc6800dbbc2c3c589f9a7474878d253b428b17557a4"
+      }
+    },
+    {
+      "index": 7,
+      "name": "network-helper",
+      "command": [
+        "node",
+        "tools/network-helper-test.mjs"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-07-network-helper.log",
+        "bytes": 127,
+        "sha256": "18dc4bc02cb5191c5c981adbc373a5a80eccdb7fbd861240f4f329ba91023c30"
+      }
+    },
+    {
+      "index": 8,
+      "name": "network-relay",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "tools/network-relay-test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 10,
+        "suites": 0,
+        "pass": 8,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 2,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-08-network-relay.log",
+        "bytes": 2357,
+        "sha256": "6bd26ec54cb173bf59c0624d8070f80c6f41b3b51ee9d13c55776dcb37ed90a4"
+      },
+      "conditionalSkips": [
+        {
+          "name": "real native backend opens the caller-supplied public TCP target",
+          "missingEnvironment": "ESP_RELAY_TEST_TARGET"
+        },
+        {
+          "name": "real native backend forwards DNS through the caller-supplied public resolver",
+          "missingEnvironment": "ESP_RELAY_TEST_DNS"
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "name": "wasm-sections",
+      "command": [
+        "node",
+        "tools/check-wasm-sections.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-09-wasm-sections.log",
+        "bytes": 57,
+        "sha256": "b2f609d733567aa28d8a781e6f938840a6583b7bc6235fe8b872d4516b495cb2"
+      }
+    },
+    {
+      "index": 10,
+      "name": "wasm-demos14",
+      "command": [
+        "node",
+        "tools/wasm-test.mjs",
+        "hello",
+        "c3-hello",
+        "c6-hello",
+        "c6-xiao",
+        "p4-hello",
+        "p4-c6-hosted",
+        "p4-lcd35-synth",
+        "c6-energy-scan",
+        "c6-contiki",
+        "c6-contiki-net",
+        "c6-rpl-net",
+        "panel",
+        "tdisplay-prices",
+        "tdisplay-schematik"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-10-wasm-demos14.log",
+        "bytes": 1693,
+        "sha256": "6ac004b9c93b6540471e92cefde299f665faa61058b5b8970a64086a224bc967"
+      },
+      "demoCount": 14,
+      "caseNames": [
+        "hello",
+        "c3-hello",
+        "c6-hello",
+        "c6-xiao",
+        "p4-hello",
+        "p4-c6-hosted",
+        "p4-lcd35-synth",
+        "c6-energy-scan",
+        "c6-contiki",
+        "c6-contiki-net",
+        "c6-rpl-net",
+        "panel",
+        "tdisplay-prices",
+        "tdisplay-schematik"
+      ]
+    },
+    {
+      "index": 11,
+      "name": "platform-suite",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "tools/platform-*-test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 554,
+        "suites": 0,
+        "pass": 554,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-11-platform-suite.log",
+        "bytes": 144651,
+        "sha256": "807ee0a3f8447297c302f13529ca440475f610e655bb50cc255bc72851a5fd31"
+      },
+      "commandExpansion": "shell glob at pinned source",
+      "expandedTestFileCount": 136,
+      "expandedFileListSha256LfUtf8": "231f542336098dd24442b3afe63fbddd4d43f3834b41988a0c6ccc40e9a084ff",
+      "originalExpandedCommandReceipt": {
+        "id": "node",
+        "name": "c5-photo-final-node-checks.json",
+        "bytes": 28754,
+        "sha256": "7d62447f914de3cecaf57b83cb5043fcf5bee01a08ec65f230b91c6dba2b4da7"
+      },
+      "privateC5Inputs": {
+        "actualPassedCaseCount": 4,
+        "caseNames": [
+          "external_pinned_C5_ROM_protocol_keeps_Flash_and_TF_scopes_reset_and_clear_semantics",
+          "external_pinned_ROM_C5_backend_rejection_is_not_retried_as_SRAM_or_raw_flash",
+          "external_original_LCD273_bytes_remain_merged_Flash_in_the_frontend_protocol",
+          "external_actual_C5_WASM_loads_original_inputs_and_rejects_corruption_without_running_firmware"
+        ],
+        "scope": "protocol/input identity and actual WASM loading/rejection; these four are not four full firmware executions"
+      }
+    },
+    {
+      "index": 12,
+      "name": "waveshare-stat-order",
+      "command": [
+        "node",
+        "tools/check-waveshare-stat-order.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 4,
+        "suites": 0,
+        "pass": 4,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-12-waveshare-stat-order.log",
+        "bytes": 1045,
+        "sha256": "46e9b76fbde57c1dcb49c332c18813fe5db588787fd8062d1a9fd70a34e08768"
+      }
+    },
+    {
+      "index": 13,
+      "name": "recording-real",
+      "command": [
+        "node",
+        "tools/platform-recording-test.mjs",
+        "--real"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-13-recording-real.log",
+        "bytes": 1100,
+        "sha256": "fb28a4151c78da3e7407c93f247df0d879a64cac193458d9256b0667fb64233d"
+      }
+    },
+    {
+      "index": 14,
+      "name": "demo-stopwatch",
+      "command": [
+        "node",
+        "tools/wasm-test.mjs",
+        "demo-stopwatch"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-14-demo-stopwatch.log",
+        "bytes": 193,
+        "sha256": "c89d3171b09b1e05f576accaf5f3750f60697f8b63709b6180359802565b4180"
+      }
+    },
+    {
+      "index": 15,
+      "name": "hardware-probe",
+      "command": [
+        "node",
+        "tools/probe-hardware-diagnostics.mjs",
+        "tools/fixtures/stopwatch-hardware-checks.json",
+        "$OUTPUT/hardware-checks.json"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-15-hardware-probe.log",
+        "bytes": 62,
+        "sha256": "7cfa637e3dc5e7e810ef44f09c9b641ebb38435e51acada68489551deec99641"
+      },
+      "virtualHardwareCaseCount": 1,
+      "physicalHardwareValidation": false,
+      "outputReceipt": {
+        "name": "c5-photo-final-node-hardware-checks.json",
+        "bytes": 1651,
+        "sha256": "85cf138827b5ec87b3065e2a712551454a8678e471cc501736a952e94c8c47eb"
+      }
+    },
+    {
+      "index": 16,
+      "name": "timing-api",
+      "command": [
+        "node",
+        "wasm/tests/timing-api.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-16-timing-api.log",
+        "bytes": 78,
+        "sha256": "c98f382beb4c03812e9764812df40c1bef5aef01b28fb558a01c21f5fb269af3"
+      }
+    },
+    {
+      "index": 17,
+      "name": "ble-api",
+      "command": [
+        "node",
+        "wasm/tests/ble-api.mjs",
+        "web/wasm/esp32sim.wasm",
+        "web/wasm/fw/public",
+        "$CHECKOUT/web/wasm/fw/esp32c3_rev3_rom.elf"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-17-ble-api.log",
+        "bytes": 552,
+        "sha256": "ff2c696fb2843b3cd9c3e4d6e4b99c9c770724073c212c34b14bc51722b70b7f"
+      }
+    },
+    {
+      "index": 18,
+      "name": "ble-connection",
+      "command": [
+        "node",
+        "wasm/tests/ble-connection.mjs",
+        "web/wasm/esp32sim.wasm",
+        "web/wasm/fw/public",
+        "$CHECKOUT/web/wasm/fw/esp32c3_rev3_rom.elf"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-18-ble-connection.log",
+        "bytes": 441,
+        "sha256": "fcafedd0f22b92ec62f594fb51d8eccfebcfb68754126ff3aa8f356f8f778e5f"
+      }
+    },
+    {
+      "index": 19,
+      "name": "worker-pacing",
+      "command": [
+        "node",
+        "tools/worker-pacing-test.mjs"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-19-worker-pacing.log",
+        "bytes": 89,
+        "sha256": "ded10fe732d98444387f9022735721223e3051bb9d12c70f0699a8525ef20158"
+      }
+    },
+    {
+      "index": 20,
+      "name": "worker-channel",
+      "command": [
+        "node",
+        "tools/worker-channel-test.mjs"
+      ],
+      "exitCode": 0,
+      "rawLog": {
+        "name": "c5-photo-final-node-20-worker-channel.log",
+        "bytes": 438,
+        "sha256": "49283123ef5ea657061dacac1ed72c2c59ebd1389b0e7b15c36f512d228f01b8"
+      }
+    },
+    {
+      "index": 21,
+      "name": "touch-input",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "tools/touch-input-test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 9,
+        "suites": 0,
+        "pass": 9,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-21-touch-input.log",
+        "bytes": 2027,
+        "sha256": "2a4faa708a24a9e6fb2ddf08aeffafe854e2e787354fcb9a03ef577dfa0a3ce6"
+      }
+    },
+    {
+      "index": 22,
+      "name": "stopwatch-ui",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "tools/stopwatch-ui-test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 3,
+        "suites": 0,
+        "pass": 3,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-22-stopwatch-ui.log",
+        "bytes": 784,
+        "sha256": "50ccb438b617d2ced7da69b00246b8a0d26f6dc2ef834358a83b64929facb05d"
+      }
+    },
+    {
+      "index": 23,
+      "name": "wasm-build-policy",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "tools/wasm-build-policy.test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 3,
+        "suites": 0,
+        "pass": 3,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-23-wasm-build-policy.log",
+        "bytes": 717,
+        "sha256": "1896328232d5a174408d90bd60fbd318e5a38b991b15dfef8f950cebc015cef5"
+      }
+    },
+    {
+      "index": 24,
+      "name": "browser-benchmark-unit",
+      "command": [
+        "node",
+        "--test",
+        "--test-reporter=tap",
+        "--test-concurrency=1",
+        "tools/browser-benchmark/battery-failure.test.mjs",
+        "tools/browser-benchmark/battery-workload.test.mjs",
+        "tools/browser-benchmark/experiments.test.mjs",
+        "tools/browser-benchmark/verdict.test.mjs"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "tests": 13,
+        "suites": 0,
+        "pass": 13,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-24-browser-benchmark-unit.log",
+        "bytes": 2785,
+        "sha256": "ffed2e8fc9415f07cd14a6b7c0775ed8f567168963ceec204de64a058e975c5d"
+      },
+      "unitFileCount": 4,
+      "isBrowserBenchmarkRun": false
+    },
+    {
+      "index": 25,
+      "name": "browser-benchmark-python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/browser-benchmark",
+        "-p",
+        "test_*.py"
+      ],
+      "exitCode": 0,
+      "summary": {
+        "pythonTests": 15
+      },
+      "rawLog": {
+        "name": "c5-photo-final-node-25-browser-benchmark-python.log",
+        "bytes": 114,
+        "sha256": "104f82d7145cd0638db3f7aa39d5df50b08d80edc2481f25d8257a53f4daec5c"
+      },
+      "isBrowserBenchmarkRun": false
+    }
+  ],
+  "platformCommandManifest": {
+    "fileCount": 136,
+    "expandedFileListSha256LfUtf8": "231f542336098dd24442b3afe63fbddd4d43f3834b41988a0c6ccc40e9a084ff",
+    "originalRawManifest": {
+      "id": "node",
+      "name": "c5-photo-final-node-checks.json",
+      "bytes": 28754,
+      "sha256": "7d62447f914de3cecaf57b83cb5043fcf5bee01a08ec65f230b91c6dba2b4da7"
+    }
+  },
+  "historicalNegativeAndCorrectedRuns": [
+    {
+      "kind": "empty-exact-filter-not-coverage",
+      "source": "06a8bad6e92ff0a5c5c999566ae3995d094dfeb1",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp32c5",
+        "external_original_factory_offline_driver_reaches_its_menu_with_real_event_queue",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture"
+      ],
+      "exitCode": 0,
+      "totals": {
+        "passed": 0,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 598
+      },
+      "coverageCounted": false,
+      "functionalWallSeconds": 0.081,
+      "rawLog": {
+        "name": "c5-wifi-compat-battery-final-actual-factory-driver.log",
+        "bytes": 3835,
+        "sha256": "6e38975c01d749c1cb7da35cd5126a4c045772e24761b9ae2a9f15e95d454132"
+      },
+      "reason": "Unqualified name plus --exact did not match the module-qualified test."
+    },
+    {
+      "kind": "corrected-named-case",
+      "source": "06a8bad6e92ff0a5c5c999566ae3995d094dfeb1",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp32c5",
+        "external_original_factory_offline_driver_reaches_its_menu_with_real_event_queue",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exitCode": 0,
+      "totals": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 597
+      },
+      "actualNamedCasePassed": true,
+      "countedInFinalSourceTotals": false,
+      "functionalWallSeconds": 286.172,
+      "rawLog": {
+        "name": "c5-wifi-compat-final-actual-factory.log",
+        "bytes": 4093,
+        "sha256": "d1299520ae0ef8602caeac760ddb623e8fd76b30f3229b9a2bd18e96e5cd989f"
+      }
+    },
+    {
+      "kind": "intentional-interruption-before-tests",
+      "source": "6e4581a17f41eebb07cbcdec4f24023e97ce2886",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--workspace",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "exitCode": -15,
+      "signalTerminated": true,
+      "testExecutionStarted": false,
+      "coverageCounted": false,
+      "assertionFailure": false,
+      "functionalWallSeconds": 79.922,
+      "rawLog": {
+        "name": "c5-wifi-compat-final-workspace.log",
+        "bytes": 1397,
+        "sha256": "dcfbaca6e7f5c8959b1519d363b7dc4469e694b4895c756a31c04b6106a729c3"
+      },
+      "reason": "Intentionally stopped during compilation for an independently validated source update; superseded by complete final runs."
+    }
+  ],
+  "limitations": [
+    "Local validation completed; GitHub CI was not executed by these receipts, and local Node major differs from CI.",
+    "No GitHub Pages publication or deployment confirmation is included.",
+    "Final CPU comparison/benchmark has not run. Functional wall seconds include compilation, build locks and overlapping jobs; they are not CPU performance samples.",
+    "The actual original-firmware native case uses explicit offline driver compatibility. Its strict negative and assisted path are distinct; passing it is not strict Wi-Fi/RF or complete factory acceptance.",
+    "The four private platform C5 cases cover original input/protocol identity, rejection and actual WASM loading without proving four full guest executions.",
+    "Two caller-target-dependent network-relay cases were skipped and remain uncovered.",
+    "Sensor negative-value behavior is unresolved and is not accepted here.",
+    "No physical hardware validation or end-user browser acceptance is inferred from Node functional checks.",
+    "Original raw captures remain private; they are identified by exact byte counts and SHA256 and are not copied into this draft."
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "baseCommit": "23e7c560",
+  "fullC5Suite": {
+    "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+    "passed": 146,
+    "failed": 0,
+    "logSha256": "d9323100848c4b92f963191265bbdbb626753a0a3c7846e037de1873f91e6e12",
+    "scope": "SWD integration before the additional unchanged LP mux read"
+  },
+  "finalBootControls": {
+    "command": "cargo test --release -p esp32c5 --test boot_controls",
+    "passed": 9,
+    "failed": 0,
+    "logSha256": "b8d64c0aa87a2f1e8934b01616a945874ad35840664bc038fe7c30052e423cac"
+  },
+  "clippy": {
+    "command": "cargo clippy -p esp32c5 --all-targets -- -D warnings",
+    "exitCode": 0,
+    "logSha256": "1439e4b0c44b86c62940896f5fe78db135191b3aaaf32d7e69f37610ec4892a6"
+  },
+  "lpMux": {
+    "address": "0x600b0400",
+    "read": 4,
+    "unchangedWrite": 4,
+    "otherWrites": "reject",
+    "source": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/lp_clkrst_reg.h",
+    "sourceSha256": "3d5baaf4b5bd5bd933a611cbfa681a613c1da4cf01a7d8722ab17cbd8e72ce1b",
+    "meaning": "RC_SLOW selection0; active LP_FAST XTAL/2 selection1. No physical slow-clock calibration or alternate sources implemented."
+  },
+  "nativeBoundaries": [
+    {
+      "log": "native-machine-lcd273-swd.log",
+      "sha256": "c79d67f698a0368e14c02df3a6b1f8eb605e8b30986ee50d9259870ee5cd1872",
+      "steps": 423210,
+      "faultPc": "0x408513e4",
+      "faultAddress": "0x600b0400",
+      "operation": "read",
+      "uartBytes": 229,
+      "applicationEntered": false,
+      "nonzeroPixels": 0,
+      "sdCommands": 0,
+      "logBytes": 1781
+    },
+    {
+      "log": "native-machine-lcd273-lp-mux.log",
+      "sha256": "97a5c40c1555df347db9299ad97f98c58aa367690bf22506fe55a23935d47eb6",
+      "steps": 423286,
+      "faultPc": "0x4084c8a8",
+      "faultAddress": "0x600b000c",
+      "operation": "read",
+      "uartBytes": 229,
+      "applicationEntered": false,
+      "nonzeroPixels": 0,
+      "sdCommands": 0,
+      "logBytes": 1781
+    }
+  ],
+  "watchdog": "Actual original AUTO enable; zero requests/feeds/resets in this short prefix. Dedicated integration test advances to real request/reset/feed events, checks IRQ18, cause0x12, LP flag retention and raw-ROM deactivation."
+}

@@ -82,12 +82,36 @@ fn reset_cause_and_reset_flag_have_independent_write_triggers() {
 
 #[test]
 #[ignore = "set C5_ROM_ELF to public esp-rom-elfs20260528 esp32c5_rev100_rom.elf"]
-fn external_c5_actual_rom_first_unsupported_access() {
+fn external_c5_actual_rom_reset_copies_its_own_elf_initializers() {
     let p = std::env::var("C5_ROM_ELF").expect("set C5_ROM_ELF to public rev100 ROM ELF");
-    let mut m = Bringup::new(); m.load_rom_elf(&std::fs::read(p).expect("read C5_ROM_ELF")).unwrap();
-    let run = m.run(1_000_000);
-    eprintln!("C5 ROM steps={} stop={:?} pc={:#x} fault={:?} UART={:?}", run.steps, run.stop, m.cpu.pc, m.bus.first_fault, String::from_utf8_lossy(&m.bus.uart[0].tx_out));
-    assert_eq!(run.steps, 6831); assert_eq!(run.stop, Stop::Trap(riscv_rv32::Trap::Exception(5)));
-    let f = m.bus.first_fault.unwrap(); assert_eq!((f.pc, f.address, f.write, f.width), (0x4001_df26, 0x600b_00e4, false, 4));
-    assert!(m.bus.uart[0].tx_out.is_empty(), "No ROM boot banner or firmware execution is claimed");
+    let bytes=std::fs::read(p).expect("read C5_ROM_ELF");let elf=esp_soc::elf::parse(&bytes).unwrap();let entry=elf.by_name["main"];
+    let mut m=Bringup::new();m.bus.sram.fill(0xa5);m.load_rom_elf(&bytes).unwrap();
+    assert!(m.bus.sram.iter().all(|&b|b==0xa5),"ROM loader must leave initializer copying to the guest");
+    let mut modified=bytes.clone();let last=modified.len()-1;modified[last]^=1;
+    let before=m.bus.rom.clone();assert!(m.load_rom_elf(&modified).unwrap_err().contains("SHA-256"));assert_eq!(m.bus.rom,before);
+    assert!(m.bus.sram.iter().all(|&b|b==0xa5));
+    for _ in 0..10_000{if m.cpu.pc==entry{break;}assert_eq!(m.run(1).stop,Stop::Budget);}
+    assert_eq!(m.cpu.pc,entry);assert!(m.bus.first_fault.is_none());let mut copied=0;
+    for s in &elf.sections{
+        if !s.is_bss&&!s.data.is_empty()&&(0x4080_0000..0x4086_0000).contains(&s.addr){
+            let offset=(s.addr-0x4080_0000)as usize;assert_eq!(&m.bus.sram[offset..offset+s.data.len()],s.data,"{}",s.name);copied+=s.data.len();
+        }
+    }
+    assert!(copied>1024);assert!(m.bus.uart[0].tx_out.is_empty());
+    eprintln!("C5 actual reset loop copied {copied} initializer bytes before ROM main; steps={}",m.cpu.insn_count);
+    // The shared loader must leave the same work to the real reset loop.
+    let mut scheduled=esp32c5::machine([0;6],4<<20);scheduled.quantum=1;scheduled.console.capture=true;
+    scheduled.bus.sram.fill(0xa5);scheduled.load_rom(&bytes).unwrap();
+    assert!(scheduled.bus.sram.iter().all(|&b|b==0xa5));scheduled.boot_rom();
+    for _ in 0..10_000{if scheduled.cores[0].pc==entry{break;}scheduled.run(1);}
+    assert_eq!(scheduled.cores[0].pc,entry);assert_eq!(scheduled.bus.sram,m.bus.sram);
+    // A validated profile survives HP reset, but a raw ROM overwrite removes it.
+    use esp_soc::SocBus;
+    scheduled.bus.write32(0x6000_2024,255).unwrap();scheduled.bus.request_reset(3);scheduled.reboot();
+    assert_eq!(scheduled.bus.read32(0x6000_2024).unwrap(),0);
+    scheduled.bus.load_bytes(0x4000_0000,&[0x13,0,0,0]).unwrap();scheduled.bus.request_reset(3);scheduled.reboot();
+    assert!(scheduled.bus.read32(0x6000_2024).is_err());
+    assert_eq!(m.bus.read32(0x6000_2024).unwrap(),0,"only validated ROM loading enables the bounded profile");
+    m.load_elf(include_bytes!("../../firmware/c5-uart-probe/probe.elf")).unwrap();
+    assert!(m.bus.read32(0x6000_2024).is_err(),"SRAM loading restores strict SPI0 reserved access");
 }

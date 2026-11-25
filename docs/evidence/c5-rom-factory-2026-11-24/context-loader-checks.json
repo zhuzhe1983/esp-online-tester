@@ -1,0 +1,36 @@
+{
+  "sourceCommit": "010c3936e533150f6fe98feb0b74c470ff2ef99d",
+  "c5Suite": {
+    "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+    "passed": 138,
+    "failed": 0,
+    "ignored": 0,
+    "logSha256": "de2c83e5c0d435d2e679126de0e577a7bd548ca09040b252209555c9935864e6"
+  },
+  "clippy": {
+    "command": "cargo clippy -p esp32c5 -p esp-soc --all-targets -- -D warnings",
+    "exitCode": 0,
+    "logSha256": "2ff3b189bfe57c8fb0e305083944cc0707c1caf60e726227745a97b9dd9c03dd"
+  },
+  "commonMachineKind5": {
+    "steps": 422856,
+    "cycles": 422848,
+    "faultPc": "0x4084bcac",
+    "faultAddress": "0x600b1c1c",
+    "operation": "write",
+    "uartBytes": 229,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "regi2cReads": 3,
+    "regi2cWrites": 3,
+    "vdetInitial": "0x0f",
+    "vdetFinal": "0x02",
+    "logSha256": "509043288ffb63a91150177b0851fe1771e3b0555c45dfdc419c5d33124779ce"
+  },
+  "limits": [
+    "Original firmware and pinned ROM unchanged.",
+    "Actual application entry, LCD, inputs and filesystem mounting remain unverified.",
+    "All three external-input tests used pinned local inputs.",
+    "Raw page writes and storage restores remain opaque data, without image validation."
+  ]
+}

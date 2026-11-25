@@ -1,0 +1,13 @@
+# C5 BOD0 and startup IRQ integration
+
+The unchanged original LCD273 firmware now executes cache interrupt setup and BOD0 initialization under the explicitly selected ideal supply. The current boundary is a later SPI1 `USR` transaction: PC4080f804 writes60003000=40000. Its read-only snapshot identifies SFDP opcode5a/address32h/24 address bits/8 dummy clocks/8 MISO bits, STR1-1-1/CS0/80MHz, after actual JEDEC20/40/19 reads. No SFDP success data is manufactured at this checkpoint.
+
+The final focused suite passes **452 C5 tests**, including all six pinned-input cases. Both workspace/all-target and release-WASM/jit-tests Clippy checks pass with warnings denied. Build jobs1 and explicit `CARGO_PROFILE_RELEASE_LTO=false` are recorded; final default-LTO CI remains required.
+
+BOD0 enable needs the actual guest slave61/reg5 code7 transfer, the existing REGI2C clock/master/ULP route, and the explicit constant ideal3300mV rails. The nominal code7 threshold2510mV is an approximate SDK setting, not a physical measurement. BOD1 and other LP interrupt controls remain separate; source15 is the documented LP_RTC_TIMER enumeration. Disabled/unknown comparator observations, dynamic supply and hardware-reset requests are unsupported. Actual BOD control6ffc02c0, threshold7, HP mask80000000 and zero alarm are retained in the native receipt. CPU/Core, LP/System, Chip and raw exit have separate qualification/retention tests.
+
+Independent review withdrew the earlier inference that SHUT must generate a cache failure and architectural abort. All such strict cached requests, including genuine mapped-PSRAM LR/SC/AMO, now stop with ModelLimit while preserving RAW/IRQ, backing and guest trap state. Unknown ENA readback also stays a model boundary in default SRAM Bringup, and complete cache/PCR accesses honor pending-reset barriers. Pure mask/clear tests seed private state only inside `cfg(test)` and do not claim a guest event producer.
+
+The software interrupt fixture uses a real source23 level, CLIC entry, guest clear and mret in plain/priced execution. I2C accepts the fixed driver mask5a8 without inventing arbitration/timeout events. These prove component behavior, not original task scheduling or board I/O.
+
+Original native totals: **26,951,310 steps/insn_count,26,951,296 nominal cycles,3,415 UART bytes**. app_main, LCD pixels and SD commands remain absent. `integration-checks.json` records source/input/log hashes, two read-only review receipts and all retained negative results, including the wrong-route setup and temporary-array compile error. No ROM/factory patch, host PC jump, forced ACK or synthetic success frame was used.

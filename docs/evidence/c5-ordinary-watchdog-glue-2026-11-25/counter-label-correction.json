@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "reason": "factory_machine prints Machine::insns(), the sum of Core::insn_count(), not Cpu::retired_count. Scheduling run_steps also includes idle skips; trapped or interrupt slots need not retire. Retired instruction totals were not measured by these native logs.",
+  "sourceReferences": [
+    "esp32c5/examples/factory_machine.rs",
+    "esp-soc/src/machine.rs",
+    "riscv-rv32/src/exec.rs"
+  ],
+  "changes": [
+    {
+      "path": "docs/evidence/c5-apm-teardown-2026-11-24/integration-checks.json",
+      "originalSha256": "a59b77f4df00b4200302cc70ed0a0fc5b124cccaa5c44f50244d8ed890611677",
+      "correctedSha256": "721c2a267dc702168f52f6aababd1c8b9864ca482161c5cb9a221035c01e7de4",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-atomic-policy-2026-11-25/checks.json",
+      "originalSha256": "00e3f425b9228f9a4eda4f55bafd58b5925520d8d3b86af2fc3b60f71fc593e5",
+      "correctedSha256": "d7903e7aaf1a83b52ebf07c1ae2af767852a48c2f81d0063ee6a23b99116d460",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-bod0-startup-2026-11-25/integration-checks.json",
+      "originalSha256": "64c95d099ba9c3569531463646e9b31edd68c087798d309e1a72b23751db3869",
+      "correctedSha256": "6058cec63c18dc4a5b49e07df2661fd1a5712d10e33ee2e5f0f6b50555a12ab2",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-lp-fast-mux-2026-11-25/integration-checks.json",
+      "originalSha256": "a356d188fd9116ccb9a320ffbc16a06a4b325f5f7bed15f9556667f3177e1898",
+      "correctedSha256": "106fdacbb9c9106e908c510c517aea7fe8f5e9a1b1591e95177e6be8aa053657",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-memory-policy-integration-2026-11-25/checks.json",
+      "originalSha256": "bfa3d7526633597bb5b92bc525ae0ce120e2208ec8042022c681c7839f60d93a",
+      "correctedSha256": "2463cb7530242f945c35715288cbd3b30fe0eb4c3ead8fcd0721a39d546c3cde",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-modem-lp-selectors-2026-11-25/integration-checks.json",
+      "originalSha256": "986909d42ecf50194043e6346f031deb5e34013d2319120026458f8365b7d31a",
+      "correctedSha256": "d6d1ac71cc9fe49578b3e269471fc6597ab2cc82a1533941cae7bf4ac636a7f5",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-ordinary-watchdog-glue-2026-11-25/integration-checks.json",
+      "originalSha256": "a56f04626fc2befd9bf5e55dee426af628a8cb499068fe4729ba2986cdc2292c",
+      "correctedSha256": "f32f4ded5c4312a4b16a70787df3904a5baa65085545fbe14692eb90ceb5cec3",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-peripheral-clock-disable-2026-11-25/integration-checks.json",
+      "originalSha256": "db6e64610ecb9a2522ac30c22ea41018c5d09ea2dfa672ca42cd540aa76f1ec4",
+      "correctedSha256": "53b874463006fd6abd228fd51d1a42a5737e1590d3a038ffd58941b2bb3e7926",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-pll-div-gates-2026-11-25/integration-checks.json",
+      "originalSha256": "1500b1dede5badeae6b9ee024d0a27486bf9c71736291f77a6ffdfb644085dde",
+      "correctedSha256": "c229ad3844a2c0fdfff1ac6d4f9742f241ad91a1f11cf666ace3d75b5d1f2093",
+      "change": "Rename retiredInstructions to cpuInstructionCount; every numeric value, input hash and log hash is unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-ordinary-watchdog-glue-2026-11-25/README.md",
+      "originalSha256": "dc2ea6170e2021e8ec92c59037843a1ff84342786b3b1ff32f9e4b92f1c08c09",
+      "correctedSha256": "38a88700700899e098ac3747e23073a7d60c177772152402977aa3721e724cb3",
+      "change": "Correct the prose label for native factory_machine insns; counts and artifact hashes are unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-bod0-startup-2026-11-25/integration.md",
+      "originalSha256": "10c436703741911504dfaa97d236fa11ea18adc676cf810e4e5c9f19fb9a22e5",
+      "correctedSha256": "634e9f0f1907c785e421ac08fffb677e7015f41cc658b708aaf252b19efd711a",
+      "change": "Correct the prose label for native factory_machine insns; counts and artifact hashes are unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-peripheral-clock-disable-2026-11-25/integration.md",
+      "originalSha256": "14bcab9d66cf1662e356bad6b42bd5fee32f30a55ce85be2465ed39408bd87f0",
+      "correctedSha256": "71e388c47db86a5d64f91d283ca12b2ae1e46bead553b4a39f4c1a55654df2a1",
+      "change": "Correct the prose label for native factory_machine insns; counts and artifact hashes are unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-atomic-policy-2026-11-25/README.md",
+      "originalSha256": "a85ed5ae47cb3eb9a4e6b1dfaea77593be6b41f667d342b32a5528244d208ab2",
+      "correctedSha256": "150a465eef75a5287551ac912992f2001d659c022eed29047c4ce325bbe9b00d",
+      "change": "Correct the prose label for native factory_machine insns; counts and artifact hashes are unchanged."
+    },
+    {
+      "path": "docs/evidence/c5-apm-teardown-2026-11-24/README.md",
+      "originalSha256": "df7e9ca4b2b28c248a1bdedda1bbfc5fc229b615a3d7e55b9ce9abb46f85a11b",
+      "correctedSha256": "28938d8478cbbae04dad4d53ae768fcea716c926a0e47e45122a3a86b99e7da5",
+      "change": "Correct the prose label for native factory_machine insns; counts and artifact hashes are unchanged."
+    }
+  ],
+  "limits": [
+    "No counter values, raw logs, source/input/log hashes or measured native outcomes are regenerated.",
+    "Explicit retired counters in older SRAM/Bringup harnesses remain unchanged; they were separate measurements.",
+    "This is a label correction, not an additional execution or performance result."
+  ],
+  "independentReview": {
+    "sha256": "b6e4be4fbcabbbbb756d889654f55a358c2469c76a32f7256f469fa835e3968b",
+    "originalReportSha256": "86e1f3bcda52078c8972849a795ccd2b296f8b08abd8656fc11dac2bbeb30b41",
+    "scope": "Read-only verification of all14 before/after hashes; reverse JSON key mapping preserves all field values, prose numeric sequences unchanged. Original report bytes archived and hash verified. No new execution."
+  }
+}

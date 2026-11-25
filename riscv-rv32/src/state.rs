@@ -1,7 +1,8 @@
-//! Machine-mode CPU state. Only M-mode exists on the C3, so there is no privilege stack beyond
-//! `mstatus.MPP` and no address translation.
+//! Machine-mode CPU state. Lower-privilege execution is outside this model;
+//! a SoC can explicitly reject transitions beyond that supported subset.
 
 use std::collections::HashMap;
+use crate::c5_memory_protection::{self as c5_policy,C5MemoryProtection,GuardedMachineContext,UnsupportedReason,WriteEffect};
 
 pub mod csr {
     /// The F extension's CSRs (RISC-V unprivileged ISA, F, "Floating-Point Control and Status Register").
@@ -76,6 +77,8 @@ pub mod mstatus {
     pub const MIE: u32 = 1 << 3;
     pub const MPIE: u32 = 1 << 7;
     pub const MPP: u32 = 3 << 11;
+    /// ESP-IDF5.5.3/5.5.4 riscv/encoding.h MSTATUS_MPRV; privileged ISA1.13.
+    pub const MPRV: u32 = 1 << 17;
     /// FP unit status, Off/Initial/Clean/Dirty, and SD = some state Dirty (RISC-V privileged ISA
     /// v1.13, "Extension Context Status in mstatus Register"). Modelled only on a core with F.
     pub const FS: u32 = 3 << 13;
@@ -147,6 +150,13 @@ pub struct Cpu {
     /// `cycle`/`instret` (Zicntr) read the machine counters; without it they are unmodelled CSRs,
     /// as they always were on the C3 and C6, which read the cycle count from MPCCR
     pub user_counters: bool,
+    /// Explicit limited execution profile: reject lower-privilege MRET and
+    /// MPRV writes rather than claiming a current mode from saved MPP bits.
+    /// Default false preserves other SoCs' existing execution behavior.
+    pub machine_only: bool,
+    c5_memory: Option<Box<C5MemoryProtection>>,
+    c5_memory_fault: Option<UnsupportedReason>,
+    c5_memory_unsupported: Option<UnsupportedReason>,
     /// CLIC mode exists (`mtvec` mode 3, `mtvt`, `mintstatus`, levels): the SoC presents the
     /// candidate as `line | level << 8 | SHV << 16` (`exec::CLIC_IRQ_*`). Without it the presented
     /// value is a line the SoC has already arbitrated, as on the C3 and C6.
@@ -201,7 +211,7 @@ impl Cpu {
             mstatus: 0x1800,          // MPP = machine
             mtvec: 0, mepc: 0, mcause: 0, mtval: 0, mie: 0, mscratch: 0,
             insn_count: 0, retired_count: 0, cycle_count: 0, cycle_base: 0, instret_base: 0, waiting: false, irq: None, misa: MISA_RV32IMC, isa_ext: 0,
-            has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, clint_levels: Vec::new(), reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
+            has_ext_ill: false, f: [0; 32], fcsr: 0, ext_ill: 0, ext_ill_all_fp: false, user_counters: false, machine_only: false, c5_memory: None, c5_memory_fault: None, c5_memory_unsupported: None, clic: false, clic_std: false, mintthresh: 0, mtvt: 0, hartid: 0, mil: 0, clint_levels: Vec::new(), reservation: None, boundary_bloom: 0, csr_other: HashMap::new(),
             q: [0; 8], pie_sar: 0, pie_sar_byte: 0, pie_cfg: 0, pie_state: 0,
             hwlp_start: [0; 2], hwlp_end: [0; 2], hwlp_count: [0; 2], hwlp_state: 0, blocks: crate::block::Blocks::default(),
         }
@@ -239,14 +249,17 @@ impl Cpu {
         // report a negative instruction rate). The architectural cycle counter is separately
         // monotonic and firmware reads its reset-relative value.
         let (insns, retired, cycles, misa, ext_ill, counters, clic, clic_std, hart, bloom) = (self.insn_count, self.retired_count, self.cycle_count, self.misa, self.has_ext_ill, self.user_counters, self.clic, self.clic_std, self.hartid, self.boundary_bloom);
-        let (all_fp, isa_ext) = (self.ext_ill_all_fp, self.isa_ext);
+        let (all_fp, isa_ext, machine_only) = (self.ext_ill_all_fp, self.isa_ext, self.machine_only);
+        let mut c5_memory=self.c5_memory.take();let mut c5_memory_fault=None;
+        if let Some(p)=&mut c5_memory{if let Err(e)=p.reset_core(){c5_memory_fault=Some(e);}}
         let mut blocks = std::mem::take(&mut self.blocks);
         blocks.flush();
         *self = Cpu::new();
         self.blocks = blocks;
+        self.c5_memory=c5_memory;self.c5_memory_fault=c5_memory_fault;
         self.insn_count = insns; self.retired_count = retired; self.cycle_count = cycles;
         self.cycle_base = cycles; self.instret_base = retired;
-        self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.clic = clic; self.clic_std = clic_std; self.hartid = hart; self.boundary_bloom = bloom; self.ext_ill_all_fp = all_fp; self.isa_ext = isa_ext;
+        self.misa = misa; self.has_ext_ill = ext_ill; self.user_counters = counters; self.machine_only = machine_only; self.clic = clic; self.clic_std = clic_std; self.hartid = hart; self.boundary_bloom = bloom; self.ext_ill_all_fp = all_fp; self.isa_ext = isa_ext;
     }
 
     /// The ISA word the decoder takes: `misa` and `isa_ext`.
@@ -293,6 +306,40 @@ impl Cpu {
     #[inline(always)]
     pub fn mie_enabled(&self) -> bool { self.mstatus & mstatus::MIE != 0 }
 
+    /// C5 cold-ROM CPU policy. The SoC must also apply its immutable snapshot
+    /// at CPU memory boundaries; this does not configure DMA or a physical cache.
+    pub fn enable_c5_memory_protection(&mut self)->Result<(),UnsupportedReason>{
+        self.c5_machine_context()?;
+        self.c5_memory.get_or_insert_with(||Box::new(C5MemoryProtection::new()));Ok(())
+    }
+    pub fn c5_memory_protection(&self)->Option<&C5MemoryProtection>{self.c5_memory.as_deref()}
+    pub fn c5_memory_error(&self)->Option<UnsupportedReason>{self.c5_memory_fault}
+    pub fn c5_memory_unsupported(&self)->Option<UnsupportedReason>{self.c5_memory_unsupported}
+    pub(crate) fn note_c5_memory_unsupported(&mut self,reason:UnsupportedReason){self.c5_memory_unsupported=Some(reason);}
+    pub fn c5_machine_context(&self)->Result<GuardedMachineContext,UnsupportedReason>{
+        if let Some(e)=self.c5_memory_fault{return Err(e);}
+        GuardedMachineContext::new(self.machine_only,self.mstatus&mstatus::MPRV!=0)
+    }
+    fn c5_read_csr(&self,n:u32)->Option<Result<u32,UnsupportedReason>>{
+        let p=self.c5_memory.as_ref()?;if !c5_policy::accepts_csr(n){return None;}
+        Some(self.c5_machine_context().and_then(|ctx|p.read_csr(n,ctx)))
+    }
+    fn c5_write_csr(&mut self,n:u32,v:u32)->Option<Result<WriteEffect,UnsupportedReason>>{
+        if self.c5_memory.is_none()||!c5_policy::accepts_csr(n){return None;}
+        let ctx=match self.c5_machine_context(){Ok(ctx)=>ctx,Err(e)=>return Some(Err(e))};
+        self.c5_memory.as_mut().map(|p|p.write_csr(n,v,ctx))
+    }
+    /// Guest CSR access must preserve unsupported readback as an error.
+    /// In particular CSRRW rd=x0 skips this call entirely.
+    pub fn try_read_csr(&mut self,n:u32)->Result<u32,UnsupportedReason>{
+        self.c5_read_csr(n).unwrap_or_else(||Ok(self.read_csr(n)))
+    }
+    pub fn try_write_csr(&mut self,n:u32,v:u32)->Result<(),UnsupportedReason>{
+        if self.machine_only&&n==csr::MSTATUS&&v&mstatus::MPRV!=0{return Err(UnsupportedReason::Context);}
+        if let Some(result)=self.c5_write_csr(n,v){return result.map(|_|());}
+        self.write_csr(n,v);Ok(())
+    }
+
     pub fn read_csr(&mut self, n: u32) -> u32 {
         use csr::*;
         match n {
@@ -330,7 +377,9 @@ impl Cpu {
                 let k = (n - if n < UHWLOOP0_START { MHWLOOP0_START } else { UHWLOOP0_START }) as usize;
                 [self.hwlp_start, self.hwlp_end, self.hwlp_count][k % 3][k / 3]
             }
-            _ => self.csr_other.get(&n).copied().unwrap_or(0),
+            // Keep the legacy inspection API's zero for unavailable values;
+            // guest instructions use try_read_csr and cannot consume this fallback.
+            _ => self.c5_read_csr(n).map_or_else(||self.csr_other.get(&n).copied().unwrap_or(0),|v|v.unwrap_or(0)),
         }
     }
 
@@ -381,7 +430,7 @@ impl Cpu {
             MINSTRETH => { let c = self.retired_count.wrapping_sub(self.instret_base) & 0xffff_ffff | ((v as u64) << 32); self.instret_base = self.retired_count.wrapping_sub(c); }
             MISA | MIP | MVENDORID | MARCHID | MIMPID | MHARTID => {}   // read-only
             CYCLE | CYCLEH | INSTRET | INSTRETH if self.user_counters => {}
-            _ => { self.csr_other.insert(n, v); }
+            _ => { if self.c5_write_csr(n,v).is_none(){self.csr_other.insert(n, v);} }
         }
     }
 

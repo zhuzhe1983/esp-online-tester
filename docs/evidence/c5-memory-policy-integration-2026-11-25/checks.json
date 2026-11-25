@@ -1,0 +1,290 @@
+{
+  "schema": 1,
+  "baseCommit": "29eb3fd57b7585afcae2b79fed8a6721b391e271",
+  "sourceFiles": [
+    {
+      "path": "emu-core/src/bus.rs",
+      "sha256": "cf8ef2e289a7d66c21b8235d20cc93c131393d9b35e0f9a6ce43cec8927bce52"
+    },
+    {
+      "path": "emu-core/src/core.rs",
+      "sha256": "e3266dbe75cefdff6058b078704eaf871e00de3a7c0b51b7031e78eea30e1254"
+    },
+    {
+      "path": "esp-soc/src/machine.rs",
+      "sha256": "07b4a736c0a3fc3f2ef3f3ee5b1639ac487ccf95921189ee0ae8008ca38d8c78"
+    },
+    {
+      "path": "esp-soc/src/machine/modeled.rs",
+      "sha256": "997b21de636b02e91c5079bc82f3deed014fe3c55e142ee1a34980d4e9498df2"
+    },
+    {
+      "path": "esp-soc/src/soc.rs",
+      "sha256": "59d11557e37bea6a6005bd31d5c42c33b586e492cb95942410ce391308747a45"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "6a464388e5a754005afd4eb107edeeec955ad82e01c10d6c3b2b313828b3ef26"
+    },
+    {
+      "path": "esp32c5/src/cpu_monitor.rs",
+      "sha256": "0d22ae3be3068ba522a12dd9096629a8efd8a9bb85cc129040e727647552c772"
+    },
+    {
+      "path": "esp32c5/src/factory_tests.rs",
+      "sha256": "e3b645d15aa4fd0e31d7a9e7a2cbcf91a2b5bfe1cd94c1957295d048353a7fbb"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "72d8056290a1c28b7e4e1ef6d507f9d49e4e16e52744778089c0344972e9f700"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "fa53a81a8ee2637cc736b0b0e1a07d5fb25da1735424cc771cbff0d83bbaf021"
+    },
+    {
+      "path": "esp32c5/src/memory_policy_bus_tests.rs",
+      "sha256": "d5f73654480d9f5083fbdba45f1f0814c4e277b6860719dfe6e268be0876f067"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "90fad524cfba7f88834063fe487decc059f6155f6be124ac3f6731b702b52515"
+    },
+    {
+      "path": "riscv-rv32/src/lib.rs",
+      "sha256": "8d91fa2f72644581ccae2539120078e0a98a4853b461551257ee1c4c41b4b7e8"
+    },
+    {
+      "path": "riscv-rv32/src/state.rs",
+      "sha256": "a735da4c97e2c452f29fd3a529b2c68fbdf782b4d433348460520c3d6c63edac"
+    },
+    {
+      "path": "riscv-rv32/src/exec.rs",
+      "sha256": "b0f3125b416507713be3a457e75eb0a4a0dfccb23a860d0c1f7bb0ce36c2b5e0"
+    },
+    {
+      "path": "riscv-rv32/src/fpu.rs",
+      "sha256": "4b51d6135c313c972dce2c5facd89db95a1007b2738daf2f589884727f2c0f5a"
+    },
+    {
+      "path": "riscv-rv32/src/core.rs",
+      "sha256": "5c97330af1a874ab071bd27292c7588bf334c1930c8392ae36f827e80fcd0d76"
+    },
+    {
+      "path": "riscv-rv32/src/c5_memory_protection.rs",
+      "sha256": "dd55db1685e919bfdb5bffb45d4336b3c7dc57da8591deffd7c2f64d2f4b1adf"
+    },
+    {
+      "path": "riscv-rv32/tests/c5_memory_csr.rs",
+      "sha256": "52de6e586e7e65ba3d5b784d61cd12c5d3fc0d88694267dd8352e12434ea631d"
+    },
+    {
+      "path": "riscv-rv32/tests/c5_memory_policy_contract.rs",
+      "sha256": "61ea6fba16a0cb2ceffa44ff38b29a36588800b226cb4f42bcbd5662e61247ae"
+    },
+    {
+      "path": "riscv-rv32/tests/model_limit.rs",
+      "sha256": "83669d9df23a7a5135ce373f367448e0838a25a1b0c844f32fad6321a41109ee"
+    },
+    {
+      "path": "wasm/src/machine.rs",
+      "sha256": "01e913dfecd1ae8686bdf1823b4e2d039cf0b89c5ae6aeaf41bb51a48e987b32"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "command": "cargo test --release -p riscv-rv32 -- --include-ignored --skip external_",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-memory-policy-riscv-suite.log",
+        "sha256": "06d06f58c434811abe9e4c4b28472dff8c3f80dc0d4d9ef29bf9b01290a817d5",
+        "logBytes": 11180
+      },
+      "passed": 124,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 2
+    },
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-memory-policy-c5-suite.log",
+        "sha256": "e06b83ed829dac6ba8146ba0a10ba5583071eead2b1106af8c72d4b5061adf84",
+        "logBytes": 36952
+      },
+      "passed": 337,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-memory-policy-workspace-clippy-reviewed.log",
+        "sha256": "22430dd8aaea634302183d02b9edbd0be271346c2a614d37c2d3413979c35e0d",
+        "logBytes": 1681
+      }
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-memory-policy-wasm-clippy.log",
+        "sha256": "08faf1a4561fafb604c928619a110b20f572e159860990aac7da853f9129960c",
+        "logBytes": 1502
+      }
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-memory-policy-evidence-privacy.log",
+        "sha256": "a51914f62352e1980bb2e812e214f1414acc9e4ab21a23f76447eab4477a837f",
+        "logBytes": 130
+      }
+    }
+  ],
+  "contracts": [
+    "Only validated C5 cold-ROM load selects the optional CPU PMA/PMP owner; other SoCs keep existing CSR storage when disabled.",
+    "Actual guest CSR instructions use checked reads and writes. CSRRW/CSRRWI rd=x0 omit old-value reads. Unsupported preserves the reason and stops the host model without writing guest exception CSRs or destinations.",
+    "CPU observer refreshes immutable policy snapshots only at epoch/generation changes before each instruction. Fetch/load/store and LR/SC/RMW are checked before device effects; complete 32-bit fetch spans are checked before the high half.",
+    "Known Deny remains an architectural access fault. Unknown POR/WARL/overlap/other unqualified cases become Fault::Unsupported -> Trap::ModelLimit(pc) -> unconditional Stop::ModelLimit, with no invented raw instruction or guest exception. The debug unimplemented-instruction switch cannot override this stop.",
+    "CLIC SHV resolves the vector read before committing guest entry state. An unknown vector preserves mepc/mcause/mtval/mstatus/mil/reservation/waiting; genuine prohibited-vector behavior retains MINHV.",
+    "CPU policy locks survive ROM byte replacement and profile deselection. Only actual core reset clears locks and advances epoch; failed reset generation arithmetic stays fail-closed.",
+    "Host inspection has no guest instruction context; DMA uses independent APM and transport boundaries. Both ordinary and priced observer early-stop paths clean the CPU context."
+  ],
+  "testCoverage": {
+    "canonicalPolicyContractsInNormalWorkspace": 22,
+    "internalPolicyTests": 2,
+    "checkedGuestCsrTests": 4,
+    "sharedRiscvModelLimitTests": 3,
+    "c5MemoryBridgeTests": 4,
+    "developerInputC5Tests": 6,
+    "c5BridgeScenarios": [
+      "New generation applies to next load/store, TYPE0 and read-only restrictions",
+      "Whole four-byte instruction crosses locked PMP boundary",
+      "Plain/priced unknown Fetch/Load/Store/AMO leave guest trap state unchanged even with stop_on_unimplemented=false",
+      "Before/after observer registration ordering cannot attribute host inspection to a guest"
+    ],
+    "realPsramRegression": {
+      "function": "external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+      "stopPc": "0x4211f8a0",
+      "factoryGuestLog": "SPI SRAM memory test OK",
+      "spanBytes": 8388608,
+      "strideBytes": 32,
+      "actualBackingWordsVerified": 262144,
+      "everyByteTestClaimed": false,
+      "appMainEntered": false,
+      "lcdOrTfClaimed": false
+    }
+  },
+  "originalFactoryPolicyReturn": {
+    "log": {
+      "file": "native-machine-lcd273-pma-staging-return.log",
+      "sha256": "37e5a2348faa5e256d13a857e0295358ec76f78b0c14cedaa5b59915b0e3ba17",
+      "logBytes": 8648
+    },
+    "breakpoint": "0x42000934",
+    "runSteps": 20821125,
+    "cpuInstructionCount": 20821124,
+    "nominalCycles": 20821120,
+    "uartBytes": 2150,
+    "firstFault": null,
+    "actualGuestHeapSizeAtPc42071654": 8388608,
+    "epoch": 1,
+    "generation": 104,
+    "pmaPorMask": 0,
+    "hostSeededHeapSize": false
+  },
+  "originalFactoryNextBoundary": {
+    "log": {
+      "file": "native-machine-lcd273-pma-next-boundary.log",
+      "sha256": "0dae94d5636e37e0c52694fe66af1854780852f9e085b2e874424c3e06a893ac",
+      "logBytes": 6949
+    },
+    "runSteps": 24764132,
+    "cpuInstructionCount": 24764132,
+    "nominalCycles": 24764096,
+    "uartBytes": 2194,
+    "guestPsramTestPassed": true,
+    "pc": "0x4211f8ee",
+    "readAddress": "0x60096128",
+    "description": "Unimplemented PCR PLL divider gate register, before app_main; next independent hardware task.",
+    "nonzeroPixels": 0,
+    "sdCommands": 0
+  },
+  "negativeResults": [
+    {
+      "logs": [
+        {
+          "file": "native-machine-lcd273-memory-policy-return.log",
+          "sha256": "1689bc046a23d10c24756b741945bcb2204ad61230201bf6b0f6fb5910b3e6f2",
+          "logBytes": 3522
+        },
+        {
+          "file": "native-machine-lcd273-rom-pma-address.log",
+          "sha256": "84ee0ddd005848467b394af706c00f747c85e25e2220f5fb78ba63b48398027f",
+          "logBytes": 4527
+        }
+      ],
+      "steps": 5938,
+      "pc": "0x4003ab62",
+      "raw": "0xbdc79073",
+      "requestedPmaAddress12": "0x140007ff",
+      "result": "Earlier helper rejected genuine ROM address-before-config staging. Narrow reset-only POR treatment was corrected in base commit29eb3fd5; this is not a ROM/M-mode bypass."
+    },
+    {
+      "finding": "Initial glue collapsed policy Unsupported into guest cause2/1/5/7. Static review rejected this semantic conflation; the corrected typed model-stop path and preservation tests are included."
+    },
+    {
+      "finding": "Priced observer early stops omitted Soc::observer_stopped; observer order could leave host inspection under CPU protection. Both return paths now perform the same cleanup as ordinary execution."
+    },
+    {
+      "log": {
+        "file": "c5-memory-policy-workspace-clippy.log",
+        "sha256": "04c7890fdd28513bc040e80845cc58f4da371306d2a4d09e58c94f43b8c72c7c",
+        "logBytes": 2679
+      },
+      "exitCode": 101,
+      "reason": "The initial diagnostic trait import used a crate not directly linked by WASM. It was corrected to the existing xtensa_lx7::Core re-export; no dependency added."
+    }
+  ],
+  "independentStaticReview": {
+    "unresolvedP1": 0,
+    "unresolvedP2": 0,
+    "resolvedP2": 2,
+    "reportSha256": "262008f0f30e8b7cdb3cb6283dc6095e1af2ec2f0ad8ab0f2b3c84edbe348790",
+    "scope": "Actual final source and test design; test results were supplied separately, not claimed as independently executed."
+  },
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "limits": [
+    "M-mode execution subset and coherent no-line attributes; no lower privilege, physical cache or timing accuracy claim.",
+    "This focused checkpoint uses LTO=false. Final default-LTO workspace CI, CPU controls, production WASM and browser acceptance remain pending.",
+    "The original factory has not reached app_main/LCD/buttons/TF here. No product completion or publication claim."
+  ],
+  "curation": "Reproducible commands, source/input/log hashes and numeric results retained. Ignored raw logs and static-review originals are not published. Personal paths, process/session details and raw captures omitted; measured values unchanged."
+}

@@ -1,0 +1,124 @@
+{
+  "baseCommit": "7c4f084f",
+  "scope": [
+    "esp32c5/src/boot_clock.rs",
+    "esp32c5/src/clock_tree.rs",
+    "additive scoped evidence and standalone harness"
+  ],
+  "sources": [
+    {
+      "path": "components/soc/esp32c5/register/soc/pcr_reg.h",
+      "bytes": 103653,
+      "sha256": "e2537baeb66eabd30ae7e4663ec28b7afeb6cba68ab9cb19d4e33d1d5bd33d3a",
+      "urls": {
+        "v5.5.3": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/pcr_reg.h",
+        "v5.5.4": "https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/pcr_reg.h"
+      },
+      "paired553554Identical": true,
+      "provenance": "docs/evidence/c5-mspi-clock-2026-11-24/checks.json",
+      "newFetchTimestampClaimed": false
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/lp_clkrst_reg.h",
+      "bytes": 19882,
+      "sha256": "3d5baaf4b5bd5bd933a611cbfa681a613c1da4cf01a7d8722ab17cbd8e72ce1b",
+      "urls": {
+        "v5.5.3": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/lp_clkrst_reg.h",
+        "v5.5.4": "https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/lp_clkrst_reg.h"
+      },
+      "paired553554Identical": true,
+      "provenance": "docs/evidence/c5-swd-boot-2026-11-24/checks.json",
+      "newFetchTimestampClaimed": false
+    }
+  ],
+  "audit": {
+    "artifact": "c5-peripheral-clock-disable-audit.md",
+    "sha256": "665b1f26bd9378c689ba82b1203161c27283e4c167aa75274c30490ddfcac2aa",
+    "typedTG1ReadPC": "0x42000e5a",
+    "typedTG1WritePC": "0x42000e5e",
+    "typedLPpadWritePC": "0x4200108a",
+    "includedRawCapture": false
+  },
+  "TG1": {
+    "address": "0x60096060",
+    "controlReset": 1,
+    "readbackReset": "0x1d",
+    "acceptedWriteMask": "0x1f",
+    "storedWriteMask": "0x3",
+    "readOnlyReadyMask": "0x1c",
+    "readyReadback": "Set while reset bit1 is clear; suppressed during held reset, identical to TG0 contract",
+    "getter": "BootClock::timg1_control()->u32; profile-off default1",
+    "HPOrAnalogReset": "Restore control1",
+    "CPUOrLPReset": "Retain",
+    "TG0RTCcalibrationSideEffect": false
+  },
+  "LPpadClockOutput": {
+    "address": "0x600b0404",
+    "sdkNamedFieldReset": "0x7ff",
+    "acceptedWrites": [
+      0
+    ],
+    "repeatedDisable": true,
+    "nonzeroWrite": "Reject without state change, including output re-enable and reserved bits",
+    "LPOrAnalogReset": "Restore7ff",
+    "CPUOrHPReset": "Retain",
+    "internalClockDependencies": false,
+    "padWaveformImplemented": false
+  },
+  "preserved": {
+    "FPGA_DEBUG": true,
+    "rawRCGetters": true,
+    "originalFixtureBodiesUnchanged": true,
+    "originalFixtureCount": 25,
+    "originalFixtureBodiesSHA256": "ac8e72efb8e7e18eb5908e7fe101e089874907e328061e2cd04e39e0601ddb2e",
+    "files": [
+      {
+        "path": "esp32c5/src/clock_calibration.rs",
+        "sha256": "6f9f050812832b417ed087777717f40716d922e639b1e23c8169dde50ea971de",
+        "unchangedFromBase": true
+      },
+      {
+        "path": "docs/evidence/c5-clock-tree-2026-11-24/sources.json",
+        "sha256": "3c1cebf2fcd6f28a385eda7f9ea38540665af7638c8000054012d4d6c36ff9c7",
+        "unchangedFromBase": true
+      },
+      {
+        "path": "docs/evidence/c5-swd-fast-clock-2026-11-25/checks.json",
+        "sha256": "011ca50627a088c07b79c7590b40f160024ab0b1ea9c2bbe76c27095e521fedc",
+        "unchangedFromBase": true
+      }
+    ]
+  },
+  "validation": {
+    "runner": "python3 docs/evidence/c5-tg1-lp-po-2026-11-25/run-owned-checks.py --output <owned-output>",
+    "rust": "1.100.0 stable",
+    "edition": 2021,
+    "testThreads": 1,
+    "passed": 29,
+    "failed": 0,
+    "newFixtures": 4,
+    "strictOwnedClippyWarningsDenied": true,
+    "lintAllowances": false,
+    "runningTG0Calibration": {
+      "completionCycle": 30000,
+      "XTALticks": 6000,
+      "TG1ResetAndGateDoNotAffectMeasurement": true,
+      "LPpadDisableDoesNotAffectMeasurement": true
+    },
+    "negativeCases": [
+      "TG1 writes outside bits0..4",
+      "TG1 read-only bit writes cannot change ready",
+      "LPpad any nonzero write, before and after closure",
+      "Misaligned addresses and neighboring owners remain unavailable",
+      "Both words are unavailable outside selected virtual profile"
+    ],
+    "sharedOwnersModified": false,
+    "fullCargoNativeWASMOrBenchmarkRun": false
+  },
+  "claims": {
+    "physicalResetLatencyOrSiliconPORVerified": false,
+    "generalTimerOrWDTFunctionClockImplementedHere": false,
+    "watchdogAndLPTimerInternalRateChangedByLPpadLatch": false,
+    "parentIntegrationStillRequired": true
+  }
+}

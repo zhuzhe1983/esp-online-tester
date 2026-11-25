@@ -1,0 +1,123 @@
+{
+  "baseCommit": "aac053f097f22727bfa2b7a2b631e1e8718acd56",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "scope": "Actual BootAnalog only; no Bus/lib/Soc/PMU/board/shared changes",
+  "tests": {
+    "passed": 49,
+    "failed": 0,
+    "ignored": 0,
+    "filtered": 0,
+    "previous": 43,
+    "new": 6
+  },
+  "lint": "clippy-driver -D warnings PASS; same49 tests PASS",
+  "initialFailure": {
+    "passed": 48,
+    "failed": 1,
+    "exitCode": 101,
+    "test": "wifi_lp_gate_request_does_not_grant_master_or_apb_access_or_withdraw_a_locked_pll",
+    "reason": "Existing negative fixture asserted value3 was unsupported. COEX_EN bit1 is now source-backed; fixture now accepts3, checks no master grant and preserves a genuinely locked PLL, then rejects unimplemented LP_TIMER_EN3 value8.",
+    "rawOutputBytes": 5127,
+    "rawOutputSha256": "8c6c6b06b5163470e3e6d11501fcd2d696ea777d6235e59ce2713097abfdbd49",
+    "redaction": "Raw stdout retained privately in task target only; thread identifier omitted from curated summary."
+  },
+  "oldNegativeUpdates": [
+    {
+      "oldValue": 6,
+      "newValue": 8,
+      "reason": "COEX+I2C6 now defined; LP_TIMER8 remains unsupported"
+    },
+    {
+      "oldValue": 3,
+      "newValue": 8,
+      "reason": "COEX+WIFIPWR3 now defined and positively tested"
+    }
+  ],
+  "parentNativeBoundary": {
+    "logBytes": 14746,
+    "logSha256": "8f98e07c231537eab58961783c0cef03ad29a1d6727b4bce384eda0eb273608d",
+    "instructions": 44200045,
+    "nominalCycles": 44199998,
+    "uartBytes": 4657,
+    "appMain": "0x4200aebe",
+    "appMainObservedAt": 38867584,
+    "pc": "0x40800db0",
+    "address": "0x600af018",
+    "writeValue": 3,
+    "notRunByThisLane": true
+  },
+  "typed": {
+    "pcRange": [
+      "0x40800da2",
+      "0x40800db2"
+    ],
+    "setFieldBit": 1,
+    "storePc": "0x40800db0",
+    "storeInstruction": "0xcf1c",
+    "source": "Application IRAM, not ROM400xxxxx"
+  },
+  "commands": [
+    "python3 docs/evidence/c5-coex-gate-2026-11-25/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\"",
+    "python3 docs/evidence/c5-coex-gate-2026-11-25/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\" --compiler clippy-driver --lint"
+  ],
+  "artifacts": [
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "bytes": 69971,
+      "sha256": "7b77ff9cbe727a7c480e140c1e491b6a982de9b2742ace7bc32b7cde99bb27de"
+    },
+    {
+      "path": "docs/evidence/c5-coex-gate-2026-11-25/run-owned.py",
+      "bytes": 1061,
+      "sha256": "ce788dd99842570fff8eb097cbad59497f14d5d448aef8433fee3beaa1cca705"
+    },
+    {
+      "path": "docs/evidence/c5-coex-gate-2026-11-25/sources.json",
+      "bytes": 5364,
+      "sha256": "83008967d23f44b48b917c366b4f7e3b762b1832d6147cd3757ce57f5f67a0d4"
+    },
+    {
+      "path": "docs/evidence/c5-coex-gate-2026-11-25/owned-tests.txt",
+      "bytes": 4620,
+      "sha256": "d92db73d2232ea3667ea0d5eb6af8ae8ed3620ae5465d102ed60bdc0c40e8b8c",
+      "retention": {
+        "kind": "historical_full_stdout",
+        "removedFromCurrentTree": true,
+        "manifest": "../c5-owned-stdout-retention-2026-11-25/manifest.json",
+        "sourceRevision": "be21613821059a059aa1f89ca83c474c255409f9",
+        "gitBlob": "543d42f62df57cefa0a3fb89026e16ea1762b803",
+        "privateOutput": "${INTEGRATION_ROOT}/target/c5-owned-stdout-retention-20261125/from-4e1a8474/c5-coex-gate-2026-11-25/owned-tests.txt",
+        "artifactRevision": "4e1a84744765ab87909ff16efee2eda0fac7c588"
+      }
+    },
+    {
+      "path": "docs/evidence/c5-coex-gate-2026-11-25/owned-lint.txt",
+      "bytes": 4620,
+      "sha256": "d92db73d2232ea3667ea0d5eb6af8ae8ed3620ae5465d102ed60bdc0c40e8b8c",
+      "retention": {
+        "kind": "historical_full_stdout",
+        "removedFromCurrentTree": true,
+        "manifest": "../c5-owned-stdout-retention-2026-11-25/manifest.json",
+        "sourceRevision": "be21613821059a059aa1f89ca83c474c255409f9",
+        "gitBlob": "543d42f62df57cefa0a3fb89026e16ea1762b803",
+        "privateOutput": "${INTEGRATION_ROOT}/target/c5-owned-stdout-retention-20261125/from-4e1a8474/c5-coex-gate-2026-11-25/owned-lint.txt",
+        "artifactRevision": "4e1a84744765ab87909ff16efee2eda0fac7c588"
+      }
+    }
+  ],
+  "limitations": [
+    "Only the named COEX gate request/readback is added; no running COEX source/Hz/IRQ/MAC/RF or calibration success is produced",
+    "Existing I2C/PLL source qualification and functional timing profile are unchanged",
+    "No Cargo/native/WASM/browser/benchmark or post-integration original-factory run by this lane"
+  ],
+  "evidencePrivacy": "PASS:6 scoped tracked evidence files,0gzip; manual review retains only source pins, module results and normalized commands.",
+  "diffCheck": "PASS",
+  "stdoutRetention": {
+    "policy": "docs/evidence/README.md",
+    "fullStdout": "Moved to ignored target after byte/hash verification; original paths/bytes/hashes in artifacts remain historical identities.",
+    "manifest": "../c5-owned-stdout-retention-2026-11-25/manifest.json",
+    "originalSummarySha256": "92e3f5a429132ec013f943406bc76c30a54cd74949092137c99976b0245d3b08",
+    "captureContentChanged": false,
+    "resultCountsAndCommandsChanged": false
+  }
+}

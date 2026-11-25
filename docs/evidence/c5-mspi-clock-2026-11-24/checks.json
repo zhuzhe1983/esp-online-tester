@@ -1,0 +1,179 @@
+{
+  "baseCommit": "f20a024199c69e9e2767d634451b5314bd1859f5",
+  "scope": "Private C5 MSPI clock observations and source-dependent functional gates; no bus/soc/transport/shared edits",
+  "idfCommits": {
+    "v5.5.3": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+    "v5.5.4": "735507283d5b2f9fb363a1901172dbd9e847945d"
+  },
+  "sources": [
+    {
+      "path": "components/soc/esp32c5/register/soc/spi_mem_c_reg.h",
+      "bytes": 191876,
+      "sha256": "bf36bdec74d7e2a322a0b7cca57da76476889d38e24281130affa5331d54cd11",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://raw.githubusercontent.com/espressif/esp-idf/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/spi_mem_c_reg.h",
+        "v5.5.4": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/spi_mem_c_reg.h"
+      }
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/spi1_mem_reg.h",
+      "bytes": 67682,
+      "sha256": "528795b7b037ed023f49001eac73af89ecf61f2a498081fc95c440f10fecd05f",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://raw.githubusercontent.com/espressif/esp-idf/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/spi1_mem_reg.h",
+        "v5.5.4": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/spi1_mem_reg.h"
+      }
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/pcr_reg.h",
+      "bytes": 103653,
+      "sha256": "e2537baeb66eabd30ae7e4663ec28b7afeb6cba68ab9cb19d4e33d1d5bd33d3a",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/pcr_reg.h",
+        "v5.5.4": "https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/pcr_reg.h"
+      }
+    }
+  ],
+  "API": {
+    "signature": "set_clock_sources(rc_fast_hz:Option<u32>,pll_ready:bool)",
+    "default": "None/false; a zero RC rate is treated as None.",
+    "owner": "The parent supplies observations from real analog and clock state; MSPI does not create a source.",
+    "ROMCookieUsed": false,
+    "reset": "PCR module reset preserves external observations; a fresh object or die copy does not invent them.",
+    "parentWiringCompletedInLane": false
+  },
+  "PCR": {
+    "configuration": "0x60096018",
+    "clock": "0x6009601c",
+    "selectors": {
+      "0": "XTAL",
+      "1": "The actual supplied RC_FAST rate",
+      "2": "PLL_F480M only with external readiness and PCR_PLL_CLK_EN",
+      "3": "Unsupported"
+    },
+    "fastDivider": {
+      "0": 1,
+      "1": 2,
+      "2": 4,
+      "otherLowSpeedValues": "Unsupported",
+      "PLL": "Ignored; this divider applies only to low-speed sources."
+    },
+    "otherGates": [
+      "MSPI_CLK_EN0",
+      "MSPI_RST_EN1",
+      "PLL_CLK_EN2forPLLsource",
+      "FUNC_CLK_EN10",
+      "AXI_RST_EN11"
+    ]
+  },
+  "serialClock": {
+    "SPI1clockOffset": "0x14",
+    "SPI0psramClockOffset": "0x50",
+    "divider": "source/(N+1); existing phase encoding checks are retained.",
+    "testedCases": [
+      {
+        "source": "PLL ready",
+        "moduleHz": 480000000,
+        "divider": 24,
+        "serialHz": 20000000
+      },
+      {
+        "source": "PLL ready",
+        "moduleHz": 480000000,
+        "divider": 6,
+        "serialHz": 80000000
+      },
+      {
+        "source": "Supplied RC_FAST",
+        "sourceHz": 17500000,
+        "fastDivider": 4,
+        "moduleHz": 4375000
+      }
+    ]
+  },
+  "caseCoverage": [
+    "Missing RC/PLL remains unsupported; ROM compatibility cannot invent PLL readiness.",
+    "PLL loss denies mapped flash and commands; a valid PLL allows actual backing bytes and subsequent backing changes.",
+    "A denied command preserves buffers and raw interrupt state; selector3 remains unsupported.",
+    "APB/reset/PLL/functional/AXI gates still apply.",
+    "MMU power-down, AXI closure and encrypted entries still block mapped flash.",
+    "XTAL48MHz and supplied RC17.5MHz use independent div1/div2/div4 rates.",
+    "Supplied RC permits real mapped bytes and dedicated flash reads; withdrawal denies both.",
+    "PLL480MHz ignores low-speed divider values0/1/2/255.",
+    "The existing virtual8MiB PSRAM performs a QPI write/read at80MHz after serial20MHz setup.",
+    "PSRAM pads, opcodes and frequency limits remain required.",
+    "PCR reset retains external observations; a fresh die copy keeps them absent.",
+    "Explicit source withdrawal survives PCR reset."
+  ],
+  "files": [
+    {
+      "path": "esp32c5/src/mspi.rs",
+      "sha256": "fd6128c41761f59c070f46a259451ceb7e6075e18e03bd9419b3793607391373"
+    }
+  ],
+  "checks": [
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-mspi-clock-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --lib mspi::tests -- --nocapture",
+      "result": "pass",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 89
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-mspi-clock-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --test psram -- --skip original_sram_guest --nocapture",
+      "result": "pass",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 1,
+      "ignoredCommonLog": "mspi-clock-psram-tests.log",
+      "rawLogSha256": "647d09fbc9fc91f8df63c4bf37bc8f0760c6e042d8eaf4ea337e1a2e0b4c51e3",
+      "logBytes": 7968
+    },
+    {
+      "command": "clippy-driver --edition=2021 --test <lane-target>/standalone/mspi_harness.rs -D warnings --extern esp_periph=<isolated-built-rlib> -L dependency=<isolated-emu-core-rlib-directory> -o <lane-target>/standalone/mspi-tests",
+      "result": "pass",
+      "harnessIncludes": [
+        "esp32c5/src/mspi.rs",
+        "esp32c5/src/mspi_regs.rs",
+        "esp32c5/src/quad_psram.rs"
+      ],
+      "allowancesAdded": false
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "filesChecked": 3056,
+      "gzipFiles": 95
+    }
+  ],
+  "limits": [
+    "Clock integration preparation only; no factory execution on MSPI_PLL is claimed.",
+    "The parent must refresh observations on actual events, clear them with modes and restore them from retained analog state as appropriate.",
+    "The flash byte check uses actual MMU translation and backing-array bytes in a module test; it does not claim new CPU guest execution.",
+    "The synchronous functional engine remains; physical clock waveform, transfer latency and flash maximum-rate accuracy are outside this change.",
+    "The long original SRAM PSRAM guest was filtered from this focused run; the parent owns broader regression.",
+    "No bus/soc/transport/shared/core/per-tick change, broad build, benchmark, browser, push, firmware edit or validation bypass."
+  ],
+  "privacy": "Only public source hashes and aggregate checks are retained; raw logs and absolute workspace identities are omitted.",
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "1.100.0 (3acc79c0c 2026-11-05)"
+  },
+  "supersededClockClaim": {
+    "receipt": "../c5-mspi-divider-2026-11-24/checks.json",
+    "incorrectHistoricalClaim": "PLL ignores FAST_DIV",
+    "correctedPLLRule": "PLL480 / (FAST_DIV_NUM+1), then the serial divider",
+    "oldReceiptSHA256": "3e02e79b68b6c35f38b0679f3879e97d09e8eff86e35aa7ba3cb03878bc7b0d5",
+    "oldReadmeSHA256": "3aa22396fb5fc4d4d1be503b11294702a5487b7ca900cb9282aed4a53d59bb02",
+    "historicalFieldsAndResultsPreserved": true
+  }
+}

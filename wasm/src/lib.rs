@@ -20,6 +20,8 @@ mod softap;
 pub use softap::*;
 mod ble;
 pub use ble::*;
+mod c5_wifi;
+pub use c5_wifi::*;
 pub use ethernet::*;
 mod s3;
 mod lora;
@@ -473,9 +475,9 @@ pub unsafe extern "C" fn esp32sim_reports(e: *mut Emu) {
 pub unsafe extern "C" fn esp32sim_boot(e: *mut Emu, app_direct: u32) -> u32 {
     // SAFETY: The caller provides exclusive access to a live emulator.
     let e = unsafe { &mut *e };
-    // a ROM boot without a ROM runs from empty memory and prints nothing: say so (the page refuses it
-    // earlier; the ABI stays permissive for callers that drive the machine another way)
-    if app_direct == 0 && !e.rom_loaded { log("[emu] boot: no mask ROM loaded: the run will print nothing (pick the chip's ROM ELF, or boot the app directly)"); }
+    // Legacy machines keep their permissive warning. C5's MachineKind boot
+    // boundary instead requires the bus's currently validated MP ROM profile.
+    if app_direct == 0 && !e.rom_loaded && !matches!(&e.m, MachineKind::C5(_)) { log("[emu] boot: no mask ROM loaded: the run will print nothing (pick the chip's ROM ELF, or boot the app directly)"); }
     if let Err(msg) = e.m.boot(app_direct != 0) { log(&format!("[emu] boot: {}", msg)); return 1; }
     // the WebSocket server announces the board in its per-client hello; here there is one client
     let name = e.m.board_name();
@@ -676,3 +678,6 @@ mod s31_tests;
 
 #[cfg(test)]
 mod waveshare_factory_tests;
+
+#[cfg(test)]
+mod c5_tests;

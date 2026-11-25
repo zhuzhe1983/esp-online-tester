@@ -1,0 +1,225 @@
+{
+  "schema": 1,
+  "sourceBase": "51dc92bc034966b2bb4cdef0b09857afd190a4e3",
+  "documentationOnlyFollowup": "d55f23d0",
+  "moduleCommits": [
+    {
+      "integrated": "4e1a8474",
+      "original": "be21613821059a059aa1f89ca83c474c255409f9",
+      "scope": "LPCON COEX bit1 request, independent of I2C and160MHz source."
+    },
+    {
+      "integrated": "51dc92bc",
+      "original": "d82cf70bfc9f28b609cf1b6f61920e35e4f45fd6",
+      "scope": "Timed SHTC3 and LCD273 board/MMIO wiring."
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "sha256": "7b77ff9cbe727a7c480e140c1e491b6a982de9b2742ace7bc32b7cde99bb27de"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "57de840ebef3c42b281c4301d44ba5af145eb533891764a16e26b22a1b246f59"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "07fd7cf1d498c0d3bc0ca78908ad382a65dab952046249b7ea6e85f01d990d86"
+    },
+    {
+      "path": "esp32c5/src/coex_gate_bus_tests.rs",
+      "sha256": "036f8a3a033ac7ee6f86ad908e65458859981038adb0e2147a8690b88f2b67ff"
+    },
+    {
+      "path": "esp-periph/src/i2c.rs",
+      "sha256": "20e48d56527921e1bc77f82866a79728fc21b56583eecd9eb41ff7f32af8dfb0"
+    },
+    {
+      "path": "esp-periph/src/i2c/shtc3.rs",
+      "sha256": "cedf67dd9efdbd5a9d51c8b39ccd6abf47afbdb95d0e52632ff3344b5fa62411"
+    },
+    {
+      "path": "esp32c5/src/board/waveshare_lcd273.rs",
+      "sha256": "b81b2aeeaa7a915fc6e9f2937a0cd210d834ef494adb8faff6313fed51dd0fe4"
+    },
+    {
+      "path": "esp32c5/tests/lcd273.rs",
+      "sha256": "4ca993a68360ef2d1e069ddc33b57c465d7064625fb32f17108382ed2755e663"
+    },
+    {
+      "path": "esp32c5/src/i2c.rs",
+      "sha256": "78a20aecd82dc83b0c503db26a3889e6fd133a078a470256aeb2b6088f3e06e8"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "timingInterpretation": "Diagnostic check timings, not controlled performance samples."
+  },
+  "checks": [
+    {
+      "log": "c5-coex-gate-sht-integration-final-sht-periph.log",
+      "exitCode": 0,
+      "sha256": "5f7d735c4796bf1276697fa6eddbe55af509a5423b235492b290c2534a4b7302",
+      "elapsedSeconds": 0.089,
+      "bytes": 3418,
+      "command": "cargo test --release -p esp-periph i2c::shtc3::tests -- --include-ignored",
+      "results": {
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 317
+      },
+      "intentionalFilter": "Seven new SHTC3 component cases only; not the full esp-periph suite."
+    },
+    {
+      "log": "c5-coex-gate-sht-integration-final-c5-suite.log",
+      "exitCode": 0,
+      "sha256": "fd3c662600fe88eee4ace558c6bceae01b73b90f73e51508ff706a71eff1eb7b",
+      "elapsedSeconds": 4.101,
+      "bytes": 58930,
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "results": {
+        "passed": 553,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      },
+      "inputCases": [
+        "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+        "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+        "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+        "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+        "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+        "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+      ]
+    },
+    {
+      "log": "native-machine-lcd273-coex-gate-sht-integration-final.log",
+      "exitCode": 0,
+      "sha256": "ba136ac655cdb8ed3ff7644c9c4990ff97cfb64d69e7109db5ca5f1f746a0cfe",
+      "elapsedSeconds": 4.378,
+      "bytes": 13057,
+      "command": "C5_FACTORY_TRACE_USB=1 C5_FACTORY_TRACE_PCS=40800db0,40800d2a,40800d32,40800d4e,40800c70,40800c8a,4002132c,42121cb0,4200aebe cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned SD>"
+    },
+    {
+      "log": "c5-coex-gate-sht-integration-final-workspace-clippy.log",
+      "exitCode": 0,
+      "sha256": "74fe229fd48330a9f2b811a94a7bac426157cf33701f3f22480c4361a9d83e8c",
+      "elapsedSeconds": 12.318,
+      "bytes": 1175,
+      "command": "cargo clippy --workspace --all-targets -- -D warnings"
+    },
+    {
+      "log": "c5-coex-gate-sht-integration-final-wasm-clippy.log",
+      "exitCode": 0,
+      "sha256": "6d83f4aa0355f3e9ef1ab62529a1e44639e10c0c517dec1befe5457b9d9dec10",
+      "elapsedSeconds": 4.708,
+      "bytes": 1242,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings"
+    },
+    {
+      "log": "c5-coex-gate-sht-integration-final-privacy.log",
+      "exitCode": 0,
+      "sha256": "f1c876c598b121142eba327b4e963269d07a8d4b53dfa11624f969927767b90a",
+      "elapsedSeconds": 0.406,
+      "bytes": 130,
+      "command": "node tools/check-evidence-privacy.mjs"
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "actualNative": {
+    "log": "native-machine-lcd273-coex-gate-sht-integration-final.log",
+    "sha256": "ba136ac655cdb8ed3ff7644c9c4990ff97cfb64d69e7109db5ca5f1f746a0cfe",
+    "runSteps": 44199355,
+    "cpuInstructionCount": 44199355,
+    "nominalCycles": 44199294,
+    "uartBytes": 4536,
+    "appMainEntered": true,
+    "appMainPc": "0x4200aebe",
+    "appMainCallerPc": "0x42121cb0",
+    "appMainNominalCycle": 38867584,
+    "ordinaryTg1EnableNominalCycle": 27104576,
+    "ordinaryTg0EnableNominalCycle": 38862272,
+    "coexGateStorePc": "0x40800db0",
+    "coexGateStoreValue": 3,
+    "coexGateStoreNominalCycle": 44199294,
+    "nextStopPc": "0x40800d2a",
+    "nextReadAddress": "0x600a9c14",
+    "nextMcause": 5,
+    "rtcAndQmiInitializationLogged": true,
+    "shtc3IdLogged": "0x0807",
+    "shtc3WakeOrReadFailureLogged": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0
+  },
+  "contracts": [
+    "LPCON permits request bits0WIFIPWR/1COEX/2I2C only. FORCE remains I2C2-only; LP_TIMER/other force engines reject. Bit1 does not select independent SYSCON+04 bit12 160MHz source.",
+    "Value3 does not grant REGI2C or override MODEM_APB/LP_APB/I2C permissions, create analog targets, complete PLL/SAR/BOD or produce COEX/RF/MAC/PHY readiness. Getter/report are requests only.",
+    "write_at settles old I2C inputs first. Parent exact+18 path services old watchdogs even before rejecting partial writes. Strict exact refusals are ModelLimit and preserve guest destination/CSRs; adjacent and off-profile unknown words retain prior mapping.",
+    "Four new Bus/guest cases cover actual field RMW, independent bits/source, no I2C/APB grant, plain/UnitCost bad-bit/byte/halfword preservation, CPU retention/HP reset and watchdog precedence against correctly elapsed expected state.",
+    "SHTC3@70 is routed through host0 SDA27/SCL26. Existing C5I2c sync advances board/sensor time before START/data callbacks. No new controller/Bus hook, trait slot, callback stub or public environment API.",
+    "The declared virtual25C/50%RH uses datasheet-maximum guest deadlines:240us startup/wake/reset,12.1ms normal and0.8ms low-power. Busy addresses NACK; samples latch at command start; finite/range/overflow checks prevent early completion.",
+    "Virtual0807 is a product-ID mask with unspecified bits0, not a serial or earlier2638 garbage. Two-byte early STOP and three-byte CRC ID reads plus four no-stretch measurement commands are supported.",
+    "Powered sensor busy/sleep survives controller/CPU reset; only physical power edges reset it. Stretch/general-call/serial and result retries without a fresh command remain unsupported. Large catch-up is callback-horizon timing, not calibrated byte-phase ACK/line behavior."
+  ],
+  "reviews": [
+    {
+      "sha256": "f8765efb13f4f36cc68dc7fc46545e8684bbf54cbbcc899a9acc190db54010d9",
+      "scope": "Gate/source/Bus/plain-UnitCost guest/watchdog review. Fixture P2 found and source-fixed, no remaining P1/P2. No execution."
+    },
+    {
+      "sha256": "cd52e07934f17f0564e84b41b30a84368555b1e01b6a66d65c7b7ed3126ac127",
+      "scope": "Sensor/callback timing/reset/CRC/malformed command review. No P1/P2; no final runtime prefilled."
+    }
+  ],
+  "negativeResults": [
+    {
+      "log": "c5-coex-gate-sht-integration-initial-watchdog-fixture-failure.log",
+      "bytes": 51001,
+      "sha256": "c219e9f30f7e0d575ccf5161e253f596836cecee75288ac0bd55713b3d3dbf7f",
+      "exitCode": 101,
+      "reasonAndCorrection": "479 library cases passed and1 failed: a fixture compared the owner against its time0 clone. Old watchdog service correctly settles autonomous time to129999999. Compare against an independently elapsed expected owner instead; no production change."
+    },
+    {
+      "log": "c5-coex-gate-sht-integration-fixed-workspace-clippy.log",
+      "bytes": 2014,
+      "sha256": "47888816fe95a14a26a1a2f2bb4f59d8422b6f924d51d47e4ab05c4a222aad0e",
+      "exitCode": 101,
+      "reasonAndCorrection": "possible_missing_else in the new lcd273 MMIO helper. Added a newline between two if statements; no semantic change or lint allowance."
+    }
+  ],
+  "staticSuccessorAudit": {
+    "sha256": "3c7876efc2df29832af82f5b377042481ce6a1ba00ac906eb6b0be6e9b16c227",
+    "scope": "Fixed WIFI47 callback predicts CLK_CONF1 masks400/4/200/1fb. Only its first read40800d2a is now executed; later PHY/MAC branches remain static candidates."
+  },
+  "limits": [
+    "No original LCD output, SD commands, UI/button/FAT mount/persistence acceptance or C5 publication.",
+    "RTC/QMI init and SHT ID do not prove complete sensor/application behavior or physical environment calibration.",
+    "CLK_CONF1 remains unimplemented and produces an existing cause5 access fault. No guessed value or radio ready response is supplied.",
+    "Focused LTO=false C5 and explicitly filtered SHT tests do not replace default-LTO full-workspace/retained CI/CPU controls/current production WASM/browser/fresh product acceptance.",
+    "Production WASM remains the historical pre-KM/coex/USB artifact; Clippy is not a production build or browser result."
+  ],
+  "curation": {
+    "kept": "Revisions, source/input/log hashes, commands, bounded actual PC/cycle facts, aggregate results, negatives and limits.",
+    "omitted": "Raw test/UART/register streams, original binaries, private paths and full disassembly remain outside Git.",
+    "numericOrHistoricalLogHashesChanged": false
+  }
+}

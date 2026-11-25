@@ -2,8 +2,11 @@
 //! Byte scheduling at an explicit crystal rate; 7-bit master/FIFO subset.
 //! No slave, multi-master collision, stretched clock or timeout simulation.
 use crate::{bus::{C5Bus,PINS},i2c_regs};
-use esp_periph::{Device,RegRam,i2c::{I2c,I2cDevice,INT_END_DETECT,INT_TRANS_COMPLETE,INT_NACK}};
-const INTERRUPTS:u32=INT_END_DETECT|INT_TRANS_COMPLETE|INT_NACK;
+use esp_periph::{Device,RegRam,i2c::{I2c,I2cDevice,INT_END_DETECT,INT_TRANS_COMPLETE,INT_NACK,INT_TIMEOUT}};
+// C5 IDF v5.5.3 (2c211b23) / v5.5.4 (73550728) i2c_ll.h:53-74:
+// MASTER_EVENT_INTR also enables arbitration-lost (bit 5) and timeout (bit 8).
+// Store those enables; this single-master/no-stretch model produces neither event.
+const INTERRUPTS:u32=INT_END_DETECT|INT_TRANS_COMPLETE|INT_NACK|INT_TIMEOUT|(1<<5);
 pub(crate) struct C5I2c{controller:I2c,config:u32,clock:u32,last:u64,remainder:u64,pub deadline:Option<u64>}
 impl C5I2c{
     pub fn new(now:u64)->Self{let mut s=Self{controller:I2c::new(),config:0,clock:0,last:now,remainder:0,deadline:None};s.reset();s}

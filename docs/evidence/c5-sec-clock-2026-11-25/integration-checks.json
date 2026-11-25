@@ -1,0 +1,244 @@
+{
+  "schema": 1,
+  "baseCommit": "ccf0a725",
+  "moduleCommits": [
+    {
+      "integrated": "ccf0a725",
+      "original": "18e9424151fe83a815133d07e58ca4341c594a98",
+      "scope": "SEC exact mux0/2, pre-DPA source availability only"
+    },
+    {
+      "integrated": "45d79157",
+      "original": "c82c5bf4435e8464ca9c593f8d6623f17e13f2a5",
+      "scope": "cold LCD273/SPI SD snapshots through existing diagnostics ABI"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_clock.rs",
+      "sha256": "8c3372f74535ad8808d5efc2f27c76123c9283fcbaee79d2d65d99be8768d293"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "6870261e78152f9cd19b95b517a4bd04b7846716f6e7587808eafdbd63ee288a"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "8d5ec91448f51f5647ac3d556ea86318d842ca412063475718f0eea9ed7719ca"
+    },
+    {
+      "path": "esp32c5/src/security_clock_bus_tests.rs",
+      "sha256": "f520881887e978b6b28087566b25bf63c53d9eed6abcf93700880d57d6d9e587"
+    },
+    {
+      "path": "esp32c5/src/board/waveshare_lcd273.rs",
+      "sha256": "f0c473cd72637cf0234db2fca04dd96194f152650152241303672f6e8513c266"
+    },
+    {
+      "path": "esp-periph/src/sdmmc/card/spi.rs",
+      "sha256": "86d55c609346efe082edc439a542380fb457c8acb7924771be220b2ac7ab833d"
+    },
+    {
+      "path": "esp32c5/tests/lcd273.rs",
+      "sha256": "7dd09c540b3dd55f3b7cca4f94677ce9d45f32564dbc5e9e63dfc2f45e972719"
+    },
+    {
+      "path": "web/wasm/worker.js",
+      "sha256": "a563da54e5f2b64837ddb93f9ecbbf43da32a826edd1abd5700e0621924d7b00"
+    },
+    {
+      "path": "web/platform/hardware-diagnostics.js",
+      "sha256": "9c695118f36f83a577938bf3e854777cab416d3ef4354ded9470a53c2c63a9b0"
+    },
+    {
+      "path": "web/platform/runtime.js",
+      "sha256": "9ab32df98c159db8f93635fa5249369e65dd7d645f0e0c709c1b78e0ea655b55"
+    },
+    {
+      "path": "tools/platform-hardware-diagnostics-test.mjs",
+      "sha256": "0f6c8134797b186e9c4a9299125ca9d34f1f13cc6d94f5f7fd072f6b591c42b7"
+    },
+    {
+      "path": "tools/platform-c5-lcd273-diagnostics-parser-test.mjs",
+      "sha256": "999f74314933ebfd1461ba409dc1d55b5b3b7f1f85b7652a0c5189760e61f45d"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "productionWasm": {
+    "path": "web/wasm/esp32sim.wasm",
+    "bytes": 8825295,
+    "sha256": "c182ddfe1c4586de6773980b50cf90df5545be335df2c4b810a5d69738884197",
+    "command": "tools/wasm-build.sh",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_TARGET_DIR": "unset; default checkout target",
+      "CARGO_PROFILE_RELEASE_LTO": "unset; repository release default"
+    },
+    "note": "This is a real default-release WASM artifact used by the passing production-worker tests; native focused checks still use explicit LTO=false."
+  },
+  "checks": [
+    {
+      "log": "c5-sec-clock-cold-diagnostics-real-wasm-spi-sd-cold.log",
+      "exitCode": 0,
+      "sha256": "0f6cab571c5744076b91f9f402e6b34ab1135c359095e2fdd80a644588eafcbc",
+      "elapsedSeconds": 0.024,
+      "command": "cargo test --release -p esp-periph --lib cold_observation_",
+      "results": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 219
+      },
+      "logBytes": 590
+    },
+    {
+      "log": "c5-sec-clock-cold-diagnostics-real-wasm-c5-suite.log",
+      "exitCode": 0,
+      "sha256": "3e851ab2e64a62e036bdd38f461f88269e2398a74bbcad73df0e2181211c1a4d",
+      "elapsedSeconds": 47.967,
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "results": {
+        "passed": 491,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      },
+      "inputCases": [
+        "factory_tests::external_c5_swd_routes_real_requests_and_retains_system_reset_flag",
+        "image::tests::external_original_lcd273_32f8p_image_validates_as_flash_not_sram_direct",
+        "factory_tests::external_c5_lcd273_mask_rom_loads_and_enters_the_unchanged_bootloader",
+        "factory_tests::external_c5_lcd273_original_bootloader_loads_and_enters_the_unchanged_application",
+        "factory_tests::external_c5_lcd273_original_guest_configures_policy_and_completes_its_psram_test",
+        "external_c5_actual_rom_reset_copies_its_own_elf_initializers"
+      ],
+      "logBytes": 52753
+    },
+    {
+      "log": "native-machine-lcd273-sec-clock-cold-diagnostics-real-wasm.log",
+      "exitCode": 0,
+      "sha256": "aab5813aa2802039e5b77f23968bfa21faed16ecf3adf185c35484095303099e",
+      "elapsedSeconds": 3.392,
+      "command": "C5_FACTORY_TRACE_PCS=40817696,4002132c,4200aebe cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <pinned prepared SD>",
+      "logBytes": 10201
+    },
+    {
+      "log": "c5-sec-clock-cold-diagnostics-real-wasm-build.log",
+      "exitCode": 0,
+      "sha256": "868b215c02971c6f0649b32fc036ec18ecdd90ab10cc4cec73a5cceace76bfd5",
+      "elapsedSeconds": 58.615,
+      "command": "tools/wasm-build.sh",
+      "logBytes": 1564
+    },
+    {
+      "log": "c5-sec-clock-cold-diagnostics-real-wasm-platform.log",
+      "exitCode": 0,
+      "sha256": "3378a3b8474e1902eae36a332c7a8e2fcbeb1b55fc941806055cb70e1add9e54",
+      "elapsedSeconds": 4.584,
+      "command": "node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-hardware-diagnostics-test.mjs tools/platform-c5-lcd273-diagnostics-parser-test.mjs",
+      "results": {
+        "nodeTestSummaries": 15,
+        "passed": 15,
+        "failed": 0,
+        "configBehaviorGroups": 17,
+        "humanInputChecks": 11,
+        "framebufferLifecycleChecks": 4,
+        "realWorkerWasmHelloBootPauseResumeReset": true
+      },
+      "logBytes": 6010
+    },
+    {
+      "log": "c5-sec-clock-cold-diagnostics-real-wasm-workspace-clippy.log",
+      "exitCode": 0,
+      "sha256": "7439d96ab1a628e247d77785ef290029bf7f719a091a3a469c999709a2e863ff",
+      "elapsedSeconds": 24.802,
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "logBytes": 1421
+    },
+    {
+      "log": "c5-sec-clock-cold-diagnostics-real-wasm-wasm-clippy.log",
+      "exitCode": 0,
+      "sha256": "03d426155969066fd08c180acde89e564fed4467f976f8388f3db5134b50a0b8",
+      "elapsedSeconds": 4.897,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "logBytes": 1242
+    },
+    {
+      "log": "c5-sec-clock-cold-diagnostics-real-wasm-privacy.log",
+      "exitCode": 0,
+      "sha256": "b63c45537e5c99c836251f94464059abc42f61a61e01ad20e84d22b733680b54",
+      "elapsedSeconds": 0.438,
+      "command": "node tools/check-evidence-privacy.mjs",
+      "logBytes": 130
+    }
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "actualNative": {
+    "log": "native-machine-lcd273-sec-clock-cold-diagnostics-real-wasm.log",
+    "sha256": "aab5813aa2802039e5b77f23968bfa21faed16ecf3adf185c35484095303099e",
+    "runSteps": 27039922,
+    "cpuInstructionCount": 27039922,
+    "nominalCycles": 27039872,
+    "uartBytes": 3711,
+    "pc": "0x4200255e",
+    "readAddress": "0x60096168",
+    "mcause": 5,
+    "secSelector": 2,
+    "preDpaSourceHz": 480000000,
+    "downstreamCryptoFrequency": "unmodeled",
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "ordinaryWatchdogStartupExecuted": false,
+    "description": "Original guest completes the SEC mux RMW and the second real encryption-fuse branch, then reaches the unimplemented Key Manager memory power word. This does not implement KM reset or crypto.",
+    "logBytes": 10201
+  },
+  "contracts": [
+    "SEC owns onlyPCR6009613c, with source0/2 and documented named POR0; unknown selectors, reset and reserved requests remain unsupported. Strict exact-owner refusals become ModelLimit without new trap state; adjacent/off-profile mapping is unchanged.",
+    "Actual PLL observation, not SEC selection, qualifies the pre-DPA480M input. PCR divider tap gates do not control that direct input. TRM limits downstream CRYPTO_CLK to160M through a separate DPA policy; no KM functional clock or ready event is derived here.",
+    "Three Bus/plain+UnitCost guest checks cover actual RMW without false PLL readiness, invalid-request trap/destination preservation, CPU/HP/raw retention and prior watchdog boundary.",
+    "SpiSdCard observations copy existing latched counters only. nativeCommandCalls excludes wrapper-handled SPI commands and includes failures; storageBlocksLoaded precedes reply/MISO consumption; storageBlocksWritten proves backing-store block commitment. Neither means guest completed a read, mounted FAT or flushed a file.",
+    "LCD/SD u64 counters are canonical decimal strings through the existing diagnostics ABI, worker allowlist and bounded parser. Same-card snapshots do not consume replies/reset counters; replaced workers are isolated; no new trait, ABI, hot byte/tick path or UI is added."
+  ],
+  "reviews": [
+    {
+      "sha256": "d12abc77b005c106850cdb6d1ec80d79e77405bf3c8768564d00562a492bafe3",
+      "scope": "Independent read-only cold diagnostics/source/lifecycle scope; no P1/P2, twelve file fingerprints stable. Helper old counter wording separately marked for follow-up; no independent execution or full product acceptance."
+    },
+    {
+      "sha256": "8224ee510fefad479ba6e470104064151a75cfd05c26a0435352ca8b52590152",
+      "scope": "Independent read-only SEC owner and exact Bus classification/three guest fixtures/source pins/491 logs review; no P1/P2 in scope, all initial/final source fingerprints stable. No independent execution or KM/product acceptance."
+    }
+  ],
+  "negativeResults": [
+    {
+      "log": "c5-sec-clock-cold-diagnostics-platform.log",
+      "sha256": "8e9d7ea654d8aae359a5e9aec16e87b07ca60c29c637cc7ebbd755ebf10db3ff",
+      "description": "The real-worker test initially failed before guest startup because this checkout had no generated web/wasm/esp32sim.wasm. This was a missing documented build prerequisite, not a mock fetch or emulator defect. The next run first built the actual production artifact; no fixture or assertion was weakened.",
+      "logBytes": 5732
+    }
+  ],
+  "limits": [
+    "Original factory remains before app_main/LCD/buttons/TF and ordinary watchdog startup. No KM/crypto/RF/PHY or physical power/timing claim.",
+    "Full default-LTO native workspace CI, identical-work CPU controls, original-factory production WASM/browser and fresh product acceptance remain required.",
+    "Raw logs and absolute private paths are excluded; artifact hashes, exact commands, compact results and explicit assumptions are retained."
+  ]
+}

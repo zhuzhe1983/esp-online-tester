@@ -1,0 +1,244 @@
+{
+  "baseCommit": "0c949821ebee9d953e95e6c5dede0aae1d79513b",
+  "parentIntegrationEquivalent": "160b7f5c",
+  "scope": "Private C5 MSPI boot module; opt-in ROM compatibility not yet wired; factory acceptance remains incomplete",
+  "sourceAuditCompletedBeforeImplementation": true,
+  "idfCommits": {
+    "v5.5.3": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+    "v5.5.4": "735507283d5b2f9fb363a1901172dbd9e847945d"
+  },
+  "sources": [
+    {
+      "path": "components/soc/esp32c5/register/soc/spi_mem_c_reg.h",
+      "bytes": 191876,
+      "sha256": "bf36bdec74d7e2a322a0b7cca57da76476889d38e24281130affa5331d54cd11",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://raw.githubusercontent.com/espressif/esp-idf/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/spi_mem_c_reg.h",
+        "v5.5.4": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/spi_mem_c_reg.h"
+      }
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/spi1_mem_reg.h",
+      "bytes": 67682,
+      "sha256": "528795b7b037ed023f49001eac73af89ecf61f2a498081fc95c440f10fecd05f",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://raw.githubusercontent.com/espressif/esp-idf/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/spi1_mem_reg.h",
+        "v5.5.4": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/spi1_mem_reg.h"
+      }
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/spi_mem_c_struct.h",
+      "bytes": 133437,
+      "sha256": "7431e8d95b82135cda601b3cb5ee256e8a7335b6ecad29ac40edb923224c3d33",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://raw.githubusercontent.com/espressif/esp-idf/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/spi_mem_c_struct.h",
+        "v5.5.4": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/spi_mem_c_struct.h"
+      }
+    },
+    {
+      "path": "components/hal/esp32c5/include/hal/spimem_flash_ll.h",
+      "bytes": 24910,
+      "sha256": "56a84e7bf87a9249f6909874f2502fb82f65c4dd3e6423d44212a2a4d3ff6a31",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://raw.githubusercontent.com/espressif/esp-idf/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/hal/esp32c5/include/hal/spimem_flash_ll.h",
+        "v5.5.4": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/esp32c5/include/hal/spimem_flash_ll.h"
+      }
+    },
+    {
+      "path": "components/hal/esp32c5/include/hal/spi_flash_ll.h",
+      "bytes": 8230,
+      "sha256": "02a226b0564991de740905e149554705b727b4c560a05c44d9809334f6efef75",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://raw.githubusercontent.com/espressif/esp-idf/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/hal/esp32c5/include/hal/spi_flash_ll.h",
+        "v5.5.4": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/esp32c5/include/hal/spi_flash_ll.h"
+      }
+    }
+  ],
+  "trm": {
+    "version": "1.1",
+    "url": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+    "sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "sections": [
+      "33.1",
+      "Access Types for Registers",
+      "Programming Reserved Register Field"
+    ],
+    "MSPIRegisterTablePublished": false
+  },
+  "rom": {
+    "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+    "disassemblySha256": "475522d8b3a29739dbb3a7d79ed35769e6de12aa323919cdb0d86ad5befc1dc7",
+    "bootstrap": {
+      "function": "SPI_init",
+      "fifoPollPc": "0x400295d4",
+      "opaqueReadPcs": [
+        "0x4002967e",
+        "0x40029690"
+      ],
+      "opaqueWritePcs": [
+        "0x4002968e",
+        "0x4002969c"
+      ],
+      "witnessedRmw": "(old & ~0x3ff) | 0xff"
+    },
+    "computedPortHelpers": {
+      "esp_rom_spi_cmd_config": [
+        "0x4002c2da",
+        "0x4002c2e8",
+        "0x4002c2fa",
+        "0x4002c308",
+        "0x4002c384",
+        "0x4002c398"
+      ],
+      "esp_rom_spi_cmd_start": [
+        "0x4002c4da",
+        "0x4002c51c"
+      ]
+    },
+    "staticAuditLimit": "Per-function direct-address constant scan plus manual computed-helper audit; not complete interprocedural/indirect-call proof"
+  },
+  "configuration": {
+    "spi0Base": "0x60002000",
+    "spi1Base": "0x60003000",
+    "pcrConfig": "0x60096018",
+    "pcrClock": "0x6009601c",
+    "fifoEmptyRead": "0xfc000000",
+    "opaqueCompatibility": {
+      "api": "Mspi::enable_mp_rom_compat()",
+      "default": false,
+      "words": [
+        "0x24",
+        "0x28"
+      ],
+      "virtualInitialValues": [
+        0,
+        0
+      ],
+      "acceptedWrite": "low10 == 255 and unchanged upper22",
+      "pcrReset": "clear words; retain compatibility policy",
+      "aliasesSPI1": false,
+      "engineTimingOrIrqEffects": false
+    },
+    "virtualJedec32MiB": [
+      "20",
+      "40",
+      "19"
+    ],
+    "flashBytes": 33554432,
+    "psramBytes": 8388608
+  },
+  "nativeStrict": {
+    "board": "waveshare-c5-lcd273",
+    "factorySha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+    "factoryBytes": 3346992,
+    "factoryLoadOffset": 0,
+    "budget": 1000000,
+    "baselineSteps": 274276,
+    "steps": 274383,
+    "firstFault": {
+      "pc": "0x4002967e",
+      "address": "0x60002028",
+      "write": false,
+      "width": 4
+    },
+    "trapVectorPc": "0x40001600",
+    "uartBytes": 101,
+    "nonzeroPixels": 0,
+    "opaqueCompatibilityEnabled": false,
+    "publicLoaderAcceptance": false,
+    "rawLogSha256": "7e255e1723cacd99367380568097aa934f5d31c303a9baf89bd01aa00f264656",
+    "rawLogLocation": "ignored common research/mspi-strict-lcd273.log",
+    "command": "CARGO_TARGET_DIR=target/c5-mspi-boot-lane CARGO_BUILD_JOBS=1 cargo run --release -p esp32c5 --example factory_boundary -- waveshare-c5-lcd273 32 8 <inputs>/esp32c5_rev100_rom.elf <inputs>/lcd273-factory.bin 1000000",
+    "logBytes": 2118
+  },
+  "files": [
+    {
+      "path": "esp32c5/src/mspi.rs",
+      "sha256": "130b91f2c212562fde525b35b339e6fe57295213992d90eaefa951c1b232dd74"
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "1.100.0 (3acc79c0c 2026-11-05)"
+  },
+  "checks": [
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-mspi-boot-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --lib mspi::tests -- --nocapture",
+      "result": "pass",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 35
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-mspi-boot-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --test psram -- --skip original_sram_guest_checks_all_eight_mib_and_executes_through_its_own_mmu_map",
+      "result": "pass",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 1,
+      "scope": "Existing controller/PSRAM tests only; the long SRAM guest is left to integration."
+    },
+    {
+      "command": "clippy-driver --edition=2021 --crate-name esp32c5 --test esp32c5/src/lib.rs -D warnings -o <lane-target>/mspi-unit-clippy --extern emu_core=<built-rlib> --extern esp_periph=<built-rlib> --extern esp_soc=<built-rlib> --extern riscv_rv32=<built-rlib> -L dependency=<each-built-rlib-directory>",
+      "result": "pass",
+      "allowancesAdded": false
+    },
+    {
+      "command": "<lane-target>/mspi-unit-clippy mspi::tests --nocapture",
+      "result": "pass",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 35
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-mspi-boot-lane CARGO_BUILD_JOBS=1 cargo clippy -p esp32c5 --lib --tests -- -D warnings",
+      "result": "blocked-at-integration",
+      "diagnostic": "The sole ordinary-library diagnostic is dead_code for enable_mp_rom_compat; parent-owned strict ROM loader call is intentionally absent from this module-only change."
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "filesChecked": 3031,
+      "gzipFiles": 95
+    }
+  ],
+  "negativeChecks": [
+    {
+      "test": "initial virtual_jedec_capacity_and_mmu_cover_32_mib_without_aliasing",
+      "passed": 6,
+      "failed": 1,
+      "reason": "Test incorrectly assumed vendor EF. Existing explicitly virtual shared flash JEDEC returns20. Assertion corrected; capacity byte19 and physical firmware unchanged."
+    },
+    {
+      "check": "first direct unit-crate Clippy",
+      "result": "failed",
+      "diagnostic": "Two test hex literals used unequal byte grouping; corrected to 0x0019_4020."
+    }
+  ],
+  "supportedCommandScope": {
+    "SPI0": "CMD0 only; all nonzero software commands reject",
+    "SPI1Dedicated": "One trigger per write; RDSR/RDID/WREN/WRDI/WRSR/PP/SE/CE and existing power state paths; READ newly bounded to 1..64 real bytes; FLASH_PE permitted only with USR",
+    "SPI1User": "One 8-bit SPI command phase; STR, byte-multiple W0..W15 lengths <=64; existing explicit known flash opcodes and separately validated Quad PSRAM; no host simultaneous TX/RX/highpart/CRC/octal/DDR/held-CS extension"
+  },
+  "limits": [
+    "Opaque words are behavioral virtual compatibility, not a claimed silicon register/reset definition.",
+    "Computed-port SPI0 arbitrary lengths and command engines remain unsupported.",
+    "No new four-byte flash mode; MMU/JEDEC capacity tests do not establish a die command protocol.",
+    "Existing virtual JEDEC is not a physical board manufacturer/device ID.",
+    "No analog/cache-line latency or timing calibration, ECC/PMS/XTS/NAND/HPM or dedicated C5 32KiB erase engine.",
+    "No bus/soc/shared edits or broad builds/benchmarks; native strict negative proof only.",
+    "Integration must wire opt-in after ROM validation and rerun ordinary Clippy, factory/native/Worker acceptance and regression checks."
+  ],
+  "privacy": "Public source URLs/hashes and aggregate checks only; personal paths and raw tool captures omitted from committed evidence."
+}

@@ -1,0 +1,171 @@
+{
+  "schema": 1,
+  "baseCommit": "9cd478baeb7c1033c6de6c673a9480950834f83a",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "sha256": "ba1432a39fac9338cacbc880b2f9848e830e9efa7f0568c346db611304d43e52"
+    },
+    {
+      "path": "esp32c5/src/boot_analog_sar.rs",
+      "sha256": "6a588d1c6a70c549f15718eb9c85041ff963f866fc58959eb4b48aca983f3a86"
+    },
+    {
+      "path": "esp32c5/src/boot_saradc.rs",
+      "sha256": "21c832d77a1d85c362ab74684ed4ff4ac76bb87c6adb3a45b231f1edaa83f1af"
+    },
+    {
+      "path": "esp32c5/src/boot_saradc_tests.rs",
+      "sha256": "14c12c4a12405a29a3dfe92c146e62ce67a6e625aeeee585990e50510f83d177"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "37e6a2a9ef88973f174303ca5044f53c3c9142a9c4768609fd3b4bc0a6428f3e"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "6abd0d7e5505c499ffb4d3a9171093724c00022db18ea8346d41fb5f008c0fd8"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "52842fb4f09e75cb444d3bcfc0c15243a2dbc1b208ba409c25a3fc5cc7e6d2f2"
+    }
+  ],
+  "inputsAfterNativeRun": [
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": "saradc-integrated-c5-suite.log",
+      "logSha256": "c029317bec5afd4933eb0a8b16fe1ed85c661d22b527d4b1cc8be421fb6deaa6",
+      "passed": 266,
+      "failed": 0,
+      "ignored": 0,
+      "environment": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false"
+      },
+      "scope": "Focused C5 suite including all four developer-input tests; not the default-LTO workspace CI command.",
+      "logBytes": 29799
+    },
+    {
+      "command": "cargo test --release -p esp32c5 --lib boot_saradc",
+      "exitCode": 0,
+      "log": "saradc-after-clippy-tests.log",
+      "logSha256": "551ffcb930ba66f8a2b8316ea8152ee651bfff7393880b833a99b28794d23964",
+      "passed": 21,
+      "scope": "After equivalent checked-Option guard refactor; overlaps full266, do not add counts.",
+      "logBytes": 2573
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "saradc-integrated-workspace-clippy-final.log",
+      "logSha256": "8f1b942eea373da3983c52e7f0319bfec4b7c13e5f887cc893e0f3ec3f51138d",
+      "logBytes": 318
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": "saradc-integrated-wasm-clippy.log",
+      "logSha256": "4385e7b34685f0fe7f5e4e2177c87603bb82ba7e08cc7deae080fb4da81c68ad",
+      "logBytes": 241
+    }
+  ],
+  "nativeUnchangedFactory": {
+    "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 10000000 <prepared FAT32 card>",
+    "steps": 796274,
+    "cycles": 796224,
+    "uartBytes": 1353,
+    "faultPc": "0x4084efac",
+    "faultAddress": "0x600b0c10",
+    "operation": "read LP_TIMER_UPDATE",
+    "applicationEntered": false,
+    "partitionTablePrinted": true,
+    "factorySelected": true,
+    "firstApplicationSegment": {
+      "paddr": "0x00020020",
+      "vaddr": "0x42130020",
+      "bytes": 1904700,
+      "guestMessage": "map; subsequent operation still stopped at LP timer"
+    },
+    "sarAnalog": {
+      "readsTotal": 21,
+      "writesTotal": 23,
+      "writtenMask": "0x3f",
+      "guestInitialCodes": [
+        2150,
+        2150
+      ],
+      "reservedPathConfigured": true
+    },
+    "sarTimer": {
+      "rawInputs": [
+        2048,
+        2048
+      ],
+      "inputProvenance": "explicit ideal constant, not voltage/calibration/noise/entropy",
+      "sourceSel": 0,
+      "xtalHz": 48000000,
+      "dividerNUM": 0,
+      "sarDivider": 15,
+      "target": 200,
+      "periodNominalCycles": 2000,
+      "triggers": 104,
+      "captures": [
+        52,
+        52
+      ],
+      "last": [
+        2048,
+        2048
+      ],
+      "lastAt": 795008,
+      "clockFault": false,
+      "physicalConversionModeled": false,
+      "entropyModeled": false,
+      "rngCoupling": false
+    },
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "logSha256": "ddece575ef765d0520e016862b3adfe9dc302a23ef48227f18761cac98bbd947"
+  },
+  "contracts": [
+    "Strict-ROM selection explicitly supplies raw[2048,2048] and selects SAR byte configuration; all profile candidates validate before assignment. Raw/SRAM exit withdraws both.",
+    "The timer advances only after actual SAR REGI2C bytes/power, digital mode/pattern, XTAL and gates are configured. Captures alternate at real modeled timer edges without a per-trigger loop.",
+    "Before analog changes old inputs advance. An unsupported live route withdrawal restores the analog/ADC snapshots before any changed PLL/MSPI clock observations are published, preserving elapsed sampling before the attempted write.",
+    "RNG remains the existing independent deterministic per-read source. ADC capture does not increase RNG sample count; RNG reads do not generate ADC captures.",
+    "CPU retains HP digital ADC state; Core clears digital config/captures and retains the selected ideal raw inputs. LP/system withdraws analog readiness; Chip clears SAR byte history and explicitly selects the virtual input profile again.",
+    "Global pending reset blocks ADC MMIO advancement. Only watchdog controllers use actual event-at arbitration; ADC reset/report timing remains at the Bus service boundary, not asynchronous physical reset timing."
+  ],
+  "negativeHistory": [
+    {
+      "log": "saradc-integrated-workspace-clippy.log",
+      "sha256": "bb2869e6bb76f6b0627a9926b401357ad0d48e63a4664e54fdd2207a33806ebf",
+      "outcome": "Adjacent VDET if statements and a checked Option unwrap triggered denied lints. A line break and equivalent virtual-timer/if-let guard fixed them without allowances; the21 focused tests pass afterward.",
+      "logBytes": 1598
+    }
+  ],
+  "limits": [
+    "No ADC DONE/data/status/IRQ/DMA or ordinary external ADC mode support. Captures are zero-conversion-delay functional bookkeeping of explicit ideal raw inputs, not actual analog conversion.",
+    "Reported phase/count is lazy controller state at its last observation; last_at identifies the last captured edge. No physical ADC or cryptographic entropy claim.",
+    "First actual remaining gap is LP_TIMER snapshot/time. No original app entry, LCD framebuffer, buttons, TF mount or Wi-Fi acceptance.",
+    "Full default-LTO workspace tests, CPU controls, final integrated production WASM/browser and fresh final release acceptance remain pending. Latest private cold-ABI contract also needs the final rebuilt WASM. No C5 publication."
+  ]
+}

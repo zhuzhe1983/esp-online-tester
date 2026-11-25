@@ -52,6 +52,20 @@ The platform page installs `window.espTester`. Await its presence before use. Ru
 | `subscribe(listener)` | Synchronous subscription; returns an unsubscribe function. Events include `state`, `serial`, `frame`, `stats`, `board`, `error`, `load-progress`, `imu`, `lora-input`, `audio`, `audio-state`, `network`, acknowledged `input`, `{type:'recording',state}`, `{type:'storage',storage}`, `{type:'sd-card',sdCard}`, `{type:'leds',leds}`, `{type:'motors',motors,motorOutput}`, `{type:'hardware-diagnostics',hardwareDiagnostics}`, `{type:'accessories',accessoryInputs}`, `{type:'accessory-positions',accessoryInputs}` and `{type:'accessory-outputs',accessoryOutputs}`. |
 | `dispose()` | Ends this session and releases its worker. Create a new runtime/page session to run again. |
 
+For Waveshare LCD273 only, a portable scene may explicitly include
+`c5WifiDriverCompat:'waveshare-lcd273-idf553-offline-v1'`. Omission keeps strict
+hardware simulation. Unknown profiles, other boards and explicit app-direct
+startup reject; `firmware:null` is allowed for a local Files selection, with the
+actual merged image/ROM checked at load time. Change this field through
+`configure`, which stops the current instance, then reload firmware. There is no
+automatic fallback or global preference. This offline mode has no hotspot or
+network connection; Wi-Fi configuration lasts only for this execution instance.
+Sharing and iframe `configure` retain the explicit field; both workbench and embed
+show the offline marker. Selection is not evidence of activation: inspect the
+actual `driverCompatibility.enabled` and matching `profile` snapshot. Recording
+scene/firmware receipts retain the profile and reject cross-mode replay. See
+[scope and workflow](../../../docs/platform/c5-wifi-driver-compat.md).
+
 Input shapes:
 
 ```js

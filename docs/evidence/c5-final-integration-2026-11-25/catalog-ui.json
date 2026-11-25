@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-25",
+  "status": "static-ui-pass; no-firmware-execution",
+  "sourceHeadAtServiceCheck": "f41a3df74412e11e16c2832e4c98e0aa615a9998",
+  "scope": "Fresh independent headless static UI check. No firmware download/load/start/reset, card import, guest inputs or prior Photo-run qualification reused.",
+  "servedAssets": [
+    {
+      "path": "web/platform/catalog/firmwares.json",
+      "httpStatus": 200,
+      "bytes": 1454682,
+      "sha256": "44414594d74e932e5e49c00dc3f44b7d9a39d771bb560b85f9ad821b8550112d",
+      "matchesDisk": true,
+      "trackedAtC823": true,
+      "matchesC823": false
+    },
+    {
+      "path": "web/platform/app.js",
+      "httpStatus": 200,
+      "bytes": 117298,
+      "sha256": "ed14d6ca2e79cc925404181e0f5f1d79eda56a48cba3341c5bba7faf47c41e4e",
+      "matchesDisk": true,
+      "trackedAtC823": true,
+      "matchesC823": true
+    },
+    {
+      "path": "web/platform/runtime.js",
+      "httpStatus": 200,
+      "bytes": 120658,
+      "sha256": "9ee59eef4b9a540d7bdb630cbd8a04d7d8a5550cfce19668ad88b070cec1cfcf",
+      "matchesDisk": true,
+      "trackedAtC823": true,
+      "matchesC823": true
+    },
+    {
+      "path": "web/platform/c5-wifi-driver-compat-ui.js",
+      "httpStatus": 200,
+      "bytes": 4617,
+      "sha256": "8163a9f6249ab3f1b2eb2a371c3d98143c85e16947d33ba8343722431a586740",
+      "matchesDisk": true,
+      "trackedAtC823": true,
+      "matchesC823": true
+    },
+    {
+      "path": "web/platform/c5-wifi-driver-compat.js",
+      "httpStatus": 200,
+      "bytes": 2148,
+      "sha256": "dd8f34a6e4b4ef64295cf86997806b70bc9a992e6776c999955b42586f07e603",
+      "matchesDisk": true,
+      "trackedAtC823": true,
+      "matchesC823": true
+    },
+    {
+      "path": "web/wasm/worker.js",
+      "httpStatus": 200,
+      "bytes": 36487,
+      "sha256": "258ca929134ef98821de5ce9b822495f10bb8ad7ebea7f1223ecdf2b4c5084a9",
+      "matchesDisk": true,
+      "trackedAtC823": true,
+      "matchesC823": true
+    },
+    {
+      "path": "web/wasm/esp32sim.wasm",
+      "httpStatus": 200,
+      "bytes": 8902103,
+      "sha256": "dee308ca758e02e5574d1888b3b68d7f7b7071da6d0f193347a4cf8628ceb28f",
+      "matchesDisk": true,
+      "trackedAtC823": false
+    },
+    {
+      "path": "web/wasm/fw/esp32c5_rev100_rom.elf",
+      "httpStatus": 200,
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+      "matchesDisk": true,
+      "trackedAtC823": false
+    }
+  ],
+  "catalogObserved": {
+    "status": 200,
+    "bytes": 1454682,
+    "sha256": "44414594d74e932e5e49c00dc3f44b7d9a39d771bb560b85f9ad821b8550112d"
+  },
+  "selectedFirmwareEntry": {
+    "id": "waveshare-c5-lcd273-factory",
+    "name": "C5 LCD2.73 · 官方出厂镜像（未验证，允许尝试）",
+    "productIds": [
+      "waveshare-esp32-c5-lcd-2-73",
+      "waveshare-esp32-c5-lcd-2-73-en"
+    ],
+    "version": "FactoryOnly_20260724",
+    "status": "trial",
+    "source": {
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+      "bootMode": "rom"
+    },
+    "role": "factory",
+    "publisher": "Waveshare",
+    "publisherGroup": "官方",
+    "simulationVerified": false,
+    "hardwareValidated": false,
+    "sources": [
+      {
+        "id": "factory",
+        "title": "Unmodified ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+        "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+        "checkedAt": "2026-11-23"
+      }
+    ],
+    "limitations": [
+      "完整原厂镜像已固定SHA、芯片rev100、启动布局和校验；实验性ROM加载保留原始字节，trial不代表完整硬件或原生Wi-Fi兼容。",
+      "严格硬件模式已通过ROM、bootloader、完整PSRAM测试并进入app_main，当前停在Wi-Fi私有MAC读取0x600ad858；不会自动切换模式。",
+      "显式离线模式已验证此固定原厂镜像的菜单、三个GPIO按键，以及Photo从64MiB FAT32卡读取、解码和显示JPEG，正常重载保留整卡。模式仅处理受限Wi-Fi驱动API，不关联热点或取得IP，配置只在本次运行保留；不代表原生Wi-Fi/RF验收。",
+      "原厂Sensor页面的温湿度与IMU读数存在等待时间、字节序问题，仍列为已知限制，不能作为正确测量或校准结果。",
+      "历史初次ROM对照在第6831条指令读取PMU0x600b00e4时停止；该历史记录保留，已不代表当前启动停点。"
+    ]
+  },
+  "entryComparedWithC823": {
+    "commit": "c8232bfcc3464bd62bdafbc93c18d096c169d6f5",
+    "changedFields": [
+      "limitations"
+    ],
+    "statusSourceShaBootModeProductIdsAndOtherFieldsUnchanged": true
+  },
+  "dom": {
+    "firmwareSelection": {
+      "id": "firmware-select",
+      "value": "waveshare-c5-lcd273-factory",
+      "text": "C5 LCD2.73 · 官方出厂镜像（未验证，允许尝试）"
+    },
+    "trialLabel": "可尝试运行 · 官方出厂",
+    "mode": {
+      "value": "",
+      "selected": "严格硬件模拟",
+      "options": [
+        {
+          "value": "",
+          "text": "严格硬件模拟"
+        },
+        {
+          "value": "waveshare-lcd273-idf553-offline-v1",
+          "text": "Wi-Fi 驱动兼容（离线）"
+        }
+      ]
+    },
+    "applyButton": {
+      "text": "应用模式并停止运行",
+      "visible": true,
+      "disabled": true
+    },
+    "expandedTooltipTitle": "固件兼容范围",
+    "observedLimitations": [
+      "完整原厂镜像已固定SHA、芯片rev100、启动布局和校验；实验性ROM加载保留原始字节，trial不代表完整硬件或原生Wi-Fi兼容。",
+      "严格硬件模式已通过ROM、bootloader、完整PSRAM测试并进入app_main，当前停在Wi-Fi私有MAC读取0x600ad858；不会自动切换模式。",
+      "显式离线模式已验证此固定原厂镜像的菜单、三个GPIO按键，以及Photo从64MiB FAT32卡读取、解码和显示JPEG，正常重载保留整卡。模式仅处理受限Wi-Fi驱动API，不关联热点或取得IP，配置只在本次运行保留；不代表原生Wi-Fi/RF验收。",
+      "原厂Sensor页面的温湿度与IMU读数存在等待时间、字节序问题，仍列为已知限制，不能作为正确测量或校准结果。",
+      "历史初次ROM对照在第6831条指令读取PMU0x600b00e4时停止；该历史记录保留，已不代表当前启动停点。"
+    ],
+    "allFiveLimitationsFoundInVisibleDomText": true
+  },
+  "runtimeObservation": {
+    "status": "configured",
+    "sceneProfile": null,
+    "driverCompatibility": null,
+    "firmware": null,
+    "stats": {},
+    "frame": null,
+    "autoRunningObserved": false,
+    "pauseWasNeeded": false,
+    "noBrowserEngineRomOrBinRequests": true
+  },
+  "console": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "screenshot": {
+    "artifact": "whole-ui.png",
+    "bytes": 324909,
+    "sha256": "a592c14fe95939668156d4b18d75f49e5265dfb2d2ee6ff79b7f86a5f1daa5f8",
+    "width": 1280,
+    "height": 1691,
+    "visuallyInspected": true
+  },
+  "observerCorrection": "First capture helper assumed catalogue.firmwares; actual schema is catalogue.items. Read-only helper corrected, initial failure retained. No firmware execution from either attempt.",
+  "cleanup": {
+    "ownedHeadlessEphemeralContexts": 1,
+    "wrapperSessionAbsent": true,
+    "all8OwnedBrowserProcessesEnded": true,
+    "ownedServerEnded": true,
+    "listenerAbsent": true,
+    "unrelatedBrowsersPreserved": true,
+    "leaseReturnedBeforeReport": true
+  },
+  "limitations": [
+    "Static DOM and metadata check only. Catalogue text describes separately evidenced historical runtime outcomes; this check did not execute or requalify those outcomes.",
+    "Offline selector/apply control presence and default state verified; no mode activation or apply behavior tested.",
+    "WASM/ROM HTTP hashes were read by host for identity only; browser did not fetch/instantiate the engine.",
+    "Sensor waiting/byte-order wording is observed catalogue text; no new diagnosis or measurement asserted."
+  ],
+  "rawHashes": [
+    {
+      "artifact": "observed-static-ui.json",
+      "bytes": 26891,
+      "sha256": "4caa755e8621bc5cc3482db6dc6e0d42ff9dcd515d30ace33e2eef8881faae10"
+    },
+    {
+      "artifact": "limitations-expanded-snapshot.txt",
+      "bytes": 24170,
+      "sha256": "8da306e52192c87143f06debe9365c9f145685aea018fd6e883a0a13746effba"
+    },
+    {
+      "artifact": "browser-requests.txt",
+      "bytes": 1758,
+      "sha256": "73065aad1c07164b62f601949828b4ad97658d54f46330ded69834a5349cd8e0"
+    },
+    {
+      "artifact": "console-errors.txt",
+      "bytes": 94,
+      "sha256": "36e2ac76128d5f4aec65449ba343d7cb683069bdd7c5d18592f6e813384de0f2"
+    },
+    {
+      "artifact": "served-identities.json",
+      "bytes": 2296,
+      "sha256": "f844a639090cbb8d6994f12e5feddb0465c5bc0f3e10a23380791e24a832a720"
+    },
+    {
+      "artifact": "lifecycle.json",
+      "bytes": 651,
+      "sha256": "6425bd11f02c9a4cc56068799abd4728f37d0b5a5ee0c450e1a30d771de063a1"
+    },
+    {
+      "artifact": "static-capture-first-schema-error.log",
+      "bytes": 181,
+      "sha256": "bdc6ccf86ea613e29fee42b5eb21c706a1baa72eb326fb22a10ae5f244bc6200"
+    }
+  ]
+}

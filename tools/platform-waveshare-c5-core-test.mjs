@@ -32,7 +32,7 @@ test('five exact C5 core profiles execute real RMT and BOOT input through the pu
       ['waveshare-esp32-c5-wifi6-kit-n32r8',[0x34,0x12,0x56]],
     ]){
       const scene=createDefaultScene(catalog,id);scene.firmware=null;await runtime.configure(scene);
-      const caps=await runtime.capabilities();assert.deepEqual(caps.execution.bootModes,['app-direct']);
+      const caps=await runtime.capabilities();assert.deepEqual(caps.execution.bootModes,['rom','app-direct']);
       for(const available of [caps.network.available,caps.sdCard.available,caps.deviceStorage.available,caps.audio.output.available])assert.equal(available,false);
       await runtime.loadFirmware({file:new File([waveshareC5CoreProbe()],'original-core-sram-diagnostic.bin')});await runtime.start();
       // UART/RMT output and periodic counters arrive as independent observations.

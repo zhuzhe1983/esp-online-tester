@@ -1,0 +1,395 @@
+{
+  "app_descriptor": {
+    "app_elf_sha256": "18f5a36486fbb13b8527bfae5db2b6c1a0d8306c3e59bbf12006dd79d0e585cc",
+    "compile_date": "Nov 25 2026",
+    "compile_time": "07:02:20",
+    "idf_version": "v5.5.1",
+    "magic": "0xabcd5432",
+    "project_name": "hello_world",
+    "secure_version": 0,
+    "version": "v0.3.0-1576-gbeb97707"
+  },
+  "artifacts": {
+    "bootloader/bootloader.bin": {
+      "bytes": 22176,
+      "sha256": "92074be07256b0ce520f1ce9b91e97d234f4f0263e42dc445f1636d958fee311"
+    },
+    "config/sdkconfig.h": {
+      "bytes": 38625,
+      "sha256": "4753ac2c699b938069820c3e7f8f695cc574b37a5a0a805d273a846fe0251128"
+    },
+    "flasher_args.json": {
+      "bytes": 922,
+      "sha256": "2868c25191c5a4f732f115ad4ab6858155f49556cdea4db06405ce48ec03b6f2"
+    },
+    "hello_world.bin": {
+      "bytes": 157744,
+      "sha256": "ef77f4b4ac177e9a75a30e56da67f276def22fab3846ac942f62df7057ad9754"
+    },
+    "hello_world.elf": {
+      "bytes": 3282636,
+      "sha256": "18f5a36486fbb13b8527bfae5db2b6c1a0d8306c3e59bbf12006dd79d0e585cc"
+    },
+    "hello_world.map": {
+      "bytes": 1895846,
+      "sha256": "380a12f63ad73eb81c348ab1441dd2865e2c16df5126e5ec94aff0ed538b36bb"
+    },
+    "merged.bin": {
+      "bytes": 223280,
+      "sha256": "17be53de095e731e8a2068df6e138caefe2ae4e19f83b489983736ce93f20cd9"
+    },
+    "partition_table/partition-table.bin": {
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "project_description.json": {
+      "bytes": 115969,
+      "sha256": "f4b1c2c8c8080269bd3181b610701e705b26af2037500cc292448cb01e565a51"
+    },
+    "sdkconfig": {
+      "bytes": 46709,
+      "sha256": "cff74bdad23448cad67fa259b38aff9434700289be225a19b5b6db1ec4a50e35"
+    }
+  },
+  "build_environment": {
+    "architecture": "arm64",
+    "os": "Darwin",
+    "scope": "Build metadata only; no benchmark or guest timing"
+  },
+  "builder": {
+    "bytes": 19295,
+    "sha256": "57621c7b6b9bb97094eed70aedbf9143d4332e5c4ca4a62be4bc1e70d5dbb8bc"
+  },
+  "checks": [
+    {
+      "check": "changed segment fails XOR",
+      "error": "image XOR checksum mismatch",
+      "rejected": true
+    },
+    {
+      "check": "changed appended digest fails SHA256",
+      "error": "appended image SHA256 mismatch",
+      "rejected": true
+    },
+    {
+      "check": "oversized segment rejected",
+      "error": "truncated segment payload",
+      "rejected": true
+    },
+    {
+      "check": "changed partition entry fails MD5",
+      "error": "partition table MD5 mismatch",
+      "rejected": true
+    },
+    {
+      "check": "non-RISC-V ELF rejected",
+      "error": "ELF machine is not RISC-V",
+      "rejected": true
+    },
+    {
+      "check": "merged prefix and gaps are erased FF; last file ends at merged length",
+      "passed": true
+    },
+    {
+      "check": "independent read-only reinspection",
+      "passed": true
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "$GCC_BIN/riscv32-esp-elf-gcc",
+        "--version"
+      ],
+      "phase": "compiler-version"
+    },
+    {
+      "argv": [
+        "$IDF_PYTHON",
+        "$IDF_PATH/tools/idf.py",
+        "--version"
+      ],
+      "phase": "idf-version-and-dependencies"
+    },
+    {
+      "argv": [
+        "$IDF_PYTHON",
+        "$IDF_PATH/tools/idf.py",
+        "-C",
+        "$REFERENCE_DIR/project",
+        "set-target",
+        "esp32c5"
+      ],
+      "phase": "configure-c5"
+    },
+    {
+      "argv": [
+        "$CMAKE",
+        "--build",
+        "$REFERENCE_DIR/project/build",
+        "--parallel",
+        "1"
+      ],
+      "phase": "build-jobs1"
+    },
+    {
+      "argv": [
+        "$IDF_PYTHON",
+        "$IDF_PATH/tools/idf.py",
+        "-C",
+        "$REFERENCE_DIR/project",
+        "merge-bin",
+        "--format",
+        "raw",
+        "-o",
+        "$REFERENCE_DIR/project/build/merged.bin"
+      ],
+      "phase": "merge-bin-jobs1"
+    }
+  ],
+  "configuration": {
+    "psram_enabled": false,
+    "selected": {
+      "CONFIG_COMPILER_LTO": null,
+      "CONFIG_ESPTOOLPY_FLASHFREQ": "80m",
+      "CONFIG_ESPTOOLPY_FLASHMODE": "dio",
+      "CONFIG_ESPTOOLPY_FLASHSIZE": "32MB",
+      "CONFIG_ESP_CONSOLE_UART_DEFAULT": "y",
+      "CONFIG_ESP_CONSOLE_UART_NUM": "0",
+      "CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ": "240",
+      "CONFIG_IDF_TARGET": "esp32c5",
+      "CONFIG_XTAL_FREQ": "0",
+      "CONFIG_XTAL_FREQ_AUTO": "y"
+    },
+    "xtal_runtime_note": "C5 uses ROM/pin/eFuse autodetection; this is not a runtime XTAL measurement"
+  },
+  "elf": {
+    "byte_order": "little",
+    "class": 32,
+    "entry": "0x408002fe",
+    "machine": 243
+  },
+  "flash_files": [
+    {
+      "bytes": 22176,
+      "offset": 8192,
+      "path": "bootloader/bootloader.bin",
+      "sha256": "92074be07256b0ce520f1ce9b91e97d234f4f0263e42dc445f1636d958fee311"
+    },
+    {
+      "bytes": 3072,
+      "offset": 32768,
+      "path": "partition_table/partition-table.bin",
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    {
+      "bytes": 157744,
+      "offset": 65536,
+      "path": "hello_world.bin",
+      "sha256": "ef77f4b4ac177e9a75a30e56da67f276def22fab3846ac942f62df7057ad9754"
+    }
+  ],
+  "guest_executed": false,
+  "images": {
+    "bootloader/bootloader.bin": {
+      "appended_sha256": "155a19a19fcf20619aa0eb9bd31d9b88c763fbb0d1814fcffe3ac56803ea2379",
+      "checksum": 110,
+      "checksum_offset": 22143,
+      "chip_id": 23,
+      "entry": "0x4084bbaa",
+      "flash_frequency_code": 15,
+      "flash_mode_code": 2,
+      "flash_size_code": 5,
+      "max_revision_full": 199,
+      "min_revision_full": 100,
+      "segments": [
+        {
+          "bytes": 5904,
+          "file_offset": 32,
+          "load_address": "0x408556b0",
+          "sha256": "f08414195ced0a66d338ed5c730883431f175155d4b3d89d270285f189be10fd"
+        },
+        {
+          "bytes": 3484,
+          "file_offset": 5944,
+          "load_address": "0x4084bba0",
+          "sha256": "3a3a13260e22e2bec01ad9df2c525d559db31a946089123d8cb0be62222420e8"
+        },
+        {
+          "bytes": 12696,
+          "file_offset": 9436,
+          "load_address": "0x4084e5a0",
+          "sha256": "5f05ba941adbd4a5ef8035052381d051769e0c49bb01d27db191f7962d4e458f"
+        }
+      ],
+      "trailing_bytes": 0,
+      "validated_image_bytes": 22176
+    },
+    "hello_world.bin": {
+      "appended_sha256": "42d1231e063d93f6b765ea167e4596a54fc213fb96545414456db63358a46c97",
+      "checksum": 108,
+      "checksum_offset": 157711,
+      "chip_id": 23,
+      "entry": "0x408002fe",
+      "flash_frequency_code": 15,
+      "flash_mode_code": 2,
+      "flash_size_code": 5,
+      "max_revision_full": 199,
+      "min_revision_full": 100,
+      "segments": [
+        {
+          "bytes": 27904,
+          "file_offset": 32,
+          "load_address": "0x42020020",
+          "sha256": "b9b1c88f32e7ee3561ac4691a5e260044a9d134fe18ed565c7886f3d341198d2"
+        },
+        {
+          "bytes": 37616,
+          "file_offset": 27944,
+          "load_address": "0x40800000",
+          "sha256": "d3be8001af29ace7879cd9cf55ec69a49f43d6599263f63c5e8c8386523a2cd6"
+        },
+        {
+          "bytes": 78096,
+          "file_offset": 65568,
+          "load_address": "0x42000020",
+          "sha256": "8c033ae5d6da00f70f5579b7964fe0f84df41d10dbba6c8e12c00fc869607ddc"
+        },
+        {
+          "bytes": 7820,
+          "file_offset": 143672,
+          "load_address": "0x408092f0",
+          "sha256": "ecb2e64f15d51fa1be392708426fc1bdbaf384bc8a8d911c9c145a3819e1ad1a"
+        },
+        {
+          "bytes": 6208,
+          "file_offset": 151500,
+          "load_address": "0x4080b180",
+          "sha256": "b444e96abee01992a3926896b5f64e91077425cf34cb735ddb0135444f00b57c"
+        }
+      ],
+      "trailing_bytes": 0,
+      "validated_image_bytes": 157744
+    }
+  },
+  "jobs": 1,
+  "kind": "independent-c5-idf551-hello-reference",
+  "limitations": [
+    "No guest/emulator execution or timing measurement",
+    "Independent IDF 5.5.1 reference, not FactoryOnly IDF 5.5.3 or its ELF",
+    "No PSRAM enabled; no WiFi/RF/LCD/SD/input acceptance",
+    "Hello counts down then intentionally restarts; runtime verification remains separate"
+  ],
+  "map_text_contains": {
+    "app_main": true,
+    "esp_restart": true,
+    "esp_wifi_init": false,
+    "vTaskDelay": true
+  },
+  "partitions": {
+    "entries": [
+      {
+        "bytes": 24576,
+        "flags": 0,
+        "label": "nvs",
+        "offset": 36864,
+        "subtype": 2,
+        "type": 1
+      },
+      {
+        "bytes": 4096,
+        "flags": 0,
+        "label": "phy_init",
+        "offset": 61440,
+        "subtype": 1,
+        "type": 1
+      },
+      {
+        "bytes": 1048576,
+        "flags": 0,
+        "label": "factory",
+        "offset": 65536,
+        "subtype": 0,
+        "type": 0
+      }
+    ],
+    "md5_valid": true
+  },
+  "private_capture_note": "Raw logs, sources, ELF/map and binaries remain under ignored target/; paths are aliased here",
+  "private_captures": {
+    "build_state": {
+      "bytes": 2992,
+      "path_alias": "$REFERENCE_DIR/state.json",
+      "sha256": "fab05c9688893db09c13822b468772ee2ad20a82f66f69a0dea7c87f5eed1fe4"
+    },
+    "retention": "Not committed; original stdout and PID/PGID/commands are in ignored target/",
+    "stdout": {
+      "bytes": 87717,
+      "path_alias": "$REFERENCE_DIR/build.stdout.log",
+      "sha256": "6ef45a3d086de42e0f8adc3560de102f24ba07e4016d7472815346e4424f561b"
+    }
+  },
+  "repository_build_base": "beb97707605a19e0aaab4c7f192a966e9f7f657a",
+  "reproduction_limits": [
+    "Build timestamps, staging paths/debug info and default PROJECT_VER derived from the containing repository affect hashes; bit-identical rebuilds are not claimed.",
+    "The app version in this build names the containing repository base, not a Waveshare app release."
+  ],
+  "schema": 1,
+  "sdk": {
+    "repository": "https://github.com/espressif/esp-idf",
+    "revision": "fcae32885b0296b32044cb99ecbdc50d98dddb83",
+    "submodules": [
+      " 24c60e243580c7868f4334a1ba3123481fe1aa48 components/bootloader/subproject/components/micro-ecc/micro-ecc (24c60e2)",
+      " 185c7205db1f5082d070d00ea5dfdbb24c291d05 components/bt/controller/lib_esp32 (185c720)",
+      " ff958fab2f693e4b5974375cce525945fd238c4f components/bt/controller/lib_esp32c2/esp32c2-bt-lib (ff958fa)",
+      " 0c68809d62e432427de97b5294f6619307f62f40 components/bt/controller/lib_esp32c3_family (0c68809)",
+      " 74cfecd57f600e5e00d175311893d241a6163cdd components/bt/controller/lib_esp32c5/esp32c5-bt-lib (74cfecd)",
+      " 3655fcdaadb66bb4cd4d497c2dbd4e6e2a4cc696 components/bt/controller/lib_esp32c6/esp32c6-bt-lib (3655fcd)",
+      " a2ba40fae2462488f65efca042e5cecd9e018c7e components/bt/controller/lib_esp32h2/esp32h2-bt-lib (a2ba40f)",
+      " d9fe7de9a9eb2a4e4c51172b9c303f9d800706fa components/bt/esp_ble_mesh/lib/lib (d9fe7de)",
+      " b45dcedcafb7888174c3567002c36b342ec0b723 components/bt/host/nimble/nimble (b45dced)",
+      " eeecc49ce8af123cf8ad40efdb9673e37b56230f components/cmock/CMock (eeecc49)",
+      " 71b47be7c950f1bf5f7e5303779fa99a16224bb6 components/cmock/CMock/vendor/c_exception (71b47be)",
+      " cf949f45ca6d172a177b00da21310607b97bc7a7 components/cmock/CMock/vendor/unity (cf949f4)",
+      " 2d68674e3d522fb025e4666217f9cc1ca2af9399 components/esp_coex/lib (2d68674)",
+      " 45ce2703403784b4c3983a52e453988d61eb0e9d components/esp_phy/lib (45ce270)",
+      " c1f74dcf9151ae21b7a3850b90952796a2806358 components/esp_wifi/lib (c1f74dc)",
+      " 2867f6883a12920b1969ff9624c0ab0e4185c2ce components/heap/tlsf (2867f68)",
+      " 8f2beb57ddad1f94bed899790b00f46df893ccac components/json/cJSON (8f2beb5)",
+      " ebabd6d79c120c5d4415755aab1d908d8b5fa372 components/lwip/lwip (ebabd6d)",
+      " b5d87eaa6748b7a6fa70593178c08b4480e9b71e components/mbedtls/mbedtls (b5d87ea)",
+      " 6af4446a48ea7fa54948edc4e62277ed70abb6e1 components/mqtt/esp-mqtt (6af4446)",
+      " ec0296c44f628b8e1d1cb78898fe62baa2f90d13 components/openthread/lib (ec0296c)",
+      " b945928d722177cd9caeab2e1025499628c101ef components/openthread/openthread (b945928)",
+      " abc67a11c6db271bedbb9f58be85d6f4e2ea8389 components/protobuf-c/protobuf-c (abc67a1)",
+      " 0dbb3f71c5f6fae3747a9d935372773762baf852 components/spiffs/spiffs (0dbb3f7)",
+      " bf560290f6020737eafaa8b5cbd2177c3956c03f components/unity/unity (bf56029)"
+    ],
+    "tracked_clean_before_after": true,
+    "version": "5.5.1"
+  },
+  "source": {
+    "defaults": "CONFIG_ESPTOOLPY_FLASHSIZE_32MB=y\n# CONFIG_SPIRAM is not set\n",
+    "defaults_sha256": "61774d47d5d901db821941331bbb4257b10d0345df9f7f0abfb6a52972529d4e",
+    "main_license": "CC0-1.0",
+    "path": "examples/get-started/hello_world",
+    "sdk_license": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "unchanged_sha256": {
+      "CMakeLists.txt": "49af6567ee0b9c381654ad42f7ea0c40fe61a8ca0d9421625faa01ca21603009",
+      "main/CMakeLists.txt": "116b04da44200b6ddeee8aed45c9fbfb5e487d727c7d29b028e79807e76137cc",
+      "main/hello_world_main.c": "b2d1c8573307e010d276d2d0df537f1fe752416f8422e267aa8b1661c1744595"
+    }
+  },
+  "static_verification_passed": true,
+  "toolchain": {
+    "cmake_version": "cmake version 4.4.5",
+    "compiler_version_line": "riscv32-esp-elf-gcc (crosstool-NG esp-14.2.0_20241119) 14.2.0",
+    "esptool_version": "4.12.0 (observed in the build log)",
+    "idf_python_version": "Python 3.11.15",
+    "ninja_version": "1.13.2",
+    "recommended_version": "esp-14.2.0_20241119"
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "baseCommit": "3b24d3985b0f5a28ec5d73a40f9847ae4fca9a5d",
+  "scope": "Private C5 system timer before bus wiring; no factory success claim",
+  "idfVersion": "v5.5.4",
+  "idfCommit": "735507283d5b2f9fb363a1901172dbd9e847945d",
+  "sourceAuditCompletedBeforeImplementation": true,
+  "sources": [
+    {
+      "path": "components/soc/esp32c5/register/soc/systimer_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/systimer_reg.h",
+      "bytes": 30093,
+      "sha256": "a9e8c0f8475922225da5c9c374a7f925b5546e668e63cf929725faf416faecee"
+    },
+    {
+      "path": "components/soc/esp32c5/register/soc/pcr_reg.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/pcr_reg.h",
+      "bytes": 103653,
+      "sha256": "e2537baeb66eabd30ae7e4663ec28b7afeb6cba68ab9cb19d4e33d1d5bd33d3a"
+    },
+    {
+      "path": "components/soc/esp32c5/include/soc/interrupts.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/include/soc/interrupts.h",
+      "bytes": 5869,
+      "sha256": "effb67f529e87e6b18b3aef4429b78e4716eaaf3093681bcfaadb905e36b440a"
+    },
+    {
+      "path": "components/soc/esp32c5/include/soc/soc_caps.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/include/soc/soc_caps.h",
+      "bytes": 38790,
+      "sha256": "7e810cede26d9a98ce39c3e0cf332e2aa698bae5204c3bdd41bd041d34e90d40"
+    },
+    {
+      "path": "components/hal/esp32c5/include/hal/systimer_ll.h",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/esp32c5/include/hal/systimer_ll.h",
+      "bytes": 6937,
+      "sha256": "6d7c361d897cc346f1a8d2e03f9cd71b31a04a2bbd7d91de10afb81ac40cd799"
+    },
+    {
+      "path": "components/hal/systimer_hal.c",
+      "url": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/systimer_hal.c",
+      "bytes": 7316,
+      "sha256": "7b04fc829596c330b729d5a3df1001475ba53865aa5fd9cf807e959de1bcf66f"
+    }
+  ],
+  "trm": {
+    "version": "1.1",
+    "url": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+    "sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "chapter": 14,
+    "printedPages": [
+      662,
+      663,
+      664,
+      665,
+      666,
+      667,
+      668,
+      669
+    ]
+  },
+  "configuration": {
+    "base": "0x6000a000",
+    "irqSources": [
+      61,
+      62,
+      63
+    ],
+    "cpuHzNominal": 240000000,
+    "timerHzAverage": 16000000,
+    "cpuCyclesPerTimerTick": 15,
+    "counterWidth": 52,
+    "targetWidth": 52,
+    "periodWidth": 26,
+    "pcrConf": "0x6009606c",
+    "pcrFunctionalClock": "0x60096070",
+    "confReset": "0x46000000",
+    "dateReset": 36774432,
+    "missedAlarmStrictUpperBoundTicks": 2251799813685247,
+    "etmScope": "Alarm source generation only, saturating aggregate counters; fabric routes unsupported"
+  },
+  "sharedReuseAudit": {
+    "reused": false,
+    "reviewedFile": "esp-periph/src/systimer.rs",
+    "differences": [
+      "VALUE_VALID initially clear and asserted only after actual snapshot copy",
+      "zero WT LOAD/UPDATE writes do not perform a command",
+      "staged/active alarm target and period are separate",
+      "REAL_TARGET tracks actual periodic next target",
+      "finite52-bit counter comparison and rollover",
+      "C5-specific PCR gating/reset and IRQ61-63"
+    ]
+  },
+  "files": [
+    {
+      "path": "esp32c5/src/systimer.rs",
+      "sha256": "01ec22f0ce57955312b1c267089cdcb155bcb33fd02a3c35db482ec6ff237b8d"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "82b5a4897acfe94917a439a31e9d70a50fb7eba6b92ed3507f46ad3e96a71413"
+    }
+  ],
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "cargo": "1.100.0 (3acc79c0c 2026-11-05)"
+  },
+  "checks": [
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-systimer-lane CARGO_BUILD_JOBS=1 cargo test -p esp32c5 --lib systimer::tests -- --nocapture",
+      "result": "pass",
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "filteredOut": 10
+    },
+    {
+      "command": "clippy-driver --edition=2021 --test esp32c5/src/systimer.rs -D warnings -o target/c5-systimer-lane/systimer-lint-tests",
+      "initialResult": "failed: items_after_test_module",
+      "correction": "Moved the test module after the implementation.",
+      "result": "pass"
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "pass"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "filesChecked": 3025,
+      "gzipFiles": 95
+    }
+  ],
+  "limits": [
+    "Source-derived functional behavior, not verified on silicon.",
+    "Synchronous commands,15-cycle average count tick; no physical clock-domain latency/jitter.",
+    "RC_FAST, CPU/debug stall inputs and ETM routing/consumers unsupported.",
+    "Manual counter jumps coalesce skipped periods into one real comparison, not historical ETM events.",
+    "Zero-period active engines reject.",
+    "No representable absolute deadline beyond u64 cycle range.",
+    "No full workspace, bus IRQ-delivery, ROM/factory or benchmark run in isolated lane."
+  ],
+  "privacy": "Private paths/raw tool output omitted; source revisions/hashes and aggregate results retained."
+}

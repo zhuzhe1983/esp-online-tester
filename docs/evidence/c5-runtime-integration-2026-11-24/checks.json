@@ -1,0 +1,253 @@
+{
+  "schema": 1,
+  "scope": "Private C5 frontend/Worker/WASM integration preparation; no original firmware execution or public enablement.",
+  "sourceBase": "22b6e0419ca03c2e37c127838b03e283215e3c6f",
+  "backendPrerequisite": {
+    "state": "applied in private lane",
+    "buildCommit": "cd803eb72edf4cd927986f8b4e111b46f3dec935",
+    "result": "common kind5 and physical-capacity/table discovery used; no load_at validation bypass",
+    "prerequisiteCommits": [
+      "010c3936",
+      "0c68afa7"
+    ],
+    "appliedCommits": [
+      "d289c535",
+      "cd803eb7"
+    ]
+  },
+  "toolchain": {
+    "rustc": "1.100.0 (0ef1bc386 2026-11-09)",
+    "node": "26.13.0",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_TARGET_DIR": "target/c5-runtime-lane"
+  },
+  "checks": [
+    {
+      "command": "ESP32SIM_C5_ROM=<pinned-ROM.elf> ESP32SIM_C5_FACTORY=<original-LCD273.bin> node --test tools/platform-config-test.mjs tools/platform-runtime-test.mjs tools/platform-input-test.mjs tools/platform-view-test.mjs tools/platform-c5-rom-test.mjs tools/platform-c5-test.mjs tools/platform-local-firmware-test.mjs tools/platform-sd-card-test.mjs",
+      "exitCode": 0,
+      "testsPassed": 36,
+      "failed": 0,
+      "skipped": 0,
+      "limits": "C5 protocol/cold tests execute no original firmware instructions; the existing runtime suite separately runs its established S3/StopWatch fixtures. Configuration suite verifies4 artifact hashes."
+    },
+    {
+      "command": "node tools/worker-channel-test.mjs",
+      "exitCode": 0,
+      "result": "passed including C5 create/start mode agreement, no JIT/audio/network/stub inheritance, SRAM Flash denial,32MiB final-page delta/restore and bounds"
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-runtime-lane CARGO_BUILD_JOBS=1 cargo +stable clippy --release -p esp32sim-wasm --all-targets -- -D warnings",
+      "exitCode": 0,
+      "result": "passed"
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-runtime-lane CARGO_BUILD_JOBS=1 cargo +stable clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "result": "passed"
+    },
+    {
+      "command": "sh -n tools/fetch-rom-elfs.sh",
+      "exitCode": 0,
+      "result": "syntax passed; tarball not downloaded in this lane"
+    },
+    {
+      "command": "ESP32SIM_ROM_DIR=<ROM-directory> ESP32SIM_C5_FACTORY=<original-LCD273.bin> CARGO_TARGET_DIR=target/c5-runtime-lane CARGO_BUILD_JOBS=1 cargo +stable test --release -p esp32sim-wasm --lib c5_tests:: -- --include-ignored",
+      "exitCode": 0,
+      "testsPassed": 5,
+      "c5ColdCases": 3,
+      "sharedHelperCases": 2,
+      "failed": 0,
+      "originalLcd273Instructions": 0
+    },
+    {
+      "command": "CARGO_TARGET_DIR=target/c5-runtime-lane CARGO_BUILD_JOBS=1 cargo +stable build --release --target wasm32-unknown-unknown -p esp32sim-wasm",
+      "exitCode": 0,
+      "result": "raw Cargo-release private ABI test WASM built; production wrapper was not run"
+    },
+    {
+      "command": "ESP32SIM_C5_WASM=<private-WASM> ESP32SIM_C5_ROM=<pinned-ROM.elf> ESP32SIM_C5_FACTORY=<original-LCD273.bin> node --test tools/platform-c5-wasm-test.mjs",
+      "exitCode": 0,
+      "testsPassed": 1,
+      "failed": 0,
+      "originalLcd273Instructions": 0,
+      "cyclesAtColdRomStart": 0,
+      "result": "actual WASM ABI accepts original inputs, rejects corruption without mutation, keeps raw bounded page restore and rechecks ROM profile after SRAM startup"
+    },
+    {
+      "command": "node --test tools/platform-runtime-test.mjs",
+      "exitCode": 0,
+      "testsPassed": 1,
+      "failed": 0,
+      "result": "real Worker/WASM regression passed after verified ignored assets were prepared"
+    },
+    {
+      "command": "node --test --test-name-pattern='P4 revision routing' tools/platform-waveshare-test.mjs",
+      "exitCode": 0,
+      "testsPassed": 1,
+      "result": "exact revision/chip routing and updated C5 SRAM-only classification passed; no catalog verification status changed"
+    },
+    {
+      "command": "git diff --cached --check",
+      "exitCode": 0,
+      "result": "passed"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0,
+      "files": 3045,
+      "gzipFiles": 95,
+      "result": "no configured privacy patterns; new evidence manually reviewed"
+    },
+    {
+      "command": "SHA-256 recheck of caller-supplied original ROM and LCD273 BIN after all cold checks",
+      "exitCode": 0,
+      "result": "both source files retain the recorded immutable input hashes"
+    },
+    {
+      "command": "sh tools/fetch-rom-elfs.sh target/c5-runtime-lane/fetch-rom-cache-test",
+      "exitCode": 0,
+      "result": "complete-cache path passed after validating the cached release tarball SHA and all9 requested ELF member hashes, including the C5 MP image"
+    }
+  ],
+  "pendingChecks": [
+    "Browser acceptance deferred until genuine native factory application/LCD output succeeds",
+    "No original guest MSPI program/erase, SD mount or LCD proof belongs to these cold/protocol checks"
+  ],
+  "retainedLimitsAndNegativeResults": [
+    {
+      "command": "node --test tools/platform-runtime-test.mjs",
+      "exitCode": 1,
+      "result": "stopped before execution because the isolated tree lacks web/wasm/fw/esp32s3_rev0_rom.elf; not recorded as passing",
+      "resolution": "S3 ROM was copied only after SHA verification; private WASM was built from this lane. The same runtime command and the required platform batch subsequently pass."
+    },
+    "No browser, physical flash, firmware source modification/build, original LCD273 instruction execution, benchmark, golden update or broad Rust workspace build/test.",
+    "Protocol doubles and raw-page restore do not prove guest MSPI program/erase, SD filesystem mounting or LCD output.",
+    "Catalog source byte hashes and verification/trial status are unchanged.",
+    "The initial receipt called this direct Cargo-release WASM production. That label is corrected: tools/wasm-build.sh and its inline-threshold/debug0/strip-debuginfo policy were not used. The original artifact byte count and SHA are preserved; cold ABI results remain limited to that artifact. No rebuild was performed for this correction."
+  ],
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+      "committed": false
+    },
+    {
+      "file": "ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+      "committed": false
+    }
+  ],
+  "wasmArtifact": {
+    "file": "target/c5-runtime-lane/wasm32-unknown-unknown/release/esp32sim_wasm.wasm",
+    "bytes": 37982277,
+    "sha256": "a581505891abc62c763a9fa4cd16d905c2afb7f4a5dc51ba88f882ac9881a5a9",
+    "copiedTo": "web/wasm/esp32sim.wasm",
+    "sourceCommit": "cd803eb72edf4cd927986f8b4e111b46f3dec935",
+    "command": "CARGO_TARGET_DIR=target/c5-runtime-lane CARGO_BUILD_JOBS=1 cargo +stable build --release --target wasm32-unknown-unknown -p esp32sim-wasm",
+    "artifactRole": "raw Cargo-release private ABI test artifact; not the production wrapper artifact",
+    "productionBuildScriptUsed": false,
+    "explicitBuildEnvironment": {
+      "CARGO_TARGET_DIR": "target/c5-runtime-lane",
+      "CARGO_BUILD_JOBS": "1"
+    },
+    "cargoReleaseProfile": {
+      "optLevel": 3,
+      "lto": "fat",
+      "codegenUnits": 1,
+      "debug": 1
+    },
+    "productionDefaultsNotApplied": {
+      "RUSTFLAGS": "-Cllvm-args=-inline-threshold=2000",
+      "CARGO_PROFILE_RELEASE_DEBUG": "0",
+      "CARGO_PROFILE_RELEASE_STRIP": "debuginfo"
+    },
+    "dwarfInspection": {
+      "status": "DWARF present; no-DWARF production check does not pass",
+      "customSections": [
+        ".debug_abbrev",
+        ".debug_info",
+        ".debug_ranges",
+        ".debug_str",
+        ".debug_line",
+        "name",
+        "producers",
+        "target_features"
+      ],
+      "method": "read-only parsing of WASM custom section names",
+      "artifactBytesUnchanged": true
+    }
+  },
+  "ignoredRuntimeAssets": [
+    {
+      "file": "esp32s3_rev0_rom.elf",
+      "bytes": 949552,
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd",
+      "destination": "web/wasm/fw/esp32s3_rev0_rom.elf"
+    },
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a",
+      "destination": "web/wasm/fw/esp32c5_rev100_rom.elf"
+    }
+  ],
+  "romPackaging": {
+    "archive": {
+      "file": "esp-rom-elfs-20260528.tar.gz",
+      "bytes": 4902355,
+      "sha256": "caa463d3cbef2430a5a35847c1d9f2f152403b17a802050927ff60c8da54fe46",
+      "url": "https://github.com/espressif/esp-rom-elfs/releases/download/20260528/esp-rom-elfs-20260528.tar.gz",
+      "acquisition": "pre-existing ignored source cache; no new download or fetch timestamp"
+    },
+    "roms": [
+      {
+        "file": "esp32_rev300_rom.elf",
+        "bytes": 857500,
+        "sha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
+      },
+      {
+        "file": "esp32s3_rev0_rom.elf",
+        "bytes": 949552,
+        "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      {
+        "file": "esp32c3_rev3_rom.elf",
+        "bytes": 556332,
+        "sha256": "19ac22e08707df926fb0cf4c54795d4067b983fae8635f396ded173a6d78fc3c"
+      },
+      {
+        "file": "esp32c5_rev100_rom.elf",
+        "bytes": 472300,
+        "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+      },
+      {
+        "file": "esp32c6_rev0_rom.elf",
+        "bytes": 489768,
+        "sha256": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551"
+      },
+      {
+        "file": "esp32c61_rev100_rom.elf",
+        "bytes": 452980,
+        "sha256": "c4ee94d3a8e335da4ef5f30a8a1ebb9691e639f1c773f484e9ba721aa1557c2e"
+      },
+      {
+        "file": "esp32p4_rev0_rom.elf",
+        "bytes": 243316,
+        "sha256": "948f2c7d108d04a9c3a982f9c1c498fb17f2c4a68abc51f87782592034d7ce44"
+      },
+      {
+        "file": "esp32p4_rev300_rom.elf",
+        "bytes": 244808,
+        "sha256": "90e723f71fe4701adee7e40bfab6971d8ecf5e356f4d5a81e77743248abc3a97"
+      },
+      {
+        "file": "esp32s31_rev0_rom.elf",
+        "bytes": 513396,
+        "sha256": "a52ad7513deb656a910a5740125f1cce2c7941f11ce57213b7b43aea93d5ab87"
+      }
+    ],
+    "limit": "Cached immutable archive/member verification and helper cache-hit path; no fresh network fetch."
+  }
+}

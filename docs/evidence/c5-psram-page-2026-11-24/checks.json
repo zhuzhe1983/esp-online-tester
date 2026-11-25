@@ -1,0 +1,93 @@
+{
+  "parentDividerFix": "ab0ab2e27813998722b2d041da5668424a073f8b",
+  "negativeNativeCapture": {
+    "artifact": "native-machine-lcd273-psram-divider.log",
+    "bytes": 17063,
+    "sha256": "5242252d9856ca16f9e6ba5215d377fcbfa0983c55ded8fc562cd3b0b907b434",
+    "steps": 20721394,
+    "cycles": 20721344,
+    "uartBytes": 1928,
+    "firstFault": {
+      "pc": "0x4080a572",
+      "address": "0x60002174",
+      "write": false,
+      "width": 4
+    },
+    "mcause": 5,
+    "PSRAMPrefixHex": "8d7c6b5a",
+    "IDWord": "0x00425d0d",
+    "QPI": true,
+    "originalMemtestReached": false
+  },
+  "typedDisassembly": {
+    "artifact": "lcd273-app-seg1-40800000.bin.typed.dis",
+    "sha256": "4696bac57e7e7a848e73c86de7d0513c81e6ce5ec3e9483e41f6866b3cc7ba41",
+    "eightMiBBranchPC": "0x4080a70e",
+    "readPC": "0x4080a572",
+    "writePC": "0x4080a580",
+    "pageCode": 2,
+    "expectedWord": "0x00080000"
+  },
+  "sources": [
+    {
+      "path": "components/soc/esp32c5/register/soc/spi_mem_c_reg.h",
+      "bytes": 191876,
+      "sha256": "bf36bdec74d7e2a322a0b7cca57da76476889d38e24281130affa5331d54cd11",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://raw.githubusercontent.com/espressif/esp-idf/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/soc/esp32c5/register/soc/spi_mem_c_reg.h",
+        "v5.5.4": "https://raw.githubusercontent.com/espressif/esp-idf/735507283d5b2f9fb363a1901172dbd9e847945d/components/soc/esp32c5/register/soc/spi_mem_c_reg.h"
+      },
+      "provenance": "Fixed header comparison retained in c5-mspi-clock checks.json; no new fetch timestamp asserted."
+    },
+    {
+      "path": "components/hal/esp32c5/include/hal/psram_ctrlr_ll.h",
+      "bytes": 13939,
+      "sha256": "4f320a8c63de9a4a344a1ce0a4610defd5b689c6d7bf5c7cf60926ea1df7e265",
+      "byteIdenticalAcrossVersions": true,
+      "urls": {
+        "v5.5.3": "https://github.com/espressif/esp-idf/blob/2c211b236707889e8400c4dc5644dd5c4ee071e0/components/hal/esp32c5/include/hal/psram_ctrlr_ll.h",
+        "v5.5.4": "https://github.com/espressif/esp-idf/blob/735507283d5b2f9fb363a1901172dbd9e847945d/components/hal/esp32c5/include/hal/psram_ctrlr_ll.h"
+      },
+      "provenance": "v553 public connector text with separately unrecorded fetch time; v554 retained gzip and metadata in c5-memory-sources manifest.json."
+    }
+  ],
+  "registerContract": {
+    "address": "0x60002174",
+    "reset": "0x00080000",
+    "writablePageBits": [
+      18,
+      19
+    ],
+    "pageBytes": [
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "rejectedECCEnableBits": [
+      17,
+      20
+    ],
+    "reservedWrites": "Masked",
+    "neighborEnginesOrSPI1AliasAdded": false,
+    "queuedBurstOrECCModeled": false
+  },
+  "validation": {
+    "ownedModuleTests": 17,
+    "failed": 0,
+    "testThreads": 1,
+    "ownedClippyMetadataWarningsDenied": true,
+    "productionLintAllowancesAdded": false,
+    "fullBuildOrNativeRunInLane": false,
+    "firmwareOrMemtestModified": false,
+    "checks": [
+      "ECC requests leave page word, buffers, arrays and IRQ unchanged",
+      "All four page codes and actual code2 RMW",
+      "Reserved masking",
+      "Module gate/reset",
+      "SPI1 same offset and neighboring unimplemented words rejected",
+      "Existing QPI/cache clocks and phase checks retained"
+    ]
+  }
+}

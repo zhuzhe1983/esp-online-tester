@@ -1,0 +1,45 @@
+# C5 ROM runtime integration preparation
+
+This private source change prepares the frontend, Worker and WASM ABI. It does not establish original LCD273 application/LCD compatibility, perform physical flashing, change catalog verification or authorize publication. The original source remains trial. Publication requires native original-factory output before public enablement and a later explicit headless browser acceptance pass.
+
+## Input and boot contracts
+
+| Mode | Input and validation | Storage identity and reset |
+| --- | --- | --- |
+| C5 SRAM app-direct | Existing strict HP/LP parser; exactly one application; load kind3 at the existing staging address. No default ROM fetch. The local chooser and explicit SRAM URL option remain available. | Flash snapshots disabled. TF keeps the existing application-artifact SHA key, without a migration or deletion. Reset reloads the same SRAM image. |
+| C5 ROM | Exact MP revision100 ELF, chip23, bootloader0x2000, applications at declared partition offsets. Merged/local-build inputs use kind5; no host jump to the application. Default and manifest ROM fetches pin SHA-256, then the backend independently pins and validates the ELF. | Existing 4 KiB Flash snapshots/deltas/restore use the initial full Flash SHA. TF uses that same firmware identity. Reset follows the ROM; Flash clear preserves the TF card. |
+
+The C5 bus must report `has_validated_rom()` at every ABI ROM start. A past `Emu.rom_loaded` receipt cannot grant permission after SRAM startup has disabled that bus profile. The interpreter remains selected even when a low-level Worker caller requests JIT. C5 keeps network, audio and USB serial unavailable; UI/API serial input remains UART0 only. These are capabilities of the implemented transport, not an RF or compatibility claim.
+
+C5 ROM manifests with separate segments must provide actual `flash_at` addresses, or one whole merged Flash image. The frontend assembles explicit segments into a single erased-gap container and sends kind5 for complete backend validation. Offsetless ROM `files.app` is rejected: its generic0x10000 staging address cannot select a factory or OTA partition. Explicit SRAM manifests retain `app_direct:true` and exactly one `files.app`. ROMs load before C5 Flash inputs. Backend rejection is final; it is not retried through raw `load_at` or SRAM startup.
+
+Frontend header/layout checks are preliminary. Backend cold validation must use physical capacity and discover exactly one fully valid table; raw storage restore pages stay outside image validation. This is provided by the common `Machine::check_image_at(kind, physical_offset, data)` cold-load hook, not a JavaScript workaround. Baseline `22b6e041` contained the strict ROM hook but still rejected merged Flash through its old SRAM-only input check. Backend checkpoint `0c68afa7` is applied privately as `cd803eb7`, with analog prerequisite `010c3936` as `d289c535`. Native ABI and compiled-WASM cold checks now accept the unchanged factory through kind5; their results are recorded in checks.json.
+
+## Flash and TF preservation
+
+The existing full-array Worker comparison performs Flash persistence; guest MSPI dirty metadata is not the storage API. This change enables that path only in a C5 ROM session and keeps create/start mode agreement. The checks exercise a changed final page of a 32 MiB backing array, pre-boot raw restore, bounds rejection and mode replacement. Runtime protocol doubles separately exercise save/reload/reset/clear identity and overlay handling. They do not prove guest MSPI program/erase execution.
+
+Every declared TF slot still prepares a 64 MiB FAT32 image. The existing prepared/imported media and modified pages take priority over defaults. Focused cases cover the C5 ROM default card, prepared-card seeding, previously imported ROM media, retained old SRAM media/pages, a changed Flash tail, reset and a Flash clear that leaves cards untouched. A connected store is not evidence that the original firmware mounted a filesystem.
+
+## Sources and immutable inputs
+
+- ESP-IDF v5.5.3 commit `2c211b236707889e8400c4dc5644dd5c4ee071e0`: [image/header/partition sources and SHA receipts](../c5-image-validation-2026-11-24/sources.json). The full revision fields and bootloader0x2000 follow those C5 sources. Existing strict SRAM validation is retained separately.
+- The existing [ROM fetch helper](../../../tools/fetch-rom-elfs.sh) retains release20260528 and tarball SHA `caa463d3cbef2430a5a35847c1d9f2f152403b17a802050927ff60c8da54fe46`; this change adds the C5 filename and exact ELF pin to its cached-file/download packaging. The cached 4,902,355-byte tarball and all nine requested ELF members match their pins; the helper's complete-cache path also passes. No fresh network fetch is claimed.
+- C5 ROM `esp32c5_rev100_rom.elf`: 472,300 bytes; SHA-256 `49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a`. Native ABI checks reject an independent copy with one payload byte changed, before mutation.
+- [Original LCD273 FactoryOnly_20260724.bin](https://raw.githubusercontent.com/waveshareteam/ESP32-C5-LCD-2.73/418de818f4f40c5a04c4292dbe293bfaa1351068/firmware/ESP32-C5-LCD-2.73_FactoryOnly_20260724.bin): 3,346,992 bytes; SHA-256 `cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942`. The frontend recognizes bootloader0x2000/table0x8000/app0x20000, preserves its bytes and does not start the factory in protocol tests.
+
+No third-party binary, downloaded source body, browser capture, local application/process inventory or personal filesystem path is committed. Required external originals are caller-supplied. New native tests that need the original factory are ignored and named `external_*`; Node external cases skip with explicit environment-variable instructions when inputs are absent.
+
+## Verification and limits
+
+See [checks.json](checks.json) for final commands, source base and results. Focused native/compiled-WASM cold checks select reset PCs and inspect state while instruction counts remain zero. The earlier 37,982,277-byte artifact is a direct Cargo-release private ABI test build, not a `tools/wasm-build.sh` production build: opt3/fat-LTO/codegen1/debug1, with no explicit RUSTFLAGS/profile overrides. It retains five `.debug_*` sections. The production wrapper's inline-threshold2000/debug0/strip-debuginfo policy was not applied; the no-DWARF check therefore does not pass. The initial production label is corrected without replacing the artifact or its hash. Worker-source VM and runtime/UI-selector protocol tests exercise real code with controlled ABI doubles. No browser session, firmware build, original LCD273 instruction execution, CPU benchmark, golden update or broad Rust workspace test belongs to this preparation. The existing S3/StopWatch runtime regression separately runs its established test fixtures through this private WASM.
+
+The full platform runtime suite initially stopped because this isolated tree had no S3 ROM asset; that result is retained. After adding a hash-verified ignored S3 ROM and this source tree's own WASM, the required platform configuration/runtime/input/view checks and focused C5/local-firmware/TF checks pass together: 36 Node cases. Final browser acceptance and actual original guest MSPI/SD/LCD output remain integration gates, with no claim that a protocol acknowledgement or a prepared card proves them.
+
+## Production wrapper revalidation
+
+A separate [production receipt](production-checks.json) verifies source `c88262b565cb6d64e7ce11ccd1efc31217578421` with the unchanged `CARGO_BUILD_JOBS=1 sh -x tools/wasm-build.sh` command. The dedicated runtime worktree uses its own default `target/`, separate from native worktree targets; no RUSTFLAGS, profile, LTO, compiler-wrapper or optional WASM_OPT override was supplied. Rust 1.100.0 / LLVM 23.1.5 used opt3, fat LTO, codegen1 and the wrapper's threshold2000/debug0/strip-debuginfo policy. The actual Cargo fingerprint confirms the threshold flag; the wrapper did not invoke Binaryen.
+
+The resulting ignored WASM is 8,573,206 bytes, SHA-256 `18931572bfab8c2decd82d5bf0109024da7f38bbe67f6aee44af8cf6b3f365ce`; its wrapper copy is identical. The production section guard passes: DWARF absent, profile name section retained. All 36 focused Node contracts pass, including 14 C5 contracts, with no skips. Worker channel checks and all three build-policy guards pass. The actual compiled-WASM cold ABI accepts unchanged original inputs through kind5, rejects corrupt inputs before mutation, and retains zero C5 instructions/cycles without calling `esp32sim_run`. Existing S3/StopWatch fixture execution belongs only to the runtime regression.
+
+The earlier raw debug artifact and its failed production qualification remain unchanged in `checks.json` and ignored cache. This follow-up resolves that build-policy concern; it does not establish factory application/LCD compatibility. Later native backend changes require a production rebuild after integration; native original-factory output and browser acceptance remain pending. No third-party binary, WASM artifact or raw local build log is committed.

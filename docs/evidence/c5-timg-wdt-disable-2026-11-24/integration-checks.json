@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "baseCommit": "51119b2c530c3fb7e473ed1dfde7413ee5572d24",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "ba6f52fa96e7ff6415da598c833a2e33c66953d7596fed92ae48a68ebf81d23e"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "7e0cb0e5ede3d8111c68ee8c3457e9967c1cb546bf043872b6cac8069646b27a"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "00a510581f3a330337750e53c90bf4965cd857061d5cc92914787fe3e1d65b12"
+    },
+    {
+      "path": "esp32c5/src/clock_tree.rs",
+      "sha256": "645b2ea29192577ff0a58f5faf197d1e9e9632c49e8cf7209c2b51553af77b55"
+    },
+    {
+      "path": "esp32c5/src/boot_clock.rs",
+      "sha256": "70b6d91cd872b38900fe871d036681777e0ad744be43d3d436c649f9a02c12b2"
+    },
+    {
+      "path": "esp32c5/src/lp_wdt.rs",
+      "sha256": "1d7cffbce0e3dd8c9c3dda7ec50b58889128ba34aa856c2d22da20950d5582ca"
+    },
+    {
+      "path": "esp32c5/src/lp_wdt_rwdt.rs",
+      "sha256": "c7a94c5e4347f67a95245d7152760b76c72c1b6a1d347c9860675d377e6136df"
+    },
+    {
+      "path": "esp32c5/src/timg_wdt.rs",
+      "sha256": "5b03b555d2a1c280c840a9cbcc939cb17e0fac4d884f42e594dec57aa48527ad"
+    },
+    {
+      "path": "esp32c5/src/boot_watchdog_tests.rs",
+      "sha256": "52c8a80b961d77a384fef07e0e4a2624a11e37a4b249d089756c70b5ff3115e7"
+    },
+    {
+      "path": "esp32c5/src/factory_tests.rs",
+      "sha256": "1ccc6cc8a73ab54290170c64cfa7a9b508691708669972dce5aa190b9c512943"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "77a7ef56217fc0e69ee1db169010cb66a95de4521cbdaae53cc24647d98f3ef9"
+    }
+  ],
+  "inputsAfterNativeRun": [
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": "watchdog-joint-c5-final.log",
+      "logSha256": "1b3ec3c1f0da8b2580781692aa2818fc405f22ecfebfd5c7a07f5f5843dbc47b",
+      "passed": 241,
+      "failed": 0,
+      "ignored": 0,
+      "environment": {
+        "CARGO_BUILD_JOBS": "1",
+        "CARGO_PROFILE_RELEASE_LTO": "false"
+      },
+      "scope": "Focused C5 suite including all four developer-input tests; full default-LTO workspace tests remain pending.",
+      "logBytes": 27247
+    },
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> cargo test --release -p esp32c5 --lib boot_watchdog_tests",
+      "exitCode": 0,
+      "log": "watchdog-joint-glue-final.log",
+      "logSha256": "99135ab01623937502228e589d6a80320231824664b32d58ee88f0524abb344c",
+      "passed": 12,
+      "scope": "Overlaps the full241; do not add counts.",
+      "logBytes": 1667
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "watchdog-joint-workspace-clippy-final.log",
+      "logSha256": "2ff56ae6b40a0e152a6815aa39615721f79d5a4acfd0e98d42d7d2a1b8a353a6",
+      "logBytes": 318
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": "watchdog-joint-wasm-clippy.log",
+      "logSha256": "2efc6f340602e53b6aa362f8da85f20373eeee161779e86977d86c676a6c0aa7",
+      "logBytes": 241
+    }
+  ],
+  "postTestFormatting": "The full suite precedes one whitespace-only line break between report if expressions required by Clippy possible_missing_else. No behavior was changed; final Clippy and the unchanged-factory native run use the recorded final source hashes.",
+  "nativeUnchangedFactory": {
+    "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 10000000 <prepared FAT32 card>",
+    "environment": {
+      "CARGO_BUILD_JOBS": "1",
+      "CARGO_PROFILE_RELEASE_LTO": "false"
+    },
+    "steps": 586172,
+    "cycles": 586112,
+    "uartBytes": 633,
+    "faultPc": "0x4084f778",
+    "faultAddress": "0x60096088",
+    "operation": "read PCR_SARADC_CONF",
+    "mwdt0": {
+      "origin": 0,
+      "xtalHz": 48000000,
+      "prescale": 1,
+      "countAtActualGuestDisable": 114777,
+      "phaseAtDisable": 144000000,
+      "active": false,
+      "config": "0x00048000",
+      "key": 0,
+      "updates": 1,
+      "feeds": 0,
+      "expiries": 0,
+      "clockFault": false
+    },
+    "rwdt": {
+      "config": "0xc007ea00",
+      "hold0": 612000,
+      "sourceHz": 136000,
+      "count": 7,
+      "feeds": 1,
+      "timeouts": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "applicationEntered": false,
+    "logSha256": "8fac0de11ee13ce11f673203729bcd59c0e34b2ae964f2b01fa4bdb180241f38"
+  },
+  "jointContract": [
+    "Two fixed-size watchdog controllers are previewed; actual state commits only through the earliest nominal reset time. Per-stage catch-up is not used.",
+    "At equal times TRM1.1 Table9.1-1 orders SWD12/RWDTSystem10/RWDTCore09 before MWDT0Core07 before RWDTCPU0d.",
+    "LP/TIMG reset domains apply at watchdog_reset_at; CPU/Core retention clears dispatched/coincident requests while retaining LP count and phase.",
+    "A late service may expose a later independent event after the earlier reset is applied; each service/reboot handles one bounded boundary. The returned cause remains the captured cause of that applied reset.",
+    "Pending global reset forbids advancing TIMG MMIO or writing watchdog state; pure LP readback remains available.",
+    "Cold selection validates LP and TIMG candidates before assigning either. Core/System do not replay the boot latch. Chip reset permits a fresh checked epoch. Raw/SRAM deselection cannot rearm it.",
+    "The diagnostic Bringup stops before another retirement after a reset request; common Machine remains the product scheduler."
+  ],
+  "negativeHistory": [
+    {
+      "log": "watchdog-joint-glue-tests.log",
+      "sha256": "ece7482b06c7dfb58a080c1d52336804a0d4a81b12310a382f86f1291460b58b",
+      "outcome": "10/11 passed; the initial idempotence fixture compared lazy unpumped TG state against a reselected state advanced to the actual service time. Pumping the original state before comparison corrects that fixture without weakening the full equality assertion.",
+      "logBytes": 3517
+    },
+    {
+      "log": "watchdog-joint-workspace-clippy.log",
+      "sha256": "64675fe740c0cbc2f6c8a5b1474f03932b0cd2cf7bbc58137b226e6db536a2b5",
+      "outcome": "possible_missing_else in dense report expression; fixed with a line break, no suppression.",
+      "logBytes": 852
+    }
+  ],
+  "limits": [
+    "Nominal240MHz scheduler, not physical DFS or asynchronous mid-instruction reset/pulse accuracy. Bus/CPU time retains the retired-instruction service boundary; only watchdog controller commit/reset timestamps are ordered here.",
+    "Ordinary MWDT staged execution/IRQ, active ambiguous sources1/2 and LP_CLKRST CPU-reset gate writes remain unsupported. CPU-gate fixtures supply an explicit component input, not guest gate support.",
+    "Next actual factory gap is SARADC early-entropy initialization. No original application/LCD/buttons/TF or Wi-Fi acceptance.",
+    "Full default-LTO workspace tests, CPU controls, final integrated production WASM/browser and fresh final release acceptance remain pending. No C5 publication."
+  ]
+}

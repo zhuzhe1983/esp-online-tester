@@ -1,0 +1,74 @@
+{
+  "checkedAtUTC": "2026-11-24T14:59:53.146902+00:00",
+  "baseCommit": "0f0d15b57899cce458e77343b65f65af4cda6c73",
+  "command": "python3 docs/evidence/c5-app-pmu-config-2026-11-24/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\"",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "target": "aarch64-apple-darwin",
+  "ownedSourceSha256": {
+    "esp32c5/src/boot_pmu.rs": "a96534528c50ed6f8a487d7c07558a94fa49082abca031ec4ebc02e90da8cada",
+    "esp32c5/src/boot_bias.rs": "23ab0ebca152c1c61720045ccd385b1201f9bfc771bf819e410f9c4f864a966e",
+    "esp32c5/src/boot_analog.rs": "e44b35b3530cadd29ed5ea3cd90936370e345e1fe178c543eadb60db54ac97eb",
+    "esp32c5/src/boot_analog_pll.rs": "5b419c87837b79cc604a1da41943446b6167813730ef319841933e9b1cf5cf95",
+    "esp32c5/src/lib.rs": "958e7553e2aa93ed74d7e06b29fecbddb0f629ee750a1231849137c4f27012dc",
+    "docs/evidence/c5-app-pmu-config-2026-11-24/run-owned.py": "6870eb046759e5b853048b4cfc8039f28f71f85d305dd91f26ddf83c95908dbd"
+  },
+  "result": {
+    "passed": 35,
+    "failed": 0,
+    "ignored": 0,
+    "exitCode": 0,
+    "byModule": {
+      "boot_pmu": 9,
+      "boot_bias": 8,
+      "boot_analog": 18
+    }
+  },
+  "output": "owned-tests.txt",
+  "rawOutputSha256": "443b0fa54d0fcec645fc0c2d0fa514c721accefedc18bb08e94857ac14a0419b",
+  "normalizedOutputSha256": "4cd94187271d244d58b817840a2ebe959e4d4b9c7a2fbad4a53c4363f6158278",
+  "outputNormalization": "Leading/trailing blank lines stripped; test messages unchanged. Raw and normalized hashes retained.",
+  "actualPreIntegrationBoundary": {
+    "instructions": 20443825,
+    "nominalCycles": 20443776,
+    "uartBytes": 1814,
+    "nonzeroPixels": 0,
+    "pc": "0x420034be",
+    "address": "0x600b0000",
+    "write": true,
+    "width": 4,
+    "instruction": "c.sw a0,0(a5)",
+    "observedX10": 0,
+    "stage": "Application startup after five segment loads and validation; not app_main."
+  },
+  "nativeReceipt": {
+    "cacheFile": "native-machine-lcd273-app-pmu-request.log",
+    "bytes": 5578,
+    "sha256": "a941347ad0a5e549e9446e232e95213a9a9836f8441de4dffac7cd8f6bee4904"
+  },
+  "functionalScope": {
+    "exactNewWords": 51,
+    "existingBiasWords": [
+      "0x600b0028",
+      "0x600b005c",
+      "0x600b009c"
+    ],
+    "newBiasEntry": "write_awake_config; validated-ROM profile only; old write unchanged",
+    "oscillatorRequest": "existing+ac accepts XTAL32K request28, FOSC30 actual; no signal/ready from28;29/31 reject",
+    "powerState": "awake target configuration only",
+    "futureModes": "MODEM/SLEEP configuration retained, state transitions unexecuted",
+    "physicalAnalogVoltageReadiness": "unmodeled",
+    "ocode": "Real uncalibrated path still reaches unsupported analog request; no manufactured eFuse or DONE."
+  },
+  "limits": [
+    "Owned component harness only; no Cargo/shared build, original ROM run or benchmark.",
+    "The supplied native boundary is observed; this new module still requires integration and original-firmware rerun.",
+    "PMU per-register retention is an explicit functional contract, not independently measured silicon retention.",
+    "Final Bus/Soc routing, original execution, full Clippy and integration checks are separate work."
+  ],
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

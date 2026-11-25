@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "baseCommit": "3c7b1d997caa9f6244758e9df695ffba6f970c5e",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "0864acabd60a0f7dd8558c160a2d295768ac8de01dba46d2cb0e8d699b46994c"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "603182f5f8a397593646bbba9cc6103c52662a696477648e07ecbe4c0b4ca4a4"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "b1bb511aaa322a8c7a9e1276e81fb9b99d0a6e1d09e7e7b14f33b5481125a632"
+    },
+    {
+      "path": "esp32c5/src/boot_pmu_bus_tests.rs",
+      "sha256": "039105cefb2d8c5565f814bbdfb2372afba5b8e8798f6d24e8bc50e93b70edb5"
+    },
+    {
+      "path": "esp32c5/src/boot_pmu.rs",
+      "sha256": "a96534528c50ed6f8a487d7c07558a94fa49082abca031ec4ebc02e90da8cada"
+    },
+    {
+      "path": "esp32c5/src/boot_bias.rs",
+      "sha256": "23ab0ebca152c1c61720045ccd385b1201f9bfc771bf819e410f9c4f864a966e"
+    },
+    {
+      "path": "esp32c5/src/boot_analog_pll.rs",
+      "sha256": "5b419c87837b79cc604a1da41943446b6167813730ef319841933e9b1cf5cf95"
+    }
+  ],
+  "inputsAfterNativeRun": [
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    },
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    }
+  ],
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": "pmu-integrated-c5-suite.log",
+      "logSha256": "de10a63bc741bd126ba1b9522c12c2e51fee32e69a47fc34e613cd08c702d9f2",
+      "passed": 296,
+      "failed": 0,
+      "ignored": 0,
+      "inputDependentTestsRun": 5,
+      "phase": "before the additional validated-profile gate; selected ROM behavior unchanged",
+      "logBytes": 32788
+    },
+    {
+      "command": "cargo test --release -p esp32c5 boot_pmu_bus_tests -- --include-ignored",
+      "exitCode": 0,
+      "log": "pmu-profile-gate-tests.log",
+      "logSha256": "59f46144b4565d9eab93a85b854bb3607df0570b66e69378eaa3ad2249be9f7f",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "phase": "after profile gate, includes3 existing fixtures; overlapping counts",
+      "logBytes": 5446
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "pmu-final-workspace-clippy.log",
+      "logSha256": "538f18ad8b1e3251740bb1dd3d8dc927ae5478020ac368c19bf010568b5e45ab",
+      "logBytes": 318
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": "pmu-final-wasm-clippy.log",
+      "logSha256": "7d444940f7f1e2d627b8249ca3ade291ca3b2f7393ef46366d5035781c76f511",
+      "logBytes": 241
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "nativeUnchangedFactory": {
+    "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared FAT32 card>",
+    "log": "native-machine-lcd273-pmu-profile-gate.log",
+    "logSha256": "aa4b4927ef29cb58aad95297f7d248b96af4134f9f1576efd9616ae39992cb63",
+    "steps": 20622671,
+    "cycles": 20622656,
+    "uartBytes": 1814,
+    "faultPc": "0x40802da6",
+    "faultAddress": "0x600af81c",
+    "operation": "write HP REGI2C ANA_CONF1 before OCODE reset",
+    "requestedValue": "0x00fffeff",
+    "storeSourceRegister": 15,
+    "allFiveAppSegmentsLoaded": true,
+    "applicationStartupExecuted": true,
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "pmuWrites": 130,
+    "activeClockPowerTarget": "0x70000000",
+    "activeBiasTarget": "0x02000000",
+    "activeSysclkTarget": "0x08000000",
+    "biasHpLpTargets": [
+      28,
+      28
+    ],
+    "cpuAhbApbHz": [
+      48000000,
+      48000000,
+      48000000
+    ],
+    "clockSource": 0,
+    "pllReady": false,
+    "calDone": false,
+    "lpTimerLastCount": 11446,
+    "lpTimerLastCycle": 20622656,
+    "lpTimerCaptures": 9,
+    "rtcCalibrationMeasured": 1,
+    "rtcCalibrationTimeouts": 3,
+    "rtcCalibrationValue": 35294,
+    "logBytes": 5836
+  },
+  "reviewFix": {
+    "issue": "New PMU words initially accepted outside the validated-ROM selection. Read-only review identified the scope omission.",
+    "resolution": "Both exact-word routes reject before allocation when has_validated_rom is false. Pending reset also rejects before mutation. A fixture covers fresh raw mode, selected pending reset and raw-ROM deselection while retaining prior configuration unchanged.",
+    "fullSuiteTiming": "296 passes precede this guard; post-fix4 Bus fixtures and both warnings-denied Clippy checks pass. Final all-C5 suite will include new guard alongside later backend work."
+  },
+  "contracts": [
+    "No duplicated Bias/Analog owner; existing Bias strict write remains used outside validated-ROM mode.",
+    "New PMU registers store awake/future target configuration only; no ready bits, actual MODEM/SLEEP transition or invented eFuse values.",
+    "CPU/Core retains PMU configuration; LP/System/Chip restores header defaults. This is a declared virtual functional retention policy."
+  ],
+  "limits": [
+    "Focused release uses explicit LTO=false; not default-LTO full-workspace CI.",
+    "OCODE route remains the actual first fault, before RESETB/flag polling. No OCODE completion result is claimed here.",
+    "Application startup is verified, but app_main, full PSRAM selftest, LCD/buttons/TF/Wi-Fi remain pending.",
+    "CPU controls, production WASM/browser/final acceptance and C5 publication remain pending."
+  ],
+  "curation": "Raw private logs are retained in ignored cache. Public evidence records numeric facts and hashes, omits personal paths, process/session inventories and raw captures; no measured values altered."
+}

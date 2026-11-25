@@ -2,7 +2,25 @@ import {currentLocale} from './i18n.js';
 // Observations from the board model only; a rendered frame is not hardware validation.
 const text = (value, limit) => typeof value === 'string' && value.length <= limit;
 const integer = (value, max) => Number.isSafeInteger(value) && value >= 0 && value <= max;
+// Canonical decimal strings preserve all u64 values without Number rounding.
+const u64 = value => typeof value==='string' && /^(0|[1-9][0-9]{0,19})$/.test(value) && (value.length<20 || value<='18446744073709551615');
 export function parseHardwareDiagnostics(value) {
+  if(value?.board==='waveshare-c5-lcd273') {
+    const s=value.state,d=s?.display,sd=s?.sd,c=sd?.card;
+    if(value.schemaVersion!==1||value.counterEncoding!=='u64-decimal'||!s||Array.isArray(s)||!d||Array.isArray(d)||!sd||Array.isArray(sd)||
+      !['resetHigh','sleepOut','displayOn','visible'].every(key=>typeof d[key]==='boolean')||
+      !['brightness','pixelFormat','madctl'].every(key=>integer(d[key],255))||
+      !['pixelsWritten','ramWriteCommands','resetCount'].every(key=>u64(d[key]))||!u64(s.boardRejectedTransactions)||
+      typeof sd.present!=='boolean'||sd.transport!=='spi2-sdhc'||(sd.present?(!c||typeof c!=='object'||Array.isArray(c)):c!==null)||
+      !Array.isArray(value.limits)||value.limits.length>8||!value.limits.every(item=>text(item,512)))return null;
+    if(c && (typeof c.spiMode!=='boolean'||!['Idle','Ready','Ident','Stby','Tran','Data','Rcv','Prg','Dis','Ina'].includes(c.cardState)||
+      !['capacityBlocks','nativeCommandCalls','storageBlocksLoaded','storageBlocksWritten'].every(key=>u64(c[key]))))return null;
+    return {schemaVersion:1,board:'waveshare-c5-lcd273',counterEncoding:'u64-decimal',state:{
+      display:{resetHigh:d.resetHigh,sleepOut:d.sleepOut,displayOn:d.displayOn,visible:d.visible,brightness:d.brightness,pixelFormat:d.pixelFormat,madctl:d.madctl,
+        pixelsWritten:d.pixelsWritten,ramWriteCommands:d.ramWriteCommands,resetCount:d.resetCount},boardRejectedTransactions:s.boardRejectedTransactions,
+      sd:{present:sd.present,transport:'spi2-sdhc',card:c?{spiMode:c.spiMode,cardState:c.cardState,capacityBlocks:c.capacityBlocks,
+        nativeCommandCalls:c.nativeCommandCalls,storageBlocksLoaded:c.storageBlocksLoaded,storageBlocksWritten:c.storageBlocksWritten}:null}},limits:[...value.limits]};
+  }
   if(value?.board==='corematrix') {
     const s=value.state,m=s?.matrix,b=s?.buzzer;
     if(value.schemaVersion!==1||!s||!m||!b||!['controllerPowered','grove5vEnabled','sdPresent'].every(key=>typeof s[key]==='boolean')||

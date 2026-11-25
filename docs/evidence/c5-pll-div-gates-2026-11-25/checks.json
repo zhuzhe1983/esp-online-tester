@@ -1,0 +1,111 @@
+{
+  "checkedAtUTC": "2026-11-24T17:31:22.283323+00:00",
+  "baseCommit": "29eb3fd57b7585afcae2b79fed8a6721b391e271",
+  "command": "python3 docs/evidence/c5-pll-div-gates-2026-11-25/run-owned.py --repo \"$REPO\" --output-dir \"$TASK_TMP\"",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "host": "aarch64-apple-darwin",
+  "ownedSourceSha256": {
+    "esp32c5/src/boot_clock.rs": "cd7e989141c06ca0ad39a8644622de87f081d5a54cd3eb4a822752538b8821ab",
+    "esp32c5/src/clock_tree.rs": "7fc8bd3f22b770558265a7eb94ba478c6d8ab9217a85c646425f46cc79d6ab73",
+    "esp32c5/src/transport.rs": "576f9687bbcaf0ec6de338411865cb8c277cf6199633dc2ff45ba9c70aeb6d02",
+    "esp32c5/src/transport_clock_tests.rs": "e1384d96d1ad480ae53dfaf7660592ae18af80a38e8dfdd807069462acec30b7",
+    "docs/evidence/c5-pll-div-gates-2026-11-25/run-owned.py": "4b76b6476be3efd262e984104be714ace1802d6cb673dba4962778feb8bf9305"
+  },
+  "clockResult": {
+    "passed": 19,
+    "existingTests": 13,
+    "newGateTests": 6,
+    "failed": 0,
+    "ignored": 0,
+    "exitCode": 0
+  },
+  "ownedClippy": {
+    "scope": "Only ClockTree/BootClock/calibration standalone harness",
+    "command": "clippy-driver --edition=2021 --test \"$TASK_TMP/c5-pll-div-clock-harness.rs\" -o \"$TASK_TMP/clock-clippy-tests\" -D warnings",
+    "exitCode": 0
+  },
+  "initialHarnessLint": "TIMG0 getter unused in isolated harness; independent assertion now verifies PLL gates leave XTAL/TG0 group control unchanged. No allowance added.",
+  "transportTests": {
+    "existingObserverCallUpdated": 1,
+    "newTestsAuthored": 3,
+    "executedHere": false,
+    "reason": "Parent owns Bus fourth-argument integration and full C5 build slot.",
+    "names": [
+      "pll_divider_mask_never_grants_ready_and_each_spi_source_needs_its_own_tap",
+      "selected_pll_tap_loss_cancels_spi_but_unrelated_tap_loss_preserves_the_transfer",
+      "pll80_gate_settles_old_ledc_edges_pauses_without_irq_and_resumes_saved_phase"
+    ]
+  },
+  "output": "owned-tests.txt",
+  "rawOutputSha256": "d23c0b25e9dfa280942c77868de84dc86452e440487edd51a8a035c2f585735f",
+  "normalizedOutputSha256": "cb85c7a223e24e21390ffa224faffea18194f0082a36f7917b2fa3759e07bccf",
+  "outputNormalization": "Leading/trailing blank lines stripped only.",
+  "sourcesSha256": "e7fdf01b785dfeeed2d4ffbc42921bd4e2724e731325ceaca7a7d447910d2474",
+  "typedSequenceSha256": "0789b1938c852bf057bf5ab5c8de518bffc96561221510a57e2b09986d4a6175",
+  "headerGateFieldsVerified": true,
+  "inputs": {
+    "esp32c5_rev100_rom.elf": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "lcd273-factory.bin": {
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    }
+  },
+  "nativeReceipt": {
+    "cacheFile": "native-machine-lcd273-pma-next-boundary.log",
+    "bytes": 6949,
+    "sha256": "0dae94d5636e37e0c52694fe66af1854780852f9e085b2e874424c3e06a893ac",
+    "source": "Existing parent integration run, read only."
+  },
+  "actualPreIntegrationBoundary": {
+    "instructions": 24764132,
+    "nominalCycles": 24764096,
+    "uartBytes": 2194,
+    "nonzeroPixels": 0,
+    "pc": "0x4211f8ee",
+    "address": "0x60096128",
+    "write": false,
+    "width": 4,
+    "psramMemoryTest": "8MiB memory test OK",
+    "source": 3,
+    "cpuHz": 80000000,
+    "ahbHz": 40000000,
+    "apbHz": 40000000,
+    "pllReady": true,
+    "pcr128ReadAccepted": false
+  },
+  "typedDisassembly": {
+    "cacheFile": "research/isa-audit/lcd273-app-seg2-42000020.bin.typed.dis",
+    "sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45"
+  },
+  "trm": {
+    "version": "1.1",
+    "section": "Register9.68",
+    "pdfSha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+    "textSha256": "a728dac35943336e6d392584638b9973225385ebd55f25376ee6f0ee23a61a59",
+    "url": "https://www.espressif.com/sites/default/files/documentation/esp32-c5_technical_reference_manual_en.pdf",
+    "conflictRetained": true
+  },
+  "limits": [
+    "Source-pinned virtual gate availability, not physical/silicon verification ofTRM reservedfields.",
+    "PLL48 withdrawal unsupported until USB consumer clock/gate model exists.",
+    "Transport fulltests and Bus setter fourthargument remain parent integration work.",
+    "MSPI API/code unchanged: its directSPLL480 uses actualanalogready, not PLL80tap gate.",
+    "No Cargo/native/WASM/browser/benchmark performed.",
+    "No originalguest RMW/app_main/LCD success claimed beyond supplied boundary."
+  ],
+  "staticChecks": {
+    "diffCheck": "passed",
+    "evidencePrivacy": "passed",
+    "manualPrivacyReview": "Only relevant relative paths/public URLs/hashes/numeric samples/command templates retained.",
+    "allEvidenceFilesUnder50000Bytes": true
+  },
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

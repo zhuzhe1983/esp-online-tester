@@ -28,7 +28,7 @@ test('P4 revision routing never silently selects S3 or mixes ECO0 and ECO5 binar
   validateBoardRevision(header(100,199),'waveshare-p4-lcd35-v13');
   for(const bytes of [header(101,199),header(301),header(0,99)])assert.throws(()=>validateBoardRevision(bytes,'waveshare-p4-lcd35-v13'),{code:'CHIP_REVISION_UNSUPPORTED'});
   assert.throws(()=>validateBoardRevision(header(301),'stamp-p4'),{code:'CHIP_REVISION_UNSUPPORTED'});
-  assert.equal(chipForBoard('waveshare-c5-lcd147'),'esp32c5');assert(isSramOnlyBoard('waveshare-c5-lcd147'));
+  assert.equal(chipForBoard('waveshare-c5-lcd147'),'esp32c5');assert.equal(isSramOnlyBoard('waveshare-c5-lcd147'),false);
   for(const p of products)if(hasSdCard(p.runtime.board))assert(hasTfSlot(p),p.id+' implemented transport requires a physical slot');
   for(const board of ['waveshare-p4-core','waveshare-p4-module-16mb','waveshare-p4-core-dev-kit'])assert.equal(hasSdCard(board),false);
 });

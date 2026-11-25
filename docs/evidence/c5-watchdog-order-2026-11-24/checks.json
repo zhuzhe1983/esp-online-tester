@@ -1,0 +1,180 @@
+{
+  "baseCommit": "87933145f4b292e5d4fe49bfa03890cb5ac461e9",
+  "scope": "LP SWD/RWDT timestamped reset order and dispatch barrier; no Bus/Soc/TIMG/shared edits",
+  "API": {
+    "production": "take_reset_event()->Option<(LpWdtReset,u64)>",
+    "event": "Actual nominal reset cycle; earliest pending event before equal-time source priority.",
+    "testOnly": "take_reset_cause() wraps event API; historical SWD take_reset() keeps legacy fixture semantics.",
+    "owner": "Apply reset_domains at selected reset timestamp before advancing beyond the boundary.",
+    "externalArbitration": "Parent owns TIMG/LP Bus arbitration and cross-module snapshots; no rollback of retired CPU instructions is claimed."
+  },
+  "sources": {
+    "IDF": {
+      "v5.5.3": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+      "v5.5.4": "735507283d5b2f9fb363a1901172dbd9e847945d"
+    },
+    "TRM": {
+      "version": "1.1",
+      "url": "https://documentation.espressif.com/esp32-c5_technical_reference_manual_en.pdf",
+      "sha256": "b2e7944dec0ee8e933042de69eb418da28a959d75afddde660775e9395739240",
+      "sections": [
+        "9.1/Table9.1-1 reset-source priority",
+        "16.2 RWDT stage/feed/clock behavior",
+        "16.3 SWD request/feed/timeout"
+      ]
+    },
+    "priorContracts": [
+      "docs/evidence/c5-rwdt-boot-2026-11-24/README.md",
+      "docs/evidence/c5-swd-boot-2026-11-24/README.md"
+    ]
+  },
+  "behavior": {
+    "SWDPending": "Sticky actual epoch+EXPIRE; late pump and post-event feed/flag-clear do not alter it.",
+    "RWDTPending": "Reuses existing cause/actual-at/raw-pulse pending tuple.",
+    "latePump": "One fixed-size preview; adopt on no reset, otherwise commit only to first event time.",
+    "ordering": "Earlier actual timestamp wins; equal SWD/RWDT times choose SWD.",
+    "dispatch": "One event once, deadlineNone and no subsequent pump/take progression until owner reset.",
+    "sourceChange": "Changed observation rejects while any event pending/dispatched; unchanged observation allowed.",
+    "reset": "Acknowledge occurred/coincident events through owner time, retain CPU/Core count/stage/phase; do not catch up a second interval during reset.",
+    "legacy": "Profile-off early return; unchanged register defaults, supported modes, source readiness, virtual SWD duration and reset reason values."
+  },
+  "vectors": [
+    {
+      "latePumpCycle": 400000000,
+      "rwdtCycle": 130000000,
+      "swdCycle": 228000000,
+      "selected": [
+        "RwdtCore",
+        130000000
+      ],
+      "discardedFuture": "SWD request/flag not committed."
+    },
+    {
+      "latePumpCycle": 400000000,
+      "rwdtCycle": 300000000,
+      "swdCycle": 228000000,
+      "selected": [
+        "Swd",
+        228000000
+      ],
+      "discardedFuture": "RWDT timeout/stage event not committed."
+    },
+    {
+      "latePumpCycle": 400000000,
+      "rwdtCycle": 228000000,
+      "swdCycle": 228000000,
+      "selected": [
+        "Swd",
+        228000000
+      ]
+    },
+    {
+      "sourceHz": 136000,
+      "stageHolds": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stage0Multiplier": 2,
+      "first": [
+        "RwdtCore",
+        3530
+      ],
+      "afterOwnerCoreReset": [
+        "RwdtSystem",
+        5295
+      ]
+    },
+    {
+      "actualSoftwarePulseComplete": 204003000,
+      "futureSwdEvent": 432003000,
+      "latePumpCycle": 456000000
+    },
+    {
+      "swdOnlyLatePump": "u64::MAX",
+      "actualEvent": [
+        "Swd",
+        228000000
+      ],
+      "afterPostEventFeedAndFlagClear": "Same timestamp, no completed feed or duplicate event."
+    }
+  ],
+  "checks": [
+    {
+      "command": "clippy-driver --edition=2021 --test <owned-module-harness> -D warnings -o <isolated-test-binary>",
+      "result": "PASS",
+      "warningsDenied": true,
+      "allowances": false,
+      "modules": [
+        "lp_wdt.rs",
+        "lp_wdt_rwdt.rs"
+      ]
+    },
+    {
+      "command": "<isolated-test-binary> --nocapture",
+      "result": "PASS",
+      "passed": 28,
+      "failed": 0,
+      "ignored": 0,
+      "filtered": 0,
+      "historicalSwdFixturesUnchanged": 8,
+      "newTests": 8
+    },
+    {
+      "check": "First independent harness run",
+      "result": "27 passed / 1 failed",
+      "reason": "Retention fixture expected dispatch-blocked deadlineNone after the owner reset.",
+      "resolution": "Retain complete state-equality assertion; normalize acknowledged pending/barrier and recompute next real deadline after reset."
+    },
+    {
+      "command": "git diff --cached --check",
+      "result": "PASS"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "PASS",
+      "filesChecked": 3071,
+      "gzipFiles": 95,
+      "manualReview": "Public pins/hashes and virtual controller vectors only; no private captures/local identities."
+    },
+    {
+      "command": "git diff 87933145 --name-only -- <SWD integration-checks.json> <RWDT integration-checks.json>",
+      "result": "PASS: empty diff; both historical receipts unchanged."
+    }
+  ],
+  "files": [
+    {
+      "path": "esp32c5/src/lp_wdt.rs",
+      "bytes": 36114,
+      "sha256": "1d7cffbce0e3dd8c9c3dda7ec50b58889128ba34aa856c2d22da20950d5582ca"
+    },
+    {
+      "path": "esp32c5/src/lp_wdt_rwdt.rs",
+      "bytes": 4354,
+      "sha256": "c7a94c5e4347f67a95245d7152760b76c72c1b6a1d347c9860675d377e6136df"
+    }
+  ],
+  "unchangedHistoricalReceipts": [
+    {
+      "path": "docs/evidence/c5-swd-boot-2026-11-24/integration-checks.json",
+      "bytes": 2348,
+      "sha256": "5b717ee8d4c98435a866a55ab2a7741e422d6dca6568bb417cdc497747ef5260",
+      "unchangedFromBase": true
+    },
+    {
+      "path": "docs/evidence/c5-rwdt-boot-2026-11-24/integration-checks.json",
+      "bytes": 5877,
+      "sha256": "285203c00ae1516ed5dc7636699376ae00e1bff7cb389fbc7080d258f4b99682",
+      "unchangedFromBase": true
+    }
+  ],
+  "limits": [
+    "Bus/TIMG event arbitration remains parent integration work.",
+    "No full shared build or original firmware run in this lane.",
+    "No physical reset pulse/stall or analog oscillator timing claim.",
+    "No rollback of retired instructions or arbitrary external late state.",
+    "No app/LCD/TF acceptance claim."
+  ],
+  "privacy": "Only public pins/hashes, deterministic virtual event vectors and aggregate test outcomes; no absolute local paths or raw private captures."
+}

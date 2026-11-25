@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "baseCommit": "aafb46d148e048c665cc9d15a384113238c22501",
+  "integratedModules": [
+    {
+      "original": "9948bee42c20d32f9c93218dd88f94397cb6bc27",
+      "integrated": "eb523459"
+    },
+    {
+      "original": "61f093ec5b10984dd84f814aeed4b177ae33ce7e",
+      "integrated": "aafb46d1"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_clock.rs",
+      "sha256": "872e0541fcdc2148290000615fda6f189bc9fb8b9cae1b747dcdda16ffd5bf48"
+    },
+    {
+      "path": "esp32c5/src/clock_tree.rs",
+      "sha256": "95717d45c3a4452e72e3f95bdfb0e39fcfcaf7d1a803d0fd60911a7fa267a8a6"
+    },
+    {
+      "path": "esp32c5/src/lp_wdt.rs",
+      "sha256": "67a1bc2033d386325da368ae679f7c76cb5229e34429fd336831e4b940b1be3a"
+    },
+    {
+      "path": "esp32c5/src/lp_wdt_rwdt.rs",
+      "sha256": "c7a94c5e4347f67a95245d7152760b76c72c1b6a1d347c9860675d377e6136df"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "1ade067564e030747cdef31b88f0f75e7a051628b19be6932d583936512d192a"
+    },
+    {
+      "path": "esp32c5/src/soc.rs",
+      "sha256": "073245d2c4ff0c1a13629d096f67c7441b64b0f3b61b6bb1e142e1582b5b5c78"
+    },
+    {
+      "path": "esp32c5/src/boot_watchdog_tests.rs",
+      "sha256": "db79555921722b0b463019e2230229cd286035091cda94b0d856fe691475b052"
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-lp-fast-integrated-c5-suite-reviewed.log",
+        "sha256": "b71ef57e1ecaf2c192a5325ee488cb5dbab61ee42009be8e0078714662b80690",
+        "logBytes": 39527
+      },
+      "passed": 363,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-lp-fast-workspace-clippy.log",
+        "sha256": "3ff48fbad319abfe339f4593f87987308d0f88b4ea40d465029fb9436d9da254",
+        "logBytes": 318
+      }
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-lp-fast-wasm-clippy.log",
+        "sha256": "1547c511cf64ca5c19471228a725e9761d2170646a472cc03a5b82a888114860",
+        "logBytes": 241
+      }
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "exitCode": 0,
+      "log": {
+        "file": "c5-lp-fast-evidence-privacy.log",
+        "sha256": "bd1358042eec22c8061ae1fda18461d3806b43aba68a0e91ff155112230ca759",
+        "logBytes": 130
+      }
+    }
+  ],
+  "contracts": [
+    "LP_FAST mux0 uses the actual powered/tuned RC oscillator17.5MHz in this virtual profile, mux1 is XTAL/2=24MHz, mux2 XTAL48MHz. HP FOSC bridge gate cannot remove the independent LP oscillator.",
+    "Bus settles watchdogs under the old fast source before publishing a changed observation. Pending reset blocks normal clock mutation/publication.",
+    "SWD feed pulses retain a240MHz-scaled remaining numerator across frequency changes and loss; missing source pauses only pulse progress. Analog request850ms/expiry950ms stay fixed204M/228M nominal cycles; RWDT and LP_TIMER keep their separate slow source.",
+    "CPU/Core retention and LP controller reset preserve external observations in the module. The reset owner publishes a reset LP mux at reset_at before late catch-up. Analog reset restores the declared default24MHz source.",
+    "Same-cycle analog expiry wins over pulse completion or a new source. Pending/dispatched reset barriers cannot be advanced or withdrawn by a changed source. Arithmetic catch-up is bounded independently of elapsed time."
+  ],
+  "actualMmioControls": [
+    {
+      "sequence": "Start300-tick software pulse at24MHz, advance300cycles, write actualLP mux0",
+      "remainingTicks": 270,
+      "newHz": 17500000,
+      "expectedPulseCompletionCycle": 4003
+    },
+    {
+      "sequence": "Disable HP bridge while LP mux0 remains selected",
+      "hpRcFastHz": null,
+      "lpFastHz": 17500000
+    },
+    {
+      "sequence": "Start new300-tick pulse then immediately selectLP mux2",
+      "expectedWidthCycles": 1500
+    },
+    {
+      "sequence": "Start17.5MHz pulse, consume1cycle, turn actualFOSC power30 off for9999cycles then restore",
+      "expectedCompletionCycle": 14114,
+      "sourceLossDoesNotReseedAnalogEpoch": true
+    },
+    {
+      "sequence": "CPU reset retains17.5MHz pulse; LP reset restores24MHz and clears digital pulse without reseeding analog age",
+      "expectedNextAnalogRequestCycle": 204000000
+    }
+  ],
+  "originalFactoryRun": {
+    "command": "cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared64MiB card>",
+    "log": {
+      "file": "native-machine-lcd273-lp-fast-integrated.log",
+      "sha256": "999cc9f932edcba6577512e9ba64d62321492a4b38cefe4f0699107d6149e417",
+      "logBytes": 6990
+    },
+    "runSteps": 24768743,
+    "cpuInstructionCount": 24768743,
+    "nominalCycles": 24768704,
+    "uartBytes": 2194,
+    "psramStride32TestPassed": true,
+    "actualLpFastHz": 17500000,
+    "reportedSwdPulseSource": "17.5MHz",
+    "swdRequests": 0,
+    "swdAutomaticFeeds": 0,
+    "swdSoftwareFeeds": 0,
+    "swdPulseActive": false,
+    "rwdtSlowHz": 136000,
+    "rwdtCount": 0,
+    "rwdtFeeds": 2,
+    "lpTimerCounter": 13795,
+    "pllDividerGates": "0x23",
+    "firstFault": {
+      "pc": "0x42070cca",
+      "readAddress": "0x600af00c"
+    },
+    "nextBoundary": "MODEM_LPCON WIFI_LP_CLK_CONF (MODEM_PWR1 base600af000), not HP_SYSTEM base60095000. Clock selectors are the next separate task.",
+    "appMainEntered": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "factoryDynamicPulseExecutionClaimed": false
+  },
+  "earlyDiagnosticScope": {
+    "log": {
+      "file": "native-machine-lcd273-lp-fast-prepulse-prefix.log",
+      "sha256": "ffb04812ffc146dcbe11dcbed6d1624f184bfa507fc807bea98cb27accfe22db",
+      "logBytes": 7069
+    },
+    "budgetSteps": 60000000,
+    "reason": "A bounded prefix before SWD request/pulse engagement isolated the mux before pulse integration. requests/feeds/pulse were all0. It is not dynamic-SWD proof.",
+    "sameStepsAndBoundaryAfterFullPulseIntegration": true
+  },
+  "negativeResults": [
+    {
+      "log": {
+        "file": "c5-lp-fast-integrated-c5-suite.log",
+        "sha256": "1433f663ff216bf78d972dfeb85905c0201ad020249f4d1e00da36803da59b62",
+        "logBytes": 30088
+      },
+      "exitCode": 101,
+      "passedBeforeLibraryStop": 296,
+      "failed": 1,
+      "reason": "A new source-loss fixture tried restoring FOSC DFREQ172 after100; this lies outside the declared retuning subset and was correctly rejected.",
+      "correction": "Use the already modeled actual FOSC power30 control to withdraw and restore the oscillator. Pulse/phase and reset assertions are retained; no production code was loosened."
+    },
+    {
+      "reason": "Source audit corrected an initial informal48MHz interpretation: LP word0 selects RC_FAST, not XTAL. Fixed headers and actual guest a0=0 govern the implementation."
+    }
+  ],
+  "independentModuleReview": {
+    "reportSha256": "c7f08db017f139ae56032e6710744c76eb1eb8612d2ead5949e6461cb9e7a08a",
+    "unresolvedP1": 0,
+    "unresolvedP2": 0,
+    "scope": "Final LP_WDT source, unchanged RWDT helper and original28-test body. No independent Bus/SoC, full-suite or original-factory execution claimed."
+  },
+  "inputs": [
+    {
+      "file": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    {
+      "file": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "file": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    }
+  ],
+  "limits": [
+    "Functional awake LP_DYN_FAST equals LP_FAST; sleep switching remains unsupported.",
+    "Virtual oscillator rates and analog SWD age are explicit inputs, not physical calibration or pulse-timing accuracy.",
+    "This real factory prefix has not requested a SWD feed. Dynamic pulse correctness is tested by actual module and MMIO fixtures, not inferred from the native boot log.",
+    "Focused LTO=false checks do not replace final default-LTO CI, CPU controls, production WASM/browser or app_main/LCD/buttons/TF acceptance. No C5 publication claimed."
+  ],
+  "curation": "Commands, source/input/log hashes and numeric results retained. Raw captures remain ignored; personal paths and process/session inventories are omitted without altering measured values."
+}

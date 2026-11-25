@@ -1,0 +1,134 @@
+{
+  "scope": "Standalone owned module; no Cargo, workspace, native guest, WASM or benchmark",
+  "source": "esp32c5/src/boot_security.rs",
+  "sourceSha256": "749d6da50701e9b923a1ffca12653996e8539b1f2a922554b0a2cb9fc7bcccf3",
+  "tools": {
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "clippy-driver": "clippy 0.1.100 (0ef1bc3860 2026-11-09)"
+  },
+  "checks": [
+    {
+      "command": [
+        "rustup",
+        "run",
+        "stable",
+        "rustc",
+        "--edition=2021",
+        "--test",
+        "esp32c5/src/boot_security.rs",
+        "-D",
+        "warnings",
+        "-o",
+        "<owned-output>/security-init-tests"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalizedOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputFile": "check-0.txt"
+    },
+    {
+      "command": [
+        "<owned-output>/security-init-tests",
+        "--test-threads=1"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "957969768cb3d50d9fc89ca0952b9e2498849e8b6e0ca5dfcb62b05e2854885f",
+      "normalizedOutputSha256": "957969768cb3d50d9fc89ca0952b9e2498849e8b6e0ca5dfcb62b05e2854885f",
+      "outputFile": "check-1.txt"
+    },
+    {
+      "command": [
+        "rustup",
+        "run",
+        "stable",
+        "clippy-driver",
+        "--edition=2021",
+        "--test",
+        "esp32c5/src/boot_security.rs",
+        "-D",
+        "warnings",
+        "-o",
+        "<owned-output>/security-init-clippy"
+      ],
+      "exitCode": 0,
+      "rawOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "normalizedOutputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputFile": "check-2.txt"
+    }
+  ],
+  "normalization": "Caller-supplied repository/output paths replaced by labels; no other text changed.",
+  "exitCode": 0,
+  "checkedAtUTC": "2026-11-24T20:26:10.109981+00:00",
+  "baseCommit": "ccf0a725a256d3e03a713178f36ba6fd0a9c08c3",
+  "result": {
+    "passed": 13,
+    "failed": 0,
+    "ignored": 0,
+    "exactWords": 5,
+    "resetProtocolLatencyNominalCycles": 240,
+    "latencyMeaning": "Explicit virtual1us reset protocol, not hardware settling/KM edge/crypto frequency"
+  },
+  "harnessScriptSha256": "5537523ebcfa4370e1fa7d73c5b58aa1767920b382d94839f3413de6855a4597",
+  "sourcesSha256": "5348de6fc2a3d45cb60f0436b0159755ca3b4d2ff49f6a20a1d08df9a8daa6c2",
+  "sourcePairs": 9,
+  "identicalPairs": 9,
+  "actualBoundary": {
+    "source": "Existing integration log, read only; no new native run",
+    "cacheFile": "native-machine-lcd273-sec-clock-cold-diagnostics-real-wasm.log",
+    "sha256": "aab5813aa2802039e5b77f23968bfa21faed16ecf3adf185c35484095303099e",
+    "instructions": 27039922,
+    "nominalCycles": 27039872,
+    "uartBytes": 3711,
+    "pc": "0x4200255e",
+    "address": "0x60096168",
+    "write": false,
+    "advancedByThisCommit": false,
+    "logBytes": 10201
+  },
+  "typed": {
+    "segment1Sha256": "4696bac57e7e7a848e73c86de7d0513c81e6ce5ec3e9483e41f6866b3cc7ba41",
+    "segment2Sha256": "3e23c10184628e7c5dcea63972581d1683ba76345ad250af08dbb22c43646a45"
+  },
+  "inputContract": {
+    "sec_source_hz": "Only actual Some48M/Some480M pre-DPA availability, not functional rate",
+    "apb_available": "Explicit actual APB availability; required even for configuration POR reads",
+    "crypto_domain_available": "Caller proves strict ideal-awake virtual domain conditions; not physical power-ready",
+    "fuses": "Known DPA0 / flash encryption=false / force KM flash=false; None rejects runtime qualification",
+    "ownedGates": "Actual POWER2 and CONF clock1/reset0 plus real assert-release sequence",
+    "dpa": "Named mask7 config only; new completion only when both register/eFuse levels0"
+  },
+  "eventContract": {
+    "oldInputsFirst": true,
+    "unknownLoss": "Cancel active protocol once; restoration does not restart without actual new reset",
+    "sameCycle": "Old-context completion precedes newly observed inputs; parent watchdog/reset arbitration has priority",
+    "roReady": "HeaderPOR1 has zero completions; bus writes cannot set it; STATE/STATIC runtime require actual completion",
+    "deadlineOverflow": "Release rejects atomically; no saturation into invented due time",
+    "backwardsTimestamp": "Reject without mutation",
+    "reset": "CPU/LP retain HP latches/pending; HP/Chip restore/withdraw; functional retention only"
+  },
+  "curatedTestOutput": {
+    "file": "owned-tests.txt",
+    "rawSha256": "957969768cb3d50d9fc89ca0952b9e2498849e8b6e0ca5dfcb62b05e2854885f",
+    "curatedSha256": "b1b48efe4766788434c82c5f72407df7988bb987484c4ec34bf25660558b9ed7",
+    "normalization": "Leading/trailing blank lines stripped only."
+  },
+  "limits": [
+    "No Bus/lib/Soc/Clock/eFuse/PMU changes; only new private component and evidence.",
+    "No Cargo/workspace/native guest/WASM/browser/benchmark run.",
+    "No actual crypto functional rate, random divider, physical latency, deployed/provisioned key, keyvalid/result/data/IRQ or START/CONTINUE.",
+    "DPA selector descriptions conflict; only source-proven KnownOff protocol qualification, other named values stored as config.",
+    "PCR configuration availability is distinct from qualified KM runtime observations."
+  ],
+  "staticChecks": {
+    "diffCheck": "passed",
+    "evidencePrivacy": "passed: 3211 tracked evidence files, 95 gzip",
+    "manualPrivacyReview": "Public source URLs, relative paths, hashes, PC/counts only; caller paths normalized; private native logs outside Git.",
+    "evidenceFilesUnder50000Bytes": true
+  },
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

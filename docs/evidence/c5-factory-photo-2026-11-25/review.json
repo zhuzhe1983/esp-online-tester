@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "kind": "fixed-commit-c5-cached-unaligned-source-review",
+  "date": "2026-11-25",
+  "reviewedCommit": "6b3a68062010e3b00de1841472cd873aee89978d",
+  "parent": "7625addbe0c5164c80b60bb0e142be91134c7a23",
+  "scopeFiles": [
+    "esp32c5/src/bus.rs",
+    "esp32c5/src/mspi.rs",
+    "esp32c5/src/unaligned_bus_tests.rs",
+    "esp32c5/examples/factory_photo_boundary.rs"
+  ],
+  "fixedFiles": [
+    {
+      "path": "esp32c5/src/bus.rs",
+      "bytes": 63382,
+      "sha256": "428e05b3e36c04b15b1d591c57321df1289d05f49889a88da5235b648a05d834",
+      "changedFromParent": true
+    },
+    {
+      "path": "esp32c5/src/mspi.rs",
+      "bytes": 46890,
+      "sha256": "093ef86e5a6224f121cef027635171e1469d2472b0b79a3b542557015b500457",
+      "changedFromParent": true
+    },
+    {
+      "path": "esp32c5/src/unaligned_bus_tests.rs",
+      "bytes": 12362,
+      "sha256": "6fcbc23674b7e0cf6a3180045850f1056eede0a8cf1b2ac8594ec9601ed0377b",
+      "changedFromParent": true
+    },
+    {
+      "path": "esp32c5/examples/factory_photo_boundary.rs",
+      "bytes": 4902,
+      "sha256": "82627d445f60984dbdf5955b59dccfb8d471c5436d806f2e14e37263a6339cb4",
+      "changedFromParent": true
+    },
+    {
+      "path": "esp32c5/src/cache.rs",
+      "bytes": 21307,
+      "sha256": "4503accad07739e80530826120bd3388ee6ccd97a4d0979b8aa6b61ce18c29cd",
+      "changedFromParent": false
+    },
+    {
+      "path": "riscv-rv32/src/exec.rs",
+      "bytes": 21464,
+      "sha256": "b0f3125b416507713be3a457e75eb0a4a0dfccb23a860d0c1f7bb0ce36c2b5e0",
+      "changedFromParent": false
+    },
+    {
+      "path": "riscv-rv32/src/c5_memory_protection.rs",
+      "bytes": 19441,
+      "sha256": "dd55db1685e919bfdb5bffb45d4336b3c7dc57da8591deffd7c2f64d2f4b1adf",
+      "changedFromParent": false
+    }
+  ],
+  "diff": {
+    "bytes": 19351,
+    "sha256": "a9a349c206c56ada0638fc8daf721e2ebca482187b7c4a09e0c8d21e2bf52f42"
+  },
+  "sourceContracts": [
+    {
+      "path": "parallel/c5-factory-photo-memory-contract.md",
+      "bytes": 8115,
+      "sha256": "4c1c429c01ec687f177514b74511eff336743915d0a4f3458ffc43b32bbdd46c"
+    },
+    {
+      "path": "parallel/c5-factory-photo-memory-contract.json",
+      "bytes": 14520,
+      "sha256": "33b13d84dd2a0fa84581cafa5b04dbcbaea9747846bf1530a7410708b3360c62"
+    }
+  ],
+  "result": {
+    "status": "no-p1-p2-in-scoped-diff",
+    "p1": 0,
+    "p2": 0,
+    "findings": [],
+    "analysis": [
+      {
+        "property": "whole-span CPU protection",
+        "status": "retained",
+        "locations": [
+          "bus.rs:694",
+          "bus.rs:696",
+          "bus.rs:718",
+          "bus.rs:719"
+        ],
+        "reason": "A pure eligibility helper precedes the existing original-address/original-width APM/PMA/PMP check; no memory byte is copied before the existing check succeeds. CPU access monitor remains one access with original width, not a byte loop."
+      },
+      {
+        "property": "MMU page/target/offset/capacity",
+        "status": "qualified",
+        "locations": [
+          "mspi.rs:102",
+          "bus.rs:683"
+        ],
+        "reason": "Only width2/4, checked last address and current shift13..16; absolute page comparison is equivalent to aperture-relative comparison because aperture base is aligned. Every byte uses the same gated translator and must share target and consecutive checked offsets. Actual backing len is checked, and writes require RAM. Current scalar work is bounded by four translations."
+      },
+      {
+        "property": "cache/MSPI/Quad gates",
+        "status": "retained",
+        "locations": [
+          "mspi.rs:92",
+          "bus.rs:701",
+          "bus.rs:704",
+          "bus.rs:724",
+          "bus.rs:726"
+        ],
+        "reason": "Original translation includes source/reset/power/AXI/MMU validity/encryption qualification; original cache data gate and independent read/write QPI/pad/phase/rate checks still run before the existing single-slice read/write. A valid MMU entry alone cannot supply die readiness."
+      },
+      {
+        "property": "failed store/MMIO isolation",
+        "status": "retained",
+        "locations": [
+          "bus.rs:713",
+          "bus.rs:727"
+        ],
+        "reason": "Cross-page/capacity/Flash-write ineligibility rejects before effect. Later cache/die rejection never copies backing bytes. No recursive Bus byte call or MMIO split is introduced; any existing fallback retains a virtual4200..43ff address, which matches no MMIO owner, so it cannot alias a600x register."
+      },
+      {
+        "property": "off/aligned/fetch/atomic scope",
+        "status": "retained",
+        "reason": "Only the previously misaligned ordinary-data eligibility branch changes. Original off/profile and instruction guards precede it; byte and aligned paths skip it. Atomic/fetch/shared exec and policy code are unchanged. Existing LR cause4/TRM6 issue remains outside this change."
+      },
+      {
+        "property": "panic/overflow",
+        "status": "bounded",
+        "reason": "checked last proves address+i cannot overflow for every later scalar byte. shift is13..16; offsets and capacity use checked addition. Bus widths are fixed1/2/4. Diagnostic len is1..65536 with checked u32 conversion/end, get slices and bounded prefix; no guest-controlled unchecked index or divide is added."
+      },
+      {
+        "property": "cold diagnostic purity",
+        "status": "source-proven",
+        "reason": "New getters take &self, use immutable controller/array reads, no Bus read/write, no pump, no clock advancement or cache fill. Backing hashes/prefix are explicitly host inspection and do not claim CPU permission or cache/die access eligibility."
+      },
+      {
+        "property": "native runner integrity",
+        "status": "source-proven",
+        "reason": "Caller inputs are read into memory, ROM/Flash enter normal loaders and exact driver opt-in pinning, SD uses MemStore copy, GPIO3/28 pulses are consumed by original firmware. Observer logs existing guest SRAM/mapping/backing hashes without writes; no Cpu PC/register assignment or JPEG decode helper modifies execution. Output needs a fresh caller directory."
+      }
+    ]
+  },
+  "counterexamples": [
+    "PMP region permits first byte but not full original Store span: checked before any copy, no partial PSRAM store.",
+    "PMA valid read/execute but no Store: original width4 denied and guest exception7/address retained.",
+    "Every current page selector0..3 rejects a scalar straddling that page even if the next physical page is contiguous.",
+    "Invalid/encrypted MMU or valid physical page beyond8MiB backing rejects, no capacity wrap.",
+    "Flash mappings never authorize scalar Store, and misaligned MMIO is never newly eligible.",
+    "Cache shut or any original source/AXI/power/pad/phase/QPI gate loss denies the new path.",
+    "Profile exit returns to Misaligned behavior; atomic/fetch maintain their independent alignment guards."
+  ],
+  "ownerLogsRead": [
+    {
+      "path": ".git/c5-rom-factory-20261124/wifi-compat-kernel/photo-all-c5-tests.log",
+      "bytes": 63489,
+      "sha256": "bfdecf0b06fb7ca4e8b417dd9d945b112a6b4fb048ef4d93a439d7bcc4a4aabf",
+      "allBinariesSummary": {
+        "passed": 597,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 7,
+        "resultSections": 18
+      },
+      "unalignedNamedPasses": 14
+    },
+    {
+      "path": ".git/c5-rom-factory-20261124/wifi-compat-kernel/photo-clippy.log",
+      "bytes": 169,
+      "sha256": "669cdba91a508bb1a2a8a133c71e83bd92ba29c9a0b597a46d637e730c5e6fb8"
+    },
+    {
+      "path": ".git/c5-rom-factory-20261124/wifi-compat-kernel/photo-fixed-build.log",
+      "bytes": 171,
+      "sha256": "2cdf5115943111392d0fedc587af6327712f218ed8b51afe5666b1ce742e2789"
+    }
+  ],
+  "testScopeNotes": [
+    "Six added tests plus eight existing unaligned tests are present and named PASS in the existing owner log.",
+    "The JPEG-header test uses the original opcode with synthetic bytes at an odd cached address; it does not decode original F29 JPEG by itself.",
+    "Ordinary/priced actual guest instruction fixtures cover the original LHU and full Store permission paths; component mapping/gate cases are direct Bus tests.",
+    "Clippy completion is the existing owner receipt; reviewer ran no commands that build or execute firmware.",
+    "No native positive/frame acceptance is inherited into this source-only review."
+  ],
+  "execution": {
+    "reviewerBuilds": 0,
+    "reviewerTests": 0,
+    "reviewerGuestRuns": 0,
+    "reviewerBrowserRuns": 0,
+    "reviewerProductEdits": 0
+  },
+  "limits": [
+    "Conservative same-page and coherent-no-line functional memory only; no physical split timing, atomicity, asynchronous errors or cache-fill performance claim.",
+    "Unsupported gated states retain their existing backend error propagation; this change does not qualify physical bus-error cause/timing.",
+    "The new runner observation at first same-PC LHU is not guaranteed to be the first odd access; a subsequent runner-only filter change is outside this fixed commit.",
+    "Actual Photo continuation, precise pre-odd-load MMU/gates and framebuffer comparison remain separate runtime receipts."
+  ]
+}

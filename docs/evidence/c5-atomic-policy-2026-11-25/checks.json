@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "baseCommit": "d067cbc467f140c43235c8785cc71348adfe6a6b",
+  "sourceFiles": [
+    {
+      "path": "emu-core/src/bus.rs",
+      "sha256": "f62421d34db1d544a184c3a5b76848a4d20b7ec3d43ef089dcb1b5a570b69308"
+    },
+    {
+      "path": "esp-soc/src/machine/modeled.rs",
+      "sha256": "d056d36d98931c600348456ba723875f4c9a916e85fb88d05eded9d0f2a0f551"
+    },
+    {
+      "path": "esp32s31/src/soc.rs",
+      "sha256": "bb993a7442a5298f8d5823933367edb78dcd74afd8163501b65c3ded07eb7bbd"
+    },
+    {
+      "path": "riscv-rv32/src/exec.rs",
+      "sha256": "f617fbeb7424627fb8123b895b96d8e5a19275cafd936e7bef8b306d6a3f2fcd"
+    },
+    {
+      "path": "riscv-rv32/tests/atomic_probe.rs",
+      "sha256": "239da133599e130f0013b805cfe3074124710afb013eb2c26da9380e20a72bff"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "a57c6337b236870de70035c54450a66cc68c95b55660d5dc3b7260efe4a60beb"
+    },
+    {
+      "path": "esp32c5/src/boot_apm_bus_tests.rs",
+      "sha256": "43968249b2cb5fb70b5b6d8f156ef42388b90c6b07e6682c34b7bc24dd4f8734"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test --release -p riscv-rv32 --test atomic_probe",
+      "log": "c5-atomic-probe-tests.log",
+      "passed": 3,
+      "failed": 0,
+      "exitCode": 0,
+      "logSha256": "d817ba25d4bf0f4df2ff65be2f1e5d230d21b640e49d4989bca7fc6a6d321cd1",
+      "logBytes": 753
+    },
+    {
+      "command": "cargo test --release -p esp32c5 --lib boot_apm_bus_tests::atomic_policy",
+      "log": "c5-atomic-recording-wrapper-reviewed.log",
+      "passed": 1,
+      "failed": 0,
+      "exitCode": 0,
+      "scenarios": 4,
+      "logSha256": "36ee6790628deb1c49a08d6316733af27ab7443072d1554fc4b005529e52545a",
+      "logBytes": 547
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "log": "atomic-workspace-clippy.log",
+      "exitCode": 0,
+      "logSha256": "c8eb15613d4c3f5f037c194bf0225b4195efc10197bfed0b66a01afcec5c6e73",
+      "logBytes": 1681
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "log": "atomic-wasm-clippy.log",
+      "exitCode": 0,
+      "logSha256": "146d63c0116ec79edd1b0356f90b252057d53dddf3a4f3833436ab78527f5732",
+      "logBytes": 1502
+    }
+  ],
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "nativeControl": {
+    "command": "C5_FACTORY_STOP_PC=420713ac cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared FAT32 card>",
+    "log": "native-machine-lcd273-atomic-prefix.log",
+    "sha256": "15d854c1a427846fe47138b46d16bf0f050810e84d189957624b1ac2b4efd1e1",
+    "stop": "Breakpoint420713ac before first PMA instruction",
+    "runSteps": 20820883,
+    "cpuInstructionCount": 20820882,
+    "nominalCycles": 20820864,
+    "uartBytes": 2150,
+    "firstFault": null,
+    "sameAsPriorApmCheckpoint": true,
+    "logBytes": 6418
+  },
+  "contracts": [
+    "Bus.check_atomic32 is a permission-only probe before an actual LR read, successful-SC write, or RMW read/write. Default is no additional policy; all device effects still occur through normal accessors.",
+    "RecordingBus and the S31 adapter forward this hook without inventing a memory-access fact. A failed SC with no reservation has no access/probe.",
+    "C5 validated-ROM/APM profile permits supported internal RAM and guest-configured/ready mapped Quad PSRAM only, with constrained actual CPU context. IO/unknown/alignment failures precede any data consumption; other profiles retain previous behavior.",
+    "LR requires read, SC requires write, RMW requires both; probe rejection delivers the correct instruction-class access fault before register or memory commit.",
+    "The priced and ordinary C5 UART negative control keeps its RX byte and emits no TX byte. Positive RAM changes17to18, returns17 and records exactly2 data-access facts in priced execution; rejection records0."
+  ],
+  "negativeHistory": {
+    "logs": [
+      "c5-atomic-recording-wrapper-tests.log",
+      "c5-atomic-recording-wrapper-diagnostic.log"
+    ],
+    "reason": "A new fixture expected m.run(1) to stop before its following script, but ordinary execution may finish its scheduling quantum and reached an unrelated APM request.",
+    "fix": "Park at a real JAL immediately after the one AMO, preserving both execution modes and strict data/register/fault checks. No scheduler or atomic semantics changed for this correction.",
+    "sha256": {
+      "c5-atomic-recording-wrapper-tests.log": "4dbd897ffeda5549dd21ac4f341d3e9f1593ac320750164c484c7180ffb01502",
+      "c5-atomic-recording-wrapper-diagnostic.log": "9afcaba39ae803cd41a723f32daae0f0080344f21ea10490856f971013674c57"
+    }
+  },
+  "limits": [
+    "This is a bounded model atomic-domain/probe contract, not a silicon test of arbitrary IO AMOs.",
+    "PMA/PMP helper is still unregistered/unwired at this checkpoint; native control deliberately stops before it.",
+    "Full post-policy workspace/default-LTO tests, CPU controls, final production WASM/browser, original full PSRAM selftest/app_main/LCD/buttons/TF and fresh release acceptance remain pending. No C5 publication."
+  ],
+  "curation": "Compact facts/hashes only; raw logs stay in ignored cache without public personal paths or process inventories."
+}

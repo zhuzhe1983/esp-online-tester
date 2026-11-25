@@ -1,0 +1,86 @@
+{
+  "checkedAtUTC": "2026-11-24T14:03:03.345480+00:00",
+  "baseCommit": "51119b2c530c3fb7e473ed1dfde7413ee5572d24",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "target": "aarch64-apple-darwin",
+  "ownedSourceSha256": {
+    "esp32c5/src/boot_saradc.rs": "7bafaff36dd65d3db3c6cdd0b2f9bbc2f1cf1669eddaf38a100340c20553fc91",
+    "esp32c5/src/boot_analog.rs": "f8f92712c09fc70570ed28599870f0491ecedd085b5b52e434a9ee53dac8a8a1",
+    "esp32c5/src/boot_analog_sar.rs": "6a588d1c6a70c549f15718eb9c85041ff963f866fc58959eb4b48aca983f3a86",
+    "esp32c5/src/lib.rs": "df395b46f00e6d5fe49cdffdfcb50b970cc411ae7fdceb5f3384add448dc2434"
+  },
+  "harnesses": [
+    {
+      "source": "esp32c5/src/boot_saradc.rs",
+      "compileCommand": "rustc --edition=2021 --test esp32c5/src/boot_saradc.rs -o \"$TASK_TMP/c5-saradc-tests\"",
+      "testCommand": "\"$TASK_TMP/c5-saradc-tests\" --nocapture --test-threads=1",
+      "passed": 17,
+      "failed": 0,
+      "ignored": 0,
+      "exitCode": 0,
+      "output": "c5-saradc-tests.txt",
+      "rawOutputSha256": "f41f9769d0d0cdfd9b218fe91a5461813b6cb9d900e6c74224bad7921b2da75d",
+      "normalizedOutputSha256": "b19bdc8bc79a7375c6500f422131e926e8ff7e9d854fd74f491b9224f59796fc"
+    },
+    {
+      "source": "esp32c5/src/boot_analog.rs",
+      "compileCommand": "rustc --edition=2021 --test esp32c5/src/boot_analog.rs -o \"$TASK_TMP/c5-saradc-analog-tests\"",
+      "testCommand": "\"$TASK_TMP/c5-saradc-analog-tests\" --nocapture --test-threads=1",
+      "passed": 17,
+      "failed": 0,
+      "ignored": 0,
+      "exitCode": 0,
+      "output": "c5-saradc-analog-tests.txt",
+      "rawOutputSha256": "1ef7b79f0aa68b1b33bd32160c271496a4be39c8c62d85bb7da04e584c900d90",
+      "normalizedOutputSha256": "baebeac04fe18785e3a4e1dc02f223ef1e597da0ee2a27a457081632e0798e4f"
+    }
+  ],
+  "outputNormalization": "Leading/trailing blank lines stripped; test messages unchanged. Raw and normalized hashes both retained.",
+  "actualPreIntegrationBoundary": {
+    "instructions": 586172,
+    "nominalCycles": 586112,
+    "faultPC": "0x4084f778",
+    "faultAddress": "0x60096088",
+    "write": false,
+    "width": 4,
+    "uartBytes": 633,
+    "nonzeroPixels": 0,
+    "timgFlashboot": {
+      "origin": 0,
+      "count": 114777,
+      "active": false,
+      "updates": 1
+    }
+  },
+  "declaredVirtualInputs": {
+    "raw12Bit": [
+      2048,
+      2048
+    ],
+    "meaning": "Ideal constant raw codes only; no voltage, calibration, noise or entropy claim.",
+    "defaultProfile": null
+  },
+  "timerContract": {
+    "xtalHz": 48000000,
+    "nominalSchedulerHz": 240000000,
+    "controllerIntegerDivider": "NUM+1; only active NUM=0 supported",
+    "target": 200,
+    "controllerEdgesPerTrigger": 400,
+    "nominalCyclesPerTrigger": 2000,
+    "sarDivider": 15,
+    "sarDividerChangesTriggerPeriod": false,
+    "physicalConversionLatency": "Unmodeled; virtual input captured at the actual timer trigger boundary."
+  },
+  "limits": [
+    "Only owned standalone Rust harnesses; no Cargo/shared build, benchmark, browser or firmware execution.",
+    "Pre-integration fault is observed; subsequent typed guest write sequence and new module execution remain separate claims.",
+    "No ADC DONE/data/status/IRQ/DMA or RNG coupling.",
+    "Full Clippy and cross-module bus/scheduler/reset tests remain integration checks."
+  ],
+  "stdoutRetention": {
+    "manifest": "../c5-evidence-retention-final-2026-11-25/stdout-manifest.json",
+    "originalArtifactRevision": "df8a8bf5aae88afd0c3a71ddfc0ead07b2480e40",
+    "fullStdoutInCurrentTree": false,
+    "historicalOutputFields": "Preserved unchanged; see immutable sourceReceipt and distinct raw/normalized output records"
+  }
+}

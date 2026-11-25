@@ -12,7 +12,7 @@ const check=(value,code,message)=>{if(!value)fail(code,message);};
 export const isC5Board=board=>WAVESHARE_BOARD_CAPABILITIES[board]?.chip==='esp32c5'||['esp32c5','stamp-c5','stamp-c5-dip','lilygo-t7-c5','lilygo-t-dongle-c5'].includes(board);
 export const isS2Board=board=>WAVESHARE_BOARD_CAPABILITIES[board]?.chip==='esp32s2'||['waveshare-s2-pico','waveshare-s2-lcd096','esp32s2','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(board);
 export const isH2Board=board=>WAVESHARE_BOARD_CAPABILITIES[board]?.chip==='esp32h2'||['esp32h2','waveshare-h2-zero','waveshare-h2-dev-kit-n4'].includes(board);
-export const isSramOnlyBoard=board=>isC5Board(board)||isS2Board(board)||isH2Board(board);
+export const isSramOnlyBoard=board=>isS2Board(board)||isH2Board(board);
 export const isS31Board=board=>WAVESHARE_BOARD_CAPABILITIES[board]?.chip==='esp32s31'||['esp32s31','mosaico','esp-mosaico','metalio-ink4-plus'].includes(board);
 export const isC61Board=board=>['esp32c61','corematrix'].includes(board);
 export const isC3Board=board=>WAVESHARE_BOARD_CAPABILITIES[board]?.chip==='esp32c3'||['esp32c3','stampc3','stampc3u','seeed-xiao-epaper-75'].includes(board);
@@ -28,11 +28,17 @@ export const H2_SRAM_RANGES=Object.freeze([Object.freeze({start:0x40800000,end:0
 // S013's source-backed virtual profile is rev < 3; do not silently change ROM
 // families for an image targeting ECO5. ESP-IDF esp_image_header_t offsets 15/17.
 export function validateBoardRevision(bytes,board) {
-  if(board!=='stamp-p4'&&WAVESHARE_BOARD_CAPABILITIES[board]?.chip!=='esp32p4'&&LILYGO_BOARD_CHIPS[board]!=='esp32p4'&&!isP4Rev3Board(board)&&!isC61Board(board)&&!isS31Board(board))return;
+  if(board!=='stamp-p4'&&WAVESHARE_BOARD_CAPABILITIES[board]?.chip!=='esp32p4'&&LILYGO_BOARD_CHIPS[board]!=='esp32p4'&&!isP4Rev3Board(board)&&!isC5Board(board)&&!isC61Board(board)&&!isS31Board(board))return;
   check(bytes.length>=24,'INCOMPLETE_IMAGE','Image header is truncated.');
   const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
   if(isS31Board(board)) {
     check(view.getUint16(15,true)===0,'CHIP_REVISION_UNSUPPORTED','This ESP32-S31 runtime uses rev0; this image requires a later revision.');
+    return;
+  }
+  // C5 MP: IDF v5.5.3@2c211b236707889e8400c4dc5644dd5c4ee071e0
+  // esp_app_format.h / bootloader_common_loader.c use full min/max fields.
+  if(isC5Board(board)) {
+    check(view.getUint16(15,true)<=100&&(view.getUint16(17,true)===0||view.getUint16(17,true)>=100),'CHIP_REVISION_UNSUPPORTED','ESP32-C5 uses MP rev100; this image excludes that revision.');
     return;
   }
   if(isC61Board(board)) {
@@ -51,7 +57,7 @@ export function validateBoardRevision(bytes,board) {
   check(view.getUint16(15,true)<300,'CHIP_REVISION_UNSUPPORTED','Stamp-P4 currently uses the rev < 3 runtime profile; this image requires rev >= 3.');
 }
 export async function validateAppImage(bytes,board,flashBytes) {
-  if(isSramOnlyBoard(board))return validateSramImage(bytes,flashBytes,chipForBoard(board));
+  if(isC5Board(board)||isSramOnlyBoard(board))return validateSramImage(bytes,flashBytes,chipForBoard(board));
   check(bytes.length>=288&&bytes[0]===0xe9&&bytes[1]>0&&bytes[1]<=16,'APP_IMAGE_INVALID','Not a complete ESP application image.');
   const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
   check(view.getUint32(32,true)===0xabcd5432&&view.getUint32(28,true)>=256,'APP_IMAGE_INVALID','Application descriptor is missing; this is not an app-only image.');

@@ -25,6 +25,7 @@ impl<'a, B> RecordingBus<'a, B> {
 }
 
 impl<B: Bus> Bus for RecordingBus<'_, B> {
+    fn check_atomic32(&mut self, addr: u32, read: bool, write: bool) -> Result<(), Fault> { self.bus.check_atomic32(addr, read, write) }
     fn reserve(&mut self, addr: u32) { self.bus.reserve(addr) }
     fn reservation_held(&mut self, addr: u32) -> bool { self.bus.reservation_held(addr) }
     fn read8(&mut self, address: u32) -> Result<u8, Fault> {
@@ -307,7 +308,7 @@ impl<S: Soc> Machine<S> {
             let cx = Ctx { symbols: &self.symbols, cycles: self.bus.cycles(), cpu_hz: S::CPU_HZ };
             for observer in &mut self.observers {
                 if observer.wants().contains(Wants::INSN) {
-                    if let Some(stop) = observer.on_insn(&cx, core, &self.cores[core], &mut self.bus, pc) { return Err(stop); }
+                    if let Some(stop) = observer.on_insn(&cx, core, &self.cores[core], &mut self.bus, pc) { S::observer_stopped(&mut self.bus); return Err(stop); }
                 }
             }
         }
@@ -330,7 +331,7 @@ impl<S: Soc> Machine<S> {
             let cx = Ctx { symbols: &self.symbols, cycles: self.bus.cycles(), cpu_hz: S::CPU_HZ };
             for observer in &mut self.observers {
                 if observer.wants().contains(Wants::INSN) {
-                    if let Some(stop) = observer.after_insn(&cx, core, &self.cores[core], &mut self.bus) { return Err(stop); }
+                    if let Some(stop) = observer.after_insn(&cx, core, &self.cores[core], &mut self.bus) { S::observer_stopped(&mut self.bus); return Err(stop); }
                 }
             }
         }

@@ -56,10 +56,11 @@ function fixture(){
 }
 test('both C5 local upload paths use loadkind3 and app-direct reset with no ROM, storage, audio or network requests',async()=>{
  const f=fixture();try{for(const id of ['m5stack-s016','m5stack-s016-dip']){
-  await f.runtime.configure(createDefaultScene(catalog,id));const caps=await f.runtime.capabilities();assert.equal(caps.execution.mode,'wasm-interpreter');assert.deepEqual(caps.execution.bootModes,['app-direct']);assert.deepEqual(caps.input.serialPorts,['uart0']);
-  for(const x of [caps.network.available,caps.audio.input.available,caps.audio.output.available,caps.sdCard.available,caps.deviceStorage.available,caps.firmware.ota,caps.firmware.mergedImage,caps.firmware.localBuild])assert.equal(x,false);
+  await f.runtime.configure(createDefaultScene(catalog,id));const caps=await f.runtime.capabilities();assert.equal(caps.execution.mode,'wasm-interpreter');assert.deepEqual(caps.execution.bootModes,['rom','app-direct']);assert.deepEqual(caps.input.serialPorts,['uart0']);
+  for(const x of [caps.network.available,caps.audio.input.available,caps.audio.output.available,caps.sdCard.available,caps.deviceStorage.available,caps.firmware.ota])assert.equal(x,false);
+  assert.equal(caps.firmware.mergedImage,true);assert.equal(caps.firmware.localBuild,true);assert.equal(caps.firmware.targetRevision,100);
   const loaded=await f.runtime.loadFirmware({file:new File([image()],'bare.bin'),...(id.endsWith('dip')?{bootMode:'app-direct'}:{})});assert.equal(loaded.firmware.source,'local');assert.equal(loaded.firmware.resetMode,'reload-same-sram-image');assert.equal(loaded.storage.status,'unsupported');assert.equal(loaded.audio.available,false);assert.equal(loaded.network.connection,'unsupported');
-  await f.runtime.start();await f.runtime.pause();await f.runtime.start();await f.runtime.reset();await f.runtime.pause();
+  await f.runtime.start();for(const port of ['usb','uart1'])await assert.rejects(()=>f.runtime.input({type:'serial',port,data:'x'}),{code:'UNSUPPORTED_PORT'});await f.runtime.pause();await f.runtime.start();await f.runtime.reset();await f.runtime.pause();
  }
  assert(f.messages.filter(x=>x.op==='load').every(x=>x.kind===3));assert(f.messages.filter(x=>x.op==='start').every(x=>x.appDirect));assert(f.messages.filter(x=>x.op==='create').every(x=>x.jit===false&&x.psram_mb===0&&x.flash_mb===4));assert(f.requests.every(x=>x.endsWith('esp32sim.wasm')));
  }finally{await f.runtime.dispose();}
@@ -69,11 +70,12 @@ test('C5 remote bare metal requires explicit mode and manifests cannot smuggle R
   await f.runtime.configure(createDefaultScene(catalog,'m5stack-s016'));const source=f.remote(image());
   await assert.rejects(()=>f.runtime.loadFirmware(source),{code:'C5_APP_DIRECT_REQUIRED'});assert.equal(f.workers.length,0);
   await f.runtime.loadFirmware({...source,bootMode:'app-direct'});assert.equal((await f.runtime.observe()).scene.firmware.bootMode,'app-direct');
-  await assert.rejects(()=>f.runtime.loadFirmware({...source,bootMode:'rom'}),{code:'C5_SRAM_REQUIRED'});
-  for(const format of ['merged','segments','build'])await assert.rejects(()=>f.runtime.loadFirmware({format,file:new File([image()],'bare.bin')}),{code:'C5_SRAM_REQUIRED'});
+  await assert.rejects(()=>f.runtime.loadFirmware({...source,bootMode:'rom'}),{code:'INCOMPLETE_IMAGE'});
+  await assert.rejects(()=>f.runtime.loadFirmware({format:'merged',file:new File([image()],'bare.bin')}),{code:'INCOMPLETE_IMAGE'});
   await assert.rejects(()=>f.runtime.loadFirmware({...source,bootMode:'app-direct',sha256:'0'.repeat(64)}),{code:'HASH_MISMATCH'});
   const plan={board:'stamp-c5',app_direct:true,files:{app:source}};await f.runtime.loadFirmware(f.manifest(plan));
-  for(const patch of [{app_direct:false},{files:{...plan.files,rom:'rom.elf'}},{files:{app:[source,source]}},{flash_at:{'0x0':source}}])await assert.rejects(()=>f.runtime.loadFirmware(f.manifest({...plan,...patch})),{code:'C5_SRAM_REQUIRED'});
+  await assert.rejects(()=>f.runtime.loadFirmware(f.manifest({...plan,app_direct:false})),{code:'INCOMPLETE_IMAGE'});
+  for(const patch of [{files:{...plan.files,rom:'rom.elf'}},{files:{app:[source,source]}},{flash_at:{'0x0':source}}])await assert.rejects(()=>f.runtime.loadFirmware(f.manifest({...plan,...patch})),{code:'C5_SRAM_REQUIRED'});
   for(const patch of [{wifi:'ssid,pw'},{stubs:['fake=return0']}])await assert.rejects(()=>f.runtime.loadFirmware(f.manifest({...plan,...patch})),{code:'C5_FEATURE_UNSUPPORTED'});
   const stock=f.remote(image({segments:[{address:0x42000000,length:4}]}));await assert.rejects(()=>f.runtime.loadFirmware({...stock,bootMode:'app-direct'}),{code:'C5_SRAM_REQUIRED'});
   assert(!f.requests.some(x=>/rom\.elf|bootloader|ptable/.test(x)));

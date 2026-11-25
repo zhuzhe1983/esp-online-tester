@@ -1,0 +1,550 @@
+{
+  "schema": "c5-factory-sensor-abi-v1",
+  "kind": "read-only fixed-image SHTC3 ABI and observation-site contract",
+  "scope": {
+    "newBuilds": false,
+    "guestRuns": false,
+    "browserRuns": false,
+    "productEdits": false,
+    "hardwareOrAppAccess": false
+  },
+  "factory": {
+    "bytes": 3346992,
+    "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942",
+    "iromPhysicalBase": "0x200000",
+    "iromVirtualBase": "0x42000000",
+    "manufacturerElfMapAvailable": false,
+    "descriptorElfSha256": "4cc67d1a20db1693509b2921da7d6bcb4ac7179213a5deff10520d5d60881244",
+    "disassemblyContainersAreOriginalSymbols": false
+  },
+  "vendor": {
+    "repository": "waveshareteam/ESP32-C5-LCD-2.73",
+    "revision": "418de818f4f40c5a04c4292dbe293bfaa1351068",
+    "sources": [
+      {
+        "path": "example/ESP-IDF-V553/01_factory/components/app_sensor/app_sensor.c",
+        "gitBlob": "1b7d08c4679061a9699a891795d673ef292a6326",
+        "bytes": 1302,
+        "sha256": "d7f8098f72e7919841a5f9d23a5158553dac4fdd3aa5e895f487aee11f6ba3c4"
+      },
+      {
+        "path": "example/ESP-IDF-V553/01_factory/components/app_sensor/ui/compass_ui.c",
+        "gitBlob": "73a25aa8b9cb1d550ae9f659dfb229ee22bb84da",
+        "bytes": 10075,
+        "sha256": "78368de44e75570faaae8840a292f8d78fd250ceb63a1aa43603671d2a3fe592"
+      },
+      {
+        "path": "example/ESP-IDF-V553/01_factory/components/shtc3/include/shtc3.h",
+        "gitBlob": "613b4151c04864e5cae73c7976b0cd7b78372110",
+        "bytes": 4049,
+        "sha256": "bff9feff889e7284b6d05c6018228560a465d2c12ed585c932ae6be5243ff2b4"
+      },
+      {
+        "path": "example/ESP-IDF-V553/01_factory/components/shtc3/shtc3.c",
+        "gitBlob": "ee2b720705ad5cf364e0f55acb65d1e95835125c",
+        "bytes": 3168,
+        "sha256": "05f2d81041fc1add9533ef3f0f15bb979f196defa79760b017a473a6268b6b61"
+      }
+    ]
+  },
+  "sdk": {
+    "version": "5.5.3",
+    "revision": "2c211b236707889e8400c4dc5644dd5c4ee071e0",
+    "compiler": "riscv32-esp-elfGCC14.2_20251107",
+    "receivePrototype": "esp_err_t i2c_master_receive(i2c_master_dev_handle_t,uint8_t*,size_t,int xfer_timeout_ms)",
+    "prototypeSource": "components/esp_driver_i2c/include/driver/i2c_master.h:227",
+    "receiveDefinitionSource": "components/esp_driver_i2c/i2c_master.c:1334",
+    "transmitDefinitionSource": "components/esp_driver_i2c/i2c_master.c:1299",
+    "delayRomLinkerSources": [
+      "components/esp_rom/esp32c5/ld/esp32c5.rom.ld:30:ets_delay_us=0x4000003c",
+      "components/esp_rom/esp32c5/ld/esp32c5.rom.api.ld:53:esp_rom_delay_us=ets_delay_us"
+    ]
+  },
+  "entrySignatures": [
+    {
+      "name": "shtc3_get_th source association",
+      "pc": "0x420189e4",
+      "fileOffset": "0x2189e4",
+      "bytes": 32,
+      "hex": "93970501c183a205a1833971cd8f06de2310f10022dc26da2a8452d456d25ad0",
+      "sha256": "730e141184eccfba183fbc65e7bc02ec348c2ae679f44eae32f4feaae471ae5d"
+    },
+    {
+      "name": "shtc3_wake source association",
+      "pc": "0x420188a8",
+      "fileOffset": "0x2188a8",
+      "bytes": 32,
+      "hex": "0111856793875773fd5609466c0006ce2316f10097601000e78080ce15cd9780",
+      "sha256": "e06259e13df017188b44b2561929970ccb236131d284c982a467d3e77cc5edd1"
+    },
+    {
+      "name": "i2c_master_transmit source association",
+      "pc": "0x4211e5a4",
+      "fileOffset": "0x31e5a4",
+      "bytes": 32,
+      "hex": "011106ce21e197206ffee780002fb7572f42b735144237461442aa8613085051",
+      "sha256": "e2efc01d99e075b84ef738099712d5b8a46c1d0f4e34e503dc12ffa3c54cce8f"
+    },
+    {
+      "name": "i2c_master_receive source association",
+      "pc": "0x4211e748",
+      "fileOffset": "0x31e748",
+      "bytes": 32,
+      "hex": "1d7186cea2cca6cacac839e197206ffee7806014b7572f42b735144237461442",
+      "sha256": "3573edc8a511985775693cf1631c7355578d3e7e8816aa76e847701f3816dd57"
+    },
+    {
+      "name": "vTaskDelay source association",
+      "pc": "0x4080d322",
+      "fileOffset": "0x1fe386",
+      "bytes": 32,
+      "hex": "11e56fe0dfe1f2400561e5bfb7f7834083a7c7fa011106ce8dc3b726134237d6",
+      "sha256": "6738cc1a32e44891e9e9c5c0f30a043811e3fa9b0e093a9c3b7605d392dc4c3e"
+    }
+  ],
+  "getThAbi": {
+    "entry": "0x420189e4",
+    "signature": "esp_err_t shtc3_get_th(i2c_master_dev_handle_t a0,shtc3_register_rw_t a1,float*a2,float*a3)",
+    "prologueSpDecreaseAt": "0x420189ee",
+    "frameBytes": 64,
+    "temperaturePointerSavedIn": "s6",
+    "humidityPointerSavedIn": "s1",
+    "rxBuffer": {
+      "name": "b_read[6]",
+      "frameSpOffset": 8,
+      "entrySpOffset": -56,
+      "bytes": 6,
+      "zeroInit": [
+        {
+          "pc": "0x42018a12",
+          "operation": "sw zero,8(sp)"
+        },
+        {
+          "pc": "0x42018a14",
+          "operation": "sh zero,12(sp)"
+        }
+      ]
+    },
+    "measureTxBuffer": {
+      "frameSpOffset": 0,
+      "bytes": 2,
+      "valueHex": "7866"
+    },
+    "sleepTxBuffer": {
+      "frameSpOffset": 4,
+      "bytes": 2,
+      "valueHex": "b098"
+    },
+    "outputStores": {
+      "temperature": "0x42018ace",
+      "humidity": "0x42018b3c"
+    },
+    "returnForcedOkAt": "0x42018ba2",
+    "spRestoreAt": "0x42018ba4",
+    "returnInstruction": "0x42018ba6",
+    "callerReturn": "0x4200dc46"
+  },
+  "callSites": [
+    {
+      "purpose": "Sensor caller",
+      "callPc": "0x4200dc42",
+      "callJalrPc": null,
+      "target": "0x420189e4",
+      "returnPc": "0x4200dc46",
+      "abi": "a0=*(4083f17c), a1=7866, a2=callerSP+8, a3=callerSP+12",
+      "capture": "Read saved float outputs; a0 is forced ESP_OK, not RX success",
+      "originalCallBytes": {
+        "pc": "0x4200dc42",
+        "fileOffset": "0x20dc42",
+        "bytes": 4,
+        "hex": "efa0305a",
+        "sha256": "696f6d340cb6afc1568407168b0148895a90c8ce2f36fc49b10637aee6bbacce"
+      }
+    },
+    {
+      "purpose": "wake helper",
+      "callPc": "0x42018a18",
+      "callJalrPc": null,
+      "target": "0x420188a8",
+      "returnPc": "0x42018a1c",
+      "abi": "a0=device handle",
+      "capture": "Do not interpret outer helper a0 as actual wake TX result",
+      "originalCallBytes": {
+        "pc": "0x42018a18",
+        "fileOffset": "0x218a18",
+        "bytes": 4,
+        "hex": "eff01fe9",
+        "sha256": "2b8297be8ef2aef3618efbfbc8da344c845d94a1a9d7bd0c9935139029477266"
+      }
+    },
+    {
+      "purpose": "wake TX",
+      "callPc": "0x420188bc",
+      "callJalrPc": "0x420188c0",
+      "target": "0x4211e5a4",
+      "returnPc": "0x420188c4",
+      "abi": "a0=handle, a1=wakeFrameSP+12 bytes35 17, a2=2, a3=-1",
+      "capture": "Actual I2C esp_err_t in a0 before BEQZ",
+      "originalCallBytes": {
+        "pc": "0x420188bc",
+        "fileOffset": "0x2188bc",
+        "bytes": 8,
+        "hex": "97601000e78080ce",
+        "sha256": "374c465db05b1279666f8929f48c1f514cc0d575c08184cdd44956e2e314325c"
+      }
+    },
+    {
+      "purpose": "wake240us",
+      "callPc": "0x42018904",
+      "callJalrPc": "0x42018908",
+      "target": "0x4000003c",
+      "returnPc": "0x4201890c",
+      "abi": "a0=240 microseconds, reached only if wake TX returned0",
+      "capture": "Void ROM delay, not esp_err_t",
+      "originalCallBytes": {
+        "pc": "0x42018904",
+        "fileOffset": "0x218904",
+        "bytes": 8,
+        "hex": "9770fefde7808073",
+        "sha256": "e28a181b36194c460bae769a0e02a30479333d60132bf9487bf0d1b87fc2d793"
+      }
+    },
+    {
+      "purpose": "measure TX",
+      "callPc": "0x42018a26",
+      "callJalrPc": "0x42018a2a",
+      "target": "0x4211e5a4",
+      "returnPc": "0x42018a2e",
+      "abi": "a0=handle, a1=frameSP bytes78 66, a2=2, a3=200ms",
+      "capture": "Read actual a0 before li a0,2 at returnPC",
+      "originalCallBytes": {
+        "pc": "0x42018a26",
+        "fileOffset": "0x218a26",
+        "bytes": 8,
+        "hex": "97601000e780e0b7",
+        "sha256": "f9f448d735915e2a271d98ec5d3e799c354c398984c1fd3f59249440e522d362"
+      }
+    },
+    {
+      "purpose": "measurement delay",
+      "callPc": "0x42018a30",
+      "callJalrPc": "0x42018a34",
+      "target": "0x4080d322",
+      "returnPc": "0x42018a38",
+      "abi": "a0=2 ticks",
+      "capture": "vTaskDelay is void, not an error-code return",
+      "originalCallBytes": {
+        "pc": "0x42018a30",
+        "fileOffset": "0x218a30",
+        "bytes": 8,
+        "hex": "97507ffee780208f",
+        "sha256": "e16d3daa6f6284520bde47483c84ba07b661e3782b1d60d452a188d82b03aeb3"
+      }
+    },
+    {
+      "purpose": "measurement RX",
+      "callPc": "0x42018a42",
+      "callJalrPc": "0x42018a46",
+      "target": "0x4211e748",
+      "returnPc": "0x42018a4a",
+      "abi": "a0=handle, a1=frameSP+8, a2=6, a3=200ms",
+      "capture": "Read actual a0 and6-byte host SRAM before lbu a0,8(sp) at returnPC",
+      "originalCallBytes": {
+        "pc": "0x42018a42",
+        "fileOffset": "0x218a42",
+        "bytes": 8,
+        "hex": "97601000e78060d0",
+        "sha256": "b7133f694d0282d0bf4899e33e48e04920cf9047b250431edc3edbd32bf0bff4"
+      }
+    },
+    {
+      "purpose": "sleep TX",
+      "callPc": "0x42018b4e",
+      "callJalrPc": "0x42018b52",
+      "target": "0x4211e5a4",
+      "returnPc": "0x42018b56",
+      "abi": "a0=handle, a1=frameSP+4 bytesb0 98, a2=2, a3=-1",
+      "capture": "Read actual a0 before branch",
+      "originalCallBytes": {
+        "pc": "0x42018b4e",
+        "fileOffset": "0x218b4e",
+        "bytes": 8,
+        "hex": "97601000e78060a5",
+        "sha256": "20f3a371c4ebc4712be05a7488afa7b56f33fe8849bd08a437b30d82ac8de446"
+      }
+    }
+  ],
+  "sourceSemantics": {
+    "command": "0x7866=SHTC3_REG_T_CSD_NM: temperature-first, normal power, clock stretching disabled",
+    "warmupUs": 240,
+    "measurementDelayTicks": 2,
+    "measurementReceiveBytes": 6,
+    "measurementTimeoutMs": 200,
+    "ignoredResults": [
+      "wake helper",
+      "measurement transmit",
+      "measurement receive",
+      "sleep result does not affect final ESP_OK"
+    ],
+    "crcChecked": false,
+    "usedResultByteOffsets": {
+      "temperature": [
+        0,
+        1
+      ],
+      "humidity": [
+        3,
+        4
+      ]
+    },
+    "temperatureFormula": "((b0*256+b1)*175/65535)-45",
+    "humidityFormula": "((b3*256+b4)*100/65535)",
+    "zeroBufferResult": {
+      "temperature": -45,
+      "humidity": 0,
+      "isSuccessProof": false
+    },
+    "partialFailureCaution": "UI numbers alone cannot distinguish zero or partial buffers, failed receive, early read, or complete transfer; record all6 bytes and actual receive return."
+  },
+  "vTaskDelayIdentification": {
+    "originalEntry": "0x4080d322",
+    "assertSourceFileString": {
+      "pc": "0x42132206",
+      "text": "tasks.c"
+    },
+    "assertFunctionString": {
+      "pc": "0x4214d444",
+      "text": "vTaskDelay"
+    },
+    "assertLine": 1586,
+    "assertCondition": "uxSchedulerSuspended[0] ==0 form",
+    "referenceObjectRelocations": [
+      "vPortYield",
+      "uxSchedulerSuspended",
+      "vTaskSuspendAll",
+      "prvAddCurrentTaskToDelayedList",
+      "xTaskResumeAll"
+    ],
+    "actualElapsedDelayNotProvenByStaticCall": true
+  },
+  "referenceObjectComparison": {
+    "referenceKind": "pre-existing original-source02 sample build; read only",
+    "notManufacturerElfOrVersionCertification": true,
+    "objects": [
+      {
+        "path": "02-reference/shtc3.c.obj",
+        "bytes": 34852,
+        "sha256": "dc0e42fe1189dd7d43ba361182c6cac084ec89d756962a256e88f7ef453bf48b"
+      },
+      {
+        "path": "02-reference/FreeRTOS-Kernel/tasks.c.obj",
+        "bytes": 376340,
+        "sha256": "21856c2a3215b8c397e750db8ed4ebad912a2f64befb82990b193ef2ca301d91"
+      },
+      {
+        "path": "02-reference/i2c_master.c.obj",
+        "bytes": 449308,
+        "sha256": "f1a30d6bbac0531ebcfb16382323fd6d538ece48cdd93fa0a3fb5f5ba9ee0d8c"
+      }
+    ],
+    "getThPrefix": {
+      "originalStart": "0x420189e4",
+      "objectSection": ".text.shtc3_get_th",
+      "objectOffset": 0,
+      "exactBytes": 52,
+      "sha256": "3f77b66e719cfd2e601ee87e75a415a2277849546af3a21cb2decdd745c8880c",
+      "endBeforeFirstRelocatedCall": true
+    },
+    "wakeSymbol": "shtc3_wake.isra.0",
+    "wakePrefixInstructionBoundaryBytes": 20,
+    "wakeReturn": "Static helper callers ignore its return. Original log/delay path does not preserve its actual TX a0; sample TX return instead."
+  },
+  "observationContract": {
+    "entrySnapshot": [
+      "get_th entry: callerSP/a0/a1/a2/a3; save output pointers",
+      "RX entry: frameSP,a0,a1,a2,a3 and6-byte SRAM",
+      "I2C call returns: a0 before instruction at returnPc",
+      "Caller return: read saved float32 output pointers"
+    ],
+    "memoryReadMethod": "Bounds-checked whole internal SRAM host-slice only; no bus reads, guest writes, PC changes or timing advancement.",
+    "timingNeeded": [
+      "wakeTX completion cycle",
+      "measureTX completion cycle",
+      "delay call/return cycle and ticks",
+      "receive address ACK/NACK/data/callback cycles"
+    ],
+    "classificationRule": "Do not force ACK, add stretching, extend conversion deadlines or alter guest data based only on UI values."
+  },
+  "limits": [
+    "Static original-byte/source ABI evidence, not a new Sensor runtime pass.",
+    "No matching manufacturer ELF/map; names are source/object associations with explicit byte/argument/call checks.",
+    "Reference02 objects do not certify original manufacturer compilation version.",
+    "QMI8658 format/endian behavior is a separate contract; no conclusion here.",
+    "No original UART, private absolute paths, task/process/session inventory or device identity copied."
+  ],
+  "independentNativeDiagnostic": {
+    "evidenceClass": "Independent kernel diagnostic execution, read from retained raw log by this ABI audit; not a new run by this lane or an uninstrumented production acceptance",
+    "baseSource": "bb8cfef839dd0fd01c9b72f4f6c5ba0eab99d406",
+    "temporaryDiagnostic": {
+      "patch": {
+        "bytes": 6318,
+        "sha256": "e048d05aca54e1784a5ed8fd7346a8b02ec1e4b77d27234b91ba3448c4f53dc1"
+      },
+      "instrumentedI2c": {
+        "bytes": 8037,
+        "sha256": "3271e5eef07c2ac2df939c550df58c6e4575b494e944d2054f1db70154a4bbbf"
+      },
+      "harness": {
+        "bytes": 4573,
+        "sha256": "4ea4cecf2dc180ba0690d0eafc1eff1405c9d915430e7e69b59a90767ff7f49a"
+      }
+    },
+    "rawLog": {
+      "path": ".git/c5-rom-factory-20261124/sensor-native-boundary-20261125/run.log",
+      "bytes": 34729,
+      "sha256": "c287dd715c3b909dc0d5ba3439a9b6dbc9d08e21fae4d3e64f820a5f9069d758"
+    },
+    "restorationReceipt": {
+      "bytes": 288,
+      "sha256": "46b1cba3bc9c887a9cbffa62c63d6bb512c5423b7a90e3ad546cfa4056488615",
+      "noProductionChange": true,
+      "trackedAndUntrackedClean": true,
+      "restoredI2cSha256": "78a20aecd82dc83b0c503db26a3889e6fd133a078a470256aeb2b6088f3e06e8"
+    },
+    "addresses": {
+      "getThEntrySp": "0x40855a30",
+      "getThFrameSp": "0x408559f0",
+      "rxBuffer": "0x408559f8",
+      "temperatureOutput": "0x40855a38",
+      "humidityOutput": "0x40855a3c"
+    },
+    "actualCommand": "0x7866",
+    "trials": [
+      {
+        "getThEntryCycle": 691456660,
+        "wakeTxReturn": {
+          "pc": "0x420188c4",
+          "cycle": 691529331,
+          "a0": "0x0"
+        },
+        "measureCommandFinalByte": {
+          "cycle": 691656243,
+          "byte": "0x66",
+          "ack": true
+        },
+        "measureTxReturn": {
+          "pc": "0x42018a2e",
+          "cycle": 691659603,
+          "a0": "0x0"
+        },
+        "delayReturn": {
+          "pc": "0x42018a38",
+          "cycle": 694325411,
+          "a0RawNotStatus": "0x1f"
+        },
+        "rxEntry": {
+          "pc": "0x4211e748",
+          "cycle": 694325411,
+          "bufferBytesHex": "000000000000",
+          "length": 6,
+          "timeoutMs": 200
+        },
+        "readAddress": {
+          "cycle": 694351779,
+          "address": "0x70",
+          "read": true,
+          "ack": false
+        },
+        "rxReturn": {
+          "pc": "0x42018a4a",
+          "cycle": 694352739,
+          "a0": "0x103",
+          "bufferBytesHex": "000000000000"
+        },
+        "sleepTxReturn": {
+          "pc": "0x42018b56",
+          "cycle": 694380195,
+          "a0": "0x103"
+        },
+        "callerReturn": {
+          "pc": "0x4200dc46",
+          "cycle": 694388451,
+          "a0": "0x0",
+          "temperature": -45.0,
+          "humidity": 0.0
+        },
+        "commandToReadCycles": 2695536
+      },
+      {
+        "getThEntryCycle": 763453012,
+        "wakeTxReturn": {
+          "pc": "0x420188c4",
+          "cycle": 763525683,
+          "a0": "0x0"
+        },
+        "measureCommandFinalByte": {
+          "cycle": 763652595,
+          "byte": "0x66",
+          "ack": true
+        },
+        "measureTxReturn": {
+          "pc": "0x42018a2e",
+          "cycle": 763655955,
+          "a0": "0x0"
+        },
+        "delayReturn": {
+          "pc": "0x42018a38",
+          "cycle": 766325411,
+          "a0RawNotStatus": "0x1f"
+        },
+        "rxEntry": {
+          "pc": "0x4211e748",
+          "cycle": 766325411,
+          "bufferBytesHex": "000000000000",
+          "length": 6,
+          "timeoutMs": 200
+        },
+        "readAddress": {
+          "cycle": 766351779,
+          "address": "0x70",
+          "read": true,
+          "ack": false
+        },
+        "rxReturn": {
+          "pc": "0x42018a4a",
+          "cycle": 766352739,
+          "a0": "0x103",
+          "bufferBytesHex": "000000000000"
+        },
+        "sleepTxReturn": {
+          "pc": "0x42018b56",
+          "cycle": 766380195,
+          "a0": "0x103"
+        },
+        "callerReturn": {
+          "pc": "0x4200dc46",
+          "cycle": 766388323,
+          "a0": "0x0",
+          "temperature": -45.0,
+          "humidity": 0.0
+        },
+        "commandToReadCycles": 2699184
+      }
+    ],
+    "driverErrorClassification": {
+      "rawRxReturn": "0x103",
+      "sdkName": "ESP_ERR_INVALID_STATE",
+      "source": "IDF5.5.3 components/esp_common/include/esp_err.h:27",
+      "notTimeout": "0x107 is ESP_ERR_TIMEOUT; it was not returned here",
+      "delayReturnRaw": "0x1f at42018a38 is void-call residual, not an error status"
+    },
+    "sourceCauseOwnership": "Conversion timing/source explanation is in the independent SHTC3/FreeRTOS contract; this record fixes only exact original PCs, buffer bytes, API returns and observed cycles.",
+    "stopCounters": {
+      "firstFault": null,
+      "retiredInstructions": 346962007,
+      "cpuSlots": 819200000,
+      "cycles": 819200000
+    },
+    "notASensorSuccessReceipt": true
+  }
+}

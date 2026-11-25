@@ -1,0 +1,186 @@
+{
+  "schema": 1,
+  "baseCommit": "53f301e5a557f7d212eae061ebe77c51ba9192aa",
+  "sourceFiles": [
+    {
+      "path": "esp32c5/src/boot_analog.rs",
+      "sha256": "09a17d84a33ca73594e4c2a1c0d32749b8d27c427b474013d731e60a9f2f877e"
+    },
+    {
+      "path": "esp32c5/src/boot_analog_ocode.rs",
+      "sha256": "3029f28465da3859afd285b6efb8cfb22ff910b0420d5c52681c8ea28d3ef7a3"
+    },
+    {
+      "path": "esp32c5/src/boot_analog_pll.rs",
+      "sha256": "1f96c03773617b0d7d2b78350ed0578214c9436af47e7aad5e8b66f5a1d98d68"
+    },
+    {
+      "path": "esp32c5/src/boot_ocode_bus_tests.rs",
+      "sha256": "1ddd2c15c83f9cf2ddc3493a59f5c286d2543b934b96fe7b1b39def00231484b"
+    },
+    {
+      "path": "esp32c5/src/boot_clock.rs",
+      "sha256": "780600db40d7b1d145f2dd961c67f5069d20e12516982500e66432c7e961c34d"
+    },
+    {
+      "path": "esp32c5/src/clock_tree.rs",
+      "sha256": "03862df1292b8903892327f69b86dfb565d5bdcf4c5a240a72f9ab7fecd59b01"
+    },
+    {
+      "path": "esp32c5/src/bus.rs",
+      "sha256": "c13b71dae7b640cc7b3f0c1c4e1077547c9d443d5aab7db82b82afa24269b09c"
+    },
+    {
+      "path": "esp32c5/src/lib.rs",
+      "sha256": "d751420acc5fa5a025ed3309b399d831e8c166ac6fa09ece639e3f8f181edce6"
+    },
+    {
+      "path": "esp32c5/src/boot_saradc_tests.rs",
+      "sha256": "2140dd13afffcd88334f54cb03c8fe7969a0e2d81178e4c6838d1c89a38eb408"
+    },
+    {
+      "path": "esp32c5/examples/factory_machine.rs",
+      "sha256": "a82ca718e5b2754c65707283ee89cccf9774adca8dab7715a850ec37ad6ee323"
+    }
+  ],
+  "inputsAfterNativeRun": [
+    {
+      "name": "lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    {
+      "name": "lcd273-sd64m.img",
+      "bytes": 67108864,
+      "sha256": "a0e026d9aeafab624884455d25147647980bd6a83011618da04140659c28bfc6"
+    },
+    {
+      "name": "esp32c5_rev100_rom.elf",
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    }
+  ],
+  "checks": [
+    {
+      "command": "C5_ROM_ELF=<pinned ROM> C5_LCD273_FACTORY=<pinned factory> ESP32SIM_C5_LCD273_FACTORY=<pinned factory> cargo test --release -p esp32c5 -- --include-ignored",
+      "exitCode": 0,
+      "log": "ocode-reviewed-c5-suite.log",
+      "logSha256": "760ff4ebced6d3c43983609e242e0a05a3e55618c63d707f9cf5f4424dad86b3",
+      "passed": 316,
+      "failed": 0,
+      "ignored": 0,
+      "inputDependentTestsRun": 5,
+      "logBytes": 34819
+    },
+    {
+      "command": "cargo clippy --workspace --all-targets -- -D warnings",
+      "exitCode": 0,
+      "log": "ocode-final-workspace-clippy.log",
+      "logSha256": "e1289ce7fdaff198ccc22cabb838b8f8011ca2cbc78977ea80a3e39ab1d8956b",
+      "logBytes": 318
+    },
+    {
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "exitCode": 0,
+      "log": "ocode-final-wasm-clippy.log",
+      "logSha256": "1547c511cf64ca5c19471228a725e9761d2170646a472cc03a5b82a888114860",
+      "logBytes": 241
+    }
+  ],
+  "focusedEnvironment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_LTO": "false"
+  },
+  "nativeUnchangedFactory": {
+    "command": "C5_FACTORY_TRACE_PCS=4080142c,4080143a,40801442,40801446,408014a0,40801504,4080152c cargo run --release -p esp32c5 --example factory_machine -- waveshare-c5-lcd273 32 8 <pinned ROM> <pinned factory> 250000000 <prepared FAT32 card>",
+    "log": "native-machine-lcd273-ocode-reviewed.log",
+    "logSha256": "2ff44a8ffcee1e74457a02c97f239c9c86b229ca1bef979d44f229711ab23003",
+    "steps": 20748961,
+    "cycles": 20748928,
+    "uartBytes": 2046,
+    "firstFault": null,
+    "stop": "Exceptions(1)",
+    "trapPc": "0x40800000",
+    "periodQ19": 3855046,
+    "guestTimeoutSlowTicks": 1360,
+    "guestRtcCycle0": 11446,
+    "guestRtcDeadline": 12806,
+    "guestCleanupPc": "0x40801504",
+    "guestCleanupObservedCycle": 20647616,
+    "guestAfterCpuRestorePc": "0x4080152c",
+    "guestAfterCpuRestoreObservedCycle": 20672640,
+    "targetReset0Cycle": 20622656,
+    "targetReset1Cycle": 20622976,
+    "virtualSettleCycles": 24000,
+    "derivedTargetDeadline": 20646976,
+    "targetPollReads": 82,
+    "firstReg3": {
+      "cycle": 20623232,
+      "value": 0
+    },
+    "lastReg3": {
+      "cycle": 20647488,
+      "value": 9
+    },
+    "targetAttempts": 1,
+    "targetCompletions": 1,
+    "targetCancellations": 0,
+    "finalPllReady": true,
+    "pllAttempts": 2,
+    "pllLocks": 2,
+    "finalCommittedCpuRoot": 3,
+    "finalCpuAhbApbHz": [
+      80000000,
+      40000000,
+      40000000
+    ],
+    "finalPowerLatches": "0xf",
+    "nextBoundary": "Original PSRAM SPI write/read connectivity check reports not connected or wrong line mode; this precedes the ID read in the fixed IDF flow. No host access fault was recorded.",
+    "nextBoundaryClassification": "guest diagnostic followed by CPU exception; final detailed trap attribution is separate",
+    "appMainEntered": false,
+    "fullPsramSelftestPassed": false,
+    "nonzeroPixels": 0,
+    "sdCommands": 0,
+    "logBytes": 7273
+  },
+  "negativeHistory": [
+    {
+      "log": "ocode-integrated-c5-suite.log",
+      "logSha256": "dc94f8a6185e43d75eb636f1e5e1edf6d1184e61e93de4513e663f536a942582",
+      "passedBeforeStop": 248,
+      "failed": 1,
+      "case": "unsupported_live_power_withdrawal_rejects_transactionally_and_explicit_stop_permits_it",
+      "reason": "Fixture compared Analog snapshot at time0 with correctly settled old inputs at time1000 after the new enabled OCODE observation. Only time/observation fields differed.",
+      "fix": "Settle old Analog as well as SAR before the fixture snapshots; strict state equality and transactional rollback checks remain.",
+      "logBytes": 27208
+    },
+    {
+      "log": "ocode-reviewed-workspace-clippy.log",
+      "logSha256": "848e63d1b1cc863a2114e40dc2e484c4cce2311ace20f8bc6578e7d334dc91c0",
+      "result": "possible_missing_else lint failed; split adjacent ifs onto separate lines, no behavior change.",
+      "logBytes": 846
+    }
+  ],
+  "reviewFixes": [
+    {
+      "issue": "Unselected OCODE observation initially pumped an independent active PLL.",
+      "fix": "Wrapper returns before pump when OCODE is off; Bus also filters by enabled. New existing-PLL deadline/U64MAX negative observations preserve complete state and report."
+    },
+    {
+      "issue": "Unconditional power-latch diagnostic changed PLL-only report.",
+      "fix": "Retain the original PLL report; publish power_latches only in the enabled OCODE suffix."
+    }
+  ],
+  "integrationContracts": [
+    "Committed CPU source is observed, never a staged PCR mux or an equal output frequency. A PLL240/5=48MHz counterexample stays non-XTAL.",
+    "On a late joint-watchdog service, enabled OCODE settles strictly before reset_at. Reset wins on equal time; later pending pumps and MMIO cannot manufacture DONE. Fixtures cover earlier/equal/later OCODE deadline.",
+    "CPU-only retains target; HP/Core cancels unfinished state and preserves already completed flags; LP/analog clears target as the declared virtual contract. Raw deselection removes profile capabilities.",
+    "The bounded generic native PC observer reads only CPU registers, at caller-supplied PCs at most4 times each. It performs no guest Bus access or firmware control changes."
+  ],
+  "limits": [
+    "100us ideal-reference handshake is explicit simulator policy, not measured physical convergence, analog voltage accuracy, code or eFuse provisioning. Reg4/5/6 remain unsupported.",
+    "Source/timing fields are nominal240MHz model observations with scheduling service boundaries, not physical asynchronous accuracy.",
+    "Full factory PSRAM/LCD/buttons/TF/Wi-Fi, default-LTO workspace tests, CPU controls, final production WASM/browser and fresh release acceptance remain pending. No C5 publication."
+  ],
+  "curation": "Ignored raw logs remain local; this receipt retains numeric results, commands and hashes without personal paths/process inventories/raw captures. No measured values changed."
+}

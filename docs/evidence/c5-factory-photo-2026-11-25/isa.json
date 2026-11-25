@@ -1,0 +1,547 @@
+{
+  "schema": "c5-factory-photo-fault-isa-v1",
+  "status": "Original ISA and immediate guard failure localized; later independent native snapshot confirms PSRAM backing and exact fixture bytes.",
+  "scope": {
+    "read_only": true,
+    "new_builds": false,
+    "new_guest_runs": false,
+    "product_changes": false,
+    "hardware_access": false,
+    "app_access": false,
+    "browser_owned_by_this_lane": false
+  },
+  "inputs": {
+    "factory": {
+      "path": ".git/c5-rom-factory-20261124/inputs/lcd273-factory.bin",
+      "bytes": 3346992,
+      "sha256": "cf10a4358d03898458c16390f3f16ceb0306befe2260160de0919d755b920942"
+    },
+    "rom": {
+      "bytes": 472300,
+      "sha256": "49693d745eb4b4e6e6c77be4f5213765d545d8c7a1d9742a8a619bf596c4e27a"
+    },
+    "browser_wasm_sha256": "9e0f3c286fe90894a717786867667d0bc19bd3484cd36d4887409cdc7fd2b0c4",
+    "sd_card": {
+      "bytes": 67108864,
+      "sha256": "f29e47c7fca119caf71353f311cfb7bcbb4ccff2c26f6afcf9c80c9805dba80f"
+    },
+    "jpeg": {
+      "pathInCard": "/photo/test.jpg",
+      "bytes": 5200,
+      "sha256": "6af0bed529e583dc696a07c3d01088667efff5c4bb0d99932e7d71f42c6b53b6"
+    }
+  },
+  "browser_observation": {
+    "reported_status": "error",
+    "reported_model_limit_pc": "0x4201ed26",
+    "reported_stop_instruction_count": 773269652,
+    "last_published_stats_instruction_count": 772809888,
+    "compact_header_csrs": {
+      "mtvec": "0x40800003",
+      "mcause": "0x80000013",
+      "mepc": "0x4002155e",
+      "mstatus": "0x00001889"
+    },
+    "compact_header_has_gprs": false,
+    "compact_header_has_mtval": false,
+    "actual_access_address": null,
+    "actual_a4": null,
+    "fault_access_width_from_opcode": 2,
+    "lastError_is_post_stop_input_error": {
+      "code": "NOT_RUNNING",
+      "message": "Start the emulator before sending input."
+    },
+    "last_new_uart_line": "I (3428) butmenu_core: App 2 clicked!",
+    "frame": {
+      "width": 320,
+      "height": 320,
+      "frameNumber": 118,
+      "rgbaSha256": "139235bdfdfd045b97ebd9020cb56faacd15784de8f10b79bbc063f407099518"
+    },
+    "frame_is_jpeg_success_evidence": false,
+    "driver": {
+      "enabled": true,
+      "profile": "waveshare-lcd273-idf553-offline-v1",
+      "mode": "compatible-driver-assisted",
+      "state": "started-offline",
+      "nativeWifi": false,
+      "associated": false,
+      "hasIp": false,
+      "storage": "session-RAM",
+      "hookCalls": "10",
+      "virtualSlots": "15",
+      "eventPosts": "5",
+      "eventPostFailures": "0",
+      "connectAttempts": "4",
+      "noApFailuresQueued": "4",
+      "pendingCalls": 0,
+      "epoch": "0",
+      "failureDelayCycles": "0",
+      "failureReason": 201,
+      "bssidMeasured": false,
+      "rssiMeasured": false,
+      "lastError": null,
+      "apiCalls": {
+        "esp_wifi_init": "1",
+        "esp_wifi_get_mode": "0",
+        "esp_wifi_get_mac": "1",
+        "esp_wifi_set_mode": "1",
+        "esp_wifi_start": "1",
+        "esp_wifi_connect": "4",
+        "esp_wifi_set_config": "1",
+        "esp_wifi_internal_reg_netstack_buf_cb": "1",
+        "esp_wifi_stop": "0",
+        "esp_wifi_deinit": "0",
+        "esp_wifi_disconnect": "0",
+        "esp_wifi_scan_start": "0",
+        "esp_wifi_scan_get_ap_records": "0",
+        "esp_wifi_get_config": "0"
+      }
+    }
+  },
+  "mapping": {
+    "factory_app_partition_offset": "0x20000",
+    "physical_irom_mapping_base": "0x200000",
+    "segments": [
+      {
+        "index_zero_based": 0,
+        "vma": "0x42130020",
+        "payload_file_offset": "0x20020",
+        "bytes": 1904700
+      },
+      {
+        "index_zero_based": 1,
+        "vma": "0x40800000",
+        "payload_file_offset": "0x1f1064",
+        "bytes": 61364
+      },
+      {
+        "index_zero_based": 2,
+        "vma": "0x42000020",
+        "payload_file_offset": "0x200020",
+        "bytes": 1190100
+      },
+      {
+        "index_zero_based": 3,
+        "vma": "0x4080efb4",
+        "payload_file_offset": "0x3228fc",
+        "bytes": 37944
+      },
+      {
+        "index_zero_based": 4,
+        "vma": "0x40818400",
+        "payload_file_offset": "0x32bd3c",
+        "bytes": 21708
+      }
+    ],
+    "fault_vma": "0x4201ed26",
+    "fault_segment_index_zero_based": 2,
+    "fault_file_offset": "0x21ed26",
+    "mapping_formula": "0x200020 + (0x4201ed26 - 0x42000020) = 0x21ed26"
+  },
+  "instruction": {
+    "bytes_hex": "83572700",
+    "little_endian_word": "0x00275783",
+    "instruction_width_bytes": 4,
+    "disassembly": "lhu a5, 2(a4)",
+    "opcode": 3,
+    "funct3": 5,
+    "rd": 15,
+    "rd_abi": "a5",
+    "rs1": 14,
+    "rs1_abi": "a4",
+    "signed_immediate": 2,
+    "operation": "read two bytes; zero-extend unsigned halfword into a5",
+    "effective_address_formula": "(x14 + 2) mod 2^32",
+    "next_pc_if_success": "0x4201ed2a",
+    "atomic": false,
+    "preceding_instruction": {
+      "pc": "0x4201ed24",
+      "bytes_hex": "6247",
+      "disassembly": "c.lwsp a4, 24(sp)"
+    },
+    "expected_result_if_success": "b[address] | (b[address+1] << 8)",
+    "alignment_or_backing_not_inferred_from_opcode": true,
+    "known_independent_native_effective_address": "0x4231810b",
+    "known_independent_native_alignment": "unaligned halfword, odd address"
+  },
+  "official_object_match": {
+    "component": "espressif/esp_new_jpeg",
+    "version": "1.0.2",
+    "component_hash": "e1e7e6991193c41ed6c9fc386702aa7821433319e7aa9c3147cd3236310cd69c",
+    "archive_relative_component_path": "lib/esp32c5/libesp_new_jpeg.a",
+    "archive_bytes": 3121412,
+    "archive_sha256": "f2641ae9717d91da3f4c4ae434c53dc354bcbc7ddeedd0e3873372f8c2f73e68",
+    "member": "esp_jpeg_dec.c.obj",
+    "member_bytes": 140280,
+    "member_sha256": "b5421526f778c3d448f00196b58bc04b80fd29f6403fe6ef0449413e4a2ee32e",
+    "section": ".text.jpeg_dec_parse_header",
+    "symbol": "jpeg_dec_parse_header",
+    "symbol_section_bytes": 2564,
+    "instruction_section_offset": "0x202",
+    "dwarf_source_basename": "esp_jpeg_dec.c",
+    "dwarf_line": 552,
+    "exact_original_start_pc": "0x4201ed24",
+    "exact_original_end_pc_exclusive": "0x4201ed54",
+    "exact_object_section_start_offset": "0x200",
+    "exact_object_section_end_offset_exclusive": "0x230",
+    "exact_bytes": 48,
+    "exact_bytes_sha256": "ae891fe9a8d1637e35c662fdf96eab7329d7bf3b427a676c91183b22535e56bc",
+    "exact_bytes_hex": "62478357270013d68700a2073e9642064182894763fec7008357070093d48700a207be94c204c18093d7840063879703",
+    "inferred_original_function_entry": "0x4201eb40",
+    "entry_status": "prologue plus original JPEG_DEC/log-string and official object association, not original ELF symbol",
+    "link_relaxation_warning": "Do not add object offsets to original function entry: calls before this sequence were relaxed by the original linker.",
+    "matching_manufacturer_elf_available": false,
+    "evidence_rating": {
+      "raw_opcode_and_48_byte_match": "direct exact-byte evidence",
+      "function_name_and_line": "official component object/DWARF association; no matching manufacturer ELF"
+    }
+  },
+  "source_route": {
+    "manufacturer_revision": "418de818f4f40c5a04c4292dbe293bfaa1351068",
+    "app_photo": {
+      "path": "example/ESP-IDF-V553/01_factory/components/app_photo/app_photo.c",
+      "sha256": "6a5735f9d6fcdeaf5fb4569c77c187e3c6f3ab919a20be10aea87663a64d2fb3"
+    },
+    "photo_ui": {
+      "path": "example/ESP-IDF-V553/01_factory/components/app_photo/ui/photo_ui.c",
+      "sha256": "61694fd8d4cc5db350ed343ea0f931961411b0cb24223be6afb767034251eae2"
+    },
+    "route": "scan /sdcard/photo -> read_file_to_buffer -> jpeg_calloc_align(size,16) -> fread -> jpeg_dec_parse_header -> get_outbuf_len -> allocate output -> jpeg_dec_process -> LVGL memory image",
+    "parse_loop_from_original_bytes": "LHU segment length+2 -> swap16 -> reject length<=2 -> LHU marker+0 -> swap16 -> marker high byte==0xff -> advance buffer4 and remaining4; this fault occurs before pixel conversion",
+    "fixture_markers": [
+      {
+        "offset": 0,
+        "marker": "FFD8"
+      },
+      {
+        "offset": 2,
+        "marker": "FFE0",
+        "length_field_offset": 4,
+        "length": 16,
+        "halfword_alignment_if_base_16_aligned": "even"
+      },
+      {
+        "offset": 20,
+        "marker": "FFDB",
+        "length_field_offset": 22,
+        "length": 67,
+        "halfword_alignment_if_base_16_aligned": "even"
+      },
+      {
+        "offset": 89,
+        "marker": "FFDB",
+        "length_field_offset": 91,
+        "length": 67,
+        "halfword_alignment_if_base_16_aligned": "odd"
+      },
+      {
+        "offset": 158,
+        "marker": "FFC0",
+        "length_field_offset": 160,
+        "length": 17,
+        "halfword_alignment_if_base_16_aligned": "even"
+      },
+      {
+        "offset": 177,
+        "marker": "FFC4",
+        "length_field_offset": 179,
+        "length": 31,
+        "halfword_alignment_if_base_16_aligned": "odd"
+      },
+      {
+        "offset": 210,
+        "marker": "FFC4",
+        "length_field_offset": 212,
+        "length": 181,
+        "halfword_alignment_if_base_16_aligned": "even"
+      },
+      {
+        "offset": 393,
+        "marker": "FFC4",
+        "length_field_offset": 395,
+        "length": 31,
+        "halfword_alignment_if_base_16_aligned": "odd"
+      },
+      {
+        "offset": 426,
+        "marker": "FFC4",
+        "length_field_offset": 428,
+        "length": 181,
+        "halfword_alignment_if_base_16_aligned": "even"
+      },
+      {
+        "offset": 609,
+        "marker": "FFDA",
+        "length_field_offset": 611,
+        "length": 12,
+        "halfword_alignment_if_base_16_aligned": "odd"
+      }
+    ],
+    "conditional_hypothesis": "If inbuf is 16-aligned and parser reaches the third DQT marker at JPEG offset89, its segment-length field is at odd offset91. This does not establish actual a4, PSRAM, or the model-limit cause.",
+    "original_caller": {
+      "pc": "0x4200e900",
+      "instruction_word": "0x240100ef",
+      "bytes_hex": "ef000124",
+      "operation": "jal ra,0x4201eb40",
+      "uniqueness_in_existing_irom_listing": "one direct call to that original entry",
+      "call_setup": {
+        "0x4200e8b6": "addi a0,s3,15",
+        "0x4200e8ba": "li a1,16",
+        "0x4200e8bc": "andi a0,-16",
+        "0x4200e8be": "jal aligned-buffer allocator candidate 0x4201fb66",
+        "0x4200e8c6": "mv a3,s1 (FILE pointer)",
+        "0x4200e8c8": "mv a2,s3 (file size)",
+        "0x4200e8ca": "li a1,1",
+        "0x4200e8cc": "auipc/jalr read-file call candidate 0x42110746",
+        "0x4200e8ec": "lw a0,412(s7) (decoder handle global)",
+        "0x4200e8f0": "a2=sp+20 (header info)",
+        "0x4200e8f2": "a1=sp+28 (IO struct)",
+        "0x4200e8fa": "store s0 at sp+28 (input buffer)",
+        "0x4200e8fc": "store s3 at sp+32 (input length)",
+        "0x4200e900": "jal jpeg_dec_parse_header candidate entry"
+      },
+      "failure_log_format_vma": "0x4213415c",
+      "failure_log_text": "Failed to parse jpeg header: %s",
+      "attribution_limit": "Operation assignments follow instruction dataflow and pinned manufacturer source; no manufacturer ELF names are invented."
+    },
+    "jpeg_dec_io_t": {
+      "component": "espressif/esp_new_jpeg1.0.2",
+      "public_header": "include/esp_jpeg_dec.h:76-83",
+      "public_header_bytes": 7067,
+      "public_header_sha256": "136aa1cb155444fb460292b86c6e6ee1c6cc644681c647d268a56bec6aa67d47",
+      "rv32_size_bytes": 20,
+      "rv32_align_bytes": 4,
+      "fields": [
+        {
+          "name": "inbuf",
+          "offset": 0,
+          "bytes": 4,
+          "type": "uint8_t*"
+        },
+        {
+          "name": "inbuf_len",
+          "offset": 4,
+          "bytes": 4,
+          "type": "int32_t"
+        },
+        {
+          "name": "inbuf_remain",
+          "offset": 8,
+          "bytes": 4,
+          "type": "int32_t"
+        },
+        {
+          "name": "outbuf",
+          "offset": 12,
+          "bytes": 4,
+          "type": "uint8_t*"
+        },
+        {
+          "name": "out_size",
+          "offset": 16,
+          "bytes": 4,
+          "type": "int32_t"
+        }
+      ],
+      "original_entry": "0x4201eb40",
+      "psabi": "a0=jpeg_dec_handle_t, a1=jpeg_dec_io_t*, a2=jpeg_dec_header_info_t*",
+      "entry_observation": "Read a1[0..20] from independently validated whole internal-SRAM host backing without bus operations.",
+      "fault_observation": "s4/x20 retains original io pointer (mv s4,a1 at4201eb68). This path writes onlyio offsets8 and16; input base@0 and length@4 remain available.",
+      "fault_io_pointer": "0x408558ec",
+      "fault_header_info_pointer": "0x408558e4",
+      "advanced_parser_stack": "sp+24 is current marker pointer, sp+28 is remaining; neither is original inbuf/len after progress.",
+      "actual_io_bytes_not_in_existing_capture": true
+    }
+  },
+  "implementation_review": {
+    "source_commit": "7625addbe0c5164c80b60bb0e142be91134c7a23",
+    "files": [
+      {
+        "path": "esp32c5/src/bus.rs",
+        "sha256": "c59b4bc402a07b4c7fc7b7425801520be02f301899743f7bc2d64f1b8b1a4ec1"
+      },
+      {
+        "path": "esp32c5/src/mspi.rs",
+        "sha256": "4b1c698189a986ad676c1f00a11c5f7d79bfb664e3bc1ba701e74600979481d5"
+      },
+      {
+        "path": "riscv-rv32/src/core.rs",
+        "sha256": "5c97330af1a874ab071bd27292c7588bf334c1930c8392ae36f827e80fcd0d76"
+      },
+      {
+        "path": "riscv-rv32/src/exec.rs",
+        "sha256": "b0f3125b416507713be3a457e75eb0a4a0dfccb23a860d0c1f7bb0ce36c2b5e0"
+      }
+    ],
+    "observed_policy": "validated-ROM ordinary misaligned access is allowed only for whole internal SRAM/LP SRAM/read-only ROM backing; other misaligned data accesses return Fault::Unsupported before cache/MSPI checks. This is a candidate boundary until actual operands arrive.",
+    "csr_rule": "ld! maps Fault::Unsupported straight to Trap::ModelLimit, without cpu.trap(). The compact dump current mcause/mepc/mtval therefore need not describe this access.",
+    "dump_rule": "RV32 Core::dump prints PC/selected CSRs/instruction count but omits x registers and mtval. Core::regs exists separately.",
+    "not_runtime_acceptance": true,
+    "immediate_stop_attribution": "For the independent native replay, odd EA0x4231810b/width2 lies outside all internal backing. The validated-ROM source read gate therefore returns Unsupported before CPU permission/cache/MMU/PSRAM translation. This explains this immediate emulator stop, but does not establish the underlying mapped backing or authorize new access policy."
+  },
+  "raw_observation_artifacts": [
+    {
+      "path": "output/c5-lcd273-offline-factory-browser-20261125/photo-fixture/03-boot-photo-first-observation.json",
+      "bytes": 1206564,
+      "sha256": "f921e3a395f8c8542f6ff5c2a3811019ec9514ccf47da222a09f02d3b5c774ea"
+    },
+    {
+      "path": "output/c5-lcd273-offline-factory-browser-20261125/photo-fixture/03-photo-model-limit.json",
+      "bytes": 38637,
+      "sha256": "3bfb8b7d9d60a806b0f443b6807e51c1d95db50ceec1a495a3ec3251f3dc59a7"
+    },
+    {
+      "path": "output/c5-lcd273-offline-factory-browser-20261125/photo-fixture/model-limit-core-and-device-dump.txt",
+      "bytes": 6190,
+      "sha256": "95fa2e0fbb3d2b5d52c5fcbedc6a983d63fabd29ff8d91058242b3c790060a41"
+    },
+    {
+      "path": "output/c5-lcd273-offline-factory-browser-20261125/photo-fixture/model-limit-serial-combined.txt",
+      "bytes": 12098,
+      "sha256": "e63338e95f43af9693e01ad85f26d70ab6e530449618c02bba20c0fdd407db76"
+    },
+    {
+      "path": "output/c5-lcd273-offline-factory-browser-20261125/photo-fixture/photo-stop-console-errors.txt",
+      "bytes": 94,
+      "sha256": "36e2ac76128d5f4aec65449ba343d7cb683069bdd7c5d18592f6e813384de0f2"
+    },
+    {
+      "path": "output/c5-lcd273-offline-factory-browser-20261125/photo-fixture/input-identities.json",
+      "bytes": 550,
+      "sha256": "3682d50a0b1b8fdef22c9936bcdf5ef9e7124a591332388347e9a64040bfbd96"
+    }
+  ],
+  "limits": [
+    "Original browser captures omit operands/backing. Original7625 native replay supplies a4/SP/first_fault. The laterbb8 snapshot separately supplies MMU/cache/MSPI/backing and full JPEG hash.",
+    "Original access is unaligned. Later independent snapshot confirms PSRAM physical0x810b and exact JPEG offset91; this is not an inferred PSRAM label from the opcode.",
+    "An ordinary LHU can stop at several bus gates; changing memory policy based solely on PC or JPEG marker parity would be unjustified.",
+    "No new build, guest, browser run, input, or silicon experiment was performed by this lane.",
+    "Original UART/private captures remain ignored; this report records only selected relevant fields and hashes.",
+    "No qualification of final runtime/main CI/Pages comes from this read-only report."
+  ],
+  "native_reproduction": {
+    "provided_by": "kernel implementation lane; not run by this read-only audit",
+    "source_commit": "7625addbe0c5164c80b60bb0e142be91134c7a23",
+    "diagnostic_harness": {
+      "path_relative_worktree": "esp32c5/examples/factory_photo_boundary.rs",
+      "bytes": 3224,
+      "sha256": "77fa58620b761434c63b723c0c822c225ba1ca29c9dd8c7a9502e0ce3dc0293f",
+      "source_status": "task-owned untracked diagnostic harness, not product code",
+      "retention": "Exact historical3224-byte source retained in ignored cache and independently hash-checked. The current task-owned harness was later edited for additional cold snapshots; those edits are not attributed to the existing log.",
+      "retained_original_source_path": ".git/c5-rom-factory-20261124/photo-native-boundary-20261125-original-harness.rs"
+    },
+    "raw_log": {
+      "path": ".git/c5-rom-factory-20261124/photo-native-boundary-20261125.log",
+      "bytes": 8146,
+      "sha256": "c138882378e228df82ece7f857443a1aefee2631e4d874425c6f244b1147e530"
+    },
+    "input_contract": "unchanged cf10 factory and F29 card; same explicit offline Wi-Fi mode; actual GPIO navigation",
+    "gpio_sequence": {
+      "menu_cycles": 500000000,
+      "next_pin": 3,
+      "next_pulses": 2,
+      "activate_pin": 28,
+      "low_cycles_per_pulse": 31200000,
+      "high_cycles_per_pulse": 50400000
+    },
+    "stop": "ModelLimit { core:0, pc:0x4201ed26 }",
+    "first_fault": {
+      "pc": "0x4201ed26",
+      "address": "0x4231810b",
+      "write": false,
+      "width_bytes": 2
+    },
+    "registers": {
+      "x1_ra": "0x4201ee54",
+      "x2_sp": "0x40855870",
+      "x14_a4": "0x42318109",
+      "x15_a5": "0x00000003",
+      "x20_s4_io": "0x408558ec",
+      "x19_s3_out_info": "0x408558e4"
+    },
+    "effective_address_arithmetic": "0x42318109 + 2 = 0x4231810b",
+    "halfword_alignment_remainder": 1,
+    "instruction_bytes_hex": "83572700",
+    "retired_instructions": 341829785,
+    "cycles": 701545724,
+    "csrs": {
+      "mepc": "0x40801c2c",
+      "mcause": "0x80000014",
+      "mtval": "0x00000000",
+      "mstatus": "0x00001889"
+    },
+    "lhu_retired": false,
+    "a5_still_previous_li_value": true,
+    "backing_or_permission_state": null,
+    "run_identity_warning": "Separate native replay. These GPR/count/CSR values are not claimed to have been captured in the earlier browser run.",
+    "cpu_slots": 701545724,
+    "raw_log_counter_label": "nativeSlots (historical harness label; interpreted here as CPU accounting slots, not retired instructions)",
+    "counter_rule": "CPU accounting slots701545724, native retired/minstret341829785, driver HLE virtualSlots15 are distinct. Browser773269652 is another run; do not sum or substitute."
+  },
+  "laterIndependentBackingReceipt": {
+    "evidenceClass": "Later kernel post-fix diagnostic capture, read from retained raw log; not retroactively assigned to earlier7625/browser runs",
+    "source": "bb8cfef839dd0fd01c9b72f4f6c5ba0eab99d406",
+    "rawLog": {
+      "path": ".git/c5-rom-factory-20261124/photo-native-fixed-20261125-02.log",
+      "bytes": 10159,
+      "sha256": "c4ad74e28e217196ba7921875105a2c33831d15ce8005e5dc052bdd6167ea0ad"
+    },
+    "snapshotBeforeOriginalLhu": {
+      "pc": "0x4201ed26",
+      "a4": "0x42318109",
+      "address": "0x4231810b",
+      "widthBytes": 2,
+      "mmuPageBytes": 65536,
+      "mmuIndex": 49,
+      "mmuEntry": "0x600",
+      "translatedKind": "PSRAM",
+      "translatedPhysicalOffset": "0x810b",
+      "psramReadAllowed": true,
+      "psramWriteAllowed": true,
+      "cacheFetchAllowed": true,
+      "cacheDataAllowed": true,
+      "psramBytes": 8388608,
+      "flashBytes": 33554432
+    },
+    "jpegIo": {
+      "pointer": "0x408558ec",
+      "base": "0x423180b0",
+      "length": 5200,
+      "physicalPsramOffset": "0x80b0",
+      "snapshotsAt": [
+        "0x4201eb40",
+        "0x4201ed26"
+      ],
+      "wholeBackingSha256AtBoth": "6af0bed529e583dc696a07c3d01088667efff5c4bb0d99932e7d71f42c6b53b6",
+      "equalsFixtureJpeg": true,
+      "method": "bounds-checked mapped host backing only, no bus read or guest write"
+    },
+    "neighbor": {
+      "virtualAddress": "0x42318103",
+      "length": 16,
+      "physicalPsramOffset": "0x8103",
+      "hex": "141812141514ffdb0043010304040504",
+      "sha256": "1ec9092db1863279f6e898429b187ba8fe0cb7d1d951e2f786e5a77d8aa28459"
+    },
+    "jpegOffsetProof": {
+      "markerOffset": 89,
+      "lengthFieldOffset": 91,
+      "actualMarkerBytes": "ffdb",
+      "actualLengthBytes": "0043",
+      "lhuLittleEndianValue": "0x4300",
+      "afterSwap16": 67
+    },
+    "laterRunStop": {
+      "firstFault": null,
+      "retiredInstructions": 393868634,
+      "cpuSlots": 984800000,
+      "cycles": 984800000,
+      "exceptions": 0,
+      "frameWidth": 320,
+      "frameHeight": 320,
+      "nonzeroPixels": 102400
+    },
+    "acceptanceLimit": "This fixes byte/backing attribution. Full final Photo image comparison, browser source/WASM identities and publication qualification remain separately evidenced."
+  }
+}

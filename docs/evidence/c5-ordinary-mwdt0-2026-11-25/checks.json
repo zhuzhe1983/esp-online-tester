@@ -1,0 +1,83 @@
+{
+  "baseline": "3ddfd6393b13db89f12e92bed7327298e9ce289a",
+  "ownedSource": "esp32c5/src/timg_wdt.rs",
+  "ownedSourceSha256": "a8179e3dac287012307f002110e29608f3731d567a4fb346e730536ae5bc6289",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "edition": "2021",
+  "target": "aarch64-apple-darwin",
+  "standaloneCommand": "python3 docs/evidence/c5-ordinary-mwdt0-2026-11-25/run-owned-checks.py --output \"$TASK_TMP/final-checks\"",
+  "results": {
+    "tests": 73,
+    "passed": 73,
+    "failed": 0,
+    "ignored": 0,
+    "timgTests": 31,
+    "unchangedLpTests": 37,
+    "jointFixtures": 5,
+    "clippyDriverWarningsDeniedExit": 0,
+    "lintAllowances": []
+  },
+  "outputs": {
+    "check-0.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "check-1.txt": "3fe3bb485a961deb4d9363b6eff6e25d9acfc5b5459d4e7b3551a307c1f4a3c2",
+    "check-2.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "oldTg1EvidenceUnchanged": {
+    "docs/evidence/c5-ordinary-mwdt1-2026-11-25/source-pins.json": "004300dd189f395659f9fa7232a3da37daf6c644e299d9b5723e1326323d7f2d",
+    "docs/evidence/c5-ordinary-mwdt1-2026-11-25/checks.json": "fa63c5273f485bbca0f7765acbcfd1ff1abbedc3bb8cd73e891e1ff133b720d6",
+    "docs/evidence/c5-ordinary-mwdt1-2026-11-25/README.md": "3cf5f12b3ab9bf3decfd125e35985e9bd4a58ee490cf814cc8a05c50e2be10d2",
+    "docs/evidence/c5-ordinary-mwdt1-2026-11-25/run-owned-checks.py": "8e20c979c44fa72cd7d49998deb4b672a2d46c9fe04d22a2b2cceeca13ec3261",
+    "docs/evidence/c5-ordinary-mwdt1-2026-11-25/controller-races.rs": "43c18ff988ce3109cd4bf8ecfd03f8c400f2667fed9bdceccf1585fb24f12db8"
+  },
+  "numericSamples": {
+    "sourceHz": 48000000,
+    "prescale": 24000,
+    "hold0": 10000,
+    "hold1": 20000,
+    "irqFromPhaseZeroFeedCycles": 1200000000,
+    "core7FromPhaseZeroFeedCycles": 3600000000,
+    "restartFixtureAt": 10,
+    "fixtureIRQAt": 1200000010,
+    "fixtureCore7At": 3600000010,
+    "twoOrdinaryRace": {
+      "tg0Hold2_3AndTg1Hold1_6Cause7At": 25,
+      "tg0Hold2_6AndTg1Hold1_2Cause8At": 15,
+      "equalCore7Core8Winner": 7
+    },
+    "retainedSourceLossSample": {
+      "tg0GateOffAt": 1,
+      "tg0GateOnAt": 1000,
+      "allSourceNoneAt": 1001,
+      "sourceRestoreAt": 2000,
+      "tg0IRQAt": 2008,
+      "independentTG1IRQAt": 5999
+    }
+  },
+  "negativeResults": [
+    {
+      "run": "first mechanical generic-engine regression",
+      "passed": 24,
+      "failed": 1,
+      "reason": "The pre-extension unknown-address fixture still listed TG0 IRQ+70/+74/+78/+7c, now exact owned words. Replaced those negative addresses with still-unowned +6c/+80/+84/+88 and added explicit cold-handoff/APB/key/reserved rejection fixtures; no counter/action assertion relaxed."
+    }
+  ],
+  "handoff": "TG0 ordinary/sharedIRQ require strict profile plus a real guest FLASHBOOT-clear UPDATE while cold latch was live. Staged clear and group reset do not grant. Preserve established handoff through group/HP resets; raw/chip withdraw it.",
+  "interface": {
+    "sources": "[(58,bool),(60,bool)]",
+    "take_reset_event": "Option<(u8,u64)>; Core7/Core8",
+    "sourceCompatibility": "TG1 source() wrapper is cfg(test) only; production uses sources()."
+  },
+  "limits": [
+    "Only actual-module standalone Rust/Clippy; no shared Cargo/native/WASM/browser/benchmark.",
+    "Original factory IWDT/TWDT/FreeRTOS/app_main path is statically audited, not executed by this lane.",
+    "Same strict source0 XTAL48M, positive prescale/holds and INT->Core subset for both groups. No physical pulse/CDC accuracy claim.",
+    "No host idle/task feed, IRQ success shortcut, or automatic ordinary counter. Parent owns source routing/reset dispatch/native acceptance."
+  ],
+  "privacyCheck": {
+    "command": "node tools/check-evidence-privacy.mjs",
+    "exitCode": 0,
+    "trackedEvidenceFiles": 3173,
+    "gzipFiles": 95,
+    "manualReview": "Scoped source/curated summaries/harnesses only; no raw private capture or personal paths retained."
+  }
+}

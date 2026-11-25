@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "sourceBase": "c33bf92851d497b83df3cadd35a458dd2eb1867e",
+  "scope": "Only usb_detached.rs plus new evidence; reused the existing standalone harness. No Cargo/dependency/firmware/native guest/WASM build or benchmark.",
+  "files": [
+    {
+      "file": "esp32c5/src/usb_detached.rs",
+      "bytes": 8436,
+      "sha256": "7b667cc00e801e94782656c5f9c2094b0554a3561035440ee5b43027fb926b13"
+    },
+    {
+      "file": "tools/c5-usb-sof-harness.rs",
+      "bytes": 144,
+      "sha256": "6dd2b12bcea88d54198bf24b52d4e889ddaf3068d544985276956baec25cc63d"
+    }
+  ],
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "checks": [
+    {
+      "check": "compile",
+      "command": "rustc +stable --edition=2021 --test tools/c5-usb-sof-harness.rs -D warnings -o target/c5-usb-sticky-raw-owned/owned-tests",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T21:20:22.744517+00:00",
+      "finishedAtUTC": "2026-11-24T21:20:22.847723+00:00",
+      "rawLog": {
+        "file": "target/c5-usb-sticky-raw-owned/compile.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "tests",
+      "command": "target/c5-usb-sticky-raw-owned/owned-tests --include-ignored --skip external_ --test-threads=1",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T21:20:22.847865+00:00",
+      "finishedAtUTC": "2026-11-24T21:20:23.238789+00:00",
+      "rawLog": {
+        "file": "target/c5-usb-sticky-raw-owned/tests.txt",
+        "bytes": 1186,
+        "sha256": "2cd0fb1f2e074ce732de31216108721395fd973c1acc5c5824ac0e85b2162567"
+      }
+    },
+    {
+      "check": "clippy",
+      "command": "<stable-clippy-driver> --edition=2021 --test tools/c5-usb-sof-harness.rs -D warnings -o target/c5-usb-sticky-raw-owned/owned-lint-tests",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T21:20:23.239203+00:00",
+      "finishedAtUTC": "2026-11-24T21:20:23.354020+00:00",
+      "rawLog": {
+        "file": "target/c5-usb-sticky-raw-owned/clippy.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "check": "lintTests",
+      "command": "target/c5-usb-sticky-raw-owned/owned-lint-tests --include-ignored --skip external_ --test-threads=1",
+      "exitCode": 0,
+      "startedAtUTC": "2026-11-24T21:20:23.354139+00:00",
+      "finishedAtUTC": "2026-11-24T21:20:23.633315+00:00",
+      "rawLog": {
+        "file": "target/c5-usb-sticky-raw-owned/lintTests.txt",
+        "bytes": 1186,
+        "sha256": "2cd0fb1f2e074ce732de31216108721395fd973c1acc5c5824ac0e85b2162567"
+      }
+    },
+    {
+      "check": "evidencePrivacy",
+      "command": "node tools/check-evidence-privacy.mjs docs/evidence/c5-usb-sticky-raw-2026-11-25 esp32c5/src/usb_detached.rs",
+      "exitCode": 0,
+      "trackedFiles": 4,
+      "gzipFiles": 0,
+      "manualReview": true
+    }
+  ],
+  "negativeRegression": {
+    "priorOwner": "3570031d7162834a786486ce0e5896edd613c8e8",
+    "sourceComposition": "Exact prior owner before #[cfg(test)] plus the current hermetic test module. No guest.",
+    "case": "tests::tx_data_keeps_sticky_raw3_separate_from_fifo_occupancy",
+    "compileCommand": "rustc +stable --edition=2021 --test target/c5-usb-sticky-raw-owned/prior_unknown_with_sticky_regression.rs -D warnings -o target/c5-usb-sticky-raw-owned/prior-unknown-regression",
+    "compileExitCode": 0,
+    "testCommand": "target/c5-usb-sticky-raw-owned/prior-unknown-regression tests::tx_data_keeps_sticky_raw3_separate_from_fifo_occupancy --exact --test-threads=1",
+    "testExitCode": 101,
+    "expected": "old None versus required Some(8) immediately after accepted TX data",
+    "rawLog": {
+      "file": "target/c5-usb-sticky-raw-owned/negative-tests.txt",
+      "bytes": 676,
+      "sha256": "dff9ccc4e6187158001e4e3ba3626e71be244881ad7e3ecd05b574c85b3c6f4e"
+    },
+    "compositeSource": {
+      "bytes": 8298,
+      "sha256": "560daeb43b06086e6a1407c5a0d058b8595d6504d289db440dd4757253175329"
+    },
+    "passed": 0,
+    "failed": 1,
+    "ignored": 0,
+    "filteredOut": 10,
+    "intentionalSingleCaseFilter": true
+  },
+  "results": {
+    "passed": 11,
+    "priorFifoCases": 2,
+    "priorFifoTestsByteUnchanged": true,
+    "priorFifoPrefixSha256": "3560192b820e4fb8dbfd4054fb009bbb0d5d72cfa4992473174e7f1b51c25f0d",
+    "unchangedMonitorCases": 5,
+    "updatedUnknownMonitorCases": 3,
+    "newFullFifoClosureCases": 1,
+    "failed": 0,
+    "ignored": 0,
+    "filteredOut": 0,
+    "warningsDenied": true,
+    "lintAllowances": false,
+    "guestExecutedInThisChange": false,
+    "postFixOriginalTickExecution": false,
+    "newUsbHostOrIrqProducer": false,
+    "lcdAcceptance": false
+  },
+  "retainedHistory": {
+    "priorOwner": "3570031d7162834a786486ce0e5896edd613c8e8",
+    "priorOwnerFile": {
+      "bytes": 7565,
+      "sha256": "8e36f9d8e6fc4909053303b0ef615828cd4e71f55984cf944780e3b6e82b65bc"
+    },
+    "priorReceipt": "docs/evidence/c5-usb-sof-2026-11-25/",
+    "oldReceiptEdited": false,
+    "oldOutcome": "10 pure tests passed under the then-conservative post-TX Unknown contract; supplied original first tick is now blocked by that intentional boundary.",
+    "newEvidence": "C5 TRM SS/SC/WTC access definitions plus RAW3 lacking SC establish the bounded sticky history invariant.",
+    "oldReceiptByteUnchangedVerified": true
+  },
+  "suppliedPriorIntegration": {
+    "rerunHere": false,
+    "reportedAggregateC5TestsPassed": 540,
+    "reportedBothClippyAndPrivacyPassed": true,
+    "sourceTreeLimit": "The parent supplied capture includes integration/observation glue under review; this receipt does not assign it a clean source commit.",
+    "stop": "ModelLimit at actual first tick RAW whole-word read",
+    "pc": "40801c8e",
+    "address": "6000f008",
+    "width": 4,
+    "instructions": 29525038,
+    "nominalCycles": 29524992,
+    "uartBytes": 3991,
+    "nonzeroPixels": 0,
+    "mainTaskStarted": true,
+    "appMainAcceptance": false,
+    "logs": [
+      {
+        "file": "native-machine-lcd273-coex-usb-cold-clock-contract.log",
+        "bytes": 12386,
+        "sha256": "78385b45fb412b1d8b7e1adb1249a19ce3e70c419473e01c0bca2266bfd9b034"
+      },
+      {
+        "file": "native-machine-lcd273-coex-usb-cold-observation.log",
+        "bytes": 11653,
+        "sha256": "61197cba9c2fa2546a959bcbfb18c6a43c15afb59179343cbfcf0a22b698328b"
+      },
+      {
+        "file": "native-machine-lcd273-usb-early-tx-observation.log",
+        "bytes": 12610,
+        "sha256": "b5bd6d72a686557cc24326a206ac3e7b8e14d65f11482fec22adcc73b7df4697"
+      }
+    ],
+    "observation": {
+      "qualified": true,
+      "rawWithoutClockGuard": "None",
+      "rawQualified": "None",
+      "ena": 0,
+      "dataFree": 0,
+      "apbHz": 40000000,
+      "pll48Hz": 48000000,
+      "strict": true
+    },
+    "actualEarlyRomTrace": {
+      "ep1StorePc": "40025d46",
+      "ep1NominalCycles": [
+        8064,
+        8320,
+        8576,
+        8832
+      ],
+      "ep1Ascii": [
+        69,
+        83,
+        80,
+        45
+      ],
+      "wrDoneStorePc": "40025d56",
+      "wrDoneNominalCycles": [
+        15936,
+        261184,
+        273792,
+        285376
+      ],
+      "limit": "Bounded supplied trace observations, not a run performed here; no host transfer is claimed."
+    }
+  },
+  "integration": {
+    "apiChanged": false,
+    "busLibSocChanged": false,
+    "newIrqProducer": false,
+    "enaClearMasksRemainSofOnly": true,
+    "unknownClockStillRejects": true,
+    "physicalOrHostTimingModeled": false,
+    "postFixGuestContinuationRequired": true
+  },
+  "curation": {
+    "committed": "Bounded PC/cycle/argument facts, source/input/capture/test hashes and aggregate correctness results.",
+    "omitted": "Local identities, raw register/UART/test streams, original BIN and complete SDK/ROM listings remain ignored.",
+    "publication": false
+  }
+}
