@@ -55,3 +55,21 @@ fn ordinary_matrix_input_keeps_two_scans_and_reattachment_keeps_external_fifo() 
 fn unsupported_board_defaults_refuse_without_changing_legacy_source_contract() {
     let mut b=esp_soc::board::NoBoard;assert_eq!(b.matrix_key_debounced_at(10,0,0,true),A::Disabled);assert_eq!(b.matrix_key_diagnostics(),None);
 }
+#[test]
+fn guest_ack_irq_edge_is_published_before_the_next_debounced_key() {
+    use esp_periph::i2c::I2cDevice;
+    use esp_soc::board::BoardEdge;
+    fn reg(d:&mut dyn I2cDevice,r:u8,v:u8) {assert!(d.start(false));assert!(d.write(r));assert!(d.write(v));}
+    fn event(d:&mut dyn I2cDevice)->u8 {assert!(d.start(false));assert!(d.write(4));assert!(d.start(true));d.read()}
+    let mut board=esp32s3::board::CardputerAdv::new();let mut devices=board.i2c_devices();
+    let d=devices.iter_mut().find(|(bus,address,_)|*bus==0&&*address==0x34).unwrap().2.as_mut();
+    for (r,v) in [(0x1d,0x7f),(0x1e,0xff),(1,1)] {reg(d,r,v);}
+    assert_eq!(board.matrix_key_debounced_at(0,3,0,true),A::Accepted);
+    assert_eq!(board.take_edges(),vec![BoardEdge{cycle:0,pin:11,level:false}]);
+    assert_eq!(event(d),0x84);reg(d,2,1);
+    // No board.advance_to/take_edges here: the slave has deasserted IRQ, but the
+    // board's cached pad is still low. A new host event must not erase that ACK edge.
+    assert_eq!(board.matrix_key_debounced_at(10,3,0,false),A::Accepted);
+    assert_eq!(board.take_edges(),vec![BoardEdge{cycle:0,pin:11,level:true},BoardEdge{cycle:10,pin:11,level:false}]);
+    assert_eq!(event(d),4);reg(d,2,1);assert_eq!(board.matrix_key_diagnostics(),Some(KeyEventDiagnostics{accepted:2,consumed:2,pending:0}));
+}

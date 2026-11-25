@@ -66,6 +66,9 @@ impl BoardModel for CardputerAdv {
     fn matrix_key_debounced_at(&mut self,cycle:VirtualCycle,row:u8,column:u8,pressed:bool)->esp_soc::board::KeyEventAcceptance {
         use esp_soc::board::KeyEventAcceptance::*;
         if row>=4 || column>=14 {return Invalid;}
+        // Preserve a guest ACK's deassertion before admission can assert IRQ again.
+        // A short host run may return before advance_to/take_edges publishes it.
+        self.sync_irq();
         let result=self.keyboard.lock().expect("Cardputer keyboard mutex poisoned").try_key_debounced(cycle,column/2,row+4*(column&1),pressed);
         if matches!(result,Accepted|Duplicate) {self.cycle=self.cycle.max(cycle);self.sync_irq();}result
     }
