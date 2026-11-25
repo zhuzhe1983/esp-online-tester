@@ -2,24 +2,42 @@
 //! Matrix scanning uses a 25ms digital scan and two stable observations (§8.6.2.15),
 //! not the distinct 50us GPIO debounce. No analog ghosting, GPI events or unlock engine.
 use super::I2cDevice;
+use crate::keypad::{KeyEventAcceptance,KeyEventDiagnostics};
 use std::{collections::VecDeque,sync::{Arc,Mutex}};
 
 pub struct Tca8418State {
     regs:[u8;0x30],fifo:VecDeque<u8>,desired:[bool;80],sampled:[bool;80],stable:[bool;80],
-    cycle:u64,period:u64,next_scan:Option<u64>,irq_hold_until:Option<u64>,
+    cycle:u64,period:u64,next_scan:Option<u64>,irq_hold_until:Option<u64>,accepted:u64,consumed:u64,
 }
 impl Tca8418State {
-    pub fn new(cpu_hz:u64)->Self {Self{regs:[0;0x30],fifo:VecDeque::new(),desired:[false;80],sampled:[false;80],stable:[false;80],cycle:0,period:(cpu_hz/40).max(1),next_scan:None,irq_hold_until:None}}
+    pub fn new(cpu_hz:u64)->Self {Self{regs:[0;0x30],fifo:VecDeque::new(),desired:[false;80],sampled:[false;80],stable:[false;80],cycle:0,period:(cpu_hz/40).max(1),next_scan:None,irq_hold_until:None,accepted:0,consumed:0}}
     pub fn key(&mut self,cycle:u64,row:u8,column:u8,down:bool)->bool {
         if row>=8 || column>=10 {return false;}
         self.cycle=self.cycle.max(cycle);let index=usize::from(row)*10+usize::from(column);
         if self.desired[index]!=down {self.desired[index]=down;self.schedule();}true
     }
+    /// Nonphysical, explicit opt-in transport for edges already debounced by a host.
+    /// Do not shorten the ordinary key()/advance_to() matrix timing. FIFO backpressure
+    /// is checked before changing the clock or any matrix/FIFO/interrupt state.
+    pub fn try_key_debounced(&mut self,cycle:u64,row:u8,column:u8,down:bool)->KeyEventAcceptance {
+        use KeyEventAcceptance::*;
+        if row>=8 || column>=10 {return Invalid;}
+        let index=usize::from(row)*10+usize::from(column);
+        if !self.selected(index) || self.regs[3]&0x40!=0 {return Disabled;}
+        if self.stable[index]==down {
+            // Reconcile a pending raw sample if callers intentionally switch transport.
+            self.desired[index]=down;self.sampled[index]=down;self.cycle=self.cycle.max(cycle);return Duplicate;
+        }
+        if self.fifo.len()==10 {return Full;}
+        self.cycle=self.cycle.max(cycle);self.desired[index]=down;self.sampled[index]=down;self.stable[index]=down;
+        self.push((index+1) as u8 | if down{0x80}else{0});Accepted
+    }
+    pub fn key_diagnostics(&self)->KeyEventDiagnostics {KeyEventDiagnostics{accepted:self.accepted,consumed:self.consumed,pending:self.fifo.len() as u8}}
     fn schedule(&mut self) {if self.next_scan.is_none() {self.next_scan=Some(self.cycle.saturating_div(self.period).saturating_add(1).saturating_mul(self.period));}}
     fn selected(&self,index:usize)->bool {self.regs[0x1d]&(1<<(index/10))!=0 && self.regs[0x1e+(index%10)/8]&(1<<((index%10)%8))!=0}
     fn push(&mut self,event:u8) {
         if self.fifo.len()==10 {self.regs[2]|=8;if self.regs[1]&0x20==0 {return;}self.fifo.pop_front();}
-        self.fifo.push_back(event);self.regs[2]|=1;
+        self.fifo.push_back(event);self.regs[2]|=1;self.accepted=self.accepted.saturating_add(1);
     }
     pub fn irq_high(&self)->bool {self.irq_hold_until.is_some() || self.regs[2]&self.regs[1]&0x0f==0}
     pub fn next_deadline(&self)->Option<u64> {self.next_scan.into_iter().chain(self.irq_hold_until).min()}
@@ -67,7 +85,7 @@ impl I2cDevice for Tca8418 {
         // SCPS215G §8.6.2.4: drain by repeatedly reading KEY_EVENT_A; each read shifts
         // the FIFO. B-J observe that live shifted FIFO, not a snapshot taken before A.
         // M5Cardputer Adafruit_TCA8418::getEvent uses one readRegister8(0x04).
-        let value=match reg {3=>(state.regs[3]&0xf0)|state.fifo.len() as u8,4=>state.fifo.pop_front().unwrap_or(0),5..=0x0d=>state.fifo.get(reg-4).copied().unwrap_or(0),_=>state.regs.get(reg).copied().unwrap_or(0)};
+        let value=match reg {3=>(state.regs[3]&0xf0)|state.fifo.len() as u8,4=>match state.fifo.pop_front(){Some(v)=>{state.consumed=state.consumed.saturating_add(1);v},None=>0},5..=0x0d=>state.fifo.get(reg-4).copied().unwrap_or(0),_=>state.regs.get(reg).copied().unwrap_or(0)};
         if state.regs[1]&0x80!=0 {self.ptr=self.ptr.wrapping_add(1);}value
     }
 }
@@ -150,4 +168,66 @@ mod tests {
         d.start(false);d.write(4);d.start(true);
         assert_eq!([d.read(),d.read(),d.read()],[0x81,1,0]);
     }
+    fn snapshot(s:&Tca8418State)->([u8;0x30],VecDeque<u8>,[bool;80],[bool;80],[bool;80],u64,Option<u64>,Option<u64>,KeyEventDiagnostics) {
+        (s.regs,s.fifo.clone(),s.desired,s.sampled,s.stable,s.cycle,s.next_scan,s.irq_hold_until,s.key_diagnostics())
+    }
+    #[test]
+    fn host_debounced_edges_are_immediate_and_consumption_is_only_event_a() {
+        use KeyEventAcceptance::*;
+        let (s,mut d)=setup();let mut state=s.lock().unwrap();
+        assert_eq!(state.try_key_debounced(7,0,0,true),Accepted);
+        assert_eq!(state.try_key_debounced(7,0,0,true),Duplicate);
+        assert_eq!(state.try_key_debounced(8,0,0,false),Accepted);
+        assert_eq!(state.key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:0,pending:2});drop(state);
+        assert_eq!(read(&mut d,5),1);assert_eq!(read(&mut d,3),2);
+        assert_eq!(s.lock().unwrap().key_diagnostics().consumed,0,"B/count reads are observations");
+        assert_eq!(read(&mut d,4),0x81);assert_eq!(read(&mut d,4),1);assert_eq!(read(&mut d,4),0);
+        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:2,pending:0});
+        s.lock().unwrap().advance_to(100000);assert_eq!(read(&mut d,3),0,"no duplicate physical scan event");
+    }
+    #[test]
+    fn host_full_is_atomic_even_with_hardware_overwrite_enabled_and_retry_loses_nothing() {
+        use KeyEventAcceptance::*;
+        let (s,mut d)=setup();write(&mut d,1,0x21); // raw hardware overflow policy remains separate
+        for edge in 0..10 {assert_eq!(s.lock().unwrap().try_key_debounced(0,0,0,edge%2==0),Accepted);}
+        let before=snapshot(&s.lock().unwrap());
+        assert_eq!(s.lock().unwrap().try_key_debounced(999999,0,0,true),Full);
+        assert_eq!(snapshot(&s.lock().unwrap()),before,"Full must not touch clock, scan, matrix, flags or counters");
+        let mut events=vec![read(&mut d,4)];
+        assert_eq!(s.lock().unwrap().try_key_debounced(1,0,0,true),Accepted);
+        assert_eq!(s.lock().unwrap().try_key_debounced(2,0,0,false),Full);
+        events.push(read(&mut d,4));assert_eq!(s.lock().unwrap().try_key_debounced(2,0,0,false),Accepted);
+        while read(&mut d,3)>0 {events.push(read(&mut d,4));}
+        assert_eq!(events,[0x81,1].repeat(6));assert_eq!(read(&mut d,2)&8,0,"host admission never overflows");
+        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:12,consumed:12,pending:0});
+    }
+    #[test]
+    fn host_disabled_and_invalid_are_atomic_but_interrupt_mask_does_not_disable_fifo() {
+        use KeyEventAcceptance::*;
+        let (s,mut d)=setup();write(&mut d,0x1d,0);
+        for (row,col,status) in [(0,0,Disabled),(8,0,Invalid),(0,10,Invalid)] {
+            let before=snapshot(&s.lock().unwrap());
+            assert_eq!(s.lock().unwrap().try_key_debounced(900,row,col,true),status);
+            assert_eq!(snapshot(&s.lock().unwrap()),before);
+        }
+        write(&mut d,0x1d,0x7f);write(&mut d,3,0x40);
+        let before=snapshot(&s.lock().unwrap());assert_eq!(s.lock().unwrap().try_key_debounced(1,0,0,true),Disabled);assert_eq!(snapshot(&s.lock().unwrap()),before);
+        write(&mut d,3,0);write(&mut d,1,0);
+        assert_eq!(s.lock().unwrap().try_key_debounced(1,0,0,true),Accepted);assert!(s.lock().unwrap().irq_high());
+        write(&mut d,1,1);assert!(!s.lock().unwrap().irq_high());assert_eq!(read(&mut d,4),0x81);
+        assert!(!s.lock().unwrap().irq_high(),"reading A does not silently clear latched INT_STAT");
+        write(&mut d,2,1);assert!(s.lock().unwrap().irq_high());
+    }
+    #[test]
+    fn host_transport_preserves_other_raw_keys_two_scan_deadlines_and_fresh_reset_state() {
+        use KeyEventAcceptance::*;
+        let (s,mut d)=setup();s.lock().unwrap().key(0,0,1,true);
+        assert_eq!(s.lock().unwrap().try_key_debounced(0,0,0,true),Accepted);
+        assert_eq!(read(&mut d,4),0x81);s.lock().unwrap().advance_to(24999);assert_eq!(read(&mut d,3),0);
+        s.lock().unwrap().advance_to(25000);assert_eq!(read(&mut d,3),0);
+        s.lock().unwrap().advance_to(50000);assert_eq!(read(&mut d,4),0x82);
+        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:2,pending:0});
+        let fresh=Tca8418State::new(1_000_000);assert_eq!(fresh.key_diagnostics(),KeyEventDiagnostics::default());assert!(fresh.irq_high());
+    }
+
 }

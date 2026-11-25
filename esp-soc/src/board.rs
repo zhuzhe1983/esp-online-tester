@@ -2,6 +2,7 @@
 //! SPI bytes, LCD frames, camera requests); a `BoardModel` interprets them as the devices wired to
 //! the pins and offers what the UI and the scripts need back.
 use esp_periph::i2c::I2cDevice;
+pub use esp_periph::keypad::{KeyEventAcceptance,KeyEventDiagnostics};
 pub mod seeed_xiao_epaper;
 
 pub type VirtualCycle = u64;
@@ -316,6 +317,13 @@ pub trait BoardModel {
     /// The existing sink retains the first DMA slot as normalized signed PCM16.
     fn i2s_tx_pcm(&self, _port:usize, _routes:&crate::pins::PinRoutes<'_>, _bits:u32, _samples:&mut [i16]) {}
 
+    /// Explicit nonphysical transport for host-debounced edges, e.g. an opt-in fast UI.
+    /// Ordinary matrix_key_at retains physical scan/debounce. Callers keep a Full/Disabled
+    /// edge queued; acceptance/consumption do not prove application-level key handling.
+    /// Appended so existing hot method slots stay in their original order.
+    fn matrix_key_debounced_at(&mut self, _cycle:VirtualCycle, _row:u8, _column:u8, _pressed:bool)->KeyEventAcceptance {KeyEventAcceptance::Disabled}
+    /// Cold, read-only event FIFO counters. None means this transport is unsupported.
+    fn matrix_key_diagnostics(&self)->Option<KeyEventDiagnostics> {None}
 }
 
 pub type Board = Box<dyn BoardModel>;
