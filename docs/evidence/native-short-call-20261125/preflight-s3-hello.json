@@ -1,0 +1,141 @@
+{
+  "kind": "cli",
+  "pairs": 3,
+  "binary_sha256": {
+    "base": "43cbf68ecf22018343b9a6f79fca806e110be374a27301957edb354d0d3e53fa",
+    "new": "7c526b7ba76b0c92335e29f6d630c77f9cd17d80ca31439c9df8d1d8be916a5b"
+  },
+  "args": [
+    "--boot",
+    "rom",
+    "--rom",
+    "/Users/alice/esp32sim/web/wasm/fw/esp32s3_rev0_rom.elf",
+    "--flash-mb",
+    "8",
+    "--board",
+    "none",
+    "--psram-mb",
+    "2",
+    "--bootloader",
+    "/Users/alice/esp32sim/web/wasm/fw/public/hello-bootloader.bin",
+    "--ptable",
+    "/Users/alice/esp32sim/web/wasm/fw/public/hello-ptable.bin",
+    "--app",
+    "/Users/alice/esp32sim/web/wasm/fw/public/hello_world.bin",
+    "--max-seconds",
+    "30",
+    "--no-dump"
+  ],
+  "runs": [
+    {
+      "side": "base",
+      "exit": 0,
+      "user_s": 0.219526,
+      "system_s": 0.0059629999999999996,
+      "wall_s": 0.2289891669061035,
+      "peak_rss_bytes": 46481408,
+      "minor_faults": 3103,
+      "major_faults": 0,
+      "facts": {
+        "stop": "[emu] stop: Halted \u2014 core0 11934783 + core1 6775776 insns; emulated 30.000s (7200000000 cycles); 27229 exceptions, 6032 interrupts",
+        "insns": [
+          11934783,
+          6775776
+        ],
+        "diagnostics": [
+          "[emu] chip reset at t=11.005s: cause 0xc (RTC_SW_CPU_RESET)",
+          "[emu] chip reset at t=22.011s: cause 0xc (RTC_SW_CPU_RESET)",
+          "  core0 int1         33  sources [79]",
+          "  core0 int2       2999  sources [57]",
+          "  core1 int1          3  sources [80]",
+          "  core1 int2       2997  sources [58]",
+          "[emu] i2s frames out: 0 (i2s0 @ 44100 Hz) 0 (i2s1 @ 44100 Hz)",
+          "[emu] crypto: 0 AES blocks, 2853 SHA blocks, 0 RSA/MPI operations"
+        ],
+        "console_sha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+        "png_sha256": null
+      },
+      "code_bytes": null,
+      "pair": "preflight"
+    },
+    {
+      "side": "new",
+      "exit": 0,
+      "user_s": 0.246795,
+      "system_s": 0.015496,
+      "wall_s": 0.602355666924268,
+      "peak_rss_bytes": 46579712,
+      "minor_faults": 3106,
+      "major_faults": 0,
+      "facts": {
+        "stop": "[emu] stop: Halted \u2014 core0 11934783 + core1 6775776 insns; emulated 30.000s (7200000000 cycles); 27229 exceptions, 6032 interrupts",
+        "insns": [
+          11934783,
+          6775776
+        ],
+        "diagnostics": [
+          "[emu] chip reset at t=11.005s: cause 0xc (RTC_SW_CPU_RESET)",
+          "[emu] chip reset at t=22.011s: cause 0xc (RTC_SW_CPU_RESET)",
+          "  core0 int1         33  sources [79]",
+          "  core0 int2       2999  sources [57]",
+          "  core1 int1          3  sources [80]",
+          "  core1 int2       2997  sources [58]",
+          "[emu] i2s frames out: 0 (i2s0 @ 44100 Hz) 0 (i2s1 @ 44100 Hz)",
+          "[emu] crypto: 0 AES blocks, 2853 SHA blocks, 0 RSA/MPI operations"
+        ],
+        "console_sha256": "fd9dc186fba25898e9442c249f8f6d82e8bdf8d0951f32d7dae91aa5c1b065ef",
+        "png_sha256": null
+      },
+      "code_bytes": null,
+      "pair": "preflight"
+    }
+  ],
+  "summary": {
+    "base_median_s": 0.219526,
+    "new_median_s": 0.246795,
+    "change_pct": 12.421763253555373,
+    "base_range_s": [
+      0.219526,
+      0.219526
+    ],
+    "new_range_s": [
+      0.246795,
+      0.246795
+    ],
+    "new_slower_pairs": 1,
+    "identical_work_and_output": true
+  },
+  "conditions": {
+    "mode": "preflight",
+    "purpose": "short-call-only frozen production binaries; preflight is contended and not evidence of speed",
+    "clock_hz": 240000000,
+    "settings": {
+      "quantum": 64,
+      "vq": 1,
+      "bb": 1,
+      "native_defer": false,
+      "frontiers": false,
+      "probe_run_budget": 30000
+    },
+    "platform": {
+      "os": "Darwin",
+      "release": "27.2.0",
+      "machine": "arm64",
+      "cpus": 18
+    },
+    "started": "2026-11-25T14:32:48+0800",
+    "load_before": [
+      4.30078125,
+      6.18017578125,
+      7.52294921875
+    ],
+    "status": "passed",
+    "finished": "2026-11-25T14:33:12+0800",
+    "elapsed_s": 24.006571999983862,
+    "load_after": [
+      3.81005859375,
+      5.90869140625,
+      7.38525390625
+    ]
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "kind": "cli",
+  "pairs": 3,
+  "binary_sha256": {
+    "base": "35bd565c84fc08ae2b6441483981cb3921544686673f3dd1d991609395ed27c1",
+    "new": "9631c0d14236af7290386a8ea9cc7b42b79c18d77b02299bea032a858361e86e"
+  },
+  "args": [
+    "--boot",
+    "rom",
+    "--rom",
+    "/Users/alice/esp32sim/web/wasm/fw/esp32c6_rev0_rom.elf",
+    "--flash-mb",
+    "4",
+    "--bootloader",
+    "/Users/alice/esp32sim/web/wasm/fw/public/c6-hello-bootloader.bin",
+    "--ptable",
+    "/Users/alice/esp32sim/web/wasm/fw/public/c6-hello-ptable.bin",
+    "--app",
+    "/Users/alice/esp32sim/web/wasm/fw/public/c6-hello_world.bin",
+    "--max-seconds",
+    "30",
+    "--no-dump"
+  ],
+  "runs": [
+    {
+      "side": "base",
+      "exit": 0,
+      "user_s": 1.512186,
+      "system_s": 0.010945,
+      "wall_s": 1.861347208963707,
+      "peak_rss_bytes": 16482304,
+      "minor_faults": 1265,
+      "major_faults": 0,
+      "facts": {
+        "stop": "[emu] stop: Halted \u2014 4800000000 insns; emulated 30.000s (4800000000 cycles); 0 exceptions, 3029 interrupts",
+        "insns": [
+          4800000000
+        ],
+        "diagnostics": [
+          "[emu] chip reset at t=11.017s: cause 0xc (RTC_SW_CPU_RESET)",
+          "[emu] chip reset at t=22.031s: cause 0xc (RTC_SW_CPU_RESET)",
+          "  core0 int5         33  sources [22]",
+          "  core0 int8       2996  sources [57]"
+        ],
+        "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+        "png_sha256": null
+      },
+      "code_bytes": null,
+      "pair": "preflight"
+    },
+    {
+      "side": "new",
+      "exit": 0,
+      "user_s": 1.539226,
+      "system_s": 0.010558999999999999,
+      "wall_s": 1.8931080410256982,
+      "peak_rss_bytes": 16515072,
+      "minor_faults": 1268,
+      "major_faults": 0,
+      "facts": {
+        "stop": "[emu] stop: Halted \u2014 4800000000 insns; emulated 30.000s (4800000000 cycles); 0 exceptions, 3029 interrupts",
+        "insns": [
+          4800000000
+        ],
+        "diagnostics": [
+          "[emu] chip reset at t=11.017s: cause 0xc (RTC_SW_CPU_RESET)",
+          "[emu] chip reset at t=22.031s: cause 0xc (RTC_SW_CPU_RESET)",
+          "  core0 int5         33  sources [22]",
+          "  core0 int8       2996  sources [57]"
+        ],
+        "console_sha256": "bd69fbb9ac5c677337a293c1ec0ff7941306eec82c499290917a7c42360f86ad",
+        "png_sha256": null
+      },
+      "code_bytes": null,
+      "pair": "preflight"
+    }
+  ],
+  "summary": {
+    "base_median_s": 1.512186,
+    "new_median_s": 1.539226,
+    "change_pct": 1.7881398187789,
+    "base_range_s": [
+      1.512186,
+      1.512186
+    ],
+    "new_range_s": [
+      1.539226,
+      1.539226
+    ],
+    "new_slower_pairs": 1,
+    "identical_work_and_output": true
+  },
+  "conditions": {
+    "mode": "preflight",
+    "purpose": "short-call-only frozen production binaries; preflight is contended and not evidence of speed",
+    "clock_hz": 240000000,
+    "settings": {
+      "quantum": 64,
+      "vq": 1,
+      "bb": 1,
+      "native_defer": false,
+      "frontiers": false,
+      "probe_run_budget": 30000
+    },
+    "platform": {
+      "os": "Darwin",
+      "release": "27.2.0",
+      "machine": "arm64",
+      "cpus": 18
+    },
+    "started": "2026-11-25T14:32:48+0800",
+    "load_before": [
+      4.30078125,
+      6.18017578125,
+      7.52294921875
+    ],
+    "status": "passed",
+    "finished": "2026-11-25T14:33:12+0800",
+    "elapsed_s": 24.006571999983862,
+    "load_after": [
+      3.81005859375,
+      5.90869140625,
+      7.38525390625
+    ]
+  }
+}

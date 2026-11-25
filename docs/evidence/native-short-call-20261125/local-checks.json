@@ -1,0 +1,583 @@
+{
+  "head": "678a7ad56c5855cd08b7f1a1eb167d5ac4014cf9",
+  "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "source_files": {
+    ".github/workflows/ci.yml": "6d6a05af3b1ff7090845f5f5341bab71fcf5d6828371764be35118838afc88b5",
+    "cli/Cargo.toml": "88899b7afb2a550a062c84e513610767dcd28fad4d7db6c72e8f2bb4778f7eee",
+    "emu-core/src/bus.rs": "834a207e972189d9cb168227b59030dc5699a38708587b09e00506ef990585c3",
+    "esp32s3/Cargo.toml": "841b7bab386b3d626da08bb2b9d69af45230d83e4f1ef5c38ee1c8a1f2fc945f",
+    "esp32s3/examples/native_short_call_probe.rs": "22ca8f3f77aa7033bcea2a3773ebde2030b148e15b3cd4f30116cf4568057675",
+    "esp32s3/src/bus.rs": "5858f944d122eb33bb09a7fc315c7e5d16db9c3e162e81195bfa25bb5b6f2d21",
+    "esp32s3/src/bus/cache_tests.rs": "794e96f63db8d5a6249d0f4bdec64eecc5d41be18ba731e3b22ede9e58034466",
+    "web/platform/catalog/firmware-release-snapshot.json": "cf1e5e3f4d8056ae459972d93dc191ee5566c65581015171168fa449ec945b3d",
+    "xtensa-lx7/Cargo.toml": "0650364a6b062c408361fc58f6ebc8017bfab658ba961f2ceb9a84b11fd2837b",
+    "xtensa-lx7/src/block.rs": "c0290b1f017984bf033468a7d7b5175c1818489fab413fa8aebd795b206e6306",
+    "xtensa-lx7/src/block/native_short_call.rs": "7a1bc161cb01d1edfc0c28fd6384ad68905969491cb19cb13225753a86f5f897",
+    "xtensa-lx7/src/block/native_short_call/tests.rs": "91f2bcd241351d5357ab0e218d149ae4915456e6157be569f06b35a120f8de07",
+    "xtensa-lx7/src/jit/mod.rs": "f3442a9a5c1efed270fa9185ccd5cf5c698a856d67a9e3ee1eeda78de3588c08",
+    "xtensa-lx7/src/jit/native/native_short_call.rs": "b3eb3898e835b7585e778bb32fbfc221f35dee8d344c5d334b461128d45a799d"
+  },
+  "steps": [
+    {
+      "name": "clippy-native-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T05:57:36.731643+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T05:57:43.068874+00:00"
+    },
+    {
+      "name": "evidence-privacy",
+      "command": [
+        "node",
+        "tools/check-evidence-privacy.mjs",
+        "docs/evidence",
+        "docs/platform/evidence/seeed*"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T05:57:43.069186+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T05:57:43.986276+00:00"
+    },
+    {
+      "name": "retained-receipts",
+      "command": [
+        "sh",
+        "-c",
+        "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs && node docs/evidence/perf-x5-2026-09-22/verify-results.mjs && node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs && node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs && node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs && node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T05:57:43.986519+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T05:57:44.847998+00:00"
+    },
+    {
+      "name": "fetch-assets",
+      "command": [
+        "sh",
+        "tools/fetch-demo-assets.sh",
+        "--no-linux"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T05:57:44.848277+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T05:57:48.543800+00:00"
+    },
+    {
+      "name": "build-workspace",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--workspace",
+        "--features",
+        "native-short-call"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T05:57:48.544110+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T05:59:29.907458+00:00"
+    },
+    {
+      "name": "clippy-native",
+      "command": [
+        "cargo",
+        "clippy",
+        "--workspace",
+        "--all-targets",
+        "--features",
+        "native-short-call",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T05:59:29.907674+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T05:59:33.505702+00:00"
+    },
+    {
+      "name": "clippy-wasm",
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--target",
+        "wasm32-unknown-unknown",
+        "-p",
+        "esp32sim-wasm",
+        "--features",
+        "jit-tests",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T05:59:33.505961+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T05:59:36.533497+00:00"
+    },
+    {
+      "name": "test-workspace",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--workspace",
+        "--features",
+        "native-short-call",
+        "--",
+        "--include-ignored",
+        "--skip",
+        "external_"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T05:59:36.533721+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:10:52.570594+00:00"
+    },
+    {
+      "name": "network",
+      "command": [
+        "node",
+        "tools/network-helper-test.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:10:52.570848+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:10:53.640275+00:00"
+    },
+    {
+      "name": "network-relay",
+      "command": [
+        "node",
+        "--test",
+        "tools/network-relay-test.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:10:53.640545+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:10:54.052968+00:00"
+    },
+    {
+      "name": "native-vq",
+      "command": [
+        "env",
+        "ESP32SIM_VQ_NATIVE=1",
+        "cargo",
+        "test",
+        "--release",
+        "-p",
+        "esp32s3",
+        "--test",
+        "machine",
+        "--test",
+        "virtual_stops"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:10:54.053353+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:11:15.363665+00:00"
+    },
+    {
+      "name": "wasm-production",
+      "command": [
+        "sh",
+        "tools/wasm-build.sh"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:11:15.363956+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:11:48.812011+00:00"
+    },
+    {
+      "name": "wasm-sections",
+      "command": [
+        "node",
+        "tools/check-wasm-sections.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:11:48.812275+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:11:48.903258+00:00"
+    },
+    {
+      "name": "wasm-manifests",
+      "command": [
+        "node",
+        "tools/wasm-test.mjs",
+        "hello",
+        "c3-hello",
+        "c6-hello",
+        "c6-xiao",
+        "p4-hello",
+        "p4-c6-hosted",
+        "p4-lcd35-synth",
+        "c6-energy-scan",
+        "c6-contiki",
+        "c6-contiki-net",
+        "c6-rpl-net",
+        "panel",
+        "tdisplay-prices",
+        "tdisplay-schematik"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:11:48.903525+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:12:35.962478+00:00"
+    },
+    {
+      "name": "platform",
+      "command": [
+        "node",
+        "--test",
+        "tools/platform-accessory-selection-test.mjs",
+        "tools/platform-analytics-test.mjs",
+        "tools/platform-app-image-test.mjs",
+        "tools/platform-audio-browser-test.mjs",
+        "tools/platform-audio-live-test.mjs",
+        "tools/platform-audio-playback-test.mjs",
+        "tools/platform-audio-stream-test.mjs",
+        "tools/platform-audio-wasm-test.mjs",
+        "tools/platform-ble-profile-test.mjs",
+        "tools/platform-button-polarity-test.mjs",
+        "tools/platform-c5-driver-compat-runtime-test.mjs",
+        "tools/platform-c5-lcd273-diagnostics-parser-test.mjs",
+        "tools/platform-c5-rom-test.mjs",
+        "tools/platform-c5-test.mjs",
+        "tools/platform-c5-wasm-test.mjs",
+        "tools/platform-c5-wifi-driver-compat-test.mjs",
+        "tools/platform-c61-image-test.mjs",
+        "tools/platform-catalog-loading-test.mjs",
+        "tools/platform-catalog-selection-test.mjs",
+        "tools/platform-cloudzao-claw154-model-test.mjs",
+        "tools/platform-cloudzao-claw4-model-test.mjs",
+        "tools/platform-cloudzao-runtime-test.mjs",
+        "tools/platform-cloudzao-test.mjs",
+        "tools/platform-config-test.mjs",
+        "tools/platform-console-log-test.mjs",
+        "tools/platform-controller-registry-test.mjs",
+        "tools/platform-corematrix-grove-test.mjs",
+        "tools/platform-cores3-front-test.mjs",
+        "tools/platform-device-storage-test.mjs",
+        "tools/platform-dial-model-test.mjs",
+        "tools/platform-encoder-test.mjs",
+        "tools/platform-firmware-archive-test.mjs",
+        "tools/platform-firmware-bundle-test.mjs",
+        "tools/platform-firmware-cache-test.mjs",
+        "tools/platform-firmware-download-access-test.mjs",
+        "tools/platform-firmware-history-test.mjs",
+        "tools/platform-firmware-limits-test.mjs",
+        "tools/platform-firmware-policy-test.mjs",
+        "tools/platform-firmware-recovery-test.mjs",
+        "tools/platform-firmware-relay-test.mjs",
+        "tools/platform-firmware-run-ui-test.mjs",
+        "tools/platform-firmware-sync-test.mjs",
+        "tools/platform-firmware-target-test.mjs",
+        "tools/platform-flash-batch-test.mjs",
+        "tools/platform-flash-configuration-test.mjs",
+        "tools/platform-flash-independence-test.mjs",
+        "tools/platform-flash-security-test.mjs",
+        "tools/platform-flasher-test.mjs",
+        "tools/platform-flight-runtime-test.mjs",
+        "tools/platform-flight-test.mjs",
+        "tools/platform-gps-model-test.mjs",
+        "tools/platform-guest-network-test.mjs",
+        "tools/platform-guest-page-test.mjs",
+        "tools/platform-hardware-diagnostics-test.mjs",
+        "tools/platform-hints-test.mjs",
+        "tools/platform-i18n-test.mjs",
+        "tools/platform-imu-test.mjs",
+        "tools/platform-ink4-plus-test.mjs",
+        "tools/platform-input-test.mjs",
+        "tools/platform-ip-location-test.mjs",
+        "tools/platform-knowledge-test.mjs",
+        "tools/platform-lilygo-board-construction-test.mjs",
+        "tools/platform-lilygo-c5-test.mjs",
+        "tools/platform-lilygo-c6-test.mjs",
+        "tools/platform-lilygo-capabilities-test.mjs",
+        "tools/platform-lilygo-catalog-test.mjs",
+        "tools/platform-lilygo-chronology-test.mjs",
+        "tools/platform-lilygo-models-test.mjs",
+        "tools/platform-lilygo-p4-test.mjs",
+        "tools/platform-lilygo-runtime-test.mjs",
+        "tools/platform-lilygo-s2-test.mjs",
+        "tools/platform-lilygo-s3-test.mjs",
+        "tools/platform-lilygo-spark-test.mjs",
+        "tools/platform-local-firmware-test.mjs",
+        "tools/platform-lora-test.mjs",
+        "tools/platform-m5burner-captcha-test.mjs",
+        "tools/platform-m5burner-test.mjs",
+        "tools/platform-m5burner-v1-sync-test.mjs",
+        "tools/platform-manual-watchlist-test.mjs",
+        "tools/platform-manufacturer-model-test.mjs",
+        "tools/platform-merged-layout-test.mjs",
+        "tools/platform-meshtastic-test.mjs",
+        "tools/platform-model-binary-test.mjs",
+        "tools/platform-model-inspection-test.mjs",
+        "tools/platform-model-test.mjs",
+        "tools/platform-mosaico-layout-test.mjs",
+        "tools/platform-mosaico-model-test.mjs",
+        "tools/platform-mosaico-source-test.mjs",
+        "tools/platform-motor-test.mjs",
+        "tools/platform-network-test.mjs",
+        "tools/platform-pages-stage-test.mjs",
+        "tools/platform-paperdiy-model-test.mjs",
+        "tools/platform-papermono-lite-model-test.mjs",
+        "tools/platform-pcb-placeholder-test.mjs",
+        "tools/platform-photo-surface-test.mjs",
+        "tools/platform-plate-geometry-test.mjs",
+        "tools/platform-recording-test.mjs",
+        "tools/platform-rgb-led-view-test.mjs",
+        "tools/platform-runtime-test.mjs",
+        "tools/platform-s2-image-test.mjs",
+        "tools/platform-scene-imu-test.mjs",
+        "tools/platform-scene-test.mjs",
+        "tools/platform-sd-card-test.mjs",
+        "tools/platform-sd-image-test.mjs",
+        "tools/platform-seeed-catalog-test.mjs",
+        "tools/platform-servo-view-test.mjs",
+        "tools/platform-shared-startup-test.mjs",
+        "tools/platform-stackchan-runtime-test.mjs",
+        "tools/platform-stampfly-demo-ui-test.mjs",
+        "tools/platform-stick-environment-test.mjs",
+        "tools/platform-stickc-plus-test.mjs",
+        "tools/platform-stickc-test.mjs",
+        "tools/platform-sticker-test.mjs",
+        "tools/platform-sticks3-test.mjs",
+        "tools/platform-stickt2-test.mjs",
+        "tools/platform-triviapod-test.mjs",
+        "tools/platform-unit-angle-test.mjs",
+        "tools/platform-unit-button-test.mjs",
+        "tools/platform-unit-dlight-test.mjs",
+        "tools/platform-unit-env4-test.mjs",
+        "tools/platform-unit-hub-test.mjs",
+        "tools/platform-unit-pir-test.mjs",
+        "tools/platform-unit-rgb-test.mjs",
+        "tools/platform-view-test.mjs",
+        "tools/platform-viewer-camera-test.mjs",
+        "tools/platform-virtual-firmware-configuration-test.mjs",
+        "tools/platform-visual-variant-test.mjs",
+        "tools/platform-watchlist-test.mjs",
+        "tools/platform-waveshare-c5-core-test.mjs",
+        "tools/platform-waveshare-c5-factory-test.mjs",
+        "tools/platform-waveshare-c6-zero-test.mjs",
+        "tools/platform-waveshare-h2-test.mjs",
+        "tools/platform-waveshare-registry-test.mjs",
+        "tools/platform-waveshare-revision-test.mjs",
+        "tools/platform-waveshare-s2-test.mjs",
+        "tools/platform-waveshare-test.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:12:35.962773+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:12:44.159030+00:00"
+    },
+    {
+      "name": "waveshare-stat",
+      "command": [
+        "node",
+        "tools/check-waveshare-stat-order.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:12:44.159345+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:12:49.745179+00:00"
+    },
+    {
+      "name": "recording-real",
+      "command": [
+        "node",
+        "tools/platform-recording-test.mjs",
+        "--real"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:12:49.745466+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:12:53.888339+00:00"
+    },
+    {
+      "name": "stopwatch-real",
+      "command": [
+        "node",
+        "tools/wasm-test.mjs",
+        "demo-stopwatch"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:12:53.888716+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:12:54.505797+00:00"
+    },
+    {
+      "name": "hardware-probe",
+      "command": [
+        "node",
+        "tools/probe-hardware-diagnostics.mjs",
+        "tools/fixtures/stopwatch-hardware-checks.json",
+        "/Users/alice/esp32sim/output/native-short-call-final-checks-20261125/stopwatch-hardware-checks.json"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:12:54.506126+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:02.729074+00:00"
+    },
+    {
+      "name": "timing-api",
+      "command": [
+        "node",
+        "wasm/tests/timing-api.mjs",
+        "web/wasm/esp32sim.wasm"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:02.729432+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:02.827752+00:00"
+    },
+    {
+      "name": "ble-api",
+      "command": [
+        "node",
+        "wasm/tests/ble-api.mjs",
+        "web/wasm/esp32sim.wasm",
+        "web/wasm/fw/public",
+        "/Users/alice/esp32sim/web/wasm/fw/esp32c3_rev3_rom.elf"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:02.828038+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:03.509836+00:00"
+    },
+    {
+      "name": "ble-connection",
+      "command": [
+        "node",
+        "wasm/tests/ble-connection.mjs",
+        "web/wasm/esp32sim.wasm",
+        "web/wasm/fw/public",
+        "/Users/alice/esp32sim/web/wasm/fw/esp32c3_rev3_rom.elf"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:03.510124+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:05.567610+00:00"
+    },
+    {
+      "name": "worker-pacing",
+      "command": [
+        "node",
+        "tools/worker-pacing-test.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:05.567916+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:05.649659+00:00"
+    },
+    {
+      "name": "worker-channel",
+      "command": [
+        "node",
+        "tools/worker-channel-test.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:05.649944+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:05.818939+00:00"
+    },
+    {
+      "name": "input-ui",
+      "command": [
+        "node",
+        "--test",
+        "tools/touch-input-test.mjs",
+        "tools/stopwatch-ui-test.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:05.819243+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:05.992858+00:00"
+    },
+    {
+      "name": "build-policy",
+      "command": [
+        "node",
+        "--test",
+        "tools/wasm-build-policy.test.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:05.993172+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:06.176979+00:00"
+    },
+    {
+      "name": "browser-benchmark-node",
+      "command": [
+        "node",
+        "--test",
+        "tools/browser-benchmark/battery-failure.test.mjs",
+        "tools/browser-benchmark/battery-workload.test.mjs",
+        "tools/browser-benchmark/experiments.test.mjs",
+        "tools/browser-benchmark/verdict.test.mjs"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:06.177276+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:06.352991+00:00"
+    },
+    {
+      "name": "browser-benchmark-python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/browser-benchmark",
+        "-p",
+        "test_*.py"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:06.353376+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:13:06.443924+00:00"
+    },
+    {
+      "name": "wasm-differential",
+      "command": [
+        "sh",
+        "tools/wasm-jit-test.sh"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:13:06.444256+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:14:04.828052+00:00"
+    },
+    {
+      "name": "wasm-profile-build",
+      "command": [
+        "sh",
+        "-c",
+        ". ./tools/wasm-rustflags.sh && cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile"
+      ],
+      "status": "passed",
+      "started_at": "2026-11-25T06:14:04.828406+00:00",
+      "exit_code": 0,
+      "completed_at": "2026-11-25T06:14:36.700826+00:00"
+    }
+  ],
+  "rust_results": {
+    "summaries": 249,
+    "reported_passes": 3526,
+    "failures": 0,
+    "ignored": 0
+  },
+  "limits": "Local native AArch64 host checks; remote CI and low-end ARM results not established by this record."
+}

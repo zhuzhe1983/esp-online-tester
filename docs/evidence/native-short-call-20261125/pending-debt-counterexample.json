@@ -1,0 +1,29 @@
+{
+  "source": "8b5a631525199e492ba79266410bfcaff8c0e54a",
+  "test_overlay_sha256": "86536f834f787b66c95a99cc50f970b20cddc8fa207af1ebdf78a986b9e9e1db",
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "-p",
+    "xtensa-lx7",
+    "--features",
+    "native-short-call",
+    "pending_cache_penalty_keeps_the_original_call_boundary_before_ccompare",
+    "--",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "expected": "Old fusion must fail; data-load debt97 crosses CCOMPARE before callee ENTRY at CPI16",
+  "actual_native_return": [
+    4,
+    "None"
+  ],
+  "reference_return": [
+    2,
+    "None"
+  ],
+  "fixed_commit": "c662de94dc0cd1f5219ed60374e38e9f606e36cd",
+  "original_log_sha256": "7afe6e5c5b860e6fa6fa685fbba1cca2d1faee6cdb2c9bdf6d5007e4ae1e0f10",
+  "fixed_focused_log_sha256": "f94de68092826f31b825b588a4ffc28a82cd76fed4a79a893d5df27e5f685ade"
+}
