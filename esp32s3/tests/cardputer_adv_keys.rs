@@ -38,7 +38,7 @@ fn debounced_logical_matrix_mapping_irq_and_real_event_register_consumption() {
         let expected=(column/2*10+row+4*(column&1)+1)|0x80;
         assert_eq!(read(&mut b,3),1);assert_eq!(read(&mut b,4),expected);write(&mut b,2,1);
     }}
-    assert_eq!(b.board.matrix_key_diagnostics(),Some(KeyEventDiagnostics{accepted:56,consumed:56,pending:0}));
+    assert_eq!(b.board.matrix_key_diagnostics(),Some(KeyEventDiagnostics{accepted:56,consumed:56,pending:0,interrupt_pending:false}));
     assert_eq!(inject(&mut b,4,0,true),A::Invalid);assert_eq!(inject(&mut b,0,14,true),A::Invalid);
 }
 #[test]
@@ -71,5 +71,5 @@ fn guest_ack_irq_edge_is_published_before_the_next_debounced_key() {
     // board's cached pad is still low. A new host event must not erase that ACK edge.
     assert_eq!(board.matrix_key_debounced_at(10,3,0,false),A::Accepted);
     assert_eq!(board.take_edges(),vec![BoardEdge{cycle:0,pin:11,level:true},BoardEdge{cycle:10,pin:11,level:false}]);
-    assert_eq!(event(d),4);reg(d,2,1);assert_eq!(board.matrix_key_diagnostics(),Some(KeyEventDiagnostics{accepted:2,consumed:2,pending:0}));
+    assert_eq!(event(d),4);reg(d,2,1);assert_eq!(board.matrix_key_diagnostics(),Some(KeyEventDiagnostics{accepted:2,consumed:2,pending:0,interrupt_pending:false}));
 }

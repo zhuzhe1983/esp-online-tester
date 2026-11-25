@@ -33,7 +33,7 @@ impl Tca8418State {
         self.cycle=self.cycle.max(cycle);self.desired[index]=down;self.sampled[index]=down;self.stable[index]=down;
         self.push((index+1) as u8 | if down{0x80}else{0});Accepted
     }
-    pub fn key_diagnostics(&self)->KeyEventDiagnostics {KeyEventDiagnostics{accepted:self.accepted,consumed:self.consumed,pending:self.fifo.len() as u8}}
+    pub fn key_diagnostics(&self)->KeyEventDiagnostics {KeyEventDiagnostics{accepted:self.accepted,consumed:self.consumed,pending:self.fifo.len() as u8,interrupt_pending:self.regs[2]&self.regs[1]&1!=0}}
     fn schedule(&mut self) {if self.next_scan.is_none() {self.next_scan=Some(self.cycle.saturating_div(self.period).saturating_add(1).saturating_mul(self.period));}}
     fn selected(&self,index:usize)->bool {self.regs[0x1d]&(1<<(index/10))!=0 && self.regs[0x1e+(index%10)/8]&(1<<((index%10)%8))!=0}
     fn push(&mut self,event:u8) {
@@ -177,12 +177,28 @@ mod tests {
         assert_eq!(state.try_key_debounced(7,0,0,true),Accepted);
         assert_eq!(state.try_key_debounced(7,0,0,true),Duplicate);
         assert_eq!(state.try_key_debounced(8,0,0,false),Accepted);
-        assert_eq!(state.key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:0,pending:2});drop(state);
+        assert_eq!(state.key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:0,pending:2,interrupt_pending:true});drop(state);
         assert_eq!(read(&mut d,5),1);assert_eq!(read(&mut d,3),2);
         assert_eq!(s.lock().unwrap().key_diagnostics().consumed,0,"B/count reads are observations");
         assert_eq!(read(&mut d,4),0x81);assert_eq!(read(&mut d,4),1);assert_eq!(read(&mut d,4),0);
-        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:2,pending:0});
+        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:2,pending:0,interrupt_pending:true});
         s.lock().unwrap().advance_to(100000);assert_eq!(read(&mut d,3),0,"no duplicate physical scan event");
+    }
+    #[test]
+    fn diagnostics_observe_guest_irq_ack_without_mutation_or_masking_fifo() {
+        let (s,mut d)=setup();
+        assert_eq!(s.lock().unwrap().try_key_debounced(0,0,0,true),KeyEventAcceptance::Accepted);
+        let before=snapshot(&s.lock().unwrap());
+        for _ in 0..10 {assert!(s.lock().unwrap().key_diagnostics().interrupt_pending);}
+        assert_eq!(snapshot(&s.lock().unwrap()),before);
+        assert_eq!(read(&mut d,4),0x81);
+        assert_eq!(s.lock().unwrap().key_diagnostics().pending,0);
+        assert!(s.lock().unwrap().key_diagnostics().interrupt_pending,"FIFO pop precedes IRQ ACK");
+        write(&mut d,2,1);assert!(!s.lock().unwrap().key_diagnostics().interrupt_pending);
+        write(&mut d,1,0);
+        assert_eq!(s.lock().unwrap().try_key_debounced(1,0,0,false),KeyEventAcceptance::Accepted);
+        assert!(!s.lock().unwrap().key_diagnostics().interrupt_pending,"masked IRQ does not block a polling consumer");
+        assert_eq!(read(&mut d,4),1);
     }
     #[test]
     fn host_full_is_atomic_even_with_hardware_overwrite_enabled_and_retry_loses_nothing() {
@@ -198,7 +214,7 @@ mod tests {
         events.push(read(&mut d,4));assert_eq!(s.lock().unwrap().try_key_debounced(2,0,0,false),Accepted);
         while read(&mut d,3)>0 {events.push(read(&mut d,4));}
         assert_eq!(events,[0x81,1].repeat(6));assert_eq!(read(&mut d,2)&8,0,"host admission never overflows");
-        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:12,consumed:12,pending:0});
+        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:12,consumed:12,pending:0,interrupt_pending:true});
     }
     #[test]
     fn host_disabled_and_invalid_are_atomic_but_interrupt_mask_does_not_disable_fifo() {
@@ -225,7 +241,7 @@ mod tests {
         assert_eq!(read(&mut d,4),0x81);s.lock().unwrap().advance_to(24999);assert_eq!(read(&mut d,3),0);
         s.lock().unwrap().advance_to(25000);assert_eq!(read(&mut d,3),0);
         s.lock().unwrap().advance_to(50000);assert_eq!(read(&mut d,4),0x82);
-        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:2,pending:0});
+        assert_eq!(s.lock().unwrap().key_diagnostics(),KeyEventDiagnostics{accepted:2,consumed:2,pending:0,interrupt_pending:true});
         let fresh=Tca8418State::new(1_000_000);assert_eq!(fresh.key_diagnostics(),KeyEventDiagnostics::default());assert!(fresh.irq_high());
     }
 
