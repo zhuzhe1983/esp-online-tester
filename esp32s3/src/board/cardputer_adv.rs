@@ -63,6 +63,16 @@ impl BoardModel for CardputerAdv {
         // Inverse of factory keyboard.cpp remap: logical 4x14 -> wired 7x8.
         self.keyboard.lock().expect("Cardputer keyboard mutex poisoned").key(cycle,column/2,row+4*(column&1),pressed)
     }
+    fn matrix_key_debounced_at(&mut self,cycle:VirtualCycle,row:u8,column:u8,pressed:bool)->esp_soc::board::KeyEventAcceptance {
+        use esp_soc::board::KeyEventAcceptance::*;
+        if row>=4 || column>=14 {return Invalid;}
+        // Preserve a guest ACK's deassertion before admission can assert IRQ again.
+        // A short host run may return before advance_to/take_edges publishes it.
+        self.sync_irq();
+        let result=self.keyboard.lock().expect("Cardputer keyboard mutex poisoned").try_key_debounced(cycle,column/2,row+4*(column&1),pressed);
+        if matches!(result,Accepted|Duplicate) {self.cycle=self.cycle.max(cycle);self.sync_irq();}result
+    }
+    fn matrix_key_diagnostics(&self)->Option<esp_soc::board::KeyEventDiagnostics> {Some(self.keyboard.lock().expect("Cardputer keyboard mutex poisoned").key_diagnostics())}
     fn advance_to(&mut self,cycle:VirtualCycle) {
         let edges=self.keyboard.lock().expect("Cardputer keyboard mutex poisoned").advance_to(cycle);
         for (at,level) in edges {self.irq_high=level;self.edges.push(BoardEdge{cycle:at,pin:11,level});}

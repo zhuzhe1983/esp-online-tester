@@ -1,0 +1,540 @@
+{
+  "source": {
+    "base": "930731a2fb52cfecb9eb43fd4c2651c7c74e1e70",
+    "latest_public_integration": "f1f988a7ab75a59619df811dce65e900ec5f2a00",
+    "checked_head": "9a4742c20c21ab2cbc34de4dc8c068791678064a",
+    "commits": [
+      "b722499029b3f730cd966b1bab63a3d65001170e",
+      "cce5857fcfcbac33ea6d60576f9b46c36b6f9f82",
+      "5a394b8493e519c5c4a01dfeea1754410aa54abf",
+      "212cb8d65e29aedf71d71f94dc81ad27a756ef2b"
+    ],
+    "production_file_sha256": {
+      "esp-periph/src/keypad.rs": "2e09e35c6a5b695b22dd0fdb00243e36d1cba7608e4656d7fca01aeeecc44ddb",
+      "esp-periph/src/lib.rs": "09e6d76fd5e3c199cc39850ba366a433a03a54bff1b28ab1507b803558597a24",
+      "esp-periph/src/i2c/tca8418.rs": "9574acece9fbe2c9595fdfc112d81a5915dbbf79c68b0087dedbf89d00173d0c",
+      "esp-soc/src/board.rs": "79201659b4b11292aa9e730c5714af3e402eef95ccfee7b1c1663b24de16b085",
+      "esp32s3/src/board/cardputer_adv.rs": "e0803cae11ed593c3ef57cdac9c8a40f065f6ce006af8d52ad81fb1918bebb21",
+      "esp32s3/tests/cardputer_adv_keys.rs": "4ba0717411e18391d8bf6798b3b7ab96595ac16ff5cbe1ca3a014d54caa096f4"
+    }
+  },
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "local_environment": "native AArch64 macOS; Node26.13.0; default release LTO; isolated build target",
+  "tests": {
+    "tca_directed": 11,
+    "board_directed": 4,
+    "workspace_reported_passes": 3521,
+    "workspace_result_summaries": 249,
+    "workspace_failed": 0,
+    "platform": {
+      "tests": 554,
+      "passed": 550,
+      "skipped": 4,
+      "failed": 0
+    },
+    "production_wasm_demos": 14,
+    "commands": [
+      {
+        "name": "evidence-privacy",
+        "command": [
+          "node",
+          "tools/check-evidence-privacy.mjs",
+          "docs/evidence",
+          "docs/platform/evidence/seeed*"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "retained-receipts",
+        "command": [
+          "sh",
+          "-c",
+          "node --test docs/evidence/perf-x5-2026-09-22/verify-results.test.mjs && node docs/evidence/perf-x5-2026-09-22/verify-results.mjs && node --test docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.test.mjs && node docs/evidence/perf-x5-2026-09-22/m1-before-after/verify.mjs && node --test docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.test.mjs && node docs/evidence/perf-x5-2026-09-22/historical-before-after/verify.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "fetch-assets",
+        "command": [
+          "sh",
+          "tools/fetch-demo-assets.sh",
+          "--no-linux"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build-workspace",
+        "command": [
+          "cargo",
+          "build",
+          "--release",
+          "--workspace"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "clippy-native",
+        "command": [
+          "cargo",
+          "clippy",
+          "--workspace",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "clippy-wasm",
+        "command": [
+          "cargo",
+          "clippy",
+          "--release",
+          "--target",
+          "wasm32-unknown-unknown",
+          "-p",
+          "esp32sim-wasm",
+          "--features",
+          "jit-tests",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "test-workspace",
+        "command": [
+          "cargo",
+          "test",
+          "--release",
+          "--workspace",
+          "--",
+          "--include-ignored",
+          "--skip",
+          "external_"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "network",
+        "command": [
+          "node",
+          "tools/network-helper-test.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "network-relay",
+        "command": [
+          "node",
+          "--test",
+          "tools/network-relay-test.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "native-vq",
+        "command": [
+          "env",
+          "ESP32SIM_VQ_NATIVE=1",
+          "cargo",
+          "test",
+          "--release",
+          "-p",
+          "esp32s3",
+          "--test",
+          "machine",
+          "--test",
+          "virtual_stops"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "wasm-production",
+        "command": [
+          "sh",
+          "tools/wasm-build.sh"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "wasm-sections",
+        "command": [
+          "node",
+          "tools/check-wasm-sections.mjs",
+          "web/wasm/esp32sim.wasm"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "wasm-manifests",
+        "command": [
+          "node",
+          "tools/wasm-test.mjs",
+          "hello",
+          "c3-hello",
+          "c6-hello",
+          "c6-xiao",
+          "p4-hello",
+          "p4-c6-hosted",
+          "p4-lcd35-synth",
+          "c6-energy-scan",
+          "c6-contiki",
+          "c6-contiki-net",
+          "c6-rpl-net",
+          "panel",
+          "tdisplay-prices",
+          "tdisplay-schematik"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "platform-after-rom-fix",
+        "command": [
+          "node",
+          "--test",
+          "tools/platform-accessory-selection-test.mjs",
+          "tools/platform-analytics-test.mjs",
+          "tools/platform-app-image-test.mjs",
+          "tools/platform-audio-browser-test.mjs",
+          "tools/platform-audio-live-test.mjs",
+          "tools/platform-audio-playback-test.mjs",
+          "tools/platform-audio-stream-test.mjs",
+          "tools/platform-audio-wasm-test.mjs",
+          "tools/platform-ble-profile-test.mjs",
+          "tools/platform-button-polarity-test.mjs",
+          "tools/platform-c5-driver-compat-runtime-test.mjs",
+          "tools/platform-c5-lcd273-diagnostics-parser-test.mjs",
+          "tools/platform-c5-rom-test.mjs",
+          "tools/platform-c5-test.mjs",
+          "tools/platform-c5-wasm-test.mjs",
+          "tools/platform-c5-wifi-driver-compat-test.mjs",
+          "tools/platform-c61-image-test.mjs",
+          "tools/platform-catalog-loading-test.mjs",
+          "tools/platform-catalog-selection-test.mjs",
+          "tools/platform-cloudzao-claw154-model-test.mjs",
+          "tools/platform-cloudzao-claw4-model-test.mjs",
+          "tools/platform-cloudzao-runtime-test.mjs",
+          "tools/platform-cloudzao-test.mjs",
+          "tools/platform-config-test.mjs",
+          "tools/platform-console-log-test.mjs",
+          "tools/platform-controller-registry-test.mjs",
+          "tools/platform-corematrix-grove-test.mjs",
+          "tools/platform-cores3-front-test.mjs",
+          "tools/platform-device-storage-test.mjs",
+          "tools/platform-dial-model-test.mjs",
+          "tools/platform-encoder-test.mjs",
+          "tools/platform-firmware-archive-test.mjs",
+          "tools/platform-firmware-bundle-test.mjs",
+          "tools/platform-firmware-cache-test.mjs",
+          "tools/platform-firmware-download-access-test.mjs",
+          "tools/platform-firmware-history-test.mjs",
+          "tools/platform-firmware-limits-test.mjs",
+          "tools/platform-firmware-policy-test.mjs",
+          "tools/platform-firmware-recovery-test.mjs",
+          "tools/platform-firmware-relay-test.mjs",
+          "tools/platform-firmware-run-ui-test.mjs",
+          "tools/platform-firmware-sync-test.mjs",
+          "tools/platform-firmware-target-test.mjs",
+          "tools/platform-flash-batch-test.mjs",
+          "tools/platform-flash-configuration-test.mjs",
+          "tools/platform-flash-independence-test.mjs",
+          "tools/platform-flash-security-test.mjs",
+          "tools/platform-flasher-test.mjs",
+          "tools/platform-flight-runtime-test.mjs",
+          "tools/platform-flight-test.mjs",
+          "tools/platform-gps-model-test.mjs",
+          "tools/platform-guest-network-test.mjs",
+          "tools/platform-guest-page-test.mjs",
+          "tools/platform-hardware-diagnostics-test.mjs",
+          "tools/platform-hints-test.mjs",
+          "tools/platform-i18n-test.mjs",
+          "tools/platform-imu-test.mjs",
+          "tools/platform-ink4-plus-test.mjs",
+          "tools/platform-input-test.mjs",
+          "tools/platform-ip-location-test.mjs",
+          "tools/platform-knowledge-test.mjs",
+          "tools/platform-lilygo-board-construction-test.mjs",
+          "tools/platform-lilygo-c5-test.mjs",
+          "tools/platform-lilygo-c6-test.mjs",
+          "tools/platform-lilygo-capabilities-test.mjs",
+          "tools/platform-lilygo-catalog-test.mjs",
+          "tools/platform-lilygo-chronology-test.mjs",
+          "tools/platform-lilygo-models-test.mjs",
+          "tools/platform-lilygo-p4-test.mjs",
+          "tools/platform-lilygo-runtime-test.mjs",
+          "tools/platform-lilygo-s2-test.mjs",
+          "tools/platform-lilygo-s3-test.mjs",
+          "tools/platform-lilygo-spark-test.mjs",
+          "tools/platform-local-firmware-test.mjs",
+          "tools/platform-lora-test.mjs",
+          "tools/platform-m5burner-captcha-test.mjs",
+          "tools/platform-m5burner-test.mjs",
+          "tools/platform-m5burner-v1-sync-test.mjs",
+          "tools/platform-manual-watchlist-test.mjs",
+          "tools/platform-manufacturer-model-test.mjs",
+          "tools/platform-merged-layout-test.mjs",
+          "tools/platform-meshtastic-test.mjs",
+          "tools/platform-model-binary-test.mjs",
+          "tools/platform-model-inspection-test.mjs",
+          "tools/platform-model-test.mjs",
+          "tools/platform-mosaico-layout-test.mjs",
+          "tools/platform-mosaico-model-test.mjs",
+          "tools/platform-mosaico-source-test.mjs",
+          "tools/platform-motor-test.mjs",
+          "tools/platform-network-test.mjs",
+          "tools/platform-pages-stage-test.mjs",
+          "tools/platform-paperdiy-model-test.mjs",
+          "tools/platform-papermono-lite-model-test.mjs",
+          "tools/platform-pcb-placeholder-test.mjs",
+          "tools/platform-photo-surface-test.mjs",
+          "tools/platform-plate-geometry-test.mjs",
+          "tools/platform-recording-test.mjs",
+          "tools/platform-rgb-led-view-test.mjs",
+          "tools/platform-runtime-test.mjs",
+          "tools/platform-s2-image-test.mjs",
+          "tools/platform-scene-imu-test.mjs",
+          "tools/platform-scene-test.mjs",
+          "tools/platform-sd-card-test.mjs",
+          "tools/platform-sd-image-test.mjs",
+          "tools/platform-seeed-catalog-test.mjs",
+          "tools/platform-servo-view-test.mjs",
+          "tools/platform-shared-startup-test.mjs",
+          "tools/platform-stackchan-runtime-test.mjs",
+          "tools/platform-stampfly-demo-ui-test.mjs",
+          "tools/platform-stick-environment-test.mjs",
+          "tools/platform-stickc-plus-test.mjs",
+          "tools/platform-stickc-test.mjs",
+          "tools/platform-sticker-test.mjs",
+          "tools/platform-sticks3-test.mjs",
+          "tools/platform-stickt2-test.mjs",
+          "tools/platform-triviapod-test.mjs",
+          "tools/platform-unit-angle-test.mjs",
+          "tools/platform-unit-button-test.mjs",
+          "tools/platform-unit-dlight-test.mjs",
+          "tools/platform-unit-env4-test.mjs",
+          "tools/platform-unit-hub-test.mjs",
+          "tools/platform-unit-pir-test.mjs",
+          "tools/platform-unit-rgb-test.mjs",
+          "tools/platform-view-test.mjs",
+          "tools/platform-viewer-camera-test.mjs",
+          "tools/platform-virtual-firmware-configuration-test.mjs",
+          "tools/platform-visual-variant-test.mjs",
+          "tools/platform-watchlist-test.mjs",
+          "tools/platform-waveshare-c5-core-test.mjs",
+          "tools/platform-waveshare-c5-factory-test.mjs",
+          "tools/platform-waveshare-c6-zero-test.mjs",
+          "tools/platform-waveshare-h2-test.mjs",
+          "tools/platform-waveshare-registry-test.mjs",
+          "tools/platform-waveshare-revision-test.mjs",
+          "tools/platform-waveshare-s2-test.mjs",
+          "tools/platform-waveshare-test.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "waveshare-stat",
+        "command": [
+          "node",
+          "tools/check-waveshare-stat-order.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "recording-real",
+        "command": [
+          "node",
+          "tools/platform-recording-test.mjs",
+          "--real"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "stopwatch-real",
+        "command": [
+          "node",
+          "tools/wasm-test.mjs",
+          "demo-stopwatch"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "hardware-probe",
+        "command": [
+          "node",
+          "tools/probe-hardware-diagnostics.mjs",
+          "tools/fixtures/stopwatch-hardware-checks.json",
+          "$REPO/output/debounced-keys-combined-20261125/stopwatch-hardware-checks.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "timing-api",
+        "command": [
+          "node",
+          "wasm/tests/timing-api.mjs",
+          "web/wasm/esp32sim.wasm"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "ble-api",
+        "command": [
+          "node",
+          "wasm/tests/ble-api.mjs",
+          "web/wasm/esp32sim.wasm",
+          "web/wasm/fw/public",
+          "$REPO/web/wasm/fw/esp32c3_rev3_rom.elf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "ble-connection",
+        "command": [
+          "node",
+          "wasm/tests/ble-connection.mjs",
+          "web/wasm/esp32sim.wasm",
+          "web/wasm/fw/public",
+          "$REPO/web/wasm/fw/esp32c3_rev3_rom.elf"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "worker-pacing",
+        "command": [
+          "node",
+          "tools/worker-pacing-test.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "worker-channel",
+        "command": [
+          "node",
+          "tools/worker-channel-test.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "input-ui",
+        "command": [
+          "node",
+          "--test",
+          "tools/touch-input-test.mjs",
+          "tools/stopwatch-ui-test.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build-policy",
+        "command": [
+          "node",
+          "--test",
+          "tools/wasm-build-policy.test.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "browser-benchmark-node",
+        "command": [
+          "node",
+          "--test",
+          "tools/browser-benchmark/battery-failure.test.mjs",
+          "tools/browser-benchmark/battery-workload.test.mjs",
+          "tools/browser-benchmark/experiments.test.mjs",
+          "tools/browser-benchmark/verdict.test.mjs"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "browser-benchmark-python",
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tools/browser-benchmark",
+          "-p",
+          "test_*.py"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "wasm-differential",
+        "command": [
+          "sh",
+          "tools/wasm-jit-test.sh"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "wasm-profile-build",
+        "command": [
+          "sh",
+          "-c",
+          ". ./tools/wasm-rustflags.sh && cargo build --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-profile,cpu-profile"
+        ],
+        "exit_code": 0
+      }
+    ]
+  },
+  "negative_results": [
+    {
+      "scope": "old cce IRQ cache regression",
+      "outcome": "failed as intended: expected high@0 then low@10, actual [] after guest KEY_EVENT_A pop and W1C then immediate trusted release without board.advance",
+      "correction": "5a394b8493e519c5c4a01dfeea1754410aa54abf publishes the cached ACK before admission"
+    },
+    {
+      "scope": "initial all-platform run",
+      "outcome": "one file failed at setup; configured older shared ROM directory lacked esp32c5_rev100_rom.elf",
+      "correction": "unchanged source and production WASM; repeat platform with the complete hash-verified ROM set fetched by tools/fetch-demo-assets.sh, then run remaining checks"
+    },
+    {
+      "scope": "initial test-only snapshot lint",
+      "outcome": "Clippy type_complexity denied a tuple used only by tests",
+      "correction": "cce5857f uses cfg(test) Clone/Eq state snapshot; no production semantics changed"
+    },
+    {
+      "scope": "earlier production artifact copy",
+      "outcome": "build succeeded, shell copy used target/ while the isolated CARGO_TARGET_DIR differed",
+      "correction": "task-owned target symlink; repeat only the unfinished checks, retaining original failure"
+    }
+  ],
+  "integration_observation": {
+    "provenance": "reported by the separate native App integration; not an independent source-task device test",
+    "consumer_policy": "explicit FAST opt-in only; FIFO empty, enabled latched key IRQ ACK observed, then consumer-owned1ms guest cooldown",
+    "tests": [
+      {
+        "firmware": "Wordle",
+        "cpi": 16,
+        "edges_accepted": 24,
+        "event_a_pops": 24
+      },
+      {
+        "firmware": "UserDemo",
+        "cpi": 16,
+        "edges_accepted": 6,
+        "event_a_pops": 6
+      },
+      {
+        "firmware": "Wordle",
+        "cpi": 64,
+        "edges_accepted": 12,
+        "event_a_pops": 12
+      }
+    ],
+    "prior_counterexample": "FIFO-only/elapsed-delay policy could leave a final event pending, including5accepted/4popped at CPI64; ACK observation is separate from the board cached-edge repair",
+    "throughput_claim": false
+  },
+  "limitations": [
+    "Explicit nonphysical transport; ordinary25ms two-scan matrix path and normal browser API remain unchanged.",
+    "consumed counts only nonempty reg04 reads, not application processing; interrupt_pending is only the enabled, latched key-event bit, not every interrupt or software ISR completion.",
+    "FIFO count and IRQ state are observations, not a universal firmware-ready handshake; consumers choose transport and backpressure policy.",
+    "No public WASM or App C ABI extension; Rust trait/struct users must rebuild and wrappers must forward both optional Board methods.",
+    "No wall/CPU throughput comparison or clocks/quantum change in this batch."
+  ],
+  "privacy": "Curated source, commands, hashes and aggregate results only. Personal paths normalized; device addresses, accounts, IDs, process inventories, UI captures and raw private logs omitted."
+}

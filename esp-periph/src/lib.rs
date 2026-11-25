@@ -9,6 +9,7 @@ pub mod mmio;
 pub mod regram;
 pub mod crypto;
 pub mod i2c;
+pub mod keypad;
 pub mod uart;
 pub mod usb_serial_jtag;
 pub mod systimer;
