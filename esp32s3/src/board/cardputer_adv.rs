@@ -1,5 +1,5 @@
 //! M5Stack Cardputer-Adv: ST7789V2 and TCA8418 matrix keyboard, official K132-Adv pinmap.
-//! Digital ES8311 PCM/control and BMI270 initialization subsets; no analog/SD/RF/IR claim.
+//! Digital ES8311 PCM/control, a host-overridable battery divider and BMI270 initialization subsets.
 use std::sync::{Arc,Mutex};
 use esp_periph::i2c::I2cDevice;
 use esp_soc::devices::es8311::{Es8311,Es8311State};
@@ -18,6 +18,12 @@ impl CardputerAdv {
 impl Default for CardputerAdv {fn default()->Self {Self::new()}}
 impl BoardModel for CardputerAdv {
     fn name(&self)->&'static str {"cardputer-adv"}
+    fn default_analog_inputs(&self)->Vec<(u8,esp_periph::AnalogSource)> {
+        // M5Unified 96576a14 Power_Class.inl: ADC1 GPIO10, battery/pad ratio2.
+        // Explicit virtual 3.7V battery, not a fuel gauge or charger model. Host
+        // pad volts/raw/streams (including zero) win via AnalogInputs::set_default.
+        vec![(10,esp_periph::AnalogSource::Const(1.85))]
+    }
     fn gpio_changes(&mut self,changes:&[(u8,bool)]) {self.gpio_events+=changes.len() as u64;self.lcd.gpio(changes); }
     fn gpio_output_at(&mut self,cycle:VirtualCycle,changes:&[(u8,bool)],enabled:u64,output:u64) {
         self.cycle=cycle;self.gpio_changes(changes);let released=|pin:u8|enabled&(1u64<<pin)==0 || output&(1u64<<pin)!=0;
@@ -69,7 +75,7 @@ impl BoardModel for CardputerAdv {
     fn display(&self)->Option<(u32,u32,Vec<u16>,u64)> {Some(self.lcd.display())}
     fn display_version(&self)->u64 {self.lcd.version()}
     fn display_frames(&self)->u64 {self.lcd.panel.frames}
-    fn report(&self)->String {format!("[cardputer-adv] {}",self.lcd.report())}
+    fn report(&self)->String {format!("[cardputer-adv] {} battery=nominal-3.7V-overridable",self.lcd.report())}
 }
 #[cfg(test)]
 mod tests {
