@@ -29,6 +29,12 @@ mod native {
     pub const AVAILABLE: bool = true;
     pub const NONE: u32 = u32::MAX;
 
+    #[cfg(feature = "native-short-call")]
+    #[path = "native_short_call.rs"]
+    mod short_call;
+    #[cfg(feature = "native-short-call")]
+    pub(crate) use short_call::ShortCall;
+
     // ------------------------------------------------------------------ executable memory
     extern "C" {
         fn mmap(addr: *mut c_void, len: usize, prot: c_int, flags: c_int, fd: c_int, off: i64) -> *mut c_void;
@@ -94,11 +100,12 @@ mod native {
     // ------------------------------------------------------------------ helpers called from generated code
     /// Function pointers the generated code calls; field order is the offset table below.
     #[repr(C)]
-    pub struct Helpers { read8: *const (), read16: *const (), read32: *const (), write8: *const (), write16: *const (), write32: *const (), exec: *const (), raise_mem: *const (), overflow: *const (), pie: *const (), call8: *const (), callx8: *const (), entry: *const (), retw: *const () }
+    pub struct Helpers { read8: *const (), read16: *const (), read32: *const (), write8: *const (), write16: *const (), write32: *const (), exec: *const (), raise_mem: *const (), overflow: *const (), pie: *const (), call8: *const (), callx8: *const (), entry: *const (), retw: *const (), #[cfg(feature = "native-short-call")] short_call: *const () }
     const H_READ8: u32 = 0; const H_READ16: u32 = 8; const H_READ32: u32 = 16;
     const H_WRITE8: u32 = 24; const H_WRITE16: u32 = 32; const H_WRITE32: u32 = 40;
     const H_EXEC: u32 = 48; const H_RAISE_MEM: u32 = 56; const H_OVERFLOW: u32 = 64; const H_PIE: u32 = 72;
     const H_CALL8: u32 = 80; const H_CALLX8: u32 = 88; const H_ENTRY: u32 = 96; const H_RETW: u32 = 104;
+    #[cfg(feature = "native-short-call")] const H_SHORT_CALL: u32 = 112;
 
     /// Loads return the value in the low word, bit 32 = fault, bit 33 = the bus wants the block to end.
     macro_rules! read_helper {
@@ -247,6 +254,8 @@ mod native {
                 pie: h_pie::<B> as *const (),
                 call8: h_window::<B, 0> as *const (), callx8: h_window::<B, 1> as *const (),
                 entry: h_window::<B, 2> as *const (), retw: h_window::<B, 3> as *const (),
+                #[cfg(feature = "native-short-call")]
+                short_call: short_call::h_short_call::<B> as *const (),
             }
         }
 
@@ -259,7 +268,7 @@ mod native {
 
     // The generated AArch64 loads use these byte offsets and pointer width directly.
     const _: () = {
-        assert!(std::mem::size_of::<Helpers>() == 112);
+        assert!(std::mem::size_of::<Helpers>() == if cfg!(feature = "native-short-call") {120} else {112});
         assert!(std::mem::align_of::<Helpers>() == 8);
         assert!(std::mem::offset_of!(Helpers, read8) == H_READ8 as usize);
         assert!(std::mem::offset_of!(Helpers, read16) == H_READ16 as usize);
@@ -275,6 +284,8 @@ mod native {
         assert!(std::mem::offset_of!(Helpers, callx8) == H_CALLX8 as usize);
         assert!(std::mem::offset_of!(Helpers, entry) == H_ENTRY as usize);
         assert!(std::mem::offset_of!(Helpers, retw) == H_RETW as usize);
+        #[cfg(feature = "native-short-call")]
+        assert!(std::mem::offset_of!(Helpers, short_call) == H_SHORT_CALL as usize);
     };
 
     // ------------------------------------------------------------------ the compiler
@@ -368,6 +379,10 @@ mod native {
     /// Compile one block. Fills `insns[i].off` with each instruction's byte offset from the body
     /// start (the entry-point argument of `run`) and returns the code's offset in the cache.
     pub fn compile(cc: &mut CodeCache, insns: &mut [BlockInsn], pc0: u32, fast: bool) -> Option<u32> {
+        compile_inner(cc, insns, pc0, fast, #[cfg(feature = "native-short-call")] None)
+    }
+    fn compile_inner(cc: &mut CodeCache, insns: &mut [BlockInsn], pc0: u32, fast: bool,
+        #[cfg(feature = "native-short-call")] short: Option<*const ShortCall>) -> Option<u32> {
         if cc.remaining() < MAX_BLOCK_CODE { return None; }
         let mut a = Asm::new();
         let (exit, exit_trap, exit_trap_pre, exit_left) = (a.label(), a.label(), a.label(), a.label());
@@ -606,9 +621,30 @@ mod native {
                 // ---- everything else: the interpreter
                 _ => {
                     g.a.mov_x(0, CPU); g.a.mov_x(1, BUS);
-                    g.a.mov64(2, (&raw const *block_insn) as u64);
+                    #[cfg(feature = "native-short-call")]
+                    let fusion = short.filter(|_| i.op == Call8);
+                    #[cfg(feature = "native-short-call")]
+                    let argument = fusion.map_or((&raw const *block_insn) as u64, |p|p as u64);
+                    #[cfg(not(feature = "native-short-call"))]
+                    let argument = (&raw const *block_insn) as u64;
+                    g.a.mov64(2, argument);
                     g.a.mov32(3, pc);
-                    g.call(match i.op { Pie => H_PIE, Call8 => H_CALL8, Callx8 => H_CALLX8, Entry => H_ENTRY, Retw | RetwN => H_RETW, _ => H_EXEC });
+                    #[cfg(feature = "native-short-call")]
+                    let fused = fusion.is_some();
+                    #[cfg(not(feature = "native-short-call"))]
+                    let fused = false;
+                    if fused {
+                        #[cfg(feature = "native-short-call")]
+                        { g.a.mov(4, LEFT); g.call(H_SHORT_CALL); }
+                    } else { g.call(match i.op { Pie => H_PIE, Call8 => H_CALL8, Callx8 => H_CALLX8, Entry => H_ENTRY, Retw | RetwN => H_RETW, _ => H_EXEC }); }
+                    #[cfg(feature = "native-short-call")]
+                    if fused {
+                        // The CALL was already charged. The helper reports how many of the
+                        // two real callee instructions retired, plus the ordinary stop bits.
+                        g.a.lsr_imm(9, 0, 8); g.a.sub(LEFT, LEFT, 9);
+                        let pre = g.exit_trap_pre; g.a.tbnz(0, 2, pre);
+                        g.a.and_mask(0, 0, 2, 0);
+                    }
                     let tr = g.exit_trap;
                     g.a.tbnz(0, 0, tr);
                     g.a.lsr_imm(12, 0, 1);

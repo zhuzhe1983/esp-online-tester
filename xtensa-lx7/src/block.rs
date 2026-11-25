@@ -40,9 +40,17 @@ pub struct BlockInsn { pub insn: Insn, pub max_ar: u8, /// EX141: a static trans
 #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
 #[derive(Clone, Copy)]
 struct Entry { pc: u32, start: u32, n: u16, /// EX168 s6: the first instruction needs no exact block-boundary state (fits the padding)
- chain: bool, /** EX171 bridge class of a block without code (0: never) */ #[cfg(target_arch = "wasm32")] bridge: u8, vidx: [u32; 2], ver: [u32; 2], code: u32 }
+ chain: bool, /** EX171 bridge class of a block without code (0: never) */ #[cfg(target_arch = "wasm32")] bridge: u8,
+ #[cfg(all(feature="native-short-call",target_arch="aarch64",any(target_os="macos",target_os="linux")))] short:u8,
+ vidx: [u32; 2], ver: [u32; 2], code: u32 }
 const _: () = assert!(std::mem::size_of::<Entry>() == 32);
-impl Entry { const EMPTY: Entry = Entry { pc: 1, start: 0, n: 0, chain: false, #[cfg(target_arch = "wasm32")] bridge: 0, vidx: [0; 2], ver: [0; 2], code: crate::jit::NONE }; }
+impl Entry { const EMPTY: Entry = Entry { pc: 1, start: 0, n: 0, chain: false, #[cfg(target_arch = "wasm32")] bridge: 0,
+ #[cfg(all(feature="native-short-call",target_arch="aarch64",any(target_os="macos",target_os="linux")))] short:0,
+ vidx: [0; 2], ver: [0; 2], code: crate::jit::NONE }; }
+
+#[cfg(all(feature="native-short-call",target_arch="aarch64",any(target_os="macos",target_os="linux")))]
+#[path="block/native_short_call.rs"]
+mod native_short_call;
 
 #[cfg(not(target_arch = "wasm32"))] const ENTRIES: usize = 1 << 17;
 #[cfg(target_arch = "wasm32")] const ENTRIES: usize = 1 << 15;
@@ -380,7 +388,11 @@ fn decode_block<B: Bus>(cpu: &mut Cpu, bus: &mut B, pc0: u32) -> Option<(u32, u3
     // EX171: a block the emitter refused may still be interpretable inside a wrapper chain.
     #[cfg(target_arch = "wasm32")]
     let bridge = if code == crate::jit::NONE { bridge_block_class(&cpu.blocks.arena[start as usize..start as usize + n as usize]) } else { 0 };
-    cpu.blocks.entries[ei] = Entry { pc: pc0, start, n, chain, #[cfg(target_arch = "wasm32")] bridge, vidx: [vidx0, vidx1], ver, code };
+    #[cfg(all(feature="native-short-call",target_arch="aarch64",any(target_os="macos",target_os="linux")))]
+    let short=u8::from(cpu.blocks.arena[(start+u32::from(n)-1) as usize].insn.op==Op::Call8);
+    cpu.blocks.entries[ei] = Entry { pc: pc0, start, n, chain, #[cfg(target_arch = "wasm32")] bridge,
+        #[cfg(all(feature="native-short-call",target_arch="aarch64",any(target_os="macos",target_os="linux")))] short,
+        vidx: [vidx0, vidx1], ver, code };
     cpu.blocks.builds += 1;
     Some((ei as u32, start, n))
 }
@@ -679,8 +691,15 @@ fn retire<B: Bus>(cpu: &mut Cpu, bus: &mut B, r: u32, ei: u32, k: u32, end: u32)
 /// One block (or WASM wrapper chain). WASM also returns the next block to continue with.
 #[inline(always)]
 fn run_decoded_once<B: Bus>(cpu: &mut Cpu, bus: &mut B, budget: u32, ei: u32, mut k: u32, end: u32) -> DecodedResult {
+    #[cfg(all(feature="native-short-call",target_arch="aarch64",any(target_os="macos",target_os="linux")))]
+    if cpu.blocks.entries[ei as usize].short==1 {native_short_call::try_fuse(cpu,bus,ei as usize);}
     #[cfg(not(target_arch = "wasm32"))]
-    let limit = timer_limit(cpu, (end - k).min(budget));
+    let limit = {
+        let room=(end-k).min(budget);
+        #[cfg(all(feature="native-short-call",target_arch="aarch64",any(target_os="macos",target_os="linux")))]
+        let room=if cpu.blocks.entries[ei as usize].short==2 {budget.min(0xffff)} else {room};
+        timer_limit(cpu,room)
+    };
     // WASM code bounds itself by its block: pass the round's remaining credit so a retained
     // loop or a region may continue past the block, under the same CCOMPARE deadline.
     #[cfg(target_arch = "wasm32")]
