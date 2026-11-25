@@ -95,7 +95,7 @@ The rebuilt production WASM is 8911855 bytes, SHA-256
 `e019f308adc0b8eca252165db3ad09438d149bf119cdb5477b35cff55c378cd9`.
 Remote CI and ARM acceptance are recorded separately when available.
 
-Build the baseline at388 with the probe source copied unchanged fromd35. Build the candidate
+Build the baseline at `388d3aee` with the probe source copied unchanged from `d35e1248`. Build the candidate
 with `cargo build --release --bins --features native-short-call` and
 `cargo build --release -p esp32s3 --example native_short_call_probe --features native-short-call`.
 Keep the baseline CLIs under their ordinary names and its example as `probe-control`; keep
@@ -116,4 +116,5 @@ Each workload has a compact JSON retaining every numeric sample, order and corre
 [Curation provenance](curation.json) identifies the original/sanitized hashes. Paths and PIDs
 are removed or parameterized; edge arrays become hashes. Complete raw output, actual PNGs,
 console and architecture dumps remain in ignored `output/native-short-call-revision2-20261125/`
-and are preserved before worktree cleanup. No device or private ARM capture was accessed.
+and are preserved before worktree cleanup. This source experiment did not access a device;
+ARM performance remains unverified.
