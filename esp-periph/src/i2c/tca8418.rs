@@ -5,6 +5,7 @@ use super::I2cDevice;
 use crate::keypad::{KeyEventAcceptance,KeyEventDiagnostics};
 use std::{collections::VecDeque,sync::{Arc,Mutex}};
 
+#[cfg_attr(test,derive(Clone,Debug,Eq,PartialEq))]
 pub struct Tca8418State {
     regs:[u8;0x30],fifo:VecDeque<u8>,desired:[bool;80],sampled:[bool;80],stable:[bool;80],
     cycle:u64,period:u64,next_scan:Option<u64>,irq_hold_until:Option<u64>,accepted:u64,consumed:u64,
@@ -168,9 +169,7 @@ mod tests {
         d.start(false);d.write(4);d.start(true);
         assert_eq!([d.read(),d.read(),d.read()],[0x81,1,0]);
     }
-    fn snapshot(s:&Tca8418State)->([u8;0x30],VecDeque<u8>,[bool;80],[bool;80],[bool;80],u64,Option<u64>,Option<u64>,KeyEventDiagnostics) {
-        (s.regs,s.fifo.clone(),s.desired,s.sampled,s.stable,s.cycle,s.next_scan,s.irq_hold_until,s.key_diagnostics())
-    }
+    fn snapshot(s:&Tca8418State)->Tca8418State {s.clone()}
     #[test]
     fn host_debounced_edges_are_immediate_and_consumption_is_only_event_a() {
         use KeyEventAcceptance::*;
