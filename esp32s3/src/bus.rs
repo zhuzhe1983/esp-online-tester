@@ -869,6 +869,7 @@ impl Bus for SocBus {
     fn add_timing_penalty(&mut self, cycles: u32) {
         self.approximate_cache_pending = self.approximate_cache_pending.saturating_add(cycles);
     }
+    fn timing_penalty_pending(&self) -> Option<bool> { Some(self.approximate_cache_pending != 0) }
     fn fast_cache(&mut self) -> Option<emu_core::bus::FastCache> {
         if self.approximate_cache_inline { self.approximate_cache.as_mut().and_then(|c| c.inline_view()) } else { None }
     }

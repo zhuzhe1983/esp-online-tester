@@ -3,12 +3,14 @@ use crate::{Fault,FlatRam};
 use crate::state::ps;
 const CODE:u32=0x4200_0000;
 const LEAF:u32=CODE+0x100;
-struct CodeBus {ram:FlatRam,versions:[u32;8],pc:u32,stop:u32,remap:bool,change_on_call:bool}
+struct CodeBus {ram:FlatRam,versions:[u32;8],pc:u32,stop:u32,remap:bool,change_on_call:bool,penalty:u32,charge_load:bool,unknown_timing:bool}
 impl Bus for CodeBus {
     fn note_code_page(&mut self,_:u32) {}
     fn read8(&mut self,a:u32)->Result<u8,Fault> {self.ram.read8(a)}
     fn read16(&mut self,a:u32)->Result<u16,Fault> {self.ram.read16(a)}
-    fn read32(&mut self,a:u32)->Result<u32,Fault> {self.ram.read32(a)}
+    fn read32(&mut self,a:u32)->Result<u32,Fault> {
+        let result=self.ram.read32(a);if result.is_ok()&&self.charge_load {self.penalty=self.penalty.saturating_add(97);}result
+    }
     fn write8(&mut self,a:u32,v:u8)->Result<(),Fault> {self.ram.write8(a,v)}
     fn write16(&mut self,a:u32,v:u16)->Result<(),Fault> {self.ram.write16(a,v)}
     fn write32(&mut self,a:u32,v:u32)->Result<(),Fault> {self.ram.write32(a,v)}
@@ -20,12 +22,15 @@ impl Bus for CodeBus {
         if self.change_on_call&&pc==CODE {self.ram.mem[0x101]=0x81;self.versions[2]+=1;self.change_on_call=false;}
     }
     fn block_break(&self)->bool {self.stop!=0&&self.stop==self.pc}
+    fn take_timing_penalty(&mut self)->u32 {std::mem::take(&mut self.penalty)}
+    fn add_timing_penalty(&mut self,n:u32) {self.penalty=self.penalty.saturating_add(n);}
+    fn timing_penalty_pending(&self)->Option<bool> {if self.unknown_timing {None} else {Some(self.penalty!=0)}}
 }
 fn bus()->CodeBus {
     bus_at(LEAF)
 }
 fn bus_at(leaf:u32)->CodeBus {
-    let mut b=CodeBus{ram:FlatRam::new(CODE,1024),versions:[0;8],pc:0,stop:0,remap:false,change_on_call:false};
+    let mut b=CodeBus{ram:FlatRam::new(CODE,1024),versions:[0;8],pc:0,stop:0,remap:false,change_on_call:false,penalty:0,charge_load:false,unknown_timing:false};
     // Xtensa CALL8's displacement is relative to (PC&!3)+4, in words.
     let call=0x25|((leaf-(CODE+4))/4)<<6;
     b.ram.mem[..3].copy_from_slice(&call.to_le_bytes()[..3]);
@@ -41,8 +46,8 @@ fn setup(c:&mut Cpu,wb:u32,status:u32,ws:u32,cpi:u32) {
     c.boundary_bloom=0;c.blocks.observed=false;c.blocks.resume=(0,0,1);
 }
 #[derive(Debug,Eq,PartialEq)]
-struct State {ar:[u32;64],pc:u32,ps:u32,wb:u32,ws:u32,epc:[u32;8],depc:u32,cause:u32,lcount:u32,insns:u64,ccount:u32,interrupt:u32}
-fn state(c:&Cpu)->State {State{ar:c.ar,pc:c.pc,ps:c.ps,wb:c.windowbase,ws:c.windowstart,epc:c.epc,depc:c.depc,cause:c.exccause,lcount:c.lcount,insns:c.insn_count,ccount:c.ccount,interrupt:c.interrupt}}
+struct State {ar:[u32;64],pc:u32,ps:u32,wb:u32,ws:u32,epc:[u32;8],depc:u32,cause:u32,lcount:u32,insns:u64,ccount:u32,interrupt:u32,timing_extra:u32}
+fn state(c:&Cpu)->State {State{ar:c.ar,pc:c.pc,ps:c.ps,wb:c.windowbase,ws:c.windowstart,epc:c.epc,depc:c.depc,cause:c.exccause,lcount:c.lcount,insns:c.insn_count,ccount:c.ccount,interrupt:c.interrupt,timing_extra:c.timing_extra}}
 fn warmed()->(Cpu,CodeBus) {
     warmed_at(LEAF)
 }
@@ -77,7 +82,7 @@ fn real_three_instruction_call_matches_single_steps_across_windows_and_budgets()
 }
 #[test]
 fn guards_refuse_stale_or_remapped_callee_and_observer_boundaries() {
-    for mode in 0..6 {
+    for mode in 0..9 {
         let (mut c,mut b)=warmed();let mut oracle=Cpu::new(0);let mut ob=bus();
         setup(&mut c,0,ps::WOE,1,1);setup(&mut oracle,0,ps::WOE,1,1);
         match mode {
@@ -86,15 +91,41 @@ fn guards_refuse_stale_or_remapped_callee_and_observer_boundaries() {
             2=>{c.boundary_bloom=pc_bit(LEAF);oracle.boundary_bloom=c.boundary_bloom;}
             3=>{c.boundary_bloom=pc_bit(LEAF+3);oracle.boundary_bloom=c.boundary_bloom;}
             4=>{c.blocks.observed=true;}
-            _=>{b.change_on_call=true;ob.change_on_call=true;}
+            5=>{b.change_on_call=true;ob.change_on_call=true;}
+            6=>{c.timing_extra=7;oracle.timing_extra=7;}
+            7=>{b.penalty=97;ob.penalty=97;}
+            _=>{b.unknown_timing=true;ob.unknown_timing=true;}
         }
         assert_eq!(compare(&mut c,&mut b,&mut oracle,&mut ob,64).0,1,"guard{mode} must execute only the real CALL");
+        assert_eq!(b.penalty,ob.penalty,"guard must not consume pending time");
     }
     for stop in [CODE,LEAF,LEAF+3] {
         let (mut c,mut b)=warmed();let mut oracle=Cpu::new(0);let mut ob=bus();
         setup(&mut c,0,ps::WOE,1,1);setup(&mut oracle,0,ps::WOE,1,1);b.stop=stop;ob.stop=stop;
         assert_eq!(compare(&mut c,&mut b,&mut oracle,&mut ob,64).0,if stop==CODE {1} else if stop==LEAF {2} else {3});
     }
+}
+#[test]
+fn pending_cache_penalty_keeps_the_original_call_boundary_before_ccompare() {
+    let (mut c,mut b)=warmed();let mut oracle=Cpu::new(0);oracle.blocks.jit_enabled=false;let mut ob=bus();
+    let call=b.ram.mem[..3].to_vec();
+    for bus in [&mut b,&mut ob] {
+        bus.ram.mem[..3].copy_from_slice(&[0x42,0x22,0]); // l32i a4,a2,0; then CALL8
+        bus.ram.mem[3..6].copy_from_slice(&call);bus.ram.mem[6..9].copy_from_slice(&[0x06,0xff,0xff]);
+        bus.versions[0]+=1;bus.charge_load=true;
+    }
+    setup(&mut c,0,ps::WOE|ps::UM,1,16);setup(&mut oracle,0,ps::WOE|ps::UM,1,16);
+    c.set_ar(2,CODE+0x300);oracle.set_ar(2,CODE+0x300);
+    c.ccompare[0]=4*16;oracle.ccompare=c.ccompare;c.intenable=1<<6;oracle.intenable=c.intenable;
+    let nr=run_block(&mut c,&mut b,64);let ir=run_block(&mut oracle,&mut ob,64);
+    assert_eq!(nr,ir,"unsettled load time must leave after L32I/CALL, before ENTRY");
+    assert_eq!(b.penalty,97);assert_eq!(b.penalty,ob.penalty);
+    // Match Machine's approximate path: settle its bus debt after the original block,
+    // so CCOMPARE is presented before the callee gets to execute ENTRY.
+    c.advance_ccount(b.take_timing_penalty());oracle.advance_ccount(ob.take_timing_penalty());
+    assert_eq!(state(&c),state(&oracle));assert_eq!(c.pc,LEAF);
+    assert_eq!(run_block(&mut c,&mut b,1),run_block(&mut oracle,&mut ob,1));
+    assert_eq!(state(&c),state(&oracle));assert_eq!(c.epc[1],LEAF);
 }
 #[test]
 fn ccompare_matches_and_wrap_never_cross_an_unretired_boundary() {

@@ -7,8 +7,11 @@ fn shared_cache_misses_queue_without_charging_hits_or_service_twice() {
     bus.enable_approximate_cache(Default::default());
     bus.set_approximate_cache_contention(true);
     bus.begin_timing_batch(0, 100);
+    assert_eq!(bus.timing_penalty_pending(), Some(false));
     bus.read32(DBUS_LOW).unwrap();
+    for _ in 0..4 { assert_eq!(bus.timing_penalty_pending(), Some(true)); }
     assert_eq!(bus.take_timing_penalty(), 120);
+    assert_eq!(bus.timing_penalty_pending(), Some(false), "observing the actual miss must not drain or requeue its debt");
     bus.begin_timing_batch(1, 100);
     bus.read32(DBUS_LOW).unwrap(); // hit while the other core's resource is occupied
     assert_eq!(bus.take_timing_penalty(), 0);

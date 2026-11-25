@@ -198,6 +198,12 @@ pub trait Bus {
     /// advance timers and DMA (the S3 batches this device time). Non-zero means interrupt lines
     /// may have moved and must be re-derived.
     fn tick(&mut self, cycles: u32) -> u32 { let _ = cycles; 0 }
+    /// Observe whether provisional timing debt must be settled at the current block boundary.
+    /// None means unknown; cross-block optimizations may continue only on Some(false).
+    /// This must not drain, requeue or otherwise change timing/cache state. Kept at the tail
+    /// so existing source implementations remain valid and conservatively decline fusion.
+    #[inline(always)]
+    fn timing_penalty_pending(&self) -> Option<bool> { None }
 }
 
 /// Simple flat RAM for unit tests.

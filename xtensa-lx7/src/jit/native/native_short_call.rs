@@ -49,6 +49,10 @@ pub(super) extern "C" fn h_short_call<B:Bus>(cpu:*mut Cpu,bus:*mut B,data:*const
         if [bus.code_page(data.pcs[1]),bus.code_page(data.last)]!=data.vidx {return 0;}
         let pv=bus.page_versions();
         if data.vidx.iter().zip(data.ver).any(|(&i,v)|pv.get(i as usize)!=Some(&v)) {return 0;}
+        // The approximate machine settles pending data/control prices after this original
+        // CALL block. Crossing it would move CCOMPARE before/after ENTRY. Unknown buses
+        // decline; observing this debt never consumes or requeues it.
+        if cpu.timing_extra!=0 || bus.timing_penalty_pending()!=Some(false) || bus.block_break() {return 0;}
     }
     if data.entry.max_ar>=4 && h_overflow(cpu,u32::from(data.entry.max_ar),data.pcs[1])!=0 {return 4;}
     let flags=h_window::<B,2>(cpu,bus,&data.entry,data.pcs[1]);
