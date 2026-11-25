@@ -1,0 +1,104 @@
+{
+  "baseline_commit": "5492cc4c3c1c8b31288e59e8fbdf5262127704db",
+  "source_commit": "6b600f8ecb5a1fe7d7cea599dcf26ad3059030b5",
+  "inputs": {
+    "wordle-merged.bin": {
+      "bytes": 8388608,
+      "sha256": "1f665abf541452103399da888c25a06af222a4f2af244ee691f35867da0d573c"
+    },
+    "esp32s3_rev0_rom.elf": {
+      "bytes": 949552,
+      "sha256": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    }
+  },
+  "configuration": {
+    "clock_hz": 240000000,
+    "quantum": 64,
+    "vq": 1,
+    "bb": 1,
+    "guest_seconds": 2,
+    "input": "No keys; host voltage injected at script time0 only."
+  },
+  "cases": [
+    {
+      "name": "nominal2s",
+      "pad_volts": 1.85,
+      "per_core_insns": [
+        8189700,
+        424129942
+      ],
+      "cycles": 480000000,
+      "exceptions": 78530,
+      "interrupts": 4451,
+      "adc_raw": 1997,
+      "adc_generation": 1,
+      "console_sha256": "14aa570cdcf9fb64a748b5d396e6ca490a5df5b03224ade8b468f925a6af69e1",
+      "png_sha256": "6146f925efafae1f31658160cc0691936325040cc7c603d7ef0785018c226914"
+    },
+    {
+      "name": "host-4027-2s",
+      "pad_volts": 2.0135,
+      "per_core_insns": [
+        8189784,
+        424129942
+      ],
+      "cycles": 480000000,
+      "exceptions": 78530,
+      "interrupts": 4451,
+      "adc_raw": 2175,
+      "adc_generation": 1,
+      "console_sha256": "14aa570cdcf9fb64a748b5d396e6ca490a5df5b03224ade8b468f925a6af69e1",
+      "png_sha256": "c90d1c9e6b6cd2e8acbf109c3f4f48306e0fa1edee372141f4bb8f2668fc3614"
+    },
+    {
+      "name": "base-host-4027-2s",
+      "pad_volts": 2.0135,
+      "per_core_insns": [
+        8189784,
+        424129942
+      ],
+      "cycles": 480000000,
+      "exceptions": 78530,
+      "interrupts": 4451,
+      "adc_raw": 2175,
+      "adc_generation": 1,
+      "console_sha256": "14aa570cdcf9fb64a748b5d396e6ca490a5df5b03224ade8b468f925a6af69e1",
+      "png_sha256": "c90d1c9e6b6cd2e8acbf109c3f4f48306e0fa1edee372141f4bb8f2668fc3614"
+    }
+  ],
+  "native_binary": {
+    "candidate_sha256": "c6624ffb40ec55fc35fe3f5a087a30a8ff96111252cb4e6e0e5b62908dad4548",
+    "baseline_sha256": "d6797eaf1d68dbf2b391056e345d6a601de615aa8b74ec018b0ba82bbd9475e8",
+    "baseline_provenance": "Frozen helper bae7f607 build; production-equivalent to5492cc4c (later TCA change was comments/tests only)."
+  },
+  "checks": {
+    "physical_adc_and_host_lifetime": 4,
+    "native_clippy": "workspace/all-targets -Dwarnings passed",
+    "wasm_clippy": "release esp32sim-wasm jit-tests -Dwarnings passed",
+    "workspace_main_passes": 2914,
+    "isolated_cache_child_passes": 1,
+    "workspace_reported_passes": 2915,
+    "result_summaries": 241,
+    "production_wasm_manifests": 13,
+    "platform": "four required test files passed",
+    "goldens_updated": false
+  },
+  "production_wasm": {
+    "bytes": 8515152,
+    "sha256": "275466f59227cedb061204c381a3200e3110a2701c31a44b028285df1f30f159"
+  },
+  "sources": {
+    "M5Unified_commit": "96576a14247ddc935149145aa6b51943464120f1",
+    "Power_Class_inl_sha256": "34df466683e2e93c8b8652b3dca90c8329ede1f64f71e9a0ffe35fd41c6746b6",
+    "ESP_IDF_sens_reg_version": "v5.4.2",
+    "sens_reg_sha256": "3113e9fbcc92c629edcc748baac4ca16c4e66b4e9cac8672cc9162212715c41c"
+  },
+  "limits": [
+    "Nominal3.7V is an explicit virtual default, not a measured host battery or forced SOC.",
+    "4.027V source becomes pad2.0135V; existing integer calibration selects raw2175/pad2012mV/pack4024mV. Curve and eFuse defaults are unchanged.",
+    "The0.125guest-second runs complete zero ADC conversions and cannot establish voltage readout; the2s runs each complete one.",
+    "The initial workspace attempt lacked ignored P4 hosted artifacts and correctly failed; after fetching documented assets the full command passed.",
+    "Device SOC/charging/current are not injected into this voltage-only hardware path. Firmware controls its SOC estimate and polling.",
+    "No device access, clock/scheduling change or performance conclusion."
+  ]
+}

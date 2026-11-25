@@ -12,6 +12,7 @@ M5Burner 将这个镜像标为 v0.3；镜像内部 app version 是 `ADV-V0.2-5-g
 | TCA8418 | I2C 0x34、SDA8/SCL9、IRQ11；4×14 物理键映射到 7×8 扫描矩阵；双次稳定扫描、10 项 FIFO、按下/释放编码、事件数、溢出策略、W1C 与中断电平 |
 | I2C | 软件探测与两个硬件 I2C 控制器共享同一组外设状态；无模拟电气、争用或时钟拉伸 |
 | ES8311 数字音频 | `0x18`、SDA8/SCL9；G41 BCLK、G43 LRCK、G46 RX、G42 TX；标准 I2S PCM 经真实 S3 GDMA，受 codec 静音、增益、复位与电源控制，范围见下文 |
+| 电池电压 | GPIO10 / ADC1_CH9，2:1 分压；默认虚拟3.7V，主机电压/raw/stream 覆盖优先；无电量计、充电状态或电流模型 |
 | G0 | GPIO0，低电平有效；原有 button API 路径 |
 | 可写 Flash | 通用设备存储按产品、板型、芯片、容量和初始 Flash 内容隔离，见 [设备存储](device-storage.md) |
 
@@ -70,3 +71,11 @@ RX 从声明了 G41/G43/G46 的 `PcmSource`（或显式控制器输入）取实�
 `cargo test --release -p esp32s3 --test cardputer_adv_audio` 通过实际控制器 I2C 事务与 S3 DMA 内存/PCM 断言验证上述边界；独立 GDMA 测试覆盖未对齐写入中途故障。它们属于可重复数字模型检查，未访问物理设备。精确提交、检查和原生性能调查见 [本次证据](../evidence/cardputer-adv-kernel-20261125/README.md)。
 
 来源、真实像素截图、负面结果及最终检查见 [证据目录](evidence/cardputer-adv-official/README.md)。主要依据为 [官方产品资料](https://docs.m5stack.com/en/core/Cardputer-Adv)、[官方厂测源码](https://github.com/m5stack/M5Cardputer-UserDemo/tree/b549eac0a3c65bc108186c276b8fac0a214aaa4e)、[M5GFX 0.2.15](https://github.com/m5stack/M5GFX/tree/0.2.15)、[TI TCA8418 SCPS215G](https://www.ti.com/lit/ds/symlink/tca8418.pdf) 和 [Sitronix ST7789V2 v1.0](https://files.waveshare.com/upload/c/c9/ST7789V2.pdf)。
+
+## 电池电压输入（2026-11-25）
+
+板级默认提供名义3.7V虚拟电池，经2:1分压在GPIO10形成1.85V。它是明确的模拟默认值，不代表主机真实电量。已有 `AnalogInputs` 接口可覆盖 pad 电压、原始12位数值或流，显式0也会保留；重新挂接外设和MCU复位不会替换主机源。
+
+Rust主机可调用 `bus.analog_set(10, AnalogSource::Const(battery_microvolts as f32 / 2_000_000.0))`；CLI脚本用 `0 adc 10 2.0135` 注入4.027V电池的分压值。现有整数校准/量化可读回约4.024V。固件按自己的电压算法估算SOC，不能与另一颗燃料计的百分比强行相等。充电状态、电池电流、充放电动力学和电气断电仍不支持；没有以默认值模拟满电。
+
+固定Wordle镜像在2guest秒实际采样一次ADC：默认源显示50%，显式4.027V显示90%；同一显式电压下，新旧源码的工作量、console和真实像素完全一致。源、测试、量化边界与截图见 [电池证据](../evidence/cardputer-adv-battery-20261125/README.md)。
