@@ -238,7 +238,7 @@ onmessage = async (ev) => {
       // a retained frame from the emulator being replaced.
       pendingFrame = null;sdShadow=null;sdWatchId=null;
       motionEnabled=['stackchan','stampfly','stampfly-v11'].includes(m.board);motionLast='';motionAt=0;
-      hardwareChecksEnabled=m.board==='stopwatch'||m.board==='corematrix'||m.board==='waveshare-c5-lcd273';hardwareChecksLast='';hardwareChecksAt=-Infinity;
+      hardwareChecksEnabled=['stopwatch','corematrix','waveshare-c5-lcd273','m5-unit-gateway-h2','m5-module-gateway-h2','m5stack-u195','m5stack-m141'].includes(m.board);hardwareChecksLast='';hardwareChecksAt=-Infinity;
       pacing = createPacing(); catchupTurns = 0;
       pendingInputTrace = [];
       flight?.dispose();flight=null;runCycles=wasm.esp32sim_run;
@@ -246,8 +246,8 @@ onmessage = async (ev) => {
       emu = withBytes(enc.encode(m.board), (p, n) => wasm.esp32sim_new(p, n, m.flash_mb | 0, m.psram_mb | 0));
       // Keep low-level Worker callers under the same mode/capability boundary.
       // Unknown board names remain the WASM factory's responsibility.
-      const c5=m.board.startsWith('waveshare-c5-')||['esp32c5','stamp-c5','stamp-c5-dip','lilygo-t7-c5','lilygo-t-dongle-c5'].includes(m.board);
-      const sramOnly=['esp32h2','waveshare-h2-zero','waveshare-h2-dev-kit-n4','esp32s2','waveshare-s2-pico','waveshare-s2-lcd096','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(m.board);
+      const c5=m.board.startsWith('waveshare-c5-')||['m5-tough-c5','m5stack-k162','esp32c5','stamp-c5','stamp-c5-dip','lilygo-t7-c5','lilygo-t-dongle-c5'].includes(m.board);
+      const sramOnly=['m5-unit-gateway-h2','m5stack-u195','m5-module-gateway-h2','m5stack-m141','esp32h2','nanoh2','m5stack-c149','waveshare-h2-zero','waveshare-h2-dev-kit-n4','esp32s2','waveshare-s2-pico','waveshare-s2-lcd096','lilygo-esp32-s2-woor','lilygo-esp32-s2','lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board'].includes(m.board);
       c5DriverCompatProfile=m.c5WifiDriverCompat??null;c5DriverCompatEnabled=false;c5DriverCompatLast='';c5DriverCompatAt=-Infinity;
       ioRestricted=c5||sramOnly;c5AppDirect=c5?m.appDirect!==false:null;flashStorageAllowed=!sramOnly&&(!c5||m.appDirect===false);
       if (emu !== 0) wasm.esp32sim_set_jit(emu, ioRestricted||m.jit === false ? 0 : 1);
@@ -437,6 +437,11 @@ onmessage = async (ev) => {
       pacing.input(performance.now());
       for (const data of m.data) withBytes(enc.encode(data), (p, n) => wasm.esp32sim_in_text(emu, p, n));
       if (m.inputId !== undefined) postMessage({ inputQueued:m.inputId,time:wasm.esp32sim_cycles(emu)/CPU_HZ });
+    }
+    else if (m.op === 'sdio-host-command') {
+      const valid=Number.isInteger(m.command)&&[3,5,7,52].includes(m.command)&&Number.isSafeInteger(m.arg)&&m.arg>=0&&m.arg<=0xffff_ffff;
+      if(!valid||!emu||!wasm.esp32sim_sdio_host_command){postMessage({sdioReply:m.requestId,ok:false,code:valid?1:2});}
+      else {const p=wasm.esp32sim_alloc(4);try{const code=wasm.esp32sim_sdio_host_command(emu,m.command,m.arg,p);postMessage({sdioReply:m.requestId,ok:code===0,code,response:code===0?new DataView(wasm.memory.buffer).getUint32(p,true):null});}finally{wasm.esp32sim_free(p,4);}}
     }
     else if (m.op === 'lora-read' || m.op === 'lora-receive') {
       let result = {ok:false,code:1};

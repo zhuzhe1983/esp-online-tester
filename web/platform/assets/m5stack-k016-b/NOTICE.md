@@ -1,0 +1,1 @@
+Official photos copyright M5Stack; no separate open photograph license verified. Related K001 CAD is MIT, copyright M5Stack; no newer SKU source is described as the exact old SKU. Original mathematical approximation geometry: MIT.

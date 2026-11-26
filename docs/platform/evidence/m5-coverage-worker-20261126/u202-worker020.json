@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:30:26.757Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "1e899e2af41d5046bda746d2855fe41ddbca405878576038b70c9ec513c7a74d",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "4b2655fb234f7f755fe88b375eef71f75f39cdde23328fb2da383e9e8c091b0a"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c16b8a5693733a55fd0e6313f0b726a882afcbfad87143155450b24dbee524a4"
+    }
+  ],
+  "products": [
+    {
+      "productId": "m5stack-u202",
+      "board": "unit-c6l",
+      "control": "button",
+      "outputKind": "oled",
+      "flashMb": 16,
+      "psramMb": 0,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-I2C-SDA-cannot-read-expander-key"
+      ],
+      "limits": [
+        "厂家STL的装配件原尺寸保留，排版副本已剔除。SMA、Grove、USB和贴纸位置依据尺寸图/照片估算，非连接器厂家CAD。",
+        "未公开PCB布局，内部为UNKNOWN空白占位；SMA螺纹、螺钉及鞭状天线未完整建模。",
+        "贴纸仅取白色纸面，OLED保持空白，不能将产品照片当成固件画面。",
+        "独立Unit C6L板型：SSD1306 CS6/MOSI21/SCK20/DC18/RESET15；64×48玻璃对应RAM X=32..95。硬件SPI与软件GPIO移位均消费客体输出。",
+        "用户键经真实PI4IOE5V6408 P0输入/中断状态，不映射为虚构ESP GPIO；G2 RMT驱动RGB。",
+        "LoRa沿用真实Stamp C6LoRa的电源/复位/引脚与数字包协议子集，不模拟RF、天线增益或距离。蜂鸣器、USB与Grove作为第二CPU附件的双机行为未实现。",
+        "未启动官方User Demo或UIFlow镜像；新增板级协议测试不等于原厂固件兼容。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "width": 64,
+            "height": 48,
+            "rgbaSha256": "ce4603f37865e89f74b37212785068f10d1fa58facc2ed9ae03fb67a4a45b946",
+            "firstPixel": [
+              255,
+              255,
+              255,
+              255
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.1003010375,
+            "output": {
+              "width": 64,
+              "height": 48,
+              "rgbaSha256": "04e6a96bee826c675a258eb2ec234ab700c569dded2fd9e87046a6b121a0c746",
+              "firstPixel": [
+                0,
+                0,
+                0,
+                255
+              ]
+            }
+          },
+          "guestSerial": "COVERAGE unit-c6l READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "width": 64,
+            "height": 48,
+            "rgbaSha256": "ce4603f37865e89f74b37212785068f10d1fa58facc2ed9ae03fb67a4a45b946",
+            "firstPixel": [
+              255,
+              255,
+              255,
+              255
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.1002671,
+              "output": {
+                "width": 64,
+                "height": 48,
+                "rgbaSha256": "04e6a96bee826c675a258eb2ec234ab700c569dded2fd9e87046a6b121a0c746",
+                "firstPixel": [
+                  0,
+                  0,
+                  0,
+                  255
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.1225214375,
+              "output": {
+                "width": 64,
+                "height": 48,
+                "rgbaSha256": "ce4603f37865e89f74b37212785068f10d1fa58facc2ed9ae03fb67a4a45b946",
+                "firstPixel": [
+                  255,
+                  255,
+                  255,
+                  255
+                ]
+              }
+            }
+          ],
+          "guestSerial": "COVERAGE unit-c6l READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\nKEY UP\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "d8941ec999912581f2251440e40663910a7f48969143e3ca01219b08de45ee2c",
+      "negativeProbeSha256": "9280214f361b04be530630eadc7903d33a59646208f1ce7970b4c0ab913366cf",
+      "negative": {
+        "initial": {
+          "width": 64,
+          "height": 48,
+          "rgbaSha256": "ce4603f37865e89f74b37212785068f10d1fa58facc2ed9ae03fb67a4a45b946",
+          "firstPixel": [
+            255,
+            255,
+            255,
+            255
+          ]
+        },
+        "queuedAtGuestSeconds": 0.100301275,
+        "observedAtGuestSeconds": 0.12267671875,
+        "guestSerial": "COVERAGE unit-c6l READY\nI2C NACK\nKEY UP\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32c6_rev0_rom.elf": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551"
+      },
+      "status": "passed"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "status": "passed",
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ]
+}

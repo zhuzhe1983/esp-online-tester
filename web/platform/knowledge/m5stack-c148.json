@@ -4,15 +4,15 @@
   "kind": "product",
   "catalogId": "m5stack-c148",
   "title": "M5Stack PowerHub · C148",
-  "summary": "ESP32-S3 与 STM32G031 组成的多路电源与总线控制主机，支持 RS485、CAN、USB、电流监测和 NP-F 系列电池。",
+  "summary": "不含电池的ESP32-S3/STM32G031电源与总线主机；当前仅主MCU执行、串口与G11用户键，STM32电源、RGB和总线外设未模拟。",
   "summarySourceIds": [
-    "official-docs"
+    "official-docs-20261126"
   ],
-  "updatedAt": "2026-10-26T20:09:03Z",
+  "updatedAt": "2026-11-26T06:11:20Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
-    "sku": "C148/K148",
+    "sku": "C148",
     "directory": "C148_PowerHub"
   },
   "facts": [
@@ -836,6 +836,21 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "powerhub-kit-identity",
+      "label": "Package identity",
+      "value": {
+        "sku": "C148",
+        "batteryIncluded": false,
+        "kitSku": "K148",
+        "kitBattery": "NP-F550 2000mAh"
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126"
+      ],
+      "group": "support"
     }
   ],
   "revisions": [],
@@ -1292,6 +1307,19 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "url": "https://docs.m5stack.com/en/core/PowerHub",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/PowerHub",
+      "fetchedAt": "2026-11-26T06:02:44Z",
+      "sha256": "d466583451e4bfa16eff6a047b764ab005ebc85e146185381ed8cc49f77f084c",
+      "bytes": 160671,
+      "mediaType": "text/html; charset=UTF-8",
+      "archiveName": "PowerHub.html",
+      "id": "official-docs-20261126",
+      "title": "PowerHub official documentation (2026-11-26)",
+      "kind": "official-product-document",
+      "status": "fetched"
     }
   ],
   "assets": [
@@ -1484,6 +1512,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "Control ownership: {\"espUserKeyGpio\": 11, \"espUserKeyActiveLow\": true, \"powerButtonsOwner\": \"STM32G031\", \"rgbOwner\": \"STM32G031\", \"stm32Simulated\": false}"
   ]
 }

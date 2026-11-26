@@ -34,7 +34,7 @@ struct Touch {
 
 impl Touch {
     fn contact(&self) -> Option<(u16, u16)> {
-        // Centers of the lower touch regions in M5Tough M5Button.h (2dc8ad31).
+        // Platform touch aliases; M5Unified needs a configured touch-button height >=12 for y=228.
         self.screen.or_else(|| self.keys.iter().position(|pressed| *pressed).map(|i| (KEYS[i].1, 228)))
     }
 

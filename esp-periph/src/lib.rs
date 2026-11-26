@@ -37,6 +37,7 @@ pub mod rng;
 pub mod intmtx;
 pub mod clic;
 pub mod sdmmc;
+pub mod emac;
 pub mod usb_otg;
 
 pub use device::{Device, WriteEffect};

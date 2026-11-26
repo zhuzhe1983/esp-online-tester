@@ -1,0 +1,348 @@
+{
+  "batch": "025",
+  "scope": "Exactly five public product metadata activations, matching product knowledge/index and same-SKU firmware compatibility wording. Shared runtime implementation and previously completed production Worker020 validation are not rerun or upgraded to factory/physical acceptance.",
+  "baseCommit": "153fe4fcfe50b543b5a50eb4290fc9b8ad09c2c3",
+  "products": [
+    {
+      "id": "m5stack-k126",
+      "name": "M5Stack T-Lite 热成像套件 · K126",
+      "previousRuntime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 4,
+        "psramMb": null
+      },
+      "runtime": {
+        "board": "tlite",
+        "status": "partial",
+        "flashMb": 4,
+        "psramMb": 0
+      },
+      "previousProductSha256": "f0ec37b39a1f561f121e9b4f6eef5a7099d7962f336a3be0e8828ed820dd6e05",
+      "productSha256": "bcf2dc1edaa476d06c03b60d56ecb42d0c19387bd80c9303b89eea0b5295b996",
+      "knowledgeSha256": "daf4c17306df39099b3de6f18babccbd4835833ac1f531dab2b6bd5c84258df7",
+      "sourceCommit": "a35000c98337e62e63ee9946256bffb7d01d3cd5",
+      "summary": "T-Lite：StickC-Plus 与 MLX90640-BAA 32×24 热传感器。独立板名接入 ST7789、A/B、AXP192、BM8563 与真实 I²C0x33/SDA0/SCL26 合成热像采集。",
+      "limitations": [
+        "原始 LX6 客体诊断覆盖真实 MMIO 显示/输入；原厂固件与实物验证独立。未实机验证；浏览器 WebGL/照片对照仍未验收。",
+        "MLX90640 EEPROM明确为公开虚拟标定参数，数据为合成ADC计数；真实温标、光学、辐射率、器件噪声及完整帧同步尚未校准。",
+        "传感器16位大端指针/数据、只读832字EEPROM、832字帧、ready/subpage与速率控制为数字子集。热点采用160×120归一化坐标投影至32×24阵列。",
+        "麦克风、物理蜂鸣器、真实电池关机/唤醒和官方完整网络应用未验收。"
+      ]
+    },
+    {
+      "id": "m5stack-k014-b",
+      "name": "M5Stack BALA FIRE 主控 · K014-B",
+      "previousRuntime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 16,
+        "psramMb": 4
+      },
+      "runtime": {
+        "board": "bala-fire-original",
+        "status": "partial",
+        "flashMb": 16,
+        "psramMb": 4
+      },
+      "previousProductSha256": "c105898b879d39633a205dccf44737893ef5ad80f8ac54fede4eac05baa4337b",
+      "productSha256": "e974b4a0b37066dc0e7a9cd01d2c36c0323eebb55f768f41b087cc2ec30a4d31",
+      "knowledgeSha256": "4b8eb923ab0750eacc1864acdbf19a3a71eedff68e09f4aecd089763c5fa1bd9",
+      "sourceCommit": "a35000c98337e62e63ee9946256bffb7d01d3cd5",
+      "summary": "BALA旧FIRE主控，16 MB Flash、4 MB PSRAM、320×240 ILI9341。独立原生240×320控制器RAM及横屏显示、39/38/37三键、SD SPI和GPIO15十灯RMT数字子集。",
+      "limitations": [
+        "原始 LX6 客体诊断覆盖真实 MMIO 显示/输入；原厂固件与实物验证独立。未实机验证；浏览器 WebGL/照片对照仍未验收。",
+        "机器人底盘、电机驱动0x56、编码器、MPU6050平衡闭环和动力学尚未接入；当前适配范围为旧FIRE主控。",
+        "3D仍为相关FIRE外壳近似；未将新版16/8/ILI9342C身份混入旧16/4/ILI9341。IP5306电池管理、DAC音频、麦克风和无线链路未完整验收。",
+        "十颗RGB灯的真实RMT链路已建模；灯孔空间链序尚未实机校准。"
+      ]
+    },
+    {
+      "id": "m5stack-c145",
+      "name": "M5Stack Tab5 · C145",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5stack-tab5",
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "partial",
+        "touch": true
+      },
+      "previousProductSha256": "ed49bc710842aca46fa7166b114c30c070c5ad6301cc49a5488dd3faf6f342d6",
+      "productSha256": "e3622b6cd57b9a39e109569fa38efe73909a5383406078510f7c20bc2b6068b0",
+      "knowledgeSha256": "e49d119b2619b1590db95d1ed53019824c984ae78c8a00fbb38215041463d0e9",
+      "sourceCommit": "5da5e0afb5543c62c46a4067f37c5f982225b727",
+      "summary": "ESP32-P4主控、ESP32-C6无线协处理器的5英寸终端；C145不含电池。当前运行模型覆盖ILI9881C＋GT911批次的MIPI-DSI、真实帧缓冲DMA与触摸，其他屏幕批次仍待适配。",
+      "limitations": [
+        "仅ILI9881C＋GT911批次：DSI host/PHY/bridge、DW-GDMA、DMA2D、PI4IO复位与GPIO22背光及GPIO31/32真实I²C触摸已接入；ST7121/ST7123批次未实现。",
+        "原创客体诊断已核验720×1280完整帧和触摸驱动重绘；官方出厂固件仍为未验证试运行，未实机验证。",
+        "C6无线、摄像头、音频、RTC/IMU/电流监测、充电/PMS150G及USB应用尚未核验；已准备的TF卡不代表客体SD总线可用。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurement performed; official photographs may include shipping films and uncalibrated perspective.",
+        "PCB is an explicitly estimated UNKNOWN placeholder without invented components or traces.",
+        "Source CAD does not supply calibrated material properties; colors are source-photo-informed display approximations.",
+        "Front glass is an independent photo-informed flat surface, not manufacturer glass CAD; inset/radius +/-0.5mm, optical stack and thickness unknown.",
+        "已补microSD SPI/SDIO、RS485、I²C芯片和Grove逐针资料；物理接线事实不代表已接入客体。",
+        "检查零件将外壳/外部构件整体沿Z移开以露出UNKNOWN占位板；这是查看偏移，不宣称真实维修拆解步骤。"
+      ]
+    },
+    {
+      "id": "m5stack-u213",
+      "name": "M5Stack Unit PoE-P4 · U213",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5stack-poe-p4",
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "partial"
+      },
+      "previousProductSha256": "e4b28e70367223c7a8e0d715ea7f09ee12061758699cb625514a64008cfee7aa",
+      "productSha256": "96b8cb0e903fb74e42ca8281d8a69f3e76962a82ed3475e29dd5d0d55a6049fa",
+      "knowledgeSha256": "8fd8020d2253b759788c3cb20c366bec6fe8ebf67655340991c910341ab552bc",
+      "sourceCommit": "40c350791beadb8f1b562624be2fd780d3c1375f",
+      "summary": "ESP32-P4的PoE以太网控制器，16MB Flash、32MB PSRAM。独立板型连接IP101GRI、实际EMAC/MDIO/RMII与客体DMA，支持用户键和共阳RGB；设备本身不带屏幕。",
+      "limitations": [
+        "未实机验证；独立P4板型支持IP101GRI数字链路和原始Ethernet帧、GPIO45用户键与GPIO17/15/16共阳RGB；官方出厂程序仍为未验证试运行。",
+        "尺寸和照片估算明确区分。UNKNOWN 保留未知内部面；模型不能证明固件、总线或无线协议已运行。",
+        "原厂壳体保持独立的64×24×20.2mm，未导入远处重复排版。内部主板为UNKNOWN。",
+        "RJ45、双USB、FPC、排针、用户键和IR/RGB的完整立体件尚未逐件还原；未将DSI接口当作已集成显示屏或已有P4显示运行。",
+        "PoE协商、电气隔离、模拟功耗、IR、外部MIPI屏幕/摄像头及USB应用不在已验证范围；RJ45协议支持不证明模拟PoE供电。"
+      ]
+    },
+    {
+      "id": "m5stack-u138",
+      "name": "M5Stack Unit PoESP32 · U138",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "unit-poesp32",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "5db066e291f8bfb3548041eb1360ecbed5a76f4d19c30a23d197a1e649544f48",
+      "productSha256": "d40414da8caaeab68a0c3069246d338122b95b0379a67b6ca2c0637e973c42ae",
+      "knowledgeSha256": "1d0c95a4ec401bb752e27b595109b679bf0a83a423508d5643e8881188b3aa5f",
+      "sourceCommit": "417ede82692898e147d97736c7f77ceef1e88ca2",
+      "summary": "ESP32-WROOM-32U 与 IP101G 的独立 RMII 以太网主控，已接入真实客体 MAC/MDIO/DMA、默认虚拟网络和显式 Ethernet relay；ESP-AT 原厂应用与物理 PoE 未验收。",
+      "limitations": [
+        "独立 WROOM-32U / IP101G RMII 数字路径已验证：MDIO PHY1、真实 LX6 MAC 增强 descriptor DMA 发送 ARP 并将 VirtualNet 应答写入客体 RAM；支持显式原始以太网 relay。ESP-AT 出厂应用、物理 PoE 转换与无线射频未验收。",
+        "未验证独立 PCB 布局/板级 CAD，保留可展开的 UNKNOWN 主板；外壳、纸贴、镜头与连接器分别着色。",
+        "原照片/丝印版权归 M5Stack，未确认独立开放图片许可；近似几何按项目许可，厂家 CAD 保留原 MIT。",
+        "本轮未进行浏览器 WebGL 正反斜视/三种材质真实渲染验收；资产加载、几何、UV、材质隔离与展开复位另做离线检查。",
+        "接口位置/插合深度和逐脚物理方位未独立标定，禁用可连接线缆；不能以近似插口当电气路由。",
+        "精确原厂 CAD 为26×72×19.2mm，排版副本未混入装配；RJ45金属/触点、Grove和可见单枚紧固件为照片估算。",
+        "文档 Model Size 链接文件名为U129，与U138身份不符；未将该尺寸图当U138测量依据。",
+        "Native -Z/16.4mm-wide recess carries the circuit diagram from photo2; +Z/18.8mm-wide recess carries PoESP32 branding from photo6. These distinct carriers are verified separately rather than swapping their printed sides.",
+        "Diagram paper is a single independent masked surface: the photographed RJ45 metal shield is estimated below the plastic-CAD cutout. Paper-to-plastic/metal display clearances0.05/0.025mm prevent z-fighting; hidden shield dimensions are not verified component CAD. Branding ROI uses the measured full-body crop with a conservative real-paper-edge inset, never projects to side/inner faces."
+      ]
+    }
+  ],
+  "sourceCommits": {
+    "m5stack-k126": {
+      "commit": "a35000c98337e62e63ee9946256bffb7d01d3cd5",
+      "productChangedFields": [
+        "limitations",
+        "runtime",
+        "controls",
+        "summary"
+      ]
+    },
+    "m5stack-k014-b": {
+      "commit": "a35000c98337e62e63ee9946256bffb7d01d3cd5",
+      "productChangedFields": [
+        "limitations",
+        "controls",
+        "runtime",
+        "name",
+        "interfaces",
+        "summary"
+      ]
+    },
+    "m5stack-c145": {
+      "commit": "5da5e0afb5543c62c46a4067f37c5f982225b727",
+      "productChangedFields": [
+        "limitations",
+        "display",
+        "runtime",
+        "summary"
+      ]
+    },
+    "m5stack-u213": {
+      "commit": "40c350791beadb8f1b562624be2fd780d3c1375f",
+      "productChangedFields": [
+        "limitations",
+        "runtime",
+        "controls",
+        "interfaces",
+        "summary"
+      ]
+    },
+    "m5stack-u138": {
+      "commit": "417ede82692898e147d97736c7f77ceef1e88ca2",
+      "productChangedFields": [
+        "limitations",
+        "runtime",
+        "interfaces",
+        "summary"
+      ]
+    }
+  },
+  "firmwareChanges": [
+    {
+      "id": "m5stack-c145-official-reference",
+      "productIds": [
+        "m5stack-c145"
+      ],
+      "fields": [
+        "limitations"
+      ],
+      "sha256": "8ab08ce9673bdb3018ba14be8e1be690503c2ae4f451dd1fd4127c575cf57ec6"
+    },
+    {
+      "id": "m5stack-u213-official-reference",
+      "productIds": [
+        "m5stack-u213"
+      ],
+      "fields": [
+        "limitations"
+      ],
+      "sha256": "8649fb4a92347dc0b11fe2130d1bff84bc0ccb8671a7458c2cfbc2ddd91a5376"
+    },
+    {
+      "id": "m5-poe-cameras-webcam-v220",
+      "productIds": [
+        "m5stack-u121",
+        "m5stack-u121-b",
+        "m5stack-u121-b-v11"
+      ],
+      "fields": [
+        "compatibility",
+        "limitations"
+      ],
+      "sha256": "7c230802cf9ec97c02c0a6d6f9d92a58c839b9d07586cc6880540c432bf7436d"
+    },
+    {
+      "id": "m5stack-u138-official-source-reference",
+      "productIds": [
+        "m5stack-u138"
+      ],
+      "fields": [
+        "compatibility",
+        "limitations"
+      ],
+      "sha256": "551e9b9a0b701661dcb02c82f6771b9eb34277a91eca096cc4a625996f7f9c17"
+    }
+  ],
+  "otherProductEntriesUnchanged": true,
+  "otherKnowledgeIndexEntriesUnchanged": true,
+  "otherFirmwareEntriesUnchanged": true,
+  "knowledgeIndexUpdatedAt": "2026-11-26T11:16:38Z",
+  "validation": {
+    "catalogSchemas": {
+      "status": "passed",
+      "products": 728,
+      "accessories": 10,
+      "firmwares": 670,
+      "watchlist": 537
+    },
+    "knowledge": {
+      "status": "passed",
+      "records": 736,
+      "sourceBodiesReDownloaded": false
+    },
+    "batchScope": {
+      "status": "passed",
+      "changedProductCount": 5,
+      "otherProductKnowledgeIndexFirmwareEntriesUnchanged": false,
+      "publisherImageIdentityRolesDefaultsVerificationFlagsPreserved": true,
+      "otherProductEntriesUnchanged": true,
+      "otherKnowledgeIndexEntriesUnchanged": true,
+      "firmwareException": "Only shared m5-poe-cameras-webcam-v220 wording/compatibility is reconciled after all three selected camera entries are active."
+    },
+    "worker": {
+      "status": "reuse-completed-batch020",
+      "rerun": false,
+      "factoryCompatibilityInferred": false
+    },
+    "platformConfig": {
+      "status": "passed",
+      "behaviorGroups": 17,
+      "artifactHashes": 3,
+      "optionalS3RomHash": "not-reverified-in-this-static-run"
+    },
+    "finalStatic": {
+      "status": "passed",
+      "tests": 7,
+      "command": "node --test tools/platform-config-test.mjs tools/platform-m5-classic-camera-test.mjs tools/platform-m5-legacy-camera-test.mjs tools/platform-m5-legacy-five-test.mjs tools/platform-m5-stickt-original-model-test.mjs"
+    },
+    "broaderStatic": {
+      "status": "passed",
+      "tests": 8,
+      "command": "node --test tools/platform-m5-p4-test.mjs tools/platform-m5-classic-completion-test.mjs tools/platform-unit-controller-test.mjs tools/platform-m5-edge-test.mjs"
+    },
+    "modelValidators": {
+      "status": "passed",
+      "commands": [
+        "node tools/verify-m5-unitcam-b-model.mjs /tmp/unitcam.json",
+        "node tools/verify-m5-poe-cameraf-models.mjs /tmp/poe.json",
+        "node tools/verify-m5-camera-five.mjs /tmp/camera-five.json",
+        "node tools/check-m5-missing-models.mjs"
+      ],
+      "scope": "Actual loader/hash/geometry/material/inspection checks with image decoding stubbed; no rendered-photo or firmware execution acceptance.",
+      "retainedReceipts": [
+        "m5stack-025-unitcam-b.json",
+        "m5stack-025-poe-cameraf.json",
+        "m5stack-025-camera-five.json",
+        "m5stack-025-model-checks.json"
+      ]
+    }
+  },
+  "noCargoOrWorkerRerun": true,
+  "sourceReceiptRepair": {
+    "commit": "73162de4",
+    "products": [
+      "m5stack-k126",
+      "m5stack-k014-b"
+    ],
+    "scope": "Only existing sources archiveName and nondecreasing record/index timestamp; original fetch time/hash/URL retained."
+  },
+  "sharedFirmwareCoherence": {
+    "id": "m5-poe-cameras-webcam-v220",
+    "productIds": [
+      "m5stack-u121",
+      "m5stack-u121-b",
+      "m5stack-u121-b-v11"
+    ],
+    "sourceCommit": "3a405f14",
+    "reason": "All three have now been activated. Remove obsolete no-board text without changing role, source, default or validation flags. This is a shared wording correction, not an extra product activation."
+  },
+  "staticCoverageSource": {
+    "commit": "8a5182bd",
+    "scope": "Add fourteen-camera static coverage and adapt its model-validator expectations to the exact now-active board identities. Preserve subsequent K049-C, K115, U138 and U133 integrations."
+  },
+  "testLogHashes": {
+    "schema": "2fdab8f1bf9cae97f2f14120867b27dd079ba0a7460de351c700c5d96feb9355",
+    "knowledge": "c7c4d4b86f53035c0e58ce1ed62efc6f91d0f5c7d58560f415b8d0de12b41fb0",
+    "static": "0a2a5ad457cc0eee37018c629e3709f70487a1f2e28a2b843351fefe857ce9b2",
+    "broader-static": "57606dde299bca5d058d59cb6862aafc8b23a8961088afef43f3633c3b04e1e8",
+    "unitcam-b": "34229cfd8b909bbc8af014c07014eeff75b07dd477ebb5d073411c45430900e9",
+    "poe-cameraf": "af9f447b30e73616a06aefbe94ad1b9c85ca5bebf8d6e3f2cef1e280c5d0411c",
+    "camera-five": "ba47d8c226d6f92da1ca68598da1497a96f00a21e13058b27254862be4ada9d2",
+    "missing-models": "a72ffc21f937b55440f6044613f15fb547d91dda4b8b156998e2e646a923c27b"
+  }
+}

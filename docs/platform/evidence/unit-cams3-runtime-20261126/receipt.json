@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T09:35:34Z",
+  "products": [
+    "m5stack-u174",
+    "m5stack-u174-b"
+  ],
+  "primitiveCommit": "03b3df59",
+  "files": {
+    "esp-soc/src/camera/ov3660.rs": "b7ed07863b2b1a7032531e9fc8c9ce450606924f345d706cdbcb0bbee85ab9cb",
+    "esp-soc/src/camera/py260.rs": "19ebd2d20f87608060172676e1b4009fd965023e75968b3cc058a1cef80c0455",
+    "esp32s3/src/board/unit_cams3.rs": "953b9475a6e57bc4d89fda04dd160100feced774a602fa854b89e23094d4e418",
+    "esp32s3/src/bus/dma.rs": "98968815d90459944ced63b44c1368a5a3fa0bc8696c6e4f9a1d8c03f726c7de",
+    "esp32s3/src/periph.rs": "dbd579fa8bf8a4dc2a3ea0d93a1b9a4db38a83848505e09142dc08de6b15f95a",
+    "esp32s3/tests/unit_cams3.rs": "0e744071a33d4413a90d6e4c66b618c9aa433cee49355aa2eab88264fe6bf053"
+  },
+  "checks": [
+    {
+      "command": "cargo test -p esp-soc camera::ov3660 --lib",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "cargo test -p esp-soc camera::py260 --lib",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "cargo test -p esp32s3 --test unit_cams3",
+      "passed": 4,
+      "failed": 0,
+      "guest": "LX7 S32I/L32I instructions; guest I2C/GPIO/LCD_CAM/GDMA/SPI MMIO; host supplied virtual pictures and encoded bytes only"
+    },
+    {
+      "command": "cargo test -p esp32s3 camera_ --lib",
+      "passed": 11,
+      "failed": 0
+    },
+    {
+      "command": "cargo clippy -p esp32s3 --test unit_cams3 -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "node tools/platform-knowledge-test.mjs",
+      "result": "passed, 736 records"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "passed: 728 products, 10 accessories, 670 firmwares, 537 watchlist entries"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "not completed in sparse checkout: docs/evidence/ARCHIVE.md omitted; integration must run in full tree"
+    }
+  ],
+  "boundaries": [
+    "No factory image startup/compatibility or physical hardware verification.",
+    "Virtual 10Hz frame schedule, not sensor PLL/PCLK timing; no optical/ISP/JPEG encoder, startup delays, PDM microphone or UVC/network simulation.",
+    "Host JPEG test checks structural parsing and exact byte delivery; not semantic JPEG decoding.",
+    "Full workspace/release/WASM builds and idle CPU benchmark reserved for integration.",
+    "Model geometry assets unchanged; renderer check requires full-tree source assets omitted here."
+  ]
+}

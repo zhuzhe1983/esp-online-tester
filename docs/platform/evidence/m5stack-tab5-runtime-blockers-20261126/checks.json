@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T07:18:57Z",
+  "repositoryRevision": "baf3cb90cc3ca4f6a2ce0e1bd57d44fab68722ba",
+  "productId": "m5stack-c145",
+  "classification": "blocked-infrastructure",
+  "command": "python3 docs/platform/evidence/m5stack-tab5-runtime-blockers-20261126/recheck.py --repo . --sources <download-directory> --io-probe",
+  "environment": {
+    "rustc": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+    "build": "Isolated rustc --test; no Cargo, shared target directory or full WASM build"
+  },
+  "checks": [
+    {
+      "kind": "repository-snapshot-sha256",
+      "count": 14,
+      "result": "pass"
+    },
+    {
+      "kind": "download-bytes-and-sha256",
+      "count": 26,
+      "result": "pass"
+    },
+    {
+      "kind": "isolated-existing-device-tests",
+      "result": "pass",
+      "passed": 3,
+      "failed": 0,
+      "names": [
+        "i2c::gt911::tests::ready_clear_rescan_release_and_bounded_coordinates",
+        "i2c::pi4ioe5v6408::tests::direction_high_z_pulls_and_read_only_inputs",
+        "i2c::pi4ioe5v6408::tests::masked_latches_clear_on_status_read_and_rearm_only_after_default"
+      ]
+    },
+    {
+      "kind": "official-tab5-reset-sequence-on-existing-pi4io-device",
+      "result": "pass",
+      "passed": 1,
+      "failed": 0,
+      "name": "tab5_lcd_reset_uses_input_pullup_release",
+      "scope": "Digital input pull-up resolves reset release while push-pull drive is None and output latch remains zero; no voltage or board wiring claim."
+    }
+  ],
+  "confirmedSourceGaps": [
+    "No mounted DSI host/bridge endpoint in the P4 peripheral dispatch.",
+    "No mounted DesignWare GDMA or DMA2D endpoint in the P4 peripheral dispatch.",
+    "No DSI bridge guest-memory pixel sink, frame completion or scanout path.",
+    "No DSI-specific PHY lock/lane status, clock/reset or command FIFO state machine.",
+    "No Tab5 board wiring, expander instances or exact touch batch attachment.",
+    "No ST712x touch protocol implementation; existing GT911 is only a single-contact subset."
+  ],
+  "staticInference": "The official IDF v5.4.2 DSI bus waits for hardware-owned PHY status at 0x500A00B0. The baseline only provides zero-initialized register RAM for that unmounted block, with no state transition to satisfy these waits. This is a source-level inference, not an observed firmware hang.",
+  "notExecuted": [
+    "Tab5 P4 firmware boot or instruction trace",
+    "P4 I2C MMIO controller transactions for a Tab5 board",
+    "Guest register/descriptor stream producing DSI pixels",
+    "DMA2D display copies",
+    "Touch-to-guest-to-framebuffer interaction",
+    "Browser framebuffer rendering",
+    "Physical hardware, analog power or timing acceptance"
+  ],
+  "runtimeAvailabilityChanged": false,
+  "countsAsCompletedBoard": false
+}

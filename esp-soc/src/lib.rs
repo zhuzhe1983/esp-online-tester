@@ -10,6 +10,7 @@ mod console;
 pub mod debug;
 pub mod devices;
 pub mod elf;
+pub mod ethernet;
 pub mod gpio;
 pub mod host;
 pub mod image;
@@ -31,6 +32,7 @@ pub mod usb_host;
 pub mod web;
 pub mod waveshare_profiles;
 pub mod wifi;
+pub mod w5500;
 
 pub use board::{Board, BoardModel, NoBoard};
 pub use debug::DebugFlags;

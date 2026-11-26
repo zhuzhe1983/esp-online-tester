@@ -9,7 +9,7 @@
     "official-docs",
     "official-docs-20261122"
   ],
-  "updatedAt": "2026-11-23T05:25:46Z",
+  "updatedAt": "2026-11-26T12:19:34Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -917,7 +917,7 @@
     },
     {
       "id": "front-buttons",
-      "label": "Front panel buttons",
+      "label": "Platform touch shortcuts and source limits",
       "value": {
         "count": 3,
         "ids": [
@@ -925,36 +925,41 @@
           "btn-b",
           "btn-c"
         ],
-        "implementation": "CHSC6540 touch zones below the three printed circles; no ESP32 GPIO",
-        "legacy_touch_zones": {
+        "implementation": "Platform board-API aliases synthesize CHSC6540 contacts on the real LCD touch surface; no ESP32 GPIO or fixed manufacturer touch-button geometry is implied.",
+        "platform_touch_points": {
           "btn-a": [
-            3,
-            218,
-            102,
-            21
+            54,
+            228
           ],
           "btn-b": [
-            109,
-            218,
-            102,
-            21
+            160,
+            228
           ],
           "btn-c": [
-            215,
-            218,
-            102,
-            21
+            266,
+            228
           ]
+        },
+        "fixed_physical_regions_verified": false,
+        "m5unified": {
+          "touch_button_height_default": 0,
+          "minimum_configured_height_for_platform_points": 12,
+          "x_partition": "(raw.x * 614) >> 16",
+          "y_threshold": "240 - configured touch-button height"
         }
       },
       "basis": "official",
       "sourceIds": [
         "m5tough-readme-2dc8ad31",
         "m5tough-m5button-h-2dc8ad31",
-        "m5tough-m5touch-cpp-2dc8ad31"
+        "m5tough-m5touch-cpp-2dc8ad31",
+        "m5unified-touch-buttons-96576a14",
+        "m5unified-touch-height-96576a14",
+        "platform-tough-touch-shortcuts",
+        "m5tough-m5tough-h-2dc8ad31"
       ],
       "group": "controls",
-      "notes": "M5Tough README (\"The 3 icons on the front of the screen are capacitive buttons which are programmable\") and M5Button.h line 162-164 (\"the three buttons M5.BtnA, M5.BtnB and M5.BtnC ... come already implemented as touch buttons\"). The rectangles are the rotation-1 zones used by the deprecated library (M5Button.h line 268-273); the current official page has no button table, so the zone geometry is library-derived and not an official dimension."
+      "notes": "Source correction: M5Button.h lines 268-273 show hardware-button label examples for older M5Stack GPIO buttons, not Tough touch-button rectangles. Its prose claims Tough front touch buttons, but the same pinned M5Tough.h does not declare BtnA/B/C. M5Unified explicitly implements configurable software touch buttons for Tough: raw.y >= 240 - configured height and index (raw.x * 614) >> 16. Default height is 0. The platform aliases retain their established synthesized contact coordinates; these are simulation conveniences, not calibrated physical key positions. Basis refers to the cited software contracts; the injected points themselves are explicitly platform simulation values."
     },
     {
       "id": "power-button",
@@ -1301,7 +1306,7 @@
       "id": "diff-vs-core-basic-k007",
       "label": "Difference from Core Basic (K007)",
       "value": {
-        "buttons": "K007 BtnA/BtnB/BtnC are real GPIO inputs (G39/G38/G37); Tough has no GPIO buttons and uses touch zones",
+        "buttons": "K007 BtnA/BtnB/BtnC are GPIO inputs (G39/G38/G37); Tough has a touch surface and the platform exposes virtual contact shortcuts, not GPIO keys.",
         "display": "K007 LCD CS G14, DC G27, RST G33, backlight G32 (PWM), SPI MISO G19; Tough CS G5, DC G15, reset on AXP_IO4, SPI MISO G38",
         "speaker": "K007 speaker data_out G25; Tough NS4168 data_out G2 with enable on AXP_IO2",
         "power": "K007 has no AXP192; Tough power rails and panel reset are AXP192 outputs",
@@ -1355,21 +1360,25 @@
       "id": "front-button-ids",
       "group": "controls",
       "basis": "official",
-      "label": "Front key identifiers",
+      "label": "Platform touch shortcut identifiers",
       "value": {
-        "btn-a": "left printed circle",
-        "btn-b": "middle printed circle",
-        "btn-c": "right printed circle",
-        "transport": "CHSC6540 touch zone, no ESP32 GPIO",
-        "power": "AXP192 PWRKEY",
-        "reset": "ESP32 EN"
+        "btn-a": "platform CHSC6540 touch shortcut at (54,228)",
+        "btn-b": "platform CHSC6540 touch shortcut at (160,228)",
+        "btn-c": "platform CHSC6540 touch shortcut at (266,228)",
+        "transport": "platform-generated CHSC6540 contact; no ESP32 GPIO",
+        "power": "AXP192 PWRKEY, unsupported in this board adapter",
+        "reset": "ESP32 EN, unsupported as a board button"
       },
       "sourceIds": [
         "m5tough-readme-2dc8ad31",
         "m5tough-m5button-h-2dc8ad31",
-        "m5gfx-board-m5tough-28d47949"
+        "m5gfx-board-m5tough-28d47949",
+        "m5unified-touch-buttons-96576a14",
+        "m5unified-touch-height-96576a14",
+        "platform-tough-touch-shortcuts",
+        "m5tough-m5tough-h-2dc8ad31"
       ],
-      "notes": "Stable catalog identifiers for the five press controls. The left/middle/right order follows the deprecated library BtnA/BtnB/BtnC zones (M5Button.h line 268-273) and the printed circles in the product photos; no official source publishes per-key touch coordinates, so the geometry stays an approximation."
+      "notes": "The three aliases remain callable by API and keyboard. Their physical flag is false; spatial input uses the real LCD touch surface at the same native coordinates, without added cap or fixed key planes. M5Unified firmware must configure touch-button height >=12 to classify y=228 as BtnA/B/C; its default height is 0. Basis refers to the cited software contracts; the injected points themselves are explicitly platform simulation values."
     },
     {
       "id": "official-test-firmware",
@@ -2059,7 +2068,7 @@
         "repository": "m5stack/M5Tough",
         "commit": "2dc8ad313f13d64da8aaaa1c8a448e2862ddadee"
       },
-      "notes": "Lines 162-164 document BtnA/B/C as pre-implemented touch buttons under the three circles; lines 268-273 give rectangles A(3,218,102,21) B(109,218,102,21) C(215,218,102,21)."
+      "notes": "Lines 162-164 claim front touch buttons in prose, but lines 268-273 are explicitly older M5Stack hardware-button label examples, not Tough touch rectangles. Those numeric rectangles must not be used as physical Tough key geometry. The pinned M5Tough.h declares no BtnA/B/C members."
     },
     {
       "id": "m5tough-m5button-cpp-2dc8ad31",
@@ -2278,6 +2287,48 @@
       "sha256": "d290a0312dcc51c0a1e36e86719f4644b192f335754f0329773466113e686cb5",
       "archiveName": "M5GFX.cpp",
       "kind": "official-driver-source"
+    },
+    {
+      "id": "m5unified-touch-buttons-96576a14",
+      "title": "M5Unified configurable Tough touch-button routing",
+      "url": "https://github.com/m5stack/M5Unified/blob/96576a14247ddc935149145aa6b51943464120f1/src/M5Unified.inl",
+      "kind": "software-source",
+      "status": "fetched",
+      "sha256": "d46f55e33edef280e9a7bb938017708743771e34f2894e50967b052bce6019e5",
+      "bytes": 118575,
+      "mediaType": "text/plain; charset=utf-8",
+      "revision": {
+        "repository": "m5stack/M5Unified",
+        "commit": "96576a14247ddc935149145aa6b51943464120f1"
+      },
+      "notes": "Read independently through GitHub at the pinned revision. Routing in M5Unified.inl update(): Tough raw.y >= 240 - configured height, x index (raw.x * 614) >> 16. M5Unified.hpp sets the default height to 0 and exposes setTouchButtonHeight. Git blob 93d17b9b94a5317af294bc4d099093ebceec5d3f.",
+      "fetchedAt": "2026-11-26T12:19:34Z",
+      "archiveName": "M5Unified-96576a14.inl"
+    },
+    {
+      "id": "m5unified-touch-height-96576a14",
+      "title": "M5Unified touch-button height default and setter",
+      "url": "https://github.com/m5stack/M5Unified/blob/96576a14247ddc935149145aa6b51943464120f1/src/M5Unified.hpp",
+      "kind": "software-source",
+      "status": "fetched",
+      "sha256": "f95397508c18c54cd064a1b7d2536dfd08ce6bbd341926a3534e5ffa9928300b",
+      "bytes": 30557,
+      "mediaType": "text/plain; charset=utf-8",
+      "revision": {
+        "repository": "m5stack/M5Unified",
+        "commit": "96576a14247ddc935149145aa6b51943464120f1"
+      },
+      "notes": "Read independently through GitHub at the pinned revision. Routing in M5Unified.inl update(): Tough raw.y >= 240 - configured height, x index (raw.x * 614) >> 16. M5Unified.hpp sets the default height to 0 and exposes setTouchButtonHeight. Git blob ebe2ed5035458b9d32fa48a4436edf6cead3f71f.",
+      "fetchedAt": "2026-11-26T12:19:34Z",
+      "archiveName": "M5Unified-96576a14.hpp"
+    },
+    {
+      "id": "platform-tough-touch-shortcuts",
+      "title": "Platform Tough virtual contact aliases",
+      "url": "https://github.com/zhuzhe1983/esp-online-tester/blob/3bc45f158dc857a8aa968c2e7b795c1448831c62/esp32/src/board/m5_tough.rs",
+      "kind": "platform-source",
+      "status": "linked",
+      "notes": "Local project implementation at the pinned contribution, read from the checkout rather than downloaded from this link. SHA-256 4a91dfc19e0c64d7c3e3ed625d4bd6a189d936f64b98b170baecb9fed72d9f7a. KEYS maps A/B/C to x54/160/266 and Touch::contact synthesizes y228. These are platform input aliases, not manufacturer physical dimensions. The source comment is corrected separately without changing any non-comment line."
     }
   ],
   "assets": [
@@ -2520,6 +2571,20 @@
       ],
       "group": "firmware",
       "notes": "No bootable factory image has been verified for this SKU yet. The official page offers UiFlow1/UiFlow2/Arduino entries and MTools/EasyLoader download portals; the survey result is recorded in web/platform/catalog/firmwares.json and docs/platform/evidence/tough/ once a fixed URL and SHA-256 exist."
+    },
+    {
+      "id": "physical-front-touch-key-regions",
+      "label": "Fixed physical front-key geometry",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "m5tough-readme-2dc8ad31",
+        "m5tough-m5button-h-2dc8ad31",
+        "m5unified-touch-buttons-96576a14",
+        "m5unified-touch-height-96576a14"
+      ],
+      "group": "controls",
+      "notes": "Legacy prose mentions front circles but its documented rectangles are unrelated hardware-label examples. Current source establishes configurable software touch-button routing, not fixed manufacturer geometry. No extra 3D key cap or fixed LCD key region is asserted."
     }
   ],
   "collectionNotes": [
@@ -2530,6 +2595,7 @@
     "The official page and the 2021 schematic disagree on the USB serial bridge (CH9102 versus CP2104-F03-GMR) and the 2026-10-26 page disagreed with the current page on the LCD backlight rail (AXP_DC3 versus AXP_LDO3). Neither is silently merged.",
     "M5Tough Config.h carries the classic M5Stack line order (TFT_CS 14, TFT_DC 27, TFT_RST 33, TFT_LED 32, MISO 19). Those defaults do not apply to Tough and were not used; only the microSD CS 4 matches the official page.",
     "M5GFX pmic.pins for m5tough has no verified marker, so gpio3 -> lcd.rst is kept as a recorded disagreement with the official page and schematic.",
-    "Library README statements about a 390mAh battery, vibration motor, green power LED and CP2104 are older-revision claims; they are held as unknowns for this SKU until an official source supports them."
+    "Library README statements about a 390mAh battery, vibration motor, green power LED and CP2104 are older-revision claims; they are held as unknowns for this SKU until an official source supports them.",
+    "2026-11-26 source correction: old M5Button.h label-example coordinates were incorrectly attributed to Tough touch keys. The platform keeps its three virtual touch shortcuts and the existing real LCD touch surface; physical key placement remains unverified. Pinned M5Unified 96576a14247ddc935149145aa6b51943464120f1 routing is conditional on configured touch-button height, whose default is zero."
   ]
 }

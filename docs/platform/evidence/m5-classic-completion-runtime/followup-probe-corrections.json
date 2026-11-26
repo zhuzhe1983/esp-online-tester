@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "case": "First 020 original thermal diagnostic probe corrections",
+  "status": "resolved in original guest only; no runtime change",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "oldProbeRevision": "fb4d6499",
+  "oldDisplayProbeSourceSha256": "bc5c83923bca86ce893c588317cbac8ff6e961353bbadab8347b9e5a681c7bb6",
+  "observations": [
+    {
+      "productId": "m5stack-k126",
+      "mode": "thermal",
+      "result": "initial-frame wall-clock deadline",
+      "observedGuestSeconds": 0.42,
+      "observedCompletedDisplayFrames": 0,
+      "guestSerialTail": "CLASSIC DISPLAY SRAM READY\n",
+      "cause": "The diagnostic acknowledged the initial sensor frame without configuring rate, leaving control0x1901 at 2Hz. The next frame was correctly due only after0.5guest seconds.",
+      "correction": "Original guest now writes control0x800D=0x1B01 for32Hz before ACK, following pinned command_processor.cpp initialization rate_32Hz. This is real I2C MMIO, not a host-time sensor or framebuffer injection."
+    },
+    {
+      "productId": "m5stack-k016-t",
+      "mode": "thermal",
+      "result": "pixel assertions passed, but serial observation exposed extra state changes; that broad sampling is not retained as acceptance",
+      "cause": "The diagnostic sampled the first pixel of every VoSPI packet. Odd packets start at x80 and some rows cross the selected hotspot, so the changing sampled coordinate could be mistaken for a host scene change.",
+      "correction": "Accept packet-ID0 only and sample its first left-edge pixel at x0, outside the selected x80/r12 hotspot in every segment. Require exactly BASELINE,CHANGED,BASELINE serial reports in addition to real published pixel changes."
+    }
+  ],
+  "finalReceipt": "followup-worker.json",
+  "finalModesPassed": 5,
+  "strictSensorTransitionSequence": [
+    "SENSOR BASELINE",
+    "SENSOR CHANGED",
+    "SENSOR BASELINE"
+  ],
+  "runtimeEngineChanged": false,
+  "manufacturerFirmwareValidated": false,
+  "physicalValidation": false,
+  "browserWebglValidated": false
+}

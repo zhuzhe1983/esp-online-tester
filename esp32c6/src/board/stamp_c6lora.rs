@@ -9,6 +9,7 @@ use esp_soc::devices::{i2c_bitbang::I2cBitBang,sx1262::{Sx1262,LoRaInput}};
 
 pub struct StampC6LoRa {io:Arc<Mutex<Pi4ioState>>,i2c:I2cBitBang,radio:Sx1262,cycle:u64,levels:[bool;5],edges:Vec<BoardEdge>,selected:bool,reset_edges:u64,gpio_events:u64}
 impl StampC6LoRa {
+    pub(super) fn set_aux_input(&mut self,pin:u8,level:bool) {self.io.lock().expect("Stamp C6LoRa IO mutex poisoned").set_input(pin,Some(level));self.sync();}
     pub fn new()->Self {
         let mut s=Self{io:Arc::new(Mutex::new(Pi4ioState::default())),i2c:I2cBitBang::new(),radio:Sx1262::new(crate::periph::CPU_HZ),cycle:0,levels:[true,true,false,true,false],edges:Vec::new(),selected:false,reset_edges:0,gpio_events:0};s.sync();s
     }

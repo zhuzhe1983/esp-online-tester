@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T09:38:32.679702+00:00",
+  "scope": "Authored LX6 digital peripheral tests; no manufacturer application execution, physical device acceptance or browser rendering implied.",
+  "commands": [
+    {
+      "command": "cargo test -p esp32 --test m5_units",
+      "result": "4 passed,0 failed",
+      "coverage": [
+        "K117 independent G39/RMT27 and reset",
+        "U120 ST7789 SPI pin routing, pixels, rotation, sleep, reset and low-active backlight",
+        "U149 MLX90640 word protocol/EEPROM/nominal ambient equations/ready/subpage/rate and SPI RGB",
+        "K1152MiB PSRAM MMU first/last pages and FPGA drawing/LT8618 banked registers"
+      ],
+      "integrationFollowup": "A subsequent readback/MISO negative assertion and removal of unproven U120 package assertion require central final rerun."
+    },
+    {
+      "command": "cargo test -p esp-periph mlx90640",
+      "result": "1 passed,0 failed"
+    },
+    {
+      "command": "cargo clippy -p esp32 --test m5_units -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-input-test.mjs tools/platform-stick-environment-test.mjs",
+      "result": "passed;2 script wrappers +7 named environment tests"
+    },
+    {
+      "command": "node --test tools/platform-unit-controller-test.mjs tools/platform-knowledge-test.mjs",
+      "result": "passed;3 exact-controller contracts +736 knowledge records"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "passed;728 products,10 accessories,670 firmware,537 watch entries"
+    }
+  ],
+  "negativeResults": [
+    {
+      "command": "first cargo test -p esp32 --test m5_units",
+      "result": "2 passed,2 failed",
+      "cause": "Initial test fixture omitted CPU240MHz timing setup and PSRAM cache/MMU initialization; guest protocol tests corrected to program both through LX6 stores."
+    },
+    {
+      "command": "first/second targeted clippy",
+      "result": "failed",
+      "cause": "Formatting of boolean assignment and constant chunks_exact; fixed with explicit assignment spacing/as_chunks."
+    },
+    {
+      "command": "initial platform knowledge test",
+      "result": "failed",
+      "cause": "Changed record updatedAt was not yet synchronized to index; both updated together."
+    }
+  ],
+  "sources": 26,
+  "officialImages": [
+    {
+      "file": "u120-fw.bin",
+      "url": "https://raw.githubusercontent.com/m5stack/M5Unit-LCD-Internal-FW/8c123afa3e9cc7dec0cc1d56c3ce469ba750a9d7/examples/FirmwareUpdater/firmware.bin",
+      "bytes": 333840,
+      "sha256": "4825f0d54c45e0a059c60a6deef54762cf822c9186285939e5efd0a9b61dd470",
+      "headers": {
+        "0x0": "e905022f88370840ee000000000000000000000000000001",
+        "0x1000": "ffffffffffffffffffffffffffffffffffffffffffffffff",
+        "0x8000": "6465722f65737033322d61726475696e6f2d6c69622d6275",
+        "0x10000": "5f70756c6c75705f646973007274635f6770696f5f70756c"
+      }
+    },
+    {
+      "file": "u149-fw.bin",
+      "url": "https://raw.githubusercontent.com/m5stack/M5Unit-Thermal2-Internal-FW/496530d6a913a9bb04e246b8f040a0cfc87207a9/release-fw/V0.7/U149-UNIT-THERMAL2-V0.7-20220916-0x0.bin",
+      "bytes": 327552,
+      "sha256": "ba1c95464cb8163f48aa12e9e807cfce5d3b32632dcde54b8859444448449c55",
+      "headers": {
+        "0x0": "ffffffffffffffffffffffffffffffffffffffffffffffff",
+        "0x1000": "e903022ff0050840ee000000000000000000000000000000",
+        "0x8000": "aa50010200900000005000006e7673000000000000000000",
+        "0x10000": "e906002f8c340840ee000000000000000000000000000001"
+      }
+    }
+  ],
+  "modelChange": {
+    "productId": "m5stack-k117",
+    "kind": "existing button-cap gets controlId button; geometry unchanged",
+    "metadataSha256": "30bf1b997d1bddcc89bcd0a0786e8fece0f62ecd52ed07334431eb01a0e67243"
+  },
+  "limitations": [
+    "U138 wiring contract awaiting shared EMAC engine and guest Ethernet test.",
+    "U149 original V0.7 not executed. U120 app-only lacks cold boot package.",
+    "Central WASM registry, real browser controls/share and original factory applications remain separately required."
+  ]
+}

@@ -8,11 +8,11 @@
     "accessoryId": "m5stack-unit-c6l-u202"
   },
   "title": "M5Stack Unit C6L · U202",
-  "summary": "内置ESP32-C6、SX1262与OLED的可编程LoRa设备，可独立运行，也可作为带自身固件的扩展节点。",
+  "summary": "ESP32-C6 LoRa节点，已接入64×48 SSD1306真实SPI像素、PI4IOE5V6408 P0按键、G2 RMT RGB和S012数字LoRa子集；RF传播与蜂鸣器未模拟。",
   "summarySourceIds": [
-    "official-docs"
+    "official-docs-20261126"
   ],
-  "updatedAt": "2026-10-27T08:51:22Z",
+  "updatedAt": "2026-11-26T06:11:20Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -367,6 +367,42 @@
         "meshtastic-guide"
       ],
       "notes": "Programmable ESP32-C6 controller, exposed again in accessory catalog; host protocol is defined by its own firmware, not a fixed UART LoRa modem."
+    },
+    {
+      "id": "unit-c6l-oled-pins",
+      "label": "OLED SPI wiring",
+      "value": {
+        "csGpio": 6,
+        "mosiGpio": 21,
+        "sclkGpio": 20,
+        "dcGpio": 18,
+        "resetGpio": 15,
+        "widthPx": 64,
+        "heightPx": 48,
+        "ramColumnOffset": 32
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126",
+        "m5gfx-unit-c6l-28d4794"
+      ],
+      "group": "pinmap"
+    },
+    {
+      "id": "unit-c6l-inputs",
+      "label": "Button and RGB",
+      "value": {
+        "buttonOwner": "PI4IOE5V6408",
+        "buttonPin": "P0",
+        "buttonActiveLow": true,
+        "rgbDataGpio": 2,
+        "buzzerGpio": 11
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126"
+      ],
+      "group": "pinmap"
     }
   ],
   "revisions": [],
@@ -543,6 +579,32 @@
       "url": "https://flasher.meshtastic.org/",
       "status": "linked",
       "discoveredFrom": "official-docs"
+    },
+    {
+      "url": "https://docs.m5stack.com/en/unit/Unit_C6L",
+      "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_C6L",
+      "fetchedAt": "2026-11-26T06:02:45Z",
+      "sha256": "096d19de6bef927172e526b6555f2ff244e0933e312ddb027267b5d02884d5b5",
+      "bytes": 149957,
+      "mediaType": "text/html; charset=UTF-8",
+      "archiveName": "Unit_C6L.html",
+      "id": "official-docs-20261126",
+      "title": "Unit_C6L official documentation (2026-11-26)",
+      "kind": "official-product-document",
+      "status": "fetched"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/extras/board_spec/boards/m5unit_c6l.json",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/extras/board_spec/boards/m5unit_c6l.json",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-11-26T06:08:29Z",
+      "sha256": "4120f48260ed9b25e982a44cd47cd0358a7d9cefdf4af4779832465f61dfedcd",
+      "bytes": 4244,
+      "archiveName": "m5unit_c6l.json",
+      "id": "m5gfx-unit-c6l-28d4794",
+      "title": "M5GFX exact Unit C6L board specification",
+      "kind": "official-firmware-source",
+      "status": "fetched"
     }
   ],
   "assets": [
@@ -635,5 +697,8 @@
     "productPage": "https://docs.m5stack.com/en/unit/Unit_C6L",
     "burnerMetadataUrl": "https://m5burner-api.m5stack.com/api/firmware",
     "note": "Official UserDemo Easyloader linked; version and raw full-image SHA-256 unavailable. Meshtastic upstream is an alternative source."
-  }
+  },
+  "collectionNotes": [
+    "Source discrepancy retained: official Unit C6L HMI table identifies GPIO2 as RGB LED data; the pinned M5GFX generated board specification labels GPIO2 as power_hold.enable. This board models the documented RGB net only, without inventing power-hold behavior."
+  ]
 }

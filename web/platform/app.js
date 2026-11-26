@@ -6,6 +6,7 @@ import {currentLocale,t} from './i18n.js';
 import {firmwaresForProduct,firmwareTargetProduct} from './firmware-target.js';
 import {mountHardwareDiagnostics} from './hardware-diagnostics.js';
 import {mountAudioControls} from './audio-controls.js';
+import {mountCameraInput} from './camera-input-ui.js';
 import {mountMotorOutputs} from './motor-output-ui.js';
 import {mountStampflyDemoControls} from './stampfly-demo-controls.js';
 import {mountNetworkControls} from './network-ui.js';
@@ -1199,6 +1200,10 @@ async function init() {
   const demoMount=document.createElement('div');motorMount.before(demoMount);
   const stampflyDemo=mountStampflyDemoControls({container:demoMount,runtime:api});
   window.addEventListener('pagehide',()=>stampflyDemo.dispose(),{once:true});
+  const cameraMount=document.createElement('section');
+  document.querySelector('.console-panel, .embed-console')?.before(cameraMount);
+  const cameraPanel=mountCameraInput({container:cameraMount,runtime:api,onError:report});
+  window.addEventListener('pagehide',()=>cameraPanel.dispose(),{once:true});
   const thermalMount = document.createElement('section');
   document.querySelector('.console-panel, .embed-console')?.before(thermalMount);
   const thermalPanel = mountThermalEnvironment({

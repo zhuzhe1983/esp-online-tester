@@ -8,6 +8,7 @@
 //! at +0x4000_0000 (SOC_NON_CACHEABLE_OFFSET); caches are not modelled, so both views are one.
 
 use crate::periph::Peripherals;
+use esp_periph::Device;
 use riscv_rv32::bus::{Bus, Fault};
 
 pub const ROM_LOW: u32 = 0x4FC0_0000;
@@ -96,6 +97,20 @@ impl esp_periph::sdmmc::SdmmcMemory for DmaView<'_> {
     }
 }
 
+impl esp_periph::emac::Memory for SocBus {
+    fn read(&mut self, address:u32, bytes:usize)->Option<Vec<u8>> {
+        if bytes>65536 {return None;}
+        let mut out=vec![0;bytes];let mut view=DmaView{l2mem:&mut self.l2mem,psram:&mut self.psram,mmu:&self.mmu_psram};
+        esp_periph::sdmmc::SdmmcMemory::read(&mut view,address,&mut out).ok()?;Some(out)
+    }
+    fn write(&mut self,address:u32,bytes:&[u8])->bool {
+        let mut view=DmaView{l2mem:&mut self.l2mem,psram:&mut self.psram,mmu:&self.mmu_psram};
+        // This P4 bus has no translated/decode cache (note_code_page is a
+        // no-op); DMA writes and CPU stores share the same instruction memory.
+        esp_periph::sdmmc::SdmmcMemory::write(&mut view,address,bytes).is_ok()
+    }
+}
+
 /// An AXI-GDMA OUT channel's view of memory: descriptors and buffers in L2MEM or PSRAM.
 struct AxiOut<'a> { mem: DmaView<'a>, channel: &'a mut esp_periph::gdma::GdmaOutCh }
 impl esp_periph::gdma::OutMemory for AxiOut<'_> {
@@ -116,6 +131,8 @@ impl esp_periph::gdma::OutMemory for AxiOut<'_> {
 }
 
 pub struct SocBus {
+    pub(crate) emac_config: Option<esp_soc::board::EmacConfig>,
+    pub(crate) wired_link: Option<esp_soc::ethernet::EthernetLink>,
     pub rom: Vec<u8>,
     pub l2mem: Vec<u8>,
     pub tcm: Vec<u8>,
@@ -155,6 +172,7 @@ pub struct SocBus {
 impl SocBus {
     pub fn new(flash_size: usize, mac: [u8; 6], wafer: (u32, u32)) -> Self {
         SocBus {
+            emac_config: None, wired_link: None,
             rom: vec![0; (ROM_HIGH - ROM_LOW) as usize], l2mem: vec![0; (L2MEM_HIGH - L2MEM_LOW) as usize], tcm: vec![0; (TCM_HIGH - TCM_LOW) as usize],
             lp_rom: vec![0; (LP_ROM_HIGH - LP_ROM_LOW) as usize], lp_ram: vec![0; (LP_RAM_HIGH - LP_RAM_LOW) as usize],
             flash: vec![0xff; flash_size], psram: Vec::new(),
@@ -232,6 +250,7 @@ impl SocBus {
 
     fn periph_read(&mut self, addr: u32, size: u32) -> u32 {
         let a = self.clic_view(addr & !3);
+        if matches!(a >> 12, 0x50098 | 0x50099) && self.emac_config.is_some() { self.emac_routes(); }
         let uart = UART_FIFOS.iter().position(|&f| f == a);
         let before = uart.map(|i| self.periph.uart[i].irq());
         let w = match Self::mmu_reg(a) { Some((m, o)) => self.mmu_read(m, o), None => self.periph.read32(a) };
@@ -245,6 +264,7 @@ impl SocBus {
 
     fn periph_write(&mut self, addr: u32, v: u32, size: u32) {
         let a = self.clic_view(addr & !3);
+        if matches!(a >> 12, 0x50098 | 0x50099) && self.emac_config.is_some() { self.emac_routes(); }
         let merge = |old: u32| match size {
             4 => v,
             1 => { let sh = (addr & 3) * 8; (old & !(0xff << sh)) | ((v & 0xff) << sh) }
@@ -264,6 +284,9 @@ impl SocBus {
         let old_ena = ena_port.map_or(0, |i| self.periph.uart[i].int_ena);
         let resetting = self.periph.lp.sw_reset;
         self.periph.write32(a, v);
+        if matches!(a >> 12, 0x50098 | 0x50099) && self.emac_config.is_some() { self.emac_step(); }
+        if matches!(a >> 12, 0x50087 | 0x50088) { self.run_dma2d(); }
+        if matches!(a >> 12, 0x500a0 | 0x50081 | 0x500e6 | 0x50115) { self.run_dsi(); }
         if matches!(a >> 12, 0x500e0 | 0x500e1) && self.board.uses_gpio_routes() {
             self.board.gpio_waveform_at(self.cycles, crate::periph::GPIO_PINS.routes(&self.periph.gpio.g, &self.periph.io_mux));
         }
@@ -287,6 +310,8 @@ impl SocBus {
 
     /// Board bus numbers match the P4's hardware I2C controller numbers.
     pub fn attach_board_devices(&mut self) {
+        self.attach_emac();
+        self.board.dsi_link(false);
         self.periph.sd_power_enable = if crate::board::lcd35_virtual_revision(self.board.name()).is_some() {
             Some((45, false)) // LCD3.5 schematic Q1 AO3401: active-low TF power.
         } else {
@@ -396,6 +421,41 @@ impl SocBus {
         if self.periph.has_sdio { self.sync_sdio(); }
     }
 
+    /// Shared P4 DMA2D/PPA engines consume real guest descriptors. A memory
+    /// view includes both PSRAM aliases and enforces every MMU page boundary.
+    fn run_dma2d(&mut self) {
+        if self.periph.hp_clkrst.read(0x18) & (1 << 6) == 0 || self.periph.hp_clkrst.read(0xc0) & (1 << 31) != 0 { return; }
+        if self.periph.hp_clkrst.read(0x18) & (1 << 9) == 0 && !self.periph.ppa.pending().is_empty() { return; }
+        let mut mem = DmaView { l2mem: &mut self.l2mem, psram: &mut self.psram, mmu: &self.mmu_psram };
+        // The shared engine records refused color-conversion/PPA operations;
+        // it never substitutes a host memcpy for an unsupported operation.
+        let _ = self.periph.dma2d.service(&mut self.periph.ppa, &mut mem);
+        esp_periph::Dispatch::refresh_optional(&mut self.periph, 0x50088);
+        esp_periph::Dispatch::refresh_optional(&mut self.periph, 0x50087);
+        self.irq_dirty = true;
+    }
+
+    #[cold]
+    fn run_dsi(&mut self) {
+        while let Some(p) = self.periph.dsi.take_packet() {
+            let reply = self.board.dsi_packet(p.vc, p.kind, &p.payload);
+            if matches!(p.kind, 0x04 | 0x06 | 0x14 | 0x24) { self.periph.dsi.response(&reply); }
+        }
+        self.board.dsi_link(self.periph.dsi.video_enabled());
+        if self.periph.dsi.frame_due() {
+            let expected = self.periph.dsi.geometry().map(|(w,h,b)| w as usize * h as usize * b).unwrap_or(0);
+            let dma_clock = self.periph.hp_clkrst.read(0x14) & (1 << 13) != 0 && self.periph.hp_clkrst.read(0x18) & (1 << 5) != 0 && self.periph.hp_clkrst.read(0xc0) & (1 << 21) == 0;
+            let data = if expected != 0 && dma_clock {
+                let mut mem = DmaView { l2mem: &mut self.l2mem, psram: &mut self.psram, mmu: &self.mmu_psram };
+                self.periph.dw_dma.service_dsi(&mut mem, expected)
+            } else { None };
+            if let Some((w,h,pixels)) = self.periph.dsi.finish_frame(data.as_deref().unwrap_or(&[])) { self.board.lcd_frame(w,h,&pixels); }
+            esp_periph::Dispatch::refresh_optional(&mut self.periph, 0x500a0);
+            esp_periph::Dispatch::refresh_optional(&mut self.periph, 0x50081);
+            self.irq_dirty = true;
+        }
+    }
+
     /// An SDIO function's DAT1 after a command or at the co-simulation's slice end.
     #[cold]
     #[inline(never)]
@@ -490,8 +550,15 @@ impl SocBus {
         if self.periph.spi_exec { self.run_spi(); }
         // board time first, its input edges after the peripherals (as the S3 bus does)
         let edges = self.board.uses_gpio_edges();
-        if edges { self.board.advance_to(self.cycles); }
+        if edges {
+            let p=&self.periph;
+            self.board.advance_inputs_with_clock(self.cycles,&|pin| {
+                (p.io_mux.read(4+4*u32::from(pin))>>12&7==1).then(||p.ledc.output(&p.gpio.g,pin)).flatten()
+            });
+        }
         self.periph.tick(cycles as u64);
+        if self.emac_config.is_some() { self.emac_step(); }
+        if self.periph.dsi.frame_due() { self.run_dsi(); }
         if self.uart_busy { self.pace_uart_input(cycles); }
         if edges { self.irq_dirty |= esp_soc::gpio::drain_board_inputs(&mut *self.board, &mut self.periph.gpio.g, &mut self.gpio_events, self.cycles); }
         if self.periph.spi2.dma_tx_pending.is_some() { self.spi2_dma_tx(); }

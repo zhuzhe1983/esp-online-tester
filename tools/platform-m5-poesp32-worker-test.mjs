@@ -1,0 +1,42 @@
+// Public runtime -> unchanged production Worker -> WASM -> mask ROM -> LX6 guest MMIO/RAM.
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {resolve,basename,dirname} from 'node:path';
+import {Worker} from 'node:worker_threads';
+import {createHash} from 'node:crypto';
+import {createPlatformRuntime} from '../web/platform/runtime.js';
+import {createDeviceStorage} from '../web/platform/device-storage.js';
+import {createDefaultScene} from '../web/platform/catalog.js';
+import {m5PoEsp32Probe,poesp32ArpReply,ethernetCrc32} from './fixtures/m5-poesp32-probe.mjs';
+const root=new URL('../',import.meta.url),origin='https://m5-poesp32-probe.invalid',hash=b=>createHash('sha256').update(b).digest('hex');
+const catalog=Object.fromEntries(await Promise.all(['products','accessories','firmwares'].map(async k=>[k,JSON.parse(await readFile(new URL(`web/platform/catalog/${k}.json`,root))).items])));
+const rom=await readFile(process.env.ESP32SIM_ROM_DIR?resolve(process.env.ESP32SIM_ROM_DIR,'esp32_rev300_rom.elf'):new URL('web/wasm/fw/esp32_rev300_rom.elf',root));
+const wasm=await readFile(process.env.ESP32SIM_WASM||new URL('web/wasm/esp32sim.wasm',root));
+const workerFactory=url=>{const source=`import {parentPort} from 'node:worker_threads';globalThis.onmessage=null;globalThis.postMessage=(d,t)=>parentPort.postMessage(d,t);await import(${JSON.stringify(new URL('web'+url.pathname,root).href)});parentPort.on('message',data=>globalThis.onmessage({data}));`;const thread=new Worker(new URL('data:text/javascript,'+encodeURIComponent(source)));const adapter={postMessage:(...a)=>thread.postMessage(...a),terminate:()=>thread.terminate()};thread.on('message',data=>adapter.onmessage?.({data}));thread.on('error',e=>adapter.onerror?.(e));return adapter;};
+const serial=s=>s.serialByPort?.uart0||'',delay=ms=>new Promise(r=>setTimeout(r,ms));
+async function completed(runtime,label){const end=Date.now()+120000;let s,reported=0;while(Date.now()<end){s=await runtime.observe();if(serial(s).includes('U138 FAIL\n')||/csum err:|Falling back to built-in/.test(serial(s)))throw Error(label+': '+serial(s));if(serial(s).includes('U138 ALL CHECKS OK\n'))return s;if(s.status==='error')throw Error(label+': '+JSON.stringify(s.lastError));if(Date.now()-reported>20000){reported=Date.now();console.error(JSON.stringify({stage:label,guestSeconds:s.stats?.time,lastSerial:serial(s).slice(-400)}));}await delay(30);}throw Error(label+': '+JSON.stringify({status:s?.status,guestStats:s?.stats,serial:serial(s||{})}));}
+test('U138 public production Worker boots original LX6 and verifies IP101G, ARP RX RAM/FCS and route/clock/reset negatives',{timeout:300000},async t=>{
+ const image=m5PoEsp32Probe(),table=Buffer.alloc(0xc00,255);table.writeUInt16LE(0x50aa);table[2]=0;table[3]=0;table.writeUInt32LE(0x10000,4);table.writeUInt32LE(0x10000,8);table.fill(0,12,32);table.write('poe-probe',12);
+ const images=new Map([['/diagnostic/esp32_rev300_rom.elf',rom],['/diagnostic/probe.bin',image],['/diagnostic/partitions.bin',table]]);
+ const files=Object.fromEntries([['rom','esp32_rev300_rom.elf',rom],['bootloader','probe.bin',image],['ptable','partitions.bin',table],['app','probe.bin',image]].map(([k,p,b])=>[k,{url:origin+'/diagnostic/'+p,sha256:hash(b)}]));
+ const manifest=Buffer.from(JSON.stringify({board:'unit-poesp32',flash_mb:4,psram_mb:0,app_direct:false,stubs:[],files}));images.set('/diagnostic/probe.json',manifest);
+ const receipt={schemaVersion:1,checkedAt:new Date().toISOString(),backend:'public-runtime-production-worker-wasm-mask-ROM-original-LX6-SRAM',productId:'m5stack-u138',board:'unit-poesp32',wasmSha256:hash(wasm),romSha256:hash(rom),probeSha256:hash(image),probeBytes:image.length,probeSourceSha256:hash(await readFile(new URL('fixtures/m5-poesp32-probe.mjs',import.meta.url))),harnessSha256:hash(await readFile(new URL(import.meta.url))),physicalValidation:false,factoryFirmwareValidation:false,passes:[]};
+ const runtime=createPlatformRuntime({catalog,workerFactory,baseUrl:origin+'/platform/',assetBaseUrl:origin+'/',deviceStorage:createDeviceStorage({indexedDB:null,dbName:'m5-poesp32-worker-test'}),fetchImpl:async value=>{const url=new URL(value);assert.equal(url.origin,origin);if(images.has(url.pathname))return new Response(images.get(url.pathname));if(url.pathname.endsWith('/esp32sim.wasm'))return new Response(wasm);if(url.pathname.endsWith('_rom.elf')&&process.env.ESP32SIM_ROM_DIR)return new Response(await readFile(resolve(process.env.ESP32SIM_ROM_DIR,basename(url.pathname))));return new Response(await readFile(new URL('web'+url.pathname,root)));}});
+ const reply=poesp32ArpReply(),crc=ethernetCrc32(reply),fcs=Buffer.alloc(4);fcs.writeUInt32LE(crc);const rxHex=Buffer.concat([reply,fcs]).toString('hex'),crcHex=crc.toString(16).padStart(8,'0');
+ try{
+  const scene=createDefaultScene(catalog,'m5stack-u138');scene.firmware=null;await runtime.configure(scene);const cap=await runtime.capabilities();assert.equal(cap.network.available,true);assert.equal(cap.network.primaryInterface,'native-rmii');assert.equal(cap.network.softAp,false);
+  await runtime.configureNetwork({enabled:false,autoProvision:false});await runtime.loadFirmware({manifestUrl:origin+'/diagnostic/probe.json',sha256:hash(manifest)});await runtime.start();
+  for(const stage of['cold-boot','public-reset']){
+   if(stage==='public-reset')await runtime.reset();const s=await completed(runtime,stage),out=serial(s);
+   assert.equal(s.firmware.appDirect,false);assert.deepEqual(s.firmware.stubs,[]);assert.equal(out.split('ets Jul 29 2019').length,2,'one fresh real mask-ROM boot');assert.equal(out.split('U138 LX6 START\n').length,2,'fresh guest, old serial cleared');
+   for(const name of['ARP','RMII RECOVER','REFCLK RECOVER','CLOCK RECOVER','RESET RECOVER']){assert(out.includes(name+' RXHEX '+rxHex+'\n'));assert(out.includes(name+' CRC32 '+crcHex+'\n'));assert(out.includes(name+' OK\n'));}
+   for(const line of['PHY 0243/0c54 ADDR1 MDIO BUSY OK','WRONG MDC23 NO PHY OK','WRONG MDIO18 NO PHY OK','WRONG RMII22 NO DMA OK','WRONG REFCLK0 NO DMA OK','CLOCK GATED BUSY NO DMA OK','PHY RESET5 NO PHY NO DMA OK'])assert(out.includes(line+'\n'),line);
+   const guestCcount=parseInt(out.match(/GUEST CCOUNT ([0-9a-f]{8})\n/)?.[1],16),mdioCycles=parseInt(out.match(/MDIO CYCLES ([0-9a-f]{8})\n/)?.[1],16);assert(guestCcount>0);assert(Math.abs(mdioCycles-7680)<=128,'guest MDIO polling near32us within the digital bus-poll timing window');
+   const network=await runtime.readNetwork();assert.equal(network.supported,true);assert.equal(network.softApSupported,false);assert.equal(network.softAp,null);assert.deepEqual(network.interfaces,{});assert.equal(network.txFrames,0);assert.equal(network.rxFrames,0);assert.equal(s.frame,null);
+   receipt.passes.push({stage,guestCcount,guestCcountSeconds:guestCcount/240000000,mdioCycles,mdioPollingMicroseconds:mdioCycles/240,guestClockHz:240000000,stats:s.stats,serial:out,serialSha256:hash(out),network,checks:['real-mask-ROM-boot-no-stubs-no-app-direct','guest-CCOUNT-MDIO-busy-near32us-ID0243/0c54-address1-and-absent-address2','guest-TX-ARP-default-wired-VirtualNet-response','RX-enhanced-descriptor46-TX-ownership-DMA-TI/RI-W1C','guest-l8ui-compares-all46-RAM-bytes-including-little-endian-FCS','guest-reflected-Ethernet-CRC32-from42-RAM-bytes','MDC23-MDIO18-RMII22-REFCLK0-peripheral-clock-PHYreset5-negative-and-recovery']});
+   t.diagnostic(JSON.stringify({stage,guestCcount,mdioCycles,serialSha256:hash(out),rxHex,crcHex}));
+  }
+  receipt.expected={arpReplyHex:reply.toString('hex'),rxRamHex:rxHex,crc32:crcHex};receipt.status='passed';receipt.limitations=['Authored SRAM bootloader diagnostic, not manufacturer ESP-AT/factory or full SDK application.','Built-in explicit wired VirtualNet ARP peer; no Wi-Fi association, Internet, host relay or physical Ethernet/PoE claim.','Guest CCOUNT measures the digital bus-poll window around the modeled32us MDIO deadline, not physical edge timing; tolerance128 cycles at240MHz.','Node production Worker/WASM; browser DOM/WebGL remains separately assessed.'];
+ }catch(error){receipt.status='failed';receipt.error={name:error.name,message:error.message};receipt.failureState=await runtime.observe().catch(()=>null);throw error;}finally{await runtime.dispose();if(process.env.M5_POESP32_WORKER_RECEIPT){await mkdir(dirname(process.env.M5_POESP32_WORKER_RECEIPT),{recursive:true});await writeFile(process.env.M5_POESP32_WORKER_RECEIPT,JSON.stringify(receipt,null,2)+'\n');}}
+});

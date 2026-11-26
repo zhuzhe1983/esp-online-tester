@@ -1,5 +1,5 @@
 import {appendEnvironmentControls} from './environment-controls.js';
-import {THERMAL_PRODUCT_ID,THERMAL_FIELDS,DEFAULT_THERMAL} from './thermal-input.js';
+import {THERMAL_PRODUCT_IDS,THERMAL_FIELDS,DEFAULT_THERMAL,thermalFields,thermalDefaults} from './thermal-input.js';
 
 export function mountThermalEnvironment({container, runtime, beforeInput, onError = console.error}) {
   const document = container.ownerDocument;
@@ -17,8 +17,9 @@ export function mountThermalEnvironment({container, runtime, beforeInput, onErro
   container.append(title, note);
 
   let disposed = false, current = null, pending = false;
+  const fields=THERMAL_FIELDS.map(field=>[...field]);
   const form = appendEnvironmentControls(container, {
-    fields: THERMAL_FIELDS,
+    fields,
     values: DEFAULT_THERMAL,
     label: '应用模拟热源',
     disabled: true,
@@ -46,9 +47,17 @@ export function mountThermalEnvironment({container, runtime, beforeInput, onErro
   function refresh(state) {
     if (disposed) return;
     if (state.scene?.productId !== current?.scene?.productId || state.status !== 'running') status.textContent = '';
+    const id=state.scene?.productId;
+    if(id!==current?.scene?.productId) {
+      fields.splice(0,fields.length,...thermalFields(id).map(field=>[...field]));
+      for(const [key,label,min,max]of fields) {const input=form.inputs[key];input.min=String(min);input.max=String(max);input.setAttribute('aria-label',label);if(input.parentElement?.firstChild)input.parentElement.firstChild.textContent=label;}
+    }
     current = state;
-    container.hidden = state.scene?.productId !== THERMAL_PRODUCT_ID;
-    form.write(state.thermalEnvironment ?? DEFAULT_THERMAL);
+    container.hidden = !THERMAL_PRODUCT_IDS.includes(id);
+    const mlx=id==='m5stack-u149'||id==='m5stack-k126';
+    title.textContent=mlx?'MLX90640 合成 ADC 环境':'Lepton 合成 Raw14 环境';
+    note.textContent=id==='m5stack-k126'?'固件通过 I²C 读取 32×24 合成 ADC 与虚拟 EEPROM；热点坐标为160×120归一化空间，未作实物标定。':mlx?'原始 ADC 计数通过内部 I²C 传给固件；客体使用公开虚拟 EEPROM 计算温度。此输入不是摄氏温度，也不是实物标定。':'固件通过 VoSPI 读取合成的 Raw14 计数并绘制图像。温度、辐射率和 FFC 尚未校准。';
+    form.write(state.thermalEnvironment ?? thermalDefaults(id));
     form.setDisabled(state.status !== 'running' || pending);
   }
   const stop = runtime.subscribe(event => {

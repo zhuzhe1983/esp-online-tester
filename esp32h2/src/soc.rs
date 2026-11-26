@@ -29,11 +29,12 @@ impl SocBus for H2Bus{
  fn load_bytes(&mut self,a:u32,d:&[u8])->Result<(),String>{self.load_ram(a,d,d.len())}
  fn write_flash(&mut self,offset:usize,data:&[u8])->Result<(),String>{
   if let Some(e)=&self.config_error{return Err(e.clone());}
-  let end=offset.checked_add(data.len()).filter(|&e|e<=FLASH_SIZE).ok_or("H2 image staging exceeds exact4MiB board flash")?;self.flash[offset..end].copy_from_slice(data);Ok(())
+  let end=offset.checked_add(data.len()).filter(|&e|e<=self.flash.len()).ok_or("H2 image staging exceeds configured board capacity")?;self.flash[offset..end].copy_from_slice(data);Ok(())
  }
  fn boot_app(&mut self,off:usize)->Result<u32,String>{
   if let Some(e)=&self.config_error{return Err(e.clone());}
   let data=self.flash.get(off..).ok_or("H2 app offset exceeds configured flash")?;let image=crate::image::parse(data)?;
+  if (1usize<<20).checked_shl(u32::from(data[3]>>4)).is_none_or(|bytes|bytes>self.flash.len()) {return Err("H2 image Flash header exceeds this board capacity".into());}
   let copies:Vec<_>=image.segments.iter().map(|s|(s.load_addr,data[s.file_off as usize..s.file_off as usize+s.len as usize].to_vec())).collect();
   // Validate every segment, checksum and revision before touching guest SRAM.
   for(a,d)in copies{self.load_ram(a,&d,d.len())?;}
@@ -51,7 +52,8 @@ impl SocBus for H2Bus{
  fn last_fault(&self)->Option<(u32,bool)>{self.first_fault.as_ref().map(|f|(f.address,f.write))}
  fn console_take(&mut self)->[Vec<u8>;4]{[vec![],std::mem::take(&mut self.uart[0].tx_out),std::mem::take(&mut self.uart[1].tx_out),vec![]]}
  fn serial_input(&mut self,_data:&[u8]){} // USB Serial/JTAG is not UART0
- fn uart_input(&mut self,n:usize,data:&[u8]){if n<2&&self.uart_on(n)&&self.uart[n].read(0x20)&((1<<20)|(1<<22))==1<<20{self.uart[n].host_input(data);}}
+ fn uart_input(&mut self,n:usize,data:&[u8]){if matches!(self.board.name(),"m5-unit-gateway-h2"|"m5-module-gateway-h2") && (n!=0||self.uart_route(n).rx_pin!=Some(23)||!self.uart_route(n).matches_baud(115200)) {return;}
+        if n<2&&self.uart_on(n)&&self.uart[n].read(0x20)&((1<<20)|(1<<22))==1<<20{self.uart[n].host_input(data);}}
  fn gpio_set_input(&mut self,p:u8,l:bool){if Self::valid_pad(p){self.gpio.set_input(p,l);if let Some(events)=&mut self.gpio_events{events.push((self.cycles,p,l));}}}
  fn gpio_release_input(&mut self,p:u8){if Self::valid_pad(p){self.gpio.release_input(p);}}
  fn gpio_input(&self)->u64{self.gpio.input&crate::bus::VALID_PADS}
@@ -63,10 +65,10 @@ impl SocBus for H2Bus{
  fn audio(&self)->(&[i16],u32){(&[],0)}
  fn irq_sources_of(&self,_core:usize,_line:u32)->Vec<usize>{vec![]}
  fn set_debug(&mut self,f:&esp_soc::DebugFlags){self.debug=f.clone();}
- fn set_flash_size(&mut self,bytes:usize){self.config_error=(bytes!=FLASH_SIZE).then(||format!("H2 exact boards require4MiB flash; requested{bytes}bytes"));}
+ fn set_flash_size(&mut self,bytes:usize){self.config_error=(![2<<20,FLASH_SIZE].contains(&bytes)).then(||format!("H2 staging supports source-backed 2/4MiB profiles; requested{bytes}bytes"));if self.config_error.is_none() {self.flash.resize(bytes,0xff);}}
  fn set_psram_size(&mut self,bytes:usize)->Result<(),String>{if bytes==0{Ok(())}else{Err("H2 boards have no supported PSRAM".into())}}
  fn set_strap(&mut self,v:u32){self.gpio.strap=v&0xffff;}
  fn set_reset_cause(&mut self,cause:u32){self.reset_cause=cause&0x1f;}
  fn refresh_board_outputs(&mut self){self.publish_gpio();}
- fn report(&self)->String{format!("[h2] independent chip16 SRAM app-direct,96MHz nominal,320KiB HP/4KiB LP,4MiB staging; UART FIFO polling + GPIO19 + finite XTAL32MHz RMT; ROM/cache/interrupt routing/USB/BLE/802.15.4 unimplemented; {}",self.board.report())}
+ fn report(&self)->String{format!("[h2] independent chip16 SRAM app-direct,96MHz nominal,320KiB HP/4KiB LP,{}MiB staging; UART FIFO polling + GPIO19 + finite XTAL32MHz RMT; ROM/cache/interrupt routing/USB/BLE/802.15.4 unimplemented; {}",self.flash.len()>>20,self.board.report())}
 }

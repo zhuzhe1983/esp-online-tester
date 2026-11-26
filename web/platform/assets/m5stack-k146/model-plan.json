@@ -243,12 +243,13 @@
   "limitations": [
     "Handset and dock are separate products in the kit; the CAD dock includes stand geometry beyond the 84×54×8 mm handset. No dock dimensions pass is asserted.",
     "Dock latch component identity is unlabelled in STL; retained source positions are not an electrical or assembly-service claim.",
-    "Runtime board/peripherals are not implemented for this SKU; geometry preview does not establish firmware compatibility.",
+    "Digital EPD/touch/wake runtime is partial and documented separately; geometry preview does not establish whole firmware or dock compatibility.",
     "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
     "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
     "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
     "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
-    "Default scene retains native handset and dock cluster;54x84x8mm belongs to handset only, complete dock assembly envelope not certified by that size. Dock geometry is not scaled into handset dimensions."
+    "Default scene retains native handset and dock cluster;54x84x8mm belongs to handset only, complete dock assembly envelope not certified by that size. Dock geometry is not scaled into handset dimensions.",
+    "The existing native actuator face is selected by explicit original source-face ranges. The ordered original vertex/normal binary is unchanged; unmapped adjacent shell and reset areas remain ordinary occluders."
   ],
   "display": {
     "width": 176,
@@ -286,9 +287,18 @@
       "height": 264,
       "driver": "GDEY027T91",
       "technology": "epaper",
-      "touch": false
+      "touch": true,
+      "touchController": "FT6336U"
     },
-    "controls": [],
+    "controls": [
+      {
+        "id": "wake",
+        "name": "Wake / ESP_INT (GPIO21)",
+        "type": "button",
+        "pin": 21,
+        "activeLow": true
+      }
+    ],
     "interfaces": [
       {
         "id": "port-a",
@@ -325,6 +335,12 @@
     "publication": {
       "title": "Xiaozhi Card Kit Factory Firmware",
       "url": "https://github.com/m5stack/xiaozhi-card"
+    },
+    "runtime": {
+      "board": null,
+      "flashMb": 8,
+      "psramMb": 8,
+      "status": "unavailable"
     }
   },
   "textureSources": [
@@ -489,5 +505,1379 @@
       ],
       "basis": "Qualitative camera orientation chosen from official photograph; perspective/crop not metrically calibrated."
     }
+  },
+  "controlSurfaceRecipe": {
+    "version": 1,
+    "builder": "tools/rebuild-m5-control-models.py",
+    "baseModel": {
+      "file": "control-base-model.json.gz",
+      "sha256": "9baab9819c63724923812121f60549005db0f2010bb765d701da1148ed57fd6a",
+      "expandedSha256": "148aebea8d47bd896db7a024419bd0e3bc061a954d4700482113ff48b93a200e",
+      "scope": "Exact pre-control model metadata, preserved as immutable native data view. Original source CAD and artifact hashes remain inside this snapshot."
+    },
+    "baseGeometry": {
+      "file": "geometry.bin",
+      "sha256": "9ee9b25bb5efb5d026ee87a2ac74e4b629ff259a8a108e77b67c513bf165de87"
+    },
+    "nativePartitions": {
+      "cad-component-0": [
+        {
+          "name": "cad-component-0",
+          "triangleRanges": [
+            [
+              0,
+              5060
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-1",
+          "triangleRanges": [
+            [
+              5060,
+              5061
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-2",
+          "triangleRanges": [
+            [
+              5061,
+              5108
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-3",
+          "triangleRanges": [
+            [
+              5108,
+              5109
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-4",
+          "triangleRanges": [
+            [
+              5109,
+              5119
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-5",
+          "triangleRanges": [
+            [
+              5119,
+              5121
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-6",
+          "triangleRanges": [
+            [
+              5121,
+              5201
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-7",
+          "triangleRanges": [
+            [
+              5201,
+              5202
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-8",
+          "triangleRanges": [
+            [
+              5202,
+              5230
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-9",
+          "triangleRanges": [
+            [
+              5230,
+              5231
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-10",
+          "triangleRanges": [
+            [
+              5231,
+              5238
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-11",
+          "triangleRanges": [
+            [
+              5238,
+              5239
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-12",
+          "triangleRanges": [
+            [
+              5239,
+              5249
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-13",
+          "triangleRanges": [
+            [
+              5249,
+              5250
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-14",
+          "triangleRanges": [
+            [
+              5250,
+              5265
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-15",
+          "triangleRanges": [
+            [
+              5265,
+              5266
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-16",
+          "triangleRanges": [
+            [
+              5266,
+              5289
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-17",
+          "triangleRanges": [
+            [
+              5289,
+              5290
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-18",
+          "triangleRanges": [
+            [
+              5290,
+              5305
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-19",
+          "triangleRanges": [
+            [
+              5305,
+              5306
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-20",
+          "triangleRanges": [
+            [
+              5306,
+              5311
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-21",
+          "triangleRanges": [
+            [
+              5311,
+              5312
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-22",
+          "triangleRanges": [
+            [
+              5312,
+              5326
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-23",
+          "triangleRanges": [
+            [
+              5326,
+              5327
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-24",
+          "triangleRanges": [
+            [
+              5327,
+              5342
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-25",
+          "triangleRanges": [
+            [
+              5342,
+              5343
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-26",
+          "triangleRanges": [
+            [
+              5343,
+              5344
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-27",
+          "triangleRanges": [
+            [
+              5344,
+              5345
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-28",
+          "triangleRanges": [
+            [
+              5345,
+              5432
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-29",
+          "triangleRanges": [
+            [
+              5432,
+              5434
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-30",
+          "triangleRanges": [
+            [
+              5434,
+              5437
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-31",
+          "triangleRanges": [
+            [
+              5437,
+              5438
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-32",
+          "triangleRanges": [
+            [
+              5438,
+              5489
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-33",
+          "triangleRanges": [
+            [
+              5489,
+              5490
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-34",
+          "triangleRanges": [
+            [
+              5490,
+              5491
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-35",
+          "triangleRanges": [
+            [
+              5491,
+              5493
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-36",
+          "triangleRanges": [
+            [
+              5493,
+              5497
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-37",
+          "triangleRanges": [
+            [
+              5497,
+              5498
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-38",
+          "triangleRanges": [
+            [
+              5498,
+              5509
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-39",
+          "triangleRanges": [
+            [
+              5509,
+              5510
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-40",
+          "triangleRanges": [
+            [
+              5510,
+              5543
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-41",
+          "triangleRanges": [
+            [
+              5543,
+              5545
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-42",
+          "triangleRanges": [
+            [
+              5545,
+              5575
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-43",
+          "triangleRanges": [
+            [
+              5575,
+              5576
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-44",
+          "triangleRanges": [
+            [
+              5576,
+              5581
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-45",
+          "triangleRanges": [
+            [
+              5581,
+              5582
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-46",
+          "triangleRanges": [
+            [
+              5582,
+              5613
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-47",
+          "triangleRanges": [
+            [
+              5613,
+              5615
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-48",
+          "triangleRanges": [
+            [
+              5615,
+              5666
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-49",
+          "triangleRanges": [
+            [
+              5666,
+              5668
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-50",
+          "triangleRanges": [
+            [
+              5668,
+              5809
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-51",
+          "triangleRanges": [
+            [
+              5809,
+              5810
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-52",
+          "triangleRanges": [
+            [
+              5810,
+              5871
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-53",
+          "triangleRanges": [
+            [
+              5871,
+              5872
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-54",
+          "triangleRanges": [
+            [
+              5872,
+              5873
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-55",
+          "triangleRanges": [
+            [
+              5873,
+              5874
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-56",
+          "triangleRanges": [
+            [
+              5874,
+              5900
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-57",
+          "triangleRanges": [
+            [
+              5900,
+              5901
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-58",
+          "triangleRanges": [
+            [
+              5901,
+              5927
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-59",
+          "triangleRanges": [
+            [
+              5927,
+              5928
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-60",
+          "triangleRanges": [
+            [
+              5928,
+              6016
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-61",
+          "triangleRanges": [
+            [
+              6016,
+              6018
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-62",
+          "triangleRanges": [
+            [
+              6018,
+              6019
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-63",
+          "triangleRanges": [
+            [
+              6019,
+              6021
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-64",
+          "triangleRanges": [
+            [
+              6021,
+              6031
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-65",
+          "triangleRanges": [
+            [
+              6031,
+              6032
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-66",
+          "triangleRanges": [
+            [
+              6032,
+              6039
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-67",
+          "triangleRanges": [
+            [
+              6039,
+              6040
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-68",
+          "triangleRanges": [
+            [
+              6040,
+              6041
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-69",
+          "triangleRanges": [
+            [
+              6041,
+              6042
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-70",
+          "triangleRanges": [
+            [
+              6042,
+              6048
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-71",
+          "triangleRanges": [
+            [
+              6048,
+              6049
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-72",
+          "triangleRanges": [
+            [
+              6049,
+              6058
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-73",
+          "triangleRanges": [
+            [
+              6058,
+              6059
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-74",
+          "triangleRanges": [
+            [
+              6059,
+              6237
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-75",
+          "triangleRanges": [
+            [
+              6237,
+              6238
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-76",
+          "triangleRanges": [
+            [
+              6238,
+              7500
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-77",
+          "triangleRanges": [
+            [
+              7500,
+              7501
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-78",
+          "triangleRanges": [
+            [
+              7501,
+              7506
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-79",
+          "triangleRanges": [
+            [
+              7506,
+              7507
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-80",
+          "triangleRanges": [
+            [
+              7507,
+              7509
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-81",
+          "triangleRanges": [
+            [
+              7509,
+              7510
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-82",
+          "triangleRanges": [
+            [
+              7510,
+              7527
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-83",
+          "triangleRanges": [
+            [
+              7527,
+              7528
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-84",
+          "triangleRanges": [
+            [
+              7528,
+              7530
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-85",
+          "triangleRanges": [
+            [
+              7530,
+              7531
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-86",
+          "triangleRanges": [
+            [
+              7531,
+              7534
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-87",
+          "triangleRanges": [
+            [
+              7534,
+              7535
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-88",
+          "triangleRanges": [
+            [
+              7535,
+              7559
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-89",
+          "triangleRanges": [
+            [
+              7559,
+              7560
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-90",
+          "triangleRanges": [
+            [
+              7560,
+              7584
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-91",
+          "triangleRanges": [
+            [
+              7584,
+              7585
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-92",
+          "triangleRanges": [
+            [
+              7585,
+              7593
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-93",
+          "triangleRanges": [
+            [
+              7593,
+              7594
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-94",
+          "triangleRanges": [
+            [
+              7594,
+              7603
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-95",
+          "triangleRanges": [
+            [
+              7603,
+              7604
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-96",
+          "triangleRanges": [
+            [
+              7604,
+              7605
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-97",
+          "triangleRanges": [
+            [
+              7605,
+              7608
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-98",
+          "triangleRanges": [
+            [
+              7608,
+              7760
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-99",
+          "triangleRanges": [
+            [
+              7760,
+              7762
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-100",
+          "triangleRanges": [
+            [
+              7762,
+              7768
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-101",
+          "triangleRanges": [
+            [
+              7768,
+              7769
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-102",
+          "triangleRanges": [
+            [
+              7769,
+              7775
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-103",
+          "triangleRanges": [
+            [
+              7775,
+              7776
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-104",
+          "triangleRanges": [
+            [
+              7776,
+              7777
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-105",
+          "triangleRanges": [
+            [
+              7777,
+              7778
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-106",
+          "triangleRanges": [
+            [
+              7778,
+              7808
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-107",
+          "triangleRanges": [
+            [
+              7808,
+              7810
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-108",
+          "triangleRanges": [
+            [
+              7810,
+              9253
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-109",
+          "triangleRanges": [
+            [
+              9253,
+              9255
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-110",
+          "triangleRanges": [
+            [
+              9255,
+              9258
+            ]
+          ]
+        },
+        {
+          "name": "cad-component-0-region-111",
+          "triangleRanges": [
+            [
+              9258,
+              9260
+            ]
+          ],
+          "controlId": "wake",
+          "sourceIds": [
+            "product-photo-7126a2f5f5",
+            "official-docs"
+          ],
+          "notes": "Actual original manufacturer CAD actuator-face triangles only; conservative central region follows the separately photographed cap. No new vertices, overlay plane, scaling, hidden pad or case-wide input surface. Source triangle order and normals are unchanged."
+        },
+        {
+          "name": "cad-component-0-region-112",
+          "triangleRanges": [
+            [
+              9260,
+              9990
+            ]
+          ]
+        }
+      ]
+    },
+    "rangeMeaning": "Half-open triangle ranges in the pinned expanded geometry view of the named original model part; these are explicitly not current trimesh source-face indices. Partition order preserves the original byte offsets and original normals.",
+    "visibleGeometryDelta": false,
+    "limits": "Native manufacturing CAD remains unchanged. New black dial cap geometry is an independent exterior photo estimate, not exact engineering CAD. Every input is an actual cap surface, with no case-wide or through-shell hit region."
   }
 }

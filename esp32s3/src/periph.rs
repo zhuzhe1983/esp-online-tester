@@ -214,12 +214,24 @@ impl LcdCam {
     /// Cache activity at register/frame changes so idle ticks only read a flag.
     fn refresh_cam_active(&mut self) {
         // IDF v5.5.4 soc/lcd_cam_reg.h: CAM_CLK_SEL bits 29..30, zero disables XCLK.
+        // Clock loss discards the in-flight snapshot; a resumed clock waits for
+        // the next frame, never replaying bytes from before the interruption.
+        if !self.clock_enabled || (self.cam_ctrl >> 29) & 3 == 0 {self.cam_frame=None;}
         self.cam_active = self.clock_enabled && (self.cam_ctrl >> 29) & 3 != 0 && (self.running || self.int_ena & (1 << 2) != 0);
         self.cam_clock_active = self.clock_enabled && (self.cam_ctrl >> 29) & 3 != 0 && (self.cam_active || self.cam_frame.is_some());
     }
     pub fn cam_ctrl(&self) -> u32 { self.cam_ctrl }
     pub fn cam_active(&self) -> bool { self.cam_active }
     pub fn cam_clock_active(&self) -> bool { self.cam_clock_active }
+    /// IDF v5.5.4 lcd_cam_reg.h: CLK_SEL XTAL40 / PLL_D2(240M) /
+    /// PLL_F160M, integer divider [16:9], fractional B/A [22:17]/[28:23].
+    /// Driver v2.1.4 ll_cam.c uses source 3 and divider 8 for 20 MHz XCLK.
+    pub fn cam_xclk_hz(&self) -> Option<f64> {
+        if !self.clock_enabled {return None;}
+        let src=match self.cam_ctrl>>29&3 {1=>40_000_000.,2=>240_000_000.,3=>160_000_000.,_=>return None};
+        let n=(self.cam_ctrl>>9&255)as f64;let a=(self.cam_ctrl>>23&63)as f64;let b=(self.cam_ctrl>>17&63)as f64;
+        (n>=1.&&!(a==0.&&b!=0.)).then(||src/(n+if a!=0.{b/a}else{0.}))
+    }
     pub fn running(&self) -> bool { self.running }
     pub fn cam_frame(&self) -> Option<&std::sync::Arc<Vec<u8>>> { self.cam_frame.as_ref() }
     pub fn set_cam_frame(&mut self, frame: Option<std::sync::Arc<Vec<u8>>>) { self.cam_frame = frame; self.frame_start = self.acc; self.refresh_cam_active(); }

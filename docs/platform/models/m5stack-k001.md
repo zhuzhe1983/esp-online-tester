@@ -22,3 +22,9 @@
 - Source file contains upper core frame/glass/keys; matching bottom battery base geometry is absent. Reassembled upper core is shallower than the17mm complete-product specification, a retained dimension failure.
 - Glass/key seating is an explicitly estimated rigid assembly. Port mouths are photo-derived and no physical fit is certified.
 - Back photograph includes missing battery base, so it is not a like-for-like silhouette comparison. Side comparison shows separated base and cannot certify assembled thickness.
+
+## 原代 Basic 背部外观补全边界
+
+本型号官方 CAD 仍缺电池底座。本次按 K001 自身正反/侧照、54×54 mm 外形与官方 17 mm 整机厚度，增加独立的底部外形薄层估算，并从 K001 自身背照恢复四条针脚纸色。原生厂家几何和装配变换不变；该近似外形没有补猜电池、PCB、螺钉、磁铁、LEGO 孔或端口结构，也不把原 CAD 覆盖/尺寸失败变成通过。UNKNOWN 保留，透明紫色下可读。
+
+[最终回执与 CPU 原色/金色/紫透背面和近侧视](../evidence/m5-rear-paper-20261126/m5stack-k001/receipt.json) 记录来源、估算和最终哈希。纸贴逐字节离线重建通过，144,545 个有效 alpha 纹素均由估算底面承载，间隙 0.025 mm。完整通用重建仍存在二进制排序、PNG 编码和纹理记录差异；原生三角形位置与法向经明确量化、排序后一致，完整字节比较仍记失败。未声称校准照片或实物验证。

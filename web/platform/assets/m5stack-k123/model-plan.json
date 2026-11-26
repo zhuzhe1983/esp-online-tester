@@ -202,7 +202,8 @@
           "case-back",
           "din-rail-clip",
           "side-rail-right",
-          "side-rail-left"
+          "side-rail-left",
+          "rear-paper-label"
         ],
         "offsetMm": [
           0,
@@ -223,7 +224,10 @@
           "cad-front-panel",
           "cad-panel-insert",
           "button-bank",
-          "live-display"
+          "live-display",
+          "cover-key:button-a",
+          "cover-key:button-b",
+          "cover-key:button-c"
         ],
         "offsetMm": [
           0,
@@ -258,7 +262,63 @@
         0,
         0
       ]
-    }
+    },
+    "buttons": [
+      {
+        "id": "button-a",
+        "shape": "rectangle",
+        "sizeMm": [
+          6.5,
+          4.5
+        ],
+        "positionMm": [
+          -10,
+          7.1,
+          16.52
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-4cf93af097"
+        ],
+        "notes": "Hit region lies inside the measured native CAD top-face bounds; three keys at X=-10/0/10 mm, native top Z=16.5 mm. Input overlay offset 0.02 mm."
+      },
+      {
+        "id": "button-b",
+        "shape": "rectangle",
+        "sizeMm": [
+          6.5,
+          4.5
+        ],
+        "positionMm": [
+          0,
+          7.1,
+          16.52
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-4cf93af097"
+        ],
+        "notes": "Hit region lies inside the measured native CAD top-face bounds; three keys at X=-10/0/10 mm, native top Z=16.5 mm. Input overlay offset 0.02 mm."
+      },
+      {
+        "id": "button-c",
+        "shape": "rectangle",
+        "sizeMm": [
+          6.5,
+          4.5
+        ],
+        "positionMm": [
+          10,
+          7.1,
+          16.52
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-4cf93af097"
+        ],
+        "notes": "Hit region lies inside the measured native CAD top-face bounds; three keys at X=-10/0/10 mm, native top Z=16.5 mm. Input overlay offset 0.02 mm."
+      }
+    ]
   },
   "derivedParts": [
     {
@@ -284,6 +344,32 @@
       "id": "blank-display",
       "basis": "estimated",
       "notes": "24 × 13.5 mm blank display estimated from 1.14 inch 240:135 aspect ratio and CAD window, exact placement pending detailed photo alignment."
+    },
+    {
+      "id": "rear-paper-label",
+      "kind": "label",
+      "texture": "rear-paper-label.png",
+      "geometry": {
+        "sizeMm": [
+          39.8,
+          24
+        ],
+        "centerMm": [
+          0,
+          0,
+          -14.125
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-4025ea219b"
+      ],
+      "notes": "Station-485 official gallery supplies the same shared Station rear paper photograph as Station-Bat. Retain its optional-model printing as supplied; no SKU-specific battery internals are inferred. Its CAD assembly is registered 2 mm higher in Y. Registration is estimated from the retained near-frontal photo and native CAD recess. Paper RGB/lighting are uncalibrated; the alpha plane follows its enclosure inspection group and remains independent of shell color."
     }
   ],
   "facts": [
@@ -331,5 +417,29 @@
     "height": 135,
     "type": "IPS LCD",
     "controller": "ST7789V2"
+  },
+  "paperRestoration": {
+    "texture": {
+      "file": "rear-paper-label.png",
+      "sourceId": "product-photo-4025ea219b",
+      "sourceSha256": "cdac618a687917ddcee68f3aff75129423bde98eb0859092d43b9d6c39231dda",
+      "cropXYXY": [
+        276,
+        337,
+        516,
+        483
+      ],
+      "outputPixels": [
+        240,
+        146
+      ],
+      "method": "Original RGB crop without warp or generated lettering; explicit paper ROI intersected with nearest assembled CAD -Z face, gap 0.015–0.12 mm, one-texel mechanical edge clearance. Official continuous Station paper bridges local CAD holes/grooves, supported by the surrounding coplanar rear face; source solid is unchanged. Deterministic tools/restore-m5-rear-paper.py.",
+      "alphaMask": {
+        "radius": 6
+      },
+      "notes": "Station-485 official gallery supplies the same shared Station rear paper photograph as Station-Bat. Retain its optional-model printing as supplied; no SKU-specific battery internals are inferred. Its CAD assembly is registered 2 mm higher in Y."
+    },
+    "originalCadSha256": "105326a80d9d6cbbfead214ff7ee0a6759c1499ca88d339561a9690e5cf804b2",
+    "rebuild": "python tools/restore-m5-rear-paper.py m5stack-k123"
   }
 }

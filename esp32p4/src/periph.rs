@@ -47,6 +47,13 @@ pub mod src {
     pub const FROM_CPU0: usize = 79;
     /// ETS_USB_OTG_INTR_SOURCE: the high-speed USB-OTG core
     pub const USB_OTG: usize = 93;
+    pub const ETH_MAC: usize = 92;
+    /// ESP-IDF v5.4.2 esp32p4/include/soc/interrupts.h.
+    pub const DW_GDMA: usize = 24;
+    pub const DSI_BRIDGE: usize = 86;
+    pub const PPA: usize = 96;
+    pub const DMA2D_IN: usize = 104;
+    pub const DMA2D_OUT: usize = 106;
     pub const COUNT: usize = 128;
     /// The name IDF gives a source, for diagnostics.
     pub fn name(s: usize) -> &'static str {
@@ -521,6 +528,14 @@ pub const SIG_SD_WRITE_PRT: [usize; SLOTS] = [130, 131];
 fn pad_function(io_mux: &RegRam, pin: u8) -> u32 { io_mux.read(4 + 4 * pin as u32) >> 12 & 7 }
 
 pub struct Peripherals {
+    pub emac: esp_periph::emac::Emac,
+    pub dsi: crate::dsi::Dsi,
+    pub dw_dma: crate::dw_gdma::DwGdma,
+    pub dma2d: esp_periph::dma2d::Dma2d,
+    pub ppa: esp_periph::ppa::Ppa,
+    /// PMU registers, including LDO3 digital enable and voltage selector. The
+    /// analog regulator transient/current/trim model is outside this subset.
+    pub pmu: RegRam,
     pub uart: [Uart; 2],
     pub usb: UsbSerialJtag,
     pub systimer: SystimerP4,
@@ -598,6 +613,12 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 9), (Cloc
     0x20811 "CLIC_OTHER_CTRL" alias (clic) delta 0x11000 => [];
     0x3ff06 "ASSIST_DEBUG" (assist_debug) => [];
     0x3ff10 "CACHE" (cache) => [];
+    0x50081 "DW_GDMA" optional (dw_dma) => [src::DW_GDMA];
+    0x50087 "PPA" optional (ppa) => [src::PPA];
+    0x50088 "DMA2D" optional (dma2d) => [src::DMA2D_IN, src::DMA2D_IN + 1, NO_SOURCE, src::DMA2D_OUT, src::DMA2D_OUT + 1, src::DMA2D_OUT + 2, NO_SOURCE];
+    0x500a0 "DSI" optional (dsi) => [src::DSI_BRIDGE];
+    0x50098 "EMAC_MAC" optional (emac) => [src::ETH_MAC];
+    0x50099 "EMAC_DMA" alias (emac) delta 0x1000 => [];
     0x50083 "SDMMC" (sdmmc) => [src::SDIO_HOST];
     0x50085 "AHB_DMA" (ahb_dma) => [src::AHB_DMA_OUT_CH0, src::AHB_DMA_OUT_CH0 + 1, src::AHB_DMA_OUT_CH0 + 2, NO_SOURCE, NO_SOURCE,
                                     src::AHB_DMA_IN_CH0, src::AHB_DMA_IN_CH0 + 1, src::AHB_DMA_IN_CH0 + 2, NO_SOURCE, NO_SOURCE];
@@ -630,6 +651,7 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::Xtal, 9), (Cloc
     0x50110 "LP_SYS" (lp) => [];
     0x50111 "LP_CLKRST" alias (lp) delta 0x1000 => [];
     0x50112 "LP_TIMER" alias (lp) delta 0x2000 => [];
+    0x50115 "PMU" (pmu) => [];
     0x50124 "I2C_ANA_MST" (ana_mst) => [];
     0x5012d "EFUSE" (efuse) => [];
     0x500c4 "I2C0" optional (i2c0) => [src::I2C0];
@@ -685,6 +707,8 @@ impl Peripherals {
     /// GPIO_STRAP_REG reads 0x30F, SPI fast flash boot (include/soc/boot_mode.h).
     pub fn new(mac: [u8; 6], wafer: (u32, u32)) -> Self {
         Peripherals {
+            emac: Default::default(),
+            dsi: crate::dsi::Dsi::new(), dw_dma: crate::dw_gdma::DwGdma::new(), dma2d: esp_periph::dma2d::Dma2d::new(), ppa: esp_periph::ppa::Ppa::new(), pmu: RegRam::new(),
             uart: [Uart::new(UartLayout::C6), Uart::new(UartLayout::C6)], usb: UsbSerialJtag::new(CPU_HZ), systimer: SystimerP4::default(),
             timg: [TimerGroup::new(), TimerGroup::new()], gpio: GpioP4::new(), io_mux: RegRam::new(),
             sdmmc: Sdmmc::new(SdmmcLayout::Esp32p4), sd_pins: Vec::new(), has_sdio: false, usb_otg: Dwc2::new(Dwc2Config::esp32p4_hs(CPU_HZ)),
@@ -729,6 +753,14 @@ impl Peripherals {
 
     pub fn write32(&mut self, addr: u32, v: u32) {
         let fx = mmio::write32(self, addr, v);
+        if addr == 0x5011_104c && v & (1 << 30) != 0 { self.emac.reset(); Dispatch::refresh_optional(self, 0x50098); }
+        if addr == 0x500e_60c0 {
+            if v & (1 << 26) != 0 { self.dsi.reset(); }
+            if v & (1 << 21) != 0 { self.dw_dma = crate::dw_gdma::DwGdma::new(); Dispatch::refresh_optional(self, 0x50081); }
+            if v & (1 << 31) != 0 { self.dma2d = esp_periph::dma2d::Dma2d::new(); Dispatch::refresh_optional(self, 0x50088); }
+        }
+        if addr == 0x500e_60c4 && v & 1 != 0 { self.ppa = esp_periph::ppa::Ppa::new(); Dispatch::refresh_optional(self, 0x50087); }
+        if matches!(addr >> 12, 0x500e6 | 0x50115) { self.sync_dsi_environment(); }
         if addr == 0x500e_609c { self.ledc_clock(v); }
         if fx.contains(WriteEffect::SPI_EXEC | WriteEffect::PERIPH_RESET) {
             if fx.contains(WriteEffect::PERIPH_RESET) {
@@ -792,6 +824,23 @@ impl Peripherals {
 
     /// Emulated time in nanoseconds since power-on, from the device clock.
     pub fn now_ns(&self) -> u64 { ((self.cycle_base + self.clock.cycles()) as u128 * 1_000_000_000 / CPU_HZ as u128) as u64 }
+
+    /// ESP-IDF v5.4.2 hp_sys_clkrst_reg.h SOC_CLK_CTRL1.DSI_SYS_CLK_EN,
+    /// PERI_CLK_CTRL03.{DPHY_CFG,DPHY_PLL_REF,DPI}_CLK_EN, DPI source/divider;
+    /// pmu_reg.h EXT_LDO_P0_0P2A is physical VO3 (ldo_ll index map {0,3,1,4}).
+    pub fn sync_dsi_environment(&mut self) {
+        let clocks = self.hp_clkrst.read(0x3c);
+        let bus = self.hp_clkrst.read(0x18) & (1 << 12) != 0 && self.hp_clkrst.read(0xc0) & (1 << 26) == 0;
+        let ldo = self.pmu.read(0x1c0); let ana = self.pmu.read(0x1c4);
+        let dref = ana >> 28; let mul = ana >> 23 & 7;
+        let vref_mv = if dref < 9 { 500 + dref * 50 } else { 1000 + (dref - 9) * 100 };
+        let mv = vref_mv * (4 + mul) / 4;
+        let supply = ldo & (1 << 8) != 0 && ldo & (1 << 14) == 0 && mv == 2500;
+        let src = match clocks >> 5 & 3 { 0 => 40_000_000, 1 => 240_000_000, 2 => 160_000_000, _ => 0 };
+        let dpi = if clocks & (1 << 7) != 0 { src / ((clocks >> 8 & 255) as u64 + 1) } else { 0 };
+        self.dsi.set_environment(bus, clocks & 3 == 3, supply, dpi);
+        Dispatch::refresh_optional(self, 0x500a0);
+    }
 
     /// Advance every clocked device by `cycles` CPU cycles.
     pub fn tick(&mut self, cycles: u64) { Dispatch::tick(self, cycles); }

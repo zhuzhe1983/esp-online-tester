@@ -1,5 +1,7 @@
 //! Boards physically attached to ESP32-C3 GPIO/RMT, separate from the bare SoC.
 pub use esp_soc::board::{Board,BoardModel,NoBoard};
+pub mod m5_ssr;
+pub mod kmeter;
 pub mod stampc3;
 pub use stampc3::StampC3;
 pub mod stampc3u;
@@ -12,6 +14,9 @@ pub mod waveshare_zero;
 pub fn make_board(name:&str)->Option<Board> {
     match name {
         "none"|"bare"=>Some(Box::new(NoBoard)),"stampc3"=>Some(Box::new(StampC3::new())),"stampc3u"=>Some(Box::new(StampC3U::new())),
+        "m5-kmeter"|"m5stack-u133"=>Some(Box::new(kmeter::Kmeter::new())),
+        "m5-acssr"|"m5stack-u139"=>Some(Box::new(m5_ssr::M5Ssr::new(m5_ssr::Variant::Ac))),
+        "m5-dcssr"|"m5stack-u140"=>Some(Box::new(m5_ssr::M5Ssr::new(m5_ssr::Variant::Dc))),
         "seeed-xiao-epaper-75"=>Some(Box::new(esp_soc::board::seeed_xiao_epaper::SeeedXiaoEpaper::new(esp_soc::board::seeed_xiao_epaper::Variant::XiaoC3,crate::periph::CPU_HZ/1000))),
         "lilygo-t8-c3"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::t8_c3())),
         "lilygo-watch-keyboard-c3-v1-0"=>Some(Box::new(lilygo_additional::LilygoAdditionalC3::watch_keyboard_c3())),

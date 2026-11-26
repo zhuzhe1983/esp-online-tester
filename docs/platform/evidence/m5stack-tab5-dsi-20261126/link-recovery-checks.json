@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T10:12:17Z",
+  "baseCommit": "a2cd80f8",
+  "source": {
+    "path": "esp32p4/src/board/tab5.rs",
+    "bytes": 9305,
+    "sha256": "981195ce5b25e338872399d1597066c99340448dfc2d2c8179e2d6e89ce7f900"
+  },
+  "scope": "Digital display visibility after DSI link loss; separate from native guest framebuffer acceptance. No worker/browser/hardware result.",
+  "checks": [
+    {
+      "command": "cargo test -p esp32p4 --lib link_recovery_requires",
+      "tests": 1,
+      "status": "pass",
+      "cases": [
+        "complete blue frame visible",
+        "link loss followed by restored link and backlight plus short DMA input stays black",
+        "a new complete red frame is then visible",
+        "backlight-only gating on an uninterrupted link preserves its complete frame"
+      ]
+    },
+    {
+      "command": "cargo test -p esp32p4 --test tab5",
+      "tests": 3,
+      "status": "pass"
+    },
+    {
+      "command": "cargo clippy -p esp32p4 --all-targets -- -D warnings",
+      "status": "pass"
+    }
+  ]
+}

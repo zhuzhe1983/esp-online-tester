@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "scope": "Shared GMAC and U138 adapter; public catalog activation awaits final five-product batch.",
+  "tests": [
+    {
+      "command": "cargo test -p esp32 --test unit_poesp32",
+      "passed": 3,
+      "failed": 0
+    },
+    {
+      "command": "cargo test -p esp-periph --lib emac",
+      "passed": 4,
+      "failed": 0
+    },
+    {
+      "command": "cargo clippy -p esp32 -p esp-periph --all-targets -- -D warnings",
+      "passed": true
+    }
+  ],
+  "sourceSha256": {
+    "esp-periph/src/emac.rs": "c7c1f24aab82b9452d5b64c412f6b9c7d320c7e6b8a4bb8183af5408ebc47e2b",
+    "esp-soc/src/ethernet.rs": "14f01d22b7ae7573ae64fc3c84f1fb0acd41de80622bb760fedd0c3e9ef6f693",
+    "esp32/src/ethernet.rs": "bac41e4d8a17a5f646adb509e5d34ccdca3f80af3f159cf5e758716c881e1086",
+    "esp32/tests/unit_poesp32.rs": "24c11a6f0a5bc549fe02f9cb84880098345b6834ddf93884dce7a9911c8c95da"
+  },
+  "physicalValidation": false,
+  "manufacturerFirmwareValidation": false,
+  "limits": [
+    "digital IP101G peer at100 Mbps full duplex; no analog PoE",
+    "MDIO fixed32us digital delay; no physical autonegotiation timing",
+    "No GMAC checksum offload/PTP/collision or W5500 TCP offload acceptance"
+  ]
+}

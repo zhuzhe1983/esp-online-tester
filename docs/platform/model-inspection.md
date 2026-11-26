@@ -22,11 +22,28 @@ Add the same declaration to the reproducible model plan and exported `model.json
 
 Each `sourceIds` entry must exist in `model.provenance.sources`. Record the basis for membership, the direction and any estimated clearance in `notes`; do not invent hidden relationships. `offsetMm` uses the exported model's local millimetre axes, before the viewer rotates the whole product. It is added to each member's exact assembled position. Existing rotations, scale, vertices and material objects remain unchanged. The array defines flat groups; it does not infer a hierarchy or calculate radial offsets.
 
-`parts` contains exact, unique names of direct children in the loaded model. These include source part names, derived part IDs and named controls such as `cover-key:button`. Keep a cover's paper, visible hardware and cover-mounted hit regions in its group. A button physically mounted to the PCB remains with the PCB. The loader automatically includes each listed part's generated photographic projection surface; do not list a `-photo-surface` twin separately. Groups cannot claim the same object twice. Nested rotor/servo pieces must not be claimed separately from their top-level assembly.
+`parts` contains exact, unique names of direct children in the loaded model. These include source part names, derived part IDs and named controls such as `cover-key:button`. Keep a cover's paper, visible hardware and cover-mounted hit regions in its group. A button physically mounted to the PCB remains with the PCB. The loader automatically includes each listed part's generated photographic projection surface; do not list a `-photo-surface` twin separately. Groups cannot claim the same object twice. Do not claim an articulated assembly together with any of its descendant pieces.
+
+A group that needs articulated descendants can explicitly add `"nested": true`.
+Only that group's `parts` and `hideParts` then resolve exact names across the loaded
+model tree; each name must have exactly one match. Existing groups retain their
+direct-child behavior. Moving or hiding an ancestor and any descendant, including
+a registered photo companion, is rejected in either declaration order. A projection
+already inside the selected assembly follows its parent once; external registered
+companions receive the same assembled-model offset in their own parent frames.
+
+For nested members, the offset is bound from assembled model axes into each existing
+parent's local frame when the loader creates inspection, after servo articulation
+has established its hierarchy and before feedback changes the pose. Subsequent joint
+rotations carry that local separation along with the part. Inspection never reparents
+objects or writes joint rotations, vertices, scale or materials. Returning to 0%
+restores each member's exact assembled local position at the **current** joint pose;
+it does not reset servo feedback. This is a source-declared viewing arrangement,
+not a mechanical-disassembly or collision simulation.
 
 Keep a PCB and its soldered sockets, pin headers, and connector anchors on the same rigid assembly. A socket modeled as separate shell and pin meshes follows the board with the same transform. Use the assembly source to place panel-mounted connectors and detachable daughterboards. Separate the board assembly from its enclosure along the documented local axis. A stationary board also works when all surrounding covers move clear. Check the gap at 100% from a side or oblique view and confirm board-to-connector offsets at 0%, intermediate values, and 100%.
 
-A group can additionally declare `hideParts: ["optical-flow-harness"]` for fixed parts that should disappear only in the separated viewing arrangement. Use this for a documented cable that cannot follow the chosen viewing offset; do not stretch it or imply a simulated disconnection. Each name follows the same direct-child and unique-ownership rules as `parts`, with a maximum of 128 hidden parts. A hidden part cannot also belong to a moving group. Its registered photo companions hide with it. Expansion changes only visibility; reassembly restores the original visibility, including parts that were already hidden. Record the viewing-only reason in the group's `notes` and retain the actual assembled wire geometry.
+A group can additionally declare `hideParts: ["optical-flow-harness"]` for fixed parts that should disappear only in the separated viewing arrangement. Use this for a documented cable that cannot follow the chosen viewing offset; do not stretch it or imply a simulated disconnection. Each name follows the same resolution and unique-ownership rules as `parts`, with a maximum of 128 hidden parts. A hidden part cannot also belong to a moving group. Its registered photo companions hide with it. Expansion changes only visibility; reassembly restores the original visibility, including parts that were already hidden. Record the viewing-only reason in the group's `notes` and retain the actual assembled wire geometry.
 
 At most 32 groups and 128 declared parts per group are supported. Offsets contain three finite values, each within ±5000 mm, with at least one nonzero component. A group requires a nonempty ID, source references and a note. Validation completes before any transform changes. An invalid declaration leaves the assembled model available, disables inspection and records `group.userData.inspectionError` plus a console diagnostic. Missing declarations add no control and do not create product inputs.
 

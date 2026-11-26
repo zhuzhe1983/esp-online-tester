@@ -1,7 +1,7 @@
 import {validIlluminance} from './illuminance-input.js';
 import {validEnvironment,environmentParameters} from './environment-input.js';
 import {POWER_PRODUCT_ID,POWER_KEYS,powerParameters,validPowerEnvironment,validPowerScene} from './power-environment.js';
-import {THERMAL_PRODUCT_ID,THERMAL_FIELDS,validThermal,thermalParameters} from './thermal-input.js';
+import {THERMAL_PRODUCT_IDS,THERMAL_FIELDS,validThermal,thermalParameters} from './thermal-input.js';
 import {C5_WIFI_DRIVER_COMPAT_PROFILE,C5_WIFI_DRIVER_COMPAT_PRODUCT_IDS} from './c5-wifi-driver-compat.js';
 // Portable semantic input recordings. Guest acknowledgements are evidence of delivery,
 // not cycle-exact scheduling or a guarantee of identical firmware behavior.
@@ -20,6 +20,7 @@ const sameScene = (a,b) => !!a && !!b && json(config(a)) === json(config(b));
 const hashPattern = /^[a-f0-9]{64}$/i;
 const pressInput=event=>{
   if(event.type==='power-environment')return {type:event.type,...powerParameters(event)};
+  if(event.type==='thermocouple-environment')return {type:event.type,connected:event.connected,temperatureC:event.temperatureC};
   if(event.type==='thermal-environment')return {type:event.type,...thermalParameters(event)};
   return event.type==='accessory-motion'?{type:event.type,accessoryId:event.accessoryId,motion:event.motion}:event.type==='accessory-illuminance'?{type:event.type,accessoryId:event.accessoryId,lux:event.lux}:event.type==='accessory-environment'?{type:event.type,accessoryId:event.accessoryId,...environmentParameters(event)}:event.type==='accessory-angle'?{type:event.type,accessoryId:event.accessoryId,id:event.id,value:event.value}:event.type==='encoder'?{type:'encoder',id:event.id,steps:event.steps}:event.type==='accessory-connection'?{type:event.type,accessoryId:event.accessoryId,connected:event.connected}:event.type==='accessory-button'?{type:event.type,accessoryId:event.accessoryId,id:event.id,pressed:event.pressed}:event.type==='matrix-key'?{type:'matrix-key',row:event.row,column:event.column,pressed:event.pressed}:{type:'button',id:event.id,pressed:event.pressed};
 };
@@ -45,7 +46,7 @@ export function validateRecording(recording, {scene} = {}) {
     keys(recording.scene,['schemaVersion','productId','firmware','accessories','keyMapping','view','localAccessories','flight','environment','thermalEnvironment','c5WifiDriverCompat'],'/scene');
     if(recording.scene.c5WifiDriverCompat!==undefined && (recording.scene.c5WifiDriverCompat!==C5_WIFI_DRIVER_COMPAT_PROFILE||!C5_WIFI_DRIVER_COMPAT_PRODUCT_IDS.includes(recording.scene.productId)||recording.scene.firmware.bootMode==='app-direct'))add('RECORDING_C5_WIFI_DRIVER_COMPAT','/scene/c5WifiDriverCompat','The offline driver profile requires an explicit LCD273 ROM-startup scene.');
     if(recording.scene.environment!==undefined && (recording.scene.productId!==POWER_PRODUCT_ID||!validPowerScene(recording.scene.environment)))add('RECORDING_POWER','/scene/environment','Invalid initial virtual power environment.');
-    if(recording.scene.thermalEnvironment!==undefined && (recording.scene.productId!==THERMAL_PRODUCT_ID||!validThermal(recording.scene.thermalEnvironment)))add('RECORDING_THERMAL','/scene/thermalEnvironment','Invalid initial Raw14 stimulus.');
+    if(recording.scene.thermalEnvironment!==undefined && (!THERMAL_PRODUCT_IDS.includes(recording.scene.productId)||!validThermal(recording.scene.thermalEnvironment,recording.scene.productId)))add('RECORDING_THERMAL','/scene/thermalEnvironment','Invalid initial thermal ADC stimulus.');
     keys(recording.scene.firmware,['manifestUrl','url','sha256','bootMode'],'/scene/firmware');
     const source=recording.scene.firmware;
     if(source.bootMode!==undefined&&(!source.url||!['rom','app-direct'].includes(source.bootMode)))add('RECORDING_SOURCE','/scene/firmware/bootMode','Invalid raw-image boot mode.');
@@ -96,10 +97,13 @@ export function validateRecording(recording, {scene} = {}) {
       keys(event,['at','type',...POWER_KEYS],path);
       const {at,type,...values}=event;
       if(recording.scene?.productId!==POWER_PRODUCT_ID||!validPowerEnvironment(values))add('RECORDING_POWER',path,'Invalid or unsupported virtual power environment.');
+    } else if(event.type==='thermocouple-environment') {
+      keys(event,['at','type','connected','temperatureC'],path);
+      if(recording.scene?.productId!=='m5stack-u133'||typeof event.connected!=='boolean'||!Number.isFinite(event.temperatureC)||event.temperatureC< -200||event.temperatureC>1350)add('RECORDING_THERMOCOUPLE',path,'Invalid U133 thermocouple stimulus.');
     } else if(event.type==='thermal-environment') {
       keys(event,['at','type',...THERMAL_FIELDS.map(([key])=>key)],path);
       const {at,type,...values}=event;
-      if(recording.scene?.productId!==THERMAL_PRODUCT_ID||!validThermal(values))add('RECORDING_THERMAL',path,'Invalid bounded Raw14 environment.');
+      if(!THERMAL_PRODUCT_IDS.includes(recording.scene?.productId)||!validThermal(values,recording.scene?.productId))add('RECORDING_THERMAL',path,'Invalid bounded thermal ADC environment.');
     } else if(['accessory-button','accessory-angle','accessory-motion','accessory-environment','accessory-illuminance','accessory-connection'].includes(event.type)) {
       if(!attached.has(event.accessoryId))add('RECORDING_ACCESSORY',path,'Accessory must have a physical route in the recorded scene.');
       const key=`accessory:${event.accessoryId}:button`;
@@ -204,7 +208,7 @@ export function createRecordingController(runtime) {
     receipt={...(receipt||{}),kind:'replay',result:'cancelled',reason,bitExact:false};emit();return observe();
   };
   const onEvent=event=>{
-    if(event.type==='input'&&['button','matrix-key','touch','encoder','accessory-button','accessory-angle','accessory-motion','accessory-environment','accessory-illuminance','accessory-connection','power-environment','thermal-environment'].includes(event.event.type)) {
+    if(event.type==='input'&&['button','matrix-key','touch','encoder','accessory-button','accessory-angle','accessory-motion','accessory-environment','accessory-illuminance','accessory-connection','power-environment','thermal-environment','thermocouple-environment'].includes(event.event.type)) {
       if(status==='recording') {
         tracked(event.event);
         if(event.receipt?.delivery!=='queued'||!Number.isFinite(event.receipt.guestTime)){void cancel('missing-acknowledgement');return;}

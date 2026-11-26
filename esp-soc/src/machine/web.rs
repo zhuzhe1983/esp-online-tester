@@ -257,6 +257,13 @@ impl<S: Soc> Machine<S> {
                     let cycle = self.bus.cycles();
                     thermal_environment_input(self.bus.board(), cycle, &message);
                 }
+                "thermocouple-environment" if S::NAME=="esp32c3" => {
+                    let connected=message.get("connected").and_then(crate::json::Json::scalar_text);
+                    let temperature=message.get("temperatureC").and_then(crate::json::Json::scalar_text).and_then(|v|v.parse::<f64>().ok());
+                    if let (Some(connected),Some(temperature_c))=(connected,temperature) {if matches!(connected.as_str(),"0"|"1")&&temperature_c.is_finite()&&(-200.0..=1350.0).contains(&temperature_c) {
+                        let cycle=self.bus.cycles();self.bus.board().accessory_environment_at(cycle,"max31855k","thermocouple",connected=="1",esp_periph::i2c::env4::Environment{temperature_c,..Default::default()});
+                    }}
+                }
                 "accessory-environment" if matches!(S::NAME,"esp32s3"|"esp32c61") => {
                     let cycle=self.bus.cycles();accessory_environment_input(self.bus.board(),cycle,&message);
                 }

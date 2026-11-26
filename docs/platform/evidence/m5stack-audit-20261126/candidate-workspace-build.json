@@ -1,0 +1,19 @@
+{
+  "revision": "d33f10c1d673e6a109168ddacd897e9f55c349e5",
+  "exitCode": 0,
+  "command": "PATH=$RUST_BIN:$PATH CARGO_TARGET_DIR=$SHARED_TARGET CARGO_BUILD_JOBS=2 CARGO_INCREMENTAL=0 cargo build --release --workspace",
+  "source": {
+    "files": 970,
+    "sha256sumManifestSha256": "6fbfb685d017949eef368ea8fbe2cd704df33786666ee5d79f59184af1e5b8d9"
+  },
+  "completeLog": "candidate-workspace-build.txt",
+  "originalLogSha256": "16bd22219a8689fd3ad87d40807f64c7ffdca4c16f65cf5c6f8fb9eeec3cc1a0",
+  "originalLogBytes": 1797,
+  "retainedLogSha256": "8d1a09acb8c1780141a9a5de723e19275cfc5046eeef293af175a3a4b25c929b",
+  "retainedLogBytes": 1189,
+  "redaction": "Replace the root checkout absolute path with $CANDIDATE_SOURCE; preserve all build diagnostics, crate compilation rows and completion duration.",
+  "targetPolicy": "Coordinator builds release workspace, including CLI bins, after baseline snapshot. All local crates recompiled from root checkout paths; complete log lists Compiling rows. No tests are built by this command.",
+  "buildScopeDifference": "Baseline uses --bins; this candidate uses --workspace. The latter also builds native wasm/wasm-jit libraries and enables esp32s3/cache-inline and xtensa-lx7/wasm-cache-inline through wasm default features. All use sites are gated to wasm32; esp32s3/src/bus.rs:set_approximate_cache_inline returns false unconditionally on native. No claim that command/feature graphs are identical.",
+  "measured": false,
+  "comparisonStatus": "Retained unmeasured initial build snapshot. The final comparison requires a candidate --bins build matching baseline target scope and feature graph."
+}

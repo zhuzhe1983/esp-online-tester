@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1",
+  "checkedAt": "2026-11-26T06:17:03Z",
+  "products": [
+    "m5stack-k129",
+    "m5stack-k129-v11",
+    "m5stack-k125",
+    "m5stack-k152",
+    "m5stack-k146"
+  ],
+  "finalAssetSha256": {
+    "m5stack-k129": {
+      "model.json": "90ddaa2e35d76065d903d476af4087db94c2bd6ab67e8059aa071c1821da2584",
+      "model-plan.json": "461157f36550de8d5e4b159849038bce07777a58c1b5dc40e21e85164bd031cd",
+      "geometry.bin": "8b18019e5cd073e57cdb822829057dc611750757e7625e5ac69fc3ec5a802895"
+    },
+    "m5stack-k129-v11": {
+      "model.json": "8ecc0bcf3180f9a049a770ddc455c0a1a46a38d92b7317ee3933924bdb71122d",
+      "model-plan.json": "e1befe5dce2db5660d675a23717f29cb52e97ba78a6edd35a2207cfb4103eb07",
+      "geometry.bin": "8b18019e5cd073e57cdb822829057dc611750757e7625e5ac69fc3ec5a802895"
+    },
+    "m5stack-k125": {
+      "model.json": "25a814c968996a2397034825d6ec73b36c9cea4696ac2f5759ddfac37acd1b19",
+      "model-plan.json": "2425b235ab4001497e00ed017f894e3fd5ac58f6acc4226f213fb06676f0ed20",
+      "geometry.bin": "569ad884a8a8ca1b963faab513ec7215bd344a794f70f1087ca0761050b31256"
+    },
+    "m5stack-k152": {
+      "model.json": "ad164e75b23a60bf890eb0319ef49549bb2e128c61ffc773d001059f058a21db",
+      "model-plan.json": "0162ba8a3fc7c3d989988e37cb45a0b656c4ce120315dbcca2b7c5c18e783d49",
+      "geometry.bin": "f4e912e2f4cce988f32dc51e8246714e66b88c64d62c569aef0fa9cdac74046e"
+    },
+    "m5stack-k146": {
+      "model.json": "e026befa7d37e2a2473811ad02c8a4d7ff7224bbf9014ec2428cec03f6c06ba1",
+      "model-plan.json": "41fba4e14b3aeb029372ab1b85a41d27e77015621cf34233915e7112ddb01596",
+      "geometry.bin": "9ee9b25bb5efb5d026ee87a2ac74e4b629ff259a8a108e77b67c513bf165de87"
+    }
+  },
+  "checks": [
+    {
+      "command": "node tools/platform-m5-s3-products-test.mjs",
+      "status": "passed",
+      "details": "All5 source hash/model loads;56 nearest-key rays;Atom flexure ray;gold/purple key material isolation. Images stubbed, noGPU."
+    },
+    {
+      "command": "node tools/platform-knowledge-test.mjs",
+      "status": "passed",
+      "details": "686 records; source/revision boundaries. Source body hashes not re-read by this test."
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "passed",
+      "details": "678 products/10 accessories/611 firmwares/443 watchlist entries."
+    },
+    {
+      "command": "python tools/rebuild-product-model.py build m5stack-k152 --scratch <fresh-scratch>",
+      "status": "passed",
+      "details": "7 generated artifacts and model geometry/contract byte comparison; pinned native source face ranges."
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "status": "passed",
+      "details": "3369 tracked evidence files,95gzip; manual review limited to thischange."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    },
+    {
+      "command": "cargo test -p esp32s3 --lib capsule; cargo test -p esp32s3 --lib atoms3u",
+      "status": "pending-integration",
+      "details": "Root coordinates a shared build target; no Rust test pass claimed by this lane."
+    },
+    {
+      "command": "Real browser/photo/hardware/official-firmware acceptance",
+      "status": "not-run",
+      "details": "No newGPU/photo match, physical hardware, factory boot, LoRa/GPS/PDM/EPD/power acceptance claimed."
+    }
+  ],
+  "publicRebuild": {
+    "passed": true,
+    "verifiedArtifacts": [
+      "geometry.bin",
+      "reference-product-photo-29024fdf08.webp",
+      "LICENSE-M5Stack.txt",
+      "reference-product-photo-54718ea99e.webp",
+      "reference-product-photo-b3d9c7a339.webp",
+      "source.stl",
+      "reference-product-photo-9005db7e39.webp"
+    ],
+    "mismatches": [],
+    "unusedOriginalArtifacts": [],
+    "modelJsonByteIdentical": false,
+    "scope": "Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance."
+  },
+  "hardwareValidated": false,
+  "officialFirmwareExecuted": false,
+  "browserVerified": false
+}

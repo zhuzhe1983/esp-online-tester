@@ -1,0 +1,404 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-k016-b",
+  "unit": "mm",
+  "strideFloats": 6,
+  "binary": "geometry.bin",
+  "parts": [
+    {
+      "name": "shell-wall",
+      "byteOffset": 0,
+      "vertexCount": 864,
+      "boundsMm": [
+        [
+          -12.75,
+          -24.1,
+          -6.25
+        ],
+        [
+          12.75,
+          24.1,
+          6.25
+        ]
+      ],
+      "role": "shell",
+      "color": "#48484a",
+      "sourceIds": [
+        "photo-3"
+      ],
+      "basis": "photo-derived shell wall; ports are nominal visual openings only"
+    },
+    {
+      "name": "rear-cover",
+      "byteOffset": 20736,
+      "vertexCount": 432,
+      "boundsMm": [
+        [
+          -12.75,
+          -24.1,
+          -6.85
+        ],
+        [
+          12.75,
+          24.1,
+          -6.25
+        ]
+      ],
+      "role": "shell",
+      "color": "#48484a",
+      "sourceIds": [
+        "photo-2"
+      ],
+      "basis": "rear outline approximation; hidden structure and decal geometry unknown"
+    },
+    {
+      "name": "front-bezel",
+      "byteOffset": 31104,
+      "vertexCount": 2448,
+      "boundsMm": [
+        [
+          -12.75,
+          -24.1,
+          6.25
+        ],
+        [
+          12.75,
+          24.1,
+          6.850000000000008
+        ]
+      ],
+      "role": "shell",
+      "color": "#48484a",
+      "sourceIds": [
+        "photo-3"
+      ],
+      "basis": "front photo and independent screen nominal dimensions; optional source-traced M5 recess depth0.1mm estimated; no baked firmware picture"
+    },
+    {
+      "name": "side-button",
+      "byteOffset": 89856,
+      "vertexCount": 432,
+      "boundsMm": [
+        [
+          12.6,
+          6.199999999999999,
+          -1.2
+        ],
+        [
+          13.799999999999999,
+          10.2,
+          1.2
+        ]
+      ],
+      "role": "button",
+      "color": "#343536",
+      "controlId": "button",
+      "sourceIds": [
+        "photo-3"
+      ],
+      "basis": "visible right-side actuator; position/height approximately +/-1 mm"
+    }
+  ],
+  "derivedParts": [
+    {
+      "id": "rear-paper",
+      "kind": "label",
+      "texture": "rear-paper.png",
+      "geometry": {
+        "sizeMm": [
+          20.5,
+          39.2
+        ],
+        "centerMm": [
+          0,
+          1,
+          -6.865
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "Exact SKU photograph; label outline and plane estimated",
+      "sourceIds": [
+        "photo-2"
+      ],
+      "notes": "Independent photo paper on estimated rear cover,0.015mm outward. Native paper thickness/location unknown."
+    },
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "geometry": {
+        "sizeMm": [
+          20.5,
+          41.2,
+          1
+        ],
+        "centerMm": [
+          0,
+          0,
+          0
+        ],
+        "labelSide": "both",
+        "labelSizeMm": [
+          18.5,
+          5
+        ]
+      },
+      "sourceIds": [
+        "official-shop"
+      ],
+      "basis": "unknown board layout; outline/position estimated from enclosure space"
+    }
+  ],
+  "presentation": {
+    "bodySizeMm": [
+      25.5,
+      48.2,
+      13.7
+    ],
+    "screen": {
+      "sizeMm": [
+        14.77,
+        29.53
+      ],
+      "positionMm": [
+        0,
+        6.1,
+        6.864999999999999
+      ],
+      "basis": "nominal diagonal/aspect ratio and exact SKU front photo; no firmware texture",
+      "sourceIds": [
+        "official-shop",
+        "photo-3"
+      ]
+    },
+    "inspectionGroups": [
+      {
+        "id": "front",
+        "parts": [
+          "front-bezel",
+          "live-display"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          22
+        ],
+        "sourceIds": [
+          "photo-3"
+        ],
+        "notes": "Photo-derived exterior front group; viewing clearance only."
+      },
+      {
+        "id": "back",
+        "parts": [
+          "rear-cover",
+          "rear-paper"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -22
+        ],
+        "sourceIds": [
+          "photo-2"
+        ],
+        "notes": "Estimated rear closure; exposes the fixed UNKNOWN interior without inventing PCB parts."
+      }
+    ]
+  },
+  "dimensions": {
+    "width": 25.5,
+    "height": 48.2,
+    "depth": 13.7,
+    "unit": "mm",
+    "basis": "official",
+    "sourceId": "official-docs"
+  },
+  "referencePhotos": [
+    {
+      "sourceId": "photo-0",
+      "file": "reference-k016-b-photo-0.jpg",
+      "sourceSha256": "06101f4ebef0f7af0c981925d80efacca834ff7fd0b8bc1c90c5dc506b6fb475",
+      "view": "official kit overview"
+    },
+    {
+      "sourceId": "photo-2",
+      "file": "reference-k016-b-photo-2.jpg",
+      "sourceSha256": "358a71d8a1c06de81b92f62b9e70a887b6c0da41276833df69f221c65c80c20c",
+      "view": "official oblique/rear"
+    },
+    {
+      "sourceId": "photo-3",
+      "file": "reference-k016-b-photo-3.jpg",
+      "sourceSha256": "151d04442999f1bbaec7f45e1e923974df5ab4806d5985ce19fb5f7a163a8d95",
+      "view": "official straight front"
+    }
+  ],
+  "provenance": {
+    "kind": "source-derived",
+    "sources": [
+      {
+        "url": "https://shop.m5stack.com/products/stick.json",
+        "resolvedUrl": "https://shop.m5stack.com/products/stick.json",
+        "mediaType": "application/json; charset=utf-8",
+        "fetchedAt": "2026-11-26T06:17:54Z",
+        "sha256": "9a9c0fc563699db3e9fb99a446852085445bd2d861a21d7d166a55f8dec9d33d",
+        "bytes": 7899,
+        "archiveName": "k016-b-shop.json",
+        "id": "official-shop",
+        "title": "K016-B exact official shop product",
+        "kind": "official-product-document",
+        "status": "fetched"
+      },
+      {
+        "url": "https://docs.m5stack.com/en/core/m5stick",
+        "resolvedUrl": "https://docs.m5stack.com/en/core/M5Stick",
+        "mediaType": "text/html; charset=UTF-8",
+        "fetchedAt": "2026-11-26T06:18:28Z",
+        "sha256": "7414af735ab66d55ca73203bd3d36ffc6b308eb7643c93a87282e971af1b8009",
+        "bytes": 136002,
+        "archiveName": "k016-b-docs.html",
+        "id": "official-docs",
+        "title": "M5Stick 1.3 OLED exact documentation",
+        "kind": "official-product-document",
+        "status": "fetched"
+      },
+      {
+        "id": "photo-0",
+        "url": "https://cdn.shopify.com/s/files/1/0056/7689/2250/products/M5STICK.jpg?v=1566377235",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0056/7689/2250/products/M5STICK.jpg?v=1566377235",
+        "mediaType": "image/jpeg",
+        "fetchedAt": "2026-11-26T06:18:56Z",
+        "sha256": "06101f4ebef0f7af0c981925d80efacca834ff7fd0b8bc1c90c5dc506b6fb475",
+        "bytes": 66681,
+        "archiveName": "k016-b-photo-0.jpg",
+        "title": "K016-B official shop photo 0",
+        "kind": "official-product-photo",
+        "status": "fetched"
+      },
+      {
+        "id": "photo-2",
+        "url": "https://cdn.shopify.com/s/files/1/0056/7689/2250/products/HTB1W.E0OwHqK1RjSZFEq6AGMXXa4.jpg?v=1766483069",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0056/7689/2250/products/HTB1W.E0OwHqK1RjSZFEq6AGMXXa4.jpg?v=1766483069",
+        "mediaType": "image/jpeg",
+        "fetchedAt": "2026-11-26T06:18:56Z",
+        "sha256": "358a71d8a1c06de81b92f62b9e70a887b6c0da41276833df69f221c65c80c20c",
+        "bytes": 81009,
+        "archiveName": "k016-b-photo-2.jpg",
+        "title": "K016-B official shop photo 2",
+        "kind": "official-product-photo",
+        "status": "fetched"
+      },
+      {
+        "id": "photo-3",
+        "url": "https://cdn.shopify.com/s/files/1/0056/7689/2250/products/rB9kfl0HKGaACKTlAALw3zfF5F0075.JPG?v=1766483069",
+        "resolvedUrl": "https://cdn.shopify.com/s/files/1/0056/7689/2250/products/rB9kfl0HKGaACKTlAALw3zfF5F0075.JPG?v=1766483069",
+        "mediaType": "image/jpeg",
+        "fetchedAt": "2026-11-26T06:18:56Z",
+        "sha256": "151d04442999f1bbaec7f45e1e923974df5ab4806d5985ce19fb5f7a163a8d95",
+        "bytes": 32241,
+        "archiveName": "k016-b-photo-3.jpg",
+        "title": "K016-B official shop photo 3",
+        "kind": "official-product-photo",
+        "status": "fetched"
+      }
+    ],
+    "generator": "tools/build-m5-legacy-kit-models.py",
+    "license": "Original approximation geometry: MIT. Related K001 manufacturer CAD: M5Stack MIT. Official photographs: copyright M5Stack; see NOTICE.md."
+  },
+  "limitations": [
+    "未实机验证；模型、目录和有限运行器不表示原厂固件或全部硬件功能通过。",
+    "未找到该旧SKU的精确厂家CAD；相关K001顶壳或照片近似均明确列出，未知PCB保留UNKNOWN。",
+    "照片视角/光学材料和隐藏结构未做完整1:1验收；不在模型屏幕烘焙照片中的固件内容。",
+    "独立ESP32-WROOM32、SH1107 64×128型号；不能套用StickC/Plus的LCD和AXP192板型，当前保持preview/unavailable。",
+    "侧键与USB-C/Grove位置依据同SKU照片估算，插接空间和线序未完成视觉验收，未显示已连接线缆。",
+    "源照片无法确定插口口沿和深度，本预览不补猜USB/Grove几何；接口硬件事实仍在产品资料，保持无可连接锚点。",
+    "Front molded M5 is traced from exact-SKU photo3, recess depth0.1mm estimated. Rear paper only is rectified from photo2; corners,20.5×39.2mm physical size and position are estimates. No exact-SKU CAD or populated PCB supplied."
+  ],
+  "reviewViews": {
+    "front": {
+      "position": [
+        0,
+        0,
+        180
+      ],
+      "span": 67.48
+    },
+    "back": {
+      "position": [
+        0,
+        0,
+        -180
+      ],
+      "span": 67.48
+    },
+    "side": {
+      "position": [
+        180,
+        0,
+        0
+      ],
+      "span": 67.48
+    }
+  },
+  "artifacts": {
+    "geometry.bin": "e04b4a6ae1e4153e97197ceae3b295393746d0f56c69631ea7be1abe0b6399dd",
+    "reference-k016-b-photo-0.jpg": "06101f4ebef0f7af0c981925d80efacca834ff7fd0b8bc1c90c5dc506b6fb475",
+    "reference-k016-b-photo-2.jpg": "358a71d8a1c06de81b92f62b9e70a887b6c0da41276833df69f221c65c80c20c",
+    "reference-k016-b-photo-3.jpg": "151d04442999f1bbaec7f45e1e923974df5ab4806d5985ce19fb5f7a163a8d95",
+    "NOTICE.md": "5b7e28d28f8329ba3b73929dd19f98aced10fb73b059beb9b2aaeef69536ce4d",
+    "rear-paper.png": "4c3a50567e9036c51bfa4b7e89abedad63f8bd280f4a71bd5dbbdd65a3e5bfbe"
+  },
+  "textures": [
+    {
+      "file": "rear-paper.png",
+      "sourceFile": "reference-k016-b-photo-2.jpg",
+      "sourceId": "photo-2",
+      "quadPx": [
+        [
+          158,
+          290.5
+        ],
+        [
+          63,
+          198
+        ],
+        [
+          276,
+          68.5
+        ],
+        [
+          368.5,
+          152.5
+        ]
+      ],
+      "sizePx": [
+        500,
+        950
+      ],
+      "cornerRadiusPx": 12,
+      "notes": "One exact-SKU separate rear paper only; corners manually measured. Shell, screws, sockets, annotation arrows and second device excluded. Perspective alignment±1mm estimated.Orientation: Grove end is −Y as confirmed by kit overview photo0 (Grove beneath front M5); rear paper M5Stack logo/pin strip go toward −Y.",
+      "perspectiveMatrix": [
+        [
+          -2.241087688930553,
+          -3.4184707139121833,
+          1347.1575972425167
+        ],
+        [
+          2.7177771235173815,
+          -2.7912305592881204,
+          381.44369195745287
+        ],
+        [
+          -0.00011797845968363033,
+          0.00034230845855705256,
+          1.0
+        ]
+      ],
+      "sha256": "4c3a50567e9036c51bfa4b7e89abedad63f8bd280f4a71bd5dbbdd65a3e5bfbe"
+    }
+  ]
+}

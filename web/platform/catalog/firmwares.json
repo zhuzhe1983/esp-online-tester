@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1",
-  "revision": "2026-11-26-device-release-sync",
+  "revision": "2026-11-26-m5stack-audit-integration",
   "items": [
     {
       "id": "seeed-xiao-ips-147-factory",
@@ -906,7 +906,7 @@
       "limitations": [
         "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
         "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
-        "ESP32-P4 bootloader 位于 0x2000；当前没有 Tab5 板级模拟器，不能运行。"
+        "ESP32-P4 bootloader 位于 0x2000；当前板型仅覆盖ILI9881C＋GT911批次；未证明本官方镜像的启动或完整功能兼容。"
       ],
       "sources": [
         {
@@ -1082,7 +1082,8 @@
       ],
       "limitations": [
         "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "本轮仅通过源协议客体测试，未运行本完整厂家镜像；simulationVerified 仍为 false。"
       ],
       "publisherGroup": "官方",
       "revision": "v2.1",
@@ -1446,7 +1447,8 @@
       ],
       "limitations": [
         "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
-        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。"
+        "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
+        "本轮仅通过源协议客体测试，未运行本完整厂家镜像；simulationVerified 仍为 false。 当前执行板仅支持 D67，镜像是否针对旧 M09 尚未确认。"
       ],
       "publisherGroup": "官方",
       "revision": "v1.0.1",
@@ -1638,7 +1640,8 @@
       "limitations": [
         "厂家出厂/恢复镜像；已核对远程地址、SHA-256、芯片与完整镜像布局，尚未执行验证。",
         "仅在该产品板级模型存在时允许尝试；无线、传感器或存储等功能可能尚不受模拟器支持。",
-        "当前官方分发最新条目带 pre 后缀，按预发布版本保留原名。"
+        "当前官方分发最新条目带 pre 后缀，按预发布版本保留原名。",
+        "2026-11-26接入显示/输入协议子集，原厂镜像仍未执行验收；不能把客体诊断当整机固件兼容。"
       ],
       "sources": [
         {
@@ -1752,10 +1755,11 @@
       },
       "publicationUrl": "https://github.com/m5stack/xiaozhi-card",
       "version": null,
-      "compatibility": "unavailable",
+      "compatibility": "unverified",
       "limitations": [
         "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256，尚未核验镜像布局或执行兼容性。",
-        "浏览器加载时计算实际摘要并检查芯片、容量、启动布局；不完整镜像会要求补齐启动文件。网络、麦克风、音频及云服务尚未保证可用。"
+        "浏览器加载时计算实际摘要并检查芯片、容量、启动布局；不完整镜像会要求补齐启动文件。网络、麦克风、音频及云服务尚未保证可用。",
+        "2026-11-26接入显示/输入协议子集，原厂镜像仍未执行验收；不能把客体诊断当整机固件兼容。"
       ],
       "sources": [
         {
@@ -1809,7 +1813,8 @@
         "status": "verification-required",
         "providerCode": "BURN_CAPTCHA_INVALID",
         "httpStatus": 400
-      }
+      },
+      "storage": "remote-links-only"
     },
     {
       "id": "m5stack-k131-v11-official-reference",
@@ -3313,9 +3318,11 @@
         }
       ],
       "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
+        "官方项目/教程参考；板级已接显示、按键和RTC子集，但没有经过本平台完整验证的该厂家固件镜像。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。",
+        "本轮仅通过源协议客体测试，未运行本完整厂家镜像；simulationVerified 仍为 false。"
+      ],
+      "storage": "remote-links-only"
     },
     {
       "id": "m5stack-k049-b-uiflow2-reference",
@@ -3340,9 +3347,11 @@
         }
       ],
       "limitations": [
-        "官方页面收录的项目/教程参考；尚无经本平台验证的可运行固件与板级模拟。",
-        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。"
-      ]
+        "官方项目/教程参考；板级已接显示、按键和RTC子集，但没有经过本平台完整验证的该厂家固件镜像。",
+        "未下载或镜像固件二进制；版本、分区与对应硬件兼容性待单独核验。",
+        "本轮仅通过源协议客体测试，未运行本完整厂家镜像；simulationVerified 仍为 false。"
+      ],
+      "storage": "remote-links-only"
     },
     {
       "id": "m5stack-c139-uiflow2-reference",
@@ -6620,7 +6629,8 @@
       ],
       "limitations": [
         "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256。浏览器加载时计算实际摘要，尚未核验镜像布局或运行兼容性。",
-        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。"
+        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。",
+        "本轮仅通过源协议客体测试，未运行本完整厂家镜像；simulationVerified 仍为 false。 当前执行板仅支持 D67，镜像是否针对旧 M09 尚未确认。"
       ],
       "revision": "v1.15.5",
       "simulationVerified": false,
@@ -6753,7 +6763,8 @@
       ],
       "limitations": [
         "官方 M5Burner 固定项目、设备与版本地址；发布方未提供 SHA-256。浏览器加载时计算实际摘要，尚未核验镜像布局或运行兼容性。",
-        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。"
+        "启动时仍须核对实际 hash、芯片、容量与镜像布局；来源版本更新不代表模拟器或实机兼容性通过。",
+        "本轮仅通过源协议客体测试，未运行本完整厂家镜像；simulationVerified 仍为 false。 当前执行板仅支持 D67，镜像是否针对旧 M09 尚未确认。"
       ],
       "revision": "v2.5.5",
       "simulationVerified": false,
@@ -31418,6 +31429,2022 @@
         "适配范围为精确SKU容量、GPIO/LEDC/RMT数字输出及已声明的BOOT输入；不据此宣称完整原厂应用通过。",
         "USB桥接/集线器、射频、模拟电压、电流、热特性与实机刷写未验收。RESET使用平台重启操作，不伪装成普通GPIO按键。",
         "排针、内存与天线选项分别建档；原四基础款的原BIN执行证据只属于原型号和原镜像，不向新增SKU继承。"
+      ]
+    },
+    {
+      "id": "m5stack-c149-official-reference",
+      "name": "NanoH2 官方程序资料",
+      "productIds": [
+        "m5stack-c149"
+      ],
+      "status": "reference",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/NanoH2",
+      "storage": "remote-links-only",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "limitations": [
+        "本轮官网仅确认Arduino教程入口，未找到版本固定的出厂完整镜像或精确UIFlow/小智映射。",
+        "当前NanoH2仅SRAM app-direct；不能把原厂Flash/ROM镜像标成可运行，也不以诊断程序代替出厂固件。"
+      ],
+      "sources": [
+        {
+          "url": "https://docs.m5stack.com/en/core/NanoH2",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/NanoH2",
+          "fetchedAt": "2026-11-26T06:02:45.333914Z",
+          "sha256": "f65dc4f26ecb253a14200fa1b0636a34a3552db524c62b7a66ec9c591f095738",
+          "bytes": 140700,
+          "mediaType": "text/html; charset=UTF-8",
+          "archiveName": "NanoH2.html",
+          "id": "official-docs-20261126",
+          "title": "NanoH2 official documentation (2026-11-26)",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k159-official-reference",
+      "name": "PaperDIY User Demo · v1.0",
+      "productIds": [
+        "m5stack-k159"
+      ],
+      "status": "trial",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/2110309776206622722/versions/2110309776210817025/download"
+      },
+      "version": "v1.0",
+      "watchlistId": "m5stack-k159-factory-m5burner-v1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/2110309776206622722",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "PaperDIY User Demo official project identity",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/2110309776206622722",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact product manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/core/PaperDIY_Assembly_Kit",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已核对新版官方 M5Burner 的项目、设备与公开固定版本身份；发布方未提供SHA-256，未虚构校验值。",
+        "本次仅读取元信息，未下载、检查或执行BIN；浏览器加载时仍须检查芯片、容量和布局。已接入同原理图paperdiy数字子集，本精确固件条目仍为未验证trial。"
+      ]
+    },
+    {
+      "id": "m5stack-k162-official-reference",
+      "name": "ToughC5 User Demo · v0.1",
+      "productIds": [
+        "m5stack-k162"
+      ],
+      "status": "trial",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/2108433529612562434/versions/2108433529616756738/download"
+      },
+      "version": "v0.1",
+      "watchlistId": "m5stack-k162-factory-m5burner-v1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/2108433529612562434",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "ToughC5 User Demo official project identity",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/2108433529612562434",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact product manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/core/ToughC5",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已核对新版官方 M5Burner 的项目、设备与公开固定版本身份；发布方未提供SHA-256，未虚构校验值。",
+        "本次仅读取元信息，未下载、检查或执行BIN；浏览器加载时仍须检查芯片、容量和布局。已有独立数字板型；HP-I2C/SPI客体诊断不证明厂家LP-I2C原厂固件或完整系统兼容。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p-se-official-reference",
+      "name": "StickC-Plus SE Factory Test · v0.2",
+      "productIds": [
+        "m5stack-k016-p-se"
+      ],
+      "status": "trial",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002756/versions/1897300000000006151/download"
+      },
+      "version": "v0.2",
+      "watchlistId": "m5stack-k016-p-se-factory-m5burner-v1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000002756",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "StickC-Plus SE Factory Test official project identity",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002756",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact product manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/core/StickC-Plus_SE",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已核对新版官方 M5Burner 的项目、设备与公开固定版本身份；发布方未提供SHA-256，未虚构校验值。",
+        "本次仅读取元信息，未下载、检查或执行BIN；浏览器加载时仍须检查芯片、容量和布局。该 SKU 尚无独立板型，模型预览不等于固件适配。"
+      ]
+    },
+    {
+      "id": "m5stack-c156-official-reference",
+      "name": "StackChan Core 官方固件资料入口",
+      "productIds": [
+        "m5stack-c156"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://docs.m5stack.com/en/core/StackChan_Core",
+      "sources": [
+        {
+          "title": "StackChan Core official product documentation",
+          "url": "https://docs.m5stack.com/en/core/StackChan_Core",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅为精确 SKU 的官方资料入口；未固定可启动镜像、布局和 SHA-256，不以通用或相似型号固件代替。",
+        "已接入CoreS3原理图对应的有限主机数字子集；此资料项仍缺精确可启动镜像，不能由模型或原创诊断程序推断出厂固件兼容。"
+      ]
+    },
+    {
+      "id": "m5stack-a172-official-reference",
+      "name": "Stamp-AddOn C6 For P4 官方固件资料入口",
+      "productIds": [
+        "m5stack-a172"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://docs.m5stack.com/en/stamp/Stamp-AddOn_C6_For_P4",
+      "sources": [
+        {
+          "title": "Stamp-AddOn C6 For P4 official product documentation",
+          "url": "https://docs.m5stack.com/en/stamp/Stamp-AddOn_C6_For_P4",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅为精确 SKU 的官方资料入口；未固定可启动镜像、布局和 SHA-256，不以通用或相似型号固件代替。"
+      ]
+    },
+    {
+      "id": "m5stack-k159-uiflow-official",
+      "name": "UIFlow2.0 PaperDIY · v2.5.5",
+      "productIds": [
+        "m5stack-k159"
+      ],
+      "status": "trial",
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/2110563172188712962/versions/2122949726909186050/download"
+      },
+      "version": "v2.5.5",
+      "watchlistId": "m5stack-k159-uiflow-m5burner-v1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/2110563172188712962",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "UIFlow2.0 PaperDIY official project identity",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/2110563172188712962",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact product manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/core/PaperDIY_Assembly_Kit",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已核对新版官方 M5Burner 的项目、设备与公开固定版本身份；发布方未提供SHA-256，未虚构校验值。",
+        "本次仅读取元信息，未下载、检查或执行BIN；浏览器加载时仍须检查芯片、容量和布局。已接入同原理图paperdiy数字子集，本精确固件条目仍为未验证trial。"
+      ]
+    },
+    {
+      "id": "m5stack-k162-uiflow-official",
+      "name": "UIFlow2.0 ToughC5 · v2.5.5",
+      "productIds": [
+        "m5stack-k162"
+      ],
+      "status": "trial",
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/2104414213652606978/versions/2122950150349340673/download"
+      },
+      "version": "v2.5.5",
+      "watchlistId": "m5stack-k162-uiflow-m5burner-v1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/2104414213652606978",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "UIFlow2.0 ToughC5 official project identity",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/2104414213652606978",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact product manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/core/ToughC5",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已核对新版官方 M5Burner 的项目、设备与公开固定版本身份；发布方未提供SHA-256，未虚构校验值。",
+        "本次仅读取元信息，未下载、检查或执行BIN；浏览器加载时仍须检查芯片、容量和布局。已有独立数字板型；HP-I2C/SPI客体诊断不证明厂家LP-I2C原厂固件或完整系统兼容。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p-se-uiflow-official",
+      "name": "UIFlow2.0 StickC Plus (SE) · v2.5.5",
+      "productIds": [
+        "m5stack-k016-p-se"
+      ],
+      "status": "trial",
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000003037/versions/2122950031046557698/download"
+      },
+      "version": "v2.5.5",
+      "watchlistId": "m5stack-k016-p-se-uiflow-m5burner-v1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000003037",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "UIFlow2.0 StickC Plus (SE) official project identity",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000003037",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact product manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/core/StickC-Plus_SE",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已核对新版官方 M5Burner 的项目、设备与公开固定版本身份；发布方未提供SHA-256，未虚构校验值。",
+        "本次仅读取元信息，未下载、检查或执行BIN；浏览器加载时仍须检查芯片、容量和布局。该 SKU 尚无独立板型，模型预览不等于固件适配。"
+      ]
+    },
+    {
+      "id": "m5stack-k002-official-reference",
+      "name": "GRAY · 官方出厂/恢复资料",
+      "productIds": [
+        "m5stack-k002"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Gray",
+      "watchlistId": "m5stack-k002-official-source-watch",
+      "sources": [
+        {
+          "title": "Exact-SKU official documentation / store",
+          "url": "https://docs.m5stack.com/en/core/Gray",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅有官方资料、恢复工具或源码入口；未固定可启动完整BIN，不继承家族型号的出厂身份或验证。",
+        "M5Burner公开目录仅提供Core Series/Paper类目；类目命中不足以证明精确SKU及版本。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-v26-official-reference",
+      "name": "Basic v2.6 · 官方出厂/恢复资料",
+      "productIds": [
+        "m5stack-k001-v26"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Basic_v2.6",
+      "watchlistId": "m5stack-k001-v26-official-source-watch",
+      "sources": [
+        {
+          "title": "Exact-SKU official documentation / store",
+          "url": "https://docs.m5stack.com/en/core/Basic_v2.6",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅有官方资料、恢复工具或源码入口；未固定可启动完整BIN，不继承家族型号的出厂身份或验证。",
+        "M5Burner公开目录仅提供Core Series/Paper类目；类目命中不足以证明精确SKU及版本。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-b-official-reference",
+      "name": "Basic COMM Edition · 官方开发资料",
+      "productIds": [
+        "m5stack-k001-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://shop.m5stack.com/products/m5stack-basic-core-esp32-iot-devkit-comm-edition.json",
+      "watchlistId": "m5stack-k001-b-official-source-watch",
+      "sources": [
+        {
+          "title": "Exact-SKU official documentation / store",
+          "url": "https://shop.m5stack.com/products/m5stack-basic-core-esp32-iot-devkit-comm-edition.json",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅有官方资料、恢复工具或源码入口；未固定可启动完整BIN，不继承家族型号的出厂身份或验证。",
+        "M5Burner公开目录仅提供Core Series/Paper类目；类目命中不足以证明精确SKU及版本。"
+      ]
+    },
+    {
+      "id": "m5stack-c001-cnc-official-reference",
+      "name": "Core Metal · 官方出厂/恢复资料",
+      "productIds": [
+        "m5stack-c001-cnc"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Core_Metal",
+      "watchlistId": "m5stack-c001-cnc-official-source-watch",
+      "sources": [
+        {
+          "title": "Exact-SKU official documentation / store",
+          "url": "https://docs.m5stack.com/en/core/Core_Metal",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅有官方资料、恢复工具或源码入口；未固定可启动完整BIN，不继承家族型号的出厂身份或验证。",
+        "M5Burner公开目录仅提供Core Series/Paper类目；类目命中不足以证明精确SKU及版本。"
+      ]
+    },
+    {
+      "id": "m5stack-k049-official-reference",
+      "name": "Paper (first generation) · 官方出厂/恢复资料",
+      "productIds": [
+        "m5stack-k049"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unavailable",
+      "publicationUrl": "https://docs.m5stack.com/en/core/Paper",
+      "watchlistId": "m5stack-k049-official-source-watch",
+      "sources": [
+        {
+          "title": "Exact-SKU official documentation / store",
+          "url": "https://docs.m5stack.com/en/core/Paper",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅有官方资料、恢复工具或源码入口；未固定可启动完整BIN，不继承家族型号的出厂身份或验证。",
+        "M5Burner公开目录仅提供Core Series/Paper类目；类目命中不足以证明精确SKU及版本。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-b-official-reference",
+      "name": "M5Stick 1.3 OLED 官方恢复/出厂程序资料",
+      "productIds": [
+        "m5stack-k016-b"
+      ],
+      "status": "reference",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/m5stick",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "limitations": [
+        "保留具体SKU官方资料；未找到本轮可直接使用且固定版本的完整BIN，不猜测下载地址或校验值。",
+        "旧Easyloader或教程、UIFlow/小智映射调查分别保留；不继承v2.7、StickC或StickT2的原厂身份与兼容结论。"
+      ],
+      "sources": [
+        {
+          "url": "https://shop.m5stack.com/products/stick.json",
+          "resolvedUrl": "https://shop.m5stack.com/products/stick.json",
+          "mediaType": "application/json; charset=utf-8",
+          "fetchedAt": "2026-11-26T06:17:54Z",
+          "sha256": "9a9c0fc563699db3e9fb99a446852085445bd2d861a21d7d166a55f8dec9d33d",
+          "bytes": 7899,
+          "archiveName": "k016-b-shop.json",
+          "id": "official-shop",
+          "title": "K016-B exact official shop product",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "url": "https://docs.m5stack.com/en/core/m5stick",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/M5Stick",
+          "mediaType": "text/html; charset=UTF-8",
+          "fetchedAt": "2026-11-26T06:18:28Z",
+          "sha256": "7414af735ab66d55ca73203bd3d36ffc6b308eb7643c93a87282e971af1b8009",
+          "bytes": 136002,
+          "archiveName": "k016-b-docs.html",
+          "id": "official-docs",
+          "title": "M5Stick 1.3 OLED exact documentation",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k016-t-official-reference",
+      "name": "M5StickT Lepton 3.0 官方程序与设备资料",
+      "productIds": [
+        "m5stack-k016-t"
+      ],
+      "status": "reference",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": null,
+      "publicationUrl": "https://shop.m5stack.com/products/m5-stickt-esp32-thermal-camera-development-kit-lepton-3-0",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "limitations": [
+        "保留具体SKU官方资料；未找到本轮可直接使用且固定版本的完整BIN，不猜测下载地址或校验值。",
+        "旧Easyloader或教程、UIFlow/小智映射调查分别保留；不继承v2.7、StickC或StickT2的原厂身份与兼容结论。"
+      ],
+      "sources": [
+        {
+          "url": "https://shop.m5stack.com/products/m5-stickt-esp32-thermal-camera-development-kit-lepton-3-0.json",
+          "resolvedUrl": "https://shop.m5stack.com/products/m5-stickt-esp32-thermal-camera-development-kit-lepton-3-0.json",
+          "mediaType": "application/json; charset=utf-8",
+          "fetchedAt": "2026-11-26T06:17:54Z",
+          "sha256": "17cc9abe88bc9b67524193bab9dd490c1ff9e16b9939ab44c14f9eb37774c325",
+          "bytes": 15168,
+          "archiveName": "k016-t-shop.json",
+          "id": "official-shop",
+          "title": "K016-T exact official shop product",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k022-official-reference",
+      "name": "M5GO Lite 官方程序与设备资料",
+      "productIds": [
+        "m5stack-k022"
+      ],
+      "status": "reference",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/M5GO-Lite",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "limitations": [
+        "保留具体SKU官方资料；未找到本轮可直接使用且固定版本的完整BIN，不猜测下载地址或校验值。",
+        "旧Easyloader或教程、UIFlow/小智映射调查分别保留；不继承v2.7、StickC或StickT2的原厂身份与兼容结论。"
+      ],
+      "sources": [
+        {
+          "url": "https://shop.m5stack.com/products/m5go-lite-iot-development-board-kit.json",
+          "resolvedUrl": "https://shop.m5stack.com/products/m5go-lite-iot-development-board-kit.json",
+          "mediaType": "application/json; charset=utf-8",
+          "fetchedAt": "2026-11-26T06:17:54Z",
+          "sha256": "43ae242ec58a4dc399ff69bf0f0d3f13b9268202b92b09b10e043d3a5e4103af",
+          "bytes": 8797,
+          "archiveName": "k022-shop.json",
+          "id": "official-shop",
+          "title": "K022 exact official shop product",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "url": "https://docs.m5stack.com/en/core/M5GO-Lite",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/M5GO-Lite",
+          "mediaType": "text/html; charset=UTF-8",
+          "fetchedAt": "2026-11-26T06:17:59Z",
+          "sha256": "c7fda829d3e5a937f22ccb26479793a4d6fee381ec5006835f8385aee245b685",
+          "bytes": 145393,
+          "archiveName": "k022-docs.html",
+          "id": "official-docs",
+          "title": "M5GO Lite exact documentation",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k006-official-reference",
+      "name": "M5GO IoT Starter Kit 官方程序与设备资料",
+      "productIds": [
+        "m5stack-k006"
+      ],
+      "status": "reference",
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/M5GO_IoT_Kit",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "limitations": [
+        "保留具体SKU官方资料；未找到本轮可直接使用且固定版本的完整BIN，不猜测下载地址或校验值。",
+        "旧Easyloader或教程、UIFlow/小智映射调查分别保留；不继承v2.7、StickC或StickT2的原厂身份与兼容结论。"
+      ],
+      "sources": [
+        {
+          "url": "https://shop.m5stack.com/products/m5go-iot-starter-kit-stem-education.json",
+          "resolvedUrl": "https://shop.m5stack.com/products/m5go-iot-starter-kit-stem-education.json",
+          "mediaType": "application/json; charset=utf-8",
+          "fetchedAt": "2026-11-26T06:17:54Z",
+          "sha256": "e24969e5c0caf9e8a7f72541e7f3820b4b1247e1963a678ac62f7024c150dc81",
+          "bytes": 15618,
+          "archiveName": "k006-shop.json",
+          "id": "official-shop",
+          "title": "K006 exact official shop product",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "url": "https://docs.m5stack.com/en/core/M5GO_IoT_Kit",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/M5GO_IoT_Kit",
+          "mediaType": "text/html; charset=UTF-8",
+          "fetchedAt": "2026-11-26T06:17:59Z",
+          "sha256": "b264740b054838ead53b13aa718ef8b79cad89672cc11165ef4264aff60a95cf",
+          "bytes": 149470,
+          "archiveName": "k006-docs.html",
+          "id": "official-docs",
+          "title": "M5GO IoT Starter Kit exact documentation",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k007-official-reference",
+      "name": "FIRE PSRAM 2.0 官方恢复/出厂程序资料",
+      "productIds": [
+        "m5stack-k007"
+      ],
+      "status": "reference",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/FIRE",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "limitations": [
+        "保留具体SKU官方资料；未找到本轮可直接使用且固定版本的完整BIN，不猜测下载地址或校验值。",
+        "旧Easyloader或教程、UIFlow/小智映射调查分别保留；不继承v2.7、StickC或StickT2的原厂身份与兼容结论。"
+      ],
+      "sources": [
+        {
+          "url": "https://shop.m5stack.com/products/fire-iot-development-kit.json",
+          "resolvedUrl": "https://shop.m5stack.com/products/fire-iot-development-kit.json",
+          "mediaType": "application/json; charset=utf-8",
+          "fetchedAt": "2026-11-26T06:18:01Z",
+          "sha256": "e1331daef73fcabeef12aa4aa11d71bd97fb26d5db789eb4ec8bf8c77729e63c",
+          "bytes": 19477,
+          "archiveName": "k007-shop.json",
+          "id": "official-shop",
+          "title": "K007 exact official shop product",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "url": "https://docs.m5stack.com/en/core/FIRE",
+          "resolvedUrl": "https://docs.m5stack.com/en/core/Fire",
+          "mediaType": "text/html; charset=UTF-8",
+          "fetchedAt": "2026-11-26T06:18:05Z",
+          "sha256": "ca2118900b611063a69a82ec11e14261489184d6ba102dc098841ea93f6d28e3",
+          "bytes": 151710,
+          "archiveName": "k007-docs.html",
+          "id": "official-docs",
+          "title": "FIRE PSRAM 2.0 exact documentation",
+          "kind": "official-product-document",
+          "status": "fetched",
+          "checkedAt": "2026-11-26"
+        }
+      ]
+    },
+    {
+      "id": "m5stack-k140-official-reference",
+      "name": "K140 出厂 ESP-NOW 控制协议资料",
+      "productIds": [
+        "m5stack-k140"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Official exact-SKU documentation",
+          "url": "https://docs.m5stack.com/en/iot/SwitchC6",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "本轮未找到可唯一对应本型号、固定版本且可启动的官方出厂镜像；此项仅资料入口。",
+        "不以通用 UIFlow/ESP-IDF、主机协议 SDK 或同芯片其他设备的镜像代替出厂固件。"
+      ]
+    },
+    {
+      "id": "m5stack-k117-official-reference",
+      "name": "K117 官方 Arduino / UIFlow 开发资料",
+      "productIds": [
+        "m5stack-k117"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Official exact-SKU documentation",
+          "url": "https://docs.m5stack.com/en/core/AtomU",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "本轮未找到可唯一对应本型号、固定版本且可启动的官方出厂镜像；此项仅资料入口。",
+        "不以通用 UIFlow/ESP-IDF、主机协议 SDK 或同芯片其他设备的镜像代替出厂固件。",
+        "AtomU 专属官方 UIFlow1/UIFlow2 固定发布资料已另列；这两项是开发固件，不用它们补造出厂身份。"
+      ],
+      "compatibility": "unverified"
+    },
+    {
+      "id": "m5stack-u195-official-reference",
+      "name": "U195 官方 Thread/Zigbee 开发资料",
+      "productIds": [
+        "m5stack-u195"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Official exact-SKU documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_Gateway_H2",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "本轮未找到可唯一对应本型号、固定版本且可启动的官方出厂镜像；此项仅资料入口。",
+        "不以通用 UIFlow/ESP-IDF、主机协议 SDK 或同芯片其他设备的镜像代替出厂固件。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p2-factory",
+      "name": "M5Stack M5StickCPlus2 UserDemo · V0.1",
+      "productIds": [
+        "m5stack-k016-p2"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000003115/versions/1897300000000006765/download"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "V0.1",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000003115",
+      "watchlistId": "m5stack-k016-p2-factory-watch",
+      "compatibility": "unavailable",
+      "sources": [
+        {
+          "title": "Official exact project",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000003115",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Published immutable version metadata",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000003115/versions?scope=PUBLIC",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "固定官方项目、精确设备与公开版本 ID；发布者未提供 SHA-256，本轮没有下载二进制或捏造校验值。",
+        "板级模型尚未实现，运行按钮保持隐藏；官方固件出厂身份不代表模拟兼容或实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p2-uiflow2",
+      "name": "M5Stack UIFlow2.0 StickC Plus2 · v2.5.5",
+      "productIds": [
+        "m5stack-k016-p2"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000742/versions/2122950056795389954/download"
+      },
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "v2.5.5",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000000742",
+      "watchlistId": "m5stack-k016-p2-uiflow2-watch",
+      "compatibility": "unavailable",
+      "sources": [
+        {
+          "title": "Official exact project",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000742",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Published immutable version metadata",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000742/versions?scope=PUBLIC",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "固定官方项目、精确设备与公开版本 ID；发布者未提供 SHA-256，本轮没有下载二进制或捏造校验值。",
+        "板级模型尚未实现，运行按钮保持隐藏；官方固件出厂身份不代表模拟兼容或实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p2-uiflow1",
+      "name": "M5Stack UIFlow_StickC_Plus2 · v1.15.5",
+      "productIds": [
+        "m5stack-k016-p2"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002738/versions/2117078204033896450/download"
+      },
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "v1.15.5",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000002738",
+      "watchlistId": "m5stack-k016-p2-uiflow1-watch",
+      "compatibility": "unavailable",
+      "sources": [
+        {
+          "title": "Official exact project",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002738",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Published immutable version metadata",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000002738/versions?scope=PUBLIC",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "固定官方项目、精确设备与公开版本 ID；发布者未提供 SHA-256，本轮没有下载二进制或捏造校验值。",
+        "板级模型尚未实现，运行按钮保持隐藏；官方固件出厂身份不代表模拟兼容或实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k126-factory",
+      "name": "M5Stack M5StickC-Plus-TLite-FW · 0.0.13",
+      "productIds": [
+        "m5stack-k126"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000877/versions/1897300000000001934/download"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "0.0.13",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000000877",
+      "watchlistId": "m5stack-k126-factory-watch",
+      "compatibility": "unavailable",
+      "sources": [
+        {
+          "title": "Official exact project",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000877",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Published immutable version metadata",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000877/versions?scope=PUBLIC",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "固定官方项目、精确设备与公开版本 ID；发布者未提供 SHA-256，本轮没有下载二进制或捏造校验值。",
+        "板级模型尚未实现，运行按钮保持隐藏；官方固件出厂身份不代表模拟兼容或实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-u215-official-reference",
+      "name": "Unit CardKB2 官方出厂/内部固件资料入口",
+      "productIds": [
+        "m5stack-u215"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://github.com/m5stack/M5Unit-CardKB2-UserDemo",
+      "sources": [
+        {
+          "title": "Unit CardKB2 official documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_CardKB2",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅为官方精确型号资料入口，固定镜像版本/布局/hash尚未完整接受；未下载或执行BIN。",
+        "本SKU的独立42键GPIO矩阵及RGB数字子集已实现；HID、I2C从机、键码UART和无线应用及原厂镜像/实机兼容仍未知。"
+      ]
+    },
+    {
+      "id": "m5stack-u213-official-reference",
+      "name": "Unit PoE-P4 User Demo · v1.0.0",
+      "productIds": [
+        "m5stack-u213"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000475/versions/1897300000000000820/download"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "watchlistId": "m5stack-u213-factory-m5burner-v1",
+      "version": "v1.0.0",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000000475",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "compatibility": "unverified",
+      "storage": "remote-links-only",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "Exact UnitPoEP4 official project",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000475",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact U213 official documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_PoE-P4",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "新版M5Burner官方项目、设备和公开版本身份已核对；发布方未提供hash，不虚构SHA-256。",
+        "仅读取版本元信息，没有下载/检查/执行BIN；已有独立P4/EMAC板型，可试运行；尚未核验该官方BIN的启动与Web应用。"
+      ]
+    },
+    {
+      "id": "m5stack-m141-official-reference",
+      "name": "Module Gateway H2 官方开发固件资料入口",
+      "productIds": [
+        "m5stack-m141"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://docs.m5stack.com/en/module/Module_Gateway_H2",
+      "sources": [
+        {
+          "title": "Module Gateway H2 official documentation",
+          "url": "https://docs.m5stack.com/en/module/Module_Gateway_H2",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅为官方精确型号资料入口，固定镜像版本/布局/hash尚未完整接受；未下载或执行BIN。",
+        "本SKU的独立SRAM/UART路径已实现；ROM/Flash-cache、SPI从机、动态拨码电气、无线应用及原厂镜像/实机兼容仍未知。"
+      ]
+    },
+    {
+      "id": "m5stack-u017-official-reference",
+      "name": "M5Camera 官方出厂/内部固件资料入口",
+      "productIds": [
+        "m5stack-u017"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/M5Camera",
+      "sources": [
+        {
+          "title": "M5Camera official documentation",
+          "url": "https://docs.m5stack.com/en/unit/M5Camera",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅为官方精确型号资料入口，固定镜像版本/布局/hash尚未完整接受；未下载或执行BIN。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u109-official-reference",
+      "name": "Unit CAM 官方出厂/内部固件资料入口",
+      "productIds": [
+        "m5stack-u109"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/Unit_CAM",
+      "sources": [
+        {
+          "title": "Unit CAM official documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_CAM",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅为官方精确型号资料入口，固定镜像版本/布局/hash尚未完整接受；未下载或执行BIN。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u213-uiflow-official",
+      "name": "UIFlow2.0 Unit PoE P4 · v2.5.5",
+      "productIds": [
+        "m5stack-u213"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001729/versions/2122949913895452673/download"
+      },
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "watchlistId": "m5stack-u213-uiflow-m5burner-v1",
+      "version": "v2.5.5",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000001729",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "compatibility": "unverified",
+      "storage": "remote-links-only",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "Exact UnitPoEP4 official project",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001729",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact U213 official documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_PoE-P4",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "新版M5Burner官方项目、设备和公开版本身份已核对；发布方未提供hash，不虚构SHA-256。",
+        "仅读取版本元信息，没有下载/检查/执行BIN；U213独立板型尚未实现，运行入口保持关闭。"
+      ]
+    },
+    {
+      "id": "m5stack-k007-v26-factory-reference",
+      "name": "M5Stack FIRE v2.6 · K007-V26 · 出厂资料入口",
+      "publisher": "M5Stack",
+      "publisherGroup": "official",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k007-v26"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/Fire_v2.6",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "ExactSKU official product/factory resources",
+          "url": "https://docs.m5stack.com/en/core/Fire_v2.6",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅保留该SKU官网明确描述的出厂程序/恢复资料入口；未把EXE、DMG或源码页面伪装成可启动BIN。",
+        "未下载固件二进制；未找到经本轮核对的本型号固定BIN+完整布局，不能宣称模拟兼容或实机验证。"
+      ],
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-k049-c-factory-reference",
+      "name": "M5Stack Paper COMM Edition · K049-C · 出厂资料入口",
+      "publisher": "M5Stack",
+      "publisherGroup": "official",
+      "role": "factory",
+      "productIds": [
+        "m5stack-k049-c"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/core/Paper_Comm_Edition",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "ExactSKU official product/factory resources",
+          "url": "https://docs.m5stack.com/en/core/Paper_Comm_Edition",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅保留该SKU官网明确描述的出厂程序/恢复资料入口；未把EXE、DMG或源码页面伪装成可启动BIN。",
+        "未下载固件二进制；未找到经本轮核对的本型号固定BIN+完整布局，不能宣称模拟兼容或实机验证。"
+      ],
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-u017-pcba-factory-reference",
+      "name": "M5Stack ESP32-CAM PSRAM Fisheye · U017-PCBA · 出厂资料入口",
+      "publisher": "M5Stack",
+      "publisherGroup": "official",
+      "role": "factory",
+      "productIds": [
+        "m5stack-u017-pcba"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/unit/ESP32-CAM_PSRAM",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "ExactSKU official product/factory resources",
+          "url": "https://docs.m5stack.com/en/unit/ESP32-CAM_PSRAM",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅保留该SKU官网明确描述的出厂程序/恢复资料入口；未把EXE、DMG或源码页面伪装成可启动BIN。",
+        "未下载固件二进制；未找到经本轮核对的本型号固定BIN+完整布局，不能宣称模拟兼容或实机验证。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ],
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-u038-official-factory",
+      "name": "M5Camera-X 原厂 Wi-Fi AP · 7be1a131",
+      "publisher": "M5Stack",
+      "publisherGroup": "official",
+      "role": "factory",
+      "productIds": [
+        "m5stack-u038"
+      ],
+      "status": "trial",
+      "source": {
+        "manifestUrl": "./firmware/m5stack-u038-official.json",
+        "sha256": "ccb7504eee24022466296f566561df3309276171ae281df86e19d80d600713d3"
+      },
+      "publicationUrl": "https://github.com/m5stack/M5Stack-Camera/tree/7be1a13123ef8bb35143eb0b71542b64a3c6e4fb/wifi/wifi_ap/firmware/M5CameraX",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "ExactSKU official product/factory resources",
+          "url": "https://docs.m5stack.com/en/unit/M5Camera-X",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Pinned exactM5CameraX flash layout",
+          "url": "https://raw.githubusercontent.com/m5stack/M5Stack-Camera/7be1a13123ef8bb35143eb0b71542b64a3c6e4fb/wifi/wifi_ap/firmware/M5CameraX/flash.sh",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "完整3段原厂M5CameraX目录与flash.sh偏移已核对；原厂未提供SHA256，远程各段由浏览器下载后校验芯片/布局并计算实际摘要。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ],
+      "version": "7be1a13123ef8bb35143eb0b71542b64a3c6e4fb",
+      "revision": "7be1a13123ef",
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-u082-f-factory-reference",
+      "name": "M5Stack TimerCamera-F · U082-F · 出厂资料入口",
+      "publisher": "M5Stack",
+      "publisherGroup": "official",
+      "role": "factory",
+      "productIds": [
+        "m5stack-u082-f"
+      ],
+      "status": "reference",
+      "source": null,
+      "publicationUrl": "https://docs.m5stack.com/en/unit/TimerCamera-F",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "ExactSKU official product/factory resources",
+          "url": "https://docs.m5stack.com/en/unit/TimerCamera-F",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "仅保留该SKU官网明确描述的出厂程序/恢复资料入口；未把EXE、DMG或源码页面伪装成可启动BIN。",
+        "未下载固件二进制；未找到经本轮核对的本型号固定BIN+完整布局，不能宣称模拟兼容或实机验证。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ],
+      "storage": "remote-links-only"
+    },
+    {
+      "id": "m5stack-u121-factory-reference",
+      "name": "M5Stack Unit PoE CAM · U121 官方出厂/恢复资料",
+      "productIds": [
+        "m5stack-u121"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/poe_cam",
+      "sources": [
+        {
+          "title": "M5Stack Unit PoE CAM · U121 official hardware documentation",
+          "url": "https://docs.m5stack.com/en/unit/poe_cam",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact SKU store listing",
+          "url": "https://shop.m5stack.com/products/m5stack-poe-camera-w-o-wi-fi-ov2640.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已确认该 SKU 的出厂/恢复说明或精确源码入口；本条目未固定完整 merged 镜像、版本与 SHA-256。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u121-b-factory-reference",
+      "name": "M5Stack Unit PoE CAM-W · U121-B 官方出厂/恢复资料",
+      "productIds": [
+        "m5stack-u121-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/products/sku/U121-B",
+      "sources": [
+        {
+          "title": "M5Stack Unit PoE CAM-W · U121-B official hardware documentation",
+          "url": "https://docs.m5stack.com/en/products/sku/U121-B",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact SKU store listing",
+          "url": "https://shop.m5stack.com/products/m5stack-poe-camera-with-wi-fi-ov2640.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已确认该 SKU 的出厂/恢复说明或精确源码入口；本条目未固定完整 merged 镜像、版本与 SHA-256。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u121-b-v11-factory-reference",
+      "name": "M5Stack Unit PoE CAM-W v1.1 · U121-B-V11 官方出厂/恢复资料",
+      "productIds": [
+        "m5stack-u121-b-v11"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/Unit_PoE_CAM-W_v1.1",
+      "sources": [
+        {
+          "title": "M5Stack Unit PoE CAM-W v1.1 · U121-B-V11 official hardware documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_PoE_CAM-W_v1.1",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact SKU store listing",
+          "url": "https://shop.m5stack.com/products/m5stack-poe-camera-with-wi-fi-ov3660.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已确认该 SKU 的出厂/恢复说明或精确源码入口；本条目未固定完整 merged 镜像、版本与 SHA-256。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u174-factory",
+      "name": "UnitCamS3 UserDemo · v0.4",
+      "productIds": [
+        "m5stack-u174"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000000528/versions/1897300000000000927/download"
+      },
+      "version": "v0.4",
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://github.com/m5stack/UnitCamS3-UserDemo",
+      "digestSource": "publisher-hash-unavailable",
+      "watchlistId": "m5stack-u174-factory-m5burner",
+      "sources": [
+        {
+          "title": "M5Stack Unit CamS3 · U174 official hardware documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_CamS3",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact SKU store listing",
+          "url": "https://shop.m5stack.com/products/unit-cams3-wi-fi-camera-ov2640.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "官方 UnitCamS3 UserDemo 项目及 PUBLIC/PUBLISHED v0.4 版本已固定；没有发布方 SHA-256，不虚构摘要或镜像布局验收。",
+        "本SKU独立SCCB/LCD_CAM/GDMA与SPI SD数字子集已有原始客体诊断；完整官方factory/SDK应用、Wi-Fi/PDM/UVC和实机仍未验收，simulationVerified保持false，不继承邻近传感器的兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u174-b-factory-reference",
+      "name": "M5Stack Unit CamS3-5MP · U174-B 官方出厂/恢复资料",
+      "productIds": [
+        "m5stack-u174-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://github.com/m5stack/UnitCamS3-UserDemo/tree/unitcams3-5mp",
+      "sources": [
+        {
+          "title": "M5Stack Unit CamS3-5MP · U174-B official hardware documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_CamS3-5MP",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact SKU store listing",
+          "url": "https://shop.m5stack.com/products/unit-cams3-wi-fi-camera-5mp.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已确认该 SKU 的出厂/恢复说明或精确源码入口；本条目未固定完整 merged 镜像、版本与 SHA-256。",
+        "本SKU独立SCCB/LCD_CAM/GDMA与SPI SD数字子集已有原始客体诊断；完整官方factory/SDK应用、Wi-Fi/PDM/UVC和实机仍未验收，simulationVerified保持false，不继承邻近传感器的兼容结论。"
+      ]
+    },
+    {
+      "id": "m5-poe-cameras-webcam-v220",
+      "name": "PoE CAM Web Camera · v2.2.0",
+      "productIds": [
+        "m5stack-u121",
+        "m5stack-u121-b",
+        "m5stack-u121-b-v11"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001678/versions/1897300000000003601/download"
+      },
+      "version": "v2.2.0",
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/guide/poecam/web_cam",
+      "watchlistId": "m5-poe-cameras-webcam-official",
+      "digestSource": "publisher-hash-unavailable",
+      "sources": [
+        {
+          "title": "Exact three-SKU official webcam guide",
+          "url": "https://docs.m5stack.com/en/guide/poecam/web_cam",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "官方指南明确列出 PoE CAM / PoE CAM-W / v1.1，且已固定 OFFICIAL 项目及公开 v2.2.0 版本身份。",
+        "未固定发布方 SHA-256、未下载 BIN 或核验布局；它作为官方应用而非擅自认定的逐 SKU 出厂镜像。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。",
+        "三款独立数字相机与W5500 MACRAW子集已有原始guest/Worker020验证；本官方WebCam应用、Wi-Fi和TCP/UDP硬件卸载未据此验收，simulationVerified保持false。"
+      ]
+    },
+    {
+      "id": "m5stack-u007-official-source-reference",
+      "name": "ESP32 Camera · 官方出厂/内部程序资料",
+      "productIds": [
+        "m5stack-u007"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "watchlistId": "m5stack-u007-official-source-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/ESP32-CAM",
+      "sources": [
+        {
+          "title": "Exact-SKU official factory/development page",
+          "url": "https://docs.m5stack.com/en/unit/ESP32-CAM",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "官方型号页面及其链接已调查；未固定完整可启动的本SKU镜像，不把主机例程、FishEye或相邻版次当出厂固件。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u082-official-source-reference",
+      "name": "TimerCamera · 官方出厂/内部程序资料",
+      "productIds": [
+        "m5stack-u082"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "watchlistId": "m5stack-u082-official-source-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/TimerCamera",
+      "sources": [
+        {
+          "title": "Exact-SKU official factory/development page",
+          "url": "https://docs.m5stack.com/en/unit/TimerCamera",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "官方型号页面及其链接已调查；未固定完整可启动的本SKU镜像，不把主机例程、FishEye或相邻版次当出厂固件。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u109-x-official-source-reference",
+      "name": "UnitCAM DIY Kit · 官方出厂/内部程序资料",
+      "productIds": [
+        "m5stack-u109-x"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "watchlistId": "m5stack-u109-x-official-source-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/Unit_Camera_DIY_Kit",
+      "sources": [
+        {
+          "title": "Exact-SKU official factory/development page",
+          "url": "https://docs.m5stack.com/en/unit/Unit_Camera_DIY_Kit",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "官方型号页面及其链接已调查；未固定完整可启动的本SKU镜像，不把主机例程、FishEye或相邻版次当出厂固件。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u133-official-source-reference",
+      "name": "Unit KMeter (ESP32-C3) · 官方出厂/内部程序资料",
+      "productIds": [
+        "m5stack-u133"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source-reference",
+      "watchlistId": "m5stack-u133-official-source-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/Unit_KMeter",
+      "sources": [
+        {
+          "title": "Exact-SKU official factory/development page",
+          "url": "https://docs.m5stack.com/en/unit/Unit_KMeter",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "官方型号页面及其链接已调查；未固定完整可启动的本SKU镜像，不把主机例程、FishEye或相邻版次当出厂固件。",
+        "本SKU独立C3/MAX31855 SPI数字子集已有原始客体诊断；I2C从机应用、温标校准、官方factory镜像与实机仍未验收，simulationVerified保持false。"
+      ]
+    },
+    {
+      "id": "m5stack-u082-x-official-factory-source",
+      "name": "U082-X 官方出厂程序源码",
+      "productIds": [
+        "m5stack-u082-x"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source@09c5a07a3630",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Exact-SKU manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/unit/TimerCamera-X",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Pinned official source repository",
+          "url": "https://github.com/m5stack/TimerCam-idf/tree/09c5a07a3630f7c9bf0cbf78d3bf81beadee9817",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "当前条目保留固定官方源码/资料。未提供经核验的完整启动镜像/Flash布局，source 保持为空，不虚构二进制URL或SHA-256。",
+        "型号板级运行尚未实现，不将主机控制例程、相邻型号或UIFlow教程作为本机兼容证明。",
+        "Exact product FactoryTest links archived TimerCam-idf. Its README successorM5_Camera_Examples has source examples only. The official EasyLoader_TimerCamera_AP.exe is a linked Windows container, not a verified boot-image layout. TimerCam public category also contains CamS3/PoE/UnitCam; no family identity inherited.",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u120-official-reference",
+      "name": "U120 官方内部固件资料",
+      "productIds": [
+        "m5stack-u120"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source@8c123afa3e9c",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Exact-SKU manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_LCD",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Pinned official source repository",
+          "url": "https://github.com/m5stack/M5Unit-LCD-Internal-FW/tree/8c123afa3e9cc7dec0cc1d56c3ce469ba750a9d7",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "当前条目保留固定官方源码/资料。未提供经核验的完整启动镜像/Flash布局，source 保持为空，不虚构二进制URL或SHA-256。",
+        "该型号数字板级路径已实现，原厂完整功能仍未验收，不将主机控制例程、相邻型号或UIFlow教程作为本机兼容证明。",
+        "官方内部固件库含 I²C 更新器 firmware.bin；未证实为完整冷启动镜像，也未把内部更新程序称作已核验的固定出厂版本。"
+      ],
+      "compatibility": "unverified"
+    },
+    {
+      "id": "m5stack-u139-official-reference",
+      "name": "U139 官方主机控制SDK资料",
+      "productIds": [
+        "m5stack-u139"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source@2996144a6d82",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Exact-SKU manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_ACSSR",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Pinned official source repository",
+          "url": "https://github.com/m5stack/M5Unit-ACSSR/tree/2996144a6d821f0274079cdb11607c650ad87195",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "当前条目保留固定官方源码/资料。未提供经核验的完整启动镜像/Flash布局，source 保持为空，不虚构二进制URL或SHA-256。",
+        "型号板级运行尚未实现，不将主机控制例程、相邻型号或UIFlow教程作为本机兼容证明。",
+        "页面链接 M5Unit-ACSSR 是外部主机 Arduino 控制库，不是内部 ESP32-C3 出厂固件；当前仅资料入口。"
+      ]
+    },
+    {
+      "id": "m5stack-u140-official-reference",
+      "name": "U140 官方主机控制SDK资料",
+      "productIds": [
+        "m5stack-u140"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source@2996144a6d82",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Exact-SKU manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_DCSSR",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Pinned official source repository",
+          "url": "https://github.com/m5stack/M5Unit-ACSSR/tree/2996144a6d821f0274079cdb11607c650ad87195",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "当前条目保留固定官方源码/资料。未提供经核验的完整启动镜像/Flash布局，source 保持为空，不虚构二进制URL或SHA-256。",
+        "型号板级运行尚未实现，不将主机控制例程、相邻型号或UIFlow教程作为本机兼容证明。",
+        "页面链接 M5Unit-ACSSR 是外部主机 Arduino 控制库，不是内部 ESP32-C3 出厂固件；当前仅资料入口。"
+      ]
+    },
+    {
+      "id": "m5stack-u149-official-factory-source",
+      "name": "U149 官方出厂程序源码",
+      "productIds": [
+        "m5stack-u149"
+      ],
+      "status": "trial",
+      "source": {
+        "url": "https://raw.githubusercontent.com/m5stack/M5Unit-Thermal2-Internal-FW/496530d6a913a9bb04e246b8f040a0cfc87207a9/release-fw/V0.7/U149-UNIT-THERMAL2-V0.7-20220916-0x0.bin",
+        "sha256": "ba1c95464cb8163f48aa12e9e807cfce5d3b32632dcde54b8859444448449c55"
+      },
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "V0.7 (2022-09-16)",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Exact-SKU manufacturer documentation",
+          "url": "https://docs.m5stack.com/en/unit/Unit_Thermal2",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Pinned official source repository",
+          "url": "https://github.com/m5stack/M5Unit-Thermal2-Internal-FW/tree/496530d6a913a9bb04e246b8f040a0cfc87207a9",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "已下载到临时验证目录并核验 SHA-256、ESP32 镜像头和完整启动布局：boot0x1000、分区表0x8000、app0x10000；仓库只保存远端引用。",
+        "当前为未验证试运行，尚未执行官方 V0.7；内部 MLX90640 ADC/EEPROM 是公开的合成模型，外部 I²C 从机和完整蜂鸣器声音尚未实现。",
+        "不得将独立客体协议测试或官方来源身份当作本固件通过或实机兼容。"
+      ],
+      "compatibility": "unverified"
+    },
+    {
+      "id": "m5stack-k117-uiflow2-reference",
+      "name": "M5Stack UIFlow2.0 AtomU · v0.1（官方版本资料）",
+      "productIds": [
+        "m5stack-k117"
+      ],
+      "role": "alternative",
+      "status": "reference",
+      "source": null,
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "v0.1",
+      "publicationUrl": "https://burner.m5stack.com/firmware/2099000000000000001",
+      "watchlistId": "m5stack-k117-uiflow2-official-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Official exact AtomU project and description",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000001",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Public/published immutable release metadata",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/2099000000000000001/versions?scope=PUBLIC",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "项目名与官方说明明确 AtomU；ATOM_SERIES 只是共用设备分类，不据此授权 Lite/Matrix/Echo 等其他型号。",
+        "仅固定发布元数据资料，未下载/镜像BIN，未核对镜像头、分区、容量或SHA-256；source 保持为空。",
+        "本该型号数字板级路径已实现，原厂完整功能仍未验收；不宣称模拟兼容、实机验证或出厂固件身份。",
+        "发布版本字段为 v0.1，二进制文件名 m5stack__build-M5STACK_AtomU__uiflow-15757147-esp32-4mb-atomu-v2.5.4-20261030.bin；二者分别保留，不能把文件名的构建版本替代发布版本。"
+      ],
+      "compatibility": "unverified"
+    },
+    {
+      "id": "m5stack-k117-uiflow1-reference",
+      "name": "M5Stack UIFlow_AtomU · v1.15.5（官方版本资料）",
+      "productIds": [
+        "m5stack-k117"
+      ],
+      "role": "alternative",
+      "status": "reference",
+      "source": null,
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "v1.15.5",
+      "publicationUrl": "https://burner.m5stack.com/firmware/1897200000000001759",
+      "watchlistId": "m5stack-k117-uiflow1-official-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "sources": [
+        {
+          "title": "Official exact AtomU project and description",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001759",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Public/published immutable release metadata",
+          "url": "https://burner.m5stack.com/api/v1/firmwares/1897200000000001759/versions?scope=PUBLIC",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "项目名与官方说明明确 AtomU；ATOM_SERIES 只是共用设备分类，不据此授权 Lite/Matrix/Echo 等其他型号。",
+        "仅固定发布元数据资料，未下载/镜像BIN，未核对镜像头、分区、容量或SHA-256；source 保持为空。",
+        "本该型号数字板级路径已实现，原厂完整功能仍未验收；不宣称模拟兼容、实机验证或出厂固件身份。",
+        "发布版本字段为 v1.15.5，二进制文件名 UIFlow-atom-v1.15.5-lite-0x0.bin；二者分别保留，不能把文件名的构建版本替代发布版本。"
+      ],
+      "compatibility": "unverified"
+    },
+    {
+      "id": "m5stack-u138-official-source-reference",
+      "name": "M5Stack Unit PoESP32 · U138 官方固件/源码资料",
+      "productIds": [
+        "m5stack-u138"
+      ],
+      "status": "reference",
+      "source": null,
+      "version": "source-reference",
+      "role": "factory",
+      "publisher": "M5Stack / Espressif",
+      "publisherGroup": "官方",
+      "watchlistId": "m5stack-u138-factory-reference-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://github.com/espressif/esp-at/tree/bf71c6fb4d718bbb5ad6eb672b98619fed32484e",
+      "sources": [
+        {
+          "title": "Exact U138 official hardware page",
+          "url": "https://docs.m5stack.com/en/products/sku/U138",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact U138 store listing",
+          "url": "https://shop.m5stack.com/products/esp32-ethernet-unit-with-poe.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "精确型号资料与官方源码入口已调查；未下载固件、未固定完整可启动布局与发布方SHA-256。",
+        "已完成独立 IP101G/RMII 客体 MDIO/MAC/DMA/VirtualNet/原始 relay 测试；不能把这项测试当作 ESP-AT 原厂应用验收或实机兼容。",
+        "ESP-AT是官网明确预载程序，但通用上游版本不是U138已配置/已验收恢复镜像。"
+      ]
+    },
+    {
+      "id": "m5stack-u037-official-source-reference",
+      "name": "M5Stack M5Camera-F · U037（160°文档版） 官方固件/源码资料",
+      "productIds": [
+        "m5stack-u037"
+      ],
+      "status": "reference",
+      "source": null,
+      "version": "source-reference",
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "watchlistId": "m5stack-u037-factory-reference-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://github.com/m5stack/M5Stack-Camera/tree/7be1a13123ef8bb35143eb0b71542b64a3c6e4fb/wifi/wifi_ap/firmware/M5CameraF",
+      "sources": [
+        {
+          "title": "Exact U037 official hardware page",
+          "url": "https://docs.m5stack.com/en/unit/m5camera_f",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact U037 store listing",
+          "url": "https://shop.m5stack.com/products/fish-eye-camera-module-ov2640.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "精确型号资料与官方源码入口已调查；未下载固件、未固定完整可启动布局与发布方SHA-256。",
+        "M5CameraF目录确有bootloader/partitions/camera分片；原版160°/New150°恢复身份与布局未核验，EasyLoader.exe不是浏览器可运行BIN。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
+      ]
+    },
+    {
+      "id": "m5stack-k115-official-source-reference",
+      "name": "M5Stack Atom-PSRAM LCD Display Driver Kit · K115 官方固件/源码资料",
+      "productIds": [
+        "m5stack-k115"
+      ],
+      "status": "reference",
+      "source": null,
+      "version": "source-reference",
+      "role": "project",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "watchlistId": "m5stack-k115-factory-reference-watch",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "compatibility": "unverified",
+      "publicationUrl": "https://github.com/m5stack/M5GFX/blob/28d47949bdc84f30881623476f555398e2194313/src/M5AtomDisplay.h",
+      "sources": [
+        {
+          "title": "Exact K115 official hardware page",
+          "url": "https://docs.m5stack.com/en/products/sku/K115",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact K115 store listing",
+          "url": "https://shop.m5stack.com/products/m5stack-atom-psram-lcd-display-driver-kit.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "精确型号资料与官方源码入口已调查；未下载固件、未固定完整可启动布局与发布方SHA-256。",
+        "已实现该SKU数字路径，未验收原厂完整功能，不借用同芯片、邻近相机/Atom Lite/PoE-P4的验证。",
+        "M5GFX是官方开发入口，尚未找到该套件精确出厂镜像；不把库或Atom Lite固件标成出厂程序。"
+      ]
+    },
+    {
+      "id": "m5stack-k014-b-official-reference",
+      "name": "K014-B BALA 官方程序/出厂身份调查资料",
+      "productIds": [
+        "m5stack-k014-b"
+      ],
+      "status": "reference",
+      "source": null,
+      "role": "alternative",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "version": "source@67e66e484faf",
+      "storage": "remote-links-only",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "sources": [
+        {
+          "title": "Exact K014-B shop; preloaded application claim",
+          "url": "https://shop.m5stack.com/products/bala-esp32-development-mini-self-balancing-car.json",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Pinned official family M5Bala source",
+          "url": "https://github.com/m5stack/M5Bala/tree/67e66e484fafc6ff26e4637ee817dfbb79c53f2b",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "精确SKU页面确认预装平衡程序，但本轮未找到可唯一识别K014-B的固定出厂镜像/版本。",
+        "官方family源码含Default_firmware并引用MPU6050，而商品表保留BMM150+(MPU6886/SH200Q)；不据此宣称精确SKU固件兼容。",
+        "Releases API返回空；源码树无BIN/ZIP。Burner BALA查询仅见另一款BalaC-Plus官方条目，不用于K014-B。",
+        "不下载或镜像二进制，不继承K007/K007-V26/V27固件目标、内存、屏幕或运行结论。"
+      ]
+    },
+    {
+      "id": "m5stack-u109-b-factory-reference",
+      "name": "M5Stack Unit Camera U109-B 官方出厂图传资料",
+      "productIds": [
+        "m5stack-u109-b"
+      ],
+      "role": "factory",
+      "publisher": "M5Stack",
+      "publisherGroup": "官方",
+      "status": "reference",
+      "source": null,
+      "version": "source-reference",
+      "watchlistId": "m5stack-u109-b-factory-reference-watch",
+      "compatibility": "unverified",
+      "simulationVerified": false,
+      "hardwareValidated": false,
+      "storage": "remote-links-only",
+      "publicationUrl": "https://docs.m5stack.com/en/unit/Unit_Camera",
+      "sources": [
+        {
+          "title": "Unit Camera U109-B exact product document",
+          "url": "https://docs.m5stack.com/en/products/sku/U109-B",
+          "checkedAt": "2026-11-26"
+        },
+        {
+          "title": "Exact U109-B enclosure camera storefront",
+          "url": "https://shop.m5stack.com/products/unit-cam-wi-fi-camera-with-enclosure-ov2640.js",
+          "checkedAt": "2026-11-26"
+        }
+      ],
+      "limitations": [
+        "本SKU文档明确说明预装图传软件，因此保留factory资料身份；未固定完整BIN/布局/发布方SHA，不自动指定TimerCAM分类的同名条目。",
+        "文档链接的M5_Camera_Examples README指向TimerCAM/OV3660/8MBPSRAM/BM8563，不是本型号的已核验出厂镜像。",
+        "本SKU数字SCCB/原生I2S DMA已有定向客体测试；此官方镜像/资料仍未通过出厂应用启动与功能验收，simulationVerified保持false；不从相机传感器测试继承固件兼容结论。"
       ]
     }
   ]

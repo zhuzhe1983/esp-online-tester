@@ -6,6 +6,13 @@ import deviceTools from './en-device-tools.js';
 import cloudzao from './en-cloudzao.js';
 
 export default {
+  '以太网': 'Ethernet',
+  '以太网应用服务': 'Ethernet application service',
+  '虚拟网关': 'Virtual gateway',
+  '当前板型使用有线以太网，可连接云端中继或本地助手。': 'This board uses wired Ethernet. Connect a cloud relay or local helper.',
+  "侧面可编程按键 G37": "Programmable side button G37",
+  "USB-A 电源/串口编程": "USB-A power / serial programming",
+  "USB-C 电源/编程": "USB-C power / programming",
   "旋钮顺时针脉冲": "Knob clockwise pulse",
   "旋钮逆时针脉冲": "Knob counterclockwise pulse",
   "官方 ZIP 恢复包需要固定容器、BIN 校验值和精确相对路径。": "Official recovery ZIPs require pinned archive and BIN hashes and an exact relative entry path.",

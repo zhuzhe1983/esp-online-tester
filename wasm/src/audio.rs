@@ -100,7 +100,7 @@ pub unsafe extern "C" fn esp32sim_audio_output_streaming(e: *mut Emu, enabled: u
         crate::machine::MachineKind::S3(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
         crate::machine::MachineKind::C61(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
         crate::machine::MachineKind::S31(machine) => { machine.bus.flush_ticks(); machine.set_audio_streaming(enabled != 0); }
-        crate::machine::MachineKind::Esp32(machine) if machine.bus.board_ref().name() == "stickc-plus" => {
+        crate::machine::MachineKind::Esp32(machine) if matches!(machine.bus.board_ref().name(),"stickc-plus"|"stickc-plus-se"|"tlite") => {
             machine.set_audio_streaming(enabled != 0);
         }
         _ => return 1,
@@ -118,7 +118,7 @@ pub unsafe extern "C" fn esp32sim_audio_output_flush(e: *mut Emu) -> u32 {
         crate::machine::MachineKind::S3(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
         crate::machine::MachineKind::C61(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
         crate::machine::MachineKind::S31(machine) => { machine.bus.flush_ticks(); machine.flush_audio_output(); }
-        crate::machine::MachineKind::Esp32(machine) if machine.bus.board_ref().name() == "stickc-plus" => {
+        crate::machine::MachineKind::Esp32(machine) if matches!(machine.bus.board_ref().name(),"stickc-plus"|"stickc-plus-se"|"tlite") => {
             machine.flush_audio_output();
         }
         _ => return 1,

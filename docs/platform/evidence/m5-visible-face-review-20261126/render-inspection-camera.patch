@@ -1,0 +1,11 @@
+--- a/tools/render-m5-cpu-qa.py
++++ b/tools/render-m5-cpu-qa.py
+@@ -77,7 +77,7 @@
+    normal=np.frombuffer(raw,dtype='<f4',count=count*3,offset=m['normalOffset']).reshape(-1,3);mesh.polygons.foreach_set('use_smooth',np.ones(triangles,dtype=np.bool_));mesh.normals_split_custom_set(normal[indices].tolist())
+  data=bpy.data.cameras.new('QA camera');cam=bpy.data.objects.new('QA camera',data);bpy.context.collection.objects.link(cam);scene.camera=cam;data.type='ORTHO';target=Vector((0,0,0));corners=[Vector(((x-center[0])*scale,(y-center[1])*scale,(z-center[2])*scale)) for x in[lo[0],hi[0]] for y in[lo[1],hi[1]] for z in[lo[2],hi[2]]]
+  views=[]
+- for view,eye in [('front',Vector((0,0,3))),('back',Vector((0,0,-3))),('oblique',Vector((1.7,1.1,-3 if a.back_oblique else 3)))]:
++ for view,eye in [('front',Vector((0,0,3))),('back',Vector((0,0,-3))),('oblique',Vector((3,1,-1 if a.back_oblique else 1)))]:
+   right,up,forward=look(cam,eye,target);xs=[c.dot(right) for c in corners];ys=[c.dot(up) for c in corners];data.ortho_scale=max(max(xs)-min(xs),max(ys)-min(ys))*1.18
+   key=new_light('key',target-forward*2.5-right*1.6+up*2,140,3,target);fill=new_light('fill',target-forward*1.8+right*2-up*.2,60,3,target)
+   file=out/(identity+'-'+view+'.png');scene.render.filepath=str(file);bpy.ops.render.render(write_still=True);views.append({'view':view,'file':file.name,'sha256':digest(file),'cameraEye':list(eye),'orthoScale':data.ortho_scale});bpy.data.objects.remove(key,do_unlink=True);bpy.data.objects.remove(fill,do_unlink=True)

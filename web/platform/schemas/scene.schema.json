@@ -383,13 +383,13 @@
       "properties": {
         "background": {
           "type": "integer",
-          "minimum": 1,
-          "maximum": 16383
+          "minimum": 0,
+          "maximum": 32767
         },
         "hotspot": {
           "type": "integer",
-          "minimum": 1,
-          "maximum": 16383
+          "minimum": 0,
+          "maximum": 32767
         },
         "centerX": {
           "type": "integer",
@@ -537,11 +537,32 @@
   },
   "allOf": [
     {
-      "if": {"required": ["c5WifiDriverCompat"]},
+      "if": {
+        "required": [
+          "c5WifiDriverCompat"
+        ]
+      },
       "then": {
         "properties": {
-          "productId": {"enum": ["waveshare-esp32-c5-lcd-2-73", "waveshare-esp32-c5-lcd-2-73-en"]},
-          "firmware": {"not": {"type": "object", "required": ["bootMode"], "properties": {"bootMode": {"const": "app-direct"}}}}
+          "productId": {
+            "enum": [
+              "waveshare-esp32-c5-lcd-2-73",
+              "waveshare-esp32-c5-lcd-2-73-en"
+            ]
+          },
+          "firmware": {
+            "not": {
+              "type": "object",
+              "required": [
+                "bootMode"
+              ],
+              "properties": {
+                "bootMode": {
+                  "const": "app-direct"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -568,7 +589,76 @@
       "then": {
         "properties": {
           "productId": {
-            "const": "m5stack-k016-t2"
+            "enum": [
+              "m5stack-k016-t2",
+              "m5stack-u149",
+              "m5stack-k016-t",
+              "m5stack-k126"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "productId": {
+            "enum": [
+              "m5stack-k016-t2",
+              "m5stack-k016-t",
+              "m5stack-k126"
+            ]
+          }
+        },
+        "required": [
+          "productId"
+        ]
+      },
+      "then": {
+        "properties": {
+          "thermalEnvironment": {
+            "properties": {
+              "background": {
+                "minimum": 1,
+                "maximum": 16383
+              },
+              "hotspot": {
+                "minimum": 1,
+                "maximum": 16383
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "productId": {
+            "const": "m5stack-u149"
+          }
+        },
+        "required": [
+          "productId"
+        ]
+      },
+      "then": {
+        "properties": {
+          "thermalEnvironment": {
+            "properties": {
+              "centerX": {
+                "minimum": 0,
+                "maximum": 31
+              },
+              "centerY": {
+                "minimum": 0,
+                "maximum": 23
+              },
+              "radius": {
+                "minimum": 0,
+                "maximum": 32
+              }
+            }
           }
         }
       }

@@ -33,7 +33,8 @@
       "sourceComponent": 0,
       "name": "wake-button-shell",
       "color": "#e3e5df",
-      "role": "shell"
+      "role": "button",
+      "controlId": "wake"
     },
     {
       "sourceComponent": 3,
@@ -45,7 +46,7 @@
       "sourceComponent": 4,
       "name": "stamp-cover",
       "color": "#252b2b",
-      "role": "shell"
+      "role": "pcb"
     }
   ],
   "assemblyNotes": "Native assembled STL cluster rotated180degrees about Z and centered by rigid translation; no scale. This places USB/Grove on -Y and wake-button end on +Y, matching the exact product photographs.",
@@ -98,6 +99,31 @@
       24,
       40,
       16.2
+    ],
+    "buttons": [
+      {
+        "id": "boot",
+        "shape": "circle",
+        "sizeMm": [
+          2.8,
+          2.8
+        ],
+        "positionMm": [
+          3,
+          -4.5,
+          7.976
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "basis": "image-measurement",
+        "sourceIds": [
+          "product-photo-ab3ef831de"
+        ],
+        "notes": "Conservative 2.8mm circle over the visible Stamp-S3 G0 tongue, inside the native cover silhouette at x+3/y-4.5mm. Own front photograph shows this separate central dark press cap; official exact SKU download instructions identify Stamp G0. No whole cover/wake button mapping or visible geometry change; placement estimated +/-0.6mm and travel uncalibrated."
+      }
     ]
   },
   "derivedParts": [
@@ -116,9 +142,10 @@
           0,
           0,
           0
-        ]
+        ],
+        "labelSide": "back"
       },
-      "notes": "Only an enclosure-space placeholder, no inferred component placement; excluded from accuracy certification.",
+      "notes": "Hidden host-board envelope remains unverified. The native front Stamp cover is visible in the exact K129 photograph and is not an unknown board surface; only the reverse host-board marker is shown.",
       "sourceIds": []
     },
     {
@@ -200,7 +227,8 @@
     "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
     "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
     "Official photographs include unlabelled Stamp cover, separately fitted labelled module and accessories. No sibling label is substituted. USB/Grove external position is photo/CAD estimated; cable remains disabled without verified pin-order/mating evidence.",
-    "Manufacturer cover interior ribs are visible in native CAD; no speculative flip or invented populated StampPCB is applied. Source and camera pose differences remain visible in the comparison."
+    "Manufacturer cover interior ribs are visible in native CAD; no speculative flip or invented populated StampPCB is applied. Source and camera pose differences remain visible in the comparison.",
+    "The black Stamp cover is retained manufacturer CAD with its color category checked against the original K129 photo. It does not establish hidden circuitry or populated PCB geometry. UNKNOWN is retained on the reverse hidden host-board face; outer header contacts and full USB internal geometry are not reconstructed."
   ],
   "hardwareRevision": "unspecified",
   "catalog": {
@@ -215,14 +243,19 @@
     "controls": [
       {
         "id": "wake",
-        "name": "Wake button",
+        "name": "Wake (GPIO42)",
         "type": "button",
-        "pin": 42
+        "pin": 42,
+        "activeLow": true,
+        "defaultKeyCode": "KeyA"
       },
       {
         "id": "boot",
-        "name": "Stamp boot",
-        "type": "button"
+        "name": "Stamp boot (GPIO0)",
+        "type": "button",
+        "pin": 0,
+        "activeLow": true,
+        "defaultKeyCode": "KeyB"
       }
     ],
     "interfaces": [
@@ -286,7 +319,13 @@
         "external": true,
         "pins": []
       }
-    ]
+    ],
+    "runtime": {
+      "board": "capsule",
+      "flashMb": 8,
+      "psramMb": 0,
+      "status": "partial"
+    }
   },
   "reviewViews": {
     "front": {
@@ -328,5 +367,24 @@
         1
       ]
     }
+  },
+  "appearanceRebuild": {
+    "script": "tools/rebuild-m5-appearance.py",
+    "nativeGeometrySha256": "8b18019e5cd073e57cdb822829057dc611750757e7625e5ac69fc3ec5a802895",
+    "sourceIds": [
+      "product-photo-ab3ef831de"
+    ],
+    "sourceSha256": {
+      "product-photo-ab3ef831de": "97b61cdd4b5da896a0cd5bac6937b7b11fcc26cfa3780eaf323f7506c9f54cb1"
+    },
+    "nativePartAppearance": {
+      "stamp-cover": {
+        "role": "pcb",
+        "color": "#252b2b"
+      }
+    },
+    "scope": "Exact original K129 photograph establishes the native Stamp cover black color category. Front UNKNOWN bleed-through is removed; no sibling photograph, texture warp, new component solid, source triangle or assembly change. Opposite host-board face remains UNKNOWN.",
+    "uncertaintyMm": 0.7,
+    "photoIsIndependentGeometryEvidence": false
   }
 }

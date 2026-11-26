@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:34:53.718Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "9a8bae1b41b7c5394a6cee5d47d6a57baadbecb212c3f59a12e8490497a26da8",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "2563f4c49243ecd751eb45ae366eb723d562b236eaf7b1d89fd07111929435c1"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c16b8a5693733a55fd0e6313f0b726a882afcbfad87143155450b24dbee524a4"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ],
+  "productId": "m5stack-k124-b",
+  "product": {
+    "productId": "m5stack-k124-b",
+    "board": "station-bat",
+    "control": "button-a",
+    "outputKind": "pixel",
+    "flashMb": 16,
+    "psramMb": 0,
+    "classicMaskRom": true,
+    "explicitAppDirect": false,
+    "checks": [
+      "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+      "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+      "wrong-physical-SPI-MOSI-cannot-produce-panel-pixels"
+    ],
+    "limits": [
+      "可配置、分享和查看；尚未完成全部照片视角和可见连接器细节的1:1验收。",
+      "内部主板为UNKNOWN估算占位，不宣称真实PCB结构。",
+      "PSRAM容量在本次官方资料中未明确，未按0MB作硬件事实。",
+      "Station-specific partial runtime: real SPI LCD, GPIO37/38/39 and internal hardware I2C. INA3221/199, RS485, RGB, Grove power switching, analog battery/power, software I2C and official factory boot are unverified or unimplemented; physical power key is not a GPIO button."
+    ],
+    "passes": [
+      {
+        "stage": "cold-boot",
+        "initial": {
+          "width": 240,
+          "height": 135,
+          "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+          "firstPixel": [
+            255,
+            0,
+            0,
+            255
+          ]
+        },
+        "pressed": {
+          "pressed": true,
+          "guestTime": 0.06694466666666667,
+          "output": {
+            "width": 240,
+            "height": 135,
+            "rgbaSha256": "0c26a0ea9d8371c70daea9413c3a426713a4ff8d52c2728f6c172ca85ac78679",
+            "firstPixel": [
+              0,
+              255,
+              0,
+              255
+            ]
+          }
+        },
+        "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-bat READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+      },
+      {
+        "stage": "public-reset",
+        "initial": {
+          "width": 240,
+          "height": 135,
+          "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+          "firstPixel": [
+            255,
+            0,
+            0,
+            255
+          ]
+        },
+        "edges": [
+          {
+            "pressed": true,
+            "guestTime": 0.06696729166666666,
+            "output": {
+              "width": 240,
+              "height": 135,
+              "rgbaSha256": "0c26a0ea9d8371c70daea9413c3a426713a4ff8d52c2728f6c172ca85ac78679",
+              "firstPixel": [
+                0,
+                255,
+                0,
+                255
+              ]
+            }
+          },
+          {
+            "pressed": false,
+            "guestTime": 0.1162350125,
+            "output": {
+              "width": 240,
+              "height": 135,
+              "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+              "firstPixel": [
+                255,
+                0,
+                0,
+                255
+              ]
+            }
+          }
+        ],
+        "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-bat READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+      }
+    ],
+    "probeSha256": "f04728ae3aaaaf6f43e51a471099568eead81f1152530a2ec78c78588c28812a",
+    "negativeProbeSha256": "9c919a07905a6a9a28b2b3c26487380827667790e6e53c66cd76a93879ebdccd",
+    "negative": {
+      "initial": {
+        "width": 240,
+        "height": 135,
+        "rgbaSha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46",
+        "firstPixel": [
+          0,
+          0,
+          0,
+          255
+        ]
+      },
+      "edge": {
+        "pressed": true,
+        "guestTime": 0.06694666666666667,
+        "output": {
+          "width": 240,
+          "height": 135,
+          "rgbaSha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46",
+          "firstPixel": [
+            0,
+            0,
+            0,
+            255
+          ]
+        }
+      },
+      "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-bat READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+    },
+    "romSha256": {
+      "esp32_rev300_rom": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
+    },
+    "status": "passed"
+  },
+  "status": "passed",
+  "sourceCombinedReceiptSha256": "ceed7648a834b5581ebf79141658a6bd95b90a5b4bf1e81fd3866856388dea64"
+}

@@ -15,4 +15,7 @@ impl BoardModel for WaveshareH2{
  fn leds(&self)->Option<(&[[u8;3]],u64)>{Some((&self.rgb.leds,self.rgb.updates))}
  fn report(&self)->String{format!("[{}] trueESP32-H2 4MiB BOOT9 RGB8 rgb={:?} updates={}; SRAM/UART/GPIO/finiteRMT subset; ROM/flash-cache/interrupt-routing/USB/radio unimplemented; noWiFi/display/touch/TF",self.name(),self.rgb.leds,self.rgb.updates)}
 }
-pub fn make_board(name:&str)->Option<Board>{if matches!(name,"none"|"bare"){return Some(Box::new(esp_soc::NoBoard));}Variant::from_name(name).map(|v|Box::new(WaveshareH2::new(v))as Board)}
+pub fn make_board(name:&str)->Option<Board>{if matches!(name,"none"|"bare"){return Some(Box::new(esp_soc::NoBoard));}
+if matches!(name,"m5-unit-gateway-h2"|"m5stack-u195"){return Some(Box::new(crate::gateway::GatewayH2::new(true)));}
+if matches!(name,"m5-module-gateway-h2"|"m5stack-m141"){return Some(Box::new(crate::gateway::GatewayH2::new(false)));}
+if matches!(name,"nanoh2"|"m5stack-c149"){return Some(Box::new(crate::nanoh2::NanoH2::new()));}Variant::from_name(name).map(|v|Box::new(WaveshareH2::new(v))as Board)}

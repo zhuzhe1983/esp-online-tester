@@ -3,12 +3,12 @@
   "id": "m5stack-c149",
   "kind": "product",
   "catalogId": "m5stack-c149",
-  "title": "M5Stack NanoH2 · C149",
-  "summary": "基于ESP32-H2的微型Thread/Zigbee开发板，提供Grove、USB-C、用户按键、RGB与红外发射；本平台尚无H2执行模型。",
+  "title": "M5Stack NanoH2",
+  "summary": "ESP32-H2 微型开发板；独立 H2 SRAM/UART/GPIO/RMT 子集，G9按键、G10供电/G11 RGB及G4蓝灯。仅SRAM app-direct，尚不支持原厂ROM/Flash启动。",
   "summarySourceIds": [
-    "official-docs"
+    "official-docs-20261126"
   ],
-  "updatedAt": "2026-10-26T20:06:29Z",
+  "updatedAt": "2026-11-26T06:11:20Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -239,6 +239,23 @@
         "official-docs"
       ],
       "notes": "知识记录保留原文冲突，不把H2映射为C6模拟模型。"
+    },
+    {
+      "id": "nanoh2-pins",
+      "label": "Exact NanoH2 nets",
+      "value": {
+        "buttonGpio": 9,
+        "buttonActiveLow": true,
+        "rgbPowerGpio": 10,
+        "rgbDataGpio": 11,
+        "blueLedGpio": 4,
+        "irGpio": 3
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126"
+      ],
+      "group": "pinmap"
     }
   ],
   "revisions": [],
@@ -529,6 +546,19 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "url": "https://docs.m5stack.com/en/core/NanoH2",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/NanoH2",
+      "fetchedAt": "2026-11-26T06:02:45Z",
+      "sha256": "f65dc4f26ecb253a14200fa1b0636a34a3552db524c62b7a66ec9c591f095738",
+      "bytes": 140700,
+      "mediaType": "text/html; charset=UTF-8",
+      "archiveName": "NanoH2.html",
+      "id": "official-docs-20261126",
+      "title": "NanoH2 official documentation (2026-11-26)",
+      "kind": "official-product-document",
+      "status": "fetched"
     }
   ],
   "assets": [
@@ -667,6 +697,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "Current simulation subset: {\"cpu\": \"ESP32-H2\", \"bootModes\": [\"sram-app-direct\"], \"factoryFirmwareExecuted\": false, \"radioSimulated\": false}"
   ]
 }

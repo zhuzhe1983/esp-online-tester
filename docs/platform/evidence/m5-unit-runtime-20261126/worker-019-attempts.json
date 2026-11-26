@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "attempts": [
+    {
+      "attempt": 1,
+      "result": "failed-harness-assertion",
+      "detail": "Root first run observed [] on wrong AtomU RMT pin; no first device frame is correct. Harness incorrectly expected a fabricated black RGB ring."
+    },
+    {
+      "attempt": 2,
+      "result": "failed-harness-synchronization",
+      "receipt": "worker-019-harness-race.json",
+      "detail": "Before-reset guest UART reached BUTTON DOWN GREEN before the asynchronously published LED frame. No emulator change; await actual LED frame before assertion."
+    },
+    {
+      "attempt": 3,
+      "result": "passed",
+      "receipt": "worker-019.json",
+      "durationMs": 88273.646083,
+      "detail": "Four positive plus four wrong-route runs, four public reset checks. No firmware/board implementation changed."
+    }
+  ],
+  "receiptEnvironmentVariable": "M5_UNIT_WORKER_RECEIPT",
+  "receiptWritePolicy": "Writes passed or failed receipt in finally after runtime disposal; creates destination parent."
+}

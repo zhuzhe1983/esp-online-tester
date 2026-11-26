@@ -5,6 +5,11 @@ const integer = (value, max) => Number.isSafeInteger(value) && value >= 0 && val
 // Canonical decimal strings preserve all u64 values without Number rounding.
 const u64 = value => typeof value==='string' && /^(0|[1-9][0-9]{0,19})$/.test(value) && (value.length<20 || value<='18446744073709551615');
 export function parseHardwareDiagnostics(value) {
+  if(['m5-unit-gateway-h2','m5-module-gateway-h2'].includes(value?.board)) {
+    const s=value.state;if(value.schemaVersion!==1||!s||!u64(s.uartTxCount)||typeof s.uartTxTailHex!=='string'||!/^(?:[0-9a-f]{2}){0,64}$/.test(s.uartTxTailHex)||s.txGpio!==24||s.rxGpio!==23||s.baud!==115200||!Array.isArray(value.limits)||value.limits.length>8||!value.limits.every(v=>text(v,512)))return null;
+    return {schemaVersion:1,board:value.board,state:{uartTxCount:s.uartTxCount,uartTxTailHex:s.uartTxTailHex,txGpio:24,rxGpio:23,baud:115200},limits:[...value.limits]};
+  }
+
   if(value?.board==='waveshare-c5-lcd273') {
     const s=value.state,d=s?.display,sd=s?.sd,c=sd?.card;
     if(value.schemaVersion!==1||value.counterEncoding!=='u64-decimal'||!s||Array.isArray(s)||!d||Array.isArray(d)||!sd||Array.isArray(sd)||

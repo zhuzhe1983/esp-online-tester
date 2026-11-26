@@ -844,6 +844,7 @@ pub struct Peripherals {
     pub rsa: ClassicRsa,
     pub(crate) crypto_enabled: [bool; 3],
     pub wifi: crate::wifi::WifiMac,
+    pub emac: esp_periph::emac::Emac,
     pub analog: crate::wifi::Analog,
     pub fe: crate::wifi::FrontEnd,
     pub adc: ClassicAdc,
@@ -885,6 +886,9 @@ device_set! { Peripherals; clock: (clock) CPU_HZ, [(ClockDomain::RtcSlow, 1600)]
     0x66 "SYSCON" (syscon) => [];
     0x67 "I2C1" (i2c[1]) => [SRC_I2C1];
     0x6e "UART2" (uart[2]) => [SRC_UART2];
+    0x69 "EMAC_MAC" (emac) => [38];
+    0x6a "EMAC_DMA" alias (emac) delta 0x1000 => [];
+    0x6b "EMAC_EXT" alias (emac) delta 0x2000 => [];
 }
 
 impl DeviceSet for Peripherals {
@@ -946,6 +950,7 @@ impl Peripherals {
             rsa: ClassicRsa::new(),
             crypto_enabled: [false; 3],
             wifi: crate::wifi::WifiMac::default(),
+            emac: Default::default(),
             analog: crate::wifi::Analog::default(),
             fe: crate::wifi::FrontEnd::default(),
             adc: ClassicAdc::new(),
@@ -1064,6 +1069,7 @@ impl Peripherals {
         }
         // IDF v5.5.4 dport_reg.h:1064,1069: DPORT_CORE_RST_EN_REG bit 2 is DPORT_WIFIMAC_RST.
         if addr == 0x3ff0_00d0 && v & (1 << 2) != 0 { self.wifi.reset(); }
+        if addr == 0x3ff0_00d0 && v & (1 << 7) != 0 { self.emac.reset(); }
         if addr == 0x3ff0_00c4 && v & (1 << 11) != 0 {
             self.ledc = ClassicLedc::new();
         }

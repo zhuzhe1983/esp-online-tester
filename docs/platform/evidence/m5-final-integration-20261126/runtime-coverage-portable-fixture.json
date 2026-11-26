@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "4400608b2c7c9a063c11833f13cca1fd6442530f",
+  "generatorSha256": "100b7403c44387fff65236282429644efefe4b8563c41da60e78bc01d8cec8e8",
+  "testSha256": "76d7968f7946d97ca9557a94b2104f012b8a1ed4b9ccaf934895824c8d84f5fd",
+  "fixture": {
+    "path": "tools/fixtures/m5-runtime-coverage-historical-cohorts.json",
+    "bytes": 10464,
+    "sha256": "b9b410ebd3d11010735f308fc441f59dd9d56fe362d341bf78b9b6fe53303da0",
+    "historicalRevision": "fbe068e3174486f867d61c3a560dc2e81c44909b",
+    "fullCatalogSha256": "781707433fe677a83ae6a92b75fec76fd7c796d3dd050e89671080b0ca6b3b2c",
+    "subsetCanonicalSha256": "7d728cfe564786ebd97c887c83c9cb64eca16f03331a719398f3cbd5c01a3d69",
+    "records": 141,
+    "statusCounts": {
+      "partial": 101,
+      "unavailable": 40
+    },
+    "scope": "Derived historical id/status snapshot only; no firmware execution rerun."
+  },
+  "tests": {
+    "command": "M5_COVERAGE_SOURCE_ROOT=$SOURCE_ROOT M5_COVERAGE_REVISION=4400608b2c7c9a063c11833f13cca1fd6442530f M5_COVERAGE_VERIFY_HISTORICAL_SOURCE=1 M5_COVERAGE_REPORT=$IGNORED_OUTPUT/production-matrix.json.gz node --test tools/audit-m5-runtime-coverage.test.mjs",
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "checks": [
+      "Self-contained snapshot canonical identity and unique 141 id/status records.",
+      "Contribution-only extraction equals original full catalog hash and exact projected records.",
+      "Wrong optional artifact pin rejects before report creation.",
+      "Missing WASM rejects without an optional pin.",
+      "Actual default production artifact constructs 141 profiles with Git access to historical revision forbidden."
+    ]
+  },
+  "runtimePortability": {
+    "historicalGitWrapperControlExitCode": 77,
+    "historicalRequestsDuringActualAudit": 0,
+    "cohortSource": "fixed repository fixture",
+    "requiresHistoricalGitObject": false,
+    "sourceTree": "Only current --revision/HEAD committed-tree reads use Git. Original historical-object verification is contribution-only and explicitly opted in.",
+    "cohortLabelsIdenticalToPrior141Report": true
+  },
+  "constructorArtifact": {
+    "sha256": "2db0cec618a53063c309962c3e37c94fc2b839e8d0e6f338224e42f54ea15902",
+    "bytes": 9326209,
+    "path": "$SOURCE_ROOT/web/wasm/esp32sim.wasm",
+    "selection": "production-web/wasm",
+    "expectedSha256": null,
+    "firmwareLoaded": false,
+    "firmwareExecuted": false,
+    "helperModules": [
+      {
+        "path": "web/wasm/jit.mjs",
+        "sha256": "a759ae4a3d1ca6ddd91259ede39e34ebda45ff7ccb9c4ceeff0d1423f44ac294"
+      },
+      {
+        "path": "web/platform/app-image.js",
+        "sha256": "290df6e9fe999ae243c2f34241df0af09d335771b8f8d5d9dc615332d62130a9"
+      }
+    ]
+  },
+  "cohorts": {
+    "original101": 101,
+    "continuation40": 40
+  },
+  "construction": {
+    "constructed": 141
+  },
+  "temporaryFullReport": {
+    "gzipBytes": 155932,
+    "gzipSha256": "96fa605b7e8ad21cc1c9a34c2fba719b276a1bc82dd83a7e88a93a7558f9c80b",
+    "retention": "Ignored generated output; this small proof records the portability checks without replacing prior reports."
+  },
+  "retainedHistoricalReports": [
+    {
+      "path": "docs/platform/evidence/m5-final-integration-20261126/runtime-coverage-current.json",
+      "sha256": "2e4a006375770e6836fce8a27b725814e7b41e97ea3d73b8d4388a2d826b7869",
+      "bytes": 10461,
+      "unchanged": true
+    },
+    {
+      "path": "docs/platform/evidence/m5-final-integration-20261126/runtime-coverage-current.md",
+      "sha256": "8b012b2645d854ad35a3420a089d1e831723c24c5dde3d23857dc7a71ccebdfe",
+      "bytes": 3226,
+      "unchanged": true
+    },
+    {
+      "path": "docs/platform/evidence/m5-final-integration-20261126/runtime-coverage-current-header.json.gz",
+      "sha256": "16bc0255f14e90a4293b06fbbea4114e5bcf63eaef4bc94e73a50838eafb96cd",
+      "bytes": 23645,
+      "unchanged": true
+    },
+    {
+      "path": "docs/platform/evidence/m5-final-integration-20261126/runtime-coverage-current-original101-other-chips.json.gz",
+      "sha256": "b94b75a949afe65af5dfbd58e740f1830b673d4f2fe0416a367c49ef8adca08c",
+      "bytes": 35112,
+      "unchanged": true
+    },
+    {
+      "path": "docs/platform/evidence/m5-final-integration-20261126/runtime-coverage-current-original101-s3-no-psram.json.gz",
+      "sha256": "31b1a9996caba2da8d61b0e05233a41aaff036914964b6fd2a504778825285ed",
+      "bytes": 24256,
+      "unchanged": true
+    },
+    {
+      "path": "docs/platform/evidence/m5-final-integration-20261126/runtime-coverage-current-original101-s3-psram.json.gz",
+      "sha256": "699bcd3efd6490db72cd40e5e875356961faba9f78d6dbc276013db5046aa00d",
+      "bytes": 32372,
+      "unchanged": true
+    },
+    {
+      "path": "docs/platform/evidence/m5-final-integration-20261126/runtime-coverage-current-continuation40.json.gz",
+      "sha256": "b92fcf0d0172e92ad318c2b4becad02d3c0c8662bf940fe45701c5956b2d7bbf",
+      "bytes": 35024,
+      "unchanged": true
+    },
+    {
+      "path": "docs/platform/evidence/m5-runtime-coverage-final-20261126/matrix.json",
+      "sha256": "ef1ecf45dd9dc0fecef1d94f538629a5130ed03bcf91bb1500cb71e947254837",
+      "bytes": 961529,
+      "unchanged": true
+    }
+  ]
+}

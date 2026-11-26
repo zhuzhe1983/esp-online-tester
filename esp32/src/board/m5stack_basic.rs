@@ -19,6 +19,8 @@ const SD_MISO: u8 = 19;
 const BUTTONS: [(&str, u8); 3] = [("button-a", 39), ("button-b", 38), ("button-c", 37)];
 
 pub struct M5StackBasic {
+    bala: bool,
+    rgb: esp_soc::devices::Ws2812Chain,
     panel: DcsPanel,
     reset: bool,
     backlight: bool,
@@ -29,15 +31,16 @@ pub struct M5StackBasic {
 
 impl Default for M5StackBasic { fn default() -> Self { Self::new() } }
 impl M5StackBasic {
-    pub fn new() -> Self {
-        Self { panel: DcsPanel::new(WIDTH, HEIGHT), reset: false, backlight: false, pwm_backlight: None, display_changes: 0, sd: None }
+    pub fn new() -> Self { Self::with_bala(false) }
+    pub fn with_bala(bala:bool) -> Self {
+        Self { bala, rgb:esp_soc::devices::Ws2812Chain::new(10), panel: if bala{DcsPanel::new(240,320)}else{DcsPanel::new(WIDTH, HEIGHT)}, reset: false, backlight: false, pwm_backlight: None, display_changes: 0, sd: None }
     }
 
     fn lit(&self) -> bool { self.pwm_backlight.unwrap_or(self.backlight) }
 }
 
 impl BoardModel for M5StackBasic {
-    fn name(&self) -> &'static str { "m5stack-basic" }
+    fn name(&self) -> &'static str { if self.bala{"bala-fire-original"}else{"m5stack-basic"} }
 
     fn gpio_changes(&mut self, changes: &[(u8, bool)]) {
         for &(pin, high) in changes {
@@ -92,6 +95,9 @@ impl BoardModel for M5StackBasic {
         if self.lit() != previous { self.display_changes = self.display_changes.wrapping_add(1); }
     }
 
+    fn rmt_frame(&mut self,pin:u8,bits:&[bool]){if self.bala&&pin==15{self.rgb.from_bits(bits);}}
+    fn leds(&self)->Option<(&[[u8;3]],u64)>{self.bala.then_some((&self.rgb.leds,self.rgb.updates))}
+
     fn input_levels(&self) -> Vec<(u8, bool)> { BUTTONS.map(|(_, pin)| (pin, true)).to_vec() }
     fn named_pin(&self, name: &str) -> Option<u8> {
         BUTTONS.iter().find_map(|&(id, pin)| (id == name).then_some(pin))
@@ -99,7 +105,11 @@ impl BoardModel for M5StackBasic {
 
     fn display(&self) -> Option<(u32, u32, Vec<u16>, u64)> {
         let pixels = if !self.reset && self.lit() && self.panel.on && !self.panel.sleeping {
-            self.panel.gram.clone()
+            if self.bala {
+                let mut pixels=vec![0;WIDTH*HEIGHT];
+                for y in 0..HEIGHT{for x in 0..WIDTH{let p=self.panel.gram[x*240+y];pixels[y*WIDTH+x]=if self.panel.madctl&8!=0{p}else{(p&0x07e0)|((p&0xf800)>>11)|((p&31)<<11)};}}
+                pixels
+            }else{self.panel.gram.clone()}
         } else {
             vec![0; WIDTH * HEIGHT]
         };
@@ -109,10 +119,10 @@ impl BoardModel for M5StackBasic {
         self.panel.pixels_written.wrapping_add(self.panel.resets).wrapping_add(self.display_changes)
     }
     fn display_frames(&self) -> u64 { self.panel.frames }
-    fn gram(&self) -> Option<(Vec<u16>, usize, usize)> { Some((self.panel.gram.clone(), WIDTH, HEIGHT)) }
+    fn gram(&self) -> Option<(Vec<u16>, usize, usize)> { Some((self.panel.gram.clone(), self.panel.cols, self.panel.rows)) }
     fn report(&self) -> String {
-        let mut report = format!("[emu] m5stack-basic: {} RAMWR, {} pixels, madctl={:#04x}, colmod={:#04x}, inverted={}, sleep={}, on={}, backlight={}",
-                self.panel.frames, self.panel.pixels_written, self.panel.madctl, self.panel.colmod,
+        let mut report = format!("[emu] {}: {} RAMWR, {} pixels, madctl={:#04x}, colmod={:#04x}, inverted={}, sleep={}, on={}, backlight={}",
+                self.name(), self.panel.frames, self.panel.pixels_written, self.panel.madctl, self.panel.colmod,
                 self.panel.inverted, self.panel.sleeping, self.panel.on, self.lit());
         if let Some(sd) = &self.sd { report += &format!("; SD SPI {}", sd.report()); }
         report
@@ -196,4 +206,9 @@ mod tests {
         assert_eq!(board.spi_transfer_pins(3, card, &[], 2), [0xff, 0xff]);
         assert_eq!(board.panel.pixels_written, 0);
     }
+}
+
+#[cfg(test)]mod bala_tests {
+    use super::*;
+    #[test]fn original_fire_ili9341_geometry_capacity_and_ten_leds_are_distinct(){let mut b=M5StackBasic::with_bala(true);assert_eq!(b.name(),"bala-fire-original");assert_eq!((b.panel.cols,b.panel.rows),(240,320));assert_eq!(super::super::documented_memory_mib(b.name()),Some((16,4)));assert_eq!(b.named_pin("button-a"),Some(39));let bits:Vec<_>=[0x12u8,0x34,0x56].repeat(10).into_iter().flat_map(|v|(0..8).map(move|i|v&(0x80>>i)!=0)).collect();b.rmt_frame(27,&bits);assert_eq!(b.leds().unwrap().1,0);b.rmt_frame(15,&bits);assert_eq!(b.leds().unwrap().0,[[0x34,0x12,0x56];10]);}
 }

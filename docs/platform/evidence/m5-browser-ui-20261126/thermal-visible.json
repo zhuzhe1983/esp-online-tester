@@ -1,0 +1,72 @@
+{
+  "product": "m5stack-u149",
+  "guestSerial": "[emu] virtual AP 'esp32_online_tester' (WPA2-PSK), subnet 10.0.2.0/24, no NAT in the browser\n[emu] SoftAP: SoftAP client is unsupported on this chip\nets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5268\r\nentry 0x40081000\r\nTHERMAL SENSOR POLL\nTHERMAL RAW1000\nTHERMAL RAW4321\nTHERMAL RAW1234\n",
+  "bounds": [
+    {
+      "field": "background",
+      "max": "32767",
+      "min": "0",
+      "value": "1234"
+    },
+    {
+      "field": "hotspot",
+      "max": "32767",
+      "min": "0",
+      "value": "4321"
+    },
+    {
+      "field": "centerX",
+      "max": "31",
+      "min": "0",
+      "value": "31"
+    },
+    {
+      "field": "centerY",
+      "max": "23",
+      "min": "0",
+      "value": "23"
+    },
+    {
+      "field": "radius",
+      "max": "32",
+      "min": "0",
+      "value": "0"
+    }
+  ],
+  "resetSerial": "[emu] virtual AP 'esp32_online_tester' (WPA2-PSK), subnet 10.0.2.0/24, no NAT in the browser\n[emu] SoftAP: SoftAP client is unsupported on this chip\nets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5268\r\nentry 0x40081000\r\nTHERMAL SENSOR POLL\nTHERMAL RAW1000\nTHERMAL RAW4321\nTHERMAL RAW1234\n[emu] virtual AP 'esp32_online_tester' (WPA2-PSK), subnet 10.0.2.0/24, no NAT in the browser\n[emu] SoftAP: SoftAP client is unsupported on this chip\nets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5268\r\nentry 0x40081000\r\nTHERMAL SENSOR POLL\nTHERMAL RAW1000\n",
+  "resetFreshBootTail": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5268\r\nentry 0x40081000\r\nTHERMAL SENSOR POLL\nTHERMAL RAW1000\n",
+  "resetFields": [
+    {
+      "field": "background",
+      "value": "1000"
+    },
+    {
+      "field": "hotspot",
+      "value": "2000"
+    },
+    {
+      "field": "centerX",
+      "value": "16"
+    },
+    {
+      "field": "centerY",
+      "value": "12"
+    },
+    {
+      "field": "radius",
+      "value": "4"
+    }
+  ],
+  "negativeChecks": [
+    {
+      "kind": "wall-wait-too-short",
+      "limitMs": 30000,
+      "thenActualGuestRaw4321": true
+    },
+    {
+      "kind": "incorrect-test-assumption",
+      "expected": "UI console cleared on reset",
+      "actual": "Human console preserves prior history; fresh final mask-ROM boot reads RAW1000 and resets fields."
+    }
+  ]
+}

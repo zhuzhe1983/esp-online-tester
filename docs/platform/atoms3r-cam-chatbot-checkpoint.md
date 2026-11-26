@@ -1,5 +1,7 @@
 # K147-CAM 未完成检查点
 
+2026-11-26 更新：GC0308 配置/供电与 BMI270 子集已接入五款无屏 Atom 的独立板型，见 [当前范围](atoms3r-family-runtime-20261126.md)。本页以下保留历史检查点；视频采集及音频仍未完成。
+
 基线为 `68038e52`。当前目录仍为 unavailable，不算已交付适配；这是传感器配置阶段的代码。
 
 已实际抓取 K147-CAM / C126-CAM 官方产品页、主板与摄像头子板原理图、GC0308 datasheet、固定 esp32-camera v2.1.4 驱动和 IDF v5.5.1 GPIO/LCD_CAM 头文件。来源时间、地址、字节和 hash 见 [sources.json](evidence/atoms3r-cam-chatbot/sources.json)。API 原始回复仅放忽略目录，公开收据不保留作者/账号字段；固件二进制不入库。

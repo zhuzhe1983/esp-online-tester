@@ -1,0 +1,46 @@
+# M5Stack edge controller runtime subsets
+
+These profiles execute the declared chip's guest CPU and physical peripheral path. They do not establish factory-image compatibility or hardware validation.
+
+| SKU | Profile | Implemented and tested | Boundary |
+| --- | --- | --- | --- |
+| U139 ACSSR | m5-acssr / ESP32-C3FH4, 4 MiB | Guest GPIO4 controls digital SSR drive; GPIO3 key input; GPIO2 finite RMT RGB | Load-side AC behavior, I2C slave application and RS485 protocol unmodeled |
+| U140 DCSSR | m5-dcssr / ESP32-C3 | Same exact-SKU rear-label nets, independently selectable | Physical package/Flash unknown; 4 MiB is an explicit simulation setting; DC load physics unmodeled |
+
+Sources remain in each product's knowledge record. U139 pin identity and FH4 come from `Sch_UNIT_ACSSR.pdf` (SHA-256 `964a8b6149a2b559bbfa001c10a8001c14f1b62ad95ca27820ed51f862632f11`). U140 nets are independently read from its own rear photograph, not inferred from U139. No binary is mirrored and official firmware remains a separate reference/trial entry.
+
+`cargo test -p esp32c3 --test m5_ssr` executes newly authored RV32 SRAM code for both products. Each run writes IO_MUX, GPIO matrix, output enable and level; the guest reads the key GPIO and prints `SSR GPIO GUEST`. Positive relay drive and negative wrong-pin, wrong-mux, disabled-output, low-output and MCU-reset checks pass. RMT RGB protocol routing is additionally checked at the board boundary; that latter check does not claim guest RMT timing validation.
+
+| SKU | Profile / memory | Guest-observed primary subset | Explicit limits |
+| --- | --- | --- | --- |
+| U215 CardKB2 | m5-cardkb2 / C61HF4, 4 MiB | All 42 physical switches scanned through row GPIO0..3 and columns4/5/6/7/8/29/10/11/22/23/24; two unpopulated positions reject input | Guest owns debounce, text mapping and Fn modes; no UART character substitution, I2C-slave/HID/BLE factory compatibility; opposing row drives resolve low without calibrated contention/ghost physics |
+| U195 Unit Gateway H2 | m5-unit-gateway-h2 / H2-MINI-1-N2, 2 MiB | Guest UART0 receives and echoes host byte A through RX23/TX24 at nominal115200; BOOT9 | Independent H2 SRAM only; no ROM, Flash cache, USB, RF or Zigbee/Thread/Matter gateway |
+| M141 Module Gateway H2 | m5-module-gateway-h2 / H2-MINI-1-N2, 2 MiB | Same real UART0 peripheral, own schematic v0.4 and UART DIP-path subset | DIP electrical switching and SPI slave unmodeled; no invented onboard user button; same H2 execution limits |
+| U133 original KMeter | m5-kmeter / C3, 4 MiB simulation setting | Guest SPI2 reads real MAX31855 frame at SCLK6/MISO5/CS7; 123.25°C, -30.5°C, 1350°C and disconnected-probe fault | Physical Flash unverified; synthetic cold junction25°C, nominal100ms conversion; no thermal lag/error calibration, external I2C-slave application or hardware validation |
+| K140 SwitchC6 | m5-switchc6 / C6-MINI-1, 4 MiB simulation setting | Guest GPIO15 ON pulse closes digital latch, GPIO14 OFF opens it, GPIO7 key input; latch survives MCU reset | Physical Flash and exact module suffix unknown; pulse-width calibration, harvested energy, ADC6 source and AC load/radio absent |
+| A172 Stamp AddOn C6 | m5-stamp-addon-c6 / C6FH4, 4 MiB | Guest HINF/SLCHOST mailbox reaches host CMD52 on native CMD18/CLK19/D0..3=20..23; each wrong IO_MUX disconnects it | Existing C6 digital SDIO protocol/DMA reused; no external P4 execution or factory ESP-Hosted/Wi-Fi compatibility is inferred |
+| K162 ToughC5 | m5-tough-c5 / C5HR8, 16 MiB Flash / 8 MiB PSRAM | Guest GP-SPI writes ILI9342C pixel `0xf800`; CHSC6540 reports `[1,0,123,0,87]`; PM1/IOE1 control actual reset, rail and PWM4 backlight | Guest test uses supported HP-I2C on SDA2/SCL3; manufacturer uses LP-I2C. No factory-image compatibility, TF transport, RTC, buzzer, analog power or radio claim |
+
+H2 source capacities are enforced independently: N2 profiles reject a4MiB image declaration, out-of-capacity staging, ROM/Flash-cache access and radio MMIO. UART input targets the real host wire only while RX23 and nominal115200 are selected; TX counts require enabled TX24. FIFO byte delivery is a digital subset, not a bit-timing or analog line model.
+
+CardKB2 physical switch events, its 3D/key mappings, agent input and recordings all use matrix coordinates. The vendor's obsolete `bsp_keyboard.c` comment says ROW1/COM10 is absent; its factory keymap and own product photo instead prove ROW0/COM10 plus ROW3/COM10. No ROW1 Backspace switch is removed.
+
+For KMeter, the running-platform API accepts `input({type:'thermocouple-environment',connected:true,temperatureC:123.25})`. This changes the converter stimulus; after its nominal conversion deadline the guest must still clock the MAX31855 serial frame and decode it. Disconnection sets MAX31855 OC/D16 fault bits. Recordings preserve the stimulus and replay it at acknowledged guest time. The synthetic25°C cold junction and deterministic rounding are disclosed model assumptions, not measured results.
+
+The source receipts preserve fixed M5GFX28d47949 and KMeter internal firmwarec97d31ed URLs, hashes, byte sizes and retrieval times. Existing exact-product knowledge records retain manufacturer pages, schematics and physical revision unknowns. The KMeter internal source is independently identified as an internal firmware project; its embedded factory binary is not copied or marked compatible.
+
+Final directed checks (debug, jobs2): `cargo test -p esp32c61 --test cardkb2` (1); `cargo test -p esp32h2 --test gateway --test native --test nanoh2` (10); `cargo test -p esp32c3 --test kmeter --test m5_ssr` (2); `cargo test -p esp32c6 --test m5_edge` (2); `cargo test -p esp32c5 --test toughc5` (1). All16 passed. Node chip/capacity/42-key/thermocouple-recording checks and the existing recording regression passed; catalog schemas passed. Compiled browser-WASM verification is a separate integration step and is not implied by these native guest checks.
+
+## Production Worker checks
+
+`ESP32SIM_WASM=/absolute/path/esp32sim.wasm ESP32SIM_M5_EDGE_PRODUCT_IDS=m5stack-u139,m5stack-u140 node --test tools/platform-m5-edge-worker-test.mjs` runs only the named products; omit the product filter for all nine. The harness loads the unchanged production Worker and actual compiled WASM, then executes newly authored SRAM images. It checks guest UART values, actual board LED/relay outputs, all42 CardKB2 switches, and CHSC6540 input changing the GP-SPI framebuffer. Fixture generation and passing native checks do not themselves establish that a particular WASM build passed; retain the actual harness output and WASM hash at integration.
+
+H2 `observe().hardwareDiagnostics.state` exposes `uartTxCount` (canonical decimal string) and `uartTxTailHex`, accepted only from UART0 routed to physical TX24 at nominal115200. Console UART text remains a separate observation. The output history is bounded to64 bytes and does not drain on inspection.
+
+A172 offers `sdioHostCommand({command,arg})` for explicit digital-peer CMD3/5/7/52 while its guest runs. Commands reach the C6's existing SDIO state machine, including its native-pad gate, and return the card's32-bit short response. This path is not recordable and is not a network or RF service. Example initialization is CMD5 argument`0x00ff8000`, CMD3 argument0, CMD7 argument`0x00010000`, then CMD52 operations. Host writes still require the guest to read the actual SLCHOST mailbox; no guest result is injected by this API.
+
+The batch018 compiled WASM was subsequently executed with the production Worker for U139 and U140. Both passed guest GPIO3 DOWN/UP readback, actual relay-output red/off transitions, and wrong-GPIO/mux/enable negatives. The exact WASM/image hashes, observed serial and output colors are retained in `evidence/m5-edge-runtime-20261126/ssr-worker.json`. This historical two-product receipt does not cover the remaining seven Worker cases; the batch020 all-nine receipt below covers their later integration execution.
+
+A subsequent U133 converter correction retains the independent synthetic25°C cold-junction field while OC/D16 marks an open probe. The final open frame is`0x00011901`; zeroed thermocouple bits under this fault do not represent a valid0°C input. MAX31855 Rev5 Tables2/3 and a rerun of the actual C3 guest test are retained in `kmeter-cold-fault-revision.json`; the earlier`guest-checks.json` preserves its historical pre-correction frame rather than rewriting that result. The batch020 production Worker run confirms this corrected open frame.
+
+The batch020 central release WASM (`0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2`) passed all nine production Worker tests in20.16s. Evidence and full output are in `evidence/m5-edge-runtime-20261126/worker-020.json` and `worker-020.log`:42 physical key press/releases reached guest row scans; each H2 link emitted29 actual UART wire bytes; KMeter guest decoding included positive, negative and disconnected frames; SwitchC6 pulsed the latch; A172 CMD52 read and guest-observed write changed the mailbox; ToughC5 touch123/87 changed actual first pixels `f800→07e0→f800`. All configured negative paths passed in the same run. This is actual compiled execution of the stated digital subsets; factory-image and physical-hardware acceptance remain separate.

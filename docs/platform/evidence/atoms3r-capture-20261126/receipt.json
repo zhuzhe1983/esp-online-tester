@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T09:45:35Z",
+  "products": [
+    "m5stack-c126-cam",
+    "m5stack-k147-cam",
+    "m5stack-c126-m12",
+    "m5stack-d062-m12"
+  ],
+  "primitiveCommit": "8122a38b",
+  "files": {
+    "esp-soc/src/camera.rs": "0738254ffbb9d573733745ce3577d25d40c45982321d88405f4adc290e725a06",
+    "esp-soc/src/camera/gc0308.rs": "31d873e3cd39d40206f5b479c96d65ab1c236dc7bd8853f1c7e4f1bd7567f184",
+    "esp-soc/src/camera/ov3660.rs": "73e3f49182cd18ae9e005dbf581011f75a6eebac02eec5269f9b54629372c916",
+    "esp32s3/src/board/atoms3r_cam.rs": "94c733937a0a9b49c0a29942e4465842db3fee060445db294f42ee8a44a32a9a",
+    "esp32s3/tests/atoms3r_capture.rs": "39e4c2ebbc39cc35ef3152e24045ceb2f6c0e8163e2595752102d5198d201659"
+  },
+  "checks": [
+    {
+      "command": "cargo test -p esp32s3 --test atoms3r_capture",
+      "passed": 3,
+      "failed": 0,
+      "guest": "LX7 S32I/L32I MMIO executes I2C/GPIO/LCD_CAM/GDMA; host supplies only explicit virtual picture/JPEG bytes"
+    },
+    {
+      "command": "cargo test -p esp-soc camera:: --lib",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "command": "cargo test -p esp32s3 board::atoms3r_cam --lib",
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "command": "cargo clippy -p esp32s3 --test atoms3r_capture -- -D warnings",
+      "result": "passed"
+    },
+    {
+      "command": "node tools/platform-knowledge-test.mjs",
+      "result": "passed, 736 records"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "passed, 728 products / 10 accessories / 670 firmwares / 537 watchlist"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "boundaries": [
+    "No manufacturer firmware, USB UVC endpoint, cloud/radio, audio/base, BMM150 AUX, IR, physical hardware or optical acceptance.",
+    "Shared 10Hz digital frame schedule/nearest-neighbor virtual source sampling is approximate; no sensor startup/PLL/PCLK/ISP timing calibration.",
+    "JPEG is baseline marker/size validated and delivered verbatim, not decoded or re-encoded; only OV3660 accepts it.",
+    "GC0308 supports published eight subsample tables; other raw/Bayer/pattern output is withheld.",
+    "Production Worker/WASM integration is a subsequent check; no claim is inferred from the guest tests."
+  ]
+}

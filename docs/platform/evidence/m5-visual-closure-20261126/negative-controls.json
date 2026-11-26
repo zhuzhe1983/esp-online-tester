@@ -1,0 +1,219 @@
+{
+  "matrixSha256": "83e491fbefb8dd1ca050b9059a35b91d6fca678dc220318e375b622051a00590",
+  "validatorSha256": "10ad9104ebeefd858e5c0dfd4f25a6ac69f9980b0bc8158827d9d6ac867e5e9b",
+  "passed": true,
+  "cases": [
+    {
+      "case": "valid contribution snapshot",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "outcome": "passed"
+    },
+    {
+      "case": "valid P2 input-route-only equivalence",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "outcome": "passed"
+    },
+    {
+      "case": "valid Core2 v1.1 invisible input equivalence",
+      "expectedExit": 0,
+      "actualExit": 0,
+      "outcome": "passed"
+    },
+    {
+      "case": "duplicate same-value controlId rejected before hash acceptance",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-c145",
+          "detail": "web/platform/assets/m5stack-c145/model.json: Duplicate JSON key: controlId"
+        }
+      ]
+    },
+    {
+      "case": "missing denominator entry rejected even for a selected subset",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": "ERROR: Missing, duplicate or extraneous closure entries"
+    },
+    {
+      "case": "wrong final model digest rejected",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-c145",
+          "detail": "Model differs from evidence-bound contribution; refresh its final proof before accepting"
+        }
+      ]
+    },
+    {
+      "case": "wrong geometry identity rejected",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-c145",
+          "detail": "Native stored geometry identity changed"
+        }
+      ]
+    },
+    {
+      "case": "changed proof digest rejected",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-c145",
+          "detail": "Proof bytes changed: web/platform/assets/m5stack-c145/rear-paper-cpu-review.json"
+        }
+      ]
+    },
+    {
+      "case": "CPU receipt without final model binding rejected",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-c145",
+          "detail": "No final-model-bound CPU proof; screening is not final acceptance"
+        }
+      ]
+    },
+    {
+      "case": "original screening cannot substitute for final evidence",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-c145",
+          "detail": "Original screening cannot substitute for final closure evidence"
+        }
+      ]
+    },
+    {
+      "case": "changed retained image rejected",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k005",
+          "detail": "Retained review image changed: docs/platform/evidence/m5-faces-layout-review-20261126/gold-back.png"
+        }
+      ]
+    },
+    {
+      "case": "wrong Kit shared identity rejected",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k148",
+          "detail": "Shared-host identity mismatch: firmwareTargetId"
+        }
+      ]
+    },
+    {
+      "case": "source-limited result without decision basis rejected",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k140",
+          "detail": "Exclusion/source-limited outcome needs an explicit source decision"
+        }
+      ]
+    },
+    {
+      "case": "K151 cannot close without nested inspection proof",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k151",
+          "detail": "K151 nested inspection needs expanded CPU, whole marker, reset and servo/photo evidence"
+        }
+      ]
+    },
+    {
+      "case": "incorrect assembled-equivalence chain rejected",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k151",
+          "detail": "Final model differs from prior CPU-bound model beyond the permitted nonvisual metadata"
+        }
+      ]
+    },
+    {
+      "case": "geometry byte offsets cannot be exempted as metadata",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k016-p2",
+          "detail": "Equivalence cannot remove visual geometry/material/texture data: /parts/4/byteOffset"
+        }
+      ]
+    },
+    {
+      "case": "separate prior loader signature cannot bind the final model",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k132",
+          "detail": "Cross-proof visual signature lacks its exact old/final model binding"
+        }
+      ]
+    },
+    {
+      "case": "real geometry delta cannot masquerade as unchanged binary",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k140",
+          "detail": "Real geometry delta cannot use a metadata-only equivalence exemption"
+        }
+      ]
+    },
+    {
+      "case": "geometry delta needs all three final CPU appearances",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k140",
+          "detail": "Geometry delta lacks final model-bound CPU view records for three appearances"
+        }
+      ]
+    },
+    {
+      "case": "old geometry CPU record cannot certify new geometry",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k140",
+          "detail": "Geometry delta CPU record does not bind the final model"
+        }
+      ]
+    },
+    {
+      "case": "superseded source history remains hash checked",
+      "expectedExit": 1,
+      "actualExit": 1,
+      "outcome": [
+        {
+          "id": "m5stack-k140",
+          "detail": "Historical review image changed"
+        }
+      ]
+    }
+  ],
+  "scope": "Read-only guard checks. No model/catalog/renderer mutation, Cargo or rendering."
+}

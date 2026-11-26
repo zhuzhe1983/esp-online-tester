@@ -1,0 +1,1026 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T10:34:28.287Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX7-SRAM-camera-DMA-RAM-CRC-UART",
+  "nodeVersion": "v24.22.3",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionEntrySha256": {
+    "web/platform/runtime.js": "9cb7eab17984c1a8fd7212de1d81e0ae7e26898fd54fc81ab1a3853afeba07e0",
+    "web/wasm/worker.js": "280b02e3d46f5e8968e1a7e446767e33384cea7573b36217dd909dc0eeacec9a",
+    "web/wasm/jit.mjs": "a759ae4a3d1ca6ddd91259ede39e34ebda45ff7ccb9c4ceeff0d1423f44ac294",
+    "web/wasm/pacing.mjs": "be891e5cd99e47791f4fdafb9d1cabb0f42ed09b8f1758d890884f41dc83d6cf"
+  },
+  "catalogFileSha256": {
+    "products": "84e18ec138932d817a2b25f244374fa3ecaed77a5df103de7df2eb99d8868a31",
+    "accessories": "ab83356b958cfb9bf48d8bce7cf284541fa8d2044711d67bdfc56267f92c736d",
+    "firmwares": "1007566c9833d6bf0ba41cf5623c624c55743596200567d0b34a3c3d74a135c3"
+  },
+  "probeSourceSha256": "40d6d0eac18c60854d727d6b6afebb0c5ed19ee53ffaec28750f9f234e9ee49c",
+  "jpegFixtureSha256": "4005a6f1981567c8fa49bf30bccd3fe8acc084817e6c4acf788b89fe86900d28",
+  "harnessSha256": "974c6574a1473bfacc90860e7a4a5efa943e5261b3384ff3fdeae9f2a735a23a",
+  "products": [
+    {
+      "productId": "m5stack-u174",
+      "board": "unit-cams3",
+      "sensor": "ov2640",
+      "dimensions": [
+        8,
+        4
+      ],
+      "inputs": [
+        {
+          "format": "PPM",
+          "probeSha256": "2ef69c8c2816361fb080e7b50ba5f3a3b30db2eb987bb9d689b2fb25522edaf1",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "8dee30e2caa26a23f15a2e903788b34b4bd247a15ccb4feed7ec8b3db1bc71ee",
+            "bytes": 14,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "f800f800f800f800f800f800f800f800",
+            "crc32": "daf25a9d",
+            "expectedSha256": "50fba777c34691ff14fcb78b058c961865558c6bb8dc9d29683581f3f9cb9383",
+            "serialTail": "CAMERA SRAM READY ov2640 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\n"
+          }
+        },
+        {
+          "format": "BMP",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "cfdccdc56febdedba22db96106545503d5c9cf8232a9b810a37d9985e026aba2",
+            "bytes": 58,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY ov2640 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "default-black-after-worker-reset",
+          "guest": {
+            "eof": 1,
+            "head": "00000000000000000000000000000000",
+            "crc32": "758d6336",
+            "expectedSha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+            "serialTail": "CAMERA SRAM READY ov2640 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\n"
+          }
+        },
+        {
+          "format": "explicit-resupply-after-reset",
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY ov2640 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "baseline-JPEG-verbatim",
+          "probeSha256": "731811be6831ff4222ebf036a505a31916f495cd83f71b22711827bad227016d",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "bytes": 632,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "ffd8ffe000104a464946000101000001",
+            "crc32": "359c9549",
+            "expectedSha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "serialTail": "CAMERA SRAM READY ov2640 jpeg\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\n"
+          }
+        },
+        {
+          "format": "invalid-input-rejection-keeps-previous-source",
+          "guest": {
+            "eof": 1,
+            "head": "ffd8ffe000104a464946000101000001",
+            "crc32": "359c9549",
+            "expectedSha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "serialTail": "CAMERA SRAM READY ov2640 jpeg\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\n"
+          }
+        }
+      ],
+      "negative": [
+        {
+          "fault": "route",
+          "probeSha256": "bdf0b6f2b6c99940288f77844f5287bc421dddf5ef42dedcfd8a09f2fba6bc92",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov2640 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "clock",
+          "probeSha256": "934ba6b544cad545d1576bfb83d37339429b99f024dfc2e234a3cc491aef5f50",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov2640 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "power",
+          "probeSha256": "9a4f459b055795f39423eaebfafe82e8b6b35d1ab6ec71d66432c99e06788d53",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov2640 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        }
+      ]
+    },
+    {
+      "productId": "m5stack-u174-b",
+      "board": "unit-cams3-5mp",
+      "sensor": "py260",
+      "dimensions": [
+        96,
+        96
+      ],
+      "inputs": [
+        {
+          "format": "PPM",
+          "probeSha256": "ed86688fc67cbc7675775b380aa75a72111b52deeeb760145b8e41d44b2cfc89",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "8dee30e2caa26a23f15a2e903788b34b4bd247a15ccb4feed7ec8b3db1bc71ee",
+            "bytes": 14,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "f800f800f800f800f800f800f800f800",
+            "crc32": "c9ec00ac",
+            "expectedSha256": "01c37e92f16de3fd1d6c86daa458ad0e8a0018ffbf1ec604a6529e34028ee8e6",
+            "serialTail": "CAMERA SRAM READY py260 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=c9ec00ac END\n"
+          }
+        },
+        {
+          "format": "BMP",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "cfdccdc56febdedba22db96106545503d5c9cf8232a9b810a37d9985e026aba2",
+            "bytes": 58,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "cd853ec5",
+            "expectedSha256": "3c96d56b8cef094768cc7305fae52e3d2d7d3b08b65e0ba316cc3a3988d3c6f5",
+            "serialTail": "CAMERA SRAM READY py260 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=c9ec00ac END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=cd853ec5 END\n"
+          }
+        },
+        {
+          "format": "default-black-after-worker-reset",
+          "guest": {
+            "eof": 1,
+            "head": "00000000000000000000000000000000",
+            "crc32": "1dceb87a",
+            "expectedSha256": "f7b586904e3678145aa47e4232587c913139cef0102d6d8e9276fc80c35cbad3",
+            "serialTail": "CAMERA SRAM READY py260 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=1dceb87a END\n"
+          }
+        },
+        {
+          "format": "explicit-resupply-after-reset",
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "cd853ec5",
+            "expectedSha256": "3c96d56b8cef094768cc7305fae52e3d2d7d3b08b65e0ba316cc3a3988d3c6f5",
+            "serialTail": "CAMERA SRAM READY py260 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=1dceb87a END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=cd853ec5 END\n"
+          }
+        },
+        {
+          "format": "baseline-JPEG-verbatim",
+          "probeSha256": "79b3387efa397532e58e4c97a265c06f3090734cc627ceb20c2b33c77eb95fe6",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "bd0d63737a915c7fe60c7a849238ea9a006a6c0270ead1d77d31d71b6f1c7d4d",
+            "bytes": 882,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "ffd8ffe000104a464946000101000001",
+            "crc32": "3a6ea4d5",
+            "expectedSha256": "bd0d63737a915c7fe60c7a849238ea9a006a6c0270ead1d77d31d71b6f1c7d4d",
+            "serialTail": "CAMERA SRAM READY py260 jpeg\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=3a6ea4d5 END\n"
+          }
+        },
+        {
+          "format": "invalid-input-rejection-keeps-previous-source",
+          "guest": {
+            "eof": 1,
+            "head": "ffd8ffe000104a464946000101000001",
+            "crc32": "3a6ea4d5",
+            "expectedSha256": "bd0d63737a915c7fe60c7a849238ea9a006a6c0270ead1d77d31d71b6f1c7d4d",
+            "serialTail": "CAMERA SRAM READY py260 jpeg\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=3a6ea4d5 END\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=3a6ea4d5 END\n"
+          }
+        }
+      ],
+      "negative": [
+        {
+          "fault": "route",
+          "probeSha256": "f4e1bf47f65ed207f2f90f31a787d3c6dfe702778a9d1e4d67a37885013ced16",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "21dce176",
+            "expectedSha256": "cf1ab888207d3bad19abc777b29390a42b34627e4c18b535d7b14cabf9265603",
+            "serialTail": "CAMERA SRAM READY py260 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=21dce176 END\n"
+          }
+        },
+        {
+          "fault": "clock",
+          "probeSha256": "80c3646294f0b5465878768a33eb6a240551dde4a4f5808336b65639e8e243e4",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "21dce176",
+            "expectedSha256": "cf1ab888207d3bad19abc777b29390a42b34627e4c18b535d7b14cabf9265603",
+            "serialTail": "CAMERA SRAM READY py260 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=21dce176 END\n"
+          }
+        },
+        {
+          "fault": "power",
+          "probeSha256": "be81dfd24b72a142277d9187208301417de3ab1450edddedca3881c20fc2b012",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "21dce176",
+            "expectedSha256": "cf1ab888207d3bad19abc777b29390a42b34627e4c18b535d7b14cabf9265603",
+            "serialTail": "CAMERA SRAM READY py260 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=21dce176 END\n"
+          }
+        }
+      ]
+    },
+    {
+      "productId": "m5stack-c126-cam",
+      "board": "atoms3r-cam",
+      "sensor": "gc0308",
+      "dimensions": [
+        8,
+        4
+      ],
+      "inputs": [
+        {
+          "format": "PPM",
+          "probeSha256": "3498e18fee0ff7147bcb16b05aedaa2ad3e8d6e16e0784c118eb1c5d10a3c161",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "8dee30e2caa26a23f15a2e903788b34b4bd247a15ccb4feed7ec8b3db1bc71ee",
+            "bytes": 14,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "f800f800f800f800f800f800f800f800",
+            "crc32": "daf25a9d",
+            "expectedSha256": "50fba777c34691ff14fcb78b058c961865558c6bb8dc9d29683581f3f9cb9383",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\n"
+          }
+        },
+        {
+          "format": "BMP",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "cfdccdc56febdedba22db96106545503d5c9cf8232a9b810a37d9985e026aba2",
+            "bytes": 58,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "default-black-after-worker-reset",
+          "guest": {
+            "eof": 1,
+            "head": "00000000000000000000000000000000",
+            "crc32": "758d6336",
+            "expectedSha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\n"
+          }
+        },
+        {
+          "format": "explicit-resupply-after-reset",
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "invalid-input-rejection-keeps-previous-source",
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        }
+      ],
+      "negative": [
+        {
+          "fault": "route",
+          "probeSha256": "f44b947633b302215dfb87fae497239307b0067264ad0510c958edc9116aa985",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "clock",
+          "probeSha256": "5373058d4ffae20e2f85db23ee83f5e884c653b36c6a8befca12448c394638b6",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "power",
+          "probeSha256": "9a8779e5425011a81835cbdc293bd69ff46546e3c5bced80fdf0bc27e9e3b1a2",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        }
+      ],
+      "jpegUnsupported": true
+    },
+    {
+      "productId": "m5stack-k147-cam",
+      "board": "atoms3r-cam-chatbot",
+      "sensor": "gc0308",
+      "dimensions": [
+        8,
+        4
+      ],
+      "inputs": [
+        {
+          "format": "PPM",
+          "probeSha256": "3498e18fee0ff7147bcb16b05aedaa2ad3e8d6e16e0784c118eb1c5d10a3c161",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "8dee30e2caa26a23f15a2e903788b34b4bd247a15ccb4feed7ec8b3db1bc71ee",
+            "bytes": 14,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "f800f800f800f800f800f800f800f800",
+            "crc32": "daf25a9d",
+            "expectedSha256": "50fba777c34691ff14fcb78b058c961865558c6bb8dc9d29683581f3f9cb9383",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\n"
+          }
+        },
+        {
+          "format": "BMP",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "cfdccdc56febdedba22db96106545503d5c9cf8232a9b810a37d9985e026aba2",
+            "bytes": 58,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "default-black-after-worker-reset",
+          "guest": {
+            "eof": 1,
+            "head": "00000000000000000000000000000000",
+            "crc32": "758d6336",
+            "expectedSha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\n"
+          }
+        },
+        {
+          "format": "explicit-resupply-after-reset",
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "invalid-input-rejection-keeps-previous-source",
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        }
+      ],
+      "negative": [
+        {
+          "fault": "route",
+          "probeSha256": "f44b947633b302215dfb87fae497239307b0067264ad0510c958edc9116aa985",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "clock",
+          "probeSha256": "5373058d4ffae20e2f85db23ee83f5e884c653b36c6a8befca12448c394638b6",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "power",
+          "probeSha256": "9a8779e5425011a81835cbdc293bd69ff46546e3c5bced80fdf0bc27e9e3b1a2",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY gc0308 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        }
+      ],
+      "jpegUnsupported": true
+    },
+    {
+      "productId": "m5stack-c126-m12",
+      "board": "atoms3r-m12",
+      "sensor": "ov3660",
+      "dimensions": [
+        8,
+        4
+      ],
+      "inputs": [
+        {
+          "format": "PPM",
+          "probeSha256": "67fa8e11523776f1fdac761618bcf2cc7a4d5b92fe6055d89a15099c75ad9e18",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "8dee30e2caa26a23f15a2e903788b34b4bd247a15ccb4feed7ec8b3db1bc71ee",
+            "bytes": 14,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "f800f800f800f800f800f800f800f800",
+            "crc32": "daf25a9d",
+            "expectedSha256": "50fba777c34691ff14fcb78b058c961865558c6bb8dc9d29683581f3f9cb9383",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\n"
+          }
+        },
+        {
+          "format": "BMP",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "cfdccdc56febdedba22db96106545503d5c9cf8232a9b810a37d9985e026aba2",
+            "bytes": 58,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "default-black-after-worker-reset",
+          "guest": {
+            "eof": 1,
+            "head": "00000000000000000000000000000000",
+            "crc32": "758d6336",
+            "expectedSha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\n"
+          }
+        },
+        {
+          "format": "explicit-resupply-after-reset",
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "baseline-JPEG-verbatim",
+          "probeSha256": "f542d63753f1443b6d5e321243fb3b86a1be183b42a42c79e528daab91a0b905",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "bytes": 632,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "ffd8ffe000104a464946000101000001",
+            "crc32": "359c9549",
+            "expectedSha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "serialTail": "CAMERA SRAM READY ov3660 jpeg\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\n"
+          }
+        },
+        {
+          "format": "invalid-input-rejection-keeps-previous-source",
+          "guest": {
+            "eof": 1,
+            "head": "ffd8ffe000104a464946000101000001",
+            "crc32": "359c9549",
+            "expectedSha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "serialTail": "CAMERA SRAM READY ov3660 jpeg\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\n"
+          }
+        }
+      ],
+      "negative": [
+        {
+          "fault": "route",
+          "probeSha256": "ae45b7102eb70f50950cb6de72a361966f074d5e0951303cc39fab56b1bad259",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "clock",
+          "probeSha256": "d155ac880701a1d1b6e590cfb43ac1bc76b8667328dd9057ac6a9806156b1e18",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "power",
+          "probeSha256": "ddd897d2e2160d397d47ec979d606566f6f9925de88c7ff61c9aa3589e68a28a",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        }
+      ]
+    },
+    {
+      "productId": "m5stack-d062-m12",
+      "board": "atoms3r-m12-volcengine",
+      "sensor": "ov3660",
+      "dimensions": [
+        8,
+        4
+      ],
+      "inputs": [
+        {
+          "format": "PPM",
+          "probeSha256": "67fa8e11523776f1fdac761618bcf2cc7a4d5b92fe6055d89a15099c75ad9e18",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "8dee30e2caa26a23f15a2e903788b34b4bd247a15ccb4feed7ec8b3db1bc71ee",
+            "bytes": 14,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "f800f800f800f800f800f800f800f800",
+            "crc32": "daf25a9d",
+            "expectedSha256": "50fba777c34691ff14fcb78b058c961865558c6bb8dc9d29683581f3f9cb9383",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\n"
+          }
+        },
+        {
+          "format": "BMP",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "cfdccdc56febdedba22db96106545503d5c9cf8232a9b810a37d9985e026aba2",
+            "bytes": 58,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=1 HEAD=f800f800f800f800f800f800f800f800 CRC=daf25a9d END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "default-black-after-worker-reset",
+          "guest": {
+            "eof": 1,
+            "head": "00000000000000000000000000000000",
+            "crc32": "758d6336",
+            "expectedSha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\n"
+          }
+        },
+        {
+          "format": "explicit-resupply-after-reset",
+          "guest": {
+            "eof": 1,
+            "head": "07e007e007e007e007e007e007e007e0",
+            "crc32": "95d4c22c",
+            "expectedSha256": "96b9ae7ca69d66a046cb0af8f742f5497d71d1c6031c9a278bc02f3dd587c850",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=1 HEAD=00000000000000000000000000000000 CRC=758d6336 END\nCAPTURE EOF=1 HEAD=07e007e007e007e007e007e007e007e0 CRC=95d4c22c END\n"
+          }
+        },
+        {
+          "format": "baseline-JPEG-verbatim",
+          "probeSha256": "f542d63753f1443b6d5e321243fb3b86a1be183b42a42c79e528daab91a0b905",
+          "input": {
+            "accepted": true,
+            "delivery": "sensor-input",
+            "sha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "bytes": 632,
+            "physicalCapture": false
+          },
+          "guest": {
+            "eof": 1,
+            "head": "ffd8ffe000104a464946000101000001",
+            "crc32": "359c9549",
+            "expectedSha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "serialTail": "CAMERA SRAM READY ov3660 jpeg\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\n"
+          }
+        },
+        {
+          "format": "invalid-input-rejection-keeps-previous-source",
+          "guest": {
+            "eof": 1,
+            "head": "ffd8ffe000104a464946000101000001",
+            "crc32": "359c9549",
+            "expectedSha256": "0d7fc82803a7464ce3bca910de55395ba35eea53277f0353eb44869718ab9347",
+            "serialTail": "CAMERA SRAM READY ov3660 jpeg\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\nCAPTURE EOF=1 HEAD=ffd8ffe000104a464946000101000001 CRC=359c9549 END\n"
+          }
+        }
+      ],
+      "negative": [
+        {
+          "fault": "route",
+          "probeSha256": "ae45b7102eb70f50950cb6de72a361966f074d5e0951303cc39fab56b1bad259",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "clock",
+          "probeSha256": "d155ac880701a1d1b6e590cfb43ac1bc76b8667328dd9057ac6a9806156b1e18",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        },
+        {
+          "fault": "power",
+          "probeSha256": "ddd897d2e2160d397d47ec979d606566f6f9925de88c7ff61c9aa3589e68a28a",
+          "guest": {
+            "eof": 0,
+            "head": "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5",
+            "crc32": "74465cc5",
+            "expectedSha256": "bb626e5577021df95ea17eb6339e75904855b80087e40660931c4a89b302f74a",
+            "serialTail": "CAMERA SRAM READY ov3660 rgb565\nCAPTURE EOF=0 HEAD=a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5 CRC=74465cc5 END\n"
+          }
+        }
+      ]
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "romSha256": {
+    "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+  },
+  "workerInputMessages": [
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 632
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 4
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 882
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 4
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 632
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 4
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 632
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 4
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 632
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 4
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 58
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 14
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 632
+    },
+    {
+      "op": "load",
+      "kind": 7,
+      "bytes": 4
+    }
+  ],
+  "limitations": [
+    "Original app-direct LX7 SRAM diagnostics; no official factory image or full ESP-IDF startup validation.",
+    "Host uploads enter the production sensor-input API only. All sensor and DMA setup, RAM byte reads and CRC32 computations execute in the guest.",
+    "Synthetic single-color raw inputs and valid baseline JPEG files test transport, not real optics/ISP/encoder, UVC, microphone, cloud or physical power behavior.",
+    "Node production Worker/WASM execution does not validate browser rendering or a physical camera."
+  ]
+}

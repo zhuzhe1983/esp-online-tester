@@ -1,0 +1,297 @@
+{
+  "batch": "021",
+  "scope": "Exactly five public product metadata activations, matching product knowledge/index and same-SKU firmware compatibility wording. Shared runtime implementation and previously completed production Worker020 validation are not rerun or upgraded to factory/physical acceptance.",
+  "baseCommit": "e643c9836e11264dd4cdb7a97640c4fd73d27d59",
+  "products": [
+    {
+      "id": "m5stack-u007",
+      "name": "M5Stack ESP32 Camera · U007",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5stack-u007",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "15a818c40c6adfe8f4123d8aaa3aaa96f4739f33ea1c49212bda7f4330d0627e",
+      "productSha256": "a9ea578be84a415b3f7acbfcc50733adbece7051c94e604d5bfd147b50f11580",
+      "knowledgeSha256": "c2efb1e300f4d3579d17436301b6ba5dffac0cba153706af6d18401ddde0544e",
+      "sourceCommit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "summary": "4MB ESP32/OV2640原始相机；D0严格采用G17，独立SCCB、XCLK、RESET和原生I2S/DMA子集，保留文档尺寸与照片冲突。",
+      "limitations": [
+        "真实客体LX6指令经SCCB寄存器配置传感器，LEDC经GPIO27提供XCLK；GPIO15硬件RESET、DVP GPIO矩阵与I2S0 DMA描述符共同决定客体DRAM中的RGB565/YUV422或外部编码JPEG字节。",
+        "partial：数字相机子集使用约10Hz帧/1ms VSYNC近似调度，不模拟光学、曝光/ISP、JPEG编码器、逐PCLK时序、真实RF或电池/PoE模拟电气。未实机验证；出厂固件兼容性未由寄存器/DMA测试推断。",
+        "JPEG必须由使用者提供与传感器SCCB配置尺寸一致的完整JPEG，按原字节进入客体；RGB图片不会冒充传感器编码JPEG，预览不会代替客体DMA输出。",
+        "未实机验证；本模型只有exact-SKU照片约束的外观近似，未找到该SKU的独立完整厂家CAD/PCB布局。",
+        "未知PCB的轮廓/厚度、隐藏元件与插口深度均保持估算；照片丝印不等于可制造PCB或固件兼容。",
+        "未进行浏览器三种材质/同视角叠图验收；静态照片不会覆盖任何固件显示画面。",
+        "官方商品/文档尺寸54x54x26.6mm与长条裸板照片及带尺照片不符；模型采用约50x23mm的照片估计，误差数毫米级，不把54mm方形当PCB外形。此冲突尚未消解。",
+        "裸板上镜头/排线夹座和接口的拆卸关系缺少装配证据，因此不提供猜测的分层爆炸；PCB照片留在板上，背面UNKNOWN通过翻转查看。",
+        "厂家未指定本SKU PSRAM容量；运行配置选择0MB作为保守诊断配置，不把它写成已证实的物理容量，也不借用M5Camera/TimerCamera的PSRAM。"
+      ]
+    },
+    {
+      "id": "m5stack-u109-x",
+      "name": "M5Stack UnitCAM DIY Kit · U109-X",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5stack-u109-x",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "7f4ada861e70426ed91966775b9dfb30768821ee44552709e30dd555c3673973",
+      "productSha256": "7b9b85ad7e905e841963bd484cda22af3d6151666e25aa0a3598b1f4b7137ee7",
+      "knowledgeSha256": "d2544162a565217c33e31219b9129564c396c72fcd2b0ad403b3c73000c22873",
+      "sourceCommit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "summary": "UnitCAM DIY，ESP32-WROOM-32E/4MB与65°/160° OV2640；独立保留两种镜头外观事实，新增本SKU数字SCCB与原生I2S/DMA采集。",
+      "limitations": [
+        "真实客体LX6指令经SCCB寄存器配置传感器，LEDC经GPIO27提供XCLK；GPIO15硬件RESET、DVP GPIO矩阵与I2S0 DMA描述符共同决定客体DRAM中的RGB565/YUV422或外部编码JPEG字节。",
+        "partial：数字相机子集使用约10Hz帧/1ms VSYNC近似调度，不模拟光学、曝光/ISP、JPEG编码器、逐PCLK时序、真实RF或电池/PoE模拟电气。未实机验证；出厂固件兼容性未由寄存器/DMA测试推断。",
+        "JPEG必须由使用者提供与传感器SCCB配置尺寸一致的完整JPEG，按原字节进入客体；RGB图片不会冒充传感器编码JPEG，预览不会代替客体DMA输出。",
+        "未实机验证；本模型只有exact-SKU照片约束的外观近似，未找到该SKU的独立完整厂家CAD/PCB布局。",
+        "未知PCB的轮廓/厚度、隐藏元件与插口深度均保持估算；照片丝印不等于可制造PCB或固件兼容。",
+        "未进行浏览器三种材质/同视角叠图验收；静态照片不会覆盖任何固件显示画面。",
+        "DIY套件包含65°和160°两颗OV2640；当前外观选择普通65°装配（40x24x11），160°版本17.2mm厚度仅记录为独立配置事实，未冒用为相同外形。",
+        "背面灰色WROOM32E屏蔽罩是真实金属窗口，单独建面，不能当纸贴；两个纸贴与两侧针孔分别避让。外露端子只作可见外观，不代表接线验证。",
+        "厂家未指定本SKU PSRAM容量；运行配置选择0MB作为保守诊断配置，不把它写成已证实的物理容量，也不借用M5Camera/TimerCamera的PSRAM。"
+      ]
+    },
+    {
+      "id": "m5stack-u037",
+      "name": "M5Stack M5Camera-F · U037（160°文档版）",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 4,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5stack-u037",
+        "flashMb": 4,
+        "psramMb": 4,
+        "status": "partial"
+      },
+      "previousProductSha256": "226d00c3c3a49df4b13589e783a678ede669cf65927144ab0c199d58eed2689e",
+      "productSha256": "e390738cb638bde2ba7f4c169bbc17679ba965d1ac1481b2ec261c558c94cfcf",
+      "knowledgeSha256": "45e31808b05985e52551d25f55e2983bc5abc66c5cc3d5b5d16fb5bd4f7685b1",
+      "sourceCommit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "summary": "M5Camera-F，4MB Flash/4MB PSRAM、OV2640；保留原版160°/New150°身份差异，按原版文档接入SCCB与原生I2S/DMA数字采集。",
+      "limitations": [
+        "真实客体LX6指令经SCCB寄存器配置传感器，LEDC经GPIO27提供XCLK；GPIO15硬件RESET、DVP GPIO矩阵与I2S0 DMA描述符共同决定客体DRAM中的RGB565/YUV422或外部编码JPEG字节。",
+        "partial：数字相机子集使用约10Hz帧/1ms VSYNC近似调度，不模拟光学、曝光/ISP、JPEG编码器、逐PCLK时序、真实RF或电池/PoE模拟电气。未实机验证；出厂固件兼容性未由寄存器/DMA测试推断。",
+        "JPEG必须由使用者提供与传感器SCCB配置尺寸一致的完整JPEG，按原字节进入客体；RGB图片不会冒充传感器编码JPEG，预览不会代替客体DMA输出。",
+        "未验证独立 PCB 布局/板级 CAD，保留可展开的 UNKNOWN 主板；外壳、纸贴、镜头与连接器分别着色。",
+        "原照片/丝印版权归 M5Stack，未确认独立开放图片许可；近似几何按项目许可，厂家 CAD 保留原 MIT。",
+        "本轮未进行浏览器 WebGL 正反斜视/三种材质真实渲染验收；资产加载、几何、UV、材质隔离与展开复位另做离线检查。",
+        "接口位置/插合深度和逐脚物理方位未独立标定，禁用可连接线缆；不能以近似插口当电气路由。",
+        "未找到U037独立结构CAD；仅明示复用U038的24×48mm外壳。源外壳深13.2mm保持原值，鱼眼镜筒/光学表面按U037照片估算至总深约19mm，不能称作U037精确CAD。",
+        "同SKU的原版文档/商店列160°，SKU链接跳到New版150°；原页照片也含NEW标识，版本对应关系未消解。本条目保留original-160deg-docs身份，不合并New版引脚或恢复镜像。",
+        "外壳孔位/声学孔来自U038供体，U037内部照片仅能支持近似关系；供体元件、附件和相机本体均不继承。"
+      ]
+    },
+    {
+      "id": "m5stack-u109-b",
+      "name": "M5Stack Unit Camera · U109-B",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5stack-u109-b",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "e80833c1b6433aba7904499a0185357dc56f9e3cb1be0dc03d30e28b98eeb0a3",
+      "productSha256": "22f8ec4a85006c2e4be45f4b2ddffe7b0ba4156c2245078a34092bc4b05710ce",
+      "knowledgeSha256": "0c76bf7d8aa442958a4c1ec16a74745343217daaede18078731788434292c0a0",
+      "sourceCommit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "summary": "带外壳的ESP32-WROOM-32E/4MB/65°OV2640完整主控，保持U109-B独立身份；已接入本SKU数字SCCB、XCLK、RESET和原生I2S/DMA采集。",
+      "limitations": [
+        "真实客体LX6指令经SCCB寄存器配置传感器，LEDC经GPIO27提供XCLK；GPIO15硬件RESET、DVP GPIO矩阵与I2S0 DMA描述符共同决定客体DRAM中的RGB565/YUV422或外部编码JPEG字节。",
+        "partial：数字相机子集使用约10Hz帧/1ms VSYNC近似调度，不模拟光学、曝光/ISP、JPEG编码器、逐PCLK时序、真实RF或电池/PoE模拟电气。未实机验证；出厂固件兼容性未由寄存器/DMA测试推断。",
+        "JPEG必须由使用者提供与传感器SCCB配置尺寸一致的完整JPEG，按原字节进入客体；RGB图片不会冒充传感器编码JPEG，预览不会代替客体DMA输出。",
+        "固定M5_Hardware树和该SKU官方链接未找到U109-B制造商CAD/内嵌PCB STEP。此模型是本SKU照片和尺寸图约束的近似，不把相同UnitCAM家族的外壳或固件直接算本SKU验证。",
+        "实际PCB布局、内部元件高度/连接器精确深度未知，保留可见UNKNOWN主板；RF金属罩、纸贴、镜头和端子材质不随外壳染色。",
+        "镜头中心取本SKU图纸距顶13.5mm，即模型Y=6.5mm；壳体8mm、总深11mm、R3外角、R8.4前圈分别记录，非U109-X旧估计。",
+        "附带Lego安装夹在型号照片中确认，但不计入主机40x24x11mm包络；未核验装配轨迹，因此不猜放在机身上。",
+        "本站不下载/转存出厂BIN；官方M5Core UART接收示例明确不能刷到本机，UIFlow主机控制相机也不是相机内部MicroPython固件。",
+        "本轮完成源码加载/UV/真实几何承载/材质与复位检查；尚未完成浏览器正反斜视照片叠图、可读字形或物理硬件验收。",
+        "端口物理pin1/插合方向与深度未标定，Grove保持visual-only且禁止连接线缆。",
+        "两侧3针端子排按本SKU图纸17.78mm排距、2.54mm节距、最下端子距底3.63mm定位；针孔直径/隐藏深度仍是照片估算。",
+        "厂家未指定本SKU PSRAM容量；运行配置选择0MB作为保守诊断配置，不把它写成已证实的物理容量，也不借用M5Camera/TimerCamera的PSRAM。"
+      ]
+    },
+    {
+      "id": "m5stack-u174",
+      "name": "M5Stack Unit CamS3 · U174",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "unit-cams3",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "previousProductSha256": "260d8301c4882e4fdb7d8c306eea7d1fec4e2e0277737be76ea49670943a3301",
+      "productSha256": "dfc0247fbbeb57f88eda34aaba53e8ad9dd3ed8bfebc8a0693c3ad8a189f1653",
+      "knowledgeSha256": "90ca7ebaf55cc6018235d9947f3baf5b330d69d0f591ecbd215a80fefadde657",
+      "sourceCommit": "8f3fcc7c68a82ecf2dbadcdc6ffc8454e59f8480",
+      "summary": "OV2640 相机，16 MB Flash / 8 MB PSRAM。独立板型通过 SCCB 配置与 LCD_CAM/GDMA 接收虚拟 RAW/JPEG 源，并支持 SPI TF 卡；原厂固件与实机尚未验证。",
+      "limitations": [
+        "独立数字板型已接入：SCCB17/41、RESET21、XCLK11、真实 DVP 矩阵与 LCD_CAM/GDMA 描述符传入客体内存；提供显式虚拟图片或同尺寸已编码 JPEG。",
+        "原始 LX7 客体诊断覆盖寄存器、DMA 内存、错针、时钟、复位、描述符所有权及 SPI SD；不是原厂固件兼容证明。未实机验证，PDM 音频、UVC、Wi-Fi/云端、光学/ISP/编码器与电源模拟未实现。",
+        "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+        "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+        "仅复用后继 U174-B 外壳 CAD：两款独立官方尺寸相同并有各自照片对照。传感器、背贴、固件与 PCB 保持此 SKU 身份；外壳对应关系仍是有来源的近似。",
+        "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt."
+      ]
+    }
+  ],
+  "sourceCommits": {
+    "m5stack-u007": {
+      "commit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "productChangedFields": [
+        "summary",
+        "limitations",
+        "runtime"
+      ]
+    },
+    "m5stack-u109-x": {
+      "commit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "productChangedFields": [
+        "summary",
+        "limitations",
+        "runtime"
+      ]
+    },
+    "m5stack-u037": {
+      "commit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "productChangedFields": [
+        "summary",
+        "limitations",
+        "runtime"
+      ]
+    },
+    "m5stack-u109-b": {
+      "commit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "productChangedFields": [
+        "summary",
+        "limitations",
+        "runtime"
+      ]
+    },
+    "m5stack-u174": {
+      "commit": "8f3fcc7c68a82ecf2dbadcdc6ffc8454e59f8480",
+      "productChangedFields": [
+        "summary",
+        "limitations",
+        "interfaces",
+        "runtime"
+      ]
+    }
+  },
+  "firmwareChanges": [
+    {
+      "id": "m5stack-u007-official-source-reference",
+      "productIds": [
+        "m5stack-u007"
+      ],
+      "fields": [
+        "limitations",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "m5stack-u109-x-official-source-reference",
+      "productIds": [
+        "m5stack-u109-x"
+      ],
+      "fields": [
+        "limitations",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "m5stack-u037-official-source-reference",
+      "productIds": [
+        "m5stack-u037"
+      ],
+      "fields": [
+        "limitations",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "m5stack-u109-b-factory-reference",
+      "productIds": [
+        "m5stack-u109-b"
+      ],
+      "fields": [
+        "limitations",
+        "compatibility"
+      ]
+    },
+    {
+      "id": "m5stack-u174-factory",
+      "productIds": [
+        "m5stack-u174"
+      ],
+      "fields": [
+        "limitations",
+        "compatibility"
+      ]
+    }
+  ],
+  "otherProductEntriesUnchanged": true,
+  "otherKnowledgeIndexEntriesUnchanged": true,
+  "otherFirmwareEntriesUnchanged": true,
+  "knowledgeIndexUpdatedAt": "2026-11-26T10:32:58Z",
+  "validation": {
+    "catalogSchemas": {
+      "status": "passed",
+      "products": 728,
+      "accessories": 10,
+      "firmwares": 670,
+      "watchlist": 537
+    },
+    "knowledge": {
+      "status": "passed",
+      "records": 736,
+      "sourceBodiesReDownloaded": false
+    },
+    "batchScope": {
+      "status": "passed",
+      "changedProductCount": 5,
+      "otherProductKnowledgeIndexFirmwareEntriesUnchanged": true,
+      "publisherImageIdentityRolesDefaultsVerificationFlagsPreserved": true
+    },
+    "platformConfig": {
+      "status": "deferred-until-batch025",
+      "reason": "Existing global test expects m5stack-c145 board=m5stack-tab5; this SKU is deliberately unchanged until catalog batch025. No runtime failure inferred."
+    },
+    "worker": {
+      "status": "reuse-completed-batch020",
+      "rerun": false,
+      "factoryCompatibilityInferred": false
+    }
+  },
+  "noCargoOrWorkerRerun": true
+}

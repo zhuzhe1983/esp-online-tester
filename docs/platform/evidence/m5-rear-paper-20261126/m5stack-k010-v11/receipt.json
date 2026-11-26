@@ -1,0 +1,84 @@
+{
+  "productId": "m5stack-k010-v11",
+  "scope": "Exact-SKU rear paper only. Existing source/native/procedural geometry and assembly transforms remain unchanged. CPU mesh/material export is not browser GPU or calibrated photographic acceptance.",
+  "source": {
+    "id": "product-photo-20be082a32",
+    "title": "Core2 v1.1 official photo",
+    "url": "https://static-cdn.m5stack.com/resource/docs/products/core/Core2 v1.1/img-1ee68d74-996c-430b-acdf-45591a31e3e9.webp",
+    "kind": "product-photo",
+    "status": "fetched",
+    "discoveredFrom": "official-docs",
+    "archiveName": "product-photo-20be082a32.webp",
+    "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/core/Core2%20v1.1/img-1ee68d74-996c-430b-acdf-45591a31e3e9.webp",
+    "fetchedAt": "2026-10-26T19:17:30Z",
+    "bytes": 79240,
+    "mediaType": "image/webp",
+    "sha256": "c86516ad8d73742b7803dc1f5bff76a624c42b2f559d9151069e31fd13cdf7bc"
+  },
+  "modelSha256": "0427fa65f1983f0916d2086a1c66b760cd70d89f35117c2f84e0a847e94141f0",
+  "textureSha256": "43b56f91f5514be72ee3e2e5e2f2e240ce51461b40edd3cc5b48bf960c9f2d4d",
+  "originalGeometrySha256": "8a201080418ea0d1e72324d2bb74aaadea2b9c64c1466f826bad4403e3ef16fe",
+  "originalNativePartsSha256": "6d34bcfeb3b96124af57c3e601e7c6ea5943f91b44c410b4c3ba370c82fc5926",
+  "originalTransformSha256": "fbb6bbc41d0aecc9b05858d61c380d6fa37b5b2b89d2c64b4ebb95614df149e7",
+  "rebuild": {
+    "script": "tools/build-m5-rear-labels.py",
+    "deterministicByteComparison": [
+      "model.json",
+      "rear-paper.png",
+      "rear-label-rebuild.json"
+    ],
+    "result": "passed"
+  },
+  "actualLoaderChecks": {
+    "script": "tools/platform-m5-rear-labels-test.mjs",
+    "textureBound": true,
+    "sourceAndArtifactHashes": true,
+    "fixedMapColorAndOpacityAcrossShellPresets": true,
+    "alphaTest": 0.5,
+    "coverInspectionAttachmentAndExactReset": true
+  },
+  "render": {
+    "exporter": "tools/export-m5-cpu-models.mjs",
+    "renderer": "Blender 4.3.2 / Cycles CPU",
+    "script": "tools/render-m5-cpu-qa.py",
+    "threads": 2,
+    "samples": 12,
+    "resolution": [
+      640,
+      640
+    ],
+    "negativePolygonOffsetApproximationMm": 0.005,
+    "images": [
+      {
+        "file": "original-back.png",
+        "sha256": "ffbf1f8d6dd8f43fe119668f75ebe6439fc809d077b142f6a480921579482b3f",
+        "appearance": "original",
+        "view": "rear orthographic",
+        "manualReview": "Paper letters remain readable; only source paper is opaque; holes/fasteners and connector gap remain open."
+      },
+      {
+        "file": "gold-back.png",
+        "sha256": "9ed05b5f01f8c06619ddc7e969511cbdd7cab08e1d5185c7fbfa1c4cfdbece70",
+        "appearance": "gold",
+        "view": "rear orthographic",
+        "manualReview": "Paper letters remain readable; only source paper is opaque; holes/fasteners and connector gap remain open."
+      },
+      {
+        "file": "purple-back.png",
+        "sha256": "90a626bde7965dca96ece37730d5277c3171a671a5c7fe7e6e9513f93f06d2b4",
+        "appearance": "purple",
+        "view": "rear orthographic",
+        "manualReview": "Paper letters remain readable; only source paper is opaque; holes/fasteners and connector gap remain open."
+      }
+    ]
+  },
+  "limitations": [
+    "Rear label paper is derived only from this exact SKU photograph, using retained corner/alpha coordinates. Registration +/-1.5mm and display gap are estimates; no calibrated 1:1 photo or physical fit acceptance.",
+    "Paper remains a separate fixed-color surface for original, gold and translucent enclosure materials. Original CAD/native/procedural binary geometry and assembly transforms are unchanged.",
+    "The exact-SKU photograph shows continuous paper across openings in the source CAD back cover; this explicit thin paper bridge is retained. Underlying back-cover production revision, adhesive support and bending are unverified; photographed dark holes and the connector gap are excluded from the paper alpha.",
+    "Paper uses the source CAD outer rear-frame plane Z=-8.25mm plus a 0.025mm display gap. The recessed source-CAD center is 0.2mm deeper; paper support across that recess and native openings is unverified and no molded geometry is replaced."
+  ],
+  "projectedFlatCarrierCheck": {
+    "result": "Not claimed. Continuous photographed paper bridges source-CAD openings/recess; production backing revision and adhesive support unverified."
+  }
+}

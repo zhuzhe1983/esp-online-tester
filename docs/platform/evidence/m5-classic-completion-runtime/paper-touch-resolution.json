@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "case": "Paper GT911 zero-delay original guest to IT8951 public framebuffer",
+  "status": "resolved: prior wall-clock test timeout before next guest-time publication",
+  "wasmSha256": "3d50245c70227fbea2a924f4cf5915cb720e6bfb6366c03b3094722124187ffd",
+  "originalGuestImageSha256": "34314ebafa53ec6b6ac06294334eb16f02c933345cf2fa7c8a62fd84940b2972",
+  "originalGuestImageBytes": 7040,
+  "unchangedGuestImage": true,
+  "runtimeEngineChanged": false,
+  "guestSoftwareDelayAdded": false,
+  "productionWorkerChanged": false,
+  "guestStatusContract": "Read ready bit7 before count, ignore not-ready STATUS=0 after ACK, consume ready count0 as UP.",
+  "rootCause": "The prior capture predicate had a 5-second wall-clock deadline. Shared-host execution measured 0.008\u20130.017x. Paper publishes at 8Hz of guest time, so the test could expire before the next scheduled publication even though IT8951 RAM and optical frame were already black.",
+  "negativeObservation": {
+    "hostCapturedFrame": 1,
+    "hostCapturedPixel": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "lastStatGuestSeconds": 0.13,
+    "lastStatCompletedFrames": 1,
+    "readOnlyWasmObservationCycles": 69113185,
+    "monoBlackByteOffsets": [
+      956,
+      957,
+      958,
+      959
+    ],
+    "opticalRgb565BlackByteOffsets": [
+      1912,
+      1913,
+      1914,
+      1915,
+      1916,
+      1917,
+      1918,
+      1919
+    ],
+    "notes": "Memory scan is diagnostic only, not part of final acceptance. The asynchronous scan reply can occur after the capture and a scheduled publication; raw pointer locations are build-specific, not a supported API."
+  },
+  "testCorrection": "Require a fresh public frameNumber after each input and poll the actual expected pixel under a 30-second failure deadline. No fixed delay is inserted before drawing or capture.",
+  "traceMethod": "An ephemeral copy of production Worker added read-only outbound frame/cycle logging. No guest memory writes, MMIO changes, model changes or frame injection. Full final acceptance repeated with unmodified production Worker.",
+  "trace": [
+    {
+      "paperTrace": {
+        "stage": "wasm-out",
+        "cycles": 30081612,
+        "first": [
+          255,
+          255
+        ],
+        "framesInFlight": 0,
+        "pending": false
+      }
+    },
+    {
+      "label": "released-capture",
+      "captureFrame": 1,
+      "stats": {
+        "behind": 0.988685189666665,
+        "resyncs": 9,
+        "speed": 0.008359654122320164,
+        "mips": 2.006316989356839,
+        "t": "stat",
+        "time": 0.13,
+        "insns": 29690720,
+        "frames": 1,
+        "cam": 0,
+        "gpio_in": "1ffffffffffff"
+      },
+      "at": 11016.793882
+    },
+    {
+      "paperTrace": {
+        "stage": "wasm-out",
+        "cycles": 60577535,
+        "first": [
+          0,
+          0
+        ],
+        "framesInFlight": 0,
+        "pending": false
+      }
+    },
+    {
+      "label": "pressed-capture",
+      "captureFrame": 2,
+      "stats": {
+        "behind": 1.0513088016666656,
+        "resyncs": 22,
+        "speed": 0.007862649620608347,
+        "mips": 1.8870359089460034,
+        "t": "stat",
+        "time": 0.25,
+        "insns": 59690771,
+        "frames": 2,
+        "cam": 0,
+        "gpio_in": "1ffffffffffff"
+      },
+      "at": 24984.891256
+    },
+    {
+      "paperTrace": {
+        "stage": "wasm-out",
+        "cycles": 91118105,
+        "first": [
+          255,
+          255
+        ],
+        "framesInFlight": 0,
+        "pending": false
+      }
+    },
+    {
+      "label": "released-capture",
+      "captureFrame": 3,
+      "stats": {
+        "behind": 0.7211879306666726,
+        "resyncs": 36,
+        "speed": 0.009671400303950957,
+        "mips": 2.3211360729482293,
+        "t": "stat",
+        "time": 0.38,
+        "insns": 89690797,
+        "frames": 3,
+        "cam": 0,
+        "gpio_in": "1ffffffffffff"
+      },
+      "at": 38165.087496
+    },
+    {
+      "paperTrace": {
+        "stage": "wasm-out",
+        "cycles": 30112596,
+        "first": [
+          255,
+          255
+        ],
+        "framesInFlight": 0,
+        "pending": false
+      }
+    },
+    {
+      "label": "released-capture",
+      "captureFrame": 1,
+      "stats": {
+        "behind": 0.9982482626666674,
+        "resyncs": 9,
+        "speed": 0.008574889121791685,
+        "mips": 2.0579733892300047,
+        "t": "stat",
+        "time": 0.13,
+        "insns": 29690828,
+        "frames": 1,
+        "cam": 0,
+        "gpio_in": "1ffffffffffff"
+      },
+      "at": 56416.047231
+    },
+    {
+      "paperTrace": {
+        "stage": "wasm-out",
+        "cycles": 60625748,
+        "first": [
+          0,
+          0
+        ],
+        "framesInFlight": 0,
+        "pending": false
+      }
+    },
+    {
+      "label": "pressed-capture",
+      "captureFrame": 2,
+      "stats": {
+        "behind": 0.9998363396666562,
+        "resyncs": 23,
+        "speed": 0.008605154387176253,
+        "mips": 2.065237052922301,
+        "t": "stat",
+        "time": 0.25,
+        "insns": 59690828,
+        "frames": 2,
+        "cam": 0,
+        "gpio_in": "1ffffffffffff"
+      },
+      "at": 67933.179245
+    },
+    {
+      "paperTrace": {
+        "stage": "wasm-out",
+        "cycles": 91183594,
+        "first": [
+          255,
+          255
+        ],
+        "framesInFlight": 0,
+        "pending": false
+      }
+    },
+    {
+      "label": "released-capture",
+      "captureFrame": 3,
+      "stats": {
+        "behind": 0.4876916516666564,
+        "resyncs": 37,
+        "speed": 0.016233298013800176,
+        "mips": 3.8959915233120417,
+        "t": "stat",
+        "time": 0.38,
+        "insns": 89690850,
+        "frames": 3,
+        "cam": 0,
+        "gpio_in": "1ffffffffffff"
+      },
+      "at": 78278.873344
+    }
+  ],
+  "acceptanceReceipt": "paper-touch-worker.json",
+  "acceptance": "Both K049 and K049-C: mask-ROM boot, GT911 real I2C MMIO, touch DOWN/UP, actual IT8951 SPI commands, exact full-frame white/4-black-pixel/white pixel comparison; public frameNumbers1/2/3.",
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "browserWebglValidation": false,
+  "interpreterAcceptanceReceipt": "paper-touch-interpreter-worker.json",
+  "interpreterAcceptance": "K049 with explicit create jit:false: same original guest SHA34314e..., production Worker, mask-ROM, all-frame white/4 black/white comparisons, frameNumbers1/2/3, PASS31.3seconds."
+}

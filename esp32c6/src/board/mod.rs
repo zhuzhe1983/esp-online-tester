@@ -20,8 +20,11 @@ pub mod waveshare_amoled;
 pub mod waveshare_amoled_compact;
 pub mod xiao;
 pub mod nanoc6;
+pub mod switchc6;
+pub mod stamp_addon_c6;
 pub mod nesso_n1;
 pub mod stamp_c6lora;
+mod unit_c6l;
 pub mod lilygo;
 pub mod lilygo_tqt;
 pub mod lilygo_additional;
@@ -53,8 +56,11 @@ pub fn make_board(name: &str) -> Option<Board> {
         "lilygo-t-lora-c6" => Some(Box::new(lilygo_additional::TLoRaC6::new())),
         "lilygo-t-pico-c6" => Some(Box::new(lilygo_additional::TPicoC6::new())),
         "stamp-c6lora" | "m5stack-s012" => Some(Box::new(stamp_c6lora::StampC6LoRa::new())),
+        "unit-c6l" | "m5stack-u202" => Some(Box::new(unit_c6l::UnitC6L::new())),
         "nesso-n1" | "m5stack-dk001" => Some(Box::new(nesso_n1::NessoN1::new())),
         "nanoc6" | "m5stack-c125" => Some(Box::new(nanoc6::NanoC6::new())),
+        "m5-stamp-addon-c6"|"m5stack-a172"=>Some(Box::new(stamp_addon_c6::StampAddonC6)),
+        "m5-switchc6"|"m5stack-k140"=>Some(Box::new(switchc6::SwitchC6::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
         "xiao-esp32c6" | "xiao-c6" | "xiao" => Some(Box::new(XiaoEsp32C6::new())),
         _ => None,

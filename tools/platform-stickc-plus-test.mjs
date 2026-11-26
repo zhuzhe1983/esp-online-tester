@@ -86,18 +86,30 @@ test('K016-P accepts classic merged images at bootloader offset 0x1000', () => {
   assert.throws(() => validateMergedImage(bytes, 'stickc-plus', 0x10000), {code: 'FLASH_OVERFLOW'});
 });
 
-test('K016-P 3D A/B regions retain their photo provenance', async () => {
+test('K016-P 3D A/B provenance and separate board-PEK power region remain source-bound', async () => {
   const model = await readJson('../web/platform/assets/m5stack-k016-p/model.json');
   const plan = await readJson('../web/platform/assets/m5stack-k016-p/model-plan.json');
   assert.deepEqual(model.presentation.buttons, plan.presentation.buttons);
-  assert.deepEqual(model.presentation.buttons.map(button => button.id), ['button-a', 'button-b']);
-  for (const button of model.presentation.buttons) {
+  assert.deepEqual(model.presentation.buttons.map(button => button.id), ['button-a', 'button-b', 'power']);
+  for (const button of model.presentation.buttons.filter(button => button.id !== 'power')) {
     assert.ok(button.sourceIds.includes('product-photo-bc8190a43b'));
     assert.match(button.basis, /Photo-informed/);
     assert.ok(button.sizeMm.every(value => value > 0 && value < 15));
   }
   assert.ok(model.presentation.buttons[0].positionMm[2] > 6.75);
   assert.ok(model.presentation.buttons[1].positionMm[0] > 12);
+  const power = model.presentation.buttons.find(button => button.id === 'power');
+  assert.deepEqual(power.sourceIds, ['product-photo-487100c766', 'dimension-drawing-cbbd976ba3']);
+  assert.equal(power.supportingPart, 'shell-front');
+  assert.equal(power.basis, 'source-photo-and-existing-surface');
+  assert.ok(power.positionMm[0] < -12);
+  assert.deepEqual(power.rotation, [0, -Math.PI/2, 0]);
+  assert.ok(power.sizeMm.every(value => value > 0 && value < 4));
+  assert.match(power.notes, /AXP192 PEK/);
+  assert.equal(plus.controls.find(control => control.id === power.id).transport, 'board');
+  assert.equal(plus.controls.find(control => control.id === power.id).pin, undefined);
+  assert.ok(model.presentation.inspectionGroups[0].parts.includes('cover-key:power'));
+  assert.ok(!model.presentation.inspectionGroups[2].parts.includes('cover-key:power'));
 });
 
 test('K016-P displays the measured end terminals and rear paper locally', async () => {

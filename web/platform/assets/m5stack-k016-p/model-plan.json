@@ -152,6 +152,31 @@
           "product-photo-bc8190a43b",
           "product-photo-487100c766"
         ]
+      },
+      {
+        "id": "power",
+        "shape": "rectangle",
+        "sizeMm": [
+          0.6,
+          2.6
+        ],
+        "positionMm": [
+          -12.01,
+          -15,
+          0
+        ],
+        "rotation": [
+          0,
+          -1.5707963267948966,
+          0
+        ],
+        "basis": "source-photo-and-existing-surface",
+        "sourceIds": [
+          "product-photo-487100c766",
+          "dimension-drawing-cbbd976ba3"
+        ],
+        "supportingPart": "shell-front",
+        "notes": "AXP192 PEK input-only central area on the photographed left power actuator near USB-C. The original shared enclosure contains its integral flexure. This region is deliberately smaller than the actuator, approximately +/-1 mm placement uncertainty; it adds no visible geometry. Board transport short-press/release only; no GPIO, power-off or wake simulation."
       }
     ],
     "inspectionGroups": [
@@ -162,7 +187,8 @@
           "live-display",
           "cover-key:button-a",
           "port-well-back",
-          "top-recess-backing"
+          "top-recess-backing",
+          "cover-key:power"
         ],
         "offsetMm": [
           0,
@@ -1676,5 +1702,20 @@
       "sourceId": "dimension-drawing-cbbd976ba3",
       "file": "dimension-drawing.jpg"
     }
-  ]
+  ],
+  "controlMetadataAmendment": {
+    "generator": "tools/rebuild-m5-stick-control-metadata.py",
+    "scope": "Metadata-only input routing. The existing manufacturer/photo geometry, texture/source artifact bytes and visible materials are fixed inputs, not regenerated CAD by this amendment. Original generic builder remains the full geometry recipe.",
+    "base": {
+      "file": "control-metadata-base.json.gz",
+      "bytes": 8572,
+      "sha256": "84d79344629d9c31c5720a3e9a2ac77f5e47c965412362e7c041a7043914f8be",
+      "uncompressedBytes": 52566,
+      "uncompressedSha256": "9946eb705f44118adb224d2da7b9aabab78db1ead7c8d6a9a8d9ff2560a44d9e"
+    },
+    "addedJsonPointers": [
+      "/presentation/buttons/2",
+      "/presentation/inspectionGroups/0/parts/5"
+    ]
+  }
 }

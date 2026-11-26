@@ -4,11 +4,11 @@
   "kind": "product",
   "catalogId": "m5stack-k136",
   "title": "M5Stack VAMeter",
-  "summary": "ESP32-S3FN8 电压电流检测设备，双INA226、240×240屏幕和DIN导轨底座。显示与测量行为尚未模拟。",
+  "summary": "已接真实ST7789 SPI像素、G38背光与G3/G1旋转、G2按压；双INA226及物理电压/电流测量仍未实现。",
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:01:26Z",
+  "updatedAt": "2026-11-26T07:18:21Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -359,6 +359,49 @@
       "sourceIds": [
         "dimension-drawing-dc13ca3118"
       ]
+    },
+    {
+      "id": "audited-encoder-wiring",
+      "group": "controls",
+      "label": "Rotary encoder and press wiring",
+      "value": {
+        "a": 3,
+        "b": 1,
+        "press": 2,
+        "boot": 0
+      },
+      "unit": "GPIO",
+      "basis": "official",
+      "sourceIds": [
+        "official-vameter-hal-config"
+      ],
+      "notes": "Exact official HAL config; catalog declaration only. No VAMeter board runtime or inferred 3D control position."
+    },
+    {
+      "id": "runtime-lcd-wiring",
+      "label": "Source-backed display nets",
+      "value": {
+        "mosi": 35,
+        "sck": 36,
+        "cs": 37,
+        "dc": 34,
+        "reset": 33,
+        "backlight": 38,
+        "activePixels": [
+          240,
+          240
+        ],
+        "offsetPixels": [
+          0,
+          0
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "k136-hal-config-runtime",
+        "k136-hal-display-runtime"
+      ],
+      "group": "pinmap"
     }
   ],
   "revisions": [],
@@ -601,6 +644,74 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-audit-20261126",
+      "url": "https://docs.m5stack.com/en/core/VAMeter",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/VAMeter",
+      "fetchedAt": "2026-11-26T06:01:50Z",
+      "bytes": 143824,
+      "sha256": "ea59c2c78ddcf5d0c7d5a937d8b2a644a0b508aa8ec5393227c59a4267725911",
+      "mediaType": "text/html",
+      "title": "M5Stack VAMeter official page audit 2026-11-26",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "archiveName": "vameter.html"
+    },
+    {
+      "id": "official-vameter-hal-config",
+      "url": "https://raw.githubusercontent.com/m5stack/VAMeter-Firmware/5e8f847bbc771da2d354be7472c6345acb5655ac/platforms/vameter/main/hal_vameter/hal_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/VAMeter-Firmware/5e8f847bbc771da2d354be7472c6345acb5655ac/platforms/vameter/main/hal_vameter/hal_config.h",
+      "fetchedAt": "2026-11-26T06:04:25Z",
+      "bytes": 4705,
+      "sha256": "3d961a4aa8ab8343a3ed92332f9badf81039d20ab0bde762e461cada13bfbae9",
+      "mediaType": "text/plain",
+      "title": "VAMeter official HAL pin configuration",
+      "kind": "official-firmware-source",
+      "status": "fetched",
+      "archiveName": "vameter-config-pinned.h",
+      "revision": {
+        "commit": "5e8f847bbc771da2d354be7472c6345acb5655ac"
+      }
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/VAMeter-Firmware/5e8f847bbc771da2d354be7472c6345acb5655ac/platforms/vameter/main/hal_vameter/hal_config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/VAMeter-Firmware/5e8f847bbc771da2d354be7472c6345acb5655ac/platforms/vameter/main/hal_vameter/hal_config.h",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-11-26T07:06:54Z",
+      "sha256": "3d961a4aa8ab8343a3ed92332f9badf81039d20ab0bde762e461cada13bfbae9",
+      "bytes": 4705,
+      "archiveName": "vameter-hal-config.h",
+      "id": "k136-hal-config-runtime",
+      "title": "vameter-hal-config.h fixed official source",
+      "kind": "official-firmware-source",
+      "status": "fetched"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/VAMeter-Firmware/5e8f847bbc771da2d354be7472c6345acb5655ac/platforms/vameter/main/hal_vameter/components/hal_display.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/VAMeter-Firmware/5e8f847bbc771da2d354be7472c6345acb5655ac/platforms/vameter/main/hal_vameter/components/hal_display.cpp",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-11-26T07:07:50Z",
+      "sha256": "8484632ff0b97bd7d8ab6ff56a537b789d2a028f28bacf6c976bfbea97c2c76d",
+      "bytes": 4421,
+      "archiveName": "vameter-display.cpp",
+      "id": "k136-hal-display-runtime",
+      "title": "vameter-display.cpp fixed official source",
+      "kind": "official-firmware-source",
+      "status": "fetched"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/VAMeter-Firmware/5e8f847bbc771da2d354be7472c6345acb5655ac/platforms/vameter/main/hal_vameter/components/hal_power_monitor.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/VAMeter-Firmware/5e8f847bbc771da2d354be7472c6345acb5655ac/platforms/vameter/main/hal_vameter/components/hal_power_monitor.cpp",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-11-26T07:07:50Z",
+      "sha256": "e3bc5b16f6022e9d0f2b710f6bc685efdb100220353e456f423bc9c68a06085a",
+      "bytes": 17887,
+      "archiveName": "vameter-power.cpp",
+      "id": "k136-hal-power-reference",
+      "title": "vameter-power.cpp fixed official source",
+      "kind": "official-firmware-source",
+      "status": "fetched"
     }
   ],
   "assets": [
@@ -725,6 +836,12 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-26: exact-SKU official page rechecked. Existing factory/reference entries retained; no factory binary run or physical hardware verification. See docs/platform/m5-classic-audit-20261126.md.",
+    "仅ST7789硬件SPI RGB565和GPIO/LEDC背光开关、按键及编码器真实GPIO子集；原厂固件尚未启动验收。",
+    "双INA226@0x40/0x41保持NACK，不制造测量读数；物理电压电流、继电器、蜂鸣器、网络及电源行为尚未模拟。",
+    "240×240零偏移活动窗口映射已由独立客体流验证；实机安装方向、完整MADCTL旋转/光学背光强度未校准。",
+    "内存配置8MB Flash，0MB PSRAM为显式模拟配置；不据此推定未知版次的物理PSRAM容量。",
+    "3D拇指轮为同SKU照片估算的独立几何（约±1mm）；中心轴向端面映射按压，轮缘拖动映射编码器，机械行程/方向和齿数未校准。"
   ]
 }

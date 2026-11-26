@@ -95,23 +95,31 @@ impl esp_soc::SocBus for SocBus {
     fn ble_log_take(&mut self) -> Option<String> { self.ble.lines.take() }
     fn ble_nearby(&mut self, list: Vec<esp_soc::ble::peer::Nearby>) -> Result<(), String> { self.ble.set_nearby(list, self.cycles, periph::CPU_HZ) }
     fn set_net_tap(&mut self, tap: esp_soc::netcap::NetTap) -> Result<(), String> {
-        self.periph.wifi.link.set_tap(tap);
+        if let Some(link)=self.wired_link.as_mut(){link.set_tap(tap);}
+        else if let Some(link)=self.board.ethernet_link(){link.set_tap(tap);}
+        else{self.periph.wifi.link.set_tap(tap);}
         Ok(())
     }
     fn add_wifi_ap(&mut self, cfg: esp_soc::wifi::ApConfig) -> Result<(), String> {
         self.periph.wifi.link.add_ap(cfg, &self.debug)
     }
     fn attach_wifi(&mut self, cfg: esp_soc::wifi::ApConfig, nat: Option<esp_soc::nat::Nat>) -> Result<(), String> {
-        self.periph.wifi.link.attach_new(cfg, nat, &self.debug);
+        if let Some(link)=self.wired_link.as_mut(){link.configure(nat,cfg.epoch_s);}
+        else if let Some(link)=self.board.ethernet_link(){link.configure(nat,cfg.epoch_s);}
+        else{self.periph.wifi.link.attach_new(cfg, nat, &self.debug);}
         Ok(())
     }
     fn set_ethernet_relay(&mut self, enabled: bool) -> Result<(), String> {
-        self.periph.wifi.link.set_relay(enabled);
+        if let Some(link)=self.wired_link.as_mut(){link.set_relay(enabled);}
+        else if let Some(link)=self.board.ethernet_link(){link.set_relay(enabled);}
+        else{self.periph.wifi.link.set_relay(enabled);}
         Ok(())
     }
-    fn take_ethernet_frames(&mut self) -> Vec<Vec<u8>> { self.periph.wifi.link.take_relay_frames() }
+    fn take_ethernet_frames(&mut self) -> Vec<Vec<u8>> {
+        if let Some(link)=self.wired_link.as_mut(){link.take_frames()}else if let Some(link)=self.board.ethernet_link(){link.take_frames()}else{self.periph.wifi.link.take_relay_frames()}
+    }
     fn receive_ethernet_frame(&mut self, frame: &[u8]) -> Result<(), String> {
-        self.periph.wifi.link.receive_relay_frame(frame)
+        if let Some(link)=self.wired_link.as_mut(){link.receive(frame)}else if let Some(link)=self.board.ethernet_link(){link.receive(frame)}else{self.periph.wifi.link.receive_relay_frame(frame)}
     }
     fn cycles(&self) -> u64 {
         self.cycles

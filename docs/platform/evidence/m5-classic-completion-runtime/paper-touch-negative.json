@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "case": "Paper K049 touch ready-clear-to-IT8951 optical update without software delay",
+  "wasmSha256": "3d50245c70227fbea2a924f4cf5915cb720e6bfb6366c03b3094722124187ffd",
+  "sourceFiles": {
+    "tools/fixtures/m5-classic-paper-probe.mjs": {
+      "retainedFile": "paper-touch-stress-m5-classic-paper-probe.mjs.gz",
+      "sha256": "a45d2f7936e0caaf6d50014901b0a88ff81353cd356061bc9287c8c82cae57da"
+    },
+    "tools/platform-m5-classic-completion-worker-test.mjs": {
+      "retainedFile": "paper-touch-stress-platform-m5-classic-completion-worker-test.mjs.gz",
+      "sha256": "b598d7286dd63a30edf1d145994664aac5a1ded31d26664fdfb6faf2f2237562"
+    }
+  },
+  "command": "M5_CLASSIC_COMPLETION_WORKER_MODE=touch M5_CLASSIC_COMPLETION_WORKER_IDS=m5stack-k049 ESP32SIM_WASM=<batch018.wasm> ESP32SIM_ROM_DIR=<mask-ROMs> node --test tools/platform-m5-classic-completion-worker-test.mjs",
+  "results": {
+    "jit": "failed",
+    "interpreter": "failed",
+    "readyBit7CheckedBeforeCount": true,
+    "notReadyReportsIgnored": true,
+    "busyAssertThenReleaseVariant": "captured first pixel remained white at prior 5-second wall deadline; optical memory was not observed in that original negative run",
+    "guestSerialTail": "CLASSIC PAPER SRAM READY\nTOUCH UP\nFRAME COMPLETE\nTOUCH DOWN\nFRAME COMPLETE\n",
+    "expectedPressedPixelRgba": [
+      0,
+      0,
+      0,
+      255
+    ],
+    "actualPressedPixelRgba": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "spuriousTouchUpAfterPress": false,
+    "softwareDelayExperiment": "A6-million-iteration guest delay before drawing made this probe pass; NOT adopted as a touch validation or runtime fix."
+  },
+  "status": "resolved as test wall-clock deadline; see paper-touch-resolution.json",
+  "hardwareValidation": false,
+  "manufacturerFirmwareValidation": false,
+  "resolutionReceipt": "paper-touch-resolution.json"
+}

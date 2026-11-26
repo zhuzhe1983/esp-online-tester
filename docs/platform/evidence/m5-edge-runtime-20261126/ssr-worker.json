@@ -1,0 +1,85 @@
+{
+  "command": "ESP32SIM_WASM=<batch018.wasm> ESP32SIM_M5_EDGE_PRODUCT_IDS=m5stack-u139,m5stack-u140 node --test tools/platform-m5-edge-worker-test.mjs",
+  "productionWorker": "web/wasm/worker.js",
+  "wasm": {
+    "sha256": "3d50245c70227fbea2a924f4cf5915cb720e6bfb6366c03b3094722124187ffd",
+    "bytes": 9013665
+  },
+  "fixtureSource": "tools/fixtures/m5-edge-rv-probes.mjs",
+  "images": [
+    {
+      "options": {},
+      "sha256": "f724f138dddef4b4df7a225af271a4cd7c32f85a57a83ade1ae23a8729560fab",
+      "bytes": 912
+    },
+    {
+      "options": {
+        "pin": 5
+      },
+      "sha256": "c1663edc0306a51a52b742fe82955088ac1b2664008e049cbb224c64bd951f62",
+      "bytes": 912
+    },
+    {
+      "options": {
+        "mux": false
+      },
+      "sha256": "2cae9471d58831be319103b0a4289578aa082e8792cc806f099aa867e05490c4",
+      "bytes": 912
+    },
+    {
+      "options": {
+        "enabled": false
+      },
+      "sha256": "7989551a64ebe6d152ad1e8be4e788efec9a55f2e7c1cd3047d7bc3ab695cb97",
+      "bytes": 912
+    }
+  ],
+  "passed": 2,
+  "products": [
+    {
+      "product": "m5stack-u139",
+      "guestSerial": "SSR READY\nSSR KEY UP\nSSR KEY DOWN\nSSR KEY UP\n",
+      "actualRelayOutputColors": [
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "negativeChecks": [
+        "wrong GPIO5",
+        "wrong IO_MUX",
+        "output enable disabled"
+      ],
+      "negativeOutcome": "guest button DOWN was observed while real relay output never closed"
+    },
+    {
+      "product": "m5stack-u140",
+      "guestSerial": "SSR READY\nSSR KEY UP\nSSR KEY DOWN\nSSR KEY UP\n",
+      "actualRelayOutputColors": [
+        [
+          255,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "negativeChecks": [
+        "wrong GPIO5",
+        "wrong IO_MUX",
+        "output enable disabled"
+      ],
+      "negativeOutcome": "guest button DOWN was observed while real relay output never closed"
+    }
+  ],
+  "boundary": "original RV32I guest, actual production Worker/WASM; no factory image or physical hardware claim"
+}

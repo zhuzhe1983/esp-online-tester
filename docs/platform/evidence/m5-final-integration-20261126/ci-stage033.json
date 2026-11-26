@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T12:25:24.656325+00:00",
+  "rustSourceEquivalentTo": "d33f10c1",
+  "nativeClippy": {
+    "result": "pass",
+    "command": "cargo clippy --workspace --all-targets -- -D warnings",
+    "log": {
+      "sha256": "c5fbd58e790d9dc661b9967317e74ea6ec4bf16f813f741980f6517f15980e83",
+      "bytes": 1705
+    }
+  },
+  "wasmClippy": {
+    "result": "pass",
+    "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+    "log": {
+      "sha256": "461e09e1e57d2904a6595bc995a60c69002db213fd66717d330ccbf523e3d967",
+      "bytes": 1605
+    }
+  },
+  "nativeRelease": {
+    "exitCode": 0,
+    "command": "ESP32SIM_ROM_DIR=<roms> RUST_TEST_THREADS=2 cargo test --release --workspace -- --include-ignored --skip external_",
+    "suites": 265,
+    "passed": 3579,
+    "failed": 0,
+    "ignored": 0,
+    "externalFiltered": 146,
+    "log": {
+      "sha256": "079f27c151ad64df7a596e60e62a777dabb8268fd915434cc62d34bd380e041a",
+      "bytes": 414618
+    }
+  },
+  "initialFullPlatformNode": {
+    "tests": 645,
+    "passed": 632,
+    "failed": 9,
+    "skipped": 4,
+    "durationMs": 290596.749895,
+    "log": {
+      "sha256": "45879cfb27a89dc8a7b2005a716f371559b97c455f8a5ed20af74320101c3103",
+      "bytes": 157715
+    },
+    "causes": [
+      "Basic harness required an environment variable instead of default production WASM.",
+      "Original Paper touch capability missing from catalog despite implemented GT911.",
+      "Family builder live-parent JSON hash changed after rear paper repair.",
+      "K152 old ray test ignored transparent texture alpha.",
+      "U149 watchlist used firmware compatibility status in the watchlist domain, causing five cross-catalog failures."
+    ],
+    "fixes": [
+      "3bc45f15",
+      "135cf880",
+      "d8a0273f",
+      "8c8ac908"
+    ]
+  },
+  "targetedCorrections": {
+    "basicAndThirteenClassicModes": {
+      "tests": 3,
+      "pass": 3,
+      "fail": 0,
+      "durationMs": 255320.838283,
+      "log": {
+        "sha256": "ebc63a72ea5dad273b6fb78da280b2e50ae4b28a84b63b8693c0822d6dc4d126",
+        "bytes": 15867
+      }
+    },
+    "watchlistCrossCatalog": {
+      "tests": 22,
+      "pass": 22,
+      "fail": 0,
+      "log": {
+        "sha256": "b6320ac8992cfd3e5bc188ada01380882795bcaeeb84a804d22ab9068a95cba1",
+        "bytes": 3021
+      }
+    },
+    "legacyAndS3Models": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0,
+      "log": {
+        "sha256": "7cc971c46408116f1b0e7c89fab350d1a9bff8c6cefa81e2c22f466904bfee67",
+        "bytes": 1360
+      }
+    }
+  },
+  "finalCleanFullPlatformRun": "Pending the final supported-control mapping repairs; this initial failing run is retained and not represented as a clean pass.",
+  "rebuiltProductionWasm": {
+    "sha256": "2db0cec618a53063c309962c3e37c94fc2b839e8d0e6f338224e42f54ea15902",
+    "bytes": 9326209
+  },
+  "historicalWorker020Wasm": {
+    "sha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+    "bytes": 9326209
+  },
+  "physicalValidation": false,
+  "browserGpuValidation": false,
+  "browserUiScope": "Actual camera DMA through workbench/mini/iframe, Thermal2 input/reset, and wired P4 PHY-ready are separately recorded in m5-browser-ui-20261126.",
+  "performance": "Five native exact-work workloads all match output/counters; S3 hello median+56.83% and Pocket+21.19% CPU are measured negative evidence on a shared host. No zero-overhead or no-regression claim."
+}

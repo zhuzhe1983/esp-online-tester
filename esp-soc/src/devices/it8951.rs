@@ -1,4 +1,6 @@
-//! Bounded IT8951 SPI host interface for the reTerminal E1003's ED103TC2.
+//! Bounded IT8951 SPI host interface: ED103TC2 and M5Paper 960x540.
+//! M5EPD ef1be61debdd8a93873b081f54363945c00c4056 M5EPD_Driver.cpp
+//! adds DPY_BUF_AREA, its fixed buffer address and four LD_IMG rotations.
 //! Contract: Seeed_GFX2 556df7cb0b4a097d9b81026a26fd5511f9c934d6,
 //! Driver_IT8951.{cpp,h}, Driver_ED103TC2.cpp. Commands/registers are MSB-first;
 //! packed image endianness is selected by LD_IMG. No LUT/temperature calibration.
@@ -10,14 +12,19 @@ use crate::board::{BoardEdge,VirtualCycle};
 enum Phase {Preamble,Command,Data,Read,Invalid}
 pub struct It8951 {
     pub frame:Vec<u16>,pub frames:u64,pub version:u64,pub ram_bytes_written:u64,
-    ram:Vec<u8>,phase:Phase,byte:Option<u8>,command:u16,args:[u16;5],count:usize,reply:VecDeque<u8>,
-    load:Option<[usize;4]>,format:u16,at:usize,awake:bool,packed:bool,base:[u16;2],bitmap:bool,colors:u16,
+    width:usize,height:usize,buffer_base:[u16;2],max_mode:u16,
+    ram:Vec<u8>,phase:Phase,byte:Option<u8>,command:u16,args:[u16;7],count:usize,reply:VecDeque<u8>,
+    load:Option<[usize;4]>,format:u16,at:usize,awake:bool,packed:bool,base:[u16;2],vcom:u16,bitmap:bool,colors:u16,
     area:Option<[usize;4]>,cycle:VirtualCycle,busy_until:Option<VirtualCycle>,edges:Vec<BoardEdge>,busy_pin:u8,cycles_per_ms:u64,
 }
 impl It8951 {
     pub const WIDTH:usize=1872;pub const HEIGHT:usize=1404;
-    pub fn new(busy_pin:u8,cycles_per_ms:u64)->Self {Self{frame:vec![0xffff;Self::WIDTH*Self::HEIGHT],frames:0,version:0,ram_bytes_written:0,ram:vec![255;Self::WIDTH*Self::HEIGHT],phase:Phase::Preamble,byte:None,command:0,args:[0;5],count:0,reply:VecDeque::new(),load:None,format:0,at:0,awake:true,packed:false,base:[0,0x10],bitmap:false,colors:0x00ff,area:None,cycle:0,busy_until:None,edges:Vec::new(),busy_pin,cycles_per_ms}}
-    pub fn reset(&mut self) {self.end_transaction();self.command=0;self.count=0;self.load=None;self.at=0;self.awake=true;self.packed=false;self.base=[0,0x10];self.bitmap=false;self.colors=0x00ff;self.area=None;self.ram.fill(255);if self.busy_until.take().is_some(){self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:true});}}
+    pub fn new(busy_pin:u8,cycles_per_ms:u64)->Self {Self::with_panel(Self::WIDTH,Self::HEIGHT,[0,0x10],4,busy_pin,cycles_per_ms)}
+    /// M5EPD's SDK fixes this buffer address without querying GET_DEV_INFO.
+    /// It is a digital contract, not an identification of actual SDRAM silicon.
+    pub fn m5paper(busy_pin:u8,cycles_per_ms:u64)->Self {Self::with_panel(960,540,[0x36e0,0x12],7,busy_pin,cycles_per_ms)}
+    fn with_panel(width:usize,height:usize,buffer_base:[u16;2],max_mode:u16,busy_pin:u8,cycles_per_ms:u64)->Self {Self{width,height,buffer_base,max_mode,frame:vec![0xffff;width*height],frames:0,version:0,ram_bytes_written:0,ram:vec![255;width*height],phase:Phase::Preamble,byte:None,command:0,args:[0;7],count:0,reply:VecDeque::new(),load:None,format:0,at:0,awake:true,packed:false,base:buffer_base,vcom:if width==960{2300}else{1400},bitmap:false,colors:0x00ff,area:None,cycle:0,busy_until:None,edges:Vec::new(),busy_pin,cycles_per_ms}}
+    pub fn reset(&mut self) {self.end_transaction();self.command=0;self.count=0;self.load=None;self.at=0;self.awake=true;self.packed=false;self.base=self.buffer_base;self.bitmap=false;self.colors=0x00ff;self.area=None;self.ram.fill(255);if self.busy_until.take().is_some(){self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:true});}}
     pub fn end_transaction(&mut self){self.phase=Phase::Preamble;self.byte=None;self.reply.clear();}
     pub fn busy_high(&self)->bool {self.busy_until.is_none()}
     pub fn report(&self)->String {format!("IT8951 cmd={:04x} args={:04x?} count={} packed={} awake={} base={:04x?} load={:?} words={} busy={} bitmap={}",self.command,self.args,self.count,self.packed,self.awake,self.base,self.load,self.at,!self.busy_high(),self.bitmap)}
@@ -39,25 +46,33 @@ impl It8951 {
     }
     fn word(&mut self,w:u16) {match self.phase {
         Phase::Preamble=>{self.phase=match w{0x6000=>Phase::Command,0=>Phase::Data,0x1000=>{self.prepare_read();Phase::Read},_=>Phase::Invalid};},
-        Phase::Command=>{self.command=w;self.args=[0;5];self.count=0;self.phase=Phase::Invalid;match w{1=>self.awake=true,2|3=>{self.awake=false;self.load=None;},0x22=>self.load=None,_=>{}}},
+        Phase::Command=>{self.command=w;self.args=[0;7];self.count=0;self.phase=Phase::Invalid;match w{1=>self.awake=true,2|3=>{self.awake=false;self.load=None;},0x22=>self.load=None,_=>{}}},
         Phase::Data=>self.data(w),_=>{}
     }}
-    fn window(a:&[u16])->Option<[usize;4]> {let [x,y,w,h]=std::array::from_fn(|i|usize::from(a[i]));if w!=0&&h!=0&&x.checked_add(w)?<=Self::WIDTH&&y.checked_add(h)?<=Self::HEIGHT{Some([x,y,w,h])}else{None}}
+    fn window(a:&[u16],width:usize,height:usize)->Option<[usize;4]> {let [x,y,w,h]=std::array::from_fn(|i|usize::from(a[i]));if w!=0&&h!=0&&x.checked_add(w)?<=width&&y.checked_add(h)?<=height{Some([x,y,w,h])}else{None}}
     fn data(&mut self,w:u16) {
         if self.load.is_some()&&matches!(self.command,0x20|0x21)&&self.count>=if self.command==0x20{1}else{5}{self.pixel_word(w);return;}
         if self.count<self.args.len(){self.args[self.count]=w;}self.count=self.count.saturating_add(1);
         match (self.command,self.count) {
             (0x11,2)=>match self.args[0]{4=>self.packed=w&1!=0,0x208=>self.base[0]=w,0x20a=>self.base[1]=w,0x113a=>self.bitmap=w&4!=0,0x1250=>self.colors=w,_=>{}},
-            (0x20,1)=>self.begin_load(Some([0,0,Self::WIDTH,Self::HEIGHT])),
-            (0x21,5)=>self.begin_load(Self::window(&self.args[1..5])),
-            (0x34,5) if self.awake&&w<=4=>{self.area=Self::window(&self.args[..4]);if self.area.is_some(){if self.busy_until.is_none(){self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:false});}self.busy_until=Some(self.cycle.saturating_add(self.cycles_per_ms.saturating_mul(20).max(1)));}},_=>{}
+            (0x39,2) if self.args[0]==1=>self.vcom=w,
+            (0x20,1)=>{let(width,height)=self.load_dimensions();self.begin_load(Some([0,0,width,height]));},
+            (0x21,5)=>{let(width,height)=self.load_dimensions();self.begin_load(Self::window(&self.args[1..5],width,height));},
+            (0x34,5) if self.args[4]<=self.max_mode=>self.display_area(),
+            (0x37,7) if self.args[4]<=self.max_mode&&self.args[5..7]==self.buffer_base=>self.display_area(),_=>{}
         }
+    }
+    fn load_dimensions(&self)->(usize,usize) {if self.args[0]&1==0{(self.width,self.height)}else{(self.height,self.width)}}
+    fn display_area(&mut self) {
+        if !self.awake||self.busy_until.is_some(){return;}
+        self.area=Self::window(&self.args[..4],self.width,self.height);
+        if self.area.is_some(){self.edges.push(BoardEdge{cycle:self.cycle,pin:self.busy_pin,level:false});self.busy_until=Some(self.cycle.saturating_add(self.cycles_per_ms.saturating_mul(20).max(1)));}
     }
     fn begin_load(&mut self,window:Option<[usize;4]>) {
         self.format=self.args[0];self.at=0;
-        // The model deliberately accepts only the native rotation and the two
-        // image formats exercised by Seeed's normal 1bpp/Gray16 path.
-        self.load=if self.awake&&self.packed&&self.base==[0,0x10]&&self.format&0xf==0&&matches!((self.format>>4)&0xf,2|3){window}else{None};
+        // No bitmap/2bpp/color modes or unbacked SDRAM addresses. M5EPD uses
+        // 4bpp and rotates the logical image window before native-area refresh.
+        self.load=if self.awake&&self.packed&&self.base==self.buffer_base&&self.format&0xf<=3&&matches!((self.format>>4)&0xf,2|3){window}else{None};
     }
     fn pixel_word(&mut self,w:u16) {
         let Some([x,y,width,height])=self.load else{return;};let bits=if self.format&0x30==0x20{4}else{8};let per=16/bits;let words=width.div_ceil(per);
@@ -66,16 +81,18 @@ impl It8951 {
         // packed Pn occupies the low bits of the MSB-first SPI word. Swapping
         // wire bytes here would exchange adjacent eight-pixel bitmap blocks.
         for n in 0..per {let col=(self.at%words)*per+n;if col>=width{continue;}let shift=if self.format&0x100==0{n*bits}else{16-(n+1)*bits};let value=((w>>shift)&((1<<bits)-1))as u8;
-            self.ram[(y+self.at/words)*Self::WIDTH+x+col]=if bits==4{value*17}else{value};
+            let(lx,ly)=(x+col,y+self.at/words);
+            let(px,py)=match self.format&3 {0=>(lx,ly),1=>(ly,self.height-1-lx),2=>(self.width-1-lx,self.height-1-ly),_=>(self.width-1-ly,lx)};
+            self.ram[py*self.width+px]=if bits==4{value*17}else{value};
         }self.at+=1;self.ram_bytes_written+=2;
     }
     fn prepare_read(&mut self) {
         self.reply.clear();self.reply.extend([0,0]);
         let words:Vec<u16>=match self.command {
-            0x0302=>{let mut info=vec![0;20];info[..4].copy_from_slice(&[Self::WIDTH as u16,Self::HEIGHT as u16,0,0x10]);for (i,w) in b"SIMULATED\0\0\0\0\0\0\0".as_chunks::<2>().0.iter().enumerate(){info[4+i]=u16::from_be_bytes([w[0],w[1]]);}info},
+            0x0302=>{let mut info=vec![0;20];info[..4].copy_from_slice(&[self.width as u16,self.height as u16,self.buffer_base[0],self.buffer_base[1]]);for (i,w) in b"SIMULATED\0\0\0\0\0\0\0".as_chunks::<2>().0.iter().enumerate(){info[4+i]=u16::from_be_bytes([w[0],w[1]]);}info},
             0x10 if self.count>=1=>vec![match self.args[0]{4=>u16::from(self.packed),0x208=>self.base[0],0x20a=>self.base[1],0x113a=>if self.bitmap{4}else{0},0x1250=>self.colors,0x1224=>u16::from(!self.busy_high()),_=>0}],
             // Named nominal endpoints, no claim of physical VCOM calibration.
-            0x39=>vec![1400],0x40=>vec![25],_=>vec![0xffff]
+            0x39=>vec![self.vcom],0x40=>vec![25],_=>vec![0xffff]
         };for w in words{self.reply.extend(w.to_be_bytes());}
     }
     pub fn advance_to(&mut self,cycle:VirtualCycle) {
@@ -83,8 +100,8 @@ impl It8951 {
         if let Some([x,y,w,h])=self.area.take(){for row in y..y+h{for col in x..x+w{
             // BGVR=(background<<8)|foreground in tconDisplayArea1bpp;
             // bit 1 selects foreground, the low byte, not the high byte.
-            let g=if self.bitmap {let bit=self.ram[row*Self::WIDTH+col/8]&(1<<(col%8))!=0;if bit{self.colors as u8}else{(self.colors>>8)as u8}}else{self.ram[row*Self::WIDTH+col]};
-            let g=u16::from(g);self.frame[row*Self::WIDTH+col]=((g>>3)<<11)|((g>>2)<<5)|(g>>3);
+            let g=if self.bitmap {let bit=self.ram[row*self.width+col/8]&(1<<(col%8))!=0;if bit{self.colors as u8}else{(self.colors>>8)as u8}}else{self.ram[row*self.width+col]};
+            let g=u16::from(g);self.frame[row*self.width+col]=((g>>3)<<11)|((g>>2)<<5)|(g>>3);
         }}self.frames+=1;self.version+=1;}self.edges.push(BoardEdge{cycle:until,pin:self.busy_pin,level:true});
     }
 }

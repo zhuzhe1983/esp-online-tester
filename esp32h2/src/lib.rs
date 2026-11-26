@@ -2,6 +2,8 @@
 //! HP320KiB/LP4KiB, RV32IMAC at nominal96MHz, 19 physical GPIOs (28 register positions), UART FIFO polling and
 //! finite RMT TX at the board's32MHz crystal. Unknown MMIO and ROM execution fault.
 pub mod board;
+pub mod nanoh2;
+pub mod gateway;
 pub mod bus;
 pub mod image;
 pub mod soc;

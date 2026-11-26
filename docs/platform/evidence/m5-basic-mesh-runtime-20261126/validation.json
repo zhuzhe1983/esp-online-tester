@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-11-26T11:32:39.333761+00:00",
+  "baseCommit": "9d1caa961e04e2f5e8b604dd20d2df2ebf0227f2",
+  "taskHarness": {
+    "script": "tools/platform-m5-basic-mesh-worker-test.mjs",
+    "sha256": "aa8d0df3672426a93df6ddbbfa9b036b3d8a03d6c24642c41b1547ac738e32a3",
+    "tests": 2,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "actualProductRuns": 9,
+    "basicPhysicalButtonTransitions": 48,
+    "cardputerPhysicalKeyTransitions": 112,
+    "publicResetRuns": 9,
+    "wrongPhysicalDisplayRouteRuns": 9,
+    "wrongPhysicalKeyboardRouteRuns": 1,
+    "finalWrongDisplayOutputs": "All9 produced actual black framebuffer bytes after guest execution; each frame hash is retained.",
+    "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+    "runtimeWorkerAndCatalogUnchangedFromBase": true
+  },
+  "historicalClassicProbeByteComparison": {
+    "cases": 9,
+    "result": "passed",
+    "receipt": "classic-fixture-compatibility.json"
+  },
+  "syntaxChecks": {
+    "node--check": [
+      "tools/fixtures/m5-classic-display-probe.mjs",
+      "tools/fixtures/m5-cardputer-mesh-input-probe.mjs",
+      "tools/platform-m5-basic-mesh-worker-test.mjs"
+    ],
+    "result": "passed"
+  },
+  "broaderPlatformChecks": {
+    "platform-input-test.mjs": "passed (11 input checks)",
+    "platform-view-test.mjs": "passed",
+    "platform-config-test.mjs": {
+      "result": "failed on unchanged base catalog",
+      "assertion": "Tab5 m5stack-c145 runtime.board is null; existing test expects m5stack-tab5",
+      "line": 44,
+      "scope": "Outside the9 assigned runtime profiles; no catalog or production code was changed."
+    },
+    "platform-runtime-test.mjs": {
+      "result": "blocked by absent default site WASM artifact",
+      "romFallbackWithExplicitRomDirectory": "passed",
+      "boundaryChecksBeforeInitialization": "passed",
+      "code": "HTTP_ERROR",
+      "asset": "web/wasm/esp32sim.wasm",
+      "status": 404,
+      "scope": "This general harness reads the default site artifact. The dedicated9-SKU harness instead consumes the supplied immutable batch020 bytes and passed actual execution."
+    }
+  },
+  "limitations": [
+    "Diagnostic authored programs do not validate factory firmware, physical hardware, full application behavior or unsupported peripherals.",
+    "Exact selected Flash/PSRAM configuration is observed at real Worker creation, without claiming new capacity or PSRAM traffic acceptance."
+  ]
+}

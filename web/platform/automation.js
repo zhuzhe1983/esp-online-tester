@@ -15,6 +15,7 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
       return () => { stopRuntime(); stopRecorder(); };
     },
     async audioConfigure(options){if(options?.input)await recorder.beforeLifecycle('audio-input');return runtime.audioConfigure(options);},
+    async setCameraPicture(options){await recorder.beforeLifecycle('camera-picture');return runtime.setCameraPicture(options);},
     async pushAudio(options){await recorder.beforeLifecycle('audio-input');return runtime.pushAudio(options);},
     async configureNetwork(options){await recorder.beforeLifecycle('network-configure');return runtime.configureNetwork(options);},
     async provisionNetwork(){await recorder.beforeLifecycle('network-provision');return runtime.provisionNetwork();},
@@ -23,6 +24,7 @@ export function installAutomation(runtime, { target = globalThis.window } = {}) 
     async injectGps(options) { await recorder.beforeLifecycle('gps-input'); return runtime.injectGps(options); },
     async configureFlight(options){await recorder.beforeLifecycle('flight-configure');return runtime.configureFlight(options);},
     async setImu(options) { await recorder.beforeLifecycle('imu-input'); return runtime.setImu(options); },
+    async sdioHostCommand(options) { await recorder.beforeLifecycle('sdio-host'); return runtime.sdioHostCommand(options); },
     async receiveLoRa(packet) { await recorder.beforeLifecycle('lora-input'); return runtime.receiveLoRa(packet); },
     async configure(scene) { await recorder.beforeLifecycle('configure'); return runtime.configure(scene); },
     async loadFirmware(source) { await recorder.beforeLifecycle('load-firmware'); return runtime.loadFirmware(source); },

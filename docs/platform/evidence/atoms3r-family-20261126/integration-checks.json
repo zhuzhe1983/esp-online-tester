@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-11-26T06:09:26.150458+00:00",
+  "sourceCommit": "96e04926e525c8a4e3df39c5c9dec80b5701cb8e",
+  "checks": [
+    {
+      "command": "cargo clippy -p esp32s3 --lib -- -D warnings",
+      "status": "passed"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "passed",
+      "products": 678
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-imu-test.mjs tools/platform-knowledge-test.mjs",
+      "status": "passed",
+      "tests": 8
+    }
+  ],
+  "limits": [
+    "Factory applications and physical hardware not executed.",
+    "Production WASM rebuild pending integration.",
+    "Browser WebGL context unavailable; no 3D screenshot pass claimed."
+  ]
+}

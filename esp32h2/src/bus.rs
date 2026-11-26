@@ -75,6 +75,13 @@ impl H2Bus{
  fn ram_write(&mut self,a:u32,n:usize,v:u32)->bool{
   let(mem,r)=if let Some(r)=Self::range(a,n,SRAM_BASE,SRAM_SIZE){(&mut self.sram,r)}else if let Some(r)=Self::range(a,n,LP_BASE,LP_SIZE){(&mut self.lp_sram,r)}else{return false;};mem[r].copy_from_slice(&v.to_le_bytes()[..n]);true
  }
+ pub fn uart_route(&self,n:usize)->esp_soc::uart::UartRoute {
+  if n>=2 {return esp_soc::uart::UartRoute::new(n,0,None,None);}
+  // This H2 subset accepts only PCR source3 (32MHz XTAL); shared UART
+  // decoder source3 is40MHz, so rescale its fractional-divider result.
+  let baud=self.uart_on(n).then(||self.uart[n].baud(self.uart_clock[n],32_000_000)).flatten().map(|v|(u64::from(v)*4/5)as u32);
+  esp_soc::uart::UartPins::H2.route(n,&self.gpio,&self.io_mux,baud)
+ }
  pub(crate) fn uart_on(&self,n:usize)->bool{self.uart_conf[n]&3==1&&self.uart_clock[n]&(1<<22)!=0}
  fn pcr_read(&self,o:u32)->Result<u32,Fault>{match o{0|0xc=>{let c=self.uart_conf[(o/12)as usize];Ok(c|if c&2==0{4}else{0})},4|0x10=>Ok(self.uart_clock[((o-4)/12)as usize]),0x34=>Ok(self.rmt_conf|if self.rmt_conf&2==0{4}else{0}),0x38=>Ok(self.rmt_clock),_=>Err(Fault::Unmapped)}}
  fn pcr_write(&mut self,o:u32,v:u32)->Result<(),Fault>{
@@ -98,7 +105,7 @@ impl H2Bus{
  fn uart_write(&mut self,n:usize,o:u32,v:u32)->Result<(),Fault>{
   if !self.uart_on(n){return Err(Fault::Prohibited);}
   match o{
-   0=>{if self.uart[n].read(0x20)&(1<<20)==0{return Err(Fault::Prohibited);}self.uart[n].write(0,v&255);},
+   0=>{if self.uart[n].read(0x20)&(1<<20)==0{return Err(Fault::Prohibited);}self.uart[n].write(0,v&255);if self.board.uses_uart_pins(){self.board.uart_tx(self.cycles,self.uart_route(n),v as u8);}},
    0xc|0x10=>{if v&!UART_INTERRUPTS!=0{return Err(Fault::Prohibited);}self.uart[n].write(o,v);},
    0x14=>{if v&!0x00f00fff!=0{return Err(Fault::Prohibited);}self.uart[n].write(o,v);},
    0x20=>{let commands=(1<<22)|(1<<23);if v&!(commands|(1<<20))!=0x1c{return Err(Fault::Prohibited);}self.uart[n].write(o,v&!(1<<23));},
@@ -108,10 +115,10 @@ impl H2Bus{
   }Ok(())
  }
  fn gpio_read(&mut self,o:u32)->Result<u32,Fault>{
-  match o{4|0x20|0x44=>Ok(self.gpio.read(o)&VALID_PADS as u32),0x3c=>{let enabled=(0..28).filter(|p|Self::valid_pad(*p)&&self.io_mux.read(4+u32::from(*p)*4)&(1<<9)!=0).fold(0u32,|m,p|m|(1<<p));Ok(self.gpio.read(o)&enabled)},0x38=>Ok(self.gpio.strap&0xffff),8|0xc|0x24|0x28|0x48|0x4c=>Ok(0),0x74..=0xe0 if Self::valid_pad(((o-0x74)/4)as u8)=>Ok(self.gpio.read(o)),0x554..=0x5c0 if Self::valid_pad(((o-0x554)/4)as u8)=>Ok(self.gpio.read(o)),_=>Err(Fault::Unmapped)}
+  match o{4|0x20|0x44=>Ok(self.gpio.read(o)&VALID_PADS as u32),0x3c=>{let enabled=(0..28).filter(|p|Self::valid_pad(*p)&&self.io_mux.read(4+u32::from(*p)*4)&(1<<9)!=0).fold(0u32,|m,p|m|(1<<p));Ok(self.gpio.read(o)&enabled)},0x38=>Ok(self.gpio.strap&0xffff),8|0xc|0x24|0x28|0x48|0x4c=>Ok(0),0x74..=0xe0 if Self::valid_pad(((o-0x74)/4)as u8)=>Ok(self.gpio.read(o)),0x154..=0x350=>Ok(self.gpio.read(o)),0x554..=0x5c0 if Self::valid_pad(((o-0x554)/4)as u8)=>Ok(self.gpio.read(o)),_=>Err(Fault::Unmapped)}
  }
  fn gpio_write(&mut self,o:u32,v:u32)->Result<(),Fault>{
-  match o{4|8|0xc|0x20|0x24|0x28|0x44|0x48|0x4c=>self.gpio.write(o,v&VALID_PADS as u32),0x74..=0xe0 if Self::valid_pad(((o-0x74)/4)as u8)=>{if v&!0x39f!=0{return Err(Fault::Prohibited);}self.gpio.write(o,v);},0x554..=0x5c0 if Self::valid_pad(((o-0x554)/4)as u8)=>{if v&!0x7ff!=0{return Err(Fault::Prohibited);}self.gpio.write(o,v);},_=>return Err(Fault::Unmapped)}self.publish_gpio();Ok(())
+  match o{4|8|0xc|0x20|0x24|0x28|0x44|0x48|0x4c=>self.gpio.write(o,v&VALID_PADS as u32),0x74..=0xe0 if Self::valid_pad(((o-0x74)/4)as u8)=>{if v&!0x39f!=0{return Err(Fault::Prohibited);}self.gpio.write(o,v);},0x154..=0x350=>{if v&!0xff!=0{return Err(Fault::Prohibited);}self.gpio.write(o,v);},0x554..=0x5c0 if Self::valid_pad(((o-0x554)/4)as u8)=>{if v&!0x7ff!=0{return Err(Fault::Prohibited);}self.gpio.write(o,v);},_=>return Err(Fault::Unmapped)}self.publish_gpio();Ok(())
  }
  fn mmio_read(&mut self,a:u32)->Result<u32,Fault>{match a{
   0x60000000..=0x60001fff=>self.uart_read(((a>>12)&1)as usize,a&0xfff),

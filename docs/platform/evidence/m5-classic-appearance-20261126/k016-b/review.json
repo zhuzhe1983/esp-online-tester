@@ -1,0 +1,29 @@
+{
+  "productId": "m5stack-k016-b",
+  "modelSha256": "cfdc0fc052e5463938ae17c8a36cd8ba94d3afb7e5e2ac3e7b30137711e8311d",
+  "change": "Add only exact-SKU rear paper and photo-traced M5 shallow recesses to the existing photo-derived shell.",
+  "sources": "photo2 rear paper, photo3 front glyph; kit overview photo0 fixes Grove end at−Y and paper orientation.",
+  "negative": "Previous model had no rear-paper or front M5; no exact-SKU manufacturer CAD is claimed.",
+  "detail": "Front contours use red<69 in fixed ROI,3×3 close and0.7px polygon simplification. Body X/Y scales25.5/375 and48.2/758mm/px;0.1mm recess depth estimated. Rear paper20.5×39.2mm center[0,1,−6.865] is a photo estimate±1mm,0.015mm outward.",
+  "manualCpuReview": "Original/gold/translucent-purple front and rear checked. Glyph shapes now come from source contours and actual recess geometry; paper, blank live framebuffer, keys/connectors and unknown boards retain independent materials. Photo-only paper masks exclude enclosure, screws and sockets. Inspection view at[0.75,3,1] exposes the UNKNOWN word; front/rear group restore is exact.",
+  "checks": {
+    "offlineArtifacts": "all bytes identical in fresh independent rebuild",
+    "nativeRecessRays": "both glyph floors hit at expected estimated depth",
+    "loader": "source hashes, fixed materials, full UNKNOWN center+four inset ray checks, inspection exact reset",
+    "catalog": "728 products/10 accessories/670 firmwares/537 watchlist schemas pass",
+    "relatedTests": "14 inspection/servo-view +5 visual-variant tests pass",
+    "knowledge": "736 records pass after source archiveName/chronology fix73162de4"
+  },
+  "commands": [
+    "python tools/build-m5-legacy-kit-models.py m5stack-k016-b --output <new-independent-directory>",
+    "node tools/verify-classic-appearance-20261126.mjs <receipt> m5stack-k016-b",
+    "node tools/export-m5-cpu-models.mjs --repo <repo> --out <export> --ids m5stack-k016-b [--inspection 1]",
+    "blender -b -t 2 --python tools/render-m5-cpu-qa.py -- --repo <repo> --input <export> --out <renders> --ids m5stack-k016-b --size 768 --samples 16 --appearance <original|gold|purple>",
+    "blender -b -t 2 --python tools/render-m5-cpu-qa.py -- --repo <repo> --input <inspection-export> --out <renders> --ids m5stack-k016-b --size 768 --samples 16 --oblique-eye 0.75,3,1"
+  ],
+  "limits": [
+    "Photo/drawing geometry and relief depth are approximate; source contours are not an exact manufacturer CAD or molding certification.",
+    "Cycles CPU uses documented text-font substitution only for UNKNOWN; visible front M5 no longer uses any font.",
+    "No physical hardware, firmware compatibility or mechanical fit acceptance from these appearance checks."
+  ]
+}

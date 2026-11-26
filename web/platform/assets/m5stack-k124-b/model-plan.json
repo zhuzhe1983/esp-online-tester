@@ -204,7 +204,8 @@
           "shell-battery",
           "rail-clip",
           "rail-right",
-          "rail-left"
+          "rail-left",
+          "rear-paper-label"
         ],
         "offsetMm": [
           0,
@@ -225,7 +226,10 @@
           "front-light-guide",
           "button-panel",
           "display-carrier",
-          "live-display"
+          "live-display",
+          "cover-key:button-a",
+          "cover-key:button-b",
+          "cover-key:button-c"
         ],
         "offsetMm": [
           0,
@@ -261,7 +265,63 @@
         0
       ],
       "basis": "Active area inferred from official 1.14-inch and 240:135 ratio; position estimated from CAD carrier/photo. Blank display only."
-    }
+    },
+    "buttons": [
+      {
+        "id": "button-a",
+        "shape": "rectangle",
+        "sizeMm": [
+          6.5,
+          4.5
+        ],
+        "positionMm": [
+          -10,
+          5.1,
+          16.52
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-db9acdc521"
+        ],
+        "notes": "Hit region lies inside the measured native CAD top-face bounds; three keys at X=-10/0/10 mm, native top Z=16.5 mm. Input overlay offset 0.02 mm."
+      },
+      {
+        "id": "button-b",
+        "shape": "rectangle",
+        "sizeMm": [
+          6.5,
+          4.5
+        ],
+        "positionMm": [
+          0,
+          5.1,
+          16.52
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-db9acdc521"
+        ],
+        "notes": "Hit region lies inside the measured native CAD top-face bounds; three keys at X=-10/0/10 mm, native top Z=16.5 mm. Input overlay offset 0.02 mm."
+      },
+      {
+        "id": "button-c",
+        "shape": "rectangle",
+        "sizeMm": [
+          6.5,
+          4.5
+        ],
+        "positionMm": [
+          10,
+          5.1,
+          16.52
+        ],
+        "basis": "manufacturer-cad",
+        "sourceIds": [
+          "manufacturer-cad-db9acdc521"
+        ],
+        "notes": "Hit region lies inside the measured native CAD top-face bounds; three keys at X=-10/0/10 mm, native top Z=16.5 mm. Input overlay offset 0.02 mm."
+      }
+    ]
   },
   "derivedParts": [
     {
@@ -590,6 +650,32 @@
         ],
         "notes": "Socket plastic color category checked against the exact product source photograph; hex is an approximate display value, not a calibrated optical measurement. Contacts/inner shading independent from shell appearance."
       }
+    },
+    {
+      "id": "rear-paper-label",
+      "kind": "label",
+      "texture": "rear-paper-label.png",
+      "geometry": {
+        "sizeMm": [
+          39.8,
+          24
+        ],
+        "centerMm": [
+          0,
+          -2,
+          -14.125
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-f76707f6d0"
+      ],
+      "notes": "Station-Bat central rear pinout paper between the two mounting clips. Manufacturer photograph retains the printed optional-model table; it does not establish unmodeled circuitry. Registration is estimated from the retained near-frontal photo and native CAD recess. Paper RGB/lighting are uncalibrated; the alpha plane follows its enclosure inspection group and remains independent of shell color."
     }
   ],
   "photos": [
@@ -687,5 +773,29 @@
       "sourceId": "dimension-drawing-a2cb91c05f",
       "unit": "mm"
     }
+  },
+  "paperRestoration": {
+    "texture": {
+      "file": "rear-paper-label.png",
+      "sourceId": "product-photo-f76707f6d0",
+      "sourceSha256": "cdac618a687917ddcee68f3aff75129423bde98eb0859092d43b9d6c39231dda",
+      "cropXYXY": [
+        276,
+        337,
+        516,
+        483
+      ],
+      "outputPixels": [
+        240,
+        146
+      ],
+      "method": "Original RGB crop without warp or generated lettering; explicit paper ROI intersected with nearest assembled CAD -Z face, gap 0.015–0.12 mm, one-texel mechanical edge clearance. Official continuous Station paper bridges local CAD holes/grooves, supported by the surrounding coplanar rear face; source solid is unchanged. Deterministic tools/restore-m5-rear-paper.py.",
+      "alphaMask": {
+        "radius": 6
+      },
+      "notes": "Station-Bat central rear pinout paper between the two mounting clips. Manufacturer photograph retains the printed optional-model table; it does not establish unmodeled circuitry."
+    },
+    "originalCadSha256": "55cbbddec3676b92041b71cb826bf888da54b5d3e6d5200d159a48960deb9647",
+    "rebuild": "python tools/restore-m5-rear-paper.py m5stack-k124-b"
   }
 }

@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T06:07:17Z",
+  "baselineCommit": "81bc93c0333a9fd13c16565b245b3d1c0d7ce237",
+  "products": [
+    "m5stack-c126-ext",
+    "m5stack-c126-cam",
+    "m5stack-c126-m12",
+    "m5stack-k147-cam",
+    "m5stack-d062-m12"
+  ],
+  "checks": [
+    {
+      "command": "cargo test --release -p esp32s3 atoms3r_cam --lib",
+      "result": "passed",
+      "tests": 2,
+      "filteredOut": 423,
+      "scope": "5 exact board variants; BMI270 register outputs, missing devices, camera power/reset and identity"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "passed",
+      "products": 678,
+      "accessories": 10,
+      "firmwares": 611,
+      "watchlist": 443
+    },
+    {
+      "command": "node tools/platform-knowledge-test.mjs",
+      "result": "passed",
+      "records": 686,
+      "downloadedSourceHashesVerified": 0
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-imu-test.mjs",
+      "result": "passed",
+      "tests": 7,
+      "limits": "ROM hash not checked in config test because esp32s3_rev0_rom.elf is absent in this worktree; factory firmware not booted."
+    },
+    {
+      "command": "cargo clippy --release -p esp32s3 --all-targets -- -D warnings",
+      "result": "blocked",
+      "reason": "cargo-clippy component is not installed in the shared stable toolchain; no lint pass claimed."
+    }
+  ],
+  "models": [
+    {
+      "productId": "m5stack-c126-ext",
+      "modelJsonSha256": "5ae214ef6f73b5346495e5d9413894352637a648ecebdda0569eda1b7f98ff49",
+      "assetSha256": {
+        "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "back-paper.png": "519ce8e208ed16d70e37d0c2cd3fcd5d6746e1c4c586a3a2883b63bc95194bae",
+        "geometry.bin": "3279a9413a424578141e2415e936bf3ffc090fa34e3027817f4d9cc84bfa27d0",
+        "reference-product-photo-8cad8be4b1.webp": "7ac8f11d09055e4a24b497c4fa90aba3b79c9fbfa147feb896c54230cbcfdf64",
+        "reference-product-photo-d2a3f2520a.webp": "1335ca10f9b6afc6096dcc23c68d70e2d495dfa44cff64d78c19acd079351499",
+        "reference-product-photo-ed9c85b525.webp": "3d900a2e69bcfe3a69db5ad2037a167206675da7f4e1112389e96bdfcb85f1be",
+        "reference-product-photo-fa48f1c3b7.webp": "c86cd078bfd3e518b484ec6475f32379016ab8193b272b5314a8f52fabc4ead8",
+        "source.stl": "509eb0d308f21b35cd30b02d97aa5df63072d2ece75eb08f6d9efc06d0dd336f"
+      },
+      "changed": false,
+      "visualOrDimensionRevalidation": "not-rerun-unchanged-assets",
+      "scope": "Hash checked existing local assets; no new geometry/texture accuracy claim."
+    },
+    {
+      "productId": "m5stack-c126-cam",
+      "modelJsonSha256": "fbebea9f48cf426a6788e115e12951cfdcf523a871221244156e2eb9116d6f3f",
+      "assetSha256": {
+        "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "back-paper.png": "43b1ed8913de5138ddb1b566fa61cdb378e4fdc39742c886b1a0962db63721d0",
+        "front-photo.webp": "ac7a64707403845cbabfcd13a3e342e5e167bcb968093f2bef5782fbb1f59692",
+        "geometry.bin": "aa25bb7891bacfabc2185328e52cdff69ac350b5ec9d82220b9386cd3a09cb86",
+        "reference-product-photo-19448ec774.webp": "71e328d5fc43639ef074169f7a4778f08724f333f76f727dc3fc1c41f2698d6f",
+        "reference-product-photo-5f73db7168.webp": "0943508b79486fda6d0773966a792a5841f576295757d4044358dcc3e6d0bae3",
+        "reference-product-photo-e06098ebf5.webp": "c4255dcdf5b104b0fae1e447874dec7a4009182cd5f90dc0adc9cacb51c8d06a",
+        "source.stl": "397d751f477d0a05d1de8f6d75f85dba6f26e45f127ed8dfabf977c2761548cd"
+      },
+      "changed": false,
+      "visualOrDimensionRevalidation": "not-rerun-unchanged-assets",
+      "scope": "Hash checked existing local assets; no new geometry/texture accuracy claim."
+    },
+    {
+      "productId": "m5stack-c126-m12",
+      "modelJsonSha256": "7e78d3fcd07c9bdca57ee1842d64a920bb626ac74fa3b588da421d4c9e2f8d77",
+      "assetSha256": {
+        "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "geometry.bin": "241c63f696e1f05ff96772f0ed1c8316e5cb60971c34dc48bffb26b278c20fb7",
+        "paper-labels.png": "28a503b7b84d0272528cb3652cc221456c51535d415e6ef4b985b1ce3dd48f95",
+        "reference-product-photo-677533a51a.webp": "8c8d069ad1b8ab8cba948812073e03020d8210b018288ac52f9c410fd2d9052e",
+        "reference-product-photo-763f5fb9a0.webp": "92f788d42b53015163330ae0c72b469d9acb0ed1a69c7e568421375621e38b4d",
+        "reference-product-photo-a0837d0a46.webp": "9ba6085cdc0a1db8e7b6479171985b72eed9c8c71d4871817fa71371f939cff7",
+        "source.stl": "58f85c2db5d70a101bfa02df5114afdb1600716f4f6a45e191196fbf0a86737a"
+      },
+      "changed": false,
+      "visualOrDimensionRevalidation": "not-rerun-unchanged-assets",
+      "scope": "Hash checked existing local assets; no new geometry/texture accuracy claim."
+    },
+    {
+      "productId": "m5stack-k147-cam",
+      "modelJsonSha256": "58d29186d5eb498a30ed73fd80e3bcb2604b2deb459e66292a9a1dab69629c2b",
+      "assetSha256": {
+        "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "back-paper.png": "f5e097cdbebfeaa492db235d0c0f868c9625730925c8b04752e2b7e58e992cf9",
+        "front-photo.webp": "2c90eb747367a84360a8f254d737ea373db88857a933eee79ebb021f9c3c3067",
+        "geometry.bin": "a6d712b569698b091b1b74be5809f60f0b7d0fe3f3c115ded021886e6d5a6288",
+        "reference-product-photo-18a350b78e.webp": "c581435eb1341f63eb4b2d2137793b38525ea2ed3302dd997aaf63626efe64a7",
+        "reference-product-photo-835883080a.webp": "1e37194aa6ab9a4d9abc3e4f36a49db3be3cddb6038e6e4bfe1bb3c795127753",
+        "reference-product-photo-8e49762452.webp": "96cd5b3ca825f902ab97bfb3a7181c26d69603bbfebb7d33fe74e40209c30372",
+        "source.stl": "c1de1ec2778ad1d34d4a63be812783596847a2a9a91d8cea1fa0cfd4cbbc8ea1"
+      },
+      "changed": false,
+      "visualOrDimensionRevalidation": "not-rerun-unchanged-assets",
+      "scope": "Hash checked existing local assets; no new geometry/texture accuracy claim."
+    },
+    {
+      "productId": "m5stack-d062-m12",
+      "modelJsonSha256": "3b5cfe0f706da372aef2103b94911b53e1c86f58a10cf99fb541863821bf8bec",
+      "assetSha256": {
+        "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+        "camera-face.webp": "3f07ab86fc2221184dfb5923687e347f25ab07643ec9d593dad8f151cc576846",
+        "geometry.bin": "c0bcbf7bfafcfbc5b3a9c24bf1b951658c8da6722e08ea3357c1e4fd48de7c3a",
+        "reference-product-photo-6f57f8c588.jpg": "1e646c38523507458801231ca40f0dff79d84375079ee57c2d57e355b89cad7d",
+        "reference-product-photo-e29fd7406e.jpg": "c1ec18a3034e47918493d8ed1b0d22006bc8c831293c6ba02e633fe6bf1bcf00",
+        "reference-product-photo-ea60c36924.jpg": "234a9804a117bb67c89f5719de892b0fa9de1f393e7a57021d586cfbbfa4363c",
+        "source.stl": "08ac28c1b18a4315d9ed8d888aedbe3e454458f912f16f2627b57631a09102f2"
+      },
+      "changed": false,
+      "visualOrDimensionRevalidation": "not-rerun-unchanged-assets",
+      "scope": "Hash checked existing local assets; no new geometry/texture accuracy claim."
+    }
+  ],
+  "notVerified": [
+    "official factory firmware boot or application behavior",
+    "production WASM rebuild and browser run for these new variants",
+    "physical hardware",
+    "camera capture/UVC/audio/BMM150/IR",
+    "new dimension or photographic 1:1 comparison"
+  ]
+}

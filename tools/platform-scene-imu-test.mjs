@@ -73,6 +73,9 @@ test('all host-fed runtime IMUs accept the same documented virtual axes, with no
     ['stickc','mpu6886-register-subset'],
     ['stickc-plus','mpu6886-register-subset'],
     ['stickt2','mpu6886-register-subset'],
+    ['stickc-plus2','mpu6886-register-subset'],
+    ['stickt-original','mpu6886-register-subset'],
+    ['tlite','mpu6886-register-subset'],
     ['sticks3','bmi270-register-subset'],
   ]);
   for (const [board,model] of stickProfiles) assert.equal(imuModelForBoard(board),model);
@@ -86,7 +89,9 @@ test('all host-fed runtime IMUs accept the same documented virtual axes, with no
       assert.equal((await runtime.observe()).imu.source,'agent');
       const result=await runtime.setImu({source:'scene',quaternion:tilted});assert.ok(Math.abs(result.accelG[0]-1)<1e-8);assert.deepEqual(result.gyroDps,[0,0,0]);
     }
-    assert.equal([...seen].filter(board=>!stickProfiles.has(board)&&!board.startsWith('waveshare-')).length,12);
+    const addedBoards=new Set(['atoms3r-ext','atoms3r-cam','atoms3r-cam-chatbot','atoms3r-m12','atoms3r-m12-volcengine','capsule','capsule-v11']);
+    for(const board of addedBoards)assert(seen.has(board),board+' was exercised');
+    assert.equal([...seen].filter(board=>!stickProfiles.has(board)&&!addedBoards.has(board)&&!board.startsWith('waveshare-')).length,12);
     // Incremental Waveshare deliveries contain a growing subset of products;
     // exercise every published IMU board without weakening the upstream set.
     for(const board of new Set(catalog.products.filter(p=>p.manufacturer==='Waveshare'&&imuModelForBoard(p.runtime?.board)).map(p=>p.runtime.board)))assert(seen.has(board));

@@ -1,0 +1,19 @@
+{
+  "scope": "Prepared integration harnesses; pending central WASM and EMAC builds, no execution acceptance claimed.",
+  "worker": {
+    "command": "ESP32SIM_WASM=<central-module> ESP32SIM_ROM_DIR=<rom-directory> M5_UNIT_WORKER_RECEIPT=<receipt.json> node --test tools/platform-m5-unit-worker-test.mjs",
+    "fixtureSource": "tools/fixtures/m5-unit-controller-probe.mjs",
+    "bootMode": "actual mask ROM loads an authored SRAM diagnostic bootloader at Flash0x1000",
+    "appDirect": false,
+    "stubs": [],
+    "structuralImageChecks": "ESP app header, complete segments, XOR checksum and embedded SHA256 passed for every correct/wrong-route image.",
+    "imageBytes": {"atomu":5328,"unit-lcd":6704,"unit-thermal2":5600,"atom-psram-display":5488},
+    "execution": "pending"
+  },
+  "ethernet": {
+    "command": "cargo test -p esp32 --test unit_poesp32",
+    "source": "esp32/tests/unit_poesp32.rs",
+    "tests": 3,
+    "execution": "pending shared EMAC engine integration"
+  }
+}

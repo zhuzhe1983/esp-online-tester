@@ -35,6 +35,8 @@ async function fixture(id='m5stack-u202-meshtastic-stable') {
 test('C6L trial sources download and prepare without a board or a prior simulator download',async()=>{
   for(const id of ['m5stack-u202-meshtastic-stable','m5stack-u202-meshtastic-alpha','m5stack-u202-uiflow2']) {
     const f=await fixture(id);await firmwareCache.clear();
+    // Deliberately remove the now-implemented board to retain this independence case.
+    f.product.runtime={...f.product.runtime,board:null,status:"unavailable"};
     assert.equal(f.product.runtime.board,null);assert.equal(f.firmware.simulationVerified,false);
     assert.equal(firmwareRunPolicy(f.product,f.firmware).canRun,false);
     assert.equal(firmwareFlashPolicy(f.product,f.scene.firmware).canFlash,true);

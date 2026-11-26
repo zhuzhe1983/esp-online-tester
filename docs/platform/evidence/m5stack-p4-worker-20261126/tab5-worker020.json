@@ -1,0 +1,88 @@
+{
+  "checkedAt": "2026-11-26T10:40:47.009Z",
+  "productId": "m5stack-c145",
+  "batch": "ILI9881C+GT911",
+  "backend": "actual-platform-worker-wasm",
+  "guestSha256": "f161b465ace6b07d877ed9338a9c762a708840fcab40dfbedc6c174da569f507",
+  "guestBytes": 7888,
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "harnessSha256": "36798a8958c9ce0afc51768ac6cf1c9a452afa160d2ac8150383b202812aa566",
+  "fixtureModuleSha256": "c0062356bd15ed070c4452e0d38b0840c954e3c554f47e9833aed5a32a625aa2",
+  "workerSha256": "280b02e3d46f5e8968e1a7e446767e33384cea7573b36217dd909dc0eeacec9a",
+  "checks": [
+    "real-guest-921600-pixels-DMA2D-DW-GDMA-DSI-and-full-RGBA-sha256",
+    "GT911-I2C-report-consumed-by-guest-and-drawn-into-second-DMA-frame",
+    "pause-freezes-guest-time",
+    "platform-reset-recreates-guest-framebuffer-and-touch-state",
+    "wrong-physical-SDA-LDO3-loss-unmapped-DMA-source-invalid-LLI-all-reject-panel-frames"
+  ],
+  "frames": [
+    {
+      "label": "initial",
+      "frameNumber": 2,
+      "rgbaSha256": "1bbeb3e5360e7075ccb9f47e789fc38e40ad9ec9a17b5de5511513fc1be225b0"
+    },
+    {
+      "label": "touch",
+      "frameNumber": 3,
+      "rgbaSha256": "ca681221c286e8522b2702405eeb091572918f6cfa2e48c681fdc148c75878bc"
+    },
+    {
+      "label": "platform-reset",
+      "frameNumber": 2,
+      "rgbaSha256": "1bbeb3e5360e7075ccb9f47e789fc38e40ad9ec9a17b5de5511513fc1be225b0"
+    },
+    {
+      "label": "wrong-i2c-route",
+      "frameNumber": 1,
+      "rgbaSha256": "771fa16b358e3195e00973cb8baa582a84f3c38d9ab2218742169515211b9889"
+    },
+    {
+      "label": "power-loss",
+      "frameNumber": 1,
+      "rgbaSha256": "771fa16b358e3195e00973cb8baa582a84f3c38d9ab2218742169515211b9889"
+    },
+    {
+      "label": "bad-source",
+      "frameNumber": 1,
+      "rgbaSha256": "771fa16b358e3195e00973cb8baa582a84f3c38d9ab2218742169515211b9889"
+    },
+    {
+      "label": "invalid-lli",
+      "frameNumber": 1,
+      "rgbaSha256": "771fa16b358e3195e00973cb8baa582a84f3c38d9ab2218742169515211b9889"
+    }
+  ],
+  "limitations": [
+    "Original SRAM RV32 diagnostic, not factory/ROM-boot acceptance.",
+    "ST7121/ST7123 batches are unsupported.",
+    "No physical hardware/analog timing/charging, camera/audio, C6, SD/USB application acceptance."
+  ],
+  "negativeCases": [
+    {
+      "fault": "wrong-i2c-route",
+      "guestSha256": "6d4277fa6c7a8e7523bdae87c73def7eff15768c10b6a44ff963b92e262b5504",
+      "guestBytes": 7888,
+      "acceptedPanelFrames": 0
+    },
+    {
+      "fault": "power-loss",
+      "guestSha256": "545cdc2f410cec3ca2a54dc6e2bf2b724db87908ff2523f0a92c1025e641accc",
+      "guestBytes": 7904,
+      "acceptedPanelFrames": 0
+    },
+    {
+      "fault": "bad-source",
+      "guestSha256": "5644cdff721038321b15efaac5b1994b10a66db76733fa3237c1d5df58981577",
+      "guestBytes": 7888,
+      "acceptedPanelFrames": 0
+    },
+    {
+      "fault": "invalid-lli",
+      "guestSha256": "47ee7474f94ee4975b870eed9f3432adfcfb2892153753266ba07b9a3b5969d4",
+      "guestBytes": 7888,
+      "acceptedPanelFrames": 0
+    }
+  ],
+  "status": "pass"
+}

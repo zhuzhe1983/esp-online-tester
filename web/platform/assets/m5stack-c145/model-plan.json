@@ -102,7 +102,7 @@
     "No physical hardware measurement performed; official photographs may include shipping films and uncalibrated perspective.",
     "PCB is an explicitly estimated UNKNOWN placeholder without invented components or traces.",
     "Source CAD does not supply calibrated material properties; colors are source-photo-informed display approximations.",
-    "P4 CPU/board unsupported; C6 wireless coprocessor is not a substitute main controller. C145 model excludes K145 NP-F550 battery.",
+    "Tab5 board/MIPI-DSI unsupported; C6 wireless coprocessor is not a substitute main controller. C145 model excludes K145 NP-F550 battery.",
     "Front glass is an independent photo-informed flat surface, not manufacturer glass CAD; inset/radius +/-0.5mm, optical stack and thickness unknown."
   ],
   "assemblyNotes": "Components 0/3/4/7/8 share assembled bounds at x0..128,y0.889717..80.889717,z-12..0. Duplicates have large negative Y translations. Common rigid 90-degree Z rotation centers portrait body; CAD display-facing side orientation will be checked in browser.",
@@ -157,7 +157,31 @@
         0
       ],
       "basis": "5-inch 720:1280 ratio; center estimated; blank preview excludes protective-film graphics."
-    }
+    },
+    "inspectionGroups": [
+      {
+        "id": "exterior-enclosure",
+        "parts": [
+          "battery-lock",
+          "source-part-3",
+          "source-part-4",
+          "battery-rail",
+          "shell",
+          "cover-glass",
+          "live-display",
+          "rear-paper-label"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          32
+        ],
+        "sourceIds": [
+          "manufacturer-cad-b775479916"
+        ],
+        "notes": "Retain all imported exterior parts as one rigid inspection group and move away from the fixed UNKNOWN placeholder. This is a viewing displacement, not a verified mechanical disassembly procedure."
+      }
+    ]
   },
   "derivedParts": [
     {
@@ -177,6 +201,32 @@
       ],
       "sourceIds": [],
       "notes": "Neutral placeholder; schematic and photographs do not constitute a measured complete board layout."
+    },
+    {
+      "id": "rear-paper-label",
+      "kind": "label",
+      "texture": "rear-paper-label.png",
+      "geometry": {
+        "sizeMm": [
+          74,
+          66.4
+        ],
+        "centerMm": [
+          0,
+          -28,
+          -5.925
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-531bf55037"
+      ],
+      "notes": "Tab5 rear lower circuit/pinout paper only; battery lid, header opening, screw holes, sockets and shell remain separate CAD. The photographed screen film is not a framebuffer. Registration is estimated from the retained near-frontal photo and native CAD recess. Paper RGB/lighting are uncalibrated; the alpha plane follows its enclosure inspection group and remains independent of shell color."
     }
   ],
   "revisions": [
@@ -406,5 +456,128 @@
       ],
       "notes": "Viewer axes; reference drawing/source product dimensions are retained without geometric rescaling."
     }
-  ]
+  ],
+  "paperRestoration": {
+    "texture": {
+      "file": "rear-paper-label.png",
+      "sourceId": "product-photo-531bf55037",
+      "sourceSha256": "92909fca6c2150f12e9954504d010e385b0b39b6c1aedb9ed1a9e0cdf0f72862",
+      "cropXYXY": [
+        347,
+        562,
+        858,
+        1023
+      ],
+      "outputPixels": [
+        511,
+        461
+      ],
+      "method": "Original RGB crop without warp or generated lettering; explicit paper ROI intersected with nearest assembled CAD -Z face, gap 0.015–0.12 mm, one-texel mechanical edge clearance. Deterministic tools/restore-m5-rear-paper.py.",
+      "alphaMask": {
+        "polygon": [
+          [
+            366,
+            565
+          ],
+          [
+            830,
+            565
+          ],
+          [
+            854,
+            585
+          ],
+          [
+            854,
+            1019
+          ],
+          [
+            716,
+            1019
+          ],
+          [
+            716,
+            1008
+          ],
+          [
+            489,
+            1008
+          ],
+          [
+            489,
+            1019
+          ],
+          [
+            365,
+            1019
+          ],
+          [
+            365,
+            902
+          ],
+          [
+            348,
+            902
+          ],
+          [
+            348,
+            816
+          ],
+          [
+            365,
+            816
+          ]
+        ],
+        "ellipses": [
+          [
+            428,
+            796,
+            470,
+            838
+          ],
+          [
+            728,
+            796,
+            770,
+            838
+          ],
+          [
+            334,
+            946,
+            378,
+            990
+          ],
+          [
+            823,
+            946,
+            867,
+            990
+          ]
+        ],
+        "rects": [
+          [
+            566,
+            579,
+            635,
+            612
+          ],
+          [
+            654,
+            587,
+            701,
+            610
+          ],
+          [
+            388,
+            988,
+            463,
+            1038
+          ]
+        ]
+      },
+      "notes": "Tab5 rear lower circuit/pinout paper only; battery lid, header opening, screw holes, sockets and shell remain separate CAD. The photographed screen film is not a framebuffer."
+    },
+    "originalCadSha256": "426a6be3d703cc5e2dfe013d68a1821a519ea1390102a7d0de25569702f20a0d",
+    "rebuild": "python tools/restore-m5-rear-paper.py m5stack-c145"
+  }
 }

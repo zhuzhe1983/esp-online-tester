@@ -1,0 +1,1 @@
+Original photo/drawing approximation geometry follows the project MIT license. Official M5Stack photographs, drawing and their texture crops remain copyright M5Stack; no separate open photo license established. No U109-B manufacturer CAD was located in the reviewed fixed tree.

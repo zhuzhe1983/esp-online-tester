@@ -77,6 +77,23 @@ pub struct BoardPowerState { pub controller_powered: bool }
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BoardPowerEvent { Reset { download: bool } }
 
+/// Physical Ethernet PHY identity; the MAC/MDIO adapter uses the board's actual wiring.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum EthernetPhy { Ip101g, Rtl8201, Lan87xx }
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct EmacConfig {
+    pub phy: EthernetPhy,
+    pub phy_addr: u8,
+    pub mdc: u8,
+    pub mdio: u8,
+    /// TX_EN, TXD0, TXD1, RXD0, RXD1, CRS_DV in that order.
+    pub rmii: [u8; 6],
+    /// External 50 MHz reference input, if routed to an MCU pad.
+    pub ref_clk: Option<u8>,
+    /// Active-low PHY reset output; None means the hardware's RC reset circuit.
+    pub reset_pin: Option<u8>,
+}
+
 /// What a board does with the SoC's pin-level activity.
 pub trait BoardModel {
     fn name(&self) -> &'static str;
@@ -324,6 +341,20 @@ pub trait BoardModel {
     fn matrix_key_debounced_at(&mut self, _cycle:VirtualCycle, _row:u8, _column:u8, _pressed:bool)->KeyEventAcceptance {KeyEventAcceptance::Disabled}
     /// Cold, read-only event FIFO counters. None means this transport is unsupported.
     fn matrix_key_diagnostics(&self)->Option<KeyEventDiagnostics> {None}
+    /// Cold physical Ethernet attachment. Does not create a link or bypass MAC clocks/routes.
+    /// Appended to preserve existing hot vtable slots.
+    fn emac_config(&self) -> Option<EmacConfig> { None }
+    /// Wired SPI Ethernet endpoints use the same bounded host relay as a native MAC.
+    fn ethernet_link(&mut self) -> Option<&mut crate::ethernet::EthernetLink> { None }
+    /// Cold digital camera-rail stimulus, not a battery/PMIC or optical model.
+    /// Removing supply invalidates SCCB/stream state; restoring it requires guest initialization.
+    /// Appended to preserve all existing hot method slots.
+    fn camera_supply_at(&mut self, _cycle:VirtualCycle, _present:bool)->bool {false}
+    /// Cold MIPI-DSI packet transport. Fixed board lanes carry virtual-channel
+    /// and DSI data-type fields; reads return the panel's reply payload.
+    fn dsi_packet(&mut self, _vc:u8, _kind:u8, _payload:&[u8])->Vec<u8> {Vec::new()}
+    /// Link/clock shutdown gates a streaming display independently of its RAM.
+    fn dsi_link(&mut self, _enabled:bool) {}
 }
 
 pub type Board = Box<dyn BoardModel>;

@@ -122,10 +122,11 @@
     }
   ],
   "limitations": [
-    "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
+    "Manufacturer exterior CAD plus a photo-estimated thumbwheel; digital display/input runtime is partial and documented separately.",
     "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
     "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-    "Official size order51.5×48×40.5 is mapped to model Y×X×Z so source orientation stays upright; whole CAD Y51.4126mm remains measured separately. Rear label/encoder/USB sockets are partial."
+    "Official size order51.5×48×40.5 is mapped to model Y×X×Z so source orientation stays upright; whole CAD Y51.4126mm remains measured separately. Rear label/encoder/USB sockets are partial.",
+    "Encoder thumbwheel is an independent exact-photo exterior estimate, not manufacturer CAD; radius/position about +/-1mm, physical detent direction and press travel not calibrated."
   ],
   "assemblyNotes": "Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling.",
   "omittedComponents": [
@@ -263,7 +264,57 @@
         -5.57,
         20.28
       ]
-    }
+    },
+    "buttons": [
+      {
+        "id": "encoder-press",
+        "shape": "rectangle",
+        "sizeMm": [
+          3,
+          1
+        ],
+        "positionMm": [
+          0,
+          -25.225,
+          18.1
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ],
+        "basis": "image-measurement",
+        "sourceIds": [
+          "product-photo-99e842f36d",
+          "product-photo-a2a11d2e5c"
+        ],
+        "notes": "Narrow 3x1mm region centered on the existing exposed black thumbwheel radial surface, 0.025mm outside its radius2.1mm envelope; the hidden axial ends are not press surfaces. Side wheel arcs retain encoder drag. Actual wheel is an existing +/-1mm photo estimate; press travel uncalibrated. Invisible input metadata only."
+      },
+      {
+        "id": "boot",
+        "shape": "rectangle",
+        "sizeMm": [
+          2.4,
+          2.2
+        ],
+        "positionMm": [
+          3.4,
+          -3.6,
+          5.53
+        ],
+        "rotation": [
+          3.141592653589793,
+          0,
+          0
+        ],
+        "basis": "manufacturer-cad-and-own-photo",
+        "sourceIds": [
+          "manufacturer-cad-646d47dcdb",
+          "official-docs"
+        ],
+        "notes": "G0/BOOT inside the existing Stamp cover tongue, facing -Z. Exact K136 source component0 flat cap is Z5.55000019 at the center and four inset corners; this finite plane is0.02000019mm outside that native surface. Exact SKU official gallery7 shows the exposed Stamp face after base removal and gallery4 labels MENU BTN BtnC0/BOOT; independent native module registration identifies the same tongue. Default case/base/UNKNOWN geometry is retained and blocks direct assembled access. Use the existing source-bound inspection separation; do not move the UNKNOWN board or fabricate an actuator. Size/placement follows native triangles, while physical travel remains uncalibrated."
+      }
+    ]
   },
   "derivedParts": [
     {
@@ -283,6 +334,32 @@
       ],
       "sourceIds": [],
       "notes": "Neutral UNKNOWN placeholder; no verified PCB placement/layout geometry. Exterior shape is not an assertion of PCB detail."
+    },
+    {
+      "id": "encoder-thumbwheel",
+      "kind": "cylinder",
+      "color": "#252a28",
+      "geometry": {
+        "radiusMm": 2.1,
+        "depthMm": 8,
+        "radialSegments": 32,
+        "centerMm": [
+          0,
+          -23.1,
+          18.1
+        ],
+        "rotation": [
+          0,
+          1.5707963267948966,
+          0
+        ]
+      },
+      "encoderId": "encoder",
+      "sourceIds": [
+        "product-photo-99e842f36d"
+      ],
+      "basis": "image-measurement",
+      "notes": "Black lower thumbwheel visible in exact SKU front/side photos; radius/width/position estimated about +/-1mm. The narrow radial center has a separate press presentation region; exposed side arcs keep encoder dragging. Mechanical travel, detents and direction uncalibrated."
     }
   ],
   "revisions": [],

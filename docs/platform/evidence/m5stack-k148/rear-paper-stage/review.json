@@ -1,0 +1,55 @@
+{
+  "productId": "m5stack-k148",
+  "stage": "rear-paper repair before independently observed rear-pad and UNKNOWN-placement corrections",
+  "eligibleForFinalPass": false,
+  "checkedAt": "2026-11-26T11:01:57.674088Z",
+  "modelSha256": "9d5fdc15626bfb6028cdf6161ee82dfc78e8a8882f079f28aaaf5d2a4f2d2ca5",
+  "cpuGeometrySha256": "b339ca9ce65638072b3b30199876cea90cdb886975fca9e30ecfc7c6549b1198",
+  "sharedHostAssetCommit": "418c98a5",
+  "kitPreviewBatteryInstalled": false,
+  "passedOnlyWithinScope": [
+    "Fixed official page bytes and separate K148/C148 Includes entries",
+    "Independent production Kit/host instances: 74 meshes, 21496 triangles, positions/normals/UV/indices/transforms/source textures match",
+    "Rear paper geometric ray visible above EXT; actual CPU rear paper remains opaque and uncolored under original, gold and translucent purple",
+    "Declared inspection translation and exact restoration at25/50/100%; board remains fixed",
+    "Catalog schema728 products/10 accessories/670 firmwares/537 watchlist; visual-variant/inspection tests12/12"
+  ],
+  "unresolvedObservedDefects": [
+    {
+      "id": "rear-pads",
+      "observation": "Four black anti-slip pads in the fixed manufacturer rear photo are not separated from the native rear-shell appearance. They remain white in original and turn gold/purple with the shell.",
+      "status": "repair required before final shared-host acceptance"
+    },
+    {
+      "id": "keyhole-unknown-fragments",
+      "observation": "The interior UNKNOWN marker is partially visible through both native keyholes in opaque rear views. The source photo shows dark holes without that partial lettering.",
+      "status": "placement correction required; preserve visible UNKNOWN in inspection and transparent mode"
+    }
+  ],
+  "otherLimitations": [
+    "No battery mesh/contact/installation fit/charging/runtime verification",
+    "Side printing remains incomplete",
+    "Uncalibrated generic CPU camera; no whole-host/whole-Kit1:1 or manufacturing pass",
+    "Visible uninstalled-battery host envelope56x89.15x38.90mm versus generic official56x88x38.5mm; derived exterior estimates retain+1.15/+0.40mm deviations",
+    "CPU raster uses two threads,12 samples,450px and Canvas UNKNOWN text substitute; not browser GPU or firmware output"
+  ],
+  "toolAndProductionInputSha256": {
+    "tools/verify-powerhub-kit-appearance.mjs": "f52fd7c7b2a0be682fe92ca0e9d6182bdbb3f374476b349b18c87a6067ea7645",
+    "tools/compose-powerhub-kit-review.py": "06592b338da42ee2167a7f9b5a408456f89829abfe473d128563b39f233d87f4",
+    "tools/export-m5-cpu-models.mjs": "ea92a472a9e5f38383ec7864da9257301757b845e7f2aa9646c3f108add1bcd3",
+    "tools/render-m5-cpu-qa.py": "48ab0134af3e46b92b7d995b97aaca4dbd4e4e73801b861cadf010dc8e0d8e0d",
+    "web/platform/manufacturer-model.js": "98472fb97697792e9f8125394f013602f4919682b8d66b504b405854704fac93",
+    "web/platform/shell-appearance.js": "2c76c44858a86ba30b0a860b58a276a1475765c35ad61be93dfe0a154f0cb510",
+    "web/platform/model-inspection.js": "48454a7eec5af2e8ba55cc608baad53cf7a3de7336c3f8eb257404093f7f6cef",
+    "web/platform/vendor/three.module.min.js": "e2b5ee6bccd38fd6d8a2428546b83c5f2426d84b152ef82be8055556e3b40eb6"
+  },
+  "commands": [
+    "node tools/verify-powerhub-kit-appearance.mjs --source-html SOURCE_HTML",
+    "node tools/export-m5-cpu-models.mjs --repo . --out OUTPUT/export --ids m5stack-k148",
+    "blender -b -t 2 --python tools/render-m5-cpu-qa.py -- --repo . --input OUTPUT/export --out OUTPUT/APPEARANCE --ids m5stack-k148 --size 450 --samples 12 --appearance APPEARANCE",
+    "python tools/compose-powerhub-kit-review.py --repo . --renders-root OUTPUT --out docs/platform/evidence/m5stack-k148/rear-paper-stage"
+  ],
+  "reproductionNote": "Replace APPEARANCE with original/gold/purple, OUTPUT with an independent output directory, and SOURCE_HTML with the official page bytes matching the retained hash. Shared-host source reconstruction is in tools/rebuild-powerhub-rear-appearance.py.",
+  "factoryFirmwareValidation": false,
+  "physicalFitValidation": false
+}

@@ -1,3 +1,4 @@
+import {m5WiredProtocol} from './m5-wired-boards.js';
 import {hasFlight,FLIGHT_MODEL,parseFlightSnapshot} from './flight-state.js';
 import {parseHardwareDiagnostics} from './hardware-diagnostics.js';
 import {C5_WIFI_DRIVER_COMPAT_PROFILE,c5WifiDriverCompatIssue} from './c5-wifi-driver-compat.js';
@@ -38,6 +39,9 @@ export const API_VERSION = '1.0.0';
 const MIB = 1024 * 1024;
 const KINDS = { rom: 0, bootloader: 1, ptable: 2, app: 3, elf: 4, flash: 5, script: 6, picture: 7 };
 const SERIAL_LIMIT = 64 * 1024;
+const CAMERA_MAX_BYTES=8*1024*1024;
+const CAMERA_BOARDS=new Set(['ai-thinker-cam','unit-cams3','unit-cams3-5mp','atoms3r-cam','atoms3r-cam-chatbot','atoms3r-m12','atoms3r-m12-volcengine',...['u017','u017-b','u109','u017-pcba','u038','u082-f','u121','u121-b','u121-b-v11','u007','u082','u109-x','u082-x','u037','u109-b'].map(s=>'m5stack-'+s)]);
+const cameraFormats=board=>['atoms3r-cam','atoms3r-cam-chatbot'].includes(board)?['bmp','ppm']:['bmp','ppm','baseline-jpeg'];
 const clone = value => value == null ? value : structuredClone(value);
 const error = (code, message, details) => Object.assign(new Error(message), { code, details });
 const requireValue = (condition, code, message, details) => { if (!condition) throw error(code, message, details); };
@@ -45,11 +49,11 @@ const failure = e => ({ code: e.code || 'RUNTIME_ERROR', message: e.message || S
 const bytesOf = data => data instanceof ArrayBuffer ? new Uint8Array(data) : new Uint8Array(data.buffer, data.byteOffset, data.byteLength);
 const sramAppDirect = cfg => isSramOnlyBoard(cfg.board)||isC5Board(cfg.board)&&cfg.appDirect===true;
 const restrictedIO = board => isC5Board(board)||isSramOnlyBoard(board);
-const keyboardForBoard = board => LILYGO_BOARD_CAPABILITIES[board]?.keyboard || (['cardputer','cardputer-adv','tdeck'].includes(board) ? {
+const keyboardForBoard = board => board==='m5-cardkb2'?{rows:4,columns:11,model:'physical-gpio-matrix',layout:'cardkb2'}:LILYGO_BOARD_CAPABILITIES[board]?.keyboard || (['cardputer','cardputer-adv','tdeck'].includes(board) ? {
   rows:4,columns:board==='tdeck'?10:14,
   model:board==='tdeck'?'esp32c3-i2c-raw':board==='cardputer'?'gpio-matrix-74hc138':'tca8418',layout:board,
 } : null);
-const loraForBoard = board => LILYGO_BOARD_CAPABILITIES[board]?.lora || (['papermono','lilygo-t-beam-v1-2','stamp-c6lora','seeed-sensecap-indicator-d1l','seeed-sensecap-indicator-d1pro','seeed-sensecap-indicator-meshtastic'].includes(board)
+const loraForBoard = board => LILYGO_BOARD_CAPABILITIES[board]?.lora || (['papermono','lilygo-t-beam-v1-2','stamp-c6lora','unit-c6l','seeed-sensecap-indicator-d1l','seeed-sensecap-indicator-d1pro','seeed-sensecap-indicator-meshtastic'].includes(board)
   ? {model:board==='lilygo-t-beam-v1-2'?'sx1276-lora-digital':'sx1262-lora-digital'} : null);
 
 export function resolveFirmwareUrl(value, baseUrl) {
@@ -239,7 +243,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   let powerEnvironment=null,thermalEnvironment=null;
   const resetEnvironmentInputs = () => {
     powerEnvironment = hasPowerEnvironment(product) ? {...powerParameters(scene.environment?.power),virtual:true,delivery:'configured',guestTime:null} : null;
-    thermalEnvironment = hasThermalEnvironment(product) ? thermalParameters(scene.thermalEnvironment) : null;
+    thermalEnvironment = hasThermalEnvironment(product) ? thermalParameters(scene.thermalEnvironment,product) : null;
   };
   const flightEnabled=()=>scene?.flight?.enabled===true;
   let accessoryInputs = [], accessoryOutputs = [];
@@ -311,7 +315,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     const requestId=++inputSequence,reply=await ask(`audio:${requestId}`,{op:`audio-${action}`,requestId,...options},transfer);
     requireValue(reply.ok,'AUDIO_COMMAND_FAILED',reply.error||'The emulator rejected this audio operation.');return reply;
   }});
-  const network=createNetworkSession({emit,supportsSoftAp:()=>!isS31Board(product?.runtime?.board),command:async(action,options)=>{
+  const network=createNetworkSession({emit,primaryInterface:()=>m5WiredProtocol(product?.runtime?.board),supportsSoftAp:()=>!isS31Board(product?.runtime?.board)&&!m5WiredProtocol(product?.runtime?.board),command:async(action,options)=>{
     const requestId=++inputSequence,reply=await ask(`network:${requestId}`,{op:`network-${action}`,requestId,...options});
     requireValue(reply.ok,'NETWORK_COMMAND_FAILED',reply.error||'The emulator rejected this network operation.');return reply;
   },sendFrame:(interfaceId,data)=>worker?.postMessage({op:'network-receive',interface:interfaceId,data},[data])});
@@ -344,7 +348,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
           motors=next.motors;motorOutput=next.motorOutput;emit({type:'motors',motors:clone(motors),motorOutput:clone(motorOutput)});
         }
       }
-      else if (text.t === 'hardware-diagnostics' && ['stopwatch','corematrix','waveshare-c5-lcd273'].includes(product?.runtime?.board)) {
+      else if (text.t === 'hardware-diagnostics' && ['stopwatch','corematrix','waveshare-c5-lcd273','m5-unit-gateway-h2','m5-module-gateway-h2'].includes(product?.runtime?.board)) {
         const next=parseHardwareDiagnostics(text);
         if(next?.board===product.runtime.board && JSON.stringify(next)!==JSON.stringify(hardwareDiagnostics)) {hardwareDiagnostics=next;emit({type:'hardware-diagnostics',hardwareDiagnostics:clone(next)});}
       }
@@ -383,6 +387,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (message.resumed !== undefined) resolve('resumed', message);
     if (message.inputQueued !== undefined) resolve(`input:${message.inputQueued}`, message);
     if (message.imuApplied !== undefined) resolve(`imu:${message.imuApplied}`, message);
+    if (message.sdioReply !== undefined) resolve(`sdio:${message.sdioReply}`,message);
     if (message.loraResult !== undefined) resolve(`lora:${message.loraResult}`, message);
     if (message.stopped !== undefined) {
       const requested = pending.has('stopped');
@@ -794,7 +799,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     }
     for (const spec of bundle.cfg.stubs || []) worker.postMessage({ op: 'stub', spec });
     if(restrictedIO(bundle.cfg.board))await network.attach({available:false});
-    else if(result.networkAvailable&&chipForBoard(bundle.cfg.board)!=='esp32p4')await network.attach({available:true,softApAvailable:!isS31Board(bundle.cfg.board),manifestWifi:bundle.cfg.wifi});
+    else if(result.networkAvailable&&(chipForBoard(bundle.cfg.board)!=='esp32p4'||m5WiredProtocol(bundle.cfg.board)))await network.attach({available:true,softApAvailable:!isS31Board(bundle.cfg.board)&&!m5WiredProtocol(bundle.cfg.board),manifestWifi:bundle.cfg.wifi});
     else if(bundle.cfg.wifi)worker.postMessage({op:'wifi',spec:bundle.cfg.wifi});
     if (imuModel()&&!flightEnabled()) await applyImu();
     if (isC61Board(bundle.cfg.board)&&bleNearby.length) await applyBleNearby(bleNearby);
@@ -834,10 +839,10 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
     if (control?.transport !== 'board') return false;
     const board = product?.runtime?.board;
     if (isClassicStickBoard(board)) return control.id === 'power';
-    return (isCore2Board(board) ? ['button-a','button-b','button-c','power'] : WAVESHARE_BOARD_CAPABILITIES[board]?.boardButtons || LILYGO_BOARD_CAPABILITIES[board]?.boardButtons || {'cloudzao-claw-154':['previous','home','next'],'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'chain-captain':['power'],'m5-tough':['btn-a','btn-b','btn-c'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back'],'seeed-sensecap-watcher':['knob']}[board] || []).includes(control.id);
+    return (isCore2Board(board) ? ['button-a','button-b','button-c','power'] : WAVESHARE_BOARD_CAPABILITIES[board]?.boardButtons || LILYGO_BOARD_CAPABILITIES[board]?.boardButtons || {'cloudzao-claw-154':['previous','home','next'],'metalio-ink4-plus':['power','volume-up','volume-down','home','previous','next'],'metalio-ink4':['volume-up','volume-down','home','previous','next'],'nesso-n1':['btnA','btnB'],'unit-c6l':['button'],'lilygo-t-beam-v1-2':['power'],'stamps3bat':['power'],'stamplc':['button-a','button-b','button-c'],'corematrix':['button-a','button-b','button-c','power'],'chain-captain':['power'],'m5stack-poe-p4':['user'],'m5-tough':['btn-a','btn-b','btn-c'],'stackchan':['touch-pad-front','touch-pad-middle','touch-pad-back'],'seeed-sensecap-watcher':['knob']}[board] || []).includes(control.id);
   };
   const input = async event => {
-    const releaseWhilePaused = status === 'paused' && ((['button','matrix-key','accessory-button'].includes(event?.type) && event.pressed === false) || (event?.type==='accessory-connection' && event.connected===false) || (event?.type === 'touch' && event.down === false));
+    const releaseWhilePaused = status === 'paused' && ((['button','matrix-key','accessory-button'].includes(event?.type) && event.pressed === false) || (['accessory-connection','thermocouple-environment'].includes(event?.type) && event.connected===false) || (event?.type === 'touch' && event.down === false));
     requireValue(status === 'running' || releaseWhilePaused, 'NOT_RUNNING', 'Start the emulator before sending input.');
     requireValue(event && typeof event === 'object', 'INVALID_INPUT', 'Input must be an object.');
     let message, accessoryUpdate, accessoryBatch, powerUpdate, thermalUpdate;
@@ -847,10 +852,14 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(validPowerEnvironment(values), 'INVALID_INPUT', 'Supply both bounded integer voltages in microvolts and the four boolean power flags.');
       powerUpdate = values;
       message = powerMessage(powerUpdate);
+    } else if (event.type === 'thermocouple-environment') {
+      requireValue(product?.runtime?.board==='m5-kmeter','UNSUPPORTED_CONTROL','Thermocouple input requires original U133 KMeter.');
+      requireValue(typeof event.connected==='boolean'&&Number.isFinite(event.temperatureC)&&event.temperatureC>=-200&&event.temperatureC<=1350,'INVALID_INPUT','Supply probe connection and temperatureC from -200 to 1350.');
+      message={t:'thermocouple-environment',connected:event.connected?1:0,temperatureC:event.temperatureC};
     } else if (event.type === 'thermal-environment') {
-      requireValue(hasThermalEnvironment(product), 'UNSUPPORTED_CONTROL', 'Raw14 input requires StickT2 K016-T2.');
+      requireValue(hasThermalEnvironment(product), 'UNSUPPORTED_CONTROL', 'Thermal input requires a matching implemented sensor board.');
       const {type,...values} = event;
-      requireValue(validThermal(values), 'INVALID_INPUT', 'Supply bounded integer Raw14 counts, coordinates and radius.');
+      requireValue(validThermal(values,product), 'INVALID_INPUT', 'Supply bounded sensor ADC counts, coordinates and radius.');
       thermalUpdate = values;
       message = {t:'thermal-environment',...thermalUpdate};
     } else if (event.type === 'button') {
@@ -903,7 +912,7 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       requireValue(keyboard, 'UNSUPPORTED_CONTROL', 'This product does not expose a matrix keyboard.');
       const columns=keyboard.columns;
       requireValue(Number.isInteger(event.row) && event.row >= 0 && event.row < 4 && Number.isInteger(event.column) && event.column >= 0 && event.column < columns && typeof event.pressed === 'boolean', 'INVALID_INPUT', `Keyboard row/column must be within the physical 4×${columns} layout and pressed must be a boolean.`);
-      requireValue(!(product.runtime.board==='tdeck' || product.runtime.board.startsWith('lilygo-t-deck')) || controls().some(control=>control.type==='matrix-key'&&control.row===event.row&&control.column===event.column), 'INVALID_INPUT', 'This T-Deck position has no physical key.');
+      requireValue(!(product.runtime.board==='m5-cardkb2' || product.runtime.board==='tdeck' || product.runtime.board.startsWith('lilygo-t-deck')) || controls().some(control=>control.type==='matrix-key'&&control.row===event.row&&control.column===event.column), 'INVALID_INPUT', 'This matrix position has no physical key.');
       message = { t:'matrix-key', row:event.row, column:event.column, pressed:event.pressed?1:0 };
     } else if (event.type === 'touch') {
       const display = product.display || product.hardware?.display;
@@ -948,6 +957,13 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
   });
   const api = {
     version: API_VERSION,
+    sdioHostCommand({command,arg}={}) {return exclusive(async()=>{
+      requireValue(product?.runtime?.board==='m5-stamp-addon-c6'&&worker,'SDIO_UNSUPPORTED','SDIO host commands require the A172 digital host link.');
+      requireValue(status==='running','NOT_RUNNING','Start the C6 guest before operating the SDIO peer.');
+      requireValue(Number.isInteger(command)&&[3,5,7,52].includes(command)&&Number.isSafeInteger(arg)&&arg>=0&&arg<=0xffff_ffff,'INVALID_INPUT','Supply supported SDIO command3/5/7/52 and an unsigned32-bit argument.');
+      const requestId=++inputSequence,result=await ask(`sdio:${requestId}`,{op:'sdio-host-command',requestId,command,arg});
+      requireValue(result.ok,'SDIO_NO_RESPONSE','The guest SDIO state or documented pin routes did not answer.');return {response:result.response,source:'guest-HINF-SLC-SLCHOST',physicalRf:false};
+    });},
     readLoRa() {return exclusive(async()=>{
       requireValue(loraForBoard(product?.runtime?.board)&&worker,'LORA_UNSUPPORTED','Load firmware on a board with a digital LoRa model before inspecting its radio.');
       const requestId=++inputSequence,result=await ask(`lora:${requestId}`,{op:'lora-read',requestId});
@@ -1057,21 +1073,35 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
       return audio.push(options);
     });},
     readAudio(options){return exclusive(async()=>{await audio.refresh();return audio.read(options);});},
+    setCameraPicture(options){return exclusive(async()=>{
+      requireValue(CAMERA_BOARDS.has(product?.runtime?.board),'CAMERA_UNSUPPORTED','This product has no host-picture camera model.');
+      requireValue(loaded&&worker,'NOT_LOADED','Load firmware before selecting a camera picture.');
+      requireValue(options&&typeof options==='object'&&!Array.isArray(options)&&Object.keys(options).every(k=>k==='bytes'),'INVALID_CAMERA_PICTURE','Provide camera bytes only.');
+      requireValue(options.bytes instanceof Uint8Array||options.bytes instanceof ArrayBuffer,'INVALID_CAMERA_PICTURE','Camera bytes must be Uint8Array or ArrayBuffer.');
+      const bytes=bytesOf(options.bytes).slice();
+      requireValue(bytes.length>0&&bytes.length<=CAMERA_MAX_BYTES,'INVALID_CAMERA_PICTURE','Camera picture must contain 1 byte to 8 MiB.');
+      const digest=await sha256(bytes),data=bytes.buffer,byteLength=bytes.length;
+      const reply=await ask('loaded:7',{op:'load',kind:7,data},[data]);
+      requireValue(reply.ok,'CAMERA_PICTURE_REJECTED','The camera rejected this image; use BMP, PPM or a supported baseline JPEG.');
+      return {accepted:true,delivery:'sensor-input',sha256:digest,bytes:byteLength,physicalCapture:false};
+    });},
     async capabilities() {
       const powerAvailable = hasPowerEnvironment(product), thermalAvailable = hasThermalEnvironment(product);
-      const sramOnly=isSramOnlyBoard(product?.runtime?.board),c5=isC5Board(product?.runtime?.board),s2=isS2Board(product?.runtime?.board),h2=isH2Board(product?.runtime?.board),c61=isC61Board(product?.runtime?.board),s31=isS31Board(product?.runtime?.board),limited=sramOnly||c5;
+      const sramOnly=isSramOnlyBoard(product?.runtime?.board),c5=isC5Board(product?.runtime?.board),s2=isS2Board(product?.runtime?.board),h2=isH2Board(product?.runtime?.board),c61=isC61Board(product?.runtime?.board),s31=isS31Board(product?.runtime?.board),limited=sramOnly||c5,wiredProtocol=m5WiredProtocol(product?.runtime?.board);
       return { version: API_VERSION, backend: 'esp32sim-wasm', static: true, executable: !!product?.runtime?.board,
         execution: {...(product?.runtime?.board==='waveshare-c5-lcd273'?{c5WifiDriverCompat:scene?.c5WifiDriverCompat??null,c5WifiDriverCompatProfiles:[C5_WIFI_DRIVER_COMPAT_PROFILE]}:{}),mode: product?.runtime?.board === 'stopwatch'||limited||c61||s31 ? 'wasm-interpreter' : 'wasm-jit', reason: c5?'C5 uses the RV32 interpreter; ROM boot requires the pinned MP revision100 image.':s31?'S31 uses the dual-hart RV32 interpreter.':sramOnly?`${s2?'S2':h2?'H2':'C5'} SRAM app-direct only; no ROM/IDF startup or JIT.`:c61?'C61 uses the RV32 interpreter.':product?.runtime?.board === 'stopwatch' ? 'Official V0.5 IMU JIT non-response; interpreter verified.' : null,...(limited?{bootModes:c5?['rom','app-direct']:['app-direct'],romBoot:c5,resetMode:c5&&!loaded?.cfg.appDirect?'rom-reset':'reload-same-sram-image',counterSemantics:s2?'interpreter-instructions':c5&&scene?.c5WifiDriverCompat?'interpreter-slots-including-wfi-idle-and-driver-compat':'interpreter-slots-including-wfi-idle',sramRanges:clone(s2?S2_SRAM_RANGES:h2?H2_SRAM_RANGES:C5_SRAM_RANGES),...(s2?{sramPhysicalBytes:320*1024,sramAliased:true}:{})}:{})},
         sdCard:{available:hasSdCard(product?.runtime?.board),slot:hasTfSlot(product),configurable:hasTfSlot(product),defaultInserted:hasTfSlot(product),defaultBytes:DEFAULT_SD_BYTES,maxBytes:MAX_SD_BYTES,formats:[...SD_FORMATS,'raw-image'],blankCapacitiesMiB:[...SD_CAPACITIES],scope:loaded&&sramAppDirect(loaded.cfg)?'product-board-application-sha256':'product-board-canonical-flash-sha256',preparedScope:'product',autoSaveIntervalMs:1500,crashSafe:false},
         ble:{available:c61,model:c61?'c61-legacy-digital-radio':null,physicalRf:false,connections:false,recording:false,shares:false,maxNearby:32,maxQueuedPackets:256,methods:c61?['configureBle','readBle']:[]},
-        network:limited?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&chipForBoard(product.runtime.board)!=='esp32p4',transport:s31?'ethernet-websocket':'browser-softap+ethernet-websocket',helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&(c61||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),automaticProvisioning:c61||s31?[]:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
+        network:limited?{available:false,transport:null,modes:[],softAp:false,automaticProvisioning:[],methods:[]}:{available:!!product?.runtime?.board&&(chipForBoard(product.runtime.board)!=='esp32p4'||!!wiredProtocol),transport:wiredProtocol?'wired-ethernet-websocket':s31?'ethernet-websocket':'browser-softap+ethernet-websocket',primaryInterface:wiredProtocol||null,helperRequired:false,externalConnectionRequired:true,modes:['public-relay','local-helper'],portMappingRequiresHelper:true,softAp:!!product?.runtime?.board&&!wiredProtocol&&(c61||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),automaticProvisioning:c61||s31||wiredProtocol?[]:['xiaozhi-web'],methods:['configureNetwork','readNetwork','connectNetwork','mapNetworkPort','unmapNetworkPort','requestNetworkHttp','provisionNetwork','addNetworkService']},
         audio:isStickPlusBoard(product?.runtime?.board) ? {
           input:{available:false,ports:[],reason:'Browser PCM is output-only for StickC-Plus.'},
           output:{available:true,channels:1,format:'s16le',source:'guest-routed-ledc-g2',sampleRate:16000},
           methods:['readAudio'],
         } : limited?{input:{available:false,ports:[]},output:{available:false},methods:[]}:{input:{available:!!product?.runtime?.board&&!isC61Board(product.runtime.board)&&chipForBoard(product.runtime.board)!=='esp32p4',mode:'logical-i2s-port',sampleRates:[8000,96000],ports:isC61Board(product?.runtime?.board)?[]:product?.runtime?.board&&['esp32c3_rev3_rom.elf','esp32c6_rev0_rom.elf'].includes(romFor(product.runtime.board))?[0]:[0,1]},output:{available:!!product?.runtime?.board&&(product.runtime.board==='corematrix'||s31||romFor(product.runtime.board)==='esp32s3_rev0_rom.elf'),channels:1,format:'s16le'},methods:['audioConfigure','pushAudio','readAudio']},
         environment:{power:{available:powerAvailable,virtual:true,measured:false,inputType:'power-environment',unit:'microvolt',fields:powerAvailable?[...POWER_KEYS]:[],defaultInput:powerAvailable?powerParameters():null,boundsUv:powerAvailable?clone(POWER_BOUNDS_UV):null,recording:powerAvailable,shares:'initial-scene-and-recorded-inputs',adcSource:'guest-time-AXP192-registers'}},
-        ...(thermalAvailable?{thermal:{model:'lepton3-cci-raw14-subset',sceneUnits:'raw14-counts',defaultScene:'deterministic-synthetic-hotspot',environmentInput:'input:thermal-environment',calibrated:false,hardwareValidated:false,recordable:true,shareable:true}}:{}),
+        ...(product?.runtime?.board==='m5-kmeter'?{thermocouple:{model:'max31855k-digital',environmentInput:'input:thermocouple-environment',temperatureBoundsC:[-200,1350],coldJunctionC:25,conversionMs:100,calibrated:false,recordable:true}}:{}),
+        ...(thermalAvailable?{thermal:{model:product.id==='m5stack-u149'?'mlx90640-register-raw16-subset':product.id==='m5stack-k126'?'mlx90640-i2c-synthetic-raw-subset':'lepton3-cci-raw14-subset',sceneUnits:product.id==='m5stack-u149'?'virtual-adc-counts':product.id==='m5stack-k126'?'synthetic-adc-counts-normalized-160x120':'raw14-counts',defaultScene:'deterministic-synthetic-hotspot',environmentInput:'input:thermal-environment',calibrated:false,hardwareValidated:false,recordable:true,shareable:true}}:{}),
+        camera:{hostPicture:CAMERA_BOARDS.has(product?.runtime?.board),formats:CAMERA_BOARDS.has(product?.runtime?.board)?cameraFormats(product.runtime.board):[],maxBytes:CAMERA_MAX_BYTES,methods:CAMERA_BOARDS.has(product?.runtime?.board)?['setCameraPicture']:[],source:'explicit-host-image-to-sensor',physicalCapture:false,recording:false,shareable:false,persistence:'current-worker-session'},
         lifecycle: ['configure', 'loadFirmware', 'start', 'pause', 'reset', 'dispose'],
         deviceStorage: {available:!!storage.scope, backend:storage.backend, persistent:storage.backend==='indexeddb', scope:'product-board-chip-canonical-flash-sha256', autoSaveIntervalMs:500, crashSafe:false},
         firmware: { manifest: true, mergedImage: !sramOnly, localFile: true, localSegments: !sramOnly, localBuild: !sramOnly, sha256: true, maxFileBytes: MAX_FILE, maxBundleBytes: MAX_TOTAL, corsRequired: true,...(limited?{sramAppDirect:true,ota:false,targetRevision:s2?0:h2?null:100}:{}) },
@@ -1079,12 +1109,13 @@ export function createPlatformRuntime({ catalog: initialCatalog, onEvent, fetchI
         servos:{available:product?.runtime?.board==='stackchan',axes:product?.runtime?.board==='stackchan'?['pan','tilt']:[],source:'guest-uart-feedback',unit:'degrees',hardwareValidated:false},
         motors:{available:hasMotorOutput(product?.runtime?.board),axes:hasMotorOutput(product?.runtime?.board)?STAMPFLY_MOTORS.map(({id})=>id):[],source:'guest-routed-pwm',unit:'normalized-duty',rpmAvailable:false,flightSimulated:false,hardwareValidated:false},
         flight:{available:hasFlight(product?.runtime?.board),enabled:flightEnabled(),model:FLIGHT_MODEL,calibrated:false,source:'guest-pwm-rigid-body',methods:['configureFlight','readFlight'],recording:false,shares:'configuration-only',worldFrame:'NED',bodyFrame:'FRD'},
-        hardwareDiagnostics:{available:['stopwatch','corematrix','waveshare-c5-lcd273'].includes(product?.runtime?.board),source:product?.runtime?.board==='waveshare-c5-lcd273'?'guest-registers-and-device-transactions':'guest-registers',hardwareValidated:false},
+        hardwareDiagnostics:{available:['stopwatch','corematrix','waveshare-c5-lcd273','m5-unit-gateway-h2','m5-module-gateway-h2'].includes(product?.runtime?.board),source:product?.runtime?.board==='waveshare-c5-lcd273'?'guest-registers-and-device-transactions':'guest-registers',hardwareValidated:false},
         framebuffer: { available: !!frame, formats: ['rgba', 'png'], source: 'emulator' },
         gps: { available:gpsSupported(),mode: gpsSupported()?'logical-uart1-nmea':null, physicalRouting: false, baudTiming: false, hardwareValidated: false },
+        sdioHost:{available:product?.runtime?.board==='m5-stamp-addon-c6',commands:[3,5,7,52],methods:['sdioHostCommand'],recording:false,physicalRf:false},
         lora:{available:!!loraForBoard(product?.runtime?.board),model:loraForBoard(product?.runtime?.board)?.model||'sx1262-lora-digital',physicalRf:false,maxPayloadBytes:255,methods:['readLoRa','receiveLoRa'],recording:false},
         imu: { available: !!imuModel(), model: imuModel(), sceneOrientation: !!imuModel(), sceneMapping: 'virtual-model-xyz', sceneLinkDefault: false, orientation: 'quaternion-xyzw', accelerationUnit: 'g', angularVelocityUnit: 'deg/s', maxSceneHz: 30, hardwareValidated: false, sampleTiming: flightEnabled()?'guest-cycles':'host-input', inputOwner:flightEnabled()?'flight':'host', physicalMountingVerified: false },
-        unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input', ...(thermalAvailable?['lepton3-calibrated-thermal-imaging','lepton3-full-timing-telemetry-ffc','encoder-i2c-0x30','axp192-long-press-shutdown','physical-pdm-microphone','rtc']:[])] };
+        unsupported: ['arbitrary-dynamic-peripheral-attachment', 'uart2-input', 'physical-gps-radio', 'arbitrary-firmware-compatibility', 'cycle-exact-host-input', ...(thermalAvailable?product.id==='m5stack-u149'?['mlx90640-physical-calibration','external-i2c-slave-0x32','thermal2-buzzer-audio']:['lepton3-calibrated-thermal-imaging','lepton3-full-timing-telemetry-ffc','encoder-i2c-0x30','axp192-long-press-shutdown','physical-pdm-microphone','rtc']:[])] };
     },
     configure(nextScene) { progressGeneration++; imuGeneration++; return exclusive(async () => {
       catalog ||= await loadCatalog();

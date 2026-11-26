@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T06:32:10Z",
+  "baseCommit": "401d02d03ccc3352f551cc9a1ee14ec2ea8a8627",
+  "products": [
+    "m5stack-k140",
+    "m5stack-k016-p2",
+    "m5stack-k117",
+    "m5stack-k126",
+    "m5stack-u195"
+  ],
+  "scope": "Five newly cataloged exact SKUs; all remain runtime unavailable. Original factory/alternative identities are separate from simulation support.",
+  "checks": [
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "passed",
+      "products": 683,
+      "accessories": 10,
+      "firmwares": 618,
+      "watchlist": 452
+    },
+    {
+      "command": "node tools/platform-knowledge-test.mjs",
+      "result": "passed",
+      "records": 691
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-knowledge-test.mjs tools/platform-firmware-target-test.mjs tools/platform-watchlist-test.mjs tools/platform-manual-watchlist-test.mjs tools/platform-catalog-selection-test.mjs",
+      "result": "passed",
+      "tests": 27,
+      "limits": "Config ROM hash was not verified because the S3 ROM file is absent in this worktree."
+    },
+    {
+      "command": "validateWatchlist(actual firmware-watchlist.json)",
+      "result": "passed",
+      "actualEntries": 452
+    },
+    {
+      "command": "node tools/check-m5-missing-controller-models.mjs",
+      "result": "passed",
+      "models": 5,
+      "limits": "Real loader/file-backed fetch and artifact hash checks; browser image decoding is stubbed, no screenshot/photographic fit claim."
+    },
+    {
+      "command": "python tools/build-m5-missing-controller-models.py --output <independent scratch directory>",
+      "result": "passed",
+      "models": 5,
+      "comparison": "All final generated geometry/PNG/metadata bytes match an independent offline rebuild."
+    }
+  ],
+  "toolSha256": {
+    "tools/build-m5-missing-controller-models.py": "ef663af34a2a6ad3ad4feb8e9ff67dcca5dfd2b0756b99c3f64a610ef400d1b6",
+    "tools/check-m5-missing-controller-models.mjs": "60e7627ac00c3bf2d76dac41d313a82285fab9abc8e1fe5d95cb93bedc856e7d"
+  },
+  "notVerified": [
+    "Real browser original/gold/purple rendering and texture decoding",
+    "Same-view photographic overlays",
+    "Full dimensions/fit of photo-derived details and connectors",
+    "Official firmware execution",
+    "Hardware flashing",
+    "Physical hardware",
+    "Thread/Zigbee/Matter/thermal/voice/relay behavior"
+  ]
+}

@@ -5,6 +5,8 @@ web/platform/assets/**/source*.stp binary
 web/platform/assets/**/source*.stl binary
 web/platform/assets/**/source*.obj binary
 web/platform/assets/**/source*.kicad_mod binary
+# Source schematic PDFs can contain textual PDF syntax; retain original bytes.
+web/platform/assets/**/schematic*.pdf binary
 # RFC-style CSV records may use CRLF; their archived hashes remain unchanged.
 *.csv whitespace=cr-at-eol
 # This generated inventory report is retained verbatim with SHA256SUMS.
@@ -12,3 +14,13 @@ docs/platform/research/m5-hardware-inventory-2026-10-26/changes.md whitespace=-b
 # LILYGO CAD keeps the upstream filenames and exact bytes.
 web/platform/assets/lilygo-*/*.step binary
 web/platform/assets/lilygo-*/*.stp binary
+# Preserve byte-pinned manufacturer keymap sources, including upstream spacing.
+web/platform/assets/m5stack-u215/*-source.[ch] -text whitespace=-trailing-space,-blank-at-eof
+# Preserve the upstream CRLF license bytes covered by the source receipt.
+docs/platform/evidence/m5-classic-paper-runtime/LICENSE-LovyanGFX.txt binary
+
+# Byte-pinned upstream driver evidence retains its original whitespace.
+docs/platform/evidence/vameter-xiaozhi-card-20261126/*.[ch] -text whitespace=-trailing-space,-blank-at-eof
+docs/platform/evidence/vameter-xiaozhi-card-20261126/*.h.in -text whitespace=-trailing-space,-blank-at-eof
+docs/platform/evidence/vameter-xiaozhi-card-20261126/*.cpp -text whitespace=-trailing-space,-blank-at-eof
+docs/platform/evidence/vameter-xiaozhi-card-20261126/*.cc -text whitespace=-trailing-space,-blank-at-eof

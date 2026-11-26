@@ -6,7 +6,7 @@
     {
       "sourceComponent": 0,
       "name": "rear-shell",
-      "color": "#343b35",
+      "color": "#e4b13d",
       "role": "shell"
     },
     {
@@ -77,13 +77,33 @@
     {
       "sourceId": "product-photo-8e3ecd7dc5",
       "view": "side"
+    },
+    {
+      "sourceId": "lite-gallery-03-20261126",
+      "view": "current-LITE-camera-detail"
+    },
+    {
+      "sourceId": "lite-gallery-02-20261126",
+      "view": "current-LITE-camera-front"
+    },
+    {
+      "sourceId": "lite-gallery-05-20261126",
+      "view": "current-yellow-rear-edge"
+    },
+    {
+      "sourceId": "lite-gallery-06-20261126",
+      "view": "current-IMU-detail"
     }
   ],
   "limitations": [
-    "Manufacturer exterior CAD only; board/display/peripheral runtime unavailable.",
     "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
     "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
-    "Official rear-photo SKU text reads CORE S3 SE; relation to Lite listing is retained as a source discrepancy. No hidden board inferred from this photo."
+    "Official rear-photo SKU text reads CORE S3 SE; relation to Lite listing is retained as a source discrepancy. No hidden board inferred from this photo.",
+    "Native exact-Lite source CAD and transforms remain unchanged. Rear shell yellow is independently visible in current Lite image05 and full cover in image07; display color is an uncalibrated photo estimate. No CoreS3-SE CAD, board layout or firmware identity is substituted.",
+    "The current Lite official gallery image07 is byte-identical to the historical SE-marked rear photograph. Its paper artwork is retained literally, including SE text, as source-photo appearance with an unresolved gallery/SKU discrepancy. Images02/03 show LITE and camera, image06 names BMI270/BMM150. No label-derived hardware identity is inferred.",
+    "Separate paper masks exclude gold plastic, rubber feet, fastener holes and connector cavity. The independent source photo confirms white-paper bridges over print-layout apertures in the Lite CAD; those paper bridges do not close or replace underlying unknown structure. Native fastener heads, detailed connector and physical fit remain incomplete.",
+    "Rear paper registration +/-1.5mm, paper extent and0.025mm display gap are estimated; no calibrated optical, manufacturing, or hardware acceptance.",
+    "An independent0.2mm paper substrate seats into the native0.2mm label recess and bridges only source-confirmed continuous paper areas. Thickness is inferred from CAD recess depth, not measured paper stock; this adds no plastic closure or hidden PCB geometry."
   ],
   "assemblyNotes": "Original manufacturer components selected from assembled cluster; other components excluded with reasons. One rigid global transform, no scaling.",
   "omittedComponents": [
@@ -142,7 +162,9 @@
       {
         "id": "rear-cover",
         "parts": [
-          "rear-shell"
+          "rear-shell",
+          "rear-paper-carrier",
+          "rear-paper"
         ],
         "offsetMm": [
           0,
@@ -223,6 +245,160 @@
       "connectionStatus": "visual-only-unverified",
       "notes": "Visible mouth placed against manufacturer opening / photo; seat +/-0.6mm. Pin order is unverified, cables disabled.",
       "housingColor": "#b82d35"
+    },
+    {
+      "id": "rear-paper-carrier",
+      "kind": "plate",
+      "role": "paper",
+      "color": "#f4f3ee",
+      "geometry": {
+        "outlineMm": [
+          [
+            7.6554181570030115,
+            26.189231922407743
+          ],
+          [
+            -9.74013058695117,
+            25.782193630950335
+          ],
+          [
+            -10.894585961031629,
+            25.26048268343808
+          ],
+          [
+            -11.471420930114693,
+            24.226332543402275
+          ],
+          [
+            -11.551553449374422,
+            20.215581913365604
+          ],
+          [
+            -12.19772345089493,
+            18.904622414688802
+          ],
+          [
+            -13.659218062152453,
+            18.37346310195711
+          ],
+          [
+            -24.007218869468257,
+            18.306852268222528
+          ],
+          [
+            -25.15244461922208,
+            17.789595321641134
+          ],
+          [
+            -25.55194561298077,
+            16.456090652423395
+          ],
+          [
+            -26.976557838927828,
+            -15.507074919268423
+          ],
+          [
+            -26.663256179767153,
+            -16.673709064020507
+          ],
+          [
+            -25.674925015567077,
+            -17.537300365826287
+          ],
+          [
+            -24.607081254706326,
+            -17.772642244156916
+          ],
+          [
+            -14.195360830340595,
+            -17.74826062814962
+          ],
+          [
+            -13.088567272394865,
+            -18.07760805089348
+          ],
+          [
+            -12.306441624370075,
+            -18.782291523365096
+          ],
+          [
+            -11.982207058401876,
+            -19.803012138699028
+          ],
+          [
+            -11.825294416850094,
+            -23.66688136258978
+          ],
+          [
+            -11.385032007537363,
+            -24.508056142840594
+          ],
+          [
+            -10.492475875557517,
+            -25.03333521888033
+          ],
+          [
+            7.716072768387251,
+            -25.00646789381082
+          ],
+          [
+            8.543839465433852,
+            -24.418028936660107
+          ],
+          [
+            8.790487407864632,
+            -23.064960593576227
+          ],
+          [
+            9.125113200699435,
+            24.181936982077954
+          ],
+          [
+            8.863695451879634,
+            25.206153595988898
+          ]
+        ],
+        "depthMm": 0.2,
+        "centerMm": [
+          0,
+          0,
+          -8.150000095367432
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "manufacturer-cad-d8e384acb5",
+        "product-photo-e3f51adfdb",
+        "lite-gallery-07-20261126"
+      ],
+      "notes": "Independent physical paper, not plastic or PCB. Source photograph shows this continuous paper outline across native print-aperture cutouts. Its0.2mm thickness is an estimate from native outer rear Z=-8.25mm versus recessed label carrier Z=-8.05mm; stock thickness and fit are unmeasured. The exterior paper face supports its separate texture with0.025mm display gap. Case cutouts and missing native fastener heads remain unchanged."
+    },
+    {
+      "id": "rear-paper",
+      "kind": "label",
+      "texture": "rear-paper.png",
+      "geometry": {
+        "sizeMm": [
+          53.2,
+          53.2
+        ],
+        "centerMm": [
+          0,
+          0,
+          -8.275000190734865
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-e3f51adfdb",
+        "lite-gallery-07-20261126"
+      ],
+      "notes": "Independent paper surface0.025mm behind native rear exterior. Source photo shows continuous paper bridging the native printing cutouts; opaque texture does not supply plastic, screws or PCB detail. Extents and display gap are estimates."
     }
   ],
   "revisions": [],
@@ -347,5 +523,599 @@
       ],
       "notes": "Static blank glass approximation from official photo and manufacturer aperture; edges +/-0.6mm. Firmware pixels are never copied."
     }
-  ]
+  ],
+  "rearLabel": {
+    "texture": {
+      "file": "rear-paper.png",
+      "sourceId": "product-photo-e3f51adfdb",
+      "sourceFile": "reference-product-photo-e3f51adfdb.webp",
+      "sourceSha256": "3e03306da1ab9c06b706e77618f84f809d38dff992a2d15c0dfd4f6676088460",
+      "perspectiveQuad": [
+        [
+          226,
+          425
+        ],
+        [
+          719,
+          238
+        ],
+        [
+          982,
+          670
+        ],
+        [
+          461,
+          876
+        ]
+      ],
+      "rectifiedPixels": [
+        1080,
+        1080
+      ],
+      "alphaMask": {
+        "includePolygons": [
+          [
+            [
+              405,
+              361
+            ],
+            [
+              568,
+              303
+            ],
+            [
+              581,
+              303
+            ],
+            [
+              591,
+              309
+            ],
+            [
+              610,
+              340
+            ],
+            [
+              622,
+              348
+            ],
+            [
+              638,
+              347
+            ],
+            [
+              734,
+              311
+            ],
+            [
+              747,
+              311
+            ],
+            [
+              757,
+              320
+            ],
+            [
+              928,
+              574
+            ],
+            [
+              931,
+              585
+            ],
+            [
+              926,
+              596
+            ],
+            [
+              917,
+              602
+            ],
+            [
+              817,
+              641
+            ],
+            [
+              808,
+              648
+            ],
+            [
+              804,
+              657
+            ],
+            [
+              806,
+              667
+            ],
+            [
+              824,
+              701
+            ],
+            [
+              824,
+              710
+            ],
+            [
+              818,
+              718
+            ],
+            [
+              640,
+              788
+            ],
+            [
+              629,
+              786
+            ],
+            [
+              620,
+              775
+            ],
+            [
+              400,
+              382
+            ],
+            [
+              398,
+              373
+            ]
+          ]
+        ]
+      },
+      "notes": "Only paper boundary from image07 of the current official Lite gallery, byte-identical to the retained old SE-marked photo. Feet, screws, gold plastic and connector channel remain transparent. The source SE text is preserved as a disclosed source conflict, never rewritten to LITE. Rear-corner registration +/-1.5mm is estimated."
+    },
+    "part": {
+      "id": "rear-paper",
+      "kind": "label",
+      "texture": "rear-paper.png",
+      "geometry": {
+        "sizeMm": [
+          53.2,
+          53.2
+        ],
+        "centerMm": [
+          0,
+          0,
+          -8.275000190734865
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-e3f51adfdb",
+        "lite-gallery-07-20261126"
+      ],
+      "notes": "Independent paper surface0.025mm behind native rear exterior. Source photo shows continuous paper bridging the native printing cutouts; opaque texture does not supply plastic, screws or PCB detail. Extents and display gap are estimates."
+    },
+    "inspectionGroup": "rear-cover",
+    "paperDisplayGapMm": 0.025,
+    "originalGeometrySha256": "eea25dd3ca98f3b0337e31f2b810e0d07fd706b6839486213863822b5f396f10",
+    "originalNativePartsSha256": "d15da1cf7236c94521bc1a78e65a2cbed61c88e9033df98707a2c9fff5f5e625",
+    "originalTransformSha256": "81fe7c0735215afced9da0fcd2ffb64b555b69cd4e43556909cd3d65016f2c04",
+    "nativeAppearanceUpdates": [
+      {
+        "name": "rear-shell",
+        "fields": {
+          "color": {
+            "before": "#343b35",
+            "after": "#e4b13d"
+          }
+        }
+      }
+    ],
+    "limitations": [
+      "Native exact-Lite source CAD and transforms remain unchanged. Rear shell yellow is independently visible in current Lite image05 and full cover in image07; display color is an uncalibrated photo estimate. No CoreS3-SE CAD, board layout or firmware identity is substituted.",
+      "The current Lite official gallery image07 is byte-identical to the historical SE-marked rear photograph. Its paper artwork is retained literally, including SE text, as source-photo appearance with an unresolved gallery/SKU discrepancy. Images02/03 show LITE and camera, image06 names BMI270/BMM150. No label-derived hardware identity is inferred.",
+      "Separate paper masks exclude gold plastic, rubber feet, fastener holes and connector cavity. The independent source photo confirms white-paper bridges over print-layout apertures in the Lite CAD; those paper bridges do not close or replace underlying unknown structure. Native fastener heads, detailed connector and physical fit remain incomplete.",
+      "Rear paper registration +/-1.5mm, paper extent and0.025mm display gap are estimated; no calibrated optical, manufacturing, or hardware acceptance.",
+      "An independent0.2mm paper substrate seats into the native0.2mm label recess and bridges only source-confirmed continuous paper areas. Thickness is inferred from CAD recess depth, not measured paper stock; this adds no plastic closure or hidden PCB geometry."
+    ],
+    "scope": "Keep exact-Lite CAD; apply evidence-backed yellow rear-shell appearance and current-Lite-gallery paper, with SE/LITE source discrepancy explicit. No hidden PCB, new fastener or runtime changes.",
+    "additionalParts": [
+      {
+        "id": "rear-paper-carrier",
+        "kind": "plate",
+        "role": "paper",
+        "color": "#f4f3ee",
+        "geometry": {
+          "outlineMm": [
+            [
+              7.6554181570030115,
+              26.189231922407743
+            ],
+            [
+              -9.74013058695117,
+              25.782193630950335
+            ],
+            [
+              -10.894585961031629,
+              25.26048268343808
+            ],
+            [
+              -11.471420930114693,
+              24.226332543402275
+            ],
+            [
+              -11.551553449374422,
+              20.215581913365604
+            ],
+            [
+              -12.19772345089493,
+              18.904622414688802
+            ],
+            [
+              -13.659218062152453,
+              18.37346310195711
+            ],
+            [
+              -24.007218869468257,
+              18.306852268222528
+            ],
+            [
+              -25.15244461922208,
+              17.789595321641134
+            ],
+            [
+              -25.55194561298077,
+              16.456090652423395
+            ],
+            [
+              -26.976557838927828,
+              -15.507074919268423
+            ],
+            [
+              -26.663256179767153,
+              -16.673709064020507
+            ],
+            [
+              -25.674925015567077,
+              -17.537300365826287
+            ],
+            [
+              -24.607081254706326,
+              -17.772642244156916
+            ],
+            [
+              -14.195360830340595,
+              -17.74826062814962
+            ],
+            [
+              -13.088567272394865,
+              -18.07760805089348
+            ],
+            [
+              -12.306441624370075,
+              -18.782291523365096
+            ],
+            [
+              -11.982207058401876,
+              -19.803012138699028
+            ],
+            [
+              -11.825294416850094,
+              -23.66688136258978
+            ],
+            [
+              -11.385032007537363,
+              -24.508056142840594
+            ],
+            [
+              -10.492475875557517,
+              -25.03333521888033
+            ],
+            [
+              7.716072768387251,
+              -25.00646789381082
+            ],
+            [
+              8.543839465433852,
+              -24.418028936660107
+            ],
+            [
+              8.790487407864632,
+              -23.064960593576227
+            ],
+            [
+              9.125113200699435,
+              24.181936982077954
+            ],
+            [
+              8.863695451879634,
+              25.206153595988898
+            ]
+          ],
+          "depthMm": 0.2,
+          "centerMm": [
+            0,
+            0,
+            -8.150000095367432
+          ]
+        },
+        "basis": "image-measurement",
+        "sourceIds": [
+          "manufacturer-cad-d8e384acb5",
+          "product-photo-e3f51adfdb",
+          "lite-gallery-07-20261126"
+        ],
+        "notes": "Independent physical paper, not plastic or PCB. Source photograph shows this continuous paper outline across native print-aperture cutouts. Its0.2mm thickness is an estimate from native outer rear Z=-8.25mm versus recessed label carrier Z=-8.05mm; stock thickness and fit are unmeasured. The exterior paper face supports its separate texture with0.025mm display gap. Case cutouts and missing native fastener heads remain unchanged."
+      }
+    ]
+  },
+  "textureSources": [
+    {
+      "file": "rear-paper.png",
+      "sourceId": "product-photo-e3f51adfdb",
+      "sourceFile": "reference-product-photo-e3f51adfdb.webp",
+      "sourceSha256": "3e03306da1ab9c06b706e77618f84f809d38dff992a2d15c0dfd4f6676088460",
+      "perspectiveQuad": [
+        [
+          226,
+          425
+        ],
+        [
+          719,
+          238
+        ],
+        [
+          982,
+          670
+        ],
+        [
+          461,
+          876
+        ]
+      ],
+      "rectifiedPixels": [
+        1080,
+        1080
+      ],
+      "alphaMask": {
+        "includePolygons": [
+          [
+            [
+              405,
+              361
+            ],
+            [
+              568,
+              303
+            ],
+            [
+              581,
+              303
+            ],
+            [
+              591,
+              309
+            ],
+            [
+              610,
+              340
+            ],
+            [
+              622,
+              348
+            ],
+            [
+              638,
+              347
+            ],
+            [
+              734,
+              311
+            ],
+            [
+              747,
+              311
+            ],
+            [
+              757,
+              320
+            ],
+            [
+              928,
+              574
+            ],
+            [
+              931,
+              585
+            ],
+            [
+              926,
+              596
+            ],
+            [
+              917,
+              602
+            ],
+            [
+              817,
+              641
+            ],
+            [
+              808,
+              648
+            ],
+            [
+              804,
+              657
+            ],
+            [
+              806,
+              667
+            ],
+            [
+              824,
+              701
+            ],
+            [
+              824,
+              710
+            ],
+            [
+              818,
+              718
+            ],
+            [
+              640,
+              788
+            ],
+            [
+              629,
+              786
+            ],
+            [
+              620,
+              775
+            ],
+            [
+              400,
+              382
+            ],
+            [
+              398,
+              373
+            ]
+          ]
+        ]
+      },
+      "notes": "Only paper boundary from image07 of the current official Lite gallery, byte-identical to the retained old SE-marked photo. Feet, screws, gold plastic and connector channel remain transparent. The source SE text is preserved as a disclosed source conflict, never rewritten to LITE. Rear-corner registration +/-1.5mm is estimated."
+    }
+  ],
+  "sourceRecheck": {
+    "page": {
+      "url": "https://docs.m5stack.com/en/core/CoreS3-Lite",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/CoreS3-Lite",
+      "fetchedAt": "2026-11-26T10:39:36.610269+00:00",
+      "sha256": "8d95998784fa170a271849e218122978363b01a492625f6209f05ebdd75105ce",
+      "bytes": 158270,
+      "mediaType": "text/html"
+    },
+    "galleryReceipts": [
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-01.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-01.webp",
+        "fetchedAt": "2026-11-26T10:39:45.446440+00:00",
+        "sha256": "b5a29041f34654c29b908e2a486454aadaafcc35239472421c573604b2312bc0",
+        "bytes": 156906,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-01.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-04.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-04.webp",
+        "fetchedAt": "2026-11-26T10:39:45.382780+00:00",
+        "sha256": "7e106819118f2d6415ae254a1866102ee5997ab318b1728c1fc835a71c47e873",
+        "bytes": 33352,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-04.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-03.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-03.webp",
+        "fetchedAt": "2026-11-26T10:39:44.335144+00:00",
+        "sha256": "a31ebce6be5421d294811eae2256d6f8b8f66e02a4a3b4e5b8788c269cd60564",
+        "bytes": 46224,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-03.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-02.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-02.webp",
+        "fetchedAt": "2026-11-26T10:39:51.890786+00:00",
+        "sha256": "ce3897f4e5273d57803924816c3dfda323033e5cc5ff2584961175a49595b098",
+        "bytes": 39224,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-02.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-05.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-05.webp",
+        "fetchedAt": "2026-11-26T10:39:51.938666+00:00",
+        "sha256": "3e7e332621525cf878cc8c6b0d431c97257085f68048826303e8e340537c0daf",
+        "bytes": 39544,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-05.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-06.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-06.webp",
+        "fetchedAt": "2026-11-26T10:39:52.216385+00:00",
+        "sha256": "54a0df46e1549156c47353b8ed0530c6d21aa22819fab3a6beb71d91e2619ac7",
+        "bytes": 119178,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-06.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-07.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-07.webp",
+        "fetchedAt": "2026-11-26T10:39:59.455143+00:00",
+        "sha256": "3e03306da1ab9c06b706e77618f84f809d38dff992a2d15c0dfd4f6676088460",
+        "bytes": 81216,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-07.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-08.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-08.webp",
+        "fetchedAt": "2026-11-26T10:39:59.481767+00:00",
+        "sha256": "b8e5ef04f23d2ad381bfb3e801795154b2399771fdcaaff9781ea8ce5b8a0a52",
+        "bytes": 54270,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-08.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-09.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-09.webp",
+        "fetchedAt": "2026-11-26T10:40:00.777197+00:00",
+        "sha256": "c77f9c1a6b8d5c206bfac067c9c316460443875025861dcceebea4248971e60f",
+        "bytes": 68114,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-09.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-10.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-10.webp",
+        "fetchedAt": "2026-11-26T10:40:07.635119+00:00",
+        "sha256": "0e3d07ad8eb125b9b646394758a2fa44d2a5cdf7128ee308588d1a992280ebed",
+        "bytes": 141322,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-10.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-11.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-11.webp",
+        "fetchedAt": "2026-11-26T10:40:07.654609+00:00",
+        "sha256": "5b01ae79d4e7ce9cd8c2e839e226a5610b1d6873fa63caf961ef5d16c25af676",
+        "bytes": 68544,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-11.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-12.webp",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-12.webp",
+        "fetchedAt": "2026-11-26T10:40:07.654668+00:00",
+        "sha256": "402d0426bb589b755791177b9d7631494558b5985a9a739ce2a28d52a2530016",
+        "bytes": 63240,
+        "mediaType": "image/webp",
+        "file": "K128-Lite-12.webp"
+      },
+      {
+        "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-weight.jpg",
+        "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1162/K128-Lite-weight.jpg",
+        "fetchedAt": "2026-11-26T10:40:15.566501+00:00",
+        "sha256": "572cb5d62bd6459b21c2e1ddb2432aa18ca23979215e759c446f0eb59469bf57",
+        "bytes": 197226,
+        "mediaType": "image/jpg",
+        "file": "K128-Lite-weight.jpg"
+      }
+    ],
+    "assessment": "Current official Lite gallery preserves a SE-marked shared rear cover; front images02/03 are LITE with camera,05 shows yellow rear edge,06 BMI270/BMM150. Retain source conflict; do not use SE CAD or remove known Lite camera/IMU.",
+    "reusedRearPhotoSha256": "3e03306da1ab9c06b706e77618f84f809d38dff992a2d15c0dfd4f6676088460",
+    "sameAsCurrentGalleryImage": "K128-Lite-07.webp"
+  }
 }

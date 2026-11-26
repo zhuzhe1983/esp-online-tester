@@ -185,6 +185,24 @@ impl ClassicGpSpi {
         (clock, mosi)
     }
 
+    /// Cold opt-in phase metadata for a pin-aware SPI slave. ESP-IDF v4.4.7
+    /// esp32/spi_reg.h USER/USER1/USER2, CTRL and SLAVE, also v5.5.4 offsets.
+    /// This describes the existing transfer; it is not a second serializer.
+    pub(crate) fn phase_snapshot(&self,transfer:&Transfer)->esp_soc::board::SpiQspiPins {
+        let user=self.regs.read(0x1c);let control=self.regs.read(8);
+        let command=user&USER_COMMAND!=0;let address=user&USER_ADDR!=0;
+        let mosi=user&USER_MOSI!=0;let miso=user&USER_MISO!=0;
+        esp_soc::board::SpiQspiPins {
+            keep_cs:transfer.keep_cs,command_width:u8::from(command),address_width:u8::from(address),data_width:u8::from(mosi),read_width:u8::from(miso),
+            command_bits:if command{((self.regs.read(0x24)>>28)&15)as u8+1}else{0},address_bits:if address{((self.regs.read(0x20)>>26)&63)as u8+1}else{0},
+            data_bits:if mosi{(self.regs.read(0x28)&0xffffff)+1}else{0},read_bits:if miso{(self.regs.read(0x2c)&0xffffff)+1}else{0},
+            dummy_cycles:if user&(1<<29)!=0{(self.regs.read(0x20)&255)as u16+1}else{0},sio:user&(1<<16)!=0,full_duplex:user&1!=0,
+            clock_idle_high:self.regs.read(0x34)&(1<<29)!=0,clock_output_edge:user&(1<<7)!=0,
+            unsupported_mode:control&((3<<25)|(3<<23)|(1<<20)|(1<<14))!=0||user&((15<<12)|(3<<10))!=0||self.regs.read(0x38)&(1<<30)!=0,
+            ..Default::default()
+        }
+    }
+
     pub(crate) fn dma_fault(&mut self, tx: bool) {
         self.dma_int_raw |= if tx { 1 << 1 } else { 1 << 2 };
         if tx { self.out_active = false; } else { self.in_active = false; }

@@ -153,8 +153,8 @@ export function validateScene(scene, catalog) {
   if (scene.environment !== undefined && (!hasPowerEnvironment(product) || !validPowerScene(scene.environment))) {
     errors.push(issue('POWER_ENVIRONMENT', '/environment', 'StickC-Plus requires a complete virtual power environment.'));
   }
-  if (scene.thermalEnvironment !== undefined && (!hasThermalEnvironment(product) || !validThermal(scene.thermalEnvironment))) {
-    errors.push(issue('THERMAL_ENVIRONMENT', '/thermalEnvironment', 'StickT2 requires bounded integer Raw14 counts, coordinates and radius.'));
+  if (scene.thermalEnvironment !== undefined && (!hasThermalEnvironment(product) || !validThermal(scene.thermalEnvironment,product))) {
+    errors.push(issue('THERMAL_ENVIRONMENT', '/thermalEnvironment', 'This sensor requires bounded integer ADC counts, coordinates and radius.'));
   }
   if(scene.flight!==undefined&&(!validFlightConfig(scene.flight)||!hasFlight(product?.runtime?.board)))errors.push(issue('FLIGHT_CONFIG','/flight','Flight requires StampFly and a valid explicit model configuration.'));
   if (scene.firmware === null) warnings.push(issue('FIRMWARE_MISSING', '/firmware', 'Choose a firmware artifact before running.'));

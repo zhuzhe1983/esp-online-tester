@@ -23,7 +23,8 @@
           20.0,
           8.100000762939453
         ]
-      ]
+      ],
+      "controlId": "wake"
     },
     {
       "sourceComponent": 3,
@@ -49,7 +50,7 @@
       "sourceComponent": 4,
       "name": "stamp-cover",
       "color": "#282d2a",
-      "role": "shell",
+      "role": "pcb",
       "byteOffset": 363888,
       "vertexCount": 9504,
       "boundsMm": [
@@ -63,7 +64,22 @@
           6.000006198883057,
           7.95000114440918
         ]
-      ]
+      ],
+      "texture": {
+        "file": "reference-product-photo-ea3f701eb5.webp",
+        "projection": "xy",
+        "boundsMm": [
+          -30,
+          -30,
+          30,
+          30
+        ],
+        "side": "front",
+        "mode": "decal",
+        "minNormalZ": 0.95,
+        "minZMm": 7.4,
+        "maxZMm": 7.96
+      }
     }
   ],
   "sourceTransform": {
@@ -141,7 +157,9 @@
           "stamp-cover",
           "usb-c",
           "usb-body",
-          "antenna-face"
+          "antenna-face",
+          "antenna-face-photo",
+          "usb-body-photo"
         ],
         "offsetMm": [
           0,
@@ -177,6 +195,31 @@
       24,
       40,
       16.2
+    ],
+    "buttons": [
+      {
+        "id": "boot",
+        "shape": "circle",
+        "sizeMm": [
+          2.8,
+          2.8
+        ],
+        "positionMm": [
+          3,
+          -4.5,
+          7.976
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "basis": "image-measurement",
+        "sourceIds": [
+          "product-photo-ea3f701eb5"
+        ],
+        "notes": "Conservative 2.8mm circle over the visible Stamp-S3 G0 tongue, inside the native cover silhouette at x+3/y-4.5mm. Own front photograph shows this separate central dark press cap; official exact SKU download instructions identify Stamp G0. No whole cover/wake button mapping or visible geometry change; placement estimated +/-0.6mm and travel uncalibrated."
+      }
     ]
   },
   "derivedParts": [
@@ -196,7 +239,10 @@
         0
       ],
       "sourceIds": [],
-      "notes": "Neutral UNKNOWN placeholder; no verified PCB placement/layout geometry. Exterior shape is not an assertion of PCB detail."
+      "notes": "Unverified hidden host-board space. Front Stamp cover has native CAD and its exact-SKU factory-photo appearance; the opposite host-board face remains UNKNOWN.",
+      "geometry": {
+        "labelSide": "back"
+      }
     },
     {
       "id": "usb-c",
@@ -290,6 +336,94 @@
         "dimension-drawing-e1470e6e7b"
       ],
       "notes": "Visible metallic antenna face approximation +/-0.6mm; no RF geometry or electrical behavior."
+    },
+    {
+      "id": "antenna-face-photo",
+      "kind": "photo-surface",
+      "texture": "reference-product-photo-ea3f701eb5.webp",
+      "geometry": {
+        "outlineMm": [
+          [
+            -6.25,
+            -2.2
+          ],
+          [
+            6.25,
+            -2.2
+          ],
+          [
+            6.25,
+            2.2
+          ],
+          [
+            -6.25,
+            2.2
+          ]
+        ],
+        "centerMm": [
+          0,
+          3,
+          7.656
+        ],
+        "side": "front",
+        "uvFromMm": [
+          0.016666666666666666,
+          0,
+          0.5,
+          0,
+          0.016666666666666666,
+          0.55
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-ea3f701eb5"
+      ],
+      "notes": "Original near-frontal exact-SKU photograph on the already-estimated antenna-face top plane. Existing carrier extent and seating retained, +/-0.7mm; projected shading does not establish relief or manufacturing geometry."
+    },
+    {
+      "id": "usb-body-photo",
+      "kind": "photo-surface",
+      "texture": "reference-product-photo-ea3f701eb5.webp",
+      "geometry": {
+        "outlineMm": [
+          [
+            -4.45,
+            -3.2
+          ],
+          [
+            4.45,
+            -3.2
+          ],
+          [
+            4.45,
+            3.2
+          ],
+          [
+            -4.45,
+            3.2
+          ]
+        ],
+        "centerMm": [
+          0,
+          -16.8,
+          7.156
+        ],
+        "side": "front",
+        "uvFromMm": [
+          0.016666666666666666,
+          0,
+          0.5,
+          0,
+          0.016666666666666666,
+          0.21999999999999997
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-ea3f701eb5"
+      ],
+      "notes": "Original near-frontal exact-SKU photograph on the already-estimated usb-body top plane. Existing carrier extent and seating retained, +/-0.7mm; projected shading does not establish relief or manufacturing geometry."
     }
   ],
   "derivedSurfaces": [],
@@ -765,7 +899,8 @@
     "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
     "Model uses the no-label front configuration explicitly pictured by the manufacturer; supplied loose label is not falsely printed into source geometry.",
     "USB/Grove mouths are source-photo-informed standard visual approximations; shell outlines remain manufacturer CAD.",
-    "Capsule v1.1 changes core module to Stamp-S3A; earlier Capsule firmware/PCB is not assumed identical."
+    "Capsule v1.1 changes core module to Stamp-S3A; earlier Capsule firmware/PCB is not assumed identical.",
+    "The exact K129-V11 near-frontal factory photograph colors existing Stamp cover front triangles. Only visible top appearance is evidenced; side/reverse circuitry, connector internals and populated board geometry are not established. The host board UNKNOWN marker remains on its reverse. Photo pixels are not independent CAD verification."
   ],
   "artifacts": {
     "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
@@ -774,5 +909,38 @@
     "reference-product-photo-b0a902f256.webp": "32d6bcb55c3018b69cd985625a6f86b1183348f54570ff98ac0f5865a2226c1b",
     "geometry.bin": "8b18019e5cd073e57cdb822829057dc611750757e7625e5ac69fc3ec5a802895",
     "source.stl": "ef780502da88abad6d677b381b10c011f7e89af168b109b55577e84a6d1aa3ae"
+  },
+  "appearanceRebuild": {
+    "script": "tools/rebuild-m5-appearance.py",
+    "nativeGeometrySha256": "8b18019e5cd073e57cdb822829057dc611750757e7625e5ac69fc3ec5a802895",
+    "sourceIds": [
+      "product-photo-ea3f701eb5"
+    ],
+    "sourceSha256": {
+      "product-photo-ea3f701eb5": "659e462651a8eebf66535bdd31d3239bde51295b7b84382e35df8a1b8bd5484a"
+    },
+    "nativePartAppearance": {
+      "stamp-cover": {
+        "role": "pcb",
+        "texture": {
+          "file": "reference-product-photo-ea3f701eb5.webp",
+          "projection": "xy",
+          "boundsMm": [
+            -30,
+            -30,
+            30,
+            30
+          ],
+          "side": "front",
+          "mode": "decal",
+          "minNormalZ": 0.95,
+          "minZMm": 7.4,
+          "maxZMm": 7.96
+        }
+      }
+    },
+    "scope": "Exact K129-V11 photo projected only on existing front-facing Stamp cover triangles. Native CAD/source/assembly/controls/connector anchors unchanged; no generated pixels or invented electronic solids. Hidden board reverse remains UNKNOWN.",
+    "uncertaintyMm": 0.7,
+    "photoIsIndependentGeometryEvidence": false
   }
 }

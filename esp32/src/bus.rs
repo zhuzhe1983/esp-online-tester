@@ -59,6 +59,8 @@ pub struct SocBus {
     pub mmu: [[u32; 2048]; 2],
     pub periph: Peripherals,
     pub board: esp_soc::Board,
+    pub(crate) emac_config: Option<esp_soc::board::EmacConfig>,
+    pub(crate) wired_link: Option<esp_soc::ethernet::EthernetLink>,
     pub cycles: u64,
     pub last_fault: Option<(u32, bool)>,
     pub irq_dirty: bool,
@@ -90,6 +92,7 @@ impl SocBus {
             mmu: [[MMU_INVALID; 2048]; 2],
             periph: Peripherals::new(mac),
             board: Box::new(esp_soc::NoBoard),
+            emac_config: None, wired_link: None,
             cycles: 0,
             last_fault: None,
             irq_dirty: true,
@@ -288,6 +291,7 @@ impl SocBus {
         if a == WDEV_RND {
             return;
         }
+        if (0x3ff6_9000..0x3ff6_c000).contains(&a) && self.emac_config.is_some() { self.emac_routes(); }
         // A byte/halfword store merges into the register's current value, but reading a UART FIFO pops a received byte:
         // TX FIFO writes merge into 0 instead.
         let fifo = matches!(a, 0x3ff4_0000 | 0x3ff5_0000 | 0x3ff6_e000);
@@ -431,12 +435,17 @@ impl SocBus {
         Some((w, h, frame))
     }
     pub fn attach_board_devices(&mut self) {
+        self.attach_emac();
         // Cold package setup for these boards, as listed in the M5Stack specifications.
         // Factory IDF 85c43024c and IDF v5.5.1 efuse_reg.h: RDATA3 package bits [11:9].
         // Espressif esptool v4.7.0, targets/esp32.py: the PICO-D4 package code is 5.
-        if matches!(self.board.name(), "atom-matrix-v11" | "stamppico" | "stickc" | "stickc-plus" | "stickt2") {
+        if matches!(self.board.name(), "atomu" | "unit-thermal2" | "atom-matrix-v11" | "stamppico" | "stickc" | "stickc-plus" | "stickc-plus-se" | "tlite" | "stickt2" | "stickt-original" | "coreink-d67") {
             let value = self.periph.efuse.ram.read(0x0c);
             self.periph.efuse.ram.write(0x0c, (value & !(7 << 9)) | (5 << 9));
+        }
+        if matches!(self.board.name(), "stickc-plus2" | "atom-psram-display") {
+            let value = self.periph.efuse.ram.read(0x0c);
+            self.periph.efuse.ram.write(0x0c, (value & !(7 << 9)) | (6 << 9));
         }
         self.irq_dirty = true;
         if self.board.uses_gpio_routes() {
@@ -565,7 +574,14 @@ impl SocBus {
                     .set_output_signal(cs_signals[cs], polarity, true);
             }
             self.flush_gpio();
-            let rx = if self.board.uses_spi_pins() {
+            let rx = if self.board.uses_qspi_pins() {
+                let gpio=&self.periph.gpio;
+                let mut pins=self.periph.spi[index].phase_snapshot(&transfer);
+                pins.sclk=gpio.output_pins(clock_signal);pins.data[0]=gpio.output_pins(mosi_signal);pins.input[1]=gpio.input_pin(miso_signal);pins.cs=gpio.low_outputs();
+                if let Some((cs,polarity))=transfer.cs {if !polarity {pins.hardware_cs=gpio.output_pins(cs_signals[cs]);}}
+                let routes=gpio.routes();for pin in 0..40 {if routes.software_output(pin)==Some(false){pins.software_cs|=1<<pin;}}
+                self.board.spi_transfer_qspi_pins(host as u8,pins,&transfer.tx,transfer.rx_len)
+            } else if self.board.uses_spi_pins() {
             let gpio = &self.periph.gpio;
             let pins = esp_soc::board::SpiPins {
                 sclk: gpio.output_pins(clock_signal), mosi: gpio.output_pins(mosi_signal),
@@ -678,6 +694,7 @@ impl Bus for SocBus {
         self.flush_gpio();
 
         if self.periph.wifi.clock_enabled { self.wifi_step(); }
+        if self.emac_config.is_some() { self.emac_step(); }
         u32::from(self.irq_dirty)
     }
 }

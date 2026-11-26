@@ -1,0 +1,28 @@
+{
+  "productId": "m5stack-k151",
+  "modelSha256": "7f0dd1c0f2afac0ee19afd71358ace53e86ff431c413a05943f9696ed37aaf60",
+  "source": "Exact SKU manufacturer rear photo07, product-photo-9567dda286, SHA256 d53bd95dc0ed026b3e71c35e6340096c593343b77877a649aa32e5c54199ee90",
+  "manualCpuReview": "Upper exposed power-board chips/print now use only source-visible patches. Raised central ribbon, right FFC, top connectors, servo hardware, shell, fasteners and shadows outside the board ROI are masked out. Green board edge follows exact-SKU photo, with lighting uncertainty. Photographed face retains colors in original/gold/translucent-purple. Original native/servo geometry remains unchanged.",
+  "unknown": "Power board UNKNOWN stays on inward front face; rear known patches do not imply PCB layout or component heights. Other unknown boards are retained.",
+  "inspection": "Existing articulated model has no nested internal inspection controller; this change does not claim full disassembly acceptance. A separate engine follow-up must expose inward markers.",
+  "jointAttachment": "New photo is explicitly in the same tilt joint as pcb-power; real production applyServoValues pan31/tilt−19 and neutral verify identical board-local attachment.",
+  "negativeResults": [
+    {
+      "command": "Generic manufacturer CAD re-export",
+      "result": "failed: Source plane clip selects an empty surface",
+      "response": "No source-component replacement or silent retessellation. Original committed model checkpoint and all27 original artifact bytes are hash-pinned and copied; dedicated appearance recipe generates only the new source-photo surface and contract."
+    }
+  ],
+  "commands": [
+    "python tools/rebuild-product-model.py plan m5stack-k151",
+    "python tools/rebuild-stackchan-rear-appearance.py --scratch <new-directory>",
+    "node tools/verify-classic-appearance-20261126.mjs <receipt> m5stack-k151",
+    "node tools/export-m5-cpu-models.mjs --repo <repo> --out <export> --ids m5stack-k151",
+    "blender -b -t 2 --python tools/render-m5-cpu-qa.py -- --repo <repo> --input <export> --out <renders> --ids m5stack-k151 --size 768 --samples 16 --appearance <original|gold|purple>"
+  ],
+  "limits": [
+    "Photo quad/body scale is approximate±1mm; 43×35mm power-board outline/position remain enclosure-space estimates.",
+    "No board layout, chip heights, traces or electrical routing reconstructed.",
+    "No firmware, mechanical fit or physical hardware verification in this appearance change."
+  ]
+}

@@ -686,7 +686,11 @@ impl Device for SdioSlave {
 /// The host's access to the slave through the C6's bus: the DMA reaches SRAM, and the SLC0 line
 /// is re-derived before the C6's next instruction.
 impl crate::bus::SocBus {
+    fn product_sdio_connected(&self)->bool {
+        self.board.name()!="m5-stamp-addon-c6" || (18..=23).all(|pin|esp_soc::pins::ChipPins::C6.routes(&self.periph.gpio,&self.periph.io_mux).input_function(pin,0))
+    }
     pub fn sdio_command(&mut self, cmd: u8, arg: u32) -> Result<SdResponse, SdCmdError> {
+        if !self.product_sdio_connected() {return Err(SdCmdError::NoResponse);}
         let mut mem = Sram { base: crate::bus::SRAM_LOW, bytes: &mut self.sram };
         let r = self.periph.optional.sdio.command(cmd, arg, &mut mem);
         self.sdio_settle();
@@ -695,6 +699,7 @@ impl crate::bus::SocBus {
     /// The next card-to-host bytes. `done` is the machine cycle the bus finishes carrying them:
     /// the DMA's hand-back to the C6 waits for it when it is still to come.
     pub fn sdio_read_data(&mut self, buf: &mut [u8], done: u64) -> Result<(), SdDataError> {
+        if !self.product_sdio_connected() {return Err(SdDataError::Timeout);}
         let mut mem = Sram { base: crate::bus::SRAM_LOW, bytes: &mut self.sram };
         let sdio = &mut self.periph.optional.sdio;
         sdio.defer_to((done > self.cycles).then_some(done));
@@ -705,6 +710,7 @@ impl crate::bus::SocBus {
     }
     /// The next host-to-card bytes, `done` as for `sdio_read_data`.
     pub fn sdio_write_data(&mut self, data: &[u8], done: u64) -> Result<(), SdDataError> {
+        if !self.product_sdio_connected() {return Err(SdDataError::Timeout);}
         let mut mem = Sram { base: crate::bus::SRAM_LOW, bytes: &mut self.sram };
         let sdio = &mut self.periph.optional.sdio;
         sdio.defer_to((done > self.cycles).then_some(done));

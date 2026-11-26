@@ -22,6 +22,8 @@ The LILYGO inventory follows Spark’s stable series IDs and product IDs: 127 li
 
 Stamp 系列已逐款接入 22 个主控和套件，StampFly v1.1 保持独立型号；模型、可运行行为与已知限制见 [Stamp 适配清单](stamp-series-onboarding.md)。同 PCB 的排针、DIP 和套装变体从常用设备列表收起，原 ID 与模型保留。C5 仅支持显式 SRAM app-direct。StampFly 另有独立 UART 演示固件和需主动开启的近似飞行环境，见[操作说明](stampfly-demo.md)与[模型边界](stampfly-flight.md)。
 
+Tab5 C145 的 ILI9881C＋GT911 批次已接入真实P4 MIPI-DSI、DW-GDMA/DMA2D、PI4IO复位/背光与GPIO31/32触摸；原创RV32客体已验证720×1280全帧和触摸驱动第二帧。Unit PoE-P4 U213采用独立IP101GRI/EMAC/MDIO/RMII与客体PSRAM DMA、GPIO45用户键和共阳RGB。两者保留partial与官方固件未验证试运行；其他Tab5屏幕批次、模拟PoE/充电和实机未验，见[Tab5运行范围](m5stack-tab5-runtime.md)和[PoE-P4运行范围](m5stack-poep4-runtime.md)。
+
 TriviaPOD TP-01-A 作为 M5Stack「其他主控」中的独立产品列出，提供官方 3D 模型与硬件资料，并显式采用 StopWatch 兼容模拟配置（32 MB Flash、8 MB PSRAM）。通过独立的 `firmwareTargetId` 共用 StopWatch 固件目录，提供试运行；USB-C 仅确认充电用途，不继承原厂固件身份、实机验证结论、Grove 或后部扩展接口，见 [TriviaPOD 模型说明](triviapod-model.md)和[固件目标规则](firmware-targets.md)。
 
 CoreMatrix C158 已增加独立 ESP32-C61 运行器、16×16 白色 LED 矩阵与原厂 CAD 模型；官方 UIFlow 原始镜像的外设验收、启动缺失模块及未实现能力见 [CoreMatrix 运行报告](corematrix-runtime.md)。

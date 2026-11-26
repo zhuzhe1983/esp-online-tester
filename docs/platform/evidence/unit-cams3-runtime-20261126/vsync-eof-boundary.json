@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T10:03:34Z",
+  "problem": "Clocked LCD_CAM must not fabricate VSYNC EOF when an opt-in wired sensor has no valid output.",
+  "checks": [
+    {
+      "command": "cargo test -p esp32s3 camera_disconnected_wired_sensor --lib",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "command": "cargo clippy -p esp32s3 --lib -- -D warnings",
+      "result": "passed"
+    }
+  ],
+  "expected": {
+    "partialDescriptorLengthBytes": 2,
+    "ownerRemainsDma": true,
+    "successEofInterrupt": false,
+    "descriptorWriteback": false,
+    "vsyncInterrupt": false
+  },
+  "files": {
+    "esp32s3/src/bus/dma.rs": "dace8cb9f6ec107f9929a8f9373fe04e3d9e4a7df8f4c0891c980027984ccf68",
+    "esp32s3/src/bus/dma_tests.rs": "b0d8fae77f403fd97ef5ea1d89a8591b6bdf81a2e98d0100db1f96865f1d93df"
+  },
+  "scope": "Regression for the S3 digital model; not calibrated sensor VSYNC electrical timing."
+}

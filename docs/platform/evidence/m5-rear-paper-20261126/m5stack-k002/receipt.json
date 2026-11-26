@@ -1,0 +1,84 @@
+{
+  "productId": "m5stack-k002",
+  "scope": "Exact-SKU rear paper only. Existing source/native/procedural geometry and assembly transforms remain unchanged. CPU mesh/material export is not browser GPU or calibrated photographic acceptance.",
+  "source": {
+    "id": "photo-2",
+    "title": "k002 photo-2.jpg",
+    "url": "https://cdn.shopify.com/s/files/1/0056/7689/2250/products/4_e1736957-6112-4a41-8f38-c044f4ac5e2f.jpg?v=1652238861",
+    "resolvedUrl": "https://cdn.shopify.com/s/files/1/0056/7689/2250/products/4_e1736957-6112-4a41-8f38-c044f4ac5e2f.jpg?v=1652238861",
+    "kind": "official-product-photo",
+    "status": "fetched",
+    "fetchedAt": "2026-11-26T06:13:18Z",
+    "bytes": 42810,
+    "sha256": "c4ab77207159bd2e571c3308da9ef10760d60a389f3bd20bd58e73fa955fee54",
+    "mediaType": "image/jpeg",
+    "archiveName": "photo-2.jpg"
+  },
+  "modelSha256": "37196035dc347fdfac2b8a6aa96462145738ae761c30985312af7cce00cc594a",
+  "textureSha256": "ab6dc29eec1774104338467ee4b2fef197adc8a54d08fb449d7e7ab6e61100fb",
+  "originalGeometrySha256": "ff021945e025d2f5a78940efc106b1b81069bfced3fb3a4726e4b88cc79c1916",
+  "originalNativePartsSha256": "b78b3dfad6ccd86d51066a6ed876e7299ec75c80fa3b5f0131d64b601268d661",
+  "originalTransformSha256": "adaf37e0ec94363f66ca9a5794e268bf13738f4db2d7fd50457e18c81b394ebc",
+  "rebuild": {
+    "script": "tools/build-m5-rear-labels.py",
+    "deterministicByteComparison": [
+      "model.json",
+      "rear-paper.png",
+      "rear-label-rebuild.json"
+    ],
+    "result": "passed"
+  },
+  "actualLoaderChecks": {
+    "script": "tools/platform-m5-rear-labels-test.mjs",
+    "textureBound": true,
+    "sourceAndArtifactHashes": true,
+    "fixedMapColorAndOpacityAcrossShellPresets": true,
+    "alphaTest": 0.5,
+    "coverInspectionAttachmentAndExactReset": true
+  },
+  "render": {
+    "exporter": "tools/export-m5-cpu-models.mjs",
+    "renderer": "Blender 4.3.2 / Cycles CPU",
+    "script": "tools/render-m5-cpu-qa.py",
+    "threads": 2,
+    "samples": 12,
+    "resolution": [
+      640,
+      640
+    ],
+    "negativePolygonOffsetApproximationMm": 0.005,
+    "images": [
+      {
+        "file": "original-back.png",
+        "sha256": "2be13d8c94cb4ebe769bdfded418feccfc5c6a1b9ba3c334d2bc3145bcea6367",
+        "appearance": "original",
+        "view": "rear orthographic",
+        "manualReview": "Paper letters remain readable; only source paper is opaque; holes/fasteners and connector gap remain open."
+      },
+      {
+        "file": "gold-back.png",
+        "sha256": "e227025d49f690c675bdc7f8890d2b68dd240287a0bab5c36cd156cb825fa37d",
+        "appearance": "gold",
+        "view": "rear orthographic",
+        "manualReview": "Paper letters remain readable; only source paper is opaque; holes/fasteners and connector gap remain open."
+      },
+      {
+        "file": "purple-back.png",
+        "sha256": "2ffad7d582e4cb517962b3ec50897b5b0aee35c22dd832ce8e94b5b65307aeb7",
+        "appearance": "purple",
+        "view": "rear orthographic",
+        "manualReview": "Paper letters remain readable; only source paper is opaque; holes/fasteners and connector gap remain open."
+      }
+    ]
+  },
+  "limitations": [
+    "Rear label paper is derived only from this exact SKU photograph, using retained corner/alpha coordinates. Registration +/-1.5mm and display gap are estimates; no calibrated 1:1 photo or physical fit acceptance.",
+    "Paper remains a separate fixed-color surface for original, gold and translucent enclosure materials. Original CAD/native/procedural binary geometry and assembly transforms are unchanged."
+  ],
+  "projectedFlatCarrierCheck": {
+    "alphaOpaqueTexelCenters": 152250,
+    "outsideProjectedFlatCarrier": 0,
+    "flatCarrierZMm": -11.347700119018555,
+    "method": "Alpha>=128 texel centers projected onto unchanged native back-facing flat carrier triangles; no physical fit claim."
+  }
+}

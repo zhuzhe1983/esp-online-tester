@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1",
+  "productId": "m5stack-k132-v11",
+  "checkedAt": "2026-11-26T10:27:09Z",
+  "beforeModelSha256": "3ea27cded61603ef408d0f37ebeca1222e5155ac067d11fec6e00e297942edce",
+  "modelSha256": "061f26d56ef478c0151ae11d42c3d2810ba1d2b0b78f7e1133e9e16fec5a2802",
+  "planSha256": "75a8f1d0e97ea8315548dd9a5cd619ce8c77daa7925aa356d1bd821e6013300e",
+  "sourceGeometryUnchanged": {
+    "geometry.bin": "75e7555103700d3159aa02ce511fc539d706d38f017cb23140ee96b88bc7c4c0",
+    "source.stl": "723c44d415832bc77aa52376c5b8a549855d3fd316b073e4cfa1d8135e7a306d"
+  },
+  "nativePartsByteEquivalent": true,
+  "textureChecks": {
+    "schemaVersion": "1",
+    "productId": "m5stack-k132-v11",
+    "unchangedArtifacts": {
+      "geometry.bin": "75e7555103700d3159aa02ce511fc539d706d38f017cb23140ee96b88bc7c4c0",
+      "source.stl": "723c44d415832bc77aa52376c5b8a549855d3fd316b073e4cfa1d8135e7a306d"
+    },
+    "manufacturerPartsUnchanged": true,
+    "sourceRgbUnchanged": true,
+    "alphaProbes": [
+      {
+        "texture": "rear-top-feature-strip.png",
+        "sourcePixel": [
+          400,
+          287
+        ],
+        "alpha": 255,
+        "feature": "printed ESP32-S3/WiFi feature strip",
+        "actualAlpha": 255
+      },
+      {
+        "texture": "rear-top-feature-strip.png",
+        "sourcePixel": [
+          192,
+          230
+        ],
+        "alpha": 0,
+        "feature": "upper mounting hole",
+        "actualAlpha": 0
+      },
+      {
+        "texture": "rear-top-feature-strip.png",
+        "sourcePixel": [
+          304,
+          333
+        ],
+        "alpha": 0,
+        "feature": "lower silver screw",
+        "actualAlpha": 0
+      },
+      {
+        "texture": "rear-top-feature-strip.png",
+        "sourcePixel": [
+          400,
+          500
+        ],
+        "alpha": 0,
+        "feature": "existing main rear label excluded",
+        "actualAlpha": 0
+      },
+      {
+        "texture": "rear-top-feature-strip.png",
+        "sourcePixel": [
+          104,
+          290
+        ],
+        "alpha": 0,
+        "feature": "left enclosure wall",
+        "actualAlpha": 0
+      }
+    ],
+    "modelSha256": "061f26d56ef478c0151ae11d42c3d2810ba1d2b0b78f7e1133e9e16fec5a2802",
+    "planSha256": "75a8f1d0e97ea8315548dd9a5cd619ce8c77daa7925aa356d1bd821e6013300e",
+    "scope": "Restore the exact SKU top rear feature-paper strip; retain its existing main paper and every manufacturer triangle. Source-photo registration is estimated; no physical fit or factory runtime claim.",
+    "mode": "check"
+  },
+  "nativeTriangleSupport": [
+    {
+      "productId": "m5stack-k132-v11",
+      "label": "rear-top-feature-strip",
+      "opaquePixels": 20387,
+      "missingNativeSupportPixels": 0,
+      "intrudingPixels": 0,
+      "gapMmQuantiles": {
+        "min": 0.024999656677245234,
+        "p01": 0.024999656677245238,
+        "median": 0.02499965667724524,
+        "p99": 0.024999656677245245,
+        "max": 0.024999656677245245
+      },
+      "method": "Every alpha>=128 texture-pixel center ray-cast against the retained manufacturer triangles in paper-local coordinates. Nearest outward triangle on either side; no derived label, invisible control or UNKNOWN board supplies support. Numerical model-space check, not calibrated hardware fit.",
+      "missingSourcePixelBounds": null,
+      "intrudingSourcePixelBounds": null
+    }
+  ],
+  "productionMeshMaterialChecks": "node --test tools/platform-m5-paper-repairs-test.mjs: original-like, gold and translucent-purple shell presets leave the real paper materials/maps/opacity unchanged.",
+  "rendering": {
+    "renderer": "Blender4.3.2 Cycles CPU",
+    "size": [
+      640,
+      640
+    ],
+    "samples": 24,
+    "threads": 2,
+    "exportScriptSha256": "ea92a472a9e5f38383ec7864da9257301757b845e7f2aa9646c3f108add1bcd3",
+    "renderScriptSha256": "48ab0134af3e46b92b7d995b97aaca4dbd4e4e73801b861cadf010dc8e0d8e0d",
+    "scope": "Actual production Three loader meshes/UVs/alpha/materials, with blank black screen. Not a browser capture, pose-calibrated overlay, hardware measurement or firmware execution. Textured GPU polygonOffset is approximated by0.005mm outward normal displacement only in the CPU export."
+  },
+  "comparisons": [
+    {
+      "view": "back",
+      "comparisonFile": "m5stack-k132-v11-back.webp",
+      "comparisonSha256": "f61326375ddc28b95eb2eaf7a640b0a8f054b2d514457427aef756d55f23d226",
+      "beforeRenderSha256": "850fab47f69ef95dc87d2a28068554d87e53102405f84b700c07beace048962c",
+      "afterRenderSha256": "cab1e48ac6651dd9642a52223f6269c108da611f5da5e2df62bcee010c313aad",
+      "referenceFile": "reference-product-photo-6325f08b3b.webp",
+      "referenceSha256": "6fe51b5ba20501b5f5b3a9500d72364669020bab7a94b06fa0714242efb47127"
+    }
+  ],
+  "scope": "Restore the exact SKU top rear feature-paper strip; retain its existing main paper and every manufacturer triangle. Source-photo registration is estimated; no physical fit or factory runtime claim.",
+  "reproduce": [
+    "python3 tools/restore-m5-paper-labels.py --ids m5stack-k132-v11 --write",
+    "python3 tools/restore-m5-paper-labels.py --ids m5stack-k132-v11 --support",
+    "ESP32SIM_M5_PAPER_PRODUCT_IDS=m5stack-k132-v11 node --test tools/platform-m5-paper-repairs-test.mjs",
+    "node tools/export-m5-cpu-models.mjs --repo . --out /tmp/m5-paper-export --ids m5stack-k132-v11",
+    "blender -b --factory-startup --threads 2 --python tools/render-m5-cpu-qa.py -- --repo . --input /tmp/m5-paper-export --out /tmp/m5-paper-render --ids m5stack-k132-v11 --size 640 --samples 24"
+  ]
+}

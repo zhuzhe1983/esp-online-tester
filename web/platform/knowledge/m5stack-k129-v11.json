@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:57:23Z",
+  "updatedAt": "2026-11-26T06:15:50Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -399,6 +399,28 @@
       "sourceIds": [
         "dimension-drawing-e1470e6e7b"
       ]
+    },
+    {
+      "id": "runtime-pinmap-20261126",
+      "label": "Audited digital pin map",
+      "value": {
+        "wake": 42,
+        "boot": 0,
+        "rgb": 21,
+        "rgbPowerGate": 38,
+        "i2c": {
+          "sda": 8,
+          "scl": 10,
+          "bmi270Address7bit": 105,
+          "bm8563Address7bit": 81
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126",
+        "capsule-schematic",
+        "stamp-s3a-schematic"
+      ]
     }
   ],
   "revisions": [
@@ -408,7 +430,8 @@
         "official-docs"
       ],
       "basis": "official",
-      "changes": "Stamp-S3 replaced by Stamp-S3A with revised antenna/button/power behavior."
+      "changes": "Stamp-S3 replaced by Stamp-S3A with revised antenna/button/power behavior.",
+      "releaseDate": null
     }
   ],
   "sources": [
@@ -776,6 +799,45 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-20261126",
+      "url": "https://docs.m5stack.com/en/core/Capsule_v1.1",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Capsule_v1.1",
+      "mediaType": "text/html",
+      "bytes": 149003,
+      "sha256": "df54ac8209131cdff5ab2c9ae110ba8e013581d799439c1ec2b43fdf374d9a89",
+      "fetchedAt": "2026-11-26T06:01:35Z",
+      "title": "M5Stack Capsule v1.1 · K129-V11 official documentation (2026-11-26)",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "archiveName": "k129-v11-official-docs-20261126.html"
+    },
+    {
+      "id": "capsule-schematic",
+      "title": "capsule schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/496/Sch_M5Capsule.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/496/Sch_M5Capsule.pdf",
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "kind": "official-schematic",
+      "bytes": 486725,
+      "sha256": "d084743583727e028c48654a447ec41c46e26e42885522007368e1672e12ac7e",
+      "fetchedAt": "2026-11-26T06:10:27Z",
+      "archiveName": "capsule-schematic.pdf"
+    },
+    {
+      "id": "stamp-s3a-schematic",
+      "title": "stamp s3a schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/Sch_StampS3_v0.3.3.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/Sch_StampS3_v0.3.3.pdf",
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "kind": "official-schematic",
+      "bytes": 369766,
+      "sha256": "2f9610aecc5a5d2ee51b33c75df31cf90c7639d2997e7a2bb147ba8d46b46966",
+      "fetchedAt": "2026-11-26T06:10:27Z",
+      "archiveName": "stamp-s3a-schematic.pdf"
     }
   ],
   "assets": [
@@ -964,6 +1026,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-26: source-backed button/GPIO route; revision-specific RMT RGB supply; BMI270 correct0x69 and BM8563 shared hardware I2C; wake cap material/control isolation. Runtime/code coverage is separate from appearance and physical hardware acceptance; see evidence/m5-s3-products-20261126/README.md."
   ]
 }

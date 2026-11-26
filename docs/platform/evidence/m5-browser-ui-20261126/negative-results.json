@@ -1,0 +1,48 @@
+{
+  "cases": [
+    {
+      "kind": "product-ui-defect",
+      "sourceSha256": "58ca12dd5b4e66edb53bcffbdd5f0aea937940ac573c2f97f7168e044c402db8",
+      "observed": "Switching StopWatch to U017 leaves the camera panel hidden because it listened for status/scene rather than actual state events.",
+      "fixedBy": "d566057c",
+      "retested": "Workbench, mini and actual iframe camera image inputs reach real guest DMA checks."
+    },
+    {
+      "kind": "diagnostic-precondition",
+      "originalProbeSha256": "25938926b8a24c98bb2bb21a6a78c7f1240cae27998b13c68d30ee51b3837ce4",
+      "observed": "FAIL CAMERA ASSERT #1D after the UI immediately started the original diagnostic before a human could choose the required red input.",
+      "resolution": "Only the authored diagnostic now waits for a genuine red DMA frame before checking every pixel; the production emulator is unchanged."
+    },
+    {
+      "kind": "bounded-wall-wait",
+      "observed": "30-second wall predicate expired before THERMAL RAW4321; the subsequent actual output contains that result.",
+      "resolution": "Use guest evidence with a longer bounded wait; no guest clock or sensor behavior changed."
+    },
+    {
+      "kind": "incorrect-test-assumption",
+      "observed": "The human console retains prior runs on reset, so a predicate excluding every old RAW4321 did not match.",
+      "resolution": "The fresh final mask-ROM boot tail contains RAW1000 and UI defaults reset to1000/2000/16/12/4."
+    },
+    {
+      "kind": "product-ui-label-defect",
+      "observed": "The wired U213 panel used STA labels although automatic provisioning and SoftAP were correctly unavailable.",
+      "fixedBy": "484e524c",
+      "retested": "Actual configured and running U213 shows Ethernet/virtual gateway, no invented lease; English and return-to-Wi-Fi labels pass."
+    },
+    {
+      "kind": "browser-capability-limit",
+      "observed": "THREE.WebGLRenderer: Error creating WebGL context.",
+      "resolution": "Actual 2D fallback was exercised. No browser GPU/model acceptance is claimed."
+    },
+    {
+      "kind": "external-network-limit",
+      "observed": "Failed to fetch in the preview network panel.",
+      "resolution": "No cloud-relay connectivity or Internet result claimed. The unchanged diagnostic reaches real P4 PHY checks and waits for explicit raw host transport."
+    },
+    {
+      "kind": "preview-infrastructure",
+      "observed": "Managed static preview refuses a symlink directory with ENOTDIR.",
+      "resolution": "Read-only hardlink mirror contains no extra file-data copies; official preview start succeeds at the returned localhost origin."
+    }
+  ]
+}

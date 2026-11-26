@@ -20,3 +20,11 @@ ESP32-S3便携键盘终端，56键与1.14英寸LCD；本型号硬件差异与固
 - External connector/body inserts are photo-derived estimates where manufacturer CAD omits them.
 - No physical hardware measurements or flashing performed.
 - Cap LoRa source case is assembled with the Cardputer; external RP-SMA antenna and its flexible joint remain an estimated/missing exterior detail. Full kit outline not claimed1:1.
+
+## Source-photo paper repair, 2026-11-26
+
+Exact-SKU printed paper was restored as independent alpha-masked photo layers. The manufacturer geometry, source transform, dimensions and native part records are unchanged. Placement remains a photo/CAD estimate; source shell, screen, keycaps, mounting openings and screw heads are excluded. The original-like, gold and translucent-purple production shell presets preserve these paper materials.
+
+Rebuild and quantitative alpha/native-triangle checks: `python3 tools/restore-m5-paper-labels.py --ids m5stack-k152 --write --support`. Actual production-mesh Cycles CPU before/after/reference comparisons and exact hashes are in [the paper-repair receipt](../evidence/m5-paper-repairs-20261126/m5stack-k152.json). CPU rendering uses a blank screen and does not establish factory firmware or physical fit.
+
+The own-SKU photo shows continuous Stamp-S3A paper over the perforated native cover. That film bridges existing CAD cutouts; the support receipt retains every missing-native-support pixel and its source-image bounds. No underlying surface is invented. All repaired paper has zero native-triangle penetration; the cover relief and adhesion remain unverified.

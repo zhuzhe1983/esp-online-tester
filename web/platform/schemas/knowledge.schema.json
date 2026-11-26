@@ -4,35 +4,1067 @@
   "title": "Source-backed product, accessory or firmware knowledge record v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "id", "kind", "catalogId", "title", "summary", "summarySourceIds", "updatedAt", "hardwareRevision", "facts", "revisions", "sources", "assets", "unknowns", "collectionNotes"],
+  "required": [
+    "schemaVersion",
+    "id",
+    "kind",
+    "catalogId",
+    "title",
+    "summary",
+    "summarySourceIds",
+    "updatedAt",
+    "hardwareRevision",
+    "facts",
+    "revisions",
+    "sources",
+    "assets",
+    "unknowns",
+    "collectionNotes"
+  ],
   "properties": {
-    "schemaVersion": {"const": "1"}, "id": {"$ref": "#/$defs/id"}, "kind": {"enum": ["product", "accessory", "firmware"]}, "catalogId": {"$ref": "#/$defs/id"},
-    "title": {"type": "string", "minLength": 1}, "summary": {"type": "string", "minLength": 1, "maxLength": 1200}, "summarySourceIds": {"$ref": "#/$defs/refs"},
-    "updatedAt": {"$ref": "#/$defs/utc"}, "hardwareRevision": {"type": "string"}, "identity": {"type": "object"},
-    "facts": {"type": "array", "items": {"$ref": "#/$defs/fact"}},
-    "unknowns": {"type": "array", "items": {"allOf": [{"$ref": "#/$defs/fact"}, {"properties": {"basis": {"const": "unknown"}, "value": {"type": "null"}}}]}},
-    "revisions": {"type": "array", "items": {"type": "object", "required": ["id", "releaseDate", "basis", "sourceIds", "changes"], "properties": {"id": {"type": "string"}, "releaseDate": {"type": "string", "format": "date"}, "basis": {"const": "official"}, "sourceIds": {"$ref": "#/$defs/refs"}, "changes": {"type": "string"}, "hardwareRevision": {"type": "string"}, "powerContact": {"type": "object"}}}},
-    "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source"}},
-    "assets": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "sourceId", "role", "url"], "properties": {"id": {"$ref": "#/$defs/id"}, "sourceId": {"$ref": "#/$defs/id"}, "role": {"type": "string"}, "url": {"$ref": "#/$defs/url"}, "localUrl": {"type": "string"}}}},
-    "collectionNotes": {"type": "array", "items": {"type": "string"}}
+    "schemaVersion": {
+      "const": "1"
+    },
+    "id": {
+      "$ref": "#/$defs/id"
+    },
+    "kind": {
+      "enum": [
+        "product",
+        "accessory",
+        "firmware"
+      ]
+    },
+    "catalogId": {
+      "$ref": "#/$defs/id"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "summarySourceIds": {
+      "$ref": "#/$defs/refs"
+    },
+    "updatedAt": {
+      "$ref": "#/$defs/utc"
+    },
+    "hardwareRevision": {
+      "type": "string"
+    },
+    "identity": {
+      "type": "object"
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fact"
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          {
+            "$ref": "#/$defs/fact"
+          },
+          {
+            "properties": {
+              "basis": {
+                "const": "unknown"
+              },
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "releaseDate",
+          "basis",
+          "sourceIds",
+          "changes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "releaseDate": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "$comment": "null records an unknown release date; a source fetch/check date is never substituted."
+          },
+          "basis": {
+            "const": "official"
+          },
+          "sourceIds": {
+            "$ref": "#/$defs/refs"
+          },
+          "changes": {
+            "type": "string"
+          },
+          "hardwareRevision": {
+            "type": "string"
+          },
+          "powerContact": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "actualFunction",
+              "stickerLabels",
+              "batteryConnection"
+            ],
+            "properties": {
+              "actualFunction": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stickerLabels": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "batteryConnection": {
+                "type": "boolean"
+              }
+            }
+          },
+          "revision": {
+            "type": "string",
+            "minLength": 1
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "sourceId",
+          "role",
+          "url"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/sourceId"
+          },
+          "sourceId": {
+            "$ref": "#/$defs/sourceId"
+          },
+          "role": {
+            "type": "string"
+          },
+          "url": {
+            "$ref": "#/$defs/sourceUrl"
+          },
+          "localUrl": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "manufacturer-photo",
+              "photo"
+            ],
+            "$comment": "Retained legacy photo classification; required normalized role remains separate."
+          }
+        }
+      }
+    },
+    "collectionNotes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "factoryFirmwareSurvey": {
+      "$ref": "#/$defs/factoryFirmwareSurvey"
+    },
+    "catalogRoles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "productId",
+        "accessoryId"
+      ],
+      "properties": {
+        "productId": {
+          "$ref": "#/$defs/id"
+        },
+        "accessoryId": {
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "firmwareSurvey": {
+      "$ref": "#/$defs/firmwareSurvey"
+    },
+    "keyboardMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rows",
+        "columns",
+        "rowGpios",
+        "columnGpios",
+        "unpopulated",
+        "keys",
+        "sourceCommit",
+        "sourceIds",
+        "simulation"
+      ],
+      "properties": {
+        "rows": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 32
+        },
+        "rowGpios": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 63
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "columnGpios": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 63
+          },
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "unpopulated": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "row",
+              "column"
+            ],
+            "properties": {
+              "row": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 31
+              },
+              "column": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 31
+              }
+            }
+          }
+        },
+        "keys": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "row",
+              "column",
+              "scanIndex",
+              "name",
+              "rowGpio",
+              "columnGpio",
+              "centerMm",
+              "sourceIds"
+            ],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/id"
+              },
+              "row": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 31
+              },
+              "column": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 31
+              },
+              "scanIndex": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1023
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "rowGpio": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 63
+              },
+              "columnGpio": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 63
+              },
+              "centerMm": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              },
+              "sourceIds": {
+                "$ref": "#/$defs/refs"
+              }
+            }
+          }
+        },
+        "sourceCommit": {
+          "$ref": "#/$defs/gitOid"
+        },
+        "sourceIds": {
+          "$ref": "#/$defs/refs"
+        },
+        "simulation": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
   },
   "$defs": {
-    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,100}$"},
-    "utc": {"type": "string", "format": "date-time", "pattern": "Z$"},
-    "url": {"type": "string", "format": "uri", "pattern": "^https://"},
-    "refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
-    "fact": {"type": "object", "additionalProperties": false, "required": ["id", "label", "value", "basis", "sourceIds"], "properties": {"id": {"$ref": "#/$defs/id"}, "group": {"type": "string"}, "label": {"type": "string"}, "value": {}, "unit": {"type": "string"}, "basis": {"enum": ["official", "image-measurement", "cad-measurement", "unknown"]}, "sourceIds": {"$ref": "#/$defs/refs"}, "notes": {"type": "string"}, "method": {"type": "string"}, "uncertainty": {"type": "string"}}, "allOf": [
-      {"if": {"properties": {"basis": {"const": "unknown"}}}, "then": {"properties": {"value": {"type": "null"}}}, "else": {"properties": {"sourceIds": {"minItems": 1}}}},
-      {"if": {"properties": {"basis": {"enum": ["image-measurement", "cad-measurement"]}}}, "then": {"required": ["method"]}},
-      {"if": {"properties": {"basis": {"const": "image-measurement"}}}, "then": {"required": ["uncertainty"]}}
-    ]},
-    "source": {"type": "object", "additionalProperties": false, "required": ["id", "title", "url", "kind", "status"], "properties": {
-      "id": {"$ref": "#/$defs/id"}, "title": {"type": "string", "minLength": 1}, "url": {"$ref": "#/$defs/url"}, "kind": {"type": "string", "minLength": 1}, "status": {"enum": ["fetched", "linked", "failed"]},
-      "fetchedAt": {"$ref": "#/$defs/utc"}, "attemptedAt": {"$ref": "#/$defs/utc"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "bytes": {"type": "integer", "minimum": 1}, "mediaType": {"type": "string"},
-      "archiveName": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"}, "discoveredFrom": {"$ref": "#/$defs/id"}, "resolvedUrl": {"$ref": "#/$defs/url"}, "revision": {"type": "object"}, "notes": {"type": "string"}, "error": {"type": "string"}, "license": {"type": "string"}, "licenseUrl": {"$ref": "#/$defs/url"}
-    }, "allOf": [
-      {"if": {"properties": {"status": {"const": "fetched"}}}, "then": {"required": ["fetchedAt", "sha256", "bytes", "archiveName"]}, "else": {"not": {"anyOf": [{"required": ["fetchedAt"]}, {"required": ["sha256"]}, {"required": ["bytes"]}, {"required": ["archiveName"]}]}}},
-      {"if": {"properties": {"status": {"const": "failed"}}}, "then": {"required": ["attemptedAt", "error"]}}
-    ]}
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,100}$"
+    },
+    "utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/sourceId"
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "value",
+        "basis",
+        "sourceIds"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "group": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {},
+        "unit": {
+          "type": "string"
+        },
+        "basis": {
+          "enum": [
+            "official",
+            "image-measurement",
+            "cad-measurement",
+            "unknown"
+          ]
+        },
+        "sourceIds": {
+          "$ref": "#/$defs/refs"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "uncertainty": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "unknown"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "sourceIds": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "enum": [
+                  "image-measurement",
+                  "cad-measurement"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "method"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "image-measurement"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "uncertainty"
+            ]
+          }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "url",
+        "kind",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "$ref": "#/$defs/sourceUrl"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "enum": [
+            "fetched",
+            "linked",
+            "failed"
+          ]
+        },
+        "fetchedAt": {
+          "$ref": "#/$defs/utc"
+        },
+        "attemptedAt": {
+          "$ref": "#/$defs/utc"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mediaType": {
+          "type": "string"
+        },
+        "httpStatus": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 599
+        },
+        "archiveName": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+        },
+        "discoveredFrom": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "resolvedUrl": {
+          "$ref": "#/$defs/sourceUrl"
+        },
+        "revision": {
+          "$ref": "#/$defs/sourceRevision"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        },
+        "licenseUrl": {
+          "$ref": "#/$defs/sourceUrl"
+        },
+        "checkedAt": {
+          "$ref": "#/$defs/dateOrTimestamp"
+        },
+        "finalUrl": {
+          "$ref": "#/$defs/sourceUrl"
+        },
+        "acquisition": {
+          "$ref": "#/$defs/acquisition"
+        },
+        "originalFetchedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "receiptTimeNote": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contentType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repository": {
+          "$ref": "#/$defs/repository"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "fetched"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "fetchedAt",
+              "sha256",
+              "bytes",
+              "archiveName"
+            ]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "fetchedAt"
+                  ]
+                },
+                {
+                  "required": [
+                    "sha256"
+                  ]
+                },
+                {
+                  "required": [
+                    "bytes"
+                  ]
+                },
+                {
+                  "required": [
+                    "archiveName"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "failed"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "attemptedAt",
+              "error"
+            ]
+          }
+        }
+      ]
+    },
+    "sourceId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,159}$",
+      "$comment": "Local source/asset namespace preserves real filename case, dots and underscores. Catalog and device IDs continue using the separate strict id definition."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "dateOrTimestamp": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "date",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        {
+          "$ref": "#/$defs/timestamp"
+        }
+      ]
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "gitOid": {
+      "type": "string",
+      "pattern": "^(?:[a-fA-F0-9]{40}|[a-fA-F0-9]{64})$"
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^(?:https://[^\\s]+|[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)$"
+    },
+    "acquisition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "containerId",
+        "containerSha256",
+        "embeddedName",
+        "checksumAlgorithm",
+        "declaredChecksum",
+        "verifiedChecksum",
+        "decoder"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "minLength": 1
+        },
+        "containerId": {
+          "$ref": "#/$defs/sourceId"
+        },
+        "containerSha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "embeddedName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checksumAlgorithm": {
+          "type": "string",
+          "minLength": 1
+        },
+        "declaredChecksum": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{1,64}$"
+        },
+        "verifiedChecksum": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{1,64}$"
+        },
+        "decoder": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "sourceRevision": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commit": {
+              "$ref": "#/$defs/gitOid"
+            },
+            "sourceCommit": {
+              "$ref": "#/$defs/gitOid"
+            },
+            "gitCommit": {
+              "$ref": "#/$defs/gitOid"
+            },
+            "gitBlobOid": {
+              "$ref": "#/$defs/gitOid"
+            },
+            "gitBlobSha1": {
+              "$ref": "#/$defs/gitOid"
+            },
+            "componentVersion": {
+              "type": "string",
+              "minLength": 1
+            },
+            "member": {
+              "type": "string",
+              "minLength": 1
+            },
+            "kind": {
+              "type": "string",
+              "minLength": 1
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            },
+            "containerRevision": {
+              "type": "string",
+              "minLength": 1
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "donorSku": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "minLength": 1
+            },
+            "repository": {
+              "$ref": "#/$defs/repository"
+            },
+            "committedAt": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "publishedAt": {
+              "$ref": "#/$defs/timestamp"
+            },
+            "documentDate": {
+              "type": "string",
+              "format": "date"
+            },
+            "publisherSha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "containerSha256": {
+              "$ref": "#/$defs/sha256"
+            },
+            "containerBytes": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "acquisition": {
+              "$ref": "#/$defs/acquisition"
+            }
+          }
+        }
+      ],
+      "$comment": "A revision may be an original Git/document revision string or explicitly typed structured provenance; neither representation implies a product release date."
+    },
+    "factoryFirmwareSurvey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkedAt",
+        "status",
+        "productPage",
+        "burnerMetadataUrl",
+        "note"
+      ],
+      "properties": {
+        "checkedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "status": {
+          "enum": [
+            "not-found",
+            "recovery-tool-only"
+          ]
+        },
+        "productPage": {
+          "$ref": "#/$defs/url"
+        },
+        "burnerMetadataUrl": {
+          "$ref": "#/$defs/url"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "surveyClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "official-version-metadata-pinned",
+            "not-located-in-model-specific-links",
+            "documentation-only",
+            "not-located"
+          ]
+        },
+        "simulationVerified": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "fixedOfficialVersion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "firmwareId",
+        "deviceId",
+        "versionId",
+        "versionName",
+        "publishTime",
+        "url",
+        "publisherHash",
+        "bodyDownloaded"
+      ],
+      "properties": {
+        "role": {
+          "enum": [
+            "factory",
+            "uiflow"
+          ]
+        },
+        "firmwareId": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "deviceId": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "versionId": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "versionName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "publishTime": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "url": {
+          "$ref": "#/$defs/url"
+        },
+        "publisherHash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sha256"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bodyDownloaded": {
+          "type": "boolean"
+        }
+      }
+    },
+    "firmwareSurvey": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "productId",
+        "sku",
+        "defaultFirmwareId",
+        "factoryFirmwareIds",
+        "status",
+        "checkedAt",
+        "sourceUrls",
+        "officialLinks",
+        "uiFlow",
+        "xiaozhi",
+        "conclusion"
+      ],
+      "properties": {
+        "productId": {
+          "$ref": "#/$defs/id"
+        },
+        "sku": {
+          "type": "string",
+          "minLength": 1
+        },
+        "defaultFirmwareId": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "factoryFirmwareIds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "uniqueItems": true
+        },
+        "status": {
+          "enum": [
+            "reference-only",
+            "not-located"
+          ]
+        },
+        "checkedAt": {
+          "$ref": "#/$defs/timestamp"
+        },
+        "sourceUrls": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/url"
+          },
+          "uniqueItems": true
+        },
+        "officialLinks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "url"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "url": {
+                "$ref": "#/$defs/url"
+              }
+            }
+          }
+        },
+        "uiFlow": {
+          "$ref": "#/$defs/surveyClaim"
+        },
+        "xiaozhi": {
+          "$ref": "#/$defs/surveyClaim"
+        },
+        "conclusion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixedOfficialVersions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fixedOfficialVersion"
+          }
+        }
+      }
+    },
+    "sourceUrl": {
+      "type": "string",
+      "pattern": "^https://[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?(?::[0-9]{1,5})?(?:[/?#][^\\u0000-\\u001F\\u007F]*)?$",
+      "$comment": "Exact original publisher HTTPS locator. Some retained manufacturer paths contain literal spaces; preserve that spelling rather than inventing a different acquisition URL. Request URL parsers percent-encode path spaces. Scheme/host and control characters remain constrained. Catalog/firmware links use the separate URI definition."
+    }
   }
 }

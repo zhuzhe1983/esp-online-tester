@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-27T00:08:10Z",
+  "updatedAt": "2026-11-26T06:15:50Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -858,6 +858,33 @@
       "group": "mechanical",
       "method": "原始CAD刚体变换后，在顶部Y=36.039993mm平面拟合半径7mm安装座圆弧，保留原厂几何。",
       "notes": "天线完整长108mm含接头、最大直径9.3mm见官方规格；分段轮廓源于photo06。photo07淡出天线上段，横向位置与CAD存在约4mm差别，未以拉伸/移动壳体消除此差异。"
+    },
+    {
+      "id": "host-board-20261126",
+      "label": "Kit host identity",
+      "value": "Cardputer-Adv based on Stamp-S3A; ST7789V2 G36/G35/G37, resetG33/DCG34, TCA8418 SDA8/SCL9/IRQ11. Cap SX1262 remains distinct.",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126",
+        "cardputer-adv-schematic",
+        "stamp-s3a-schematic"
+      ]
+    },
+    {
+      "id": "keyboard-cad-partition-20261126",
+      "label": "K152 exact source triangle partition",
+      "value": {
+        "sourceComponent": 10,
+        "totalFaces": 39180,
+        "capCount": 56,
+        "facesPerCap": 250,
+        "carrierFaces": 25180
+      },
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad-3216e1af92"
+      ],
+      "method": "Select original cap triangles with max modelZ>6.5mm; connected face adjacency gives56 groups, measured bounds sort4 rows x14 columns. Reordered triangle bytes preserve the complete original triangle multiset."
     }
   ],
   "revisions": [],
@@ -1410,6 +1437,45 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-20261126",
+      "url": "https://docs.m5stack.com/en/core/Cardputer_Mesh_Kit",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Cardputer_Mesh_Kit",
+      "mediaType": "text/html",
+      "bytes": 163108,
+      "sha256": "af1f95fdf86469e497e63aac8239bf5ecfa75d2611e48755e919f7b119569606",
+      "fetchedAt": "2026-11-26T06:01:34Z",
+      "title": "M5Stack Cardputer Mesh Kit official documentation (2026-11-26)",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "archiveName": "k152-official-docs-20261126.html"
+    },
+    {
+      "id": "cardputer-adv-schematic",
+      "title": "cardputer adv schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1178/Sch_M5CardputerAdv_v1.0_2025_06_20_17_19_58.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1178/Sch_M5CardputerAdv_v1.0_2025_06_20_17_19_58.pdf",
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "kind": "official-schematic",
+      "bytes": 878155,
+      "sha256": "9553f5ee22b6e5f29a385388192e42c5ff76f16281b6f7ea9418f7b62a2d48b0",
+      "fetchedAt": "2026-11-26T06:10:28Z",
+      "archiveName": "cardputer-adv-schematic.pdf"
+    },
+    {
+      "id": "stamp-s3a-schematic",
+      "title": "stamp s3a schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/Sch_StampS3_v0.3.3.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1150/Sch_StampS3_v0.3.3.pdf",
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "kind": "official-schematic",
+      "bytes": 369766,
+      "sha256": "2f9610aecc5a5d2ee51b33c75df31cf90c7639d2997e7a2bb147ba8d46b46966",
+      "fetchedAt": "2026-11-26T06:10:27Z",
+      "archiveName": "stamp-s3a-schematic.pdf"
     }
   ],
   "assets": [
@@ -1651,6 +1717,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-26: exact documented Adv host hookup; 56 independent original CAD key caps and matrix mapping. Runtime/code coverage is separate from appearance and physical hardware acceptance; see evidence/m5-s3-products-20261126/README.md."
   ]
 }

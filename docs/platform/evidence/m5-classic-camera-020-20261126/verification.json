@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "batch": "020",
+  "rustSourceSnapshot": "96dc157b",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "result": "passed",
+  "smokeProductId": "m5stack-u121-b-v11",
+  "productsPassed": 14,
+  "poeProductsPassed": 3,
+  "testMilliseconds": 89665.959654,
+  "attemptHistory": [
+    {
+      "scope": "PoE V1.1 smoke",
+      "result": "passed first attempt",
+      "failures": []
+    },
+    {
+      "scope": "all fourteen exact SKUs",
+      "result": "passed first attempt",
+      "failures": []
+    }
+  ],
+  "implementationFixesDuringAcceptance": [],
+  "receipts": [
+    {
+      "file": "poe-smoke.json",
+      "sha256": "670366b4218124c40b621ac679a251282e3e87f98263db298fef8223a17ff5af"
+    },
+    {
+      "file": "worker-all14.json",
+      "sha256": "cf390db3b88bb2c98ec396131c47f8d18dd9abd3ea7dadd115c7d7d6804e5682"
+    }
+  ],
+  "execution": "public runtime -> production Worker -> production WASM -> unmodified ESP32 mask ROM -> original LX6 SRAM diagnostic loaded from bootloader Flash0x1000",
+  "cameraAssertions": [
+    "swapped physical SCCB NACK",
+    "sensor PID",
+    "wrong D0 no EOF and untouched DMA memory",
+    "16 red RGB565 guest words",
+    "asserted hardware RESET NACK, no EOF and untouched DMA memory",
+    "released RESET requires guest sensor reconfiguration",
+    "explicit new green host source; 16 green RGB565 guest words"
+  ],
+  "wiredAssertions": [
+    "full-duplex FIFO W5500 header",
+    "hardware 16-bit command and 8-bit address phases with CS",
+    "Socket0 MACRAW actual ARP request and all 44 RX bytes including length prefix",
+    "active-low GPIO2 IRQ and RECV pointer/IRQ release"
+  ],
+  "notValidated": [
+    "manufacturer/factory or SDK image compatibility",
+    "physical hardware, RF, optics/ISP, JPEG encoding",
+    "W5500 TCP/UDP hardwired socket offload, physical Ethernet/PoE, internet reachability",
+    "browser GPU rendering or public deployment"
+  ]
+}

@@ -135,7 +135,8 @@
         "id": "rear",
         "parts": [
           "case-bottom",
-          "blue-light-window"
+          "blue-light-window",
+          "rear-paper-label"
         ],
         "offsetMm": [
           0,
@@ -264,6 +265,32 @@
         "product-photo-8948e53bb3"
       ],
       "notes": "G7 blue light behind central rear USB-end slot, per official annotated photo. Hidden depth and optical area are estimated, not PCB CAD."
+    },
+    {
+      "id": "rear-paper-label",
+      "kind": "label",
+      "texture": "rear-paper-label.png",
+      "geometry": {
+        "sizeMm": [
+          8.8,
+          15.2
+        ],
+        "centerMm": [
+          0,
+          0,
+          -4.575
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-8948e53bb3"
+      ],
+      "notes": "NanoC6 white rear identity/pinout paper within the recessed bottom-shell face. Grove and USB-C openings and end ventilation slots remain CAD geometry. Registration is estimated from the retained near-frontal photo and native CAD recess. Paper RGB/lighting are uncalibrated; the alpha plane follows its enclosure inspection group and remains independent of shell color."
     }
   ],
   "facts": [
@@ -309,5 +336,29 @@
       "view": "annotated-controls-and-lights"
     }
   ],
-  "photoReview": "实际浏览器四视图确认 Grove 朝上方向，依据官方照片改为青色壳体；壳体尺寸检查通过。官方 CAD 未包含照片中白色 Grove 端子、USB 金属内芯和文字；当前 UNKNOWN PCB 通过开口可见，外观仍不完整，未标记 1:1 通过。"
+  "photoReview": "实际浏览器四视图确认 Grove 朝上方向，依据官方照片改为青色壳体；壳体尺寸检查通过。官方 CAD 未包含照片中白色 Grove 端子、USB 金属内芯和文字；当前 UNKNOWN PCB 通过开口可见，外观仍不完整，未标记 1:1 通过。",
+  "paperRestoration": {
+    "texture": {
+      "file": "rear-paper-label.png",
+      "sourceId": "product-photo-8948e53bb3",
+      "sourceSha256": "a35e9d3ffdf440384a19e3577728c547196b3187304bcb8e3164f6b6b72cce90",
+      "cropXYXY": [
+        333,
+        286,
+        469,
+        522
+      ],
+      "outputPixels": [
+        136,
+        236
+      ],
+      "method": "Original RGB crop without warp or generated lettering; explicit paper ROI intersected with nearest assembled CAD -Z face, gap 0.015–0.12 mm, one-texel mechanical edge clearance. Deterministic tools/restore-m5-rear-paper.py.",
+      "alphaMask": {
+        "radius": 3
+      },
+      "notes": "NanoC6 white rear identity/pinout paper within the recessed bottom-shell face. Grove and USB-C openings and end ventilation slots remain CAD geometry."
+    },
+    "originalCadSha256": "6898a0b828fb5cb4364211bd2943fb69839e2093213e86157f1e2ed9fcaae2f2",
+    "rebuild": "python tools/restore-m5-rear-paper.py m5stack-c125"
+  }
 }

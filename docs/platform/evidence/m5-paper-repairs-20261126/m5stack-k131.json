@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1",
+  "productId": "m5stack-k131",
+  "checkedAt": "2026-11-26T10:26:58Z",
+  "beforeModelSha256": "a08d67588791692af5f8773bd2f6bfc59c0b0b1a9157cbfc4c24842933f76972",
+  "modelSha256": "4e725f7e47a89ac6127fa7d375c22a07a4e6cf04791e917459fa61be8ad9619c",
+  "planSha256": "80210dc480e19dd617b3b1ebab5d087cd46856b94fd082b614d2c493092f2944",
+  "sourceGeometryUnchanged": {
+    "geometry.bin": "ceae8308665050079a7767007797960e9e3d6f1149a9cdacb0b01fc1c00db4ff",
+    "source.stl": "32a1c7131321ae9c09aa73d07caec46010104e244dd181639888bb3297e6a68e"
+  },
+  "nativePartsByteEquivalent": true,
+  "textureChecks": {
+    "schemaVersion": "1",
+    "productId": "m5stack-k131",
+    "unchangedArtifacts": {
+      "geometry.bin": "ceae8308665050079a7767007797960e9e3d6f1149a9cdacb0b01fc1c00db4ff",
+      "source.stl": "32a1c7131321ae9c09aa73d07caec46010104e244dd181639888bb3297e6a68e"
+    },
+    "manufacturerPartsUnchanged": true,
+    "sourceRgbUnchanged": true,
+    "alphaProbes": [
+      {
+        "texture": "rear-circuit-paper.png",
+        "sourcePixel": [
+          400,
+          420
+        ],
+        "alpha": 255,
+        "feature": "printed STAMP S3 paper",
+        "actualAlpha": 255
+      },
+      {
+        "texture": "rear-circuit-paper.png",
+        "sourcePixel": [
+          280,
+          260
+        ],
+        "alpha": 255,
+        "feature": "printed power/data legend",
+        "actualAlpha": 255
+      },
+      {
+        "texture": "rear-circuit-paper.png",
+        "sourcePixel": [
+          244,
+          574
+        ],
+        "alpha": 0,
+        "feature": "lower-left screw and paper notch",
+        "actualAlpha": 0
+      },
+      {
+        "texture": "rear-circuit-paper.png",
+        "sourcePixel": [
+          215,
+          400
+        ],
+        "alpha": 0,
+        "feature": "gray enclosure",
+        "actualAlpha": 0
+      },
+      {
+        "texture": "rear-circuit-paper.png",
+        "sourcePixel": [
+          400,
+          610
+        ],
+        "alpha": 0,
+        "feature": "black mounting strip",
+        "actualAlpha": 0
+      }
+    ],
+    "modelSha256": "4e725f7e47a89ac6127fa7d375c22a07a4e6cf04791e917459fa61be8ad9619c",
+    "planSha256": "80210dc480e19dd617b3b1ebab5d087cd46856b94fd082b614d2c493092f2944",
+    "scope": "Original K131 rear printed paper restored from its own pinned photo. Native source triangles and dimensions retained. Placement is photo/CAD estimated, not a calibrated fit or factory runtime validation.",
+    "mode": "check"
+  },
+  "nativeTriangleSupport": [
+    {
+      "productId": "m5stack-k131",
+      "label": "rear-circuit-paper",
+      "opaquePixels": 122728,
+      "missingNativeSupportPixels": 0,
+      "intrudingPixels": 0,
+      "gapMmQuantiles": {
+        "min": 0.024612403869628704,
+        "p01": 0.2246131668090818,
+        "median": 0.22461316680908183,
+        "p99": 0.22461316680908186,
+        "max": 0.5246124038696288
+      },
+      "method": "Every alpha>=128 texture-pixel center ray-cast against the retained manufacturer triangles in paper-local coordinates. Nearest outward triangle on either side; no derived label, invisible control or UNKNOWN board supplies support. Numerical model-space check, not calibrated hardware fit.",
+      "missingSourcePixelBounds": null,
+      "intrudingSourcePixelBounds": null
+    }
+  ],
+  "productionMeshMaterialChecks": "node --test tools/platform-m5-paper-repairs-test.mjs: original-like, gold and translucent-purple shell presets leave the real paper materials/maps/opacity unchanged.",
+  "rendering": {
+    "renderer": "Blender4.3.2 Cycles CPU",
+    "size": [
+      640,
+      640
+    ],
+    "samples": 24,
+    "threads": 2,
+    "exportScriptSha256": "ea92a472a9e5f38383ec7864da9257301757b845e7f2aa9646c3f108add1bcd3",
+    "renderScriptSha256": "48ab0134af3e46b92b7d995b97aaca4dbd4e4e73801b861cadf010dc8e0d8e0d",
+    "scope": "Actual production Three loader meshes/UVs/alpha/materials, with blank black screen. Not a browser capture, pose-calibrated overlay, hardware measurement or firmware execution. Textured GPU polygonOffset is approximated by0.005mm outward normal displacement only in the CPU export."
+  },
+  "comparisons": [
+    {
+      "view": "back",
+      "comparisonFile": "m5stack-k131-back.webp",
+      "comparisonSha256": "e7904bf88682800d8333b527d4f0066380c7aa8f88a6c6a3336651916414e8d4",
+      "beforeRenderSha256": "4d6d6e59546ebe59c5d636234fc7dde4b02142b99d8b326b68cfdeb83a4b1571",
+      "afterRenderSha256": "103ecc1c099a73b3a10baa73ca483aff9301e77badb4fe97b13c45f79c08acda",
+      "referenceFile": "reference-product-photo-94379b4292.webp",
+      "referenceSha256": "ff61a42025df270ba26b7357642f9b01ce896ac1a3b11723fbb44812129d6921"
+    }
+  ],
+  "scope": "Original K131 rear printed paper restored from its own pinned photo. Native source triangles and dimensions retained. Placement is photo/CAD estimated, not a calibrated fit or factory runtime validation.",
+  "reproduce": [
+    "python3 tools/restore-m5-paper-labels.py --ids m5stack-k131 --write",
+    "python3 tools/restore-m5-paper-labels.py --ids m5stack-k131 --support",
+    "ESP32SIM_M5_PAPER_PRODUCT_IDS=m5stack-k131 node --test tools/platform-m5-paper-repairs-test.mjs",
+    "node tools/export-m5-cpu-models.mjs --repo . --out /tmp/m5-paper-export --ids m5stack-k131",
+    "blender -b --factory-startup --threads 2 --python tools/render-m5-cpu-qa.py -- --repo . --input /tmp/m5-paper-export --out /tmp/m5-paper-render --ids m5stack-k131 --size 640 --samples 24"
+  ]
+}

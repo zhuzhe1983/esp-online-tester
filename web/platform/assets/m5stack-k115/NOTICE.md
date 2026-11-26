@@ -1,0 +1,1 @@
+Original approximation geometry follows the project MIT license. Manufacturer CAD, when present, retains M5Stack MIT. Official photographs and texture crops remain copyright M5Stack; no independent open photo license established. Source photos do not certify PCB layout, manufacturing dimensions, optics or firmware execution.

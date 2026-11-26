@@ -4,15 +4,15 @@
   "kind": "product",
   "catalogId": "m5stack-c145",
   "title": "M5Stack Tab5 · C145",
-  "summary": "以ESP32-P4为主控、ESP32-C6提供无线连接的5英寸触摸终端，具备摄像头、音频和工业扩展接口。C145不含电池，K145套装另列。",
+  "summary": "ESP32-P4主控、ESP32-C6无线协处理器的5英寸终端；C145不含电池。当前运行模型覆盖ILI9881C＋GT911批次的MIPI-DSI、真实帧缓冲DMA与触摸，其他屏幕批次仍待适配。",
   "summarySourceIds": [
-    "official-docs"
+    "official-docs-20261126"
   ],
-  "updatedAt": "2026-10-26T17:51:31Z",
+  "updatedAt": "2026-11-26T09:59:49Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
-    "sku": "C145/K145",
+    "sku": "C145",
     "directory": "C145_Tab5"
   },
   "facts": [
@@ -1023,6 +1023,26 @@
         "dimension-drawing-9d1127f4ef"
       ],
       "notes": "Viewer axes; reference drawing/source product dimensions are retained without geometric rescaling."
+    },
+    {
+      "id": "tab5-i2c-bus",
+      "label": "Internal I2C",
+      "value": {
+        "sdaGpio": 31,
+        "sclGpio": 32,
+        "addresses": {
+          "BMI270": "0x68",
+          "RX8130CE": "0x32",
+          "INA226": "0x41",
+          "PI4IOE5V6408-1": "0x43",
+          "PI4IOE5V6408-2": "0x44"
+        }
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126"
+      ],
+      "group": "support"
     }
   ],
   "revisions": [
@@ -1582,6 +1602,19 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "url": "https://docs.m5stack.com/en/core/Tab5",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Tab5",
+      "fetchedAt": "2026-11-26T06:02:44Z",
+      "sha256": "50ac6dc7f16bddaf8c093f6a6ffbebcee9aa6193d6fd183aef04629bd85a3723",
+      "bytes": 166300,
+      "mediaType": "text/html; charset=UTF-8",
+      "archiveName": "Tab5.html",
+      "id": "official-docs-20261126",
+      "title": "Tab5 official documentation (2026-11-26)",
+      "kind": "official-product-document",
+      "status": "fetched"
     }
   ],
   "assets": [
@@ -1816,6 +1849,7 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-26: m5stack-tab5实现ILI9881C＋GT911批次的P4 DSI/DW-GDMA/DMA2D及PI4IO/GPIO31/32触摸，原创RV32全帧与触摸重绘已验证；ST7121/ST7123、官方出厂程序与实机仍未验证，见docs/platform/m5stack-tab5-runtime.md。"
   ]
 }

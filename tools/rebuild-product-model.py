@@ -30,6 +30,9 @@ def load_product(root,identity):
  if len(by_id)!=len(sources):raise ValueError('Duplicate source IDs')
  for old in audit.get('sources',[]):
   if old['id']in by_id and old.get('sha256') and by_id[old['id']].get('sha256')!=old['sha256']:raise ValueError(f"Source receipt disagreement: {old['id']}")
+ if plan.get('controlSurfaceRecipe'):
+  if plan['controlSurfaceRecipe'].get('builder')!='tools/rebuild-m5-control-models.py':raise ValueError('Unknown control surface recipe builder')
+  return {'id':identity,'root':root,'assets':assets,'plan':plan,'metadata':metadata,'audit':audit,'sources':sources,'byId':by_id,'required':[],'mode':'fixed-native-control-surface'}
  supporting=plan.get('supportingAssets',[]);names=set()
  if not isinstance(supporting,list) or len(supporting)>32:raise ValueError('Invalid supporting assets')
  reserved={'model.json','model-plan.json','geometry.bin',plan.get('provenance',{}).get('licenseFile','LICENSE-M5Stack.txt'),*[t['file']for t in plan.get('textureSources',[])]}
@@ -101,6 +104,16 @@ def scratch_path(root,path):
 
 def hydrate(product,scratch,allow_network=False):
  scratch=scratch_path(product['root'],scratch);folder=scratch/'sources'/product['id']
+ if product.get('mode')=='fixed-native-control-surface':
+  folder.mkdir(parents=True,exist_ok=True);records=[]
+  for name,expected in product['metadata']['artifacts'].items():
+   filename(name);source=product['assets']/name;destination=folder/name
+   if source.is_symlink()or destination.is_symlink():raise ValueError('Refusing symlink fixed input')
+   data=source.read_bytes()
+   if len(data)>MAX_BYTES or digest(data)!=expected:raise ValueError('Fixed control input changed: '+name)
+   destination.write_bytes(data);records.append({'file':name,'sha256':expected,'bytes':len(data),'method':'committed-fixed-artifact'})
+  write(folder/'model-plan.json',product['plan']);receipt={'productId':product['id'],'kind':'fixed-native-control-inputs','acquiredAt':utc(),'verifiedArtifacts':[r['file']for r in records],'artifacts':records,'sourceReceiptPolicy':'Frozen geometry and metadata view; original fetched receipts are not replaced or refreshed.'};write(scratch/'hydration'/f"{product['id']}.json",receipt);return folder,receipt
+
  for child in [folder,scratch/'hydration']:
   if not child.resolve().is_relative_to(scratch):raise ValueError('Scratch child escapes scratch directory')
  folder.mkdir(parents=True,exist_ok=True);records=[];active=set();done=set()
@@ -138,6 +151,10 @@ def compare_build(expected,actual,output):
  return {'passed':not mismatches,'verifiedArtifacts':verified,'mismatches':mismatches,'unusedOriginalArtifacts':sorted(set(expected['artifacts'])-set(actual['artifacts'])),'modelJsonByteIdentical':digest(json.dumps(expected,ensure_ascii=False,indent=2).encode()+b'\n')==digest((output/'model.json').read_bytes()),'scope':'Exact regenerated geometry, source/reference files, textures and model contract. Metadata byte order and historical unused files are reported separately. No fresh browser, hardware or firmware acceptance.'}
 
 def build(product,scratch,allow_network=False):
+ if product['plan'].get('controlSurfaceRecipe'):
+  scratch=scratch_path(product['root'],scratch);spec=importlib.util.spec_from_file_location('control_surface_rebuild',product['root']/'tools/rebuild-m5-control-models.py');builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder);builder.build(product['id'],product['root'],product['root'],scratch/'rebuilt');actual=json.loads((scratch/'rebuilt'/product['id']/'model.json').read_text());comparison=compare_build(product['metadata'],actual,scratch/'rebuilt'/product['id']);write(scratch/'comparison'/f"{product['id']}.json",comparison)
+  if not comparison['passed']:raise ValueError('Control metadata recipe differs from committed artifacts')
+  return comparison
  scratch=scratch_path(product['root'],scratch);output=scratch/'rebuilt'/product['id']
  for child in [output,scratch/'evidence'/product['id'],scratch/'comparison']:
   if not child.resolve().is_relative_to(scratch):raise ValueError('Scratch child escapes scratch directory')
@@ -149,6 +166,8 @@ def build(product,scratch,allow_network=False):
 
 def main(argv=None):
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('command',choices=['plan','hydrate','build']);p.add_argument('product_id');p.add_argument('--scratch',help='Dedicated scratch directory; required for hydrate/build');p.add_argument('--allow-network',action='store_true',help='Fetch missing pinned public sources only; changed bytes/hash always fail');a=p.parse_args(argv);product=load_product(ROOT,a.product_id)
+ if a.command=='plan' and product.get('mode')=='fixed-native-control-surface':
+  print(json.dumps({'productId':a.product_id,'mode':product['mode'],'sourceCommit':product['metadata'].get('provenance',{}).get('commit'),'builder':'tools/rebuild-m5-control-models.py','fixedArtifacts':product['metadata']['artifacts'],'policy':'Exact committed native geometry and frozen metadata inputs; new derived caps are a separate photo-estimated recipe. No CAD retessellation or network is required.'},indent=2));return
  if a.command=='plan':
   print(json.dumps({'productId':a.product_id,'sourceCommit':product['metadata']['provenance']['commit'],'requiredSources':[{'id':sid,'sha256':product['byId'][sid]['sha256'],'bytes':product['byId'][sid]['bytes'],'localCandidates':[str(path.relative_to(ROOT))for path in local_candidates(product,product['byId'][sid])],'embeddedContainer':product['byId'][sid].get('acquisition',{}).get('containerId')}for sid in product['required']],'network':'disabled by default; plan does not read large artifacts or download anything'},indent=2));return
  if not a.scratch:p.error('--scratch is required for hydrate/build')

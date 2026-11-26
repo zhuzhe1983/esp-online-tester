@@ -23,6 +23,7 @@ pub mod board;
 pub mod i2s;
 pub mod camera_fifo;
 mod camera_dma;
+mod ethernet;
 pub mod ledc;
 pub mod rmt;
 pub mod spi;

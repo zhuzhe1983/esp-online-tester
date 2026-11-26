@@ -13,6 +13,9 @@
 pub mod board;
 pub mod bus;
 pub mod coproc;
+pub mod dsi;
+pub mod dw_gdma;
+mod ethernet;
 pub mod periph;
 pub mod soc;
 

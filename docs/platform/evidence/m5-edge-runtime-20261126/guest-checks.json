@@ -1,0 +1,14 @@
+{
+  "build": "debug; CARGO_BUILD_JOBS=2; shared target; modified source touched to avoid stale cross-worktree mtime reuse",
+  "commands": [
+    {"command":"cargo test -p esp32c61 --test cardkb2","passed":1,"measuredGuestResults":{"physicalKeys":42,"absentRejected":[[0,10],[3,10]],"wrongMuxAndEnable":"no pressed columns","heldSwitchAcrossReset":"preserved"}},
+    {"command":"cargo test -p esp32h2 --test gateway --test native --test nanoh2","passed":10,"measuredGuestResults":{"profiles":["m5-unit-gateway-h2","m5-module-gateway-h2"],"serial":"H2 HOST READY\nA","receivedByte":65,"realRoutedTxBeforeEcho":14,"negativeChecks":["wrong TX/RX pin","TX disabled","wrong baud","4MiB header on N2","staging overflow","Flash-cache MMIO","radio MMIO"]}},
+    {"command":"cargo test -p esp32c3 --test kmeter --test m5_ssr","passed":2,"measuredGuestResults":{"kmeterHotJunctionC":[123.25,-30.5,1350.0],"coldJunctionSixteenths":400,"openProbeFrameHex":"00010001","wrongSpiMisoAndClock":"ffffffff","ssr":"positive/negative GPIO drive and key input"}},
+    {"command":"cargo test -p esp32c6 --test m5_edge","passed":2,"measuredGuestResults":{"switchOnOffAndResetRetention":"passed","sdioGuestMailboxHex":"41313732","hostWriteGuestReadHex":"41315a32","wrongNativePadsRejected":[18,19,20,21,22,23]}},
+    {"command":"cargo test -p esp32c5 --test toughc5","passed":1,"measuredGuestResults":{"pixelRgb565Hex":"f800","touchReport":[1,0,123,0,87],"ioeBacklightOff":"all black","ioePanelReset":"all black","pm1TouchReset":"I2C NACK"}}
+  ],
+  "nativeGuestTestsPassed":16,
+  "nodeChecks":{"command":"node --test tools/platform-m5-edge-runtime-test.mjs; node tools/platform-recording-test.mjs","result":"passed"},
+  "catalogSchema":"passed: 728 products, 10 accessories, 670 firmwares, 537 watches",
+  "limitations":["no hardware validation","no factory image compatibility inferred","browser-WASM validation pending integration build","no RF or AC/DC load physics","Kmeter cold junction is an explicit synthetic25C source","unknown physical Flash remains unknown on U133/U140/K140"]
+}

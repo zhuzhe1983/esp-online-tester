@@ -15,7 +15,7 @@ const power = {...POWER_DEFAULT,batteryVoltageUv:0};
 const heat = {...DEFAULT_THERMAL,centerX:40,centerY:30};
 const plusId = 'm5stack-k016-p', t2Id = 'm5stack-k016-t2', cId = 'm5stack-k016-c', s3Id = 'm5stack-k150';
 const baseUrl = 'https://fixture.invalid/platform/index.html';
-const products = [[plusId,'stickc-plus'],[t2Id,'stickt2'],[cId,'stickc'],[s3Id,'sticks3']].map(([id,board])=>({
+const products = [[plusId,'stickc-plus'],[t2Id,'stickt2'],['m5stack-k016-t','stickt-original'],['m5stack-k126','tlite'],[cId,'stickc'],[s3Id,'sticks3']].map(([id,board])=>({
   id,chip:chipForBoard(board),runtime:{board,status:'partial',flashMb:4,psramMb:0,touch:false},
   display:{width:135,height:240},controls:[{type:'button',id:'power',transport:'board'}],
 }));
@@ -145,8 +145,10 @@ test('Plus queues initial power, sends exact voltage/flags and resets to the sce
 for (const sample of [
   {productId:plusId,type:'power-environment',sceneField:'environment',initial:{power},values:{...power,batteryVoltageUv:5000000}},
   {productId:t2Id,type:'thermal-environment',sceneField:'thermalEnvironment',initial:heat,values:{...heat,centerX:0,radius:0}},
+  {productId:'m5stack-k016-t',type:'thermal-environment',sceneField:'thermalEnvironment',initial:heat,values:{...heat,centerX:0,radius:0}},
+  {productId:'m5stack-k126',type:'thermal-environment',sceneField:'thermalEnvironment',initial:heat,values:{...heat,centerX:0,radius:0}},
 ]) {
-  test(`${sample.type} share and replay preserve exact guest-acknowledged stimuli`,async()=>{
+  test(`${sample.productId} ${sample.type} share and replay preserve exact guest-acknowledged stimuli`,async()=>{
     const f = runtimeFixture();
     const scene = f.scene(sample.productId,{[sample.sceneField]:sample.initial});
     try {

@@ -46,3 +46,11 @@ python tools/onboard-lane-01.py publish --ids m5stack-k128-lite
 - No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.
 - PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.
 - Official rear-photo SKU text reads CORE S3 SE; relation to Lite listing is retained as a source discrepancy. No hidden board inferred from this photo.
+
+## 现行 Lite 官网照片与黄背盖
+
+2026-11-26 10:39–10:40 UTC 重新抓取 Lite 官方页及 13 张图库原图，逐项保留 URL、最终 URL、媒体类型、字节数、时间和 SHA-256。当前第 02/03 图明确为 LITE 且带摄像头，第 05 图可见黄色背盖边缘，第 06 图标 BMI270/BMM150；第 07 图却与早期保留的 SE 字样黄背照片逐字节相同。该矛盾没有被改写成统一型号：保留 Lite 自身原厂 CAD、原生三角形及变换，不替换成 CoreS3-SE CAD，不从背贴文字推导内部硬件或固件身份。
+
+依据 Lite 自身图库把后壳恢复为估算黄色，白纸只取照片实际纸边；SE 字样照原图保留并明确记录冲突。独立纸基底按原 CAD 0.2 mm 凹槽深度估算厚度，跨槽部分有照片连续纸面依据；它不是新增塑料底板，不补猜 PCB、螺钉或连接器。纸、纸基底与外壳材质分离，透明模式中原 UNKNOWN 仍保留。
+
+[抓取证据、最终哈希、离线比较和 CPU 三材质背面/斜背/近侧视](../evidence/m5-rear-paper-20261126/m5stack-k128-lite/receipt.json) 同时列出限制。648,691 个 alpha≥128 纹素均有几何交点、无穿透，间隙中位及 99 百分位约 0.025 mm，边界最大约 0.225 mm，仍属未校准配准残差。纸贴逐字节离线重建通过；完整通用二进制/PNG/纹理记录比较仍失败，原生三角形位置与法向经明确量化和排序后全相同。未声称校准照片、完整机械装配或实物配合通过。

@@ -3,8 +3,12 @@
 //! this module does not model LCD_CAM, I2S, DMA, board wiring or capture timing.
 mod ov2640;
 mod gc0308;
-pub use gc0308::{Gc0308,Gc0308State};
+mod ov3660;
+mod py260;
+pub use gc0308::{Gc0308,Gc0308State,Gc0308Output};
 pub use ov2640::{Ov2640, Ov2640State};
+pub use ov3660::{Ov3660, Ov3660State};
+pub use py260::{Py260, Py260State};
 
 use esp_periph::i2c::I2cDevice;
 use crate::picture;
@@ -105,7 +109,7 @@ pub struct HostFrameSource {
     jpeg: Option<picture::Jpeg>,
 }
 #[derive(Clone, Copy, PartialEq, Eq)]
-struct FrameConfig { w: u32, h: u32, format: picture::PixelFormat, window: Option<([u32; 4], u32, u32)> }
+struct FrameConfig { w: u32, h: u32, format: picture::PixelFormat, window: Option<([u32; 4], u32, u32)>, mirror: bool, flip: bool }
 impl HostFrameSource {
     fn invalidate(&mut self) { self.cached = None; }
     pub fn set_camera_picture(&mut self, p: picture::Picture) -> Result<(), &'static str> {
@@ -131,7 +135,12 @@ impl HostFrameSource {
         Some(out)
     }
     pub fn frame(&mut self, w: u32, h: u32, format: picture::PixelFormat, window: Option<([u32; 4], u32, u32)>) -> Option<(u32, u32, std::sync::Arc<Vec<u8>>)> {
-        let config = FrameConfig { w, h, format, window };
+        self.oriented_frame(w, h, format, window, false, false)
+    }
+    /// Sensor-selected mirror/flip in the virtual scene, after its array crop.
+    /// Orientation is part of the conversion cache; encoded JPEG stays verbatim.
+    pub fn oriented_frame(&mut self, w: u32, h: u32, format: picture::PixelFormat, window: Option<([u32; 4], u32, u32)>, mirror: bool, flip: bool) -> Option<(u32, u32, std::sync::Arc<Vec<u8>>)> {
+        let config = FrameConfig { w, h, format, window, mirror, flip };
         if self.cached.as_ref().is_none_or(|(old, _)| *old != config) {
             let black = picture::Picture { w: 1, h: 1, rgb: vec![0; 3] };
             let p = self.picture.as_ref().unwrap_or(&black);
@@ -139,6 +148,14 @@ impl HostFrameSource {
             let p = if let Some((window, array_w, array_h)) = window {
                 cropped = picture::crop(p, window, array_w, array_h)?; &cropped
             } else { p };
+            let oriented;
+            let p = if mirror || flip {
+                let mut rgb=Vec::with_capacity(p.rgb.len());
+                for y in 0..p.h {for x in 0..p.w {
+                    let sx=if mirror {p.w-1-x}else{x};let sy=if flip {p.h-1-y}else{y};let at=(sy as usize*p.w as usize+sx as usize)*3;
+                    rgb.extend_from_slice(&p.rgb[at..at+3]);
+                }}oriented=picture::Picture{w:p.w,h:p.h,rgb};&oriented
+            } else {p};
             let data = picture::sensor_frame(p, w, h, format)?;
             self.cached = Some((config, std::sync::Arc::new(data)));
         }
@@ -219,5 +236,15 @@ mod tests {
         let mut board = crate::board::NoBoard;
         assert_eq!(crate::board::BoardModel::set_camera_jpeg(&mut board, jpeg(4, 2, 5)), Err(picture::JpegError::Unsupported));
         assert!(!crate::board::BoardModel::camera_frame_is_jpeg(&board));
+    }
+
+    #[test]
+    fn virtual_orientation_changes_wire_pixels_and_cache_not_preview() {
+        let mut s=HostFrameSource::default();s.set_camera_picture(picture::Picture{w:2,h:2,rgb:vec![255,0,0,0,255,0,0,0,255,255,255,255]}).unwrap();
+        let first=s.oriented_frame(2,2,picture::PixelFormat::Rgb565,None,true,false).unwrap().2;
+        assert_eq!(*first,[7,224,248,0,255,255,0,31]);assert!(Arc::ptr_eq(&first,&s.oriented_frame(2,2,picture::PixelFormat::Rgb565,None,true,false).unwrap().2));
+        assert_eq!(*s.oriented_frame(2,2,picture::PixelFormat::Rgb565,None,false,true).unwrap().2,[0,31,255,255,248,0,7,224]);
+        assert_eq!(*s.frame(2,2,picture::PixelFormat::Rgb565,None).unwrap().2,[248,0,7,224,0,31,255,255]);
+        assert_eq!(s.camera_preview(1,1).unwrap(),[255,0,0]);
     }
 }

@@ -20,3 +20,9 @@ StampS3环境监测终端，1.54英寸200×200电子纸、SEN55与SCD40，600mAh
 - External connector/body inserts are photo-derived estimates where manufacturer CAD omits them.
 - No physical hardware measurements or flashing performed.
 - CAD assembled envelope and removable mounting/power pieces do not exactly match the documented24.1mm depth; retained dimensions compare full selected source envelope without correction.
+
+## Source-photo paper repair, 2026-11-26
+
+Exact-SKU printed paper was restored as independent alpha-masked photo layers. The manufacturer geometry, source transform, dimensions and native part records are unchanged. Placement remains a photo/CAD estimate; source shell, screen, keycaps, mounting openings and screw heads are excluded. The original-like, gold and translucent-purple production shell presets preserve these paper materials.
+
+Rebuild and quantitative alpha/native-triangle checks: `python3 tools/restore-m5-paper-labels.py --ids m5stack-k131 --write --support`. Actual production-mesh Cycles CPU before/after/reference comparisons and exact hashes are in [the paper-repair receipt](../evidence/m5-paper-repairs-20261126/m5stack-k131.json). CPU rendering uses a blank screen and does not establish factory firmware or physical fit.

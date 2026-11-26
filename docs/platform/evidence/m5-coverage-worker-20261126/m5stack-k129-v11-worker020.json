@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:34:53.718Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "9a8bae1b41b7c5394a6cee5d47d6a57baadbecb212c3f59a12e8490497a26da8",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "2563f4c49243ecd751eb45ae366eb723d562b236eaf7b1d89fd07111929435c1"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c16b8a5693733a55fd0e6313f0b726a882afcbfad87143155450b24dbee524a4"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ],
+  "productId": "m5stack-k129-v11",
+  "product": {
+    "productId": "m5stack-k129-v11",
+    "board": "capsule-v11",
+    "control": "wake",
+    "outputKind": "rgb",
+    "flashMb": 8,
+    "psramMb": 0,
+    "classicMaskRom": false,
+    "explicitAppDirect": true,
+    "checks": [
+      "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+      "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+      "wrong-physical-RMT-output-cannot-light-real-RGB"
+    ],
+    "limits": [
+      "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+      "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+      "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+      "Model uses the no-label front configuration explicitly pictured by the manufacturer; supplied loose label is not falsely printed into source geometry.",
+      "USB/Grove mouths are source-photo-informed standard visual approximations; shell outlines remain manufacturer CAD.",
+      "Capsule v1.1 changes core module to Stamp-S3A; earlier Capsule firmware/PCB is not assumed identical.",
+      "仅实现 G42/G0 数字输入、G21 硬件 RMT RGB、SDA8/SCL10 的 BMI270@0x69 轮询寄存器与 BM8563@0x51 日历；GPIO38 仅在 v1.1 控制 RGB 电源。",
+      "保持虚拟常供电；HOLD46、RTC 定时唤醒/闹钟、microSD 传输、红外、麦克风、蜂鸣器与实机电源行为尚未实现。",
+      "可尝试目标芯片/容量/布局校验通过的固件，未执行本型号官方固件或实机验收。"
+    ],
+    "passes": [
+      {
+        "stage": "cold-boot",
+        "initial": {
+          "leds": [
+            [
+              255,
+              0,
+              0
+            ]
+          ]
+        },
+        "pressed": {
+          "pressed": true,
+          "guestTime": 0.05855525416666667,
+          "output": {
+            "leds": [
+              [
+                0,
+                255,
+                0
+              ]
+            ]
+          }
+        },
+        "guestSerial": "COVERAGE capsule-v11 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      },
+      {
+        "stage": "public-reset",
+        "initial": {
+          "leds": [
+            [
+              255,
+              0,
+              0
+            ]
+          ]
+        },
+        "edges": [
+          {
+            "pressed": true,
+            "guestTime": 0.05853277916666667,
+            "output": {
+              "leds": [
+                [
+                  0,
+                  255,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "pressed": false,
+            "guestTime": 0.06993806666666667,
+            "output": {
+              "leds": [
+                [
+                  255,
+                  0,
+                  0
+                ]
+              ]
+            }
+          }
+        ],
+        "guestSerial": "COVERAGE capsule-v11 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      }
+    ],
+    "probeSha256": "71dfa3175702885e58f55e4ded0025aba8430657cc111e4698e4c13c60775ae9",
+    "negativeProbeSha256": "8ecc68326da3d856f4c0360be7623107b708a8aa6d915082a03658d2b41b77f2",
+    "negative": {
+      "initial": {
+        "leds": [],
+        "noPublishedLedFrame": true
+      },
+      "edge": {
+        "pressed": true,
+        "guestTime": 0.058508583333333336,
+        "output": {
+          "leds": [],
+          "noPublishedLedFrame": true
+        }
+      },
+      "guestSerial": "COVERAGE capsule-v11 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+    },
+    "romSha256": {
+      "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    "status": "passed"
+  },
+  "status": "passed",
+  "sourceCombinedReceiptSha256": "ceed7648a834b5581ebf79141658a6bd95b90a5b4bf1e81fd3866856388dea64"
+}

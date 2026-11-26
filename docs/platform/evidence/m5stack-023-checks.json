@@ -1,0 +1,281 @@
+{
+  "batch": "023",
+  "scope": "Exactly five public product metadata activations, matching product knowledge/index and same-SKU firmware compatibility wording. Shared runtime implementation and previously completed production Worker020 validation are not rerun or upgraded to factory/physical acceptance.",
+  "baseCommit": "83a90cbb6f8eebdb672399e1d25cc40d3a425436",
+  "products": [
+    {
+      "id": "m5stack-u121-b",
+      "name": "M5Stack Unit PoE CAM-W · U121-B",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5stack-u121-b",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "previousProductSha256": "46bb6c41c3dc95deae60d178626d853863a19be6586ba8f02e0bc837ced2436b",
+      "productSha256": "81c25796963f672ff80e1d254ddc4bb16b9143e717d2e28f66af3964825e59c8",
+      "knowledgeSha256": "af8afa72e14c341ef279299ecff3140f6e4fb73d06d56b0906d0bd3ab4eca4cf",
+      "sourceCommit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "summary": "Unit PoE CAM-W旧版，OV2640/16MB Flash/8MB PSRAM；独立SCCB12/14与原生I2S/DMA采集，不能继承V1.1的OV3660身份。",
+      "limitations": [
+        "真实客体LX6指令经SCCB寄存器配置传感器，LEDC经GPIO27提供XCLK；GPIO15硬件RESET、DVP GPIO矩阵与I2S0 DMA描述符共同决定客体DRAM中的RGB565/YUV422或外部编码JPEG字节。",
+        "partial：数字相机子集使用约10Hz帧/1ms VSYNC近似调度，不模拟光学、曝光/ISP、JPEG编码器、逐PCLK时序、真实RF或电池/PoE模拟电气。未实机验证；出厂固件兼容性未由寄存器/DMA测试推断。",
+        "JPEG必须由使用者提供与传感器SCCB配置尺寸一致的完整JPEG，按原字节进入客体；RGB图片不会冒充传感器编码JPEG，预览不会代替客体DMA输出。",
+        "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+        "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+        "仅复用后继 U121-B-V11 外壳 CAD：两款独立官方尺寸相同并有各自照片对照。传感器、背贴、固件与 PCB 保持此 SKU 身份；外壳对应关系仍是有来源的近似。",
+        "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt.",
+        "W5500经真实SPI MOSI13/MISO38/SCLK23/CS4与INT2收发Socket0 MACRAW原始Ethernet帧，支持独立虚拟ARP及可选宿主原始帧relay；保留RX/TX环形指针、IRQ/W1C与RESET边界。未实现TCP/UDP硬件socket卸载或PoE模拟电气，不用IP101G/RMII代替。"
+      ]
+    },
+    {
+      "id": "m5stack-u121-b-v11",
+      "name": "M5Stack Unit PoE CAM-W v1.1 · U121-B-V11",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5stack-u121-b-v11",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "previousProductSha256": "e250c192dbb1ae2b3c758267feb42aed83ce1144fa3c907233cd6c09dab89cf2",
+      "productSha256": "ee85c3a7f4f81e584de68aa60a0432446f06e8e6a309aa8f83ff5f7ee22b9376",
+      "knowledgeSha256": "9d385122dde53378775a565d99a85a4350b6b7541bfa4dc9e8911a2c58f0cb5d",
+      "sourceCommit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "summary": "Unit PoE CAM-W V1.1，OV3660/16MB Flash/8MB PSRAM；按自身原理图SCCB12/14和原生I2S/DMA采集，与旧版OV2640保持独立。",
+      "limitations": [
+        "真实客体LX6指令经SCCB寄存器配置传感器，LEDC经GPIO27提供XCLK；GPIO15硬件RESET、DVP GPIO矩阵与I2S0 DMA描述符共同决定客体DRAM中的RGB565/YUV422或外部编码JPEG字节。",
+        "partial：数字相机子集使用约10Hz帧/1ms VSYNC近似调度，不模拟光学、曝光/ISP、JPEG编码器、逐PCLK时序、真实RF或电池/PoE模拟电气。未实机验证；出厂固件兼容性未由寄存器/DMA测试推断。",
+        "JPEG必须由使用者提供与传感器SCCB配置尺寸一致的完整JPEG，按原字节进入客体；RGB图片不会冒充传感器编码JPEG，预览不会代替客体DMA输出。",
+        "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+        "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+        "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt.",
+        "W5500经真实SPI MOSI13/MISO38/SCLK23/CS4与INT2收发Socket0 MACRAW原始Ethernet帧，支持独立虚拟ARP及可选宿主原始帧relay；保留RX/TX环形指针、IRQ/W1C与RESET边界。未实现TCP/UDP硬件socket卸载或PoE模拟电气，不用IP101G/RMII代替。"
+      ]
+    },
+    {
+      "id": "m5stack-u215",
+      "name": "M5Stack Unit CardKB2 · U215",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5-cardkb2",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "8eedfe22945b0d88a9618e38bbdbed6cfe5840807e7288e575a8054cad83d4b2",
+      "productSha256": "7f0de3cdfb1d80be97f10b6a83c90ebb7a78211adf1a090d0b2745360f726887",
+      "knowledgeSha256": "085c955b6d16b7ba4ab8b60e73a09fe255f4c3da21eca54ba2f0ac69e9116bd6",
+      "sourceCommit": "2e127b3c5493d85dff5221f2f10039a123f97707",
+      "summary": "ESP32-C61HF4的42键便携键盘，保留4×11物理矩阵与42个实际开关；独立C61客体逐键GPIO扫描，RGB为G27/G28/G9低有效数字子集。USB HID、I2C从机、键码UART和BLE应用仍未验收。",
+      "limitations": [
+        "已实现ESP32-C61的42个真实物理矩阵开关及客体GPIO扫描回读；字符映射/去抖由客体负责。键码UART、I2C从机、HID/BLE/ESP-NOW应用与原厂固件兼容未验证；未实机验证。",
+        "尺寸和照片估算明确区分。UNKNOWN 保留未知内部面；模型不能证明固件、总线或无线协议已运行。",
+        "官网已抓规格为84.7×54.3×6.15mm，尺寸图区分84×54×1mm PCB及78×48mm孔距；搜索缓存中的1mm不当作整机厚度。",
+        "42键使用厂商4×11矩阵及真实GPIO/扫描编号；(0,10)/(3,10)未装键。按键高度和金属外观估算，I2C从机/键码UART/BLE HID/ESP-NOW应用未验证，GPIO矩阵扫描已有实际客体回读，不将点击或ASCII回执当客体消费。"
+      ]
+    },
+    {
+      "id": "m5stack-u195",
+      "name": "M5Stack Unit Gateway H2 · U195",
+      "previousRuntime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 2,
+        "psramMb": null
+      },
+      "runtime": {
+        "board": "m5-unit-gateway-h2",
+        "status": "partial",
+        "flashMb": 2,
+        "psramMb": 0
+      },
+      "previousProductSha256": "adbff3f917a24e1d8f8d0eddcf90560d041aeda93be577c226cefb8932ae0197",
+      "productSha256": "71efccf72168d8e72de6fa564f70763e49e65ba0652d2883022dc082b86213cb",
+      "knowledgeSha256": "b7913ab7461f2775c059500bb886a5d5cb203265320b4757b5a84e72fe96b53f",
+      "sourceCommit": "980f942cbe027ffbd393a1017ccce9a89f39851b",
+      "summary": "ESP32-H2-MINI-1-N2/2MB独立Grove网关；SRAM客体经RX23/TX24原生UART双向通信并有BOOT9输入。ROM/Flash-cache启动、SPI从机与802.15.4/Thread/Zigbee/Matter无线仍未实现。",
+      "limitations": [
+        "已实现独立ESP32-H2 SRAM客体、RX23/TX24@115200的原生UART双向路径及BOOT9输入。无ROM、Flash-cache执行、USB或无线网关；原厂固件兼容与实物验证仍未知。",
+        "Manufacturer photos retain their original rights; exterior dimensions are source-backed while local feature sizes and materials are approximate.",
+        "Hidden populated PCB, internal fasteners and material calibration remain unknown. PCB placeholder is explicitly marked UNKNOWN.",
+        "Source images never cover the simulated display with a static firmware screenshot.",
+        "Connector shape/position estimates do not establish pin1 mating, electrical routing or working cables.",
+        "原色、金色和透明材质需要浏览器复核；本批静态检查不代表1:1照片或实物通过。",
+        "Native selected enclosure extents24×48×8mm match the independently documented rotated orientation. Source components1/3 are print duplicates. PCB is still an explicitly estimated unknown envelope; true populated board geometry is not inferred from the schematic.",
+        "USB-C is on the internal PCB; no external shell opening is fabricated. BOOT G9 comes from the exact U195 schematic, not from NanoH2."
+      ]
+    },
+    {
+      "id": "m5stack-m141",
+      "name": "M5Stack Module Gateway H2 · M141",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 2,
+        "psramMb": 0,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5-module-gateway-h2",
+        "flashMb": 2,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "f17349bb475bb54c54b55a7bbf15059262a5ca8ef810bb513d535b60d67de7f9",
+      "productSha256": "248e2c4c9a53645400129ffc5d8854e58744f7d46971e5b9f7287eade257c5b8",
+      "knowledgeSha256": "065e0a983bcf9a803e64fa779e7cf16b6a3a9370a0de19a91fd31a2d32178b6d",
+      "sourceCommit": "57deec165ee35e064d0e1742bfb3e1d5c620a78f",
+      "summary": "ESP32-H2-MINI-1-N2/2MB堆叠协处理模块；独立SRAM客体支持UART拨码路径RX23/TX24原生双向通信。动态拨码电气、SPI从机、M-Bus互联、ROM/Flash-cache与无线协议未实现。",
+      "limitations": [
+        "已实现本SKU独立ESP32-H2 SRAM客体及UART拨码路径的RX23/TX24原生双向UART。动态拨码电气、SPI从机、M-Bus互联、ROM/Flash-cache及无线未实现；没有虚构板载按键，未验证原厂固件或实物。",
+        "尺寸和照片估算明确区分。UNKNOWN 保留未知内部面；模型不能证明固件、总线或无线协议已运行。",
+        "M141是带ESP32-H2的独立协处理扩展模块；仅实现UART拨码路径的原生UART双向读写。动态拨码电气、SPI从机、M-Bus互联及无线Thread/Zigbee/Matter未建模。",
+        "没有取得此SKU的原厂完整CAD或PCB布局；框体、模块/拨码和排针几何按照片估算。面向主机叠接的针序与电气资料保留，未把机械插上当电气连接。"
+      ]
+    }
+  ],
+  "sourceCommits": {
+    "m5stack-u121-b": {
+      "commit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "productChangedFields": [
+        "limitations",
+        "runtime",
+        "summary"
+      ]
+    },
+    "m5stack-u121-b-v11": {
+      "commit": "3a405f14a6e757e557aa6d435ba078054086fd6c",
+      "productChangedFields": [
+        "limitations",
+        "runtime",
+        "summary"
+      ]
+    },
+    "m5stack-u215": {
+      "commit": "2e127b3c5493d85dff5221f2f10039a123f97707",
+      "productChangedFields": [
+        "limitations",
+        "runtime",
+        "summary"
+      ]
+    },
+    "m5stack-u195": {
+      "commit": "980f942cbe027ffbd393a1017ccce9a89f39851b",
+      "productChangedFields": [
+        "limitations",
+        "runtime",
+        "summary"
+      ]
+    },
+    "m5stack-m141": {
+      "commit": "57deec165ee35e064d0e1742bfb3e1d5c620a78f",
+      "productChangedFields": [
+        "limitations",
+        "runtime",
+        "summary"
+      ]
+    }
+  },
+  "firmwareChanges": [
+    {
+      "id": "m5stack-u215-official-reference",
+      "productIds": [
+        "m5stack-u215"
+      ],
+      "fields": [
+        "limitations"
+      ],
+      "sha256": "7a75c5c1894f52c399865594a8ec1effe3e6659dc70d2c28aac50ad5ae24b800"
+    },
+    {
+      "id": "m5stack-m141-official-reference",
+      "productIds": [
+        "m5stack-m141"
+      ],
+      "fields": [
+        "limitations"
+      ],
+      "sha256": "9b7f3215e00716406a44fa8eb3a93efd0ba661f0f1a001e77d99ecc1c95d865f"
+    },
+    {
+      "id": "m5stack-u121-b-factory-reference",
+      "productIds": [
+        "m5stack-u121-b"
+      ],
+      "fields": [
+        "compatibility",
+        "limitations"
+      ],
+      "sha256": "fd4b4c1f3957efbdd0fd989bc18a4e8bcdc14f0b35b0d5f5a9dd8e35218a1253"
+    },
+    {
+      "id": "m5stack-u121-b-v11-factory-reference",
+      "productIds": [
+        "m5stack-u121-b-v11"
+      ],
+      "fields": [
+        "compatibility",
+        "limitations"
+      ],
+      "sha256": "d9bc52fc53522bb430cdeaa0bebd9dfd22bb5cd7567e8639052b117545e98d80"
+    }
+  ],
+  "otherProductEntriesUnchanged": true,
+  "otherKnowledgeIndexEntriesUnchanged": true,
+  "otherFirmwareEntriesUnchanged": true,
+  "knowledgeIndexUpdatedAt": "2026-11-26T10:32:58Z",
+  "validation": {
+    "catalogSchemas": {
+      "status": "passed",
+      "products": 728,
+      "accessories": 10,
+      "firmwares": 670,
+      "watchlist": 537
+    },
+    "knowledge": {
+      "status": "passed",
+      "records": 736,
+      "sourceBodiesReDownloaded": false
+    },
+    "batchScope": {
+      "status": "passed",
+      "changedProductCount": 5,
+      "otherProductKnowledgeIndexFirmwareEntriesUnchanged": true,
+      "publisherImageIdentityRolesDefaultsVerificationFlagsPreserved": true
+    },
+    "worker": {
+      "status": "reuse-completed-batch020",
+      "rerun": false,
+      "factoryCompatibilityInferred": false
+    },
+    "platformConfig": {
+      "status": "deferred-until-batch025",
+      "reason": "C145 deliberately unchanged until025; its activation is required by the already-integrated global test."
+    }
+  },
+  "noCargoOrWorkerRerun": true,
+  "coherenceCorrections": [
+    "Source edge activations had appended a valid subset to an old preview-only summary. Replace only the three selected summaries, preserving physical identity and all unimplemented factory/radio limits.",
+    "Selected U215/M141 firmware references no longer state that no board model exists; their roles, remote sources, defaults and validation flags are unchanged."
+  ],
+  "testLogHashes": {
+    "schema": "2fdab8f1bf9cae97f2f14120867b27dd079ba0a7460de351c700c5d96feb9355",
+    "knowledge": "c7c4d4b86f53035c0e58ce1ed62efc6f91d0f5c7d58560f415b8d0de12b41fb0"
+  }
+}

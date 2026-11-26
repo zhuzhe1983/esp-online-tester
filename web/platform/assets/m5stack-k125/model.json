@@ -103,7 +103,8 @@
       {
         "id": "front",
         "parts": [
-          "shell-back"
+          "shell-back",
+          "cover-key:button-a"
         ],
         "offsetMm": [
           0,
@@ -119,7 +120,8 @@
       {
         "id": "rear",
         "parts": [
-          "shell-front"
+          "shell-front",
+          "back-paper"
         ],
         "offsetMm": [
           0,
@@ -131,6 +133,26 @@
           "product-photo-aa900260ed"
         ],
         "notes": "The source rear molded plate occupies the -Z outer face after the archived assembly rotation. Its model name is shell-front. The rear shell travels 19 mm for inspection."
+      }
+    ],
+    "buttons": [
+      {
+        "id": "button-a",
+        "shape": "rectangle",
+        "sizeMm": [
+          10,
+          4
+        ],
+        "positionMm": [
+          0,
+          2,
+          5.17
+        ],
+        "basis": "image-measurement",
+        "sourceIds": [
+          "product-photo-315b1709f0"
+        ],
+        "notes": "Upper part of visible U-shaped flexure above the LED slit;20mm body/photo scale, position and4mm height are visual estimates (about +/-1mm), not a measured switch footprint."
       }
     ]
   },
@@ -496,6 +518,32 @@
         "metalness": 0.75,
         "roughness": 0.3
       }
+    },
+    {
+      "id": "back-paper",
+      "kind": "label",
+      "texture": "back-paper.png",
+      "geometry": {
+        "sizeMm": [
+          18.2,
+          35.3
+        ],
+        "centerMm": [
+          0,
+          6,
+          -5.166
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "product-photo-aa900260ed"
+      ],
+      "notes": "Independent thin printed-paper plane, estimated from the exact SKU rear photo and unchanged CAD envelope. Only paper pixels, no connector/shell/USB content. Placement and edge +/-1mm; no inferred reverse PCB layout."
     }
   ],
   "derivedSurfaces": [],
@@ -521,7 +569,154 @@
       "sourceSha256": "9d77acf56770ff330844361053828e9c40f6fbe2c6818e8663b32e93b25785b2"
     }
   ],
-  "textures": [],
+  "textures": [
+    {
+      "file": "back-paper.png",
+      "sourceId": "product-photo-aa900260ed",
+      "perspectiveQuad": [
+        [
+          626,
+          489
+        ],
+        [
+          430,
+          612
+        ],
+        [
+          224,
+          294
+        ],
+        [
+          370,
+          206
+        ]
+      ],
+      "rectifiedPixels": [
+        292,
+        565
+      ],
+      "alphaMask": {
+        "includePolygons": [
+          [
+            [
+              623,
+              489
+            ],
+            [
+              431,
+              609
+            ],
+            [
+              227,
+              294
+            ],
+            [
+              370,
+              209
+            ]
+          ]
+        ],
+        "excludePolygons": [
+          [
+            [
+              409,
+              548
+            ],
+            [
+              439,
+              548
+            ],
+            [
+              439,
+              579
+            ],
+            [
+              409,
+              579
+            ]
+          ],
+          [
+            [
+              581,
+              451
+            ],
+            [
+              613,
+              451
+            ],
+            [
+              613,
+              488
+            ],
+            [
+              581,
+              488
+            ]
+          ],
+          [
+            [
+              376,
+              219
+            ],
+            [
+              411,
+              219
+            ],
+            [
+              411,
+              256
+            ],
+            [
+              376,
+              256
+            ]
+          ],
+          [
+            [
+              215,
+              309
+            ],
+            [
+              249,
+              309
+            ],
+            [
+              249,
+              346
+            ],
+            [
+              215,
+              346
+            ]
+          ]
+        ]
+      },
+      "notes": "Only the exact K125 white printed rear paper. Source photograph USB/Grove orientation and printed pixels preserved. Explicit exclusions retain all four visible case/header apertures. Oblique photo corner/depth uncertainty +/-1mm; not a measured label die-cut.",
+      "sourceSha256": "9d77acf56770ff330844361053828e9c40f6fbe2c6818e8663b32e93b25785b2",
+      "perspectiveMatrix": [
+        [
+          -1.9839899944530373,
+          1.7947047299645849,
+          364.36712357491945
+        ],
+        [
+          -1.2171574760548025,
+          -1.93953549029871,
+          1710.3734347663756
+        ],
+        [
+          0.0006975738973347881,
+          0.0012988977546713905,
+          1.0
+        ]
+      ],
+      "outputPixels": [
+        292,
+        565
+      ],
+      "method": "Explicit original-photo polygon mask at 4x and four-corner Lanczos4 rectification. No repainted/generated pixels. Same-photo appearance is not independent geometry evidence."
+    }
+  ],
   "reviewViews": {
     "front": {
       "span": 70.78464106844741,
@@ -841,7 +1036,8 @@
     "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
     "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
     "Manufacturer STL contains only the40.3mm plastic body. USB-A plug is separate drawing/photo-informed geometry; imported shell width20.7069mm differs from nominal20mm. Failed source-only envelope is retained.",
-    "Flash/PSRAM capacities were not explicitly confirmed in audited product table; chip naming is not used to silently fill unknown capacity."
+    "Flash/PSRAM capacities were not explicitly confirmed in audited product table; chip naming is not used to silently fill unknown capacity.",
+    "The AtomS3U K125 rear printed paper is rectified from its exact official oblique photo; source corners and placement have +/-1mm uncertainty. Alpha exclusions avoid visible shell/header apertures; printed pixels do not establish a populated board or precise label cut. UNKNOWN remains on both internal board faces and is revealed in inspection."
   ],
   "artifacts": {
     "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
@@ -849,6 +1045,145 @@
     "geometry.bin": "569ad884a8a8ca1b963faab513ec7215bd344a794f70f1087ca0761050b31256",
     "reference-product-photo-aa900260ed.webp": "9d77acf56770ff330844361053828e9c40f6fbe2c6818e8663b32e93b25785b2",
     "source.stl": "3ba622c77c605d214a4e6f16d82b0993a4cafb07ddbbfcf103e9c025fefa8df5",
-    "reference-product-photo-6c4a5ae1f0.webp": "fd1fff97e4e3e58c1e36d7a478f496b05d45bff170263e14465e4a74eaa4a5e5"
+    "reference-product-photo-6c4a5ae1f0.webp": "fd1fff97e4e3e58c1e36d7a478f496b05d45bff170263e14465e4a74eaa4a5e5",
+    "back-paper.png": "784d1a183e336534b8c3aede9e1edc5b7d7898a9eba799101d1bdcab09fb2f24"
+  },
+  "appearanceRebuild": {
+    "script": "tools/rebuild-m5-appearance.py",
+    "nativeGeometrySha256": "569ad884a8a8ca1b963faab513ec7215bd344a794f70f1087ca0761050b31256",
+    "sourceIds": [
+      "product-photo-aa900260ed"
+    ],
+    "sourceSha256": {
+      "product-photo-aa900260ed": "9d77acf56770ff330844361053828e9c40f6fbe2c6818e8663b32e93b25785b2"
+    },
+    "generatedTextures": [
+      {
+        "file": "back-paper.png",
+        "sourceId": "product-photo-aa900260ed",
+        "perspectiveQuad": [
+          [
+            626,
+            489
+          ],
+          [
+            430,
+            612
+          ],
+          [
+            224,
+            294
+          ],
+          [
+            370,
+            206
+          ]
+        ],
+        "rectifiedPixels": [
+          292,
+          565
+        ],
+        "alphaMask": {
+          "includePolygons": [
+            [
+              [
+                623,
+                489
+              ],
+              [
+                431,
+                609
+              ],
+              [
+                227,
+                294
+              ],
+              [
+                370,
+                209
+              ]
+            ]
+          ],
+          "excludePolygons": [
+            [
+              [
+                409,
+                548
+              ],
+              [
+                439,
+                548
+              ],
+              [
+                439,
+                579
+              ],
+              [
+                409,
+                579
+              ]
+            ],
+            [
+              [
+                581,
+                451
+              ],
+              [
+                613,
+                451
+              ],
+              [
+                613,
+                488
+              ],
+              [
+                581,
+                488
+              ]
+            ],
+            [
+              [
+                376,
+                219
+              ],
+              [
+                411,
+                219
+              ],
+              [
+                411,
+                256
+              ],
+              [
+                376,
+                256
+              ]
+            ],
+            [
+              [
+                215,
+                309
+              ],
+              [
+                249,
+                309
+              ],
+              [
+                249,
+                346
+              ],
+              [
+                215,
+                346
+              ]
+            ]
+          ]
+        },
+        "notes": "Only the exact K125 white printed rear paper. Source photograph USB/Grove orientation and printed pixels preserved. Explicit exclusions retain all four visible case/header apertures. Oblique photo corner/depth uncertainty +/-1mm; not a measured label die-cut."
+      }
+    ],
+    "scope": "Exact K125 rear printed paper on a separate plane, carried by the source rear shell during inspection. Native CAD triangles, assembly, controls and connector anchors unchanged. Internal board UNKNOWN remains on both sides.",
+    "uncertaintyMm": 1,
+    "photoIsIndependentGeometryEvidence": false
   }
 }

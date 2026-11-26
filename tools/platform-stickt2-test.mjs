@@ -10,6 +10,7 @@ for(const name of ['products','accessories','firmwares'])catalog[name]=JSON.pars
 const product=catalog.products.find(p=>p.id==='m5stack-k016-t2');
 assert.equal(product.runtime.board,'stickt2');assert.equal(product.runtime.flashMb,4);assert.equal(product.display.touch,false);
 assert.deepEqual(product.controls.map(c=>[c.id,c.pin]),[['btnA',37],['btnB',39],['power',undefined]]);
+assert.equal(product.controls.find(control=>control.id==='power').transport,'board');
 const model=JSON.parse(await readFile(new URL('web/platform/assets/m5stack-k016-t2/model.json',root),'utf8'));
 const derived=new Map(model.derivedParts.map(part=>[part.id,part]));
 const usb=derived.get('usb-c'),grove=derived.get('grove');
@@ -29,17 +30,28 @@ assert.equal(sourceFaces.length,3130);
 assert.equal(new Set(sourceFaces).size,3130);
 assert.ok(sourceFaces.every(index=>index>=0 && index<3130));
 assert.equal(rear.find(part=>part.name==='rear-m5-engraving').role,'shell');
-assert.deepEqual(model.presentation.buttons.map(button=>button.id),['btnA']);
+assert.deepEqual(model.presentation.buttons.map(button=>button.id),['btnA','btnB','power']);
+assert.deepEqual(model.presentation.buttons[0].sourceIds,['product-photo-5094fb4b8d']);
+for(const id of ['btnB','power']){
+  const region=model.presentation.buttons.find(button=>button.id===id);
+  assert.deepEqual(region.sourceIds,['product-photo-d829ecdbd1','product-photo-552313a3da','manufacturer-cad-cfa964c8a1']);
+  assert.equal(region.basis,'source-photo-and-existing-surface');
+  assert.match(region.notes,/Input-only/);
+  assert.equal(region.supportingPart,id==='btnB'?'shell-back':'shell-front');
+}
+for(const name of ['side-key-a','side-key-b'])assert.equal(model.parts.find(part=>part.name===name).controlId,undefined,'Hidden internal pieces must not become exterior button hits');
 const [frontCover,board,rearCover]=model.presentation.inspectionGroups;
 assert.deepEqual([frontCover.offsetMm,board.offsetMm,rearCover.offsetMm],[[0,0,32],[0,0,3],[0,0,-26]]);
 assert.ok(frontCover.parts.includes('live-display') && frontCover.parts.includes('cover-key:btnA'));
+assert.ok(frontCover.parts.includes('cover-key:power')&&!frontCover.parts.includes('cover-key:btnB'));
 for (const part of ['pcb-main','usb-c','grove','grove-left-retainer','grove-right-retainer',
   'rotary-encoder-insert','rotary-recess-back','rotary-grip-1','rotary-grip-2','rotary-grip-3']) assert.ok(board.parts.includes(part));
 assert.deepEqual(rearCover.parts,[
   'shell-back','rear-m5-engraving',
   'rear-screw-left','rear-screw-left-socket-floor','rear-screw-right','rear-screw-right-socket-floor',
-  'thermal-lens-bezel','thermal-lens-window'
+  'thermal-lens-bezel','thermal-lens-window','cover-key:btnB'
 ]);
+assert.ok(!rearCover.parts.includes('cover-key:power'));
 assert.equal(chipIdForBoard('stickt2'),0);
 const candidates=catalog.firmwares.filter(f=>f.productIds.includes(product.id));
 assert.equal(candidates[0].id,product.defaultFirmwareId);assert.equal(candidates[0].role,'factory');assert.equal(candidates[0].simulationVerified,false);

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T10:30:14.616Z",
+  "nodeVersion": "v24.22.3",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "romSha256": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31",
+  "probeSourceSha256": "3b97721b1f23ad521d6e64798df3da6015ad9e6a8ef545408564922a7aa624eb",
+  "harnessSha256": "a7c61d605bf28712cfcab1816ef76325faf6762eda37881ce927632ac84ec19b",
+  "backend": "public-runtime-production-worker-wasm-mask-ROM-original-LX6-SRAM",
+  "products": [
+    {
+      "productId": "m5stack-u121-b-v11",
+      "board": "m5stack-u121-b-v11",
+      "sensor": "OV3660",
+      "flashMb": 16,
+      "psramMb": 8,
+      "probeSha256": "5b1813c6e07702a3d59dbc962711549d376d6ffa9ef1d6334acdcced6bbdaa8c",
+      "probeBytes": 13808,
+      "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:13472\r\nentry 0x40081000\r\nCAMERA SRAM m5stack-u121-b-v11\nW5500 FIFO PASS\nW5500 PHASE PASS\nWIRED ARP PASS\nWRONG SCCB PASS\nSENSOR PID PASS\nWRONG DVP PASS\nRED DMA PASS\nRESET PASS\nGREEN DMA PASS\nCAMERA PROBE PASS\n",
+      "rawFrameWordsCheckedPerColor": 16,
+      "hostInputs": [
+        {
+          "accepted": true,
+          "delivery": "sensor-input",
+          "sha256": "8dee30e2caa26a23f15a2e903788b34b4bd247a15ccb4feed7ec8b3db1bc71ee",
+          "bytes": 14,
+          "physicalCapture": false
+        },
+        {
+          "accepted": true,
+          "delivery": "sensor-input",
+          "sha256": "ea0b45017eacf87d28293d911af4b45cf169652eeabaafbc413a353b893b0e79",
+          "bytes": 14,
+          "physicalCapture": false
+        }
+      ],
+      "wrongSccbNack": true,
+      "wrongD0NoDma": true,
+      "resetNoDmaAndReinitialized": true,
+      "w5500": {
+        "fullDuplexFifo": true,
+        "hardwareCommandAddressPhases": true,
+        "wiredArpFrameBytesChecked": 44,
+        "irqAndRecv": true
+      }
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "limitations": [
+    "Original SRAM diagnostic is loaded by the unmodified mask ROM as a diagnostic bootloader; this is not a manufacturer image, SDK startup or factory compatibility claim.",
+    "Host PPM pixels are sensor input; every acceptance decision follows guest SCCB/LEDC/GPIO/I2S/native DMA memory operations. No host-painted camera framebuffer is accepted as execution.",
+    "W5500 test uses actual guest SPI Socket0 MACRAW and the independent local wired VirtualNet peer; TCP/UDP hardwired socket offload, physical PHY/PoE/FCS and internet reachability are not validated.",
+    "Node uses the production runtime/Worker/WASM path without browser GPU rendering or physical hardware. Camera optics, ISP, JPEG encoder and analog/battery/RTC behavior are excluded."
+  ]
+}

@@ -3305,7 +3305,8 @@
           "label-cores3-top",
           "bearing-fixture",
           "servo-arm",
-          "servo-tilt-output"
+          "servo-tilt-output",
+          "pcb-power-back-photo"
         ],
         "basis": "cad-measurement",
         "sourceIds": [
@@ -3314,7 +3315,140 @@
         "notes": "X axis through the source servo-body lateral bearing bore after rigid Z+12.75mm assembly translation: y=0,z=4.6532mm. Upward tilt is an explicit visual convention; physical direction is not hardware-calibrated."
       }
     ],
-    "servoNotes": "Only observed board feedback positions move the joints. Disabled servos keep their feedback pose; absent feedback resets the neutral presentation. No frontend motion interpolation, collision or mechanical load simulation."
+    "servoNotes": "Only observed board feedback positions move the joints. Disabled servos keep their feedback pose; absent feedback resets the neutral presentation. No frontend motion interpolation, collision or mechanical load simulation.",
+    "inspectionGroups": [
+      {
+        "id": "cores3-front-module",
+        "nested": true,
+        "parts": [
+          "shell-front",
+          "sensor-window-support",
+          "front-glass",
+          "live-display",
+          "pcb-main",
+          "usb-c",
+          "grove-a",
+          "camera-bezel",
+          "camera-window",
+          "camera-lens",
+          "microphone-left",
+          "microphone-right",
+          "ltr-window-1",
+          "ltr-window-2",
+          "label-cores3-top"
+        ],
+        "offsetMm": [
+          72,
+          0,
+          38
+        ],
+        "sourceIds": [
+          "manufacturer-cad-c6394d7bc8",
+          "product-photo-9567dda286",
+          "dimension-drawing-74afac7b92"
+        ],
+        "notes": "Manufacturer CoreS3 shell, glass, display and optical-window stack move together with its estimated main-board envelope, board-mounted USB-C/Grove-A inserts and regulatory paper. +X/+Z clearance is a viewing arrangement, not measured disassembly travel. Existing servo tilt parent and source coordinates are retained; the StackChan power board and its exact-photo rear surface remain together in the head."
+      },
+      {
+        "id": "servo-enclosure-covers",
+        "nested": true,
+        "parts": [
+          "servo-shell",
+          "servo-cover",
+          "servo-side-cover",
+          "screw-rear-0-head",
+          "screw-rear-0-drive",
+          "screw-rear-1-head",
+          "screw-rear-1-drive"
+        ],
+        "offsetMm": [
+          -68,
+          0,
+          -32
+        ],
+        "sourceIds": [
+          "manufacturer-cad-52cb7ac41d",
+          "manufacturer-cad-6176ffdaa9",
+          "manufacturer-cad-8ed6ee0116",
+          "product-photo-9567dda286"
+        ],
+        "notes": "The three source servo-enclosure shell pieces and their rear visible fasteners move left/rear to reveal the stationary adapter-board UNKNOWN layer. Servo bodies, joint pivots, arm/bearing mechanism and battery remain at their existing transforms. Clearance is estimated for inspection, not a calibrated removal sequence."
+      },
+      {
+        "id": "base-bottom-cover",
+        "parts": [
+          "base-cover",
+          "label-base",
+          "foot-pad-left",
+          "foot-pad-right",
+          "screw-base-0-head",
+          "screw-base-0-drive",
+          "screw-base-0-shaft",
+          "screw-base-1-head",
+          "screw-base-1-drive",
+          "screw-base-1-shaft",
+          "screw-base-2-head",
+          "screw-base-2-drive",
+          "screw-base-2-shaft",
+          "screw-base-3-head",
+          "screw-base-3-drive",
+          "screw-base-3-shaft"
+        ],
+        "offsetMm": [
+          0,
+          -42,
+          0
+        ],
+        "sourceIds": [
+          "manufacturer-cad-62eea1a3b6",
+          "product-photo-ad2f64f41c"
+        ],
+        "notes": "Separate manufacturer BaseCover, its paper, feet and visible base fasteners move downward along model -Y. The base ring-board placeholder and base body stay in place. Estimated viewing clearance does not establish internal PCB outline or installed fastener lengths."
+      },
+      {
+        "id": "head-outer-enclosure",
+        "nested": true,
+        "parts": [
+          "shell-main",
+          "label-side-left",
+          "label-side-right",
+          "light-guide-left",
+          "light-guide-right",
+          "bearing-fixture",
+          "servo-arm",
+          "servo-tilt-output",
+          "cover-key:touch-pad-front",
+          "cover-key:touch-pad-middle",
+          "cover-key:touch-pad-back",
+          "rgb-window-left-0",
+          "rgb-window-left-1",
+          "rgb-window-left-2",
+          "rgb-window-left-3",
+          "rgb-window-left-4",
+          "rgb-window-left-5",
+          "rgb-window-right-0",
+          "rgb-window-right-1",
+          "rgb-window-right-2",
+          "rgb-window-right-3",
+          "rgb-window-right-4",
+          "rgb-window-right-5"
+        ],
+        "offsetMm": [
+          -65,
+          42,
+          0
+        ],
+        "sourceIds": [
+          "manufacturer-cad-ca86c257a3",
+          "manufacturer-cad-fbd57f39a7",
+          "manufacturer-cad-c71853d138",
+          "manufacturer-cad-88638030c5",
+          "manufacturer-cad-07c827fd72",
+          "product-photo-6ce7959e87"
+        ],
+        "notes": "Source MainBody, light guides, side paper, viewing/physical hit surfaces and existing arm/bearing attachments move left/up as one enclosure group. The touch PCB and its LED packages stay in their electronics layer, opening the UNKNOWN surface. All source triangles and tilt-joint membership are preserved. The large clearance is an explicit inspection arrangement, not a measured mechanical removal path or electrical/collision simulation."
+      }
+    ]
   },
   "photos": [
     {
@@ -3722,16 +3856,21 @@
         ],
         "labelOffsetMm": [
           0,
-          11
+          8
+        ],
+        "labelSide": "front",
+        "labelSizeMm": [
+          24,
+          5
         ]
       },
-      "color": "#a7a9a4",
+      "color": "#14302a",
       "basis": "estimated",
       "sourceIds": [
         "schematic-50c2458111",
         "product-photo-9567dda286"
       ],
-      "notes": "Head power/expander board identity from CoreS3 BUS and GroveB/C schematic; envelope estimated behind host; actual outline/population UNKNOWN.",
+      "notes": "Exact photo-07 shows the exposed rear power-board color and partial visible surface only; hidden layout and component heights remain unknown, marked on inward front.",
       "label": "UNKNOWN"
     },
     {
@@ -5244,6 +5383,51 @@
         "manufacturer-cad-07c827fd72"
       ],
       "notes": "SCS0009 published32.5×11×1.6mm mounting-ear envelope, two end tabs only. Rectangular ear outline is estimated; tilt ear/fork nominal overlap0.55mm remains unresolved because actual corner, slot and installed clearance are unavailable. No manufacturing-fit claim."
+    },
+    {
+      "id": "pcb-power-back-photo",
+      "kind": "photo-surface",
+      "texture": "pcb-power-back.png",
+      "geometry": {
+        "outlineMm": [
+          [
+            -21.5,
+            -17.5
+          ],
+          [
+            21.5,
+            -17.5
+          ],
+          [
+            21.5,
+            17.5
+          ],
+          [
+            -21.5,
+            17.5
+          ]
+        ],
+        "depthMm": 0.001,
+        "centerMm": [
+          0,
+          7,
+          20.785
+        ],
+        "uvFromMm": [
+          -0.023255813953488372,
+          0,
+          0.5,
+          0,
+          0.02857142857142857,
+          0.5
+        ],
+        "side": "back"
+      },
+      "basis": "Exact-SKU rear photograph on estimated board face; no board CAD",
+      "sourceIds": [
+        "product-photo-9567dda286"
+      ],
+      "notes": "Only visible upper board regions are projected; ribbon cable, connectors, shell, servo and fasteners excluded by source alpha mask. Body-aligned quad is approximate±1mm. No electrical layout or component heights inferred."
     }
   ],
   "limitations": [
@@ -5253,7 +5437,8 @@
     "SCS0009 end tabs use a rectangular envelope. A nominal0.55mm tilt-ear/fork overlap remains unresolved; precise ear rounding and actual installed clearance need manufacturer assembly data or physical measurement.",
     "Battery capacity550mAh is official; pouch geometry and placement are enclosure-space estimates with no inferred manufacturer markings.",
     "Photograph-informed colors and labels are uncalibrated display approximations. Product photos remain manufacturer copyright, not project MIT.",
-    "Runtime is implemented separately: guest servo feedback drives the articulated joints, twelve RGB values drive optical windows, and pad/screen inputs reach the board. See docs/platform/stackchan-runtime.md for tested functions and remaining limitations."
+    "Runtime is implemented separately: guest servo feedback drives the articulated joints, twelve RGB values drive optical windows, and pad/screen inputs reach the board. See docs/platform/stackchan-runtime.md for tested functions and remaining limitations.",
+    "Rear power-board photo preserves only exact-SKU visible upper board patches; ribbon/FFC, servo and shell are excluded. Board43×35mm and photographic alignment remain estimates. UNKNOWN remains on its inward unknown face; no populated-PCB CAD claim."
   ],
   "surfaces": [
     {
@@ -5505,11 +5690,106 @@
         ]
       },
       "notes": "Top photo11 manufacturer regulatory paper. Public generic printed certification IDs retained; no physical-device unique serial present."
+    },
+    {
+      "file": "pcb-power-back.png",
+      "sourceId": "product-photo-9567dda286",
+      "perspectiveQuad": [
+        [
+          385,
+          265
+        ],
+        [
+          805,
+          265
+        ],
+        [
+          805,
+          606
+        ],
+        [
+          385,
+          606
+        ]
+      ],
+      "rectifiedPixels": [
+        860,
+        700
+      ],
+      "alphaMask": {
+        "includePolygons": [
+          [
+            [
+              425,
+              317
+            ],
+            [
+              716,
+              317
+            ],
+            [
+              716,
+              441
+            ],
+            [
+              650,
+              441
+            ],
+            [
+              650,
+              451
+            ],
+            [
+              425,
+              451
+            ]
+          ]
+        ],
+        "excludeRects": [
+          [
+            526,
+            330,
+            651,
+            452
+          ]
+        ]
+      },
+      "notes": "Visible rear power-board upper chips/print only. Excludes top connectors, central raised ribbon, right FFC and all servo/shell/fasteners. Photographed chips have no reconstructed heights; this is a masked surface reference."
     }
   ],
   "detailAssemblyNotes": {
     "pcb": "PCB coordinates are enclosure estimates, separate from schematic connection facts. UNKNOWN rendered on both sides of every blank board.",
     "battery": "Estimated unbranded550mAh pouch envelope; no unobserved wiring.",
     "labels": "Photo alpha crops remain manufacturer copyright. All head labels and sockets belong to tilt; battery/adapter belong to pan; base USB/ring/feet/base label fixed."
+  },
+  "appearancePreserveEncodings": [
+    {
+      "file": "geometry.bin",
+      "sha256": "43a3f731ea8f12b7071f75e5c8d2a325ab876737164906f7993bfd7765ad1e29"
+    },
+    {
+      "file": "label-base.webp",
+      "sha256": "0a9eb0c1bb6a8714d53abaf21abf70dd980d477e067133b8f8f071e77460d6e6"
+    },
+    {
+      "file": "label-side-left.webp",
+      "sha256": "fa8725162b0ab39a80ba7a982d15be3d657b077803ce5c0617b3e971bc427353"
+    },
+    {
+      "file": "label-side-right.webp",
+      "sha256": "24089ee2464b0bf51f489ad74db673529be2990ecf4a07df56810848704d3b7c"
+    },
+    {
+      "file": "label-cores3-top.webp",
+      "sha256": "1cb0f9559e1bfef76faa5be036dfbf43cab1e2ef358e892903f8d868b19267d6"
+    }
+  ],
+  "appearanceRebuild": "python tools/rebuild-stackchan-rear-appearance.py --scratch /new/scratch/directory",
+  "appearanceBaseModel": {
+    "file": "appearance-base-model.json.gz",
+    "sha256": "b2ae960455f9ebaf811e23114179a2d6ea90bf0902b50662430ca0aaf08c9fd5",
+    "expandedSha256": "2a80ddc2d4d6e5942ca3968651e25a34e6b4a2a347928696ff3405e4f89fdc68",
+    "geometrySha256": "43a3f731ea8f12b7071f75e5c8d2a325ab876737164906f7993bfd7765ad1e29",
+    "basis": "Retained committed platform mesh/contract checkpoint, not a new manufacturer source. Dedicated appearance rebuild preserves accepted mesh stream and source/paper bytes."
   }
 }

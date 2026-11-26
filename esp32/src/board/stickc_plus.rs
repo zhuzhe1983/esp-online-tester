@@ -2,6 +2,7 @@
 //! Wiring: https://docs.m5stack.com/en/core/StickC-Plus
 //! LCD offsets/colour order: M5StickC-Plus src/utility/ST7789_Rotation.h.
 //! AXP192 LDO2/LDO3 supply integration is deliberately explicit; there is no GPIO backlight.
+pub mod mlx90640;
 use esp_periph::i2c::{
     axp192::{Axp192, Axp192State},
     mpu6886::{Mpu6886, Mpu6886Sample},
@@ -72,6 +73,10 @@ impl I2cDevice for PowerDevice {
 }
 
 pub struct StickCPlus {
+    se: bool,
+    thermal: Option<Arc<Mutex<mlx90640::Mlx90640>>>,
+    thermal_bus: I2cBitBang,
+    thermal_levels: [bool;2],
     pub panel: DcsPanel,
     pub pmic: Arc<Mutex<Axp192State>>,
     pub supply: Arc<Mutex<StickCPlusSupply>>,
@@ -99,7 +104,9 @@ impl Default for StickCPlus {
     }
 }
 impl StickCPlus {
-    pub fn new() -> Self {
+    pub fn new() -> Self { Self::with_se(false) }
+    pub fn tlite() -> Self {let mut board=Self::new();let state=Arc::new(Mutex::new(mlx90640::Mlx90640::new()));board.thermal_bus.attach(0x33,Box::new(mlx90640::Endpoint::new(state.clone())));board.thermal=Some(state);board}
+    pub fn with_se(se: bool) -> Self {
         let pmic = Arc::new(Mutex::new(Axp192State::stickc()));
         let state = pmic.lock().unwrap();
         let supply = Arc::new(Mutex::new(StickCPlusSupply {
@@ -109,6 +116,7 @@ impl StickCPlus {
         }));
         drop(state);
         Self {
+            se, thermal:None, thermal_bus:I2cBitBang::new(), thermal_levels:[true;2],
             pmic,
             panel: DcsPanel::st7789(),
             supply,
@@ -173,7 +181,7 @@ impl StickCPlus {
 }
 impl BoardModel for StickCPlus {
     fn name(&self) -> &'static str {
-        "stickc-plus"
+        if self.thermal.is_some(){"tlite"}else if self.se { "stickc-plus-se" } else { "stickc-plus" }
     }
     fn gpio_changes(&mut self, changes: &[(u8, bool)]) {
         for &(pin, level) in changes {
@@ -202,6 +210,7 @@ impl BoardModel for StickCPlus {
     ) {
         self.gpio_changes(changes);
         let released = |pin: u8| enabled & (1u64 << pin) == 0 || output & (1u64 << pin) != 0;
+        if self.thermal.is_some(){let scl=released(26);let sda=self.thermal_bus.drive(scl,released(0));for(i,(pin,level))in[(0,sda),(26,scl)].into_iter().enumerate(){if self.thermal_levels[i]!=level{self.thermal_levels[i]=level;self.edges.push(BoardEdge{cycle,pin,level});}}}
         let scl = released(PIN_I2C_SCL);
         let sda = self.i2c.drive(scl, released(PIN_I2C_SDA));
         for (i, (pin, level)) in [(PIN_I2C_SDA, sda), (PIN_I2C_SCL, scl)]
@@ -214,6 +223,7 @@ impl BoardModel for StickCPlus {
             }
         }
     }
+    fn thermal_environment_at(&mut self,cycle:VirtualCycle,scene:[u16;5])->bool{self.advance_to(cycle);self.thermal.as_ref().is_some_and(|s|s.lock().unwrap().set_scene(scene))}
     fn uses_gpio_edges(&self) -> bool {
         true
     }
@@ -244,7 +254,7 @@ impl BoardModel for StickCPlus {
             .i2c
             .controller_devices(None)
             .iter()
-            .all(|(a, _)| *a != 0x68)
+            .all(|(a, _)| *a != 0x34)
         {
             self.i2c.attach(
                 0x34,
@@ -254,27 +264,28 @@ impl BoardModel for StickCPlus {
                     supply: self.supply.clone(),
                 }),
             );
-            self.i2c
-                .attach(0x68, Box::new(Mpu6886::new(self.imu.clone())));
+            if !self.se { self.i2c.attach(0x68, Box::new(Mpu6886::new(self.imu.clone()))); }
             self.i2c
                 .attach(0x51, Box::new(Bm8563::new(self.rtc.clone())));
         }
-        (0..2)
+        let mut devices:Vec<_>=(0..2)
             .flat_map(|bus| {
                 self.i2c
                     .controller_devices(Some((PIN_I2C_SDA, PIN_I2C_SCL)))
                     .into_iter()
                     .map(move |(a, d)| (bus, a, d))
             })
-            .collect()
+            .collect();
+        if self.thermal.is_some(){for bus in 0..2{devices.extend(self.thermal_bus.controller_devices(Some((0,26))).into_iter().map(|(a,d)|(bus,a,d)));}}
+        devices
     }
     fn input_levels(&self) -> Vec<(u8, bool)> {
-        vec![
+        let mut pins=vec![
             (PIN_BUTTON_A, true),
             (PIN_BUTTON_B, true),
             (PIN_I2C_SDA, self.i2c_levels[0]),
             (PIN_I2C_SCL, self.i2c_levels[1]),
-        ]
+        ];if self.thermal.is_some(){pins.extend([(0,self.thermal_levels[0]),(26,self.thermal_levels[1])]);}pins
     }
     fn button_at(&mut self, _cycle: VirtualCycle, id: &str, pressed: bool) -> bool {
         if id != "power" {
@@ -291,6 +302,7 @@ impl BoardModel for StickCPlus {
         }
     }
     fn set_imu_sample(&mut self, accel_g: [f64; 3], gyro_dps: [f64; 3]) -> bool {
+        if self.se { return false; }
         if accel_g
             .iter()
             .chain(gyro_dps.iter())
@@ -346,6 +358,7 @@ impl BoardModel for StickCPlus {
     }
     fn advance_to(&mut self, cycle: VirtualCycle) {
         self.sync_power();
+        if let Some(s)=&self.thermal{s.lock().unwrap().advance_to(cycle);}
         self.rtc.lock().unwrap().advance_to(cycle);
         self.pmic
             .lock()
@@ -373,7 +386,8 @@ impl BoardModel for StickCPlus {
     fn report(&self) -> String {
         let rails = self.supply.lock().unwrap();
         format!(
-            "[emu] StickC-Plus K016-P: SPI {} accepted/{} dropped; LCD on={} sleeping={} backlight={} ic={} frames={} pixels={}",
+            "[emu] {}: SPI {} accepted/{} dropped; LCD on={} sleeping={} backlight={} ic={} frames={} pixels={}",
+            self.name(),
             self.spi_bytes,
             self.spi_dropped,
             self.panel.on,
@@ -440,7 +454,11 @@ mod tests {
                 "stickc-plus"
             );
         }
-        assert!(super::super::make_board("stickc-plus2").is_none());
+        assert_eq!(super::super::make_board("stickc-plus2").unwrap().name(),"stickc-plus2");
+        let mut se=StickCPlus::with_se(true);
+        assert_eq!(se.name(),"stickc-plus-se");
+        assert!(se.i2c_devices().iter().all(|(_,address,_)|*address!=0x68));
+        assert!(!se.set_imu_sample([0.;3],[0.;3]));
         let b = StickCPlus::new();
         assert_eq!(b.named_pin("button-a"), Some(37));
         assert_eq!(b.named_pin("button-b"), Some(39));

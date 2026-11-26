@@ -1,4 +1,3 @@
-import {isClassicStickBoard} from './board-compatibility.js';
 
 // Virtual sensor axes: +X model right, +Y model top, +Z out of the display.
 // This registration is explicit, not a claim about the unmeasured PCB mounting.
@@ -11,7 +10,7 @@ const waveshareQmiBoards = new Set([
 ]);
 // QMI guest register conversions are verified; physical PCB/screen orientation
 // and motion responses in the vendor application remain uncalibrated.
-export const imuModelForBoard = board => isClassicStickBoard(board)?'mpu6886-register-subset':waveshareQmiBoards.has(board) ? 'qmi8658-register-subset' : ({sticks3:'bmi270-register-subset',stopwatch:'bmi270-register-subset',corematrix:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset',papers3:'bmi270-register-subset',papermono:'bmi270-register-subset','papermono-lite':'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[board] || null);
+export const imuModelForBoard = board => ['stickc','stickc-plus','m5stack-k016-p','stickc-plus2','stickt2','stickt-original','tlite'].includes(board)?'mpu6886-register-subset':waveshareQmiBoards.has(board) ? 'qmi8658-register-subset' : ({capsule:'bmi270-register-subset','capsule-v11':'bmi270-register-subset',sticks3:'bmi270-register-subset',stopwatch:'bmi270-register-subset',corematrix:'bmi270-register-subset',atoms3:'mpu6886-register-subset','atom-matrix':'mpu6886-register-subset','atom-matrix-v11':'bmi270-register-subset',atoms3r:'bmi270-register-subset','atoms3r-chatbot':'bmi270-register-subset','atoms3r-ext':'bmi270-register-subset','atoms3r-cam':'bmi270-register-subset','atoms3r-cam-chatbot':'bmi270-register-subset','atoms3r-m12':'bmi270-register-subset','atoms3r-m12-volcengine':'bmi270-register-subset',papers3:'bmi270-register-subset',papermono:'bmi270-register-subset','papermono-lite':'bmi270-register-subset',stampfly:'bmi270-register-subset','stampfly-v11':'bmi270-register-subset'}[board] || null);
 
 // UI choice is deliberately ephemeral, separate from the agent IMU API and
 // shared scene. At most one request runs and one latest sample waits for it.

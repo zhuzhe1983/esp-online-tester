@@ -153,6 +153,11 @@ impl<R: Revision> Soc for Esp32p4<R> {
 }
 
 impl esp_soc::SocBus for SocBus {
+    fn set_net_tap(&mut self,tap:esp_soc::netcap::NetTap)->Result<(),String>{self.wired_link.as_mut().ok_or("this P4 board has no wired Ethernet")?.set_tap(tap);Ok(())}
+    fn attach_wifi(&mut self,cfg:esp_soc::wifi::ApConfig,nat:Option<esp_soc::nat::Nat>)->Result<(),String>{self.wired_link.as_mut().ok_or("this P4 board has no wired Ethernet")?.configure(nat,cfg.epoch_s);Ok(())}
+    fn set_ethernet_relay(&mut self,enabled:bool)->Result<(),String>{self.wired_link.as_mut().ok_or("this P4 board has no wired Ethernet")?.set_relay(enabled);Ok(())}
+    fn take_ethernet_frames(&mut self)->Vec<Vec<u8>>{self.wired_link.as_mut().map_or_else(Vec::new,|link|link.take_frames())}
+    fn receive_ethernet_frame(&mut self,frame:&[u8])->Result<(),String>{self.wired_link.as_mut().ok_or("this P4 board has no wired Ethernet")?.receive(frame)}
     fn cycles(&self) -> u64 { self.cycles }
     fn next_deadline(&self) -> Option<u64> {
         let c = self.periph.cycles_until_timer();
@@ -225,6 +230,9 @@ impl esp_soc::SocBus for SocBus {
         p.gpio.g.strap = old.gpio.g.strap;
         p.gpio.g.restore_external(&old.gpio.g);         // the board still drives its inputs
         p.i2s1.pcm = std::mem::take(&mut old.i2s1.pcm); p.i2s1.frames_out = old.i2s1.frames_out;   // keep the captured audio continuous
+        // The wired PHY is independently powered; reset the P4's MAC/DMA while
+        // preserving PHY page/register state until PHY_RST51 or BMCR reset.
+        p.emac=std::mem::take(&mut old.emac);p.emac.reset();
         // The card in the socket keeps its power and its state; IDF's init resets it with CMD0.
         p.sdmmc.devices = old.sdmmc.devices;
         p.sdmmc.stats = old.sdmmc.stats;

@@ -131,7 +131,7 @@ test('all declared TF slots prepare a card before firmware load without claiming
   const devices=catalog.products.filter(hasTfSlot);assert.ok(devices.length>=33);
   for(const product of devices){await runtime.configure(createDefaultScene(catalog,product.id));const state=await runtime.observe(),cap=(await runtime.capabilities()).sdCard;assert.equal(state.sdCard.slot,true);assert.equal(state.sdCard.present,true);assert.equal(state.sdCard.mounted,false);assert.equal(state.sdCard.bytes,64*1024*1024);assert.equal(state.sdCard.format,'fat32');assert.equal(state.sdCard.supported,hasSdCard(product.runtime?.board));assert.equal(cap.defaultInserted,true);assert.deepEqual(cap.formats,['fat32','exfat','raw-image']);}
   assert.equal(counts.created,0,'Preparing local cards does not start any firmware');
-  await runtime.configure(createDefaultScene(catalog,'m5stack-k049-b'));await assert.rejects(load,{code:'UNSUPPORTED_PRODUCT'});assert.equal((await runtime.observe()).sdCard.present,true,'A failed firmware load does not hide the prepared card');assert.equal((await runtime.exportSdCard()).bytes.length,64*1024*1024);
+  await runtime.configure(createDefaultScene(catalog,'m5stack-k049'));await assert.rejects(load,{code:'INCOMPLETE_IMAGE'});assert.equal((await runtime.observe()).sdCard.present,true,'A failed firmware load does not hide the prepared card');assert.equal((await runtime.exportSdCard()).bytes.length,64*1024*1024);
   await runtime.configure(createDefaultScene(catalog,'m5stack-stopwatch'));assert.equal((await runtime.observe()).sdCard.present,false);await assert.rejects(()=>runtime.attachSdCard(),{code:'SD_UNSUPPORTED'});
  }finally{await runtime.dispose();}
 });
@@ -140,7 +140,7 @@ test('prepared imported media is product-isolated, seeds only fresh firmware car
  const sd=createSdCardStorage({indexedDB:null,BroadcastChannel:null,dbName:'prepared-tf-'+Date.now()}),{runtime,load}=structuralRuntime(sd);
  try{
   await runtime.configure(createDefaultScene(catalog,productId));const image=createExfatImage();await runtime.attachSdCard({bytes:image});assert.equal((await runtime.observe()).sdCard.format,'exfat');assert.equal(digest((await runtime.exportSdCard()).bytes),digest(image));
-  await runtime.configure(createDefaultScene(catalog,'m5stack-k049-b'));let state=await runtime.observe();assert.equal(state.sdCard.supported,false);assert.equal(state.sdCard.slot,true);assert.equal(state.sdCard.format,'fat32');
+  await runtime.configure(createDefaultScene(catalog,'m5stack-k049-b'));let state=await runtime.observe();assert.equal(state.sdCard.supported,true);assert.equal(state.sdCard.slot,true);assert.equal(state.sdCard.format,'fat32');
   await runtime.attachSdCard({format:'exfat',byteLength:128*1024*1024});state=await runtime.observe();assert.equal(state.sdCard.bytes,128*1024*1024);assert.equal(state.sdCard.mounted,false);assert.equal(sdImageFormat((await runtime.exportSdCard()).bytes),'exfat');
   await runtime.configure(createDefaultScene(catalog,productId));assert.equal((await runtime.observe()).sdCard.bytes,image.length);await load();state=await runtime.observe();assert.equal(state.sdCard.mounted,true);assert.equal(state.sdCard.format,'exfat');
   const key=`v1:${productId}:papermono:${state.storage.scope.firmwareSha256}`;assert.equal(digest(new Uint8Array((await sd.read(key)).image)),digest(image));

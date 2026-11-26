@@ -14,11 +14,15 @@ use esp_soc::{Board, BoardModel, NoBoard};
 pub mod lilygo;
 pub mod waveshare_platform;
 pub mod waveshare_screens;
+pub mod tab5;
+pub mod poe_p4;
 
 pub fn make_board(name: &str) -> Option<Board> {
     match name {
         "none" | "bare" => Some(Box::new(NoBoard)),
         "stamp-p4" | "m5stack-s013" => Some(Box::new(StampP4)),
+        "m5stack-tab5" | "m5stack-c145" => Some(Box::new(tab5::Tab5::new())),
+        "m5stack-poe-p4" | "m5stack-u213" => Some(Box::new(poe_p4::PoeP4::new())),
         "lilygo-t-display-p4" => Some(Box::new(lilygo::TDisplayP4::new())),
         "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" => Some(Box::new(WaveshareP4Lcd35::new())),
         "waveshare-p4-lcd35-v13" => Some(Box::new(WaveshareP4Lcd35::with_name("waveshare-p4-lcd35-v13"))),
@@ -32,6 +36,12 @@ pub fn make_board(name: &str) -> Option<Board> {
 /// that the virtual revision equals the revision of a physical production die.
 pub fn lcd35_virtual_revision(name: &str) -> Option<u16> {
     match name { "waveshare-p4-lcd35-v13" => Some(100), "waveshare-p4-lcd35-v32" => Some(301), _ => None }
+}
+
+/// Selected M5 P4 profiles use the manufacturer's 16 MiB Flash / 32 MiB
+/// PSRAM configuration and rev < 3 guest ABI. This does not identify every die.
+pub fn m5_memory_mib(name:&str)->Option<(usize,usize)> {
+    matches!(name,"m5stack-tab5"|"m5stack-c145"|"m5stack-poe-p4"|"m5stack-u213").then_some((16,32))
 }
 
 /// M5Stack S013 Stamp-P4: bare P4NRW32 module, 16 MiB Flash and 32 MiB PSRAM.

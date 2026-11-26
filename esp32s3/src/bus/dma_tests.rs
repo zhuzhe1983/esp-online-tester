@@ -575,6 +575,22 @@ fn camera_receive_leftover_data_reports_ring_exhaustion() {
 }
 
 #[test]
+fn camera_disconnected_wired_sensor_never_fabricates_vsync_eof() {
+    struct Disconnected;
+    impl crate::board::BoardModel for Disconnected {
+        fn name(&self)->&'static str {"disconnected-dvp"}
+        fn camera_dvp_pins(&self)->Option<[u8;11]> {Some([6,15,16,7,5,10,4,13,12,18,42])}
+    }
+    let mut bus=SocBus::new(4<<20,0,[0;6]);bus.board=Box::new(Disconnected);
+    bus.periph.lcd_cam.set_clock_enabled(true);bus.periph.lcd_cam.write(4,(3<<29)|(8<<9)|(1<<8));bus.periph.lcd_cam.write(8,1<<29);bus.periph.lcd_cam.frame_cycles=1000;
+    m2m_desc(&mut bus,FIRST_DESC,(1<<31)|8,M2M_DST,0);
+    let channel=&mut bus.periph.gdma.inp[0];channel.running=true;channel.peri_sel=5;channel.desc=FIRST_DESC;channel.buf_pos=2;channel.rx_eof_pos=2;
+    bus.dma_cam_step(1000);
+    assert_eq!(bus.read32(FIRST_DESC).unwrap(),(1<<31)|8,"no fabricated length/owner/EOF writeback");
+    assert_eq!(bus.periph.gdma.inp[0].int_raw,0);assert_eq!(bus.periph.gdma.inp[0].buf_pos,2);assert_eq!(bus.periph.lcd_cam.int_raw,0);
+}
+
+#[test]
 fn camera_large_frame_slow_clock_progress_does_not_overflow() {
     let mut bus = camera_bus(vec![0x5a; 16_000_000]);
     let period = 1u64 << 40;

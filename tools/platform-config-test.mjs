@@ -39,7 +39,9 @@ test('catalogs retain provenance, distinct GPS defaults and truthful support', (
     }
   }
   for(const id of ['m5stack-papermono','m5stack-c153-lite']) { const paper=catalog.products.find(item=>item.id===id);assert.equal(paper.runtime.board,id==='m5stack-c153-lite'?'papermono-lite':'papermono');assert.equal(paper.runtime.status,'partial');assert.equal(paper.runtime.touch,true);const factory=catalog.firmwares.find(item=>item.id===paper.defaultFirmwareId);assert.ok(factory.productIds.includes(id)&&factory.source?.sha256); }
-  assert.equal(catalog.products.find(item=>item.id==='m5stack-c149').runtime.board,null);
+  const nanoH2=catalog.products.find(item=>item.id==='m5stack-c149');
+  assert.equal(nanoH2.runtime.board,'nanoh2');assert.equal(nanoH2.chip,'esp32h2');assert.equal(nanoH2.runtime.status,'partial');
+  const tab5=catalog.products.find(item=>item.id==='m5stack-c145');assert.equal(tab5.runtime.board,'m5stack-tab5');assert.equal(tab5.runtime.status,'partial');assert.equal(tab5.runtime.touch,true);
   const watch = catalog.products.find(item => item.id === 'm5stack-stopwatch');
   assert.equal(watch.runtime.status, 'partial');
   assert.deepEqual(watch.interfaces.find(item => item.id === 'grove').pins.filter(item => item.gpio !== undefined).map(item => item.gpio), [10, 11]);
@@ -82,7 +84,8 @@ test('configuration validity is separate from execution readiness', () => {
   assert.ok(has(result, 'PARTIAL_MODEL', 'warnings'));
   const paper = validateScene(createDefaultScene(catalog, 'm5stack-papermono'), catalog);
   assert.equal(paper.valid, true); assert.ok(has(paper, 'PARTIAL_MODEL', 'warnings'));
-  assert.ok(has(validateScene(createDefaultScene(catalog,'m5stack-c149'),catalog),'MODEL_UNAVAILABLE','warnings'));
+  assert.ok(has(validateScene(createDefaultScene(catalog,'m5stack-c149'),catalog),'PARTIAL_MODEL','warnings'));
+  assert.ok(has(validateScene(createDefaultScene(catalog,'m5stack-c145'),catalog),'PARTIAL_MODEL','warnings'));
   assert.throws(() => createDefaultScene(catalog, 'invented'), {code: 'UNKNOWN_PRODUCT'});
 });
 

@@ -9,8 +9,8 @@ export const firmwareBoardMatches = (manifestBoard,board) => manifestBoard === b
 export const persistentBoard = (productId,board) => productId === 'm5stack-c153-lite' && board === 'papermono-lite' ? 'papermono' : board;
 
 export const isCore2Board = board => ['core2','core2-v11','core2-v13','core2-aws','core2-aws-v13'].includes(board);
-export const isStickPlusBoard = board => board === 'stickc-plus' || board === 'm5stack-k016-p';
-export const isClassicStickBoard = board => board === 'stickc' || isStickPlusBoard(board) || board === 'stickt2';
+export const isStickPlusBoard = board => board === 'stickc-plus' || board === 'm5stack-k016-p' || board === 'stickc-plus-se' || board === 'tlite';
+export const isClassicStickBoard = board => board === 'stickc' || isStickPlusBoard(board) || ['stickt2','stickt-original','stickc-plus2','m5stick-oled'].includes(board);
 
 // Physical card transports are board-specific; this only exposes shared storage UI.
-export const hasSdCard = board => WAVESHARE_BOARD_CAPABILITIES[board]?.sdCard === true || LILYGO_BOARD_CAPABILITIES[board]?.sdCard === true || isPaperMonoBoard(board) || isCore2Board(board) || board === 'papers3' || board === 'paperdiy' || board === 'corematrix' || board === 'metalio-ink4' || board === 'metalio-ink4-plus' || ['m5stack-basic','cores3','cores3-se','cores3-lite','cores3-thread-br'].includes(board) || ['seeed-reterminal-sticky','seeed-reterminal-e1001','seeed-reterminal-e1002','seeed-reterminal-e1003','seeed-reterminal-e1004'].includes(board);
+export const hasSdCard = board => WAVESHARE_BOARD_CAPABILITIES[board]?.sdCard === true || LILYGO_BOARD_CAPABILITIES[board]?.sdCard === true || isPaperMonoBoard(board) || isCore2Board(board) || board === 'papers3' || board === 'paperdiy' || board === 'corematrix' || board === 'metalio-ink4' || board === 'metalio-ink4-plus' || ['unit-cams3','unit-cams3-5mp','m5stack-tab5','bala-fire-original','m5paper-v11','m5paper-original','m5paper-comm','m5stack-basic','cores3','cores3-se','cores3-lite','cores3-thread-br'].includes(board) || ['seeed-reterminal-sticky','seeed-reterminal-e1001','seeed-reterminal-e1002','seeed-reterminal-e1003','seeed-reterminal-e1004'].includes(board);

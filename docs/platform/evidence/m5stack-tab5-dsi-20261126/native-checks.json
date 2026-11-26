@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T10:01:58Z",
+  "repositoryCommits": [
+    "ef13cc2f",
+    "7ec4ace4",
+    "5da5e0af"
+  ],
+  "classification": "partial-digital-runtime",
+  "toolchain": "rustc 1.100.0 (0ef1bc386 2026-11-09)",
+  "scope": "Original native RV32 guest execution, exact physical register routes, PSRAM DMA, framebuffer/input and raw Ethernet. No official factory, browser, worker or physical hardware result in this receipt.",
+  "commands": [
+    {
+      "command": "cargo test -p esp32p4 --test poe_p4 --test poe_p4_ethernet --test tab5",
+      "status": "pass",
+      "tests": 6,
+      "groups": {
+        "tab5": 3,
+        "poe_p4": 1,
+        "poe_p4_ethernet": 2
+      }
+    },
+    {
+      "command": "cargo clippy -p esp32p4 --all-targets -- -D warnings",
+      "status": "pass"
+    },
+    {
+      "command": "node --test tools/platform-m5-p4-test.mjs tools/platform-config-test.mjs",
+      "status": "pass",
+      "tests": 3
+    },
+    {
+      "command": "node tools/platform-knowledge-test.mjs",
+      "status": "pass",
+      "records": 736
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "status": "pass",
+      "products": 728,
+      "accessories": 10,
+      "firmwares": 670,
+      "watchlist": 537
+    }
+  ],
+  "regressions": {
+    "p4_lib": 43,
+    "harts": 4,
+    "lilygo": 5,
+    "status": "pass",
+    "notRun": [
+      "remaining P4 revision/waveshare tests after the initial queue stopped at a diagnostic input timing failure; source-independent broad workspace checks remain the integrator responsibility"
+    ]
+  },
+  "checks": [
+    "720x1280 guest-generated RGB565 through DMA2D and actual DW 64-byte LLI to DSI bridge, exact full-frame FNV and four corners",
+    "GT911 ready/ack/real I2C read changes the guest next DMA frame",
+    "wrong SDA, physical touch reset, sleep, backlight, MCU reset, LDO3 off, bad source and invalid descriptor cannot fake a new visible frame",
+    "IP101 MDIO identity with physical MDC108/MDO109/MDI107 routes",
+    "60-byte guest PSRAM frame reaches host relay and host reply DMA writes FCS, 64-byte length and ownership",
+    "wrong PHY address, MDI pad, reference-clock pad, PHY reset, MAC clock and MMU page gate raw frames",
+    "GPIO45 press/release and active-low common-anode RGB17/15/16, wrong GPIO18 and reset"
+  ],
+  "files": [
+    {
+      "path": "esp32p4/src/dsi.rs",
+      "bytes": 8711,
+      "sha256": "c4ab8f91fd11fd2804ea6e6e9353db4750fbaa2e7182cf862318f1331031e2a9"
+    },
+    {
+      "path": "esp32p4/src/dw_gdma.rs",
+      "bytes": 6147,
+      "sha256": "f20eb9f07f5d8bac9da096ec55a470d2544cc9e194c364897469c3648cc84b91"
+    },
+    {
+      "path": "esp32p4/src/ethernet.rs",
+      "bytes": 3355,
+      "sha256": "754bc8605d3177f4a5f37840e03dc4532a9260cc822c7d15cbfff43ac706a4b1"
+    },
+    {
+      "path": "esp32p4/src/board/tab5.rs",
+      "bytes": 7731,
+      "sha256": "8b3165b9a2e5ca01f3aa8594bdab67c65cd8837c2e87c762508b90b9fb767ea4"
+    },
+    {
+      "path": "esp32p4/src/board/poe_p4.rs",
+      "bytes": 2476,
+      "sha256": "049f22b00ce8880a665aaa6be91c5260508315957bb36fc9bad0a32d3f78f28f"
+    },
+    {
+      "path": "esp32p4/src/bus.rs",
+      "bytes": 49745,
+      "sha256": "859f83ef4fe573850978a4408f59040ece8917c914fd432feb8f551f9fa21df4"
+    },
+    {
+      "path": "esp32p4/src/periph.rs",
+      "bytes": 65434,
+      "sha256": "a0397bd9896d7d1a6fae1f59b6b2cf226e74ae827fd809fc348d2040e9addbd2"
+    },
+    {
+      "path": "esp32p4/tests/tab5.rs",
+      "bytes": 9336,
+      "sha256": "0dae467a45e8416f65a11811ec6cfac76afa92c4f9f36e101e58b92b66114bfd"
+    },
+    {
+      "path": "esp32p4/tests/poe_p4.rs",
+      "bytes": 2580,
+      "sha256": "462febddb4c6e632616d8afd00664708ecd8c0bfb5d40bad5e8f9dfaaa9a6cd9"
+    },
+    {
+      "path": "esp32p4/tests/poe_p4_ethernet.rs",
+      "bytes": 5464,
+      "sha256": "27535996ec7d70d7c1529f25eefd94c0e0651e20b36d9d250dc1663343ca3b0f"
+    },
+    {
+      "path": "esp-periph/src/dma2d.rs",
+      "bytes": 25230,
+      "sha256": "d6254e259445769890af8d1744bcc12ec3c3c4c56758ad471947ed0ac1c28741"
+    },
+    {
+      "path": "esp-periph/src/emac.rs",
+      "bytes": 15583,
+      "sha256": "c7c1f24aab82b9452d5b64c412f6b9c7d320c7e6b8a4bb8183af5408ebc47e2b"
+    }
+  ],
+  "unverified": [
+    "ST7121/ST7123 Tab5 variants",
+    "official factory/ROM-boot applications",
+    "final production WASM/worker/browser",
+    "physical hardware and analog PHY/PoE/charging/optical behavior",
+    "C6, CSI/camera, audio, RTC/IMU/INA226, SD and USB applications"
+  ]
+}

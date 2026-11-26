@@ -4,11 +4,11 @@
   "kind": "product",
   "catalogId": "m5stack-k146",
   "title": "M5Stack Xiaozhi Card Kit · K146",
-  "summary": "带 2.7 英寸触摸墨水屏、音频和 LTE Cat.1 底座的小智语音卡片套件；手持机与底座分项保留尺寸。",
+  "summary": "已接176×264单色EPD真实SPI命令/RAM/刷新、FT6336U触控与G21唤醒键；音频、充电/电量计、蜂窝网络和底座未模拟。",
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:34:36Z",
+  "updatedAt": "2026-11-26T07:18:21Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -521,6 +521,76 @@
         "official-docs"
       ],
       "group": "pinmap"
+    },
+    {
+      "id": "input-pinmap-20261126",
+      "label": "Source-backed touch and wake input",
+      "value": {
+        "touchController": "FT6336U",
+        "i2cAddress7bit": 56,
+        "sda": 2,
+        "scl": 1,
+        "interrupt": 16,
+        "reset": 47,
+        "button": 21
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126",
+        "xiaozhi-card-schematic"
+      ]
+    },
+    {
+      "id": "runtime-epd-wiring",
+      "label": "Source-backed EPD/Touch nets",
+      "value": {
+        "epd": {
+          "mosi": 46,
+          "sck": 45,
+          "cs": 42,
+          "dc": 41,
+          "reset": 47,
+          "busy": 48
+        },
+        "touch": {
+          "address": "0x38",
+          "sda": 2,
+          "scl": 1,
+          "reset": 47,
+          "interrupt": 16
+        },
+        "wakeGpio": 21
+      },
+      "basis": "official",
+      "sourceIds": [
+        "k146-official-config-runtime",
+        "k146-official-board-runtime"
+      ],
+      "group": "pinmap"
+    },
+    {
+      "id": "runtime-epd-command-stream",
+      "label": "Pinned official EPD driver command contract",
+      "value": {
+        "ramWrite": "0x24",
+        "entry": "0x11=3",
+        "xWindow": "0x44 byte addresses",
+        "yWindow": "0x45 little endian",
+        "refresh": [
+          "0x22 mode",
+          "0x20 activate"
+        ],
+        "busyHigh": true,
+        "pixels": [
+          176,
+          264
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "k146-pinned-epd-driver"
+      ],
+      "group": "pinmap"
     }
   ],
   "revisions": [],
@@ -931,6 +1001,71 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-20261126",
+      "url": "https://docs.m5stack.com/en/core/Xiaozhi_Card_Kit",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/Xiaozhi_Card_Kit",
+      "mediaType": "text/html",
+      "bytes": 152931,
+      "sha256": "cf6c4e336ffff13d2ae6fdc6c17e1009a8277f187df0aa67f4cea3abb1a45f2a",
+      "fetchedAt": "2026-11-26T06:01:34Z",
+      "title": "M5Stack Xiaozhi Card Kit · K146 official documentation (2026-11-26)",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "archiveName": "k146-official-docs-20261126.html"
+    },
+    {
+      "id": "xiaozhi-card-schematic",
+      "title": "xiaozhi card schematic",
+      "url": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1157/Xiaozhi_Card_Schematics.pdf",
+      "resolvedUrl": "https://m5stack-doc.oss-cn-shenzhen.aliyuncs.com/1157/Xiaozhi_Card_Schematics.pdf",
+      "mediaType": "application/pdf",
+      "status": "fetched",
+      "kind": "official-schematic",
+      "bytes": 1143065,
+      "sha256": "da579e637e908d4dfc2d2cafa701a12136fa41ef0b55c1d97b508ab9198b3c0f",
+      "fetchedAt": "2026-11-26T06:10:42Z",
+      "archiveName": "xiaozhi-card-schematic.pdf"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/xiaozhi-card/44aa2f2b91c3e938932bb41f670e984cf752b731/main/boards/xiaozhi-card/config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/xiaozhi-card/44aa2f2b91c3e938932bb41f670e984cf752b731/main/boards/xiaozhi-card/config.h",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-11-26T07:07:37Z",
+      "sha256": "37531b87bff4a4ad80bad3a6d45d622e04102b0282c6f978d64dbd2a626c0c1d",
+      "bytes": 3508,
+      "archiveName": "xiaozhi-config.h",
+      "id": "k146-official-config-runtime",
+      "title": "xiaozhi-config.h fixed official source",
+      "kind": "official-firmware-source",
+      "status": "fetched"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/m5stack/xiaozhi-card/44aa2f2b91c3e938932bb41f670e984cf752b731/main/boards/xiaozhi-card/xiaozhi-card.cc",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/xiaozhi-card/44aa2f2b91c3e938932bb41f670e984cf752b731/main/boards/xiaozhi-card/xiaozhi-card.cc",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-11-26T07:07:37Z",
+      "sha256": "6a21fb30063894b8fb2af74ac6e363dcd447bb2a2839d4f55e972c0b9bb71ee5",
+      "bytes": 35292,
+      "archiveName": "xiaozhi-card.cc",
+      "id": "k146-official-board-runtime",
+      "title": "xiaozhi-card.cc fixed official source",
+      "kind": "official-firmware-source",
+      "status": "fetched"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/hlym123/esp_epd_gdey027t91/e7e4420392a8cf0927e79ed286f18531a14c433b/esp_epd_gdey027t91.c",
+      "resolvedUrl": "https://raw.githubusercontent.com/hlym123/esp_epd_gdey027t91/e7e4420392a8cf0927e79ed286f18531a14c433b/esp_epd_gdey027t91.c",
+      "mediaType": "text/plain; charset=utf-8",
+      "fetchedAt": "2026-11-26T07:09:30Z",
+      "sha256": "18d3356a176e4ad8e6d3f9196e7fa1c60dc6fc7caa528c47ec800b47eca042c8",
+      "bytes": 11842,
+      "archiveName": "esp_epd_gdey027t91.c",
+      "id": "k146-pinned-epd-driver",
+      "title": "esp_epd_gdey027t91.c fixed official source",
+      "kind": "official-firmware-source",
+      "status": "fetched"
     }
   ],
   "assets": [
@@ -1117,6 +1252,12 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-26: correct false no-touch product fact; document FT6336U pins and GPIO21 wake input. Runtime/code coverage is separate from appearance and physical hardware acceptance; see evidence/m5-s3-products-20261126/README.md.",
+    "已接GDEY027T91官方驱动兼容的176×264单色命令端点；并未猜测未公开die型号，也不代表灰阶、LUT、温度/残影或真实刷新时间。",
+    "EPD45/46/42/41/BUSY48；共用G47复位真实控制EPD与FT6336U@0x38(SDA2/SCL1,IRQ16)；G21为实际唤醒输入。",
+    "当前20ms刷新期限、1ms触控IRQ和双读短触保留是明确的数字接口策略，未作实机时序标定。",
+    "AW32001/BQ27220、SD NAND、ES8311/音频、4G调制解调器、网络、USB切换与底座行为未实现；相应I2C设备保持NACK，未伪造上电或电量。",
+    "原厂固件仍为trial且未启动验收；显示/触控客体诊断不代表整机小智应用可用。"
   ]
 }

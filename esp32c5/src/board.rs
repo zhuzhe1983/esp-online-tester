@@ -3,6 +3,7 @@
 //! The red nCHG lamp is charger-controlled; there is no RGB or user button here.
 use esp_soc::{BoardModel, pins::PinRoutes};
 pub mod lilygo;
+pub mod toughc5;
 pub mod waveshare_core;
 pub mod waveshare_lcd147;
 pub mod waveshare_touch169;
@@ -21,6 +22,7 @@ impl StampC5 {
 }
 pub fn make_board(name: &str) -> Option<esp_soc::Board> {
     match name {
+        "m5-tough-c5"|"m5stack-k162" => Some(Box::new(toughc5::ToughC5::new())),
         "stamp-c5" | "m5stack-s016" => Some(Box::new(StampC5::new(false))),
         "stamp-c5-dip" | "m5stack-s016-dip" => Some(Box::new(StampC5::new(true))),
         "lilygo-t7-c5" => Some(Box::new(lilygo::T7C5)),

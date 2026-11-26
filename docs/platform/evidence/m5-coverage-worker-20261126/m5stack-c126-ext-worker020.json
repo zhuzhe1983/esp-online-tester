@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:34:53.718Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "9a8bae1b41b7c5394a6cee5d47d6a57baadbecb212c3f59a12e8490497a26da8",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "2563f4c49243ecd751eb45ae366eb723d562b236eaf7b1d89fd07111929435c1"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c16b8a5693733a55fd0e6313f0b726a882afcbfad87143155450b24dbee524a4"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ],
+  "productId": "m5stack-c126-ext",
+  "product": {
+    "productId": "m5stack-c126-ext",
+    "board": "atoms3r-ext",
+    "control": "button-a",
+    "outputKind": "serial",
+    "flashMb": 8,
+    "psramMb": 8,
+    "classicMaskRom": false,
+    "explicitAppDirect": true,
+    "checks": [
+      "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+      "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+      "wrong-physical-GPIO-read-cannot-consume-real-key"
+    ],
+    "limits": [
+      "部分运行适配：ESP32-S3 / 8 MiB Flash / 8 MiB Octal PSRAM 与 BMI270 轮询寄存器；BMM150、红外、USB UVC、摄像头采集及音频未实现，未实机验证。",
+      "USER G41 按键通过控制面板/键盘输入；模型未新增无照片位置依据的按钮热区。",
+      "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+      "Source CAD provides enclosure only; visible gold prototype board and FPC are absent and not replaced with a fabricated display.",
+      "Official specification table states 12 mm depth; marketing photo states 12.9 mm. Both refer to this SKU and the discrepancy is retained.",
+      "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+      "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+      "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+    ],
+    "passes": [
+      {
+        "stage": "cold-boot",
+        "initial": null,
+        "pressed": {
+          "pressed": true,
+          "guestTime": 0.00016580833333333333,
+          "output": null
+        },
+        "guestSerial": "COVERAGE atoms3r-ext READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+      },
+      {
+        "stage": "public-reset",
+        "initial": null,
+        "edges": [
+          {
+            "pressed": true,
+            "guestTime": 0.00022706666666666667,
+            "output": null
+          },
+          {
+            "pressed": false,
+            "guestTime": 0.008992304166666666,
+            "output": null
+          }
+        ],
+        "guestSerial": "COVERAGE atoms3r-ext READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\nKEY UP\nOUTPUT COMPLETE\n"
+      }
+    ],
+    "probeSha256": "edd8cf71a8d9fb3448fb814d88fc4a893604bcd07f4540bd26c90d65b31c4cd4",
+    "negativeProbeSha256": "f3f89159eb160862cc92072fe96a9654021c434c23d1d546a0889514436b8b99",
+    "negative": {
+      "initial": null,
+      "queuedAtGuestSeconds": 0.05854556666666667,
+      "observedAtGuestSeconds": 0.08103060833333334,
+      "guestSerial": "COVERAGE atoms3r-ext READY\nKEY UP\nOUTPUT COMPLETE\n"
+    },
+    "romSha256": {
+      "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    "status": "passed"
+  },
+  "status": "passed",
+  "sourceCombinedReceiptSha256": "ceed7648a834b5581ebf79141658a6bd95b90a5b4bf1e81fd3866856388dea64"
+}

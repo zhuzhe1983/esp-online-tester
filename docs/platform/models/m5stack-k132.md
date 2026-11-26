@@ -36,3 +36,9 @@ ESP32-S3便携键盘终端，56键与1.14英寸LCD；本型号硬件差异与固
 实际 `manufacturer-model.js` 和 `scene-interaction.js` 中的透明贴纸感知最近表面拾取器验证了56/56正面和斜视命中；背面56键全部被外壳遮挡。原色、金色、半透明三种材质分别通过。外观其余partial限制继续保留；固件启动及按键语义由板级验证单独提供。
 
 重生成：获取已记录固定URL与hash的官方源文件后，运行 `python tools/split-cardputer-classic-keys.py --ids m5stack-k132`；通过受跟踪headless浏览器打开模型审阅页，再运行 `python tools/check-cardputer-classic-picking.py --session <task-session>`。临时源目录为 `output/source/cardputer-key-partition/m5stack-k132`。
+
+## Source-photo paper repair, 2026-11-26
+
+Exact-SKU printed paper was restored as independent alpha-masked photo layers. The manufacturer geometry, source transform, dimensions and native part records are unchanged. Placement remains a photo/CAD estimate; source shell, screen, keycaps, mounting openings and screw heads are excluded. The original-like, gold and translucent-purple production shell presets preserve these paper materials.
+
+Rebuild and quantitative alpha/native-triangle checks: `python3 tools/restore-m5-paper-labels.py --ids m5stack-k132 --write --support`. Actual production-mesh Cycles CPU before/after/reference comparisons and exact hashes are in [the paper-repair receipt](../evidence/m5-paper-repairs-20261126/m5stack-k132.json). CPU rendering uses a blank screen and does not establish factory firmware or physical fit.

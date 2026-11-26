@@ -4,11 +4,11 @@
   "kind": "product",
   "catalogId": "m5stack-d062-m12",
   "title": "M5Stack AtomS3R-M12 Volcengine Kit · D062-M12",
-  "summary": "AtomS3R-M12 与音频底座组成的视觉语音套件，采用 OV3660 摄像头、ESP32-S3-PICO-1-N8R8 和 I2S 音频。",
+  "summary": "OV3660 摄像头主机与 Atomic Voice Base 组成的套件。已接入 BMI270 与独立相机 SCCB/供电/DVP/LCD_CAM/GDMA，虚拟 RAW/同尺寸已编码 JPEG 实际写入客体 RAM；UVC、音频、原厂应用与实机尚未验证。",
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T19:57:22Z",
+  "updatedAt": "2026-11-26T09:42:02Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -355,7 +355,8 @@
       "sourceIds": [
         "official-docs"
       ],
-      "group": "pinmap"
+      "group": "pinmap",
+      "notes": "Historical 2026-10-26 heading said OV3360; the freshly fetched official 2026-11-26 page now says OV3660. Historical table retained, corrected heading recorded separately."
     },
     {
       "id": "table-4",
@@ -439,6 +440,17 @@
       ],
       "method": "Fixed original-pixel masks and independent mm planes; source images are unmodified except alpha and crop. Recess plane selected from manufacturer CAD planar-face audit.",
       "uncertainty": "Paper boundary +/-0.3mm; optical cover diameter +/-0.5mm. Printed-paper images do not establish calibrated optics or firmware output."
+    },
+    {
+      "id": "camera-pinmap-heading-20261126",
+      "label": "Current official camera pinmap heading",
+      "value": "OV3660(M12)",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs-20261126"
+      ],
+      "group": "pinmap",
+      "notes": "Current page corrects the historical OV3360 heading; no sensor runtime is inferred."
     }
   ],
   "revisions": [],
@@ -815,6 +827,47 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-20261126",
+      "url": "https://docs.m5stack.com/en/core/AtomS3R-M12_Volcengine_Kit",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/AtomS3R-M12_Volcengine_Kit",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T06:01:15Z",
+      "mediaType": "text/html",
+      "bytes": 146510,
+      "sha256": "bdb1449c75a64980d7a24362e9a7e294696a3a0729ff5a6bfb22a7acb45296c8",
+      "title": "M5Stack AtomS3R-M12 Volcengine Kit · D062-M12 official product page (2026-11-26)",
+      "kind": "official-product-document",
+      "archiveName": "m5stack-d062-m12-20261126.html"
+    },
+    {
+      "id": "capture-camera_pins-h",
+      "title": "Pinned official camera source camera_pins.h",
+      "kind": "firmware-source",
+      "url": "https://api.github.com/repos/m5stack/M5AtomS3/contents/examples/Basics/camera/camera_pins.h?ref=8accfe68d45ac8b31580e3067a0ecedfbf2d49c7",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/m5stack/M5AtomS3/contents/examples/Basics/camera/camera_pins.h?ref=8accfe68d45ac8b31580e3067a0ecedfbf2d49c7",
+      "fetchedAt": "2026-11-26T09:42:02Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 505,
+      "sha256": "e85ee85d6858c3cf427542ac27f22b150b29c57e921e5bec6d25c4657c4961c3",
+      "archiveName": "camera_pins.h.gz",
+      "notes": "Decoded contents API source; retained in docs/platform/research/atoms3r-capture-20261126/camera_pins.h.gz"
+    },
+    {
+      "id": "capture-camera-ino",
+      "title": "Pinned official camera source camera.ino",
+      "kind": "firmware-source",
+      "url": "https://api.github.com/repos/m5stack/M5AtomS3/contents/examples/Basics/camera/camera.ino?ref=8accfe68d45ac8b31580e3067a0ecedfbf2d49c7",
+      "status": "fetched",
+      "resolvedUrl": "https://api.github.com/repos/m5stack/M5AtomS3/contents/examples/Basics/camera/camera.ino?ref=8accfe68d45ac8b31580e3067a0ecedfbf2d49c7",
+      "fetchedAt": "2026-11-26T09:42:02Z",
+      "mediaType": "text/plain; charset=utf-8",
+      "bytes": 6096,
+      "sha256": "5f97642b2537e74d6019467c7e8d3d44f1624c6650ec192d1383d2d33986d2f2",
+      "archiveName": "camera.ino.gz",
+      "notes": "Decoded contents API source; retained in docs/platform/research/atoms3r-capture-20261126/camera.ino.gz"
     }
   ],
   "assets": [
@@ -1003,6 +1056,8 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-26: exact-SKU product page fetched again. Board atoms3r-m12-volcengine provides only the runtime subset in docs/platform/atoms3r-family-runtime-20261126.md; manufacturer features remain separate facts. No official factory firmware execution or physical hardware validation is claimed.",
+    "2026-11-26 capture extension: OV3660 独立 SCCB 地址0x3c/ID3660，16位寄存器、RAW RGB565/YUYV/Y8、同尺寸 host JPEG原样输入。 SDA12/SCL9、POWER_N18、XCLK21 与11根DVP矩阵均真实约束采集；源图片、客体RAM和前端预览分开。 Original LX7 guest diagnostics exercise actual I2C/GPIO/LCD_CAM/GDMA RAM writes and power/clock/pin/reboot refusal. Factory/UVC/cloud and physical hardware compatibility remain unverified; see docs/platform/atoms3r-family-runtime-20261126.md."
   ]
 }

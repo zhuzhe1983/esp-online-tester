@@ -87,6 +87,27 @@
           "assets": {
             "type": "array",
             "maxItems": 8
+          },
+          "compatibility": {
+            "type": "object",
+            "required": [
+              "status",
+              "productIds"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "reference-only",
+                  "product-verified"
+                ]
+              },
+              "productIds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         "allOf": [

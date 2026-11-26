@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:34:53.718Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "9a8bae1b41b7c5394a6cee5d47d6a57baadbecb212c3f59a12e8490497a26da8",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "2563f4c49243ecd751eb45ae366eb723d562b236eaf7b1d89fd07111929435c1"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c16b8a5693733a55fd0e6313f0b726a882afcbfad87143155450b24dbee524a4"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ],
+  "productId": "m5stack-c148",
+  "product": {
+    "productId": "m5stack-c148",
+    "board": "powerhub",
+    "control": "button-user",
+    "outputKind": "serial",
+    "flashMb": 16,
+    "psramMb": 8,
+    "classicMaskRom": false,
+    "explicitAppDirect": true,
+    "checks": [
+      "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+      "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+      "wrong-physical-GPIO-read-cannot-consume-real-key"
+    ],
+    "limits": [
+      "仅ESP32-S3 CPU/UART和G11用户按键子集；尚未启动验收官方出厂固件。",
+      "STM32G031、RGB、顶部/侧面电源键、电源轨、INA226、RTC、CAN、RS485和USB路由均未模拟；不将PMU键映射成ESP GPIO。",
+      "C148不含NP-F550电池；K148套装独立建档。既有模型仅表示主机，不表示已安装电池。",
+      "用户键的CAD按压区域已接入物理G11；背贴、孔洞和材质的原有几何边界仍以原模型报告为准。"
+    ],
+    "passes": [
+      {
+        "stage": "cold-boot",
+        "initial": null,
+        "pressed": {
+          "pressed": true,
+          "guestTime": 0.0584962875,
+          "output": null
+        },
+        "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+      },
+      {
+        "stage": "public-reset",
+        "initial": null,
+        "edges": [
+          {
+            "pressed": true,
+            "guestTime": 0.05865343333333333,
+            "output": null
+          },
+          {
+            "pressed": false,
+            "guestTime": 0.070704675,
+            "output": null
+          }
+        ],
+        "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\nKEY UP\nOUTPUT COMPLETE\n"
+      }
+    ],
+    "probeSha256": "ae5d0e4bbf71e8088bd8f27baadd70bad3fd99d994b5da1e6ff2602669ac208e",
+    "negativeProbeSha256": "79e3edc8565cf8bedd5b9a17b3354c1999a0e40c6be31fad1851fa90a5c580b5",
+    "negative": {
+      "initial": null,
+      "queuedAtGuestSeconds": 0.058499725,
+      "observedAtGuestSeconds": 0.0831079375,
+      "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\n"
+    },
+    "romSha256": {
+      "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    "status": "passed"
+  },
+  "status": "passed",
+  "sourceCombinedReceiptSha256": "ceed7648a834b5581ebf79141658a6bd95b90a5b4bf1e81fd3866856388dea64"
+}

@@ -674,14 +674,39 @@ impl SocBus {
     /// unchanged in v4.4.8 components/soc/esp32s3/include/soc/lcd_cam_reg.h.
     pub(super) fn dma_cam_step(&mut self, cycles: u64) {
         if !self.periph.lcd_cam.cam_clock_active() { return; }
+        // Opt-in exact board DVP route gate. CAM signals are matrix-only on S3:
+        // IDF v5.5.4 gpio_sig_map.h DATA0..7=133..140, PCLK149, HREF150,
+        // VSYNC152; CAM_CLK output149. VSYNC input inversion selects the edge
+        // and is accepted; inverting data/HREF/PCLK is outside this byte subset.
+        let wired=self.board.camera_dvp_pins();
+        let live=if let Some(pins)=wired {
+            let p=&self.periph;let routes=esp_soc::pins::ChipPins::S3.routes(&p.gpio,&p.io_mux);
+            let data=(0..8).all(|i|routes.matrix_input(133+i)==Some(pins[i]));
+            let vs=p.gpio.func_in_sel[152];let vs_pin=(vs&63)as usize;
+            data&&routes.matrix_input(149)==Some(pins[8])&&routes.matrix_input(150)==Some(pins[9])
+                &&vs&0x80!=0&&vs_pin==usize::from(pins[10])&&routes.input_function(vs_pin,1)
+        }else{true};
+        let frame=if wired.is_some()&&live {
+            let p=&self.periph;let routes=esp_soc::pins::ChipPins::S3.routes(&p.gpio,&p.io_mux);
+            self.board.camera_frame_with_clock(&|pin| {
+                if routes.matrix_output(usize::from(pin),149){p.lcd_cam.cam_xclk_hz().map(|hz|(hz,32768))}
+                else if routes.function(usize::from(pin),1)&&p.gpio.func_out_sel[usize::from(pin)]&(1<<11)==0{p.ledc.output(&p.gpio,pin)}else{None}
+            }).map(|(_,_,frame)|frame)
+        }else{None};
+        // A reset, stopped sensor or disconnected data/clock route cannot leak
+        // previously snapshotted bytes into guest RAM later in the frame.
+        if wired.is_some()&&(!live||frame.is_none()){self.periph.lcd_cam.set_cam_frame(None);}
         let before = self.periph.lcd_cam.acc;
         if self.periph.lcd_cam.frame_due(cycles) {
-            if self.periph.lcd_cam.cam_ctrl() & (1 << 8) != 0 {
+            // A disconnected/powered-down opt-in sensor does not emit VSYNC.
+            // In VS_EOF mode the periodic model must not close a partial node
+            // merely because LCD_CAM's own clock is still running.
+            if self.periph.lcd_cam.cam_ctrl() & (1 << 8) != 0 && (wired.is_none() || frame.is_some()) {
                 if let Some(ch) = self.periph.gdma.in_channel_for(5) {
                     self.camera_dma_in(ch, &[], None, true);
                 }
             }
-            let frame = if self.periph.lcd_cam.cam_active() { self.board.camera_frame().map(|(_, _, frame)| frame) } else { None };
+            let frame = if self.periph.lcd_cam.cam_active() { if wired.is_some(){frame}else{self.board.camera_frame().map(|(_, _, frame)| frame)} } else { None };
             let cam = &mut self.periph.lcd_cam;
             cam.set_cam_frame(frame);
             cam.frame_dropped = false;

@@ -1,0 +1,29 @@
+{
+  "productId": "m5stack-k117",
+  "modelSha256": "f1c03f03c64902177b6609e5fde31e21e29cd999b1cd3fe85a2eeccbb17850dc",
+  "change": "Trace M5 from the exact SKU official dimension drawing and cut real shallow pockets; open both visible USB-A lock windows. Preserve G39 button control identity and truthful runtime boundary.",
+  "sources": "photo6 original3508×2480 dimension drawing for glyph/20mm scale/13mm USB protrusion; photo3/4 independently confirm both broad shell sides and visible lock windows.",
+  "negative": "Old font mark was roughly0.7mm wide in a12mm plane and located too high; original USB shell end was already hollow, so no end-opening fix is claimed.",
+  "detail": "Drawing luminance<150, external contours area>800px2,0.7px simplify. Engraving depth0.1mm estimated; lock windows2.5×2mm atx±2.8,y−20 and0.35mm wall remain photo estimates, not connector CAD.",
+  "manualCpuReview": "Original/gold/translucent-purple front and rear checked. Glyph shapes now come from source contours and actual recess geometry; paper, blank live framebuffer, keys/connectors and unknown boards retain independent materials. Photo-only paper masks exclude enclosure, screws and sockets. Inspection view at[0.75,3,1] exposes the UNKNOWN word; front/rear group restore is exact.",
+  "checks": {
+    "offlineArtifacts": "all bytes identical in fresh independent rebuild",
+    "nativeRecessRays": "both glyph floors hit at expected estimated depth",
+    "loader": "source hashes, fixed materials, full UNKNOWN center+four inset ray checks, inspection exact reset",
+    "catalog": "728 products/10 accessories/670 firmwares/537 watchlist schemas pass",
+    "relatedTests": "14 inspection/servo-view +5 visual-variant tests pass",
+    "knowledge": "736 records pass after source archiveName/chronology fix73162de4"
+  },
+  "commands": [
+    "python tools/build-m5-missing-controller-models.py m5stack-k117 --output <new-independent-directory>",
+    "node tools/verify-classic-appearance-20261126.mjs <receipt> m5stack-k117",
+    "node tools/export-m5-cpu-models.mjs --repo <repo> --out <export> --ids m5stack-k117 [--inspection 1]",
+    "blender -b -t 2 --python tools/render-m5-cpu-qa.py -- --repo <repo> --input <export> --out <renders> --ids m5stack-k117 --size 768 --samples 16 --appearance <original|gold|purple>",
+    "blender -b -t 2 --python tools/render-m5-cpu-qa.py -- --repo <repo> --input <inspection-export> --out <renders> --ids m5stack-k117 --size 768 --samples 16 --oblique-eye 0.75,3,1"
+  ],
+  "limits": [
+    "Photo/drawing geometry and relief depth are approximate; source contours are not an exact manufacturer CAD or molding certification.",
+    "Cycles CPU uses documented text-font substitution only for UNKNOWN; visible front M5 no longer uses any font.",
+    "No physical hardware, firmware compatibility or mechanical fit acceptance from these appearance checks."
+  ]
+}

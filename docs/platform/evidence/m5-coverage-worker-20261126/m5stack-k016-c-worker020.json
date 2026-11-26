@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:34:53.718Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "9a8bae1b41b7c5394a6cee5d47d6a57baadbecb212c3f59a12e8490497a26da8",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "2563f4c49243ecd751eb45ae366eb723d562b236eaf7b1d89fd07111929435c1"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c16b8a5693733a55fd0e6313f0b726a882afcbfad87143155450b24dbee524a4"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ],
+  "productId": "m5stack-k016-c",
+  "product": {
+    "productId": "m5stack-k016-c",
+    "board": "stickc",
+    "control": "button-a",
+    "outputKind": "pixel",
+    "flashMb": 4,
+    "psramMb": 0,
+    "classicMaskRom": true,
+    "explicitAppDirect": false,
+    "checks": [
+      "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+      "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+      "wrong-physical-SPI-MOSI-cannot-produce-panel-pixels"
+    ],
+    "limits": [
+      "部分板级模拟覆盖 ST7735SV 屏幕、A/B、红色 LED、AXP192 短按与供电寄存器、MPU6886 轮询和 BM8563 日历。默认温度 25 °C、电池 4.1 V 为模拟输入。",
+      "仅覆盖 MPU6886 版本。早期 SH200Q、物理麦克风、红外输出、无线通信和长按关机尚未验收。运行范围见 docs/platform/stick-k016-c-runtime.md。",
+      "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+      "Assembled shell estimate is 24×48×13 mm, smaller than current document 25.5×48.2×13.7 mm; all dimensional failures remain visible. The directory may represent another housing revision.",
+      "Source assembly transform is estimated. Do not treat this model as a confirmed 1:1 match to current K016-C housing.",
+      "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+      "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+      "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+      "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
+      "Source separated shells are only provisionally assembled by recorded translation; rear small pieces are fasteners, not user keys. No exact enclosure assembly certification."
+    ],
+    "passes": [
+      {
+        "stage": "cold-boot",
+        "initial": {
+          "width": 80,
+          "height": 160,
+          "rgbaSha256": "4eace092c39c8789d04385ba8980b131e22045aef0d2faf8d72e4eafc280e6eb",
+          "firstPixel": [
+            255,
+            0,
+            0,
+            255
+          ]
+        },
+        "pressed": {
+          "pressed": true,
+          "guestTime": 0.06680981666666666,
+          "output": {
+            "width": 80,
+            "height": 160,
+            "rgbaSha256": "8ea0044daa99c7dff8bf271ad9b93f2d13145388919d609793db09d14e3dc616",
+            "firstPixel": [
+              0,
+              255,
+              0,
+              255
+            ]
+          }
+        },
+        "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5744\r\nentry 0x40081000\r\nCOVERAGE stickc READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+      },
+      {
+        "stage": "public-reset",
+        "initial": {
+          "width": 80,
+          "height": 160,
+          "rgbaSha256": "4eace092c39c8789d04385ba8980b131e22045aef0d2faf8d72e4eafc280e6eb",
+          "firstPixel": [
+            255,
+            0,
+            0,
+            255
+          ]
+        },
+        "edges": [
+          {
+            "pressed": true,
+            "guestTime": 0.058738283333333335,
+            "output": {
+              "width": 80,
+              "height": 160,
+              "rgbaSha256": "8ea0044daa99c7dff8bf271ad9b93f2d13145388919d609793db09d14e3dc616",
+              "firstPixel": [
+                0,
+                255,
+                0,
+                255
+              ]
+            }
+          },
+          {
+            "pressed": false,
+            "guestTime": 0.061873975,
+            "output": {
+              "width": 80,
+              "height": 160,
+              "rgbaSha256": "4eace092c39c8789d04385ba8980b131e22045aef0d2faf8d72e4eafc280e6eb",
+              "firstPixel": [
+                255,
+                0,
+                0,
+                255
+              ]
+            }
+          }
+        ],
+        "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5744\r\nentry 0x40081000\r\nCOVERAGE stickc READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+      }
+    ],
+    "probeSha256": "bbe7edb8b54ed77f193ae3142edcd6f02692659377f6190809ba998fb435996f",
+    "negativeProbeSha256": "42d408667187385163d0ba686d5fff4e3615c61315c47f71c60f2464a52b38c5",
+    "negative": {
+      "initial": {
+        "width": 80,
+        "height": 160,
+        "rgbaSha256": "587b51c7df2b7edd994eabbdb046400411cfc5b352bd40859ed9d114878c5605",
+        "firstPixel": [
+          0,
+          0,
+          0,
+          255
+        ]
+      },
+      "edge": {
+        "pressed": true,
+        "guestTime": 0.06704221666666667,
+        "output": {
+          "width": 80,
+          "height": 160,
+          "rgbaSha256": "587b51c7df2b7edd994eabbdb046400411cfc5b352bd40859ed9d114878c5605",
+          "firstPixel": [
+            0,
+            0,
+            0,
+            255
+          ]
+        }
+      },
+      "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5744\r\nentry 0x40081000\r\nCOVERAGE stickc READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+    },
+    "romSha256": {
+      "esp32_rev300_rom": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
+    },
+    "status": "passed"
+  },
+  "status": "passed",
+  "sourceCombinedReceiptSha256": "ceed7648a834b5581ebf79141658a6bd95b90a5b4bf1e81fd3866856388dea64"
+}

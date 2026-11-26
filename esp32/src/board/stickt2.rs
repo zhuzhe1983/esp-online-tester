@@ -13,6 +13,7 @@ const IMU_ADDRESS: u8 = 0x68;
 const VSYNC_PIN: u8 = 38;
 
 pub struct StickT2 {
+    original: bool,
     pmic: Arc<Mutex<Axp192State>>,
     pub thermal: Arc<Mutex<lepton::Lepton>>,
     panel: DcsPanel,
@@ -28,8 +29,10 @@ pub struct StickT2 {
     imu: Arc<Mutex<Mpu6886Sample>>,
 }
 impl StickT2 {
-    pub fn new() -> Self {
+    pub fn new() -> Self { Self::with_original(false) }
+    pub fn with_original(original:bool) -> Self {
         Self {
+            original,
             pmic: Arc::new(Mutex::new(Axp192State::stickt2())),
             thermal: Arc::new(Mutex::new(lepton::Lepton::new())),
             panel: DcsPanel::new(240, 320),
@@ -48,7 +51,7 @@ impl StickT2 {
 }
 impl Default for StickT2 { fn default() -> Self { Self::new() } }
 impl BoardModel for StickT2 {
-    fn name(&self) -> &'static str { "stickt2" }
+    fn name(&self) -> &'static str { if self.original{"stickt-original"}else{"stickt2"} }
     fn thermal_environment_at(&mut self, cycle: VirtualCycle, [background, hotspot, x, y, radius]: [u16; 5]) -> bool {
         self.advance_to(cycle);
         self.thermal.lock().expect("Lepton poisoned").set_scene(lepton::Raw14Scene { background, hotspot, center: [x, y], radius })
@@ -149,9 +152,9 @@ impl BoardModel for StickT2 {
     }
     fn report(&self) -> String {
         let thermal = self.thermal.lock().expect("Lepton poisoned");
-        format!("[stickt2] ST7789 frames={} pixels={} spi={} dropped={}; MPU6886=polled; AXP192=LDO2/3-PEK-short; \
+        format!("[{}] ST7789 frames={} pixels={} spi={} dropped={}; MPU6886=polled; AXP192=LDO2/3-PEK-short; \
             Lepton3.0=synthetic-Raw14 cci_reads={} cci_writes={} commands={} unsupported={} vospi_reads={} packets={} mode={} phase={}; \
-            encoder-0x30/microphone/RTC/long-power-key/analog-power=unmodeled", self.panel.frames,self.panel.pixels_written,
+            encoder-0x30/microphone/RTC/long-power-key/analog-power=unmodeled", self.name(),self.panel.frames,self.panel.pixels_written,
             self.accepted,self.dropped,thermal.cci_reads,thermal.cci_writes,thermal.commands,thermal.unsupported,thermal.spi_reads,
             thermal.packets,thermal.gpio_mode,thermal.phase)
     }

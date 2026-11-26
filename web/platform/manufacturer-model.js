@@ -9,6 +9,7 @@ import {createServoJoints} from './servo-view.js';
 import {createMotorRotors} from './motor-view.js';
 import {createModelInspection} from './model-inspection.js';
 import {readModelBinary} from './model-binary.js';
+import {partitionTextureTriangle} from './projected-texture.js';
 const safeAsset = (name, root) => {
   if (typeof name !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9._/-]*$/.test(name) || name.split('/').includes('..')) throw Error('Invalid local model asset');
   return new URL(name,root);
@@ -87,8 +88,12 @@ export function createManufacturerModel(product, screenTexture) {
         for(let at=0;at<values.length;at+=18) {
           const planeMatch=!projection.zPlanesMm || projection.zPlanesMm.some(plane=>[values[at+2],values[at+8],values[at+14]].every(z=>Math.abs(z-plane)<=(projection.zToleranceMm??.005)));
           const selected=planeMatch && sign*(values[at+5]+values[at+11]+values[at+17])/3>=threshold && [values[at+2],values[at+8],values[at+14]].every(z=>z>=lowZ&&z<=highZ);
-          (selected?b:a).push(...values.subarray(at,at+18));
-          if(selected)for(let k=0;k<3;k++){const u=(values[at+k*6]-xmin)/(xmax-xmin);coordinates.push(sign===1?u:1-u,(values[at+k*6+1]-ymin)/(ymax-ymin));}
+          const triangle=values.subarray(at,at+18);
+          if(!selected){a.push(...triangle);continue;}
+          const within=[0,6,12].every(k=>triangle[k]>=xmin&&triangle[k]<=xmax&&triangle[k+1]>=ymin&&triangle[k+1]<=ymax);
+          const clipped=within?{inside:triangle,outside:[]}:partitionTextureTriangle(triangle,[xmin,ymin,xmax,ymax]);
+          a.push(...clipped.outside);b.push(...clipped.inside);
+          for(let k=0;k<clipped.inside.length;k+=6){const u=THREE.MathUtils.clamp((clipped.inside[k]-xmin)/(xmax-xmin),0,1),v=THREE.MathUtils.clamp((clipped.inside[k+1]-ymin)/(ymax-ymin),0,1);coordinates.push(sign===1?u:1-u,v);}
         }
         regular=decal?values:a;painted=b;uv=coordinates;
       }
@@ -177,6 +182,20 @@ export function createManufacturerModel(product, screenTexture) {
     }
     // Derived optical windows can expose the same guest LED output as CAD parts.
     for(const part of metadata.derivedParts || []) {
+      const inputMesh=parts[part.id];
+      if(part.encoderId!==undefined){
+        if(!inputMesh?.isMesh||!product.controls?.some(c=>c.id===part.encoderId&&c.type==='encoder'))throw Error('Invalid derived encoder control');
+        inputMesh.userData.encoder=part.encoderId;
+      }
+      if(part.controlId!==undefined){
+        if(!inputMesh?.isMesh||!product.controls?.some(c=>c.id===part.controlId&&c.type==='button'))throw Error('Invalid derived button control');
+        inputMesh.userData.control=part.controlId;buttons.push(inputMesh);
+      }
+      if(part.encoderPress!==undefined){
+        const p=part.encoderPress;
+        if(!inputMesh?.userData.encoder||!inputMesh.userData.control||!p||!Array.isArray(p.centerMm)||p.centerMm.length!==3||!p.centerMm.every(Number.isFinite)||!Number.isFinite(p.radiusMm)||p.radiusMm<=0||p.radiusMm>100)throw Error('Invalid derived encoder press surface');
+        inputMesh.userData.encoderPress=p;
+      }
       if(part.ledIndex===undefined)continue;
       const mesh=parts[part.id];if(!Number.isInteger(part.ledIndex)||part.ledIndex<0||part.ledIndex>=256||!mesh?.isMesh||!mesh.material?.emissive)throw Error('Invalid derived LED window');
       mesh.userData.ledIndex=part.ledIndex;mesh.userData.unlitColor=part.color || '#666d69';(group.userData.rgbLedMeshes ||= [])[part.ledIndex]=mesh;

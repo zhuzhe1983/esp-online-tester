@@ -23,7 +23,12 @@ pub mod atoms3;
 pub mod atoms3_lite;
 pub mod atoms3r;
 pub mod atoms3r_cam;
+mod atoms3u;
+mod capsule;
 pub mod atom_voices3r;
+mod vameter;
+mod xiaozhi_card;
+mod powerhub;
 pub mod dial;
 pub mod stackchan;
 mod stackchan_host;
@@ -61,6 +66,7 @@ mod unit_pir;
 pub mod waveshare_amoled18;
 pub mod waveshare_amoled_watch;
 pub mod waveshare_cam;
+pub mod unit_cams3;
 pub mod waveshare_co5300_catalog;
 mod waveshare_rgb_catalog;
 mod waveshare_epaper_catalog;
@@ -196,9 +202,18 @@ pub fn make_board(name: &str) -> Option<Board> {
         "tdisplay-s3" | "lilygo-t-display-s3" => Some(Box::new(tdisplay_s3::TDisplayS3::new())),
         "atech14" | "atech" => Some(Box::new(Atech14::new())),
         "none" | "bare" => Some(Box::new(NoBoard)),
+        "unit-cams3" | "m5stack-u174" => Some(Box::new(unit_cams3::UnitCamS3::new(false))),
+        "unit-cams3-5mp" | "m5stack-u174-b" => Some(Box::new(unit_cams3::UnitCamS3::new(true))),
         "atom-voices3r" | "m5stack-c126-echo" => Some(Box::new(atom_voices3r::AtomVoiceS3R::new())),
+        "vameter" | "m5stack-k136" => Some(Box::new(vameter::VAMeter::new())),
+        "xiaozhi-card" | "m5stack-k146" => Some(Box::new(xiaozhi_card::XiaozhiCard::new())),
+        "powerhub" | "m5stack-c148" | "m5stack-k148" => Some(Box::new(powerhub::PowerHub)),
         "atoms3r-chatbot" | "m5stack-k147" => Some(Box::new(AtomS3R::chatbot())),
         "atoms3r-cam-chatbot" | "m5stack-k147-cam" => Some(Box::new(atoms3r_cam::AtomS3RCam::new())),
+        "atoms3r-ext" | "m5stack-c126-ext" => Some(Box::new(atoms3r_cam::AtomS3RCam::with_variant(atoms3r_cam::Variant::Ext))),
+        "atoms3r-cam" | "m5stack-c126-cam" => Some(Box::new(atoms3r_cam::AtomS3RCam::with_variant(atoms3r_cam::Variant::Cam))),
+        "atoms3r-m12" | "m5stack-c126-m12" => Some(Box::new(atoms3r_cam::AtomS3RCam::with_variant(atoms3r_cam::Variant::M12))),
+        "atoms3r-m12-volcengine" | "m5stack-d062-m12" => Some(Box::new(atoms3r_cam::AtomS3RCam::with_variant(atoms3r_cam::Variant::Volcengine))),
         "atoms3r" | "m5stack-atoms3r" => Some(Box::new(AtomS3R::new())),
         "atoms3" | "m5stack-atoms3" => Some(Box::new(AtomS3::new())),
         "stackchan" | "m5stack-k151" => Some(Box::new(stackchan::StackChan::new())),
@@ -218,6 +233,9 @@ pub fn make_board(name: &str) -> Option<Board> {
         "dinmeter-v11" | "m5stack-k134-v11" => Some(Box::new(DinMeter::v11())),
         "chain-dualkey" | "m5stack-c147" => Some(Box::new(chain_dualkey::ChainDualKey::new())),
         "dial-v11" | "m5stack-dial-v11" => Some(Box::new(Dial::v11())),
+        "atoms3u" | "m5stack-k125" => Some(Box::new(atoms3u::AtomS3U::new())),
+        "capsule" | "m5stack-k129" => Some(Box::new(capsule::Capsule::new(false))),
+        "capsule-v11" | "m5stack-k129-v11" => Some(Box::new(capsule::Capsule::new(true))),
         "atoms3-lite" | "m5stack-atoms3-lite" => Some(Box::new(AtomS3Lite::new())),
         "papermono" | "m5stack-papermono" => Some(Box::new(PaperMono::new())),
         "papercolor" | "m5stack-c151" => Some(Box::new(PaperColor::new())),
@@ -273,5 +291,5 @@ pub fn make_board(name: &str) -> Option<Board> {
 /// offset 0x50, PKG_VERSION bits 23:21; M5GFX 65c816a3 identifies PICO as 1.
 /// v4.4.8 defines the same offset/field. No changes for other products.
 pub fn configure_chip_identity(board:&str,efuse:&mut esp_periph::efuse::Efuse) {
-    if matches!(board,"atoms3r"|"atom-voices3r"|"atoms3r-chatbot"|"stamps3bat"|"atoms3r-cam-chatbot"|"sticks3"|"m5stack-k150") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
+    if matches!(board,"atoms3r"|"atom-voices3r"|"atoms3r-chatbot"|"stamps3bat"|"atoms3r-cam-chatbot"|"atoms3r-ext"|"atoms3r-cam"|"atoms3r-m12"|"atoms3r-m12-volcengine"|"sticks3"|"m5stack-k150"|"xiaozhi-card"|"m5stack-k146") {let r=efuse.ram.read(0x50);efuse.ram.write(0x50,(r&!(7<<21))|(1<<21));}
 }

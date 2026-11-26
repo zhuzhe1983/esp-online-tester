@@ -1,0 +1,295 @@
+{
+  "batch": "024",
+  "scope": "Exactly five public product metadata activations, matching product knowledge/index and same-SKU firmware compatibility wording. Shared runtime implementation and previously completed production Worker020 validation are not rerun or upgraded to factory/physical acceptance.",
+  "baseCommit": "3e426c9a7cbd322bc3ee34e4407f2ce28ee3891e",
+  "products": [
+    {
+      "id": "m5stack-u133",
+      "name": "M5Stack Unit KMeter (ESP32-C3) · U133",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": null,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5-kmeter",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "4591c0430ad64f9f69a2a57fd6b23e7bc09ccff1478c5a2085dcd635954cf665",
+      "productSha256": "280c1c0b8fc2dfa8734c69d2592ba3973a1ebbd9284576c9f961fae4a127d8dd",
+      "knowledgeSha256": "7a2cc7e4d29e516703a9a5235f173f6ec2d7e2fe6fa989f5db53c4b42df95015",
+      "sourceCommit": "b08449ad4b14502bf7445754d82a7e4f947c93d8",
+      "summary": "原版ESP32-C3 KMeter，与STM32隔离版分开；独立客体经SPI2 SCLK6/MISO5/CS7读取MAX31855有符号温度与开路故障，环境需显式设置。冷端25°C/100ms转换为合成假设；I2C从机和factory未验收，4MiB仅为模拟Flash设置，实体容量未知。",
+      "limitations": [
+        "未实机验证；本模型只有exact-SKU照片约束的外观近似，未找到该SKU的独立完整厂家CAD/PCB布局。",
+        "未知PCB的轮廓/厚度、隐藏元件与插口深度均保持估算；照片丝印不等于可制造PCB或固件兼容。",
+        "已实现原版ESP32-C3 KMeter数字子集：客体经SCLK6/MISO5/CS7读取MAX31855，实际解码正负温度与断线故障，并保留GPIO1读取指示。冷端25°C与100ms转换为披露的模型假设；未验证温度校准、I2C从机应用、原厂固件或实物。",
+        "未进行浏览器三种材质/同视角叠图验收；静态照片不会覆盖任何固件显示画面。",
+        "U133原型内部MCU为ESP32-C3，不能把U133-V11隔离版的STM32F030F4P6、固件或壳体版本复制进来。Flash/PSRAM未据资料确定；I2C@0x66为真实硬件事实但从机应用未验证；MAX31855数字转换/故障/SPI读数路径已实现。"
+      ]
+    },
+    {
+      "id": "m5stack-k140",
+      "name": "M5Stack SwitchC6 单火线开关 · K140",
+      "previousRuntime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": null,
+        "psramMb": null
+      },
+      "runtime": {
+        "board": "m5-switchc6",
+        "status": "partial",
+        "flashMb": 4,
+        "psramMb": 0
+      },
+      "previousProductSha256": "0ee264d4e3ff1198c91aed6f312a6db38ad8693ad389a4527301c1606660ea1b",
+      "productSha256": "aa6e5d9644174b7930a7947cd3275ddbe1982639d7268154a74f58bf970b9471",
+      "knowledgeSha256": "c172164891b0d8716ab1494464bedf3882af915d621e21d7ec467f77384c7de2",
+      "sourceCommit": "a8dbc8817d6691537b09bea14d559f739f1c3932",
+      "summary": "ESP32-C6-MINI-1单火线开关；GPIO15 ON/GPIO14 OFF脉冲数字锁存，GPIO7按键由客体读取，MCU复位保留继电器状态。交流负载、采能/ADC6、无线和factory未验收；4MiB仅为模拟Flash设置，实体容量未知。",
+      "limitations": [
+        "已实现ESP32-C6数字子集：GPIO15 ON/GPIO14 OFF脉冲驱动保持继电器，GPIO7按键由客体回读，MCU复位保留继电器状态。AC负载/采能、ADC6环境源、无线和原厂固件兼容未验证；实体Flash容量未知，4MiB是模拟设置；未实机验证。",
+        "Manufacturer photos retain their original rights; exterior dimensions are source-backed while local feature sizes and materials are approximate.",
+        "Hidden populated PCB, internal fasteners and material calibration remain unknown. PCB placeholder is explicitly marked UNKNOWN.",
+        "Source images never cover the simulated display with a static firmware screenshot.",
+        "Connector shape/position estimates do not establish pin1 mating, electrical routing or working cables.",
+        "原色、金色和透明材质需要浏览器复核；本批静态检查不代表1:1照片或实物通过。",
+        "Independent drawing gives57.9×46×26.8mm overall and54×32mm housing; product table rounds to58×46×27mm. Terminal cavities/lever depths, transparent shell and DIN details are approximations; Internal populated relay geometry and analog AC/energy model remain unknown; the documented GPIO latch is a separate digital subset. Public MAC-sticker detail photographs are not retained."
+      ]
+    },
+    {
+      "id": "m5stack-a172",
+      "name": "M5Stack Stamp-AddOn C6 For P4 · A172",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5-stamp-addon-c6",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "168e1a7301337ca3300f67225ac29779ee2d77eb66f3dd11473213bf2a146a6b",
+      "productSha256": "aec66a593e50c9e8f9cf6e642bde3472301370af5abfacd0ce75b21ecdcc407f",
+      "knowledgeSha256": "977ca8495466cbfe056ff0bbcacf2900dab30bbbb27abbb9df12fbac6bc37813",
+      "sourceCommit": "d543efab909a588305c8eddbc46c41fba244e9fe",
+      "summary": "独立ESP32-C6FH4/4MB的Stamp-P4 SDIO扩展；客体经CMD18/CLK19/D0..3=20..23连接HINF/SLC/SLCHOST数字邮箱。外接P4、ESP-Hosted原厂协议与无线链路未验收。",
+      "limitations": [
+        "已实现独立ESP32-C6原生SDIO数字路径：CMD18/CLK19/D0..3=20..23、HINF/SLCHOST与显式外部CMD52邮箱双向。未据此声明Stamp-P4客体执行、真实无线链路、ESP-Hosted原厂固件或物理连接器适配；未实机验证。",
+        "近似零件、照片与 UNKNOWN 占位均不证明电气、制造或固件兼容；照片叠图验收尚未完成。",
+        "官方定位是 Stamp-P4 的 ESP32-C6 SDIO 无线扩展模块，不是把 P4 模拟器绑定成独立 C6 运行器。",
+        "PCB照片仅说明有据的可见面；RF屏蔽罩使用独立支持面。内部层叠、铜线、隐藏尺寸与实际连接器插合未知；SDIO数字子集另有独立客体验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k162",
+      "name": "M5Stack ToughC5 · K162",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "m5-tough-c5",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "previousProductSha256": "23d327f3b354361fe9126f39f741e8e688852542daa64edfeefed8da402b85a6",
+      "productSha256": "7bce72a6eeed42e36dc371e6290bbf27133a638265d84f26ca7ae6ca028037e6",
+      "knowledgeSha256": "00a0e5d991e3fc263d540efbb03310185cd8df2ee46cad388bb5fd66cbc8372b",
+      "sourceCommit": "53e86a7c8b6f8dda5bdb5ed8b7b7e638651abd60",
+      "summary": "ToughC5，ESP32-C5HR8/16MB Flash/8MB PSRAM；独立SPI ILI9342C 320×240、CHSC6540触摸及M5PM1/IOE1数字子集。客体使用HP-I2C SDA2/SCL3；厂家LP-I2C、TF、RTC、蜂鸣器、无线和模拟电源未验收。",
+      "limitations": [
+        "已实现ESP32-C5数字子集：ILI9342C 320×240 SPI像素、CHSC6540触摸客体回读，以及M5PM1/IOE1复位、供电轨和背光路径。客体测试使用受支持的HP-I2C；厂家LP-I2C/原厂固件兼容、TF传输、RTC、蜂鸣器、模拟电源与无线未验证；未实机验证。",
+        "近似零件、照片与 UNKNOWN 占位均不证明电气、制造或固件兼容；照片叠图验收尚未完成。",
+        "原厂 STL 的0/2为装配组，1/3为远离原点的重复打印排版，未将全文件248.6mm宽强行缩放为75.9mm。原厂几何深度41.9mm与官网42.5mm存在0.6mm偏差。",
+        "相似外观的旧 Tough 使用 ESP32/AXP192，本型号是 C5/M5PM1；未复用其板级运行器。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-t",
+      "name": "M5Stack M5StickT Lepton 3.0 · K016-T",
+      "previousRuntime": {
+        "board": null,
+        "flashMb": null,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "runtime": {
+        "board": "stickt-original",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "previousProductSha256": "b2651a8aa2ce95f63ca9cc23fbd00f16fe4d655dbb8942ea52e18e368755dbf7",
+      "productSha256": "7f92c040854505c21da6e2cd9b75a6b4ab605ee5c951af74f4757f3454c82cbf",
+      "knowledgeSha256": "33a7f301f6dca27c1ee116bab86584c1935366398670bd55721f4cb4096f3db9",
+      "sourceCommit": "a35000c98337e62e63ee9946256bffb7d01d3cd5",
+      "summary": "原版 K016-T：4 MB Flash、135×240 ST7789、MPU6886、AXP192 与 Lepton 3.0。独立板名运行真实 SPI/CCI/VoSPI 合成热像数字子集；外壳按原版48×30×29mm资料重建。",
+      "limitations": [
+        "原始 LX6 客体诊断覆盖真实 MMIO 显示/输入；原厂固件与实物验证独立。未实机验证；浏览器 WebGL/照片对照仍未验收。",
+        "编码器副控0x30、RTC、麦克风和长按关机尚未实现；Lepton计数未经实机温标/辐射率/FFC标定。",
+        "使用原版M5-StickT源与厂家原始m5stickt.md；不把重定向StickT2的尺寸、出厂镜像或验证结论当作原版。"
+      ]
+    }
+  ],
+  "sourceCommits": {
+    "m5stack-u133": {
+      "commit": "b08449ad4b14502bf7445754d82a7e4f947c93d8",
+      "productChangedFields": [
+        "runtime",
+        "summary",
+        "limitations"
+      ]
+    },
+    "m5stack-k140": {
+      "commit": "a8dbc8817d6691537b09bea14d559f739f1c3932",
+      "productChangedFields": [
+        "runtime",
+        "summary",
+        "limitations"
+      ]
+    },
+    "m5stack-a172": {
+      "commit": "d543efab909a588305c8eddbc46c41fba244e9fe",
+      "productChangedFields": [
+        "runtime",
+        "summary",
+        "limitations"
+      ]
+    },
+    "m5stack-k162": {
+      "commit": "53e86a7c8b6f8dda5bdb5ed8b7b7e638651abd60",
+      "productChangedFields": [
+        "runtime",
+        "summary",
+        "limitations"
+      ]
+    },
+    "m5stack-k016-t": {
+      "commit": "a35000c98337e62e63ee9946256bffb7d01d3cd5",
+      "productChangedFields": [
+        "display",
+        "dimensions",
+        "controls",
+        "runtime",
+        "summary",
+        "limitations"
+      ]
+    }
+  },
+  "firmwareChanges": [
+    {
+      "id": "m5stack-k162-official-reference",
+      "productIds": [
+        "m5stack-k162"
+      ],
+      "fields": [
+        "limitations"
+      ],
+      "sha256": "010e6620c3f8fd50607392e35fa797fe7d9159cc5d786546275274e54f5ea94e"
+    },
+    {
+      "id": "m5stack-a172-official-reference",
+      "productIds": [
+        "m5stack-a172"
+      ],
+      "fields": [
+        "limitations"
+      ],
+      "sha256": "b0bfe32fba906557824490a723f8cf3492dae78c93cb2e67caedab2d4c0b67f0"
+    },
+    {
+      "id": "m5stack-k162-uiflow-official",
+      "productIds": [
+        "m5stack-k162"
+      ],
+      "fields": [
+        "limitations"
+      ],
+      "sha256": "785f2156e909597587439cce1752d768fd520bf79df737c13d6fe0d032264442"
+    },
+    {
+      "id": "m5stack-u133-official-source-reference",
+      "productIds": [
+        "m5stack-u133"
+      ],
+      "fields": [
+        "compatibility",
+        "limitations"
+      ],
+      "sha256": "9fb5c86d78bcf881c2a5c74ded0201545f48c905e2e4044efac79cd2854f4143"
+    }
+  ],
+  "otherProductEntriesUnchanged": true,
+  "otherKnowledgeIndexEntriesUnchanged": true,
+  "otherFirmwareEntriesUnchanged": true,
+  "knowledgeIndexUpdatedAt": "2026-11-26T11:16:38Z",
+  "validation": {
+    "catalogSchemas": {
+      "status": "passed",
+      "products": 728,
+      "accessories": 10,
+      "firmwares": 670,
+      "watchlist": 537
+    },
+    "knowledge": {
+      "status": "passed",
+      "records": 736,
+      "sourceBodiesReDownloaded": false
+    },
+    "batchScope": {
+      "status": "passed",
+      "changedProductCount": 5,
+      "otherProductKnowledgeIndexFirmwareEntriesUnchanged": true,
+      "publisherImageIdentityRolesDefaultsVerificationFlagsPreserved": true
+    },
+    "worker": {
+      "status": "reuse-completed-batch020",
+      "rerun": false,
+      "factoryCompatibilityInferred": false
+    },
+    "platformConfig": {
+      "status": "deferred-until-batch025",
+      "reason": "C145 deliberately unchanged until025; its activation is required by the already-integrated global test."
+    }
+  },
+  "noCargoOrWorkerRerun": true,
+  "sourceReceiptRepair": {
+    "commit": "73162de4",
+    "products": [
+      "m5stack-k016-t"
+    ],
+    "scope": "Only existing sources archiveName plus nondecreasing record/index timestamp; original fetch time/hash/URL unchanged."
+  },
+  "modelAssets": {
+    "productId": "m5stack-k016-t",
+    "sourceCommit": "a35000c9",
+    "geometrySha256": "908bb3a4dec952f847c10d672141112af05395664ab29021633760fe6708a2ea",
+    "envelopeMm": [
+      30,
+      48,
+      29
+    ],
+    "offlineRebuild": "passed; exact geometry.bin/model.json match",
+    "inspection": "production full envelope/framebuffer binding/UNKNOWN/reset passed"
+  },
+  "coherenceCorrections": [
+    "Replace four selected old preview/unsupported summary prefixes with precise digital subsets and remaining limits.",
+    "Selected U133/K162 firmware references retain factory unknowns while removing obsolete no-board claims.",
+    "No prior five-model repair commit is included; only K016-T model assets belong to this batch."
+  ],
+  "testLogHashes": {
+    "schema": "2fdab8f1bf9cae97f2f14120867b27dd079ba0a7460de351c700c5d96feb9355",
+    "knowledge": "c7c4d4b86f53035c0e58ce1ed62efc6f91d0f5c7d58560f415b8d0de12b41fb0"
+  }
+}

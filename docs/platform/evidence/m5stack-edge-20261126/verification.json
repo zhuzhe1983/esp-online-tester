@@ -1,0 +1,152 @@
+{
+  "checkedAt": "2026-11-26T06:13:50Z",
+  "baseline": "81bc93c0333a9fd13c16565b245b3d1c0d7ce237",
+  "products": [
+    "m5stack-c145",
+    "m5stack-c149",
+    "m5stack-c148",
+    "m5stack-u202",
+    "m5stack-k148"
+  ],
+  "artifacts": [
+    {
+      "path": "esp32h2/src/nanoh2.rs",
+      "sha256": "9d7126bdc191fb6944e59da7dd04574efc7cfc1a9c31ad3f0712bef934f3da81",
+      "bytes": 1679
+    },
+    {
+      "path": "esp32h2/tests/nanoh2.rs",
+      "sha256": "c397c56b1c419ed8f1a1b44bf156ddbdd7c9b1c5aeff69dfcb876f34e0125d17",
+      "bytes": 1618
+    },
+    {
+      "path": "esp32c6/src/board/unit_c6l.rs",
+      "sha256": "8f38292560409b236e7ccfb4b42592bfc04b34322fd559b939cce521aa054061",
+      "bytes": 5292
+    },
+    {
+      "path": "esp32s3/src/board/powerhub.rs",
+      "sha256": "ee36e468fd76b4ead9e03f03b52d34fc189d0a22561865f429e42b3b7f6a93c1",
+      "bytes": 1067
+    },
+    {
+      "path": "tools/platform-m5-edge-test.mjs",
+      "sha256": "ab29784fe5620dcf162d3741d7964f6ba15d2e261583ccd1a9ca47e4e1db671c",
+      "bytes": 3662
+    },
+    {
+      "path": "web/platform/assets/m5stack-c145/model.json",
+      "sha256": "51a6a79682f025ed2d335c7176302c59c2ccdfe483623bffea49387a35b39619",
+      "bytes": 35141
+    },
+    {
+      "path": "web/platform/assets/m5stack-c145/model-plan.json",
+      "sha256": "03ec87c6739103b5a10938faffbabfb32d028c7e5f0e09e833c987165a4a8642",
+      "bytes": 9770
+    },
+    {
+      "path": "web/platform/assets/m5stack-c145/geometry.bin",
+      "sha256": "426a6be3d703cc5e2dfe013d68a1821a519ea1390102a7d0de25569702f20a0d",
+      "bytes": 1229184
+    },
+    {
+      "path": "web/platform/assets/m5stack-c148/model.json",
+      "sha256": "0fbae2993e5bd863de2551087dfa1ee8c46bd0d3c7ef10e76c27706f9855661d",
+      "bytes": 53965
+    },
+    {
+      "path": "web/platform/assets/m5stack-c148/model-plan.json",
+      "sha256": "a92b73475c039bb17360036ce95f609586dcd42f3df070aba04941a1b9260ed8",
+      "bytes": 31322
+    },
+    {
+      "path": "web/platform/assets/m5stack-c148/geometry.bin",
+      "sha256": "1a83db6a0d3bc223455d88b57fc42212f6b0235456245c0a2f37ea4adede7826",
+      "bytes": 1297728
+    },
+    {
+      "path": "web/platform/assets/m5stack-c149/model.json",
+      "sha256": "793725172b4ba541df65d211317afa08ee9e418098d3f619c8a28c218706ee65",
+      "bytes": 27413
+    },
+    {
+      "path": "web/platform/assets/m5stack-c149/model-plan.json",
+      "sha256": "4ad3e1bca7ab7e7157894e525e6a911eaa8d09fd4ac2035559fa538a288cf64e",
+      "bytes": 11777
+    },
+    {
+      "path": "web/platform/assets/m5stack-c149/geometry.bin",
+      "sha256": "af09a7ead5df54168468c8b39f01a30bd5e69ecb103869854740bbecc8369793",
+      "bytes": 236592
+    },
+    {
+      "path": "web/platform/assets/m5stack-u202/model.json",
+      "sha256": "17e85b103143b4bd1a05a0e9eed9012010fd573afc1ef1405d3a7d25217edf45",
+      "bytes": 22246
+    },
+    {
+      "path": "web/platform/assets/m5stack-u202/model-plan.json",
+      "sha256": "adc700fdbffad46040ebfcd794410b6c60ca1a8606462e5d1ee1e99e5e5c1a56",
+      "bytes": 13589
+    },
+    {
+      "path": "web/platform/assets/m5stack-u202/geometry.bin",
+      "sha256": "c00b2dc1007db60adf0280ff301018e5b4f23df8a805abdba1f8a24ec6b63353",
+      "bytes": 482256
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test -p esp32h2 --test nanoh2",
+      "result": "pass",
+      "tests": 1,
+      "observed": "Independent H2 guest SRAM program emitted UART and RMT color; G10 supply/pin/reset boundaries checked."
+    },
+    {
+      "command": "cargo test -p esp32c6 --lib unit_c6l",
+      "result": "pass",
+      "tests": 2,
+      "observed": "Exact SPI routes/reset produce OLED RAM pixels; P0 expander input and G2 RMT boundaries checked."
+    },
+    {
+      "command": "cargo test -p esp32s3 --lib powerhub",
+      "result": "pass",
+      "tests": 1,
+      "observed": "G11 key only; PMU buttons and RGB absent."
+    },
+    {
+      "command": "node --test tools/platform-m5-edge-test.mjs tools/platform-manufacturer-model-test.mjs tools/platform-model-inspection-test.mjs tools/platform-app-image-test.mjs",
+      "result": "pass",
+      "tests": 11,
+      "observed": "Real model assets load; nearest NanoH2 front button/slit rays, paper/material isolation, inspect/reset and H2 wrong-chip/capacity rejection."
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "pass",
+      "products": 679,
+      "firmwares": 612
+    },
+    {
+      "command": "node tools/platform-knowledge-test.mjs",
+      "result": "pass",
+      "records": 687
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs",
+      "result": "pass",
+      "trackedFiles": 3369
+    },
+    {
+      "command": "cargo clippy -p esp32h2 -p esp32c6 -p esp32s3 --all-targets -- -D warnings",
+      "result": "pass"
+    }
+  ],
+  "notVerified": [
+    "Real browser/production WASM execution of new board profiles (integration step)",
+    "Manufacturer factory firmware boot",
+    "Physical hardware",
+    "Full 1:1 photograph overlays and optical/material calibration",
+    "K148 battery geometry/electrical simulation",
+    "Tab5 DSI, power and touch runtime"
+  ]
+}

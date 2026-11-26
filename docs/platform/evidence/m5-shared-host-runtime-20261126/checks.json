@@ -1,0 +1,59 @@
+{
+  "checkedAt": "2026-11-26T07:24:43.386054Z",
+  "modelRebuild": {
+    "productId": "m5stack-k159",
+    "modelSha256": "595baccd938c8dda963d9c8728dc7bb3c5b1782d48ca0cfff6640445ac8a7e71",
+    "generatedModelByteIdentical": true,
+    "geometryUnchanged": true
+  },
+  "checks": [
+    {
+      "command": "ESP32SIM_WASM=<built-WASM> ESP32SIM_ROM_DIR=<official-ROM-folder> node --test tools/platform-m5-shared-host-runtime-test.mjs",
+      "result": "pass: both products, independent inputs, actual pixels, power and wrong-clock negatives",
+      "receipt": "wasm.json"
+    },
+    {
+      "command": "node tools/check-m5-missing-models.mjs m5stack-k159 m5stack-c156",
+      "result": "pass: 2 models, 18 screen rays, 2 outward button rays, material isolation and exact inspection restore",
+      "receipt": "loader.json"
+    },
+    {
+      "command": "python tools/build-m5-missing-models.py --output <separate-directory> m5stack-k159",
+      "result": "pass: model.json and geometry.bin.gz byte-identical"
+    },
+    {
+      "command": "python tools/validate-platform-catalog.py",
+      "result": "pass: 714 products / 10 accessories / 654 firmwares / 501 watch entries"
+    },
+    {
+      "command": "node --test tools/platform-knowledge-test.mjs",
+      "result": "pass: 722 knowledge records; new pinned source bytes independently rehashed"
+    },
+    {
+      "command": "node --test tools/platform-config-test.mjs tools/platform-input-test.mjs tools/platform-sd-card-test.mjs tools/platform-visual-variant-test.mjs",
+      "result": "pass: 24 node tests (including 17 configuration behavior groups and 11 human input checks); configuration rerun with official ROM hash, 4 artifact hashes verified"
+    },
+    {
+      "command": "node --test tools/platform-stackchan-runtime-test.mjs",
+      "result": "pass: 2 existing whole-robot boundary tests"
+    },
+    {
+      "command": "node tools/check-evidence-privacy.mjs docs/platform/evidence/m5-shared-host-runtime-20261126",
+      "result": "pass: 4 new evidence files scanned; no configured privacy patterns found; manual source/identifier review completed"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    }
+  ],
+  "limits": [
+    "No GPU/photo-overlay/browser acceptance added. Node loader uses image decoding/canvas substitutes.",
+    "No firmware BIN downloaded, no manufacturer app tested, no physical hardware.",
+    "Production WASM is reused; no Rust or hot execution path changed."
+  ],
+  "newSourceReceiptsRehashed": 12,
+  "sourceScriptsSha256": {
+    "tools/fixtures/m5-shared-host-probe.mjs": "24626837d0630f9cd167cb505742fe68885e0eae88fe8ccd97c40fd77c4bc6ac",
+    "tools/platform-m5-shared-host-runtime-test.mjs": "ba1609c4e9d01a218dc5ef38079a0853b866f499176052134e60c13407aad4a0"
+  }
+}

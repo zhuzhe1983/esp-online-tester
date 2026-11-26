@@ -14,7 +14,7 @@ CoreS3 前部复用 [前部装配契约](../../../web/platform/assets/m5stack-k1
 | CoreS3 DXF：玻璃 | 50.8×50.8 mm，R3.4 | 同值 | 独立玻璃面 |
 | SCS0009 图纸：主壳 | 23.3×12.1×25.25 mm | 同值包络 | 分段外壳近似，不是厂家舵机 CAD |
 
-`pcb-main`、`pcb-touch`、`pcb-power`、`pcb-adapter` 和 `pcb-ring` 都是带有 **UNKNOWN** 标识的空板层。原理图只用于确认板的身份与功能；板形、厚度与位置依据壳内空间估计。未画芯片、走线、焊盘或触摸铜箔。12 个 LED 封装保留独立实体；发光区域直接由两条原 CAD 导光曲面各分六段，响应固件 RGB 值。没有额外贴在外壳上的灯片。550 mAh 容量来自官方资料，电池外形与位置属于空间估计，不附加臆造厂标。
+`pcb-main`、`pcb-touch`、`pcb-power`、`pcb-adapter` 和 `pcb-ring` 都保留带有 **UNKNOWN** 标识的估算板层；`pcb-power` 朝外面另有精确型号背照的局部可见外观，朝内面仍为 UNKNOWN。原理图只用于确认板的身份与功能；板形、厚度与位置依据壳内空间估计。未画芯片、走线、焊盘或触摸铜箔。12 个 LED 封装保留独立实体；发光区域直接由两条原 CAD 导光曲面各分六段，响应固件 RGB 值。没有额外贴在外壳上的灯片。550 mAh 容量来自官方资料，电池外形与位置属于空间估计，不附加臆造厂标。
 
 侧面、底面和 CoreS3 顶面纸贴由官方产品照片确定性裁切、透视校正并加透明遮罩；它们是独立表面，换壳色时保持原样。螺丝六角暗部只是凹槽的视觉表达，未建真实螺纹。Grove A/B/C 与两处 USB-C 有独立开口和内壁；未核实的插接线序继续禁止连线。
 
@@ -25,7 +25,8 @@ CoreS3 前部复用 [前部装配契约](../../../web/platform/assets/m5stack-k1
 复现命令（依赖见 `tools/requirements-model.txt`）：
 
 ```sh
-python tools/rebuild-product-model.py build m5stack-k151 --scratch /tmp/stackchan-model-rebuild
+python tools/rebuild-product-model.py plan m5stack-k151
+python tools/rebuild-stackchan-rear-appearance.py --scratch /new/stackchan-model-rebuild
 node --test tools/platform-servo-view-test.mjs
 ```
 
@@ -40,3 +41,54 @@ node --test tools/platform-servo-view-test.mjs
 
 该修正可用 `tools/prepare-stackchan-rgb-surfaces.py --write` 更新计划，再运行通用重建工具。`tools/test-source-plane-clip.py` 检查多平面切分、面积、法线和非法参数；`tools/verify-stackchan-rgb-surfaces.py --output <receipt.json>` 独立检查最终曲面。截面复现工具 `tools/verify-stackchan-rgb-sections.py <assets> --dz .05 --output <receipt.json>` 除模型依赖外需要 `shapely==2.2.0`，圆拟合工具 `tools/verify-stackchan-rgb-circles.py <assets> <section-receipt> --output <receipt.json>` 不改变任何网格。修正前后的接合残差和失败候选分别保留在 [截面回执](../../../web/platform/assets/m5stack-k151/rgb-section-fit.json) 与 [圆拟合回执](../../../web/platform/assets/m5stack-k151/rgb-circle-fit.json)。
 真实固件复验中，前/中/后触摸分别产生十二路红/绿/蓝，并驱动水平 +40°、俯仰 +60°、水平 −40°。斜视与透明材质下已检查圆端、曲面和姿态；未加载固件时恢复中性灯面。最新 209 项平台测试通过；[浏览器回执](../evidence/m5stack-k151/runtime/rgb-surfaces-browser.json)保留最终模型/WASM及截图 hash。此前外观回执对应旧模型，继续作为历史记录保留。
+
+
+2026-11-26 的嵌套展开修正把关节重挂后的真实零件纳入公开查看器的 inspection，
+模型为 `0b97c19cdf232fd91df3c0196b8e84a1123e4aac66b07c55393ac7010d806f6c`。
+只有新组显式声明 `nested:true`；原产品的直接子级解析行为保留。偏移在装配状态
+从模型轴换算到原父节点局部轴，之后随 pan/tilt 反馈转动；展开不重挂节点、不改
+关节四元数，复位恢复当前关节姿态下的原局部位置。
+
+| 查看分组 | 来源与行为 |
+| --- | --- |
+| CoreS3 前模块 | 厂商 CoreS3 外壳、玻璃/屏幕/传感器、主板占位、USB-C/Grove-A 与顶部纸贴一同右前移 |
+| 舵机外罩 | 三份厂商 ServoBody/ServoCover/ServoSideCover 对应外壳和背部紧固件左后移；实际舵机/电池/适配板保留 |
+| 底盖 | 独立 BaseCover、底纸、脚垫与可见底部紧固件下移；ring 板占位保留 |
+| 头部外壳 | 厂商 MainBody、导光件、侧纸、触摸命中面及原轴臂/轴承附件左上移；touch 板及 LED 封装保留在电子层 |
+
+这些大间隙是明确的查看安排，不能当作实物拆卸行程或碰撞/线束模拟。每组保留
+CAD/照片 sourceIds 和说明。五块 UNKNOWN 各有可公开旋转到的中心及四内角
+最近射线视角，且在原反馈姿态复位。原三组方案的 touch 标识仍被 MainBody 挡住
+一角（4/5），该失败保留在[负例](../evidence/m5stack-k151/inspection-20261126/negative-layout.json)。
+现在独立头壳组清开了这个标识，没有移动或悬浮 UNKNOWN 字面。
+
+[完整展开 CPU 图](../evidence/m5stack-k151/inspection-20261126/inspection-oblique.webp)
+来自同一生产 loader 的 inspection=1，全装配、原厂色、650 像素、16 samples、
+2 CPU threads、相机方向 `[0,1,3]`，没有手工隐藏零件；图中 power/touch UNKNOWN
+可读。其余面的可达视角见[真实 loader 回执](../evidence/m5stack-k151/inspection-20261126/loader.json)。
+四组 × 四种 pan/tilt 姿态 × 0/25/50/100/0% 验证了屏幕最近命中、相对板贴位置、
+原父级/材质和精确复位；已展开时再更新关节反馈也保持跟随。
+
+旧原色/金色/紫透 CPU 回执仍明确绑定照片修正后的 `7f0dd1c0…`，没有改写旧 hash。
+[组装态等价证据](../evidence/m5stack-k151/inspection-20261126/assembled-equivalence.json)
+把新 JSON 只删除 `/presentation/inspectionGroups` 后，按 UTF-8、indent=2、
+ensure_ascii=False 与末尾换行重新编码，逐字节恢复旧 `7f0dd1c0…`；旧/新真实
+loader 的三种材质 mesh、属性/index、UV/纹理、层级与世界矩阵语义 digest 也各自相同。
+新增展开 CPU 则独立绑定最终 `0b97c19c…`，不能把旧截图改名当作新展开验收。
+
+当前版本用保留原网格的专用重建路径，已[逐字节复现](../evidence/m5stack-k151/inspection-20261126/offline-rebuild.json)：
+
+```sh
+python tools/rebuild-product-model.py plan m5stack-k151
+python tools/rebuild-stackchan-rear-appearance.py --scratch /new/stackchan-rebuild
+node tools/verify-stackchan-inspection.mjs /new/stackchan-loader.json
+node --test tools/platform-model-inspection-test.mjs tools/platform-nested-model-inspection-test.mjs tools/platform-servo-view-test.mjs
+node tools/export-m5-cpu-models.mjs --repo . --out /new/stackchan-cpu/export --ids m5stack-k151 --inspection 1
+blender -b -t 2 --python tools/render-m5-cpu-qa.py -- \
+  --repo . --input /new/stackchan-cpu/export --out /new/stackchan-cpu/render \
+  --ids m5stack-k151 --size 650 --samples 16 --appearance original --oblique-eye 0,1,3
+```
+
+原 geometry 和 27 个既有 artifacts 保留不动；厂商背照派生图仍是部分照片外观，
+没有新增 PCB CAD 或固件兼容性结论。完整检查、工具 hash、未运行项及图像保留政策
+见[展开审核回执](../evidence/m5stack-k151/inspection-20261126/review.json)。

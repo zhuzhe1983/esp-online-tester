@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T12:01:06.659873+00:00",
+  "baseCommit": "b3ad713a7426da07d3376ca060e12b48564e6a21",
+  "productId": "m5stack-k152",
+  "finding": "The old test raycast treated the full transparent carrier of front-mesh-paper as opaque. The production picker already rejected its transparent pixels and correctly reached all 56 native keycaps.",
+  "baselineFailure": {
+    "command": "node --test tools/platform-m5-s3-products-test.mjs",
+    "line": 30,
+    "key": "key-r0-c0",
+    "expected": "key-r0-c0",
+    "actual": "undefined",
+    "rawHit": "front-mesh-paper"
+  },
+  "resolution": "Test calls the unchanged production pickVisibleSurface with PIL-decoded source-image alpha through the canvas boundary used by the full 141-product picking audit. No model, texture, UV, geometry or control identity was changed.",
+  "checks": {
+    "s3Products": {
+      "command": "node --test tools/platform-m5-s3-products-test.mjs",
+      "passed": true,
+      "products": 5,
+      "actualNearestKeycaps": 56,
+      "rawTransparentCarrierFalseNegativeRetained": true,
+      "opaqueSourcePaperRemainsOccluder": true,
+      "opaqueForegroundBlocksKey": true
+    },
+    "paperMaterialIsolation": {
+      "command": "ESP32SIM_M5_PAPER_PRODUCT_IDS=m5stack-k152 node --test tools/platform-m5-paper-repairs-test.mjs",
+      "passed": true,
+      "paperMeshes": 6,
+      "shellPresets": [
+        "original-like",
+        "gold",
+        "translucent-purple"
+      ]
+    }
+  },
+  "unchangedAssetSha256": {
+    "geometry.bin": "f4e912e2f4cce988f32dc51e8246714e66b88c64d62c569aef0fa9cdac74046e",
+    "reference-product-photo-29024fdf08.webp": "361fc1b9cb9c8f8d0a114afe70f6428b8202de607846c19b5122a6b479cba6cb",
+    "front-stamp-paper.png": "2bde08e7bc2f87b4eba13b0b1820c07f7ce94dfeabdc9f1f797f27269150fc54",
+    "LICENSE-M5Stack.txt": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+    "front-mesh-paper.png": "96d3f96769a821ae291875bc68d415fdeac501eb469aa0370d39c1263d39bbcf",
+    "reference-product-photo-54718ea99e.webp": "43a6345faf0ef5e36b6a3b218ddf440aced8261acb5ee5541b7a8c9d95718893",
+    "keyboard-legend-paper.png": "c4183b9dede0a3de07d36f4e7c6a23795ff7d8f98359f9585f140728b1b66a5b",
+    "cap-rear-radio-strip.png": "322822b506c151a98941b2eebc4ea1278f9b6adb87f8d13bfcbb3a5da193806f",
+    "cap-front-radio-strip.png": "608af1b99010cce35983cab6c34b58fdd23482dfa5c5b613ee8ca6d708303c6b",
+    "rear-circuit-paper.png": "8a67af36ea5e308a26de8658393465018010c2d18c5857c9942bf366b908bb3d",
+    "model-plan.json": "451e159dd940fba7ea4baeb731302a433ff3742bc26fc491573fde62b594bb4e",
+    "reference-product-photo-b3d9c7a339.webp": "785e085dc43b09d9f7e9f264539968af26414a554b58abb34071424ed1d66241",
+    "source.stl": "085b1fe79d90d825f2c876fabd82c2d3352cbf42b487325ecad38732bd3afa04",
+    "model.json": "4815a70f788c2c4ad9ace666fa223d4935e679adba0b00b2326a7fc0b08538a4",
+    "reference-product-photo-9005db7e39.webp": "2b6195411ba7a61886ce2f07f6fa24d1f7eb6446f787016e814f9fad6af42a95",
+    "paper-label-repair.json": "836770ef1533d31b69435f392c1ff4fc89f0b73d382d4a38ab2835999e83fc14"
+  },
+  "testSha256": "2bdf12865af2ac4ce2622bb8da1d3bd74c5c8ed843a2ebedab885560495af8f0",
+  "productionPickerSha256": "8f285b219493c230389ac9126a326b2eb84e9d2caa9437494005374e474d31d6",
+  "scope": "Node actual production mesh picking with original photograph alpha. No GPU, new CPU rendering, firmware, or physical calibration claim. Existing paper/CAD/CPU hashes remain applicable because every visual asset is byte-identical."
+}

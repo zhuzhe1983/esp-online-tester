@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "baseCodeRevision": "e479b63d",
+  "command": "ESP32SIM_WASM=<central020.wasm> ESP32SIM_ROM_DIR=<rom-directory> M5_POESP32_WORKER_RECEIPT=<receipt.json> node --test tools/platform-m5-poesp32-worker-test.mjs",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "finalReceiptSha256": "364ec0886dc42a88c494669e975cf2ad087d4b3538827247aa468ad0672d9c75",
+  "initialFailures": [
+    {
+      "attempt": "capabilities-not-awaited",
+      "originalReceiptSha256": "ed985d30c9b055fe1e388fa3d390b946271557ead20ff553622fbb34c0b90580",
+      "status": "failed",
+      "probeSha256": "ce4e0711e72fca41f7bdbe5a72304346ddfbbe63f94cd114032a03807189d0c4",
+      "probeBytes": 29760,
+      "error": {
+        "name": "TypeError",
+        "message": "Cannot read properties of undefined (reading 'available')"
+      },
+      "guestStats": {},
+      "guestSerial": "",
+      "retention": "Only authored diagnostic serial, hashes and aggregate guest statistics retained; public catalog/configuration snapshot omitted."
+    },
+    {
+      "attempt": "diagnostic-bootloader-overlapped-partition-table",
+      "originalReceiptSha256": "f34a60c298115e442cb35094b6b75ca26ef3c2fe5714a19de08eab90b3681cbc",
+      "status": "failed",
+      "probeSha256": "ce4e0711e72fca41f7bdbe5a72304346ddfbbe63f94cd114032a03807189d0c4",
+      "probeBytes": 29760,
+      "error": {
+        "name": "Error",
+        "message": "cold-boot: {\"status\":\"running\",\"guestStats\":{\"t\":\"stat\",\"time\":80.02,\"insns\":3200912236,\"frames\":0,\"behind\":0.004024883999998565,\"resyncs\":79,\"speed\":1.039772742713666,\"cam\":0,\"gpio_in\":\"1ffffffffffff\",\"mips\":41.59090970854663},\"serial\":\"ets Jul 29 2019 12:21:46\\r\\n\\r\\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\\r\\nconfigsip: 0, SPIWP:0x00\\r\\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\\r\\nmode:QIO, clock div:2\\r\\nload:0x3ffb0000,len:256\\r\\nload:0x40080000,len:29420\\r\\ncsum err:0x39!=0xff\\r\\nFalling back to built-in command interpreter.\\r\\nOK\\r\\n>\"}"
+      },
+      "guestStats": {
+        "t": "stat",
+        "time": 80.04,
+        "insns": 3201712240,
+        "frames": 0,
+        "behind": 0.004024883999998565,
+        "resyncs": 79,
+        "speed": 1.039772742713666,
+        "cam": 0,
+        "gpio_in": "1ffffffffffff",
+        "mips": 41.59090970854663
+      },
+      "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:29420\r\ncsum err:0x39!=0xff\r\nFalling back to built-in command interpreter.\r\nOK\r\n>",
+      "retention": "Only authored diagnostic serial, hashes and aggregate guest statistics retained; public catalog/configuration snapshot omitted."
+    },
+    {
+      "attempt": "overly-strict-CCOUNT-bound",
+      "originalReceiptSha256": "eb4ba86306c27b64ad974cb988bac475342d44ca192ab0ab75f66439c264fb31",
+      "status": "failed",
+      "probeSha256": "ba3d728830bc37af3325eec4e8febddc7036f8883a05bbfdfe82c18b6e41f692",
+      "probeBytes": 25888,
+      "error": {
+        "name": "AssertionError",
+        "message": "32us MDIO at240MHz plus guest polling overhead"
+      },
+      "guestStats": {},
+      "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:25552\r\nentry 0x40081000\r\nU138 LX6 START\nMDIO CYCLES 00001dfb\nPHY 0243/0c54 ADDR1 MDIO BUSY OK\nARP RXHEX 0200000000030253494d0002080600010800060400020253494d00020a0002020200000000030a00020f6e19fc4a\nARP CRC32 4afc196e\nARP OK\nWRONG MDC23 NO PHY OK\nWRONG MDIO18 NO PHY OK\nWRONG RMII22 NO DMA OK\nRMII RECOVER RXHEX 0200000000030253494d0002080600010800060400020253494d00020a0002020200000000030a00020f6e19fc4a\nRMII RECOVER CRC32 4afc196e\nRMII RECOVER OK\nWRONG REFCLK0 NO DMA OK\nREFCLK RECOVER RXHEX 0200000000030253494d0002080600010800060400020253494d00020a0002020200000000030a00020f6e19fc4a\nREFCLK RECOVER CRC32 4afc196e\nREFCLK RECOVER OK\nCLOCK GATED BUSY NO DMA OK\nCLOCK RECOVER RXHEX 0200000000030253494d0002080600010800060400020253494d00020a0002020200000000030a00020f6e19fc4a\nCLOCK RECOVER CRC32 4afc196e\nCLOCK RECOVER OK\nPHY RESET5 NO PHY NO DMA OK\nRESET RECOVER RXHEX 0200000000030253494d0002080600010800060400020253494d00020a0002020200000000030a00020f6e19fc4a\nRESET RECOVER CRC32 4afc196e\nRESET RECOVER OK\nGUEST CCOUNT 00064251\nU138 ALL CHECKS OK\n",
+      "retention": "Only authored diagnostic serial, hashes and aggregate guest statistics retained; public catalog/configuration snapshot omitted."
+    }
+  ],
+  "checks": [
+    {
+      "command": "node --test tools/platform-m5-poesp32-worker-test.mjs",
+      "result": "passed, one test with cold-boot/public-reset execution and five received frames per fresh guest"
+    },
+    {
+      "command": "node --test tools/platform-unit-controller-test.mjs",
+      "result": "passed4/4"
+    },
+    {
+      "command": "node --check tools/fixtures/m5-poesp32-probe.mjs && node --check tools/platform-m5-poesp32-worker-test.mjs",
+      "result": "passed"
+    },
+    {
+      "command": "ethernetCrc32(Buffer.from(\"123456789\"))",
+      "result": "cbf43926"
+    }
+  ],
+  "timingNote": "First sampled CCOUNT7675 cycles failed an exact >=7680 lower bound. The digital peripheral uses the most recent bus-poll timestamp; the final receipt records7630/7645 cycles with a stated128-cycle window around32us at240MHz. No physical edge-timing claim and no peripheral implementation change."
+}

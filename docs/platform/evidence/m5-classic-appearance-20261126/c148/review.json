@@ -1,0 +1,43 @@
+{
+  "productId": "m5stack-c148",
+  "sourceModelSha256": "9d5fdc15626bfb6028cdf6161ee82dfc78e8a8882f079f28aaaf5d2a4f2d2ca5",
+  "manualReview": {
+    "originalGoldPurple": "Rear printed label remains on its native recess above EXT, keyholes stay open, paper does not inherit shell tint. Photo shadows and perspective uncertainty retained.",
+    "inspection": "Production inspection progress1 rendered from rear oblique: paper stays on back cover and remains legible, native keyholes remain open; unknown interior is retained. Exact transform restoration independently verified.",
+    "unknown": "Unknown estimated board is preserved. UNKNOWN fragments can be seen through native keyholes; hidden PCB layout remains unknown."
+  },
+  "negativeResults": [
+    {
+      "operation": "Generic exporter byte comparison",
+      "passed": false,
+      "detail": "Source triangle order and PNG encoding differ in the current dependencies. Position triangle multiset exact, decoded front RGBA exact; two CAD vertices exchange normal components0 and -9.593175751907154e-25. Original native stream and original front PNG retained.",
+      "generatedGeometrySha256": "fc692e2c8992ddfd25df9f727183ab54e2da4acae1e56e2bb8c5920332116856",
+      "generatedFrontPngSha256": "e9ac4044664895b2167c51a87766c55d84e9d990a019d8bcfee916751c015033"
+    },
+    {
+      "operation": "Original EXT block placement",
+      "passed": false,
+      "detail": "Estimated rows at y25.73 and28.27 intersected label recess y23.7895..42.5105; native actual opening y17.2..22.8 supports corrected rows18.73 and21.27. Block sizes/contact depth remain approximate."
+    }
+  ],
+  "commands": [
+    "python tools/rebuild-product-model.py plan m5stack-c148",
+    "python tools/rebuild-powerhub-rear-appearance.py --scratch /new/scratch/directory",
+    "node tools/verify-powerhub-rear-appearance.mjs /new/scratch/loader.json",
+    "node tools/export-m5-cpu-models.mjs --repo <repo> --out <export> --ids m5stack-c148",
+    "blender -b -t2 --python tools/render-m5-cpu-qa.py -- --repo <repo> --input <export> --out <renders> --ids m5stack-c148 --size768 --samples24 --appearance <original|gold|purple>",
+    "node tools/export-m5-cpu-models.mjs --repo <repo> --out <inspection-export> --ids m5stack-c148 --inspection 1",
+    "blender -b -t 2 --python tools/render-m5-cpu-qa.py -- --repo <repo> --input <inspection-export> --out <renders> --ids m5stack-c148 --size 768 --samples 16 --back-oblique"
+  ],
+  "limitations": [
+    "Source label photo is exact SKU but its corner selection/lighting is approximate; no 1:1 manufacturing claim.",
+    "Published source shell remains32.8mm vs specified38.5mm complete envelope; no scaling or optional battery invented.",
+    "No firmware or physical-device acceptance performed by this appearance work."
+  ],
+  "checks": {
+    "catalogSchemas": "passed;728 products,10 accessories,670 firmwares,537 watchlist",
+    "privacyDefaultInvocation": "not run: sparse worktree lacks historical docs/evidence/ARCHIVE.md; scoped invocation follows staging"
+  },
+  "eligibleForFinalPass": false,
+  "supersededBy": "../c148-final/review.json"
+}

@@ -48,6 +48,8 @@ impl UartPins {
     pub const ESP32: Self = Self { chip: ChipPins::ESP32, signals: &[14, 17, 198], native: &[(1, 3, 0), (10, 9, 4), (17, 16, 4)] };
     pub const S3: Self = Self { chip: ChipPins::S3, signals: &[12, 15, 18], native: &[(43, 44, 0), (17, 18, 2)] };
     pub const C3: Self = Self { chip: ChipPins::C3, signals: &[6, 9], native: &[(21, 20, 0)] };
+    // ESP-IDF v5.5.1 esp32h2 uart_pins.h / gpio_sig_map.h: U0 TX24/RX23, signal6.
+    pub const H2: Self = Self { chip: ChipPins { valid: 0x3f | (0x7f << 8) | (0x3f << 22), input_select: 0x80, output_mask: 0x1ff }, signals: &[6, 9], native: &[(24, 23, 0)] };
     pub const C6: Self = Self { chip: ChipPins::C6, signals: &[6, 9], native: &[(16, 17, 0)] };
 
     pub fn route(&self, port: usize, gpio: &Gpio, mux: &RegRam, baud: Option<u32>) -> UartRoute {

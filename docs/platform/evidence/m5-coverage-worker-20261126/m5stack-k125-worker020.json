@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:34:53.718Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "9a8bae1b41b7c5394a6cee5d47d6a57baadbecb212c3f59a12e8490497a26da8",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "2563f4c49243ecd751eb45ae366eb723d562b236eaf7b1d89fd07111929435c1"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c16b8a5693733a55fd0e6313f0b726a882afcbfad87143155450b24dbee524a4"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ],
+  "productId": "m5stack-k125",
+  "product": {
+    "productId": "m5stack-k125",
+    "board": "atoms3u",
+    "control": "button-a",
+    "outputKind": "rgb",
+    "flashMb": 8,
+    "psramMb": 0,
+    "classicMaskRom": false,
+    "explicitAppDirect": true,
+    "checks": [
+      "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+      "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+      "wrong-physical-RMT-output-cannot-light-real-RGB"
+    ],
+    "limits": [
+      "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+      "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+      "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+      "Manufacturer STL contains only the40.3mm plastic body. USB-A plug is separate drawing/photo-informed geometry; imported shell width20.7069mm differs from nominal20mm. Failed source-only envelope is retained.",
+      "Flash/PSRAM capacities were not explicitly confirmed in audited product table; chip naming is not used to silently fill unknown capacity.",
+      "板级子集实现 GPIO41 按键与 GPIO35 硬件 RMT WS2812；IR G12、PDM 麦克风 G38/G39、USB-OTG 和外部连接器电气路由尚未实现。",
+      "模拟配置为8MiB Flash/无PSRAM，对应目录中的官方8MB UIFlow2目标；原产品页未单列容量，硬件容量不据此宣称经过实测。",
+      "按键命中区依据原厂正面照片的可见塑料弹片估算；孔隙与隐藏开关行程未实机校准。",
+      "官方 UIFlow2 保持未验证试运行；本轮未执行官方固件或实机验证。"
+    ],
+    "passes": [
+      {
+        "stage": "cold-boot",
+        "initial": {
+          "leds": [
+            [
+              255,
+              0,
+              0
+            ]
+          ]
+        },
+        "pressed": {
+          "pressed": true,
+          "guestTime": 0.05854727916666667,
+          "output": {
+            "leds": [
+              [
+                0,
+                255,
+                0
+              ]
+            ]
+          }
+        },
+        "guestSerial": "COVERAGE atoms3u READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      },
+      {
+        "stage": "public-reset",
+        "initial": {
+          "leds": [
+            [
+              255,
+              0,
+              0
+            ]
+          ]
+        },
+        "edges": [
+          {
+            "pressed": true,
+            "guestTime": 0.058582908333333336,
+            "output": {
+              "leds": [
+                [
+                  0,
+                  255,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "pressed": false,
+            "guestTime": 0.0695089125,
+            "output": {
+              "leds": [
+                [
+                  255,
+                  0,
+                  0
+                ]
+              ]
+            }
+          }
+        ],
+        "guestSerial": "COVERAGE atoms3u READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      }
+    ],
+    "probeSha256": "4b9adef82537d68d18ed4db00d61216f9c567857a7ede287418f2843ea4688a0",
+    "negativeProbeSha256": "3f332d83364e9f05054c5a6f91871ec3afb81e48da970bb781d389d5d2ef6214",
+    "negative": {
+      "initial": {
+        "leds": [],
+        "noPublishedLedFrame": true
+      },
+      "edge": {
+        "pressed": true,
+        "guestTime": 0.05858522916666667,
+        "output": {
+          "leds": [],
+          "noPublishedLedFrame": true
+        }
+      },
+      "guestSerial": "COVERAGE atoms3u READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+    },
+    "romSha256": {
+      "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+    },
+    "status": "passed"
+  },
+  "status": "passed",
+  "sourceCombinedReceiptSha256": "ceed7648a834b5581ebf79141658a6bd95b90a5b4bf1e81fd3866856388dea64"
+}

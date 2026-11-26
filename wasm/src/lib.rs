@@ -27,6 +27,7 @@ mod s3;
 mod lora;
 mod motion;
 mod hardware_diagnostics;
+mod sdio_host;
 mod audio;
 pub use audio::*;
 #[cfg(target_arch = "wasm32")]
@@ -133,14 +134,21 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     if esp_soc::waveshare_profiles::memory_mib(&board).is_some_and(|expected| expected != (flash_mb as usize, psram_mb as usize)) {
         log("[emu] This exact Waveshare board requires its documented Flash and PSRAM capacity"); return std::ptr::null_mut();
     }
+    let m5_edge_memory=match board.as_str() {
+        "m5-acssr"|"m5stack-u139"|"m5-dcssr"|"m5stack-u140"|"m5-kmeter"|"m5stack-u133"|"m5-switchc6"|"m5stack-k140"|"m5-stamp-addon-c6"|"m5stack-a172"|"m5-cardkb2"|"m5stack-u215"=>Some((4,0)),
+        "m5-unit-gateway-h2"|"m5stack-u195"|"m5-module-gateway-h2"|"m5stack-m141"=>Some((2,0)),
+        "m5-tough-c5"|"m5stack-k162"=>Some((16,8)),_=>None,
+    };
+    if m5_edge_memory.is_some_and(|expected|expected!=(flash_mb,psram_mb)) {log("[emu] This M5 edge profile requires its documented or explicitly virtual memory capacity");return std::ptr::null_mut();}
     let c3_board=if matches!(board.as_str(),"esp32c3"|"c3") {esp32c3::board::make_board("none")}else if matches!(board.as_str(),"none"|"bare") {None}else{esp32c3::board::make_board(&board)};
     let c5_board = if matches!(board.as_str(), "none" | "bare") { None } else { esp32c5::board::make_board(&board) };
     let h2_board = if board == "esp32h2" { esp32h2::board::make_board("none") } else if matches!(board.as_str(), "none" | "bare") { None } else { esp32h2::board::make_board(&board) };
-    if h2_board.is_some() && (flash_mb, psram_mb) != (4, 0) {
-        log("[emu] H2 exact profiles require 4 MiB Flash and no PSRAM"); return std::ptr::null_mut();
+    let h2_flash=if matches!(board.as_str(),"m5-unit-gateway-h2"|"m5stack-u195"|"m5-module-gateway-h2"|"m5stack-m141") {2}else{4};
+    if h2_board.is_some() && (flash_mb, psram_mb) != (h2_flash, 0) {
+        log("[emu] H2 profiles require their documented Flash capacity and no PSRAM"); return std::ptr::null_mut();
     }
     let s2_board = if board == "esp32s2" { esp32s2::board::make_board("none") } else if esp32s2::waveshare::memory_mib(&board).is_some() || matches!(board.as_str(), "lilygo-esp32-s2-woor" | "lilygo-esp32-s2" | "lilygo-t-dongle-esp32-s2-1-14-inch-lcd-board") { esp32s2::board::make_board(&board) } else { None };
-    let c61_board = if board == "esp32c61" { esp32c61::board::make_board("none") } else if board == "corematrix" { esp32c61::board::make_board(&board) } else { None };
+    let c61_board = if board == "esp32c61" { esp32c61::board::make_board("none") } else if matches!(board.as_str(), "none" | "bare") { None } else { esp32c61::board::make_board(&board) };
     let s31_board = if board == "esp32s31" { esp32s31::board::make_board("none") } else if matches!(board.as_str(), "none" | "bare") { None } else { esp32s31::board::make_board(&board) };
     if s31_board.as_ref().is_some_and(|b| b.name() == "mosaico") && (flash_mb != 16 || psram_mb != 16) {
         log("[emu] ESP-Mosaico V1.2 requires 16 MiB Flash and 16 MiB PSRAM"); return std::ptr::null_mut();
@@ -148,7 +156,7 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
     if s31_board.as_ref().is_some_and(|b| b.name() == "metalio-ink4-plus") && flash_mb != 16 {
         log("[emu] Metalio INK4 Plus requires 16 MiB Flash; PSRAM capacity is a simulation setting"); return std::ptr::null_mut();
     }
-    let c5_memory = esp_soc::waveshare_profiles::memory_mib(&board).map(|(f,p)|(f as u32,p as u32)).unwrap_or(match board.as_str() { "waveshare-c5-touch169" => (16, 8), "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8), "lilygo-t-dongle-c5" => (16, 0), _ => (4, 0) });
+    let c5_memory = esp_soc::waveshare_profiles::memory_mib(&board).map(|(f,p)|(f as u32,p as u32)).unwrap_or(match board.as_str() { "waveshare-c5-touch169" | "m5-tough-c5" | "m5stack-k162" => (16, 8), "waveshare-c5-touch28" | "waveshare-c5-touch35" | "waveshare-c5-lcd273" => (32, 8), "lilygo-t-dongle-c5" => (16, 0), _ => (4, 0) });
     if c5_board.is_some() && (flash_mb, psram_mb) != c5_memory {
         log("[emu] C5 board requires its documented Flash and PSRAM capacity"); return std::ptr::null_mut();
     }
@@ -209,6 +217,9 @@ pub unsafe extern "C" fn esp32sim_new(board: *const u8, board_len: usize, flash_
         }
     }
     let p4_board = esp32p4::board::make_board(p4_name).filter(|_| !matches!(p4_name, "none" | "bare"));
+    if esp32p4::board::m5_memory_mib(p4_name).is_some_and(|m| m!=(flash_mb as usize,psram_mb as usize)) || esp32p4::board::m5_memory_mib(p4_name).is_some() && coproc {
+        log("[emu] M5 P4 profiles require 16 MiB Flash, 32 MiB PSRAM and their implemented main-controller topology"); return std::ptr::null_mut();
+    }
     let p4_rev3 = p4_exact_revision.map_or_else(||p4_profile.is_some() || matches!(p4_name, "waveshare-p4-lcd35" | "p4-lcd35" | "lcd35" | "esp32p4-rev3" | "p4-rev3"),|revision|revision>=300); // Explicit virtual wafer family; not a claim about every physical unit.
     let p4 = p4_board.is_some() || p4_rev3 || matches!(p4_name, "esp32p4" | "p4");
     let classic_board = if board == "esp32" {

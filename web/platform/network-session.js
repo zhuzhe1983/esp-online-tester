@@ -24,7 +24,7 @@ export function networkService({interface:iface=0,protocol='tcp',guestPort,label
   return {id:`${iface}:${protocol}:${guestPort}`,interface:iface,protocol,guestPort,label:label||`${protocol.toUpperCase()} ${guestPort}`,source:'manual',verified:false};
 }
 
-export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globalThis.WebSocket,fetchImpl=globalThis.fetch,guestFactory=createGuestNetwork,supportsSoftAp=()=>true,requestTimeout=120000}={}) {
+export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globalThis.WebSocket,fetchImpl=globalThis.fetch,guestFactory=createGuestNetwork,supportsSoftAp=()=>true,primaryInterface=()=>null,requestTimeout=120000}={}) {
   let config={enabled:true,autoProvision:true,...DEFAULT_VIRTUAL_ROUTER,endpoint:'',mode:'public-relay',relayUrl:'',softApSsid:'',softApPassword:''};
   let socket=null,epoch=0,sequence=0,attached=false,supported=false,softapStarted=false,autoAttempted=false;
   let guest=null,bootstrapController=null,heartbeat=null,softApSupported=true;
@@ -32,7 +32,7 @@ export function createNetworkSession({emit,command,sendFrame,WebSocketImpl=globa
   const requireSoftAp=iface=>{if(iface===1&&!hasSoftAp())throw fail('SOFTAP_UNSUPPORTED','This board does not support firmware SoftAP access.');};
   let connection='relay-unconfigured',lastError=null,interfaces={},softAp=null,services=[],txFrames=0,rxFrames=0,droppedFrames=0,provisioning='idle';
   const pending=new Map(),mappingRequests=new Map();let finishConnecting=null,autoGeneration=0;
-  const snapshot=()=>({enabled:config.enabled,mode:config.mode,relayConfigured:!!config.relayUrl,softApSupported:hasSoftAp(),browserSoftAp:hasSoftAp()&&config.mode==='public-relay',autoProvision:config.autoProvision,router:{ssid:config.ssid,security:config.password?'wpa2-psk':'open'},helperConfigured:!!config.endpoint,connection,supported,interfaces:copy(interfaces),softAp:copy(softAp),services:copy(services),provisioning,txFrames,rxFrames,droppedFrames,lastError:copy(lastError)});
+  const snapshot=()=>({enabled:config.enabled,mode:config.mode,relayConfigured:!!config.relayUrl,primaryInterface:primaryInterface(),softApSupported:hasSoftAp(),browserSoftAp:hasSoftAp()&&config.mode==='public-relay',autoProvision:config.autoProvision,router:{ssid:config.ssid,security:config.password?'wpa2-psk':'open'},helperConfigured:!!config.endpoint,connection,supported,interfaces:copy(interfaces),softAp:copy(softAp),services:copy(services),provisioning,txFrames,rxFrames,droppedFrames,lastError:copy(lastError)});
   const changed=()=>emit({type:'network',network:snapshot()});
   const report=error=>{lastError={code:error.code||'NETWORK_ERROR',message:error.message||String(error)};changed();};
   const rejectPending=()=>{for(const p of pending.values()){clearTimeout(p.timer);p.reject(fail('NETWORK_DISCONNECTED','Network helper disconnected.'));}pending.clear();};

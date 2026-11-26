@@ -1,0 +1,4857 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T08:21:03Z",
+  "baseline": "81bc93c0333a9fd13c16565b245b3d1c0d7ce237",
+  "catalogCodeSnapshot": "fbe068e3174486f867d61c3a560dc2e81c44909b",
+  "scope": "Source-level role review of all687 fixed store listings, current M5Stack catalog entries and shared-controller kit mappings; not every historical PCB/BOM revision. Pure accessories deferred.",
+  "counts": {
+    "storeListings": 687,
+    "baselineM5Entries": 91,
+    "currentM5Entries": 141,
+    "newM5Entries": 50,
+    "runtime": {
+      "unavailable": 40,
+      "partial": 101
+    },
+    "hostKitMappings": 44
+  },
+  "unresolvedConfirmedSkuRecords": [],
+  "hostMappingCounts": {
+    "named-host-configuration-needs-individual-review": 37,
+    "host-family-confirmed-revision-unresolved": 5,
+    "distinct-controller-configuration-needs-adaptation": 2
+  },
+  "sourceIdentityConflict": "A072 title versus official Includes remains unresolved. Five kit procurement revisions remain unconfirmed; no runtime/factory identity is inferred.",
+  "verification": {
+    "platformNode": {
+      "tests": 577,
+      "passed": 573,
+      "skipped": 4,
+      "failed": 0
+    },
+    "workspaceClippy": "passed",
+    "productionWasmM5Constructors": 101,
+    "genericAssets": {
+      "products": 141,
+      "genericPassed": 139,
+      "dedicatedNotExercised": 2,
+      "failed": 0
+    },
+    "imageFiles": 882,
+    "imageDecodeFailures": 0,
+    "displaySurfaceRays": 621,
+    "displayObstructionCandidates": 0,
+    "matrixDisplayOutsideRayAudit": 1,
+    "nativeRelease": {
+      "status": "passed",
+      "exitCode": 0,
+      "command": "ESP32SIM_ROM_DIR=<roms> cargo test --release --workspace -- --include-ignored --skip external_",
+      "counts": {
+        "suites": 251,
+        "passed": 3522,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 145
+      },
+      "logSha256": "8d486cd9ccd5734418f0e5245ce77e2551f0cf8b253b185e997ca7f8565c0028"
+    },
+    "wasmJitClippy": {
+      "status": "passed",
+      "exitCode": 0,
+      "command": "cargo clippy --release --target wasm32-unknown-unknown -p esp32sim-wasm --features jit-tests -- -D warnings",
+      "logSha256": "184f7fcc7056416c51fb46c7462e36810ed5832e65f0be4fd3c1b82366c8bec0"
+    }
+  },
+  "productionWasmSha256": "7ef74ef72ae322fe37c6a2fcacab35dc36ee82c0923f87ee6d856e38d55ac409",
+  "delivery": {
+    "incrementalBinaryDiffs": true,
+    "gitHubMainUpdated": false,
+    "gitHubWriteAttempt": "Normal Git dry run had no HTTPS write credential; no remote ref was changed."
+  },
+  "limits": [
+    "40 entries remain runtime unavailable; they are previews and source investigations, not completed execution adapters.",
+    "Partial means the individually documented display/input/peripheral subset; diagnostic guests do not establish complete manufacturer firmware compatibility.",
+    "No actual WebGL model render, calibrated photograph overlay or physical-hardware acceptance was completed.",
+    "Two dedicated renderers are outside the generic asset-loader audit. The existing platform tests remain separate evidence."
+  ],
+  "products": [
+    {
+      "id": "m5stack-a172",
+      "sku": "A172",
+      "name": "M5Stack Stamp-AddOn C6 For P4 · A172",
+      "chip": "esp32c6",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-a172/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本条目提供有来源的外观预览和资料，尚无该 SKU 的独立板级模拟器。",
+        "近似零件、照片与 UNKNOWN 占位均不证明电气、制造或固件兼容；照片叠图验收尚未完成。",
+        "官方定位是 Stamp-P4 的 ESP32-C6 SDIO 无线扩展模块，不是把 P4 模拟器绑定成独立 C6 运行器。",
+        "PCB 正面照片仅保留板面；ESP32 屏蔽罩单独建几何和照片面，背面 UNKNOWN。连接器插合、SDIO、走线与隐藏尺寸均未验证。"
+      ]
+    },
+    {
+      "id": "m5stack-c001-cnc",
+      "sku": "C001-CNC",
+      "name": "M5Stack Core Metal · C001-CNC",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c001-cnc/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-c001-cnc-official-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；只复用明确记录的家族外壳网格和有来源的照片近似，不是该SKU的完整工程CAD。",
+        "原厂照片版权独立于CAD的MIT许可；本模型没有把屏幕照片作为模拟器画面。",
+        "外壳/纸贴/UNKNOWN与板级运行分别交付；未执行本SKU的官方固件、同视角照片叠图或浏览器三色材质验收。",
+        "Native shell/button/glass geometry is taken from the explicitly identified K001 family source with its recorded assembly transforms. Bottom cover, material and exact-SKU correspondence remain photo approximations.",
+        "运行仅复用已实现的m5stack-basic显示、A/B/C与SD-SPI数字子集；本SKU的IP5306、扬声器、电源及传感器没有因此获得验证。",
+        "官方商店和文档规格写厚18mm，宣传图写12mm；采用规格18mm并保留冲突。外壳金属PBR仅为展示近似，不能据此证明金属结构或内部空间准确。"
+      ]
+    },
+    {
+      "id": "m5stack-c008",
+      "sku": "C008",
+      "name": "M5Stack Atom-Lite · C008",
+      "chip": "esp32",
+      "runtime": {
+        "board": "atom-lite",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c008/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c008-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G39 按键、G27 SK6812 RMT。官方出厂镜像按键进入 Grove 测试并输出红灯；外接器件、红外、网络和模拟供电未验证。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Official gallery has no straight back view; back-photo gate unmeasured rather than reusing sibling Atom label."
+      ]
+    },
+    {
+      "id": "m5stack-c008-b",
+      "sku": "C008-B",
+      "name": "M5Stack Atom-Matrix",
+      "chip": "esp32",
+      "runtime": {
+        "board": "atom-matrix",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c008-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c008-b-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G39 按键、G27 RGB 矩阵、MPU6886 轮询寄存器；官方出厂程序的 Wi-Fi 扫描与完整流程尚未验证。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-c008-b-v11",
+      "sku": "C008-B-V11",
+      "name": "M5Stack Atom-Matrix v1.1 · C008-B-V11",
+      "chip": "esp32",
+      "runtime": {
+        "board": "atom-matrix-v11",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c008-b-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c008-b-uiflow2-reference",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G39 按键、G27 的25颗 RGB、BMI270 轮询寄存器；官方 UIFlow2 已真实启动并验证按键和姿态读数，完整功能未确认。",
+        "红外、模拟供电、真实 Wi-Fi/BLE、Grove 外设未实现；BMI270 FIFO/特征引擎/ODR及实机时序未验证。",
+        "官方 v1.1 出厂镜像本轮未找到；默认选中官方 UIFlow2，不将开发固件标为出厂固件。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Original source plastic depth13.8mm differs from official13.9mm. Difference retained; no scaling.",
+        "v1.1 IMU is BMI270, not older MPU6886.",
+        "Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete.",
+        "软件 SoftI2C 试读未通过；当前仅验证硬件 I²C 与官方 M5 驱动。"
+      ]
+    },
+    {
+      "id": "m5stack-c008-c",
+      "sku": "C008-C",
+      "name": "M5Stack Atom Voice",
+      "chip": "esp32",
+      "runtime": {
+        "board": "atom-voice",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c008-c/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c008-c-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前仅 G39 数字按键与 G27 RGB RMT；官方 v1.0.0 已进入应用并输出红灯，但经典蓝牙初始化发生 StoreProhibited 并重启，不能作为蓝牙音箱使用。",
+        "NS4168 音频、SPM1423 PDM 麦克风、经典蓝牙/A2DP、Grove 外设及真实电源行为未模拟。",
+        "外壳沿用官方 CAD，RGB 位置按公开发光照片估算，内部主板保持 UNKNOWN；模型偏差见验收报告。"
+      ]
+    },
+    {
+      "id": "m5stack-c050-b",
+      "sku": "C050-B",
+      "name": "M5Stack Stamp-Pico · C050-B",
+      "chip": "esp32",
+      "runtime": {
+        "board": "stamppico",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c050-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c050-b-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G39 用户键与 G27 SK6812 的 GRB RMT 输出；EN、下载器、模拟电源、软件 GPIO 灯时序和物理网络未验证。固件保持 trial；旧 Arduino RGB 灯序配置与现行 UIFlow2 GRB 不同。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "View displays one module, not all five loose units in the package.",
+        "Same module source geometry as DIY kit does not merge the SKU identity, package weight or included accessories.",
+        "CAD thickness 4.4 mm differs from documented 4.6 mm.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "黑色裸露 PCB 背面采用该 SKU 官方照片；内部仍为 UNKNOWN，未声称完整板级 CAD。",
+        "中心 M2×4 螺丝、薄纸贴承载面和可见背面金属环已补充；纸厚、紧固件细节及隐藏啮合仍有估算。",
+        "贴纸保留照片中的跨槽纸面，并避开螺丝孔；外观与装配仍为部分验证。"
+      ]
+    },
+    {
+      "id": "m5stack-c056-b",
+      "sku": "C056-B",
+      "name": "M5Stack Stamp-C3",
+      "chip": "esp32c3",
+      "runtime": {
+        "board": "stampc3",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c056-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G3 用户键与 G2 单颗 SK6812 的 RMT 输出；不模拟 EN/USB 桥、软件 GPIO 灯时序、模拟电源或物理网络。官方示例只有源码，尚未找到完整出厂固件。",
+        "保留厂家外盖原始尺寸；PCB 正面布局未知，拆开后显示 UNKNOWN。",
+        "外露背面使用该 SKU 官方照片；原图中 PCB 像素较少，放大不能补出细节。",
+        "已补齐一枚中心内六角沉头螺丝和可见黄铜螺柱；隐藏螺纹与内部结构未建模。",
+        "独立薄纸面支撑贴纸，边界和中心孔已遮罩；包装数量及可选排针不表示默认安装。"
+      ]
+    },
+    {
+      "id": "m5stack-c122-b",
+      "sku": "C122-B",
+      "name": "M5Stack Stamp-C3U",
+      "chip": "esp32c3",
+      "runtime": {
+        "board": "stampc3u",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c122-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G9 用户键和 G2 SK6812 RMT；EN、原生 USB 传输、模拟电源、软件 GPIO 灯时序和物理网络未验证。官方示例只有源码，不冒充完整出厂固件。",
+        "厂家仅提供外盖 CAD；黑色 PCB 背面采用 C3U 自有照片，盖内保留 UNKNOWN，可通过分开查看检查。",
+        "中心螺丝、黄铜螺柱及纸贴承载面已补齐；隐藏螺纹和完整 PCB 布局未知。",
+        "官方 PCB 链接指向 C3 目录，未据此冒充 C3U 完整板级模型。",
+        "C122-B 五件装展示单个模块；未推断已安装排针。"
+      ]
+    },
+    {
+      "id": "m5stack-c123",
+      "sku": "C123",
+      "name": "M5Stack AtomS3 · C123",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c123/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c123-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "已实现 GC9107 的 SPI 屏幕命令、GPIO41 按键，以及 MPU6886 轮询寄存器与主机采样输入；固件仍需按功能确认。",
+        "当前仅模拟官方 GC9107 屏幕版本；同名 ST7735 屏幕批次、背光 PWM 亮度、红外、IMU FIFO/中断/采样时序及无线通信未完成。",
+        "IMU 使用主机提供的传感器坐标数值；真实轴向装配、噪声和校准尚未与实物比对。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Marketing image shows 12.8 mm depth while technical table states 12.9 mm; CAD matches the latter.",
+        "Manufacturer STL lacks connector inserts, physical display assembly and PCB; blank screen plane and neutral board are explicitly estimates.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+      ]
+    },
+    {
+      "id": "m5stack-c124",
+      "sku": "C124",
+      "name": "M5Stack AtomS3-Lite",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3-lite",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c124/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c124-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "已实现 GPIO41 低电平按键与 GPIO35 单颗 WS2812C 的真实 RMT 输出。",
+        "软件 GPIO 灯带波形、红外、模拟电源/复位电路、无线联网与外部 Grove 配件路由未完成；RMT 解码未与实物校准。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-c125",
+      "sku": "C125",
+      "name": "M5Stack NanoC6 · C125",
+      "chip": "esp32c6",
+      "runtime": {
+        "board": "nanoc6",
+        "status": "partial",
+        "flashMb": 4,
+        "psramMb": 0
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c125/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c125-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G9 按键、G19 供电控制的 G20 RGB、G7 蓝灯；官方 v1.1 启动、灯光与按键状态切换已观察。IR、无线协议、物理 Grove 路由及模拟电气未验证。",
+        "Manufacturer CAD contains enclosure only; visible Grove/USB inserts and label details are not supplied as mechanical CAD.",
+        "Exterior shell dimensions pass 0.1 mm tolerance; this does not certify absent connectors or populated board.",
+        "No display exists on NanoC6; no fabricated screen or framebuffer is added.",
+        "PCB placeholder has no components. Its dimensions/placement are an enclosure-space estimate, not a verified PCB layout.",
+        "Manufacturer photo rights are separate from CAD MIT license. Materials are visual approximations, not measured reflectance."
+      ]
+    },
+    {
+      "id": "m5stack-c126",
+      "sku": "C126",
+      "name": "M5Stack AtomS3R",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3r",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c126/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c126-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前 ST7735 批次的 SPI 屏幕、LP5562 白光直控背光、GPIO41 按键与 BMI270 轮询寄存器已实现；旧 GC9107 批次、BMM150 辅助总线、RGB 灯与红外暂未实现，固件可尝试运行。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-c126-cam",
+      "sku": "C126-CAM",
+      "name": "M5Stack AtomS3R-CAM · C126-CAM",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3r-cam",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c126-cam/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c126-cam-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分运行适配：ESP32-S3 / 8 MiB Flash / 8 MiB Octal PSRAM 与 BMI270 轮询寄存器；BMM150、红外、USB UVC、摄像头采集及音频未实现，未实机验证。",
+        "GC0308 仅支持 SCCB 配置寄存器、ID、复位和 G18 低有效供电；不提供 DVP 帧或 UVC 视频。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Camera lens/glass and printed labels use original exact-SKU photographs; a planar cover is an explicit optical approximation, not a simulated camera stream.",
+        "Connector mouths are standard visual approximations; populated boards remain UNKNOWN.",
+        "Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete."
+      ]
+    },
+    {
+      "id": "m5stack-c126-echo",
+      "sku": "C126-ECHO",
+      "name": "M5Stack Atom VoiceS3R",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atom-voices3r",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c126-echo/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c126-echo-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前仅 G41 数字按键和 ES8311 控制总线初始化子集；官方 UIFlow2 可进入命令行，小智可进入配网状态，尚不代表网络可连接。",
+        "麦克风、音频播放、USB UAC、红外、物理复位监督器尚未模拟；此型号没有 RGB 灯。",
+        "官网 UAC Easyloader 的原样镜像布局存在冲突，保留恢复资料入口；其他官方固件可选择试运行。"
+      ]
+    },
+    {
+      "id": "m5stack-c126-ext",
+      "sku": "C126-Ext",
+      "name": "M5Stack AtomS3R-Ext · C126-Ext",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3r-ext",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c126-ext/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分运行适配：ESP32-S3 / 8 MiB Flash / 8 MiB Octal PSRAM 与 BMI270 轮询寄存器；BMM150、红外、USB UVC、摄像头采集及音频未实现，未实机验证。",
+        "USER G41 按键通过控制面板/键盘输入；模型未新增无照片位置依据的按钮热区。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Source CAD provides enclosure only; visible gold prototype board and FPC are absent and not replaced with a fabricated display.",
+        "Official specification table states 12 mm depth; marketing photo states 12.9 mm. Both refer to this SKU and the discrepancy is retained.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+      ]
+    },
+    {
+      "id": "m5stack-c126-m12",
+      "sku": "C126-M12",
+      "name": "M5Stack AtomS3R-M12",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3r-m12",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c126-m12/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c126-m12-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分运行适配：ESP32-S3 / 8 MiB Flash / 8 MiB Octal PSRAM 与 BMI270 轮询寄存器；BMM150、红外、USB UVC、摄像头采集及音频未实现，未实机验证。",
+        "OV3660 尚未实现 SCCB/图像采集，保持 NACK；没有用 GC0308、OV2640 或 OV5640 冒充此传感器。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-c139",
+      "sku": "C139",
+      "name": "M5Stack PaperS3",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "papers3",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c139/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c139-factory-reference",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "ET047TC1 数字黑白更新、单触点 GT911 与 BMI270 轮询子集；不代表 16 灰阶光学波形、双触点或完整整机兼容。",
+        "EDCBook 3.1.2 已验证原始固件启动、RGB 首页、触屏阅读和前后翻页；返回同页仍有少量字形像素差异，灰阶、局刷一致性及该固件的 TF/联网未验收。",
+        "默认虚拟电池为 4.0V；未模拟电池消耗、充电过程或真实供电故障。",
+        "EDCBook 重载后如进入开机确认，请在开机画面出现后尽快长按屏幕 LOGO 约 2 秒；没有确认时固件会显示关机封面。",
+        "SPI TF 已由官方 v0.5 实际写出 TEST.TXT 并验证复位/重载持久化；BM8563 基础日历按客体时钟计时。RTC 闹钟/唤醒、蜂鸣器音频、PMS150G 电源键、真实电源与完整网络流程尚未验收。",
+        "屏幕实体竖向帧为 540×960，原生行扫描为 960×540；官方 v0.5 测试界面采用横向布局。",
+        "IMU 支持显式输入及默认关闭的 3D 姿态联动，使用约定虚拟轴；尚未校准 PCB 到模型的安装变换。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-c145",
+      "sku": "C145",
+      "name": "M5Stack Tab5 · C145",
+      "chip": "esp32p4",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c145/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c145-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "本产品尚无板级模拟器，模型和资料不能证明固件兼容。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Only manufacturer exterior geometry is imported; board, display, keyboard, touch and RF runtime unavailable.",
+        "No physical hardware measurement performed; official photographs may include shipping films and uncalibrated perspective.",
+        "PCB is an explicitly estimated UNKNOWN placeholder without invented components or traces.",
+        "Source CAD does not supply calibrated material properties; colors are source-photo-informed display approximations.",
+        "Tab5 board/MIPI-DSI unsupported; C6 wireless coprocessor is not a substitute main controller. C145 model excludes K145 NP-F550 battery.",
+        "Front glass is an independent photo-informed flat surface, not manufacturer glass CAD; inset/radius +/-0.5mm, optical stack and thickness unknown.",
+        "虽然平台已有ESP32-P4 CPU核心，Tab5专属DSI、PMS150G电源和不同版次触摸链路未实现，故继续保持unavailable。",
+        "已补microSD SPI/SDIO、RS485、I²C芯片和Grove逐针资料；物理接线事实不代表已接入客体。",
+        "检查零件将外壳/外部构件整体沿Z移开以露出UNKNOWN占位板；这是查看偏移，不宣称真实维修拆解步骤。"
+      ]
+    },
+    {
+      "id": "m5stack-c147",
+      "sku": "C147",
+      "name": "M5Stack Chain DualKey · C147",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "chain-dualkey",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-c147/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c147-userdemo-v0-8",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "运行模型含 G0/G17 低有效按键与 G40 门控的 G21 WS2812B 两颗 RGB。板级控制通过 ESP-IDF 定向固件验收。",
+        "官方 V0.8 已到达 guest 开机灯光自检；该镜像的按键回调、USB/BLE HID 和网页配置流程尚未验收。",
+        "三档滑动开关、真实电池/USB/充电 ADC 电压、外部 Chain UART 通信、低功耗和物理拔插未建模。",
+        "3D 是源于官网尺寸图和照片的近似，接口保留插口外观，内部 PCB 标为 UNKNOWN。",
+        "未做实体设备对照或刷机。"
+      ]
+    },
+    {
+      "id": "m5stack-c148",
+      "sku": "C148",
+      "name": "M5Stack PowerHub · C148",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "powerhub",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c148/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c148-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "仅ESP32-S3 CPU/UART和G11用户按键子集；尚未启动验收官方出厂固件。",
+        "STM32G031、RGB、顶部/侧面电源键、电源轨、INA226、RTC、CAN、RS485和USB路由均未模拟；不将PMU键映射成ESP GPIO。",
+        "C148不含NP-F550电池；K148套装独立建档。既有模型仅表示主机，不表示已安装电池。",
+        "用户键的CAD按压区域已接入物理G11；背贴、孔洞和材质的原有几何边界仍以原模型报告为准。"
+      ]
+    },
+    {
+      "id": "m5stack-c149",
+      "sku": "C149",
+      "name": "M5Stack NanoH2",
+      "chip": "esp32h2",
+      "runtime": {
+        "board": "nanoh2",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c149/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "可配置、分享和查看；尚未完成全部照片视角和可见连接器细节的1:1验收。",
+        "内部主板为UNKNOWN估算占位，不宣称真实PCB结构。",
+        "独立ESP32-H2执行核心；仅SRAM app-direct、轮询UART/GPIO、有限RMT，不支持ROM/Flash-cache启动、USB、Thread/Zigbee/蓝牙或红外。",
+        "RGB需G10真实GPIO供电并由G11客体RMT输出驱动；断电清除像素，重新供电不会重放旧颜色。蓝灯光学位置尚未校准。",
+        "3D按钮/灯窗按同型号官方正面照估计位置，约±0.5 mm；没有实机按压力或光学校准。"
+      ]
+    },
+    {
+      "id": "m5stack-c151",
+      "sku": "C151",
+      "name": "M5Stack PaperColor · C151",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "papercolor",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c151/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c151-official-reference",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "ED2208 六色数字刷新、A/B/C、M5PM1 和两颗 RGB 已建模；SHT40 使用合成环境值。TF 目前报告无卡，网络、音频和 RTC 走时未适配。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Front e-paper cover is absent from shell STL; a dimension-drawing-based planar cover is explicit derived geometry, with optical stack/thickness unknown.",
+        "Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete."
+      ]
+    },
+    {
+      "id": "m5stack-stopwatch",
+      "sku": "C152",
+      "name": "M5Stack StopWatch",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stopwatch",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true,
+        "imu": {
+          "controller": "BMI270",
+          "address": 104,
+          "support": "register-subset-host-pose",
+          "physicalMountingVerified": false,
+          "hardwareValidated": false
+        }
+      },
+      "model": null,
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-stopwatch-official",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "现有模型覆盖屏幕、触摸、M5PM1、M5IOE1、A/B 按键与 BMI270 姿态输入；不代表任意整机固件兼容。",
+        "可视屏幕为 466×466；上游模型帧缓冲为 468×466，列偏移为 6。",
+        "TE 为合成时序；RTC、完整音频和触摸中断未建模；关机请求不会停止 CPU。",
+        "G10/G11 为官方 Grove 信号引脚，UART 控制器与 RX/TX 方向须按固件确认。",
+        "硬件 v1.0 与 v1.0.1 的外部电源触点定义不同；当前未选择硬件修订版。",
+        "IMU 为 BMI270 寄存器子集，由3D虚拟姿态提供重力和角速度；未模拟FIFO、精确ODR和运动功能，未核验实物安装轴向。StopWatch 使用 WASM 解释器，避免现有 JIT 在官方 IMU 页面卡住。"
+      ]
+    },
+    {
+      "id": "m5stack-papermono",
+      "sku": "C153",
+      "name": "M5Stack PaperMono",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "papermono",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-papermono/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-papermono-official",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "官方 User Demo 1.2.0 已验证启动、A/B 调节亮度、触摸加亮/静音；两型号四灰阶、方向及局刷后恢复通过全部 384,000 像素比较。",
+        "SSD1677、FT6336G、M5PM1/M5IOE1 为所需寄存器子集；不代表任意固件或完整时序兼容。",
+        "两型号均通过实际 Wi-Fi 关联、DHCP 和双向 SNTP，原固件显示 TIME UPDATED；官方此流程没有 HTTP 路径，未作 HTTP 验收。",
+        "120×200 BMP 放大显示通过；480×800 大 BMP 曾触发客体栈溢出，该次构建身份不确定，兼容性仍待排查。数字灰阶不代表实物反射率、温度或残影标定。",
+        "完整版 ST25R3916 数字子集使官方程序识别为 Pro，无卡扫描显示 NO CARD；SX1262 已验证发送 Hello! 与显式虚拟对端 PEER 接收，不模拟真实射频传播或 NFC 卡片交互。",
+        "已验证 64 MiB FAT32 虚拟 TF 卡挂载、目录读取、复位保持与 RGB 数字输出；音频输出及深睡唤醒尚未验证。",
+        "BMI270 已分别在完整版和 Lite 官方 1.2.0 验证首次初始化、姿态/角速度读数与恢复；采样由客体时钟推进，虚拟轴不代表实机安装方向。RX8130 RTC 仍仅寄存器存储，没有日历计时。",
+        "未连接真实硬件或执行刷机；实机行为仍需验证。",
+        "尚未确认可供 GPS 使用的外部接口；内部显示/I2C 引脚不是已验证的外接 GPS 接口。"
+      ]
+    },
+    {
+      "id": "m5stack-c153-lite",
+      "sku": "C153-Lite",
+      "name": "M5Stack PaperMono-Lite",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "papermono-lite",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c153-lite/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-papermono-official",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "官方 User Demo 1.2.0 已验证启动、A/B 调节亮度、触摸加亮/静音；两型号四灰阶、方向及局刷后恢复通过全部 384,000 像素比较。",
+        "SSD1677、FT6336G、M5PM1/M5IOE1 为所需寄存器子集；不代表任意固件或完整时序兼容。",
+        "两型号均通过实际 Wi-Fi 关联、DHCP 和双向 SNTP，原固件显示 TIME UPDATED；官方此流程没有 HTTP 路径，未作 HTTP 验收。",
+        "120×200 BMP 放大显示通过；480×800 大 BMP 曾触发客体栈溢出，该次构建身份不确定，兼容性仍待排查。数字灰阶不代表实物反射率、温度或残影标定。",
+        "Lite 不含 NFC 和 LoRa，使用独立 papermono-lite 板级模型；官方程序识别为 Lite 并保持对应界面。",
+        "已验证 64 MiB FAT32 虚拟 TF 卡挂载、目录读取、复位保持与 RGB 数字输出；音频输出及深睡唤醒尚未验证。",
+        "BMI270 已分别在完整版和 Lite 官方 1.2.0 验证首次初始化、姿态/角速度读数与恢复；采样由客体时钟推进，虚拟轴不代表实机安装方向。RX8130 RTC 仍仅寄存器存储，没有日历计时。",
+        "未连接真实硬件或执行刷机；实机行为仍需验证。"
+      ]
+    },
+    {
+      "id": "m5stack-c156",
+      "sku": "C156",
+      "name": "M5Stack StackChan Core · C156",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cores3",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c156/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "按C156官网直接链接的CoreS3 V1.0原理图复用cores3有限主机子集：ILI9342C、FT6336U单点、AW9523B、AXP2101基础寄存器、BM8563日历、虚拟BMI270采样和SPI TF。",
+        "2026-08-07后ILI9342E批次仍未核验；本次数字显示测试限定ILI9342C兼容路径，不声称E面板探测或初始化支持。",
+        "此独立主控没有StackChan底座的Si12T头顶触摸板、PY32 RGB或UART舵机；不绑定stackchan整机板型。相机、接近/BMM150、音频、充电、电源/复位和USB OTG未模拟或未验收。",
+        "StackChan App仅识别原装主控，仍须使用其专用用户固件；未借用CoreS3出厂固件身份，也未完成C156官方固件或App运行验收；未实机验证。",
+        "近似零件、照片与 UNKNOWN 占位均不证明电气、制造或固件兼容；照片叠图验收尚未完成。",
+        "C156 官方背面照片标明 CoreS3，官方尺寸54x54x15.5mm；仅复用 CoreS3 的主机上壳和光学支撑，去掉 DinBase、卡扣及四个底脚。",
+        "后部开口中的真实主板布局未知；当前为 UNKNOWN 占位，尚未补照片中的完整背贴、紧固件、扬声器和电路几何。"
+      ]
+    },
+    {
+      "id": "m5stack-c158",
+      "sku": "C158",
+      "name": "M5Stack CoreMatrix · C158",
+      "chip": "esp32c61",
+      "runtime": {
+        "board": "corematrix",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c158/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c158-uiflow2-github",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "芯片、外设和官方 UIFlow 固件的验证范围见 CoreMatrix 运行报告；尚未进行实机验证。",
+        "未发现独立公开的官方出厂恢复镜像，默认提供官方 UIFlow2，未将其标作出厂固件。"
+      ]
+    },
+    {
+      "id": "m5stack-c160",
+      "sku": "C160",
+      "name": "M5Stack Chain Captain · C160",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "chain-captain",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c160/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c160-userdemo-v0-2",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "chain-captain 板型只实现 240×240 显示窗口、G1/G4/G5 用户键、M5PM1 电源键时序、M5IOE1 PWM 红绿蓝、BMI270 I2C 子集与供电/背光门控。",
+        "RX8130CE RTC、红外收发、Chain UART、Ext.Port、I2S 音频与麦克风未建模：官方 V0.2 中 RTC 报 ESP_ERR_INVALID_STATE，Chain 扫描收到 0 字节应答。Wi-Fi 只到 guest 初始化，没有保存网络时 station 不启动，Chain IoT 显示离线。",
+        "JD9853A 控制器内部 GRAM 行数未由数据手册确认；240×320 是本平台的模拟配置，不作为厂家事实。",
+        "官网 PinMap 与出厂 UserDemo 的 Chain/Grove UART 收发方向互相冲突：固件运行期打印 left/Port A UART ready (TX=7 RX=6)、right/Port B UART ready (TX=18 RX=17)，与官网 PORT.A G6=UART2_TX/G7=UART2_RX 相反、与 PORT.CHAIN G18/G17 一致。目录按官网登记，冲突保留在知识记录。",
+        "厂家 CAD 已定位并复算校验，尚无经 1:1 照片叠合验收的 3D 模型条目。",
+        "未连接真实设备，未做刷机或实机核对。",
+        "官方 UserDemo V0.2 已在实际页面 worker WASM 中完成 ROM 启动与按键验收（docs/platform/evidence/chain-captain/README.md）；该镜像头声明 SPI Flash Size 8MB，与厂家规格 16MB 不一致，guest 按头声明使用。"
+      ]
+    },
+    {
+      "id": "m5stack-d062-m12",
+      "sku": "D062-M12",
+      "name": "M5Stack AtomS3R-M12 Volcengine Kit · D062-M12",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3r-m12-volcengine",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-d062-m12/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分运行适配：ESP32-S3 / 8 MiB Flash / 8 MiB Octal PSRAM 与 BMI270 轮询寄存器；BMM150、红外、USB UVC、摄像头采集及音频未实现，未实机验证。",
+        "OV3660 尚未实现 SCCB/图像采集，保持 NACK；没有用 GC0308、OV2640 或 OV5640 冒充此传感器。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Catalog dimensions refer to controller26.4×24×22.5mm; audio base separately24×24×14.1mm. Full kit/battery cable envelope is not inferred by adding overlapping parts.",
+        "Battery lead/external cell shown in kit photographs is not modeled as a connected electrical battery. Front photo includes cable so comparison is qualitative.",
+        "Camera optical glass is a photo-informed flat approximation; no optical/ray-tracing/camera pipeline.",
+        "Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete."
+      ]
+    },
+    {
+      "id": "m5stack-dk001",
+      "sku": "DK001",
+      "name": "Arduino Nesso N1 · DK001",
+      "chip": "esp32c6",
+      "runtime": {
+        "board": "nesso-n1",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-dk001/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：ST7789 屏幕、FT6336 单点触摸、PI4IOE5V6408 按键与背光。官方 UIFlow2 v2.5.3 已观察启动及 A/B 按键切换；该启动界面自身不响应触摸。",
+        "电池计量/充电芯片、LoRa 射频、无线网络、蜂鸣器与物理电源键尚未模拟；UIFlow2 电量可能显示 −1%。IMU 只有寄存器模型，尚未接入网页姿态输入。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurement performed; official photographs may include shipping films and uncalibrated perspective.",
+        "PCB is an explicitly estimated UNKNOWN placeholder without invented components or traces.",
+        "Source CAD does not supply calibrated material properties; colors are source-photo-informed display approximations.",
+        "Front glass is an independent photo-informed flat surface, not manufacturer glass CAD; inset/radius +/-0.5mm, optical stack and thickness unknown.",
+        "Back printed paper is a separate exterior surface; its outline/rounding are photo-derived +/-0.35mm. Mechanical pockets behind the photographed paper are covered rather than textured as visible holes.",
+        "Rear silver fasteners have exact CAD bore centers but photo-estimated head/rim/socket shapes; fastener standard, thread and internal attachment remain unknown.",
+        "Antenna remains detached; complete antenna placement is unverified. Side KEY2 hit face is an original CAD face subset; switch travel and force are not modeled."
+      ]
+    },
+    {
+      "id": "m5stack-k001",
+      "sku": "K001",
+      "name": "M5Stack Basic",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k001/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k001-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级模型面向官方资料所示的 16 MiB Flash 与 ILI9342C IPS 配置。早期 4 MiB 或 TN 批次未验证。",
+        "支持三枚实体键、RGB565 屏幕写入和背光开启/关闭。LCD 寄存器读回、亮度和颜色校准未实现。",
+        "TF 卡实现 SPI SDHC 数字读写。IP5306、电池、侧面电源键、扬声器和外部端口未建模。",
+        "未实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-b",
+      "sku": "K001-B",
+      "name": "M5Stack Basic COMM Edition · K001-B",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k001-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k001-b-official-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；只复用明确记录的家族外壳网格和有来源的照片近似，不是该SKU的完整工程CAD。",
+        "原厂照片版权独立于CAD的MIT许可；本模型没有把屏幕照片作为模拟器画面。",
+        "外壳/纸贴/UNKNOWN与板级运行分别交付；未执行本SKU的官方固件、同视角照片叠图或浏览器三色材质验收。",
+        "Native shell/button/glass geometry is taken from the explicitly identified K001 family source with its recorded assembly transforms. Bottom cover, material and exact-SKU correspondence remain photo approximations.",
+        "运行仅复用已实现的m5stack-basic显示、A/B/C与SD-SPI数字子集；本SKU的IP5306、扬声器、电源及传感器没有因此获得验证。",
+        "独立SKU文档入口返回404；官方商店明确技术细节保持Basic相同。透明外壳内仍为UNKNOWN占位，未把照片中可见元件猜建为真实PCB。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-v26",
+      "sku": "K001-V26",
+      "name": "M5Stack Basic v2.6 · K001-V26",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k001-v26/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k001-v26-official-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；只复用明确记录的家族外壳网格和有来源的照片近似，不是该SKU的完整工程CAD。",
+        "原厂照片版权独立于CAD的MIT许可；本模型没有把屏幕照片作为模拟器画面。",
+        "外壳/纸贴/UNKNOWN与板级运行分别交付；未执行本SKU的官方固件、同视角照片叠图或浏览器三色材质验收。",
+        "Native shell/button/glass geometry is taken from the explicitly identified K001 family source with its recorded assembly transforms. Bottom cover, material and exact-SKU correspondence remain photo approximations.",
+        "运行仅复用已实现的m5stack-basic显示、A/B/C与SD-SPI数字子集；本SKU的IP5306、扬声器、电源及传感器没有因此获得验证。",
+        "Basic v2.6官方规格写17mm，原宣传图写18mm；采用规格17mm，保留冲突，不把几何尺寸自洽当作外观验收通过。"
+      ]
+    },
+    {
+      "id": "m5stack-k001-v27",
+      "sku": "K001-V27",
+      "name": "M5Stack Basic v2.7",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k001-v27/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k001-v27-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级模型面向官方资料所示的 16 MiB Flash 与 ILI9342C IPS 配置。早期 4 MiB 或 TN 批次未验证。",
+        "支持三枚实体键、RGB565 屏幕写入和背光开启/关闭。LCD 寄存器读回、亮度和颜色校准未实现。",
+        "TF 卡实现 SPI SDHC 数字读写。IP5306、电池、侧面电源键、扬声器和外部端口未建模。",
+        "未实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k002",
+      "sku": "K002",
+      "name": "M5Stack GRAY · K002",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k002/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k002-official-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；只复用明确记录的家族外壳网格和有来源的照片近似，不是该SKU的完整工程CAD。",
+        "原厂照片版权独立于CAD的MIT许可；本模型没有把屏幕照片作为模拟器画面。",
+        "外壳/纸贴/UNKNOWN与板级运行分别交付；未执行本SKU的官方固件、同视角照片叠图或浏览器三色材质验收。",
+        "Native shell/button/glass geometry is taken from the explicitly identified K001 family source with its recorded assembly transforms. Bottom cover, material and exact-SKU correspondence remain photo approximations.",
+        "运行仅复用已实现的m5stack-basic显示、A/B/C与SD-SPI数字子集；本SKU的IP5306、扬声器、电源及传感器没有因此获得验证。",
+        "官方Gray描述提到4MB Flash，但官方规格表列16MB；本条目采用16MB规格配置，冲突保留，不推断用户硬件版次。MPU6886/BMM150为硬件事实，当前复用子集不模拟两者。"
+      ]
+    },
+    {
+      "id": "m5stack-k005",
+      "sku": "K005",
+      "name": "M5Stack Faces Kit",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k005/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k005-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "运行配置对应官方规格表的 16 MiB Gray 主机。早期套件采用 4 MiB Flash，屏幕面板和 IMU 也有批次差异。",
+        "官方 Gray UIFlow2 v2.5.5 已在模拟器中显示菜单，主机按键 A 可切换至 APP RUN。兼容范围为 Gray 主机子集。",
+        "出厂 EasyLoader 内的 4 MiB 镜像在 FreeRTOS 队列初始化阶段退出。选择官方 Gray UIFlow2 试运行可查看主机界面。",
+        "三款 I²C 0x08 键盘、充电底座、IMU、扬声器及电源状态不在模拟范围内。",
+        "3D为部分套件预览：Gray家族上部CAD、照片估计的长底座、三块独立Face面板及充电座；装配Z、隐藏板件和接口仍未知，散件布局尺寸不是整机尺寸。"
+      ]
+    },
+    {
+      "id": "m5stack-k006",
+      "sku": "K006",
+      "name": "M5Stack M5GO IoT Starter Kit · K006",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial",
+        "psramMbBasis": "simulation"
+      },
+      "model": {
+        "type": "source-derived",
+        "url": "./assets/m5stack-k006/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k006-official-reference",
+        "role": "alternative",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；模型、目录和有限运行器不表示原厂固件或全部硬件功能通过。",
+        "未找到该旧SKU的精确厂家CAD；相关K001顶壳或照片近似均明确列出，未知PCB保留UNKNOWN。",
+        "照片视角/光学材料和隐藏结构未做完整1:1验收；不在模型屏幕烘焙照片中的固件内容。",
+        "仅依据本SKU文档的相同ILI9342C/三按键/SD引脚复用m5stack-basic子集，不继承Basic或v2.7的出厂身份、执行或实机结论。",
+        "音频、九轴IMU、BMM150、底部10灯、麦克风、IP5306电源键及附件套装行为未模拟。",
+        "底座/充电盘为照片和官方整机尺寸约束的外观近似；旧底座LEGO孔、磁铁、pogo接点及精确端口凹腔未重建。",
+        "旧SKU官方整机厚度21mm；不同于v2.7的28.6mm。旧照片注记550mAh/MPU9250与现表500mAh/MPU6886+BMM150存在历史差异。",
+        "旧SKU资料明确16MB Flash，未明确PSRAM容量；运行配置0MB为模拟配置，不能作为实物无PSRAM的证明。"
+      ]
+    },
+    {
+      "id": "m5stack-k006-v27",
+      "sku": "K006-V27",
+      "name": "M5Stack M5GO IoT Kit v2.7",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k006-v27/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k006-v27-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "仅覆盖主机的 ILI9342C 显示、A/B/C 按键与 SPI TF 卡槽。该屏幕没有触摸输入。",
+        "原厂 EasyLoader 提供下载入口。其镜像在当前模拟器读取未建模的经典 ESP32 MCPWM0 定时器周期后触发整数除零并重启。官方 UIFlow2 16 MiB 可供试运行。",
+        "IP5306 电源键与供电、底座 SK6812 灯带、麦克风、扬声器、MPU6886、Grove A/B/C、M-Bus、红外及套装外设未验证或未建模。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k007",
+      "sku": "K007",
+      "name": "M5Stack FIRE PSRAM 2.0 · K007",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "psramMbBasis": "simulation"
+      },
+      "model": {
+        "type": "source-derived",
+        "url": "./assets/m5stack-k007/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k007-official-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；模型、目录和有限运行器不表示原厂固件或全部硬件功能通过。",
+        "未找到该旧SKU的精确厂家CAD；相关K001顶壳或照片近似均明确列出，未知PCB保留UNKNOWN。",
+        "照片视角/光学材料和隐藏结构未做完整1:1验收；不在模型屏幕烘焙照片中的固件内容。",
+        "仅依据本SKU文档的相同ILI9342C/三按键/SD引脚复用m5stack-basic子集，不继承Basic或v2.7的出厂身份、执行或实机结论。",
+        "音频、九轴IMU、BMM150、底部10灯、麦克风、IP5306电源键及附件套装行为未模拟。",
+        "底座/充电盘为照片和官方整机尺寸约束的外观近似；旧底座LEGO孔、磁铁、pogo接点及精确端口凹腔未重建。",
+        "同SKU当前官方表写8MB Quad PSRAM，旧配图标4M PSRAM；硬件版次未定。运行配置按当前表选择8MB，不能将其当旧实物容量的验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k007-v26",
+      "sku": "K007-V26",
+      "name": "M5Stack FIRE v2.6 · K007-V26",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-k007-v26/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k007-v26-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级适配：只复用经该SKU文档核对的Core显示、三键、SD和背光路径；其余FIRE外设未实现，官方出厂固件未验收。",
+        "No physical device, factory firmware execution or calibrated1:1 photographic acceptance in this batch.",
+        "Original photographs are M5Stack copyright, not relicensed under the repository MIT license.",
+        "Geometry explicitly marked image-measurement is an exterior approximation; connector depths, internal board-space and hidden component dimensions are estimates.",
+        "Official factory/UIFlow/Xiaozhi investigation is recorded separately; manufacturer identity and a model preview do not establish firmware compatibility.",
+        "Exterior approximation follows v2.6 photographs, not v2.7 CAD. USB/Grove cutouts, exact fasteners, PCB layout and M5GO charging accessory geometry are not fully reconstructed.",
+        "Only the 54x54x28.6mm host is represented; bundled charging stand, cable and LEGO pieces are reference-photo items, not part of this host model.",
+        "Runtime reuses documented Core display/three-GPIO-key/SD/backlight routes only; v2.6 MPU6886,10RGB,microphone,IP5306 and analog power are not implied."
+      ]
+    },
+    {
+      "id": "m5stack-k007-v27",
+      "sku": "K007-V27",
+      "name": "M5Stack FIRE v2.7",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 4,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k007-v27/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k007-v27-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "FIRE v2.7 复用与 Basic 接线相同的 ILI9342C 屏幕写入、三枚实体键和 SPI TF 卡。真机 8 MiB PSRAM，模拟器映射 4 MiB。",
+        "UIFlow2 v2.5.5 已启动并写入 LCD。官方 EasyLoader 内的出厂镜像在进入应用后因整数除零重启。",
+        "MPU6886、十颗 SK6812 灯、麦克风、扬声器、IP5306 和外部端口未建模。未实机验证。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Official current v2.7 page embeds filenames fire_v2.6_*. Exact cosmetic revision correspondence is not independently proven. Rear magnets/POGO contacts and some external connectors are incomplete."
+      ]
+    },
+    {
+      "id": "m5stack-k010",
+      "sku": "K010",
+      "name": "M5Stack Core2",
+      "chip": "esp32",
+      "runtime": {
+        "board": "core2",
+        "flashMb": 16,
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k010/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k010-official-factory",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "原版 Core2 的 ILI9342C 数字显示、FT6336U 单触点、屏下 A/B/C 触摸键、AXP192 电源寄存器、MPU6886 轮询和 BM8563 日历已建模。",
+        "经典 ESP32 模拟器提供 4 MiB PSRAM，官方硬件配置为 8 MiB。ILI9342E 批次、扬声器和麦克风、实体断电与唤醒、外接传感器和 Wi-Fi 应用仍待适配或验证。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-aws",
+      "sku": "K010-AWS",
+      "name": "M5Stack Core2 For AWS",
+      "chip": "esp32",
+      "runtime": {
+        "board": "core2-aws",
+        "flashMb": 16,
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k010-aws/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k010-aws-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、MPU6886 轮询。",
+        "官方 v0.0.1 已在本地模拟器显示 AWS IoT EduKit 滑动首页。安全芯片 ATECC608、外接底座灯和 AWS 云流程未模拟。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-aws-v13",
+      "sku": "K010-AWS-V13",
+      "name": "M5Stack Core2 for AWS v1.3 · K010-AWS-V13",
+      "chip": "esp32",
+      "runtime": {
+        "board": "core2-aws-v13",
+        "flashMb": 16,
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k010-aws-v13/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k010-aws-v13-official-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、BMI270 轮询。",
+        "官方 EasyLoader 的 User Demo 已启动且初始化 BMI270；ATECC608 初始化失败后固件重新启动。安全芯片、底座灯及 AWS 流程未模拟。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+      ]
+    },
+    {
+      "id": "m5stack-k010-v11",
+      "sku": "K010-V11",
+      "name": "M5Stack Core2 v1.1",
+      "chip": "esp32",
+      "runtime": {
+        "board": "core2-v11",
+        "flashMb": 16,
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k010-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k010-v11-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP2101 与 INA3221、MPU6886 轮询。",
+        "官方 v2.2 已启动并读取 64 MiB TF，但该镜像没有在当前数字电源模型中释放 ALDO2 复位，屏幕和触摸未通过原厂验证。独立 ESP-IDF 夹具已验证 AXP2101、INA3221、LCD 和屏内／屏下触摸。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
+        "Front reference is an official annotated perspective; no orthographic silhouette pass is asserted. Back label and PCB remain incomplete."
+      ]
+    },
+    {
+      "id": "m5stack-k010-v13",
+      "sku": "K010-V13",
+      "name": "M5Stack Core2 v1.3",
+      "chip": "esp32",
+      "runtime": {
+        "board": "core2-v13",
+        "flashMb": 16,
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k010-v13/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k010-v13-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级已建模数字 LCD、FT6336U 单触点和屏下 A/B/C 键、BM8563 基础日历、SPI TF 和 AXP192、BMI270 轮询。",
+        "官方 EasyLoader 内嵌镜像已在本地模拟器启动，检查到 BMI270。屏幕出现 IMU 自检失败，点击屏幕可跳过并进入仪表盘；该镜像能挂载 FAT32。",
+        "模拟 PSRAM 为 4 MiB，硬件标称 8 MiB。面板初始化仅验证数字显示子集，音频、实体断电和唤醒、外设与 Wi-Fi 应用仍有缺口。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k014-b",
+      "sku": "K014-B",
+      "name": "M5Stack BALA FIRE 主控预览 · K014-B",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 16,
+        "psramMb": 4
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "related-manufacturer-cad",
+        "provenance": "related-manufacturer-cad",
+        "status": "partial",
+        "url": "./assets/m5stack-k014-b/model.json",
+        "scope": "FIRE host only; not BALA robot assembly"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "3D仅FIRE主控；K014-B的轮子、N20电机/编码器、Mega328控制板、支架与电池模块不在本模型中，不虚构整车装配。",
+        "Related K007-V27 manufacturer enclosure geometry is an exterior approximation only. Exact K014-B parameter table remains16MB Flash,4MB PSRAM and ILI9341; no v2.7 runtime, memory, LCD or firmware identity is inherited.",
+        "Original related source triangles retain one rigid translation and no scaling; source depth20.6mm differs from nominal21mm controller. Cosmetic revision, front bezel and connector insertion depths remain estimated; no1:1 photo/side-view acceptance.",
+        "M5_Hardware complete source inventory has no exact K014/Bala CAD. Related source components0/19 are the separate charging dock and all print-layout duplicates are excluded.",
+        "PCB is an explicit UNKNOWN placeholder; no populated board CAD or hidden battery/component arrangement is inferred from a schematic or a related SKU.",
+        "No board execution, self-balancing dynamics, wheel/encoder, motor-driver I2C0x56, IMU, RGB, audio, battery management or card transport is implemented.",
+        "Own table lists BMM150+(MPU6886/SH200Q); actual sensor/PCB revision is unresolved. Family M5Bala code references MPU6050; its exact K014-B factory applicability is not proven.",
+        "No static product or firmware screenshot covers the real framebuffer. Key caps, front bezel, diffusers and connectors keep separate materials.",
+        "Port signal assignments and pin1 mating are unverified for this exact SKU. Cable connections remain disabled. Visible screws, magnets and POGO contacts are not reconstructed.",
+        "The prepared64MiB FAT32 card is local configuration only; no K014-B SD bus is connected to guest firmware. Browser, physical hardware and exact firmware validation remain unperformed."
+      ]
+    },
+    {
+      "id": "m5stack-k016-b",
+      "sku": "K016-B",
+      "name": "M5Stack M5Stick 1.3 OLED · K016-B",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-k016-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k016-b-official-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；模型、目录和有限运行器不表示原厂固件或全部硬件功能通过。",
+        "未找到该旧SKU的精确厂家CAD；相关K001顶壳或照片近似均明确列出，未知PCB保留UNKNOWN。",
+        "照片视角/光学材料和隐藏结构未做完整1:1验收；不在模型屏幕烘焙照片中的固件内容。",
+        "独立ESP32-WROOM32、SH1107 64×128型号；不能套用StickC/Plus的LCD和AXP192板型，当前保持preview/unavailable。",
+        "侧键位置依据同SKU照片估算；插口口沿/深度与线序的空间关系未确认，本预览未补猜USB/Grove连接器几何或连接锚点。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-c",
+      "sku": "K016-C",
+      "name": "M5Stack StickC · K016-C",
+      "chip": "esp32",
+      "runtime": {
+        "board": "stickc",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k016-c/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k016-c-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模拟覆盖 ST7735SV 屏幕、A/B、红色 LED、AXP192 短按与供电寄存器、MPU6886 轮询和 BM8563 日历。默认温度 25 °C、电池 4.1 V 为模拟输入。",
+        "仅覆盖 MPU6886 版本。早期 SH200Q、物理麦克风、红外输出、无线通信和长按关机尚未验收。运行范围见 docs/platform/stick-k016-c-runtime.md。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Assembled shell estimate is 24×48×13 mm, smaller than current document 25.5×48.2×13.7 mm; all dimensional failures remain visible. The directory may represent another housing revision.",
+        "Source assembly transform is estimated. Do not treat this model as a confirmed 1:1 match to current K016-C housing.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
+        "Source separated shells are only provisionally assembled by recorded translation; rear small pieces are fasteners, not user keys. No exact enclosure assembly certification."
+      ]
+    },
+    {
+      "id": "m5stack-k016-p",
+      "sku": "K016-P",
+      "name": "M5Stack StickC-Plus",
+      "chip": "esp32",
+      "runtime": {
+        "board": "stickc-plus",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k016-p/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k016-p-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "官方 v1.0 出厂固件的试运行覆盖 IMU 倾角、RTC 秒进及 A/B 页面切换。3D 按键区域按照片估算。",
+        "AXP192 电池与 USB 电压是虚拟环境。固件的麦克风频谱已用原生模拟器的虚拟 PCM 验证，浏览器不开放麦克风输入。",
+        "IR Send 和 BLE disconnect 仅验证页面切换。未验收红外光学、BLE 无线连接、GATT 或实机。部分页面切换需要持续按键。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p-se",
+      "sku": "K016-P-SE",
+      "name": "M5Stack StickC-Plus SE · K016-P-SE",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k016-p-se/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k016-p-se-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本条目提供有来源的外观预览和资料，尚无该 SKU 的独立板级模拟器。",
+        "近似零件、照片与 UNKNOWN 占位均不证明电气、制造或固件兼容；照片叠图验收尚未完成。",
+        "SE 外壳依据独立官网48x24x13.5mm和多视图复用旧 Plus 外壳 CAD；透明橙色与 SE 背贴为本型号资料，内部 IMU 被明确排除。",
+        "透明外壳下的 PCB 仍是 UNKNOWN 占位；没有拿旧 Plus 的 MPU6886 或出厂固件当作 SE 已验证能力。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-p2",
+      "sku": "K016-P2",
+      "name": "M5Stack StickC-Plus2 · K016-P2",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 8,
+        "psramMb": 2
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "dimension-photo-reconstruction",
+        "provenance": "dimension-photo-reconstruction",
+        "url": "./assets/m5stack-k016-p2/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k016-p2-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "外观模型与产品知识入库；本型号板级模拟尚未实现，不能据此运行或声称官方固件兼容。",
+        "Manufacturer photos retain their original rights; exterior dimensions are source-backed while local feature sizes and materials are approximate.",
+        "Hidden populated PCB, internal fasteners and material calibration remain unknown. PCB placeholder is explicitly marked UNKNOWN.",
+        "Source images never cover the simulated display with a static firmware screenshot.",
+        "Connector shape/position estimates do not establish pin1 mating, electrical routing or working cables.",
+        "原色、金色和透明材质需要浏览器复核；本批静态检查不代表1:1照片或实物通过。",
+        "Plus2 removes AXP192 and changes LCD DC/RST, HOLD and power semantics; the original StickC-Plus runtime is not reused. Back paper size/placement is photo-estimated."
+      ]
+    },
+    {
+      "id": "m5stack-k016-t",
+      "sku": "K016-T",
+      "name": "M5Stack M5StickT Lepton 3.0 · K016-T",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": null,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-k016-t/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k016-t-official-reference",
+        "role": "alternative",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；模型、目录和有限运行器不表示原厂固件或全部硬件功能通过。",
+        "未找到该旧SKU的精确厂家CAD；相关K001顶壳或照片近似均明确列出，未知PCB保留UNKNOWN。",
+        "照片视角/光学材料和隐藏结构未做完整1:1验收；不在模型屏幕烘焙照片中的固件内容。",
+        "精确K016-T商店资料为Lepton3.0、1.14英寸135×240屏、300mAh；M5StickT文档请求重定向到StickT2，不采用后者的容量、引脚、尺寸或温度标定。",
+        "Flash/PSRAM容量和屏控制器未知；仅独立照片预览，按键/编码器事实不能变成虚构GPIO运行支持。",
+        "主壳宽约24mm、高约48mm由1.14英寸屏幕比例估算；含侧凸/安装耳宽约30mm，深度24mm仅展示估计、约±6mm，非厂家尺寸。"
+      ]
+    },
+    {
+      "id": "m5stack-k016-t2",
+      "sku": "K016-T2",
+      "name": "M5Stack StickT2",
+      "chip": "esp32",
+      "runtime": {
+        "board": "stickt2",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false,
+        "encoder": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k016-t2/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k016-t2-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "StickT2 板型支持 ST7789 SPI 屏幕、G37/G39 按键和 MPU6886 轮询寄存器。",
+        "AXP192 支持 I²C 0x34、LDO2/3 显示供电门控和 PEK 短按。初始配置为已供电状态；电池、电源循环和长按关机仍待实现。",
+        "Lepton CCI 和 VoSPI 向固件传输合成 Raw14 计数。工作台与 mini 可设置、分享和回放热像场；现场温度标定、完整时序、FFC、旋钮、麦克风与 RTC 仍待实现。",
+        "官方出厂 v1.0 原文件的启动段附加摘要与镜像头不一致。整镜像保持原字节与固定 SHA-256，固件兼容性仍为试用。",
+        "A 键的正面 3D 热区采用照片估算。B 键和电源键可通过 2D 界面、键盘与 API 操作，侧面 CAD 键的对应尚未核实。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Manufacturer shell width includes mounting flanges (~30.4mm) while official product width is24mm; source not scaled. Thermal optics and encoder seating are not complete CAD.",
+        "虚拟运行配置 PSRAM=0；官方规格未明确外部 PSRAM，知识库仍保留未知，不以此断言实物不存在。"
+      ]
+    },
+    {
+      "id": "m5stack-k022",
+      "sku": "K022",
+      "name": "M5Stack M5GO Lite · K022",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5stack-basic",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial",
+        "psramMbBasis": "simulation"
+      },
+      "model": {
+        "type": "source-derived",
+        "url": "./assets/m5stack-k022/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k022-official-reference",
+        "role": "alternative",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；模型、目录和有限运行器不表示原厂固件或全部硬件功能通过。",
+        "未找到该旧SKU的精确厂家CAD；相关K001顶壳或照片近似均明确列出，未知PCB保留UNKNOWN。",
+        "照片视角/光学材料和隐藏结构未做完整1:1验收；不在模型屏幕烘焙照片中的固件内容。",
+        "仅依据本SKU文档的相同ILI9342C/三按键/SD引脚复用m5stack-basic子集，不继承Basic或v2.7的出厂身份、执行或实机结论。",
+        "音频、九轴IMU、BMM150、底部10灯、麦克风、IP5306电源键及附件套装行为未模拟。",
+        "底座/充电盘为照片和官方整机尺寸约束的外观近似；旧底座LEGO孔、磁铁、pogo接点及精确端口凹腔未重建。",
+        "旧SKU官方整机厚度21mm；不同于v2.7的28.6mm。旧照片注记550mAh/MPU9250与现表500mAh/MPU6886+BMM150存在历史差异。",
+        "旧SKU资料明确16MB Flash，未明确PSRAM容量；运行配置0MB为模拟配置，不能作为实物无PSRAM的证明。"
+      ]
+    },
+    {
+      "id": "m5stack-k034",
+      "sku": "K034",
+      "name": "M5Stack Tough",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5-tough",
+        "flashMb": 16,
+        "psramMb": 4,
+        "psramMbBasis": "simulation",
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k034/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k034-tough-tools-v102",
+        "role": "alternative",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "支持 ILI9342C 的 320×240 SPI 画面、CHSC6540 单点触摸、A/B/C 触摸区和 AXP192 的屏幕供电、复位和背光开关。",
+        "A/B/C 通过同一颗 CHSC6540 触摸控制器上报，按旧版 M5Tough 库的按区中心映射，单点输入。按区和玻璃坐标未做实物校准。",
+        "实物规格为 8 MiB PSRAM，此经典 ESP32 后端提供 4 MiB。ILI9342E 等其他屏幕批次未验证。",
+        "BM8563 支持客体设定的日历，闹钟唤醒未实现。实物电源键、复位键、模拟电压和整机断电未模拟。",
+        "TF 卡镜像可配置，虚拟卡未接到客体 SPI。RS485、6–24V 转换、扬声器和 PDM 麦克风不在板级适配范围。",
+        "外壳尺寸、照片对比及未知件见模型报告。USB 串口桥存在资料版本差异，未做实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k048",
+      "sku": "K048",
+      "name": "M5Stack CoreInk",
+      "chip": "esp32",
+      "runtime": {
+        "board": "coreink-d67",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k048/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k048-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "仅支持当前 GDEY0154D67 / SSD1681 批次：200×200 RAM/区域窗口/刷新/BUSY、G0 复位、G37/38/39/5/27 按键及 I2C21/22 BM8563 日历；旧 GDEW0154M09 协议不兼容。",
+        "旧 M09 固件不兼容；蜂鸣器与LED未实现；完整出厂固件启动和无线未验证；RTC alarm/wake、电池/POWER_HOLD 关闭、模拟 LUT/温度/残影未建模。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k049",
+      "sku": "K049",
+      "name": "M5Stack Paper (first generation) · K049",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k049/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k049-official-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；只复用明确记录的家族外壳网格和有来源的照片近似，不是该SKU的完整工程CAD。",
+        "原厂照片版权独立于CAD的MIT许可；本模型没有把屏幕照片作为模拟器画面。",
+        "外壳/纸贴/UNKNOWN与板级运行分别交付；未执行本SKU的官方固件、同视角照片叠图或浏览器三色材质验收。",
+        "Only the exterior shells of K049-B are reused as a documented family approximation with matching nominal 67x118.6x10mm envelope; K049 keeps its own photos, SKU and firmware identity. No nonuniform scaling.",
+        "K049板级IT8951/GT911等尚未实现，不将Paper v1.1固件身份或运行结论继承给第一代。"
+      ]
+    },
+    {
+      "id": "m5stack-k049-b",
+      "sku": "K049-B",
+      "name": "M5Stack Paper v1.1",
+      "chip": "esp32",
+      "runtime": {
+        "board": "m5paper-v11",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k049-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k049-b-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "已实现 IT8951 960×540 原生灰阶 RAM、0x37 区域刷新、四种图像旋转、G23 EPD 电源门、G37/38/39 按键及 I2C21/22 BM8563 日历；物理显示按 540×960 竖屏发布。",
+        "GT911触摸、SHT30、EEPROM与SD传输未实现；完整出厂固件启动和无线未验证；RTC alarm/wake、电池/主电源关闭、模拟 LUT/温度/残影未建模。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "8MiB PSRAM配置不表示所有高内存应用或完整原厂固件已通过；已实现内存映射的范围与限制见知识记录。",
+        "microSD默认64MiB FAT32卡仅在本地准备；m5paper-v11尚未实现客体SD传输。"
+      ]
+    },
+    {
+      "id": "m5stack-k049-c",
+      "sku": "K049-C",
+      "name": "M5Stack Paper COMM Edition · K049-C",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-k049-c/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k049-c-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尚无本型号板级运行模型；模型、光学参数和资料不代表相机/EPD/无线/传感器已经模拟。",
+        "No physical device, factory firmware execution or calibrated1:1 photographic acceptance in this batch.",
+        "Original photographs are M5Stack copyright, not relicensed under the repository MIT license.",
+        "Geometry explicitly marked image-measurement is an exterior approximation; connector depths, internal board-space and hidden component dimensions are estimates.",
+        "Official factory/UIFlow/Xiaozhi investigation is recorded separately; manufacturer identity and a model preview do not establish firmware compatibility.",
+        "COMM Edition is not the K049-B v1.1 CAD. This source-photo approximation does not claim exact translucent wall thickness, port recesses, rotary mechanics or fastener geometry.",
+        "Back-paper alpha is a manually recorded polygon; grazing-angle/three-color GPU acceptance remains untested."
+      ]
+    },
+    {
+      "id": "m5stack-k051",
+      "sku": "K051",
+      "name": "M5Stack Stamp-Pico Mate",
+      "chip": "esp32",
+      "runtime": {
+        "board": "stamppico",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k051/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c050-b-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "Mate 含相同 Stamp-Pico 模块，部分支持 G39 用户键与 G27 GRB RMT；散装排针/Grove 未电气连接。官方 GitHub UIFlow2 v2.5.4 启动缺少 M5Things，仍为 trial；EN、下载器、模拟电源和网络未验证。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "K051 保留未贴纸盖板外观；套件排针、Grove 插座、内六角匙及纸贴按散件记录，未声称预装。",
+        "黑色 PCB 背面使用该 SKU 官方照片，通孔与可见天线轮廓按尺寸图/照片补充；内部元件面仍为 UNKNOWN。",
+        "中心 M2×4 紧固件已补齐；螺丝细节、背面环厚度、天线隐藏折脚未做制造级还原。"
+      ]
+    },
+    {
+      "id": "m5stack-k051-b",
+      "sku": "K051-B",
+      "name": "M5Stack Stamp-Pico DIY Kit · K051-B",
+      "chip": "esp32",
+      "runtime": {
+        "board": "stamppico",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k051-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c050-b-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "DIY Kit 的 Stamp-Pico 模块部分支持 G39 用户键与 G27 GRB RMT；附带下载器、排针和 Grove 不自动视为接线。官方 GitHub UIFlow2 v2.5.4 启动缺少 M5Things，仍为 trial；EN、电源模拟和物理网络未验证。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Model covers the Stamp-Pico module only; downloader, headers and loose kit accessories have no matching assembly CAD in this directory.",
+        "CAD thickness 4.4 mm differs from documented product 4.6 mm; retained as a failure rather than stretched.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "K051-B 纸贴使用该 SKU 自己的官方照片，独立承载面保留真实跨槽纸面并避开中心紧固件。",
+        "黑色 PCB 背面照片、通孔和中心 M2×4 螺丝已补充；内部仍为 UNKNOWN，纸厚及隐藏紧固件细节有估算。",
+        "下载器、排针、Grove 插座及其他套件散件未声称预装或完整建模。"
+      ]
+    },
+    {
+      "id": "m5stack-k056",
+      "sku": "K056",
+      "name": "M5Stack Stamp-C3 Mate · K056",
+      "chip": "esp32c3",
+      "runtime": {
+        "board": "stampc3",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k056/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "套装包含相同 Stamp-C3 核心模块；部分支持 G3 用户键和 G2 SK6812 RMT。附带排针/Grove 散件不自动连接；EN、USB 桥、模拟电源和物理网络未验证。",
+        "保留厂家 K056 外盖；套件含同款 Stamp-C3，PCB 背面照片按共享模块来源注明，盖内正面保留 UNKNOWN。",
+        "K056 自有贴纸另设薄纸支撑，孔洞遮罩与中心螺丝、黄铜螺柱对齐；隐藏螺纹未知。",
+        "照片原始 PCB 分辨率有限；外观、孔位和材料检查不能证明完整内部 CAD 或固件兼容。",
+        "排针、HY2.0 插座和扳手是散件，模型未把它们推断为已安装。"
+      ]
+    },
+    {
+      "id": "m5stack-k115",
+      "sku": "K115",
+      "name": "M5Stack Atom-PSRAM LCD Display Driver Kit · K115",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 8,
+        "psramMb": 2,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-k115/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k115-official-source-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尚未完成本SKU独立板级运行，保持 unavailable；模型、照片与元信息不代表固件已运行或硬件验证。",
+        "未验证独立 PCB 布局/板级 CAD，保留可展开的 UNKNOWN 主板；外壳、纸贴、镜头与连接器分别着色。",
+        "原照片/丝印版权归 M5Stack，未确认独立开放图片许可；近似几何按项目许可，厂家 CAD 保留原 MIT。",
+        "本轮未进行浏览器 WebGL 正反斜视/三种材质真实渲染验收；资产加载、几何、UV、材质隔离与展开复位另做离线检查。",
+        "接口位置/插合深度和逐脚物理方位未独立标定，禁用可连接线缆；不能以近似插口当电气路由。",
+        "K115套件为ESP32-PICO-V3-02 Atom-PSRAM（8MB Flash/2MB PSRAM、CH9102）+GW1NR-9C FPGA+LT8618SX。不是C008 Atom Lite的4MB/noPSRAM配置。",
+        "固定M5_Hardware树未找到K115/AtomDisplay独立CAD或对应内嵌KiCad STEP；模型是该SKU照片和64×24×29mm标称包络约束的近似，隐藏卡扣/导轨/PCB厚度未知。",
+        "官方尺寸PDF另标总高28.7mm，产品规格取29mm；保留0.3mm差异，未按任一数值宣称制造精度。",
+        "HDMI并非ESP32原生显示屏：GW1NR SPI帧缓存/LT8618SX输出协议、720P视频及Atom-PSRAM独立WASM构造尚未接入；运行保持unavailable。"
+      ]
+    },
+    {
+      "id": "m5stack-k117",
+      "sku": "K117",
+      "name": "M5Stack AtomU · K117",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": null,
+        "psramMb": null
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "dimension-photo-reconstruction",
+        "provenance": "dimension-photo-reconstruction",
+        "url": "./assets/m5stack-k117/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "外观模型与产品知识入库；本型号板级模拟尚未实现，不能据此运行或声称官方固件兼容。",
+        "Manufacturer photos retain their original rights; exterior dimensions are source-backed while local feature sizes and materials are approximate.",
+        "Hidden populated PCB, internal fasteners and material calibration remain unknown. PCB placeholder is explicitly marked UNKNOWN.",
+        "Source images never cover the simulated display with a static firmware screenshot.",
+        "Connector shape/position estimates do not establish pin1 mating, electrical routing or working cables.",
+        "原色、金色和透明材质需要浏览器复核；本批静态检查不代表1:1照片或实物通过。",
+        "Current official table says53×20×10.3mm, while the product graphic says52×20×10mm. Nominal53 is used and discrepancy remains; USB-A hidden construction/pin mating is approximate, not a connector standard CAD."
+      ]
+    },
+    {
+      "id": "m5stack-k122",
+      "sku": "K122",
+      "name": "M5Stack Stamp-C3U Mate",
+      "chip": "esp32c3",
+      "runtime": {
+        "board": "stampc3u",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k122/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "套装中的 Stamp-C3U 采用独立 stampc3u 板级模型，部分支持 G9 用户键和 G2 RGB RMT；EN、原生 USB、模拟电源和物理网络未验证，排针/Grove 散件未电气连接。",
+        "厂家 K122 外盖保留原始尺寸；黑色 PCB 背面使用 K122 自有官方照片，盖内 UNKNOWN 可分开查看。",
+        "补齐中心 M2×4 螺丝、黄铜螺柱、独立纸贴承载面及孔洞；隐藏螺纹和完整板级 CAD 未验证。",
+        "套件排针、HY2.0 插座和扳手保持散件，未假定已焊接。",
+        "纸贴下 RGB 狭缝的透光效果未知，未用发光贴图伪造灯光。"
+      ]
+    },
+    {
+      "id": "m5stack-k123",
+      "sku": "K123",
+      "name": "M5Stack Station-485 · K123",
+      "chip": "esp32",
+      "runtime": {
+        "board": "station-485",
+        "status": "partial",
+        "flashMb": 16,
+        "psramMb": 0
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k123/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k123-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "Specification height 88 mm differs from CAD overall 92 mm and marketing photo 92 mm; failure kept visible.",
+        "Some unlabelled CAD inserts retain neutral source-component names; no unverified electrical role inferred.",
+        "PCB placeholder has no components. Its dimensions/placement are an enclosure-space estimate, not a verified PCB layout.",
+        "Manufacturer photo rights are separate from CAD MIT license. Materials are visual approximations, not measured reflectance.",
+        "Station-specific partial runtime: real SPI LCD, GPIO37/38/39 and internal hardware I2C. INA3221/199, RS485, RGB, Grove power switching, analog battery/power, software I2C and official factory boot are unverified or unimplemented; physical power key is not a GPIO button."
+      ]
+    },
+    {
+      "id": "m5stack-k124-b",
+      "sku": "K124-B",
+      "name": "M5Stack Station-Bat",
+      "chip": "esp32",
+      "runtime": {
+        "board": "station-bat",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k124-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k124-b-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "可配置、分享和查看；尚未完成全部照片视角和可见连接器细节的1:1验收。",
+        "内部主板为UNKNOWN估算占位，不宣称真实PCB结构。",
+        "PSRAM容量在本次官方资料中未明确，未按0MB作硬件事实。",
+        "Station-specific partial runtime: real SPI LCD, GPIO37/38/39 and internal hardware I2C. INA3221/199, RS485, RGB, Grove power switching, analog battery/power, software I2C and official factory boot are unverified or unimplemented; physical power key is not a GPIO button."
+      ]
+    },
+    {
+      "id": "m5stack-k125",
+      "sku": "K125",
+      "name": "M5Stack AtomS3U · K125",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3u",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k125/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Manufacturer STL contains only the40.3mm plastic body. USB-A plug is separate drawing/photo-informed geometry; imported shell width20.7069mm differs from nominal20mm. Failed source-only envelope is retained.",
+        "Flash/PSRAM capacities were not explicitly confirmed in audited product table; chip naming is not used to silently fill unknown capacity.",
+        "板级子集实现 GPIO41 按键与 GPIO35 硬件 RMT WS2812；IR G12、PDM 麦克风 G38/G39、USB-OTG 和外部连接器电气路由尚未实现。",
+        "模拟配置为8MiB Flash/无PSRAM，对应目录中的官方8MB UIFlow2目标；原产品页未单列容量，硬件容量不据此宣称经过实测。",
+        "按键命中区依据原厂正面照片的可见塑料弹片估算；孔隙与隐藏开关行程未实机校准。",
+        "官方 UIFlow2 保持未验证试运行；本轮未执行官方固件或实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k126",
+      "sku": "K126",
+      "name": "M5Stack T-Lite 热成像套件 · K126",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 4,
+        "psramMb": null
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "dimension-photo-reconstruction",
+        "provenance": "dimension-photo-reconstruction",
+        "url": "./assets/m5stack-k126/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k126-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "外观模型与产品知识入库；本型号板级模拟尚未实现，不能据此运行或声称官方固件兼容。",
+        "Manufacturer photos retain their original rights; exterior dimensions are source-backed while local feature sizes and materials are approximate.",
+        "Hidden populated PCB, internal fasteners and material calibration remain unknown. PCB placeholder is explicitly marked UNKNOWN.",
+        "Source images never cover the simulated display with a static firmware screenshot.",
+        "Connector shape/position estimates do not establish pin1 mating, electrical routing or working cables.",
+        "原色、金色和透明材质需要浏览器复核；本批静态检查不代表1:1照片或实物通过。",
+        "69×26.6×16.4mm uses the current official specification table; older marketing photo says15.5mm thick. Thermal field of view110°×75° and32×24 sensor are hardware facts only; no temperature frames are fabricated."
+      ]
+    },
+    {
+      "id": "m5stack-k128",
+      "sku": "K128",
+      "name": "M5Stack CoreS3",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cores3",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k128/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k128-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "数字实现覆盖 ILI9342C、FT6336U 单点触摸、AW9523B、AXP2101 电源寄存器子集、BM8563 日历和 SPI TF。ILI9342E 批次尚未核验。",
+        "BMI270 仅支持虚拟传感器轴寄存器采样。BMM150 AUX、摄像头和接近传感器未模拟。",
+        "音频、USB OTG、RTC 唤醒、充电和实体电源/复位操作未模拟；未实机验证。",
+        "保持 K128 标准版的 DinBase 身份；DIN 供电、M-Bus 与 Grove 外设暂不模拟。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k128-lite",
+      "sku": "K128-Lite",
+      "name": "M5Stack CoreS3-Lite",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cores3-lite",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k128-lite/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k128-lite-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "数字实现覆盖 ILI9342C、FT6336U 单点触摸、AW9523B、AXP2101 电源寄存器子集、BM8563 日历和 SPI TF。ILI9342E 批次尚未核验。",
+        "BMI270 仅支持虚拟传感器轴寄存器采样。BMM150 AUX、摄像头和接近传感器未模拟。",
+        "音频、USB OTG、RTC 唤醒、充电和实体电源/复位操作未模拟；未实机验证。",
+        "保留 Lite 独立壳体与固件运行身份；不包含标准版的 DIN 底座。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Official rear-photo SKU text reads CORE S3 SE; relation to Lite listing is retained as a source discrepancy. No hidden board inferred from this photo."
+      ]
+    },
+    {
+      "id": "m5stack-k128-se",
+      "sku": "K128-SE",
+      "name": "M5Stack CoreS3-SE · K128-SE",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cores3-se",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k128-se/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k128-se-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "数字实现覆盖 ILI9342C、FT6336U 单点触摸、AW9523B、AXP2101 电源寄存器子集、BM8563 日历和 SPI TF。ILI9342E 批次尚未核验。",
+        "SE 硬件未安装相机、接近传感器、BMI270 或 BMM150，板型不会枚举它们。",
+        "音频、USB OTG、RTC 唤醒、充电和实体电源/复位操作未模拟；未实机验证。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Source lower cover reaches overall 16.5 mm depth; table states 15.5 mm. No stretching or cover removal was used to force a pass.",
+        "No camera, IMU or battery capacity has been copied from sibling CoreS3 configurations.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
+        "Rear M-BUS open housing, four silver fastener heads and rubber feet are photo-derived external details; dimensions/depth are estimates, not manufacturer connector CAD."
+      ]
+    },
+    {
+      "id": "m5stack-k129",
+      "sku": "K129",
+      "name": "M5Stack Capsule",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "capsule",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k129/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "仅实现 G42/G0 数字输入、G21 硬件 RMT RGB、SDA8/SCL10 的 BMI270@0x69 轮询寄存器与 BM8563@0x51 日历；GPIO38 仅在 v1.1 控制 RGB 电源。",
+        "保持虚拟常供电；HOLD46、RTC 定时唤醒/闹钟、microSD 传输、红外、麦克风、蜂鸣器与实机电源行为尚未实现。",
+        "可尝试目标芯片/容量/布局校验通过的固件，未执行本型号官方固件或实机验收。"
+      ]
+    },
+    {
+      "id": "m5stack-k129-v11",
+      "sku": "K129-V11",
+      "name": "M5Stack Capsule v1.1 · K129-V11",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "capsule-v11",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k129-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Model uses the no-label front configuration explicitly pictured by the manufacturer; supplied loose label is not falsely printed into source geometry.",
+        "USB/Grove mouths are source-photo-informed standard visual approximations; shell outlines remain manufacturer CAD.",
+        "Capsule v1.1 changes core module to Stamp-S3A; earlier Capsule firmware/PCB is not assumed identical.",
+        "仅实现 G42/G0 数字输入、G21 硬件 RMT RGB、SDA8/SCL10 的 BMI270@0x69 轮询寄存器与 BM8563@0x51 日历；GPIO38 仅在 v1.1 控制 RGB 电源。",
+        "保持虚拟常供电；HOLD46、RTC 定时唤醒/闹钟、microSD 传输、红外、麦克风、蜂鸣器与实机电源行为尚未实现。",
+        "可尝试目标芯片/容量/布局校验通过的固件，未执行本型号官方固件或实机验收。"
+      ]
+    },
+    {
+      "id": "m5stack-k130",
+      "sku": "K130",
+      "name": "M5Stack Dial · K130",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "dial",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": true,
+        "encoder": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k130/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-dial-userdemo-community",
+        "role": "demo",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "GC9A01 SPI、FT3267 单点触摸、GPIO42 按压及 A41/B40 编码器已有内部客体测试；不代表任意固件全部兼容。",
+        "RTC/RFID、蜂鸣器音频、PWM 背光、电源锁存/深睡及无线网络未做本板验收。",
+        "旋钮每步输出四相 GPIO，正数为 A 先下降；3D 顺时针是平台约定，未实机校准机械方向。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Official page supplies nominal51×51×32.3mm; the selected source plastic assembly is50.8166mm diameter and30.32mm deep. Missing connector/panel stack or nominal difference is unresolved; source geometry not scaled.",
+        "Rear connectors and populated PCB are absent from shell geometry.",
+        "Rear terminal mouths are independent photo estimates; exact red/black Grove housings, power socket internals and stamp printed label remain partial."
+      ]
+    },
+    {
+      "id": "m5stack-k130-v11",
+      "sku": "K130-V11",
+      "name": "M5Stack Dial v1.1",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "dial-v11",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": true,
+        "encoder": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k130-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-dial-userdemo-community",
+        "role": "demo",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "已实现 GC9A01 SPI、FT3267 单点触摸、GPIO42 按压和 A41/B40 四相编码器；按固件分别验证。",
+        "RTC、WS1850S RFID、PWM 背光、蜂鸣器、电源保持/睡眠、Stamp-S3A GPIO38 供电的 RGB 及无线网络尚未完整模拟。",
+        "USB 供电状态下运行；电池电量、待机电流、射频和机械旋转方向未经实机校准。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告；Grove 插合方向尚未核实，不显示已连接线缆。"
+      ]
+    },
+    {
+      "id": "m5stack-k131",
+      "sku": "K131",
+      "name": "M5Stack Air Quality",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "airquality",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k131/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k131-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "官方 v0.2.0 已在真实 ROM/WASM 执行，支持 SSD1681 电子纸和 A/B 按键；其他固件仍可尝试，未保证整机兼容。",
+        "SCD40/SEN55 为数字协议模型，默认固定虚拟样本：420 ppm、25°C、50% RH、PM1/2.5/4/10=5/7/9/10 μg/m³、VOC=100、NOx=1；不代表真实空气读数。",
+        "RTC、电池 ADC、蜂鸣器、外部 Grove、供电锁存/睡眠和联网未完成；日期 2000-00-00、电压 0 V 等客体结果保留，不伪装为实测。",
+        "厂家 CAD 尺寸与照片复核仍为部分通过；屏幕位置及按键命中面为照片/CAD 推定，UNKNOWN PCB 不是实板。"
+      ]
+    },
+    {
+      "id": "m5stack-k131-v11",
+      "sku": "K131-V11",
+      "name": "M5Stack Air Quality v1.1 · K131-V11",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "airquality-v11",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k131-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k131-v11-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "官方 v0.2.0 已在独立 v1.1 板型通过真实 ROM/WASM 启动、电子纸和 A/B 操作；其他固件仍可尝试，未保证整机兼容。",
+        "SCD40/SEN55 为数字协议模型，默认固定虚拟样本：420 ppm、25°C、50% RH、PM1/2.5/4/10=5/7/9/10 μg/m³、VOC=100、NOx=1；不代表真实空气读数。",
+        "RTC、电池 ADC、蜂鸣器、外部 Grove、供电锁存/睡眠和联网未完成；日期 2000-00-00、电压 0 V 等客体结果保留，不伪装为实测。",
+        "Stamp-S3A 的 G21 RGB / G38 电源开关尚未模拟；v1.1 保留独立板型和硬件身份。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Manufacturer CAD contains one mounting clip. Three additional instances reuse its exact triangles with photo-inferred rigid assembly to match the four clips visible on the official product; positions are estimated +/-0.4mm, not independently verified assembly instructions.",
+        "Dimension checks exclude the optional lug protrusion for body measurements; overall source geometry remains separately visible.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+      ]
+    },
+    {
+      "id": "m5stack-k132",
+      "sku": "K132",
+      "name": "M5Stack Cardputer",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cardputer",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k132/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-cardputer-official",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "已验证官方 v1.1 的真实 ROM 启动、240×135 显示、Enter 与左右菜单操作；74HC138 键盘与 Adv 的 TCA8418 分开实现。",
+        "音频、SD、无线/HID、红外应用、电池与电源开关尚未完成适配；菜单存在不代表所有功能可用。",
+        "未做实体设备对照；3D 模型仍保留尺寸与照片对照偏差。"
+      ]
+    },
+    {
+      "id": "m5stack-k132-adv",
+      "sku": "K132-Adv",
+      "name": "M5Stack Cardputer-Adv · K132-Adv",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cardputer-adv",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k132-adv/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k132-adv-official",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "已验证官方 v0.3 的 ROM 启动、240×135 屏幕、Enter 进入菜单与左右导航；TCA8418 支持 56 键矩阵。音频、麦克风、SD、无线应用、IR、持续 IMU、供电和睡眠尚未在此板验收，未实机验证。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurement performed; official photographs may include shipping films and uncalibrated perspective.",
+        "PCB is an explicitly estimated UNKNOWN placeholder without invented components or traces.",
+        "Source CAD does not supply calibrated material properties; colors are source-photo-informed display approximations.",
+        "Sticker masks retain only documented white paper. Shell gray, screws, keys and LCD are never projected. Paper perimeter/position remain image measurements +/-0.25mm."
+      ]
+    },
+    {
+      "id": "m5stack-k132-v11",
+      "sku": "K132-V11",
+      "name": "M5Stack Cardputer v1.1",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cardputer",
+        "flashMb": 8,
+        "psramMb": 0,
+        "touch": false,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k132-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-cardputer-official",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "已验证官方 v1.1 的真实 ROM 启动、240×135 显示、Enter 与左右菜单操作；74HC138 键盘与 Adv 的 TCA8418 分开实现。",
+        "音频、SD、无线/HID、红外应用、电池与电源开关尚未完成适配；菜单存在不代表所有功能可用。",
+        "未做实体设备对照；3D 模型仍保留尺寸与照片对照偏差。"
+      ]
+    },
+    {
+      "id": "m5stack-k134",
+      "sku": "K134",
+      "name": "M5Stack DinMeter",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "dinmeter",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "encoder": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k134/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k134-factory-reference",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "原版 K134 板型：ST7789V2 屏幕、GPIO42 按压和 A41/B40 四相编码器；不代表 K134-V11 或任意固件完整兼容。",
+        "PWM 背光亮度、RTC、蜂鸣器、充放电/锁存/睡眠及无线功能尚未做本板适配。",
+        "正数旋钮步数为 A 先下降；3D 每圈 16 个操作步进及顺时针方向是平台约定，未实机校准机械方向或卡点数。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k134-v11",
+      "sku": "K134-V11",
+      "name": "M5Stack DinMeter v1.1 · K134-V11",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "dinmeter-v11",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "encoder": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k134-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k134-v11-official-reference",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "K134-V11 独立板型：ST7789P3 屏幕、GPIO42 按压和 A41/B40 四相编码器；尚不代表所有固件完整兼容。",
+        "RTC、PWM 背光、电池 ADC、蜂鸣器、供电锁存/睡眠、Stamp-S3A RGB 供电与无线功能尚未做本板适配。",
+        "正数旋钮步数为 A 先下降；每圈 16 个操作步进是界面约定，未实机校准方向或卡点数。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Bare panel configuration excludes the separate orange mounting clamp; its source component0 extends to38.5mm beyond the30mm panel and is not present in chosen photos.",
+        "Rear Stamp-S3A PCB/connectors are not supplied in this shell STL; full32mm depth is not reached by the imported shell/knob alone. This failed envelope check is retained.",
+        "StampS3A exterior cover is exact sourced component, but its fitted location and terminal bodies are photo estimates; complete rear PCB, white battery socket and screw not yet verified."
+      ]
+    },
+    {
+      "id": "m5stack-k136",
+      "sku": "K136",
+      "name": "M5Stack VAMeter",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "vameter",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false,
+        "psramMbBasis": "simulation",
+        "encoder": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k136/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k136-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Official size order51.5×48×40.5 is mapped to model Y×X×Z so source orientation stays upright; whole CAD Y51.4126mm remains measured separately. Rear label/encoder/USB sockets are partial.",
+        "仅ST7789硬件SPI RGB565和GPIO/LEDC背光开关、按键及编码器真实GPIO子集；原厂固件尚未启动验收。",
+        "双INA226@0x40/0x41保持NACK，不制造测量读数；物理电压电流、继电器、蜂鸣器、网络及电源行为尚未模拟。",
+        "240×240零偏移活动窗口映射已由独立客体流验证；实机安装方向、完整MADCTL旋转/光学背光强度未校准。",
+        "内存配置8MB Flash，0MB PSRAM为显式模拟配置；不据此推定未知版次的物理PSRAM容量。",
+        "3D拇指轮为同SKU照片估算的独立几何（约±1mm）；中心轴向端面映射按压，轮缘拖动映射编码器，机械行程/方向和齿数未校准。"
+      ]
+    },
+    {
+      "id": "m5stack-k138",
+      "sku": "K138",
+      "name": "M5Stack StampFly",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stampfly",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k138/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k138-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级数字外设为部分实现；官方固件兼容性须以对应版本的实际执行记录为准。",
+        "电机展示来自客体 PWM，占空比不代表实测转速。可选近似飞行模型尚未校准，不模拟完整碰撞或 ESP-NOW 遥控链路，未验证实机飞行。",
+        "尺寸、材质、内部未知项和照片核验范围见模型报告；未进行实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k138-v11",
+      "sku": "K138-V11",
+      "name": "M5Stack StampFly v1.1",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stampfly-v11",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k138-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k138-v11-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级数字外设为部分实现；官方固件兼容性须以对应版本的实际执行记录为准。",
+        "电机展示来自客体 PWM，占空比不代表实测转速。可选近似飞行模型尚未校准，不模拟完整碰撞或 ESP-NOW 遥控链路，未验证实机飞行。",
+        "K138-V11 使用独立 S3A 外壳与照片纹理；共享机架仍为官方链接的简化模拟器几何，未完成精确机械验收。",
+        "官方尺寸表与护桨外包络存在口径差异，保留图纸与照片，不缩放旧版CAD掩盖差异。",
+        "当前外观不安装电池，与官方参考照片一致；旧版电池模型不能代替320mAh版次。",
+        "未进行实机验证。"
+      ]
+    },
+    {
+      "id": "m5stack-k140",
+      "sku": "K140",
+      "name": "M5Stack SwitchC6 单火线开关 · K140",
+      "chip": "esp32c6",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": null,
+        "psramMb": null
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "dimension-photo-reconstruction",
+        "provenance": "dimension-photo-reconstruction",
+        "url": "./assets/m5stack-k140/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "外观模型与产品知识入库；本型号板级模拟尚未实现，不能据此运行或声称官方固件兼容。",
+        "Manufacturer photos retain their original rights; exterior dimensions are source-backed while local feature sizes and materials are approximate.",
+        "Hidden populated PCB, internal fasteners and material calibration remain unknown. PCB placeholder is explicitly marked UNKNOWN.",
+        "Source images never cover the simulated display with a static firmware screenshot.",
+        "Connector shape/position estimates do not establish pin1 mating, electrical routing or working cables.",
+        "原色、金色和透明材质需要浏览器复核；本批静态检查不代表1:1照片或实物通过。",
+        "Independent drawing gives57.9×46×26.8mm overall and54×32mm housing; product table rounds to58×46×27mm. Terminal cavities/lever depths, transparent shell and DIN details are approximations; no internal relay/AC electrical simulation. Public MAC-sticker detail photographs are not retained."
+      ]
+    },
+    {
+      "id": "m5stack-k141",
+      "sku": "K141",
+      "name": "M5Stack StamPLC · K141",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamplc",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k141/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k141-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：ST7789V2 显示、PI4IO 三按键/二值 RGB/背光，以及 AW9523 继电器 GPIO 驱动和读回；八路光耦输入固定为未接入。实际继电器触点/负载、传感器、RTC、SD、CAN、RS485、蜂鸣器、物理电源与网络未模拟。",
+        "原厂外壳、键帽和导光件保持原始几何；Stamp 纸贴与四组继电器标签已按各自承载面校正。后盖补齐照片确认的四颗螺丝头与四个 M3 铜套可见边缘，外形尺寸为明确标注的近似。",
+        "主板及 Stamp 小板仍保留 UNKNOWN；黑色 Stamp 板边有照片依据，隐藏 PCB 布局、PIN1.27 排针装配及紧固件内部未编造。",
+        "端子、Grove 与 USB 插口为有来源的外观近似，CAN/RS485 等侧面细节尚不完整；未实机或光学标定。"
+      ]
+    },
+    {
+      "id": "m5stack-k146",
+      "sku": "K146",
+      "name": "M5Stack Xiaozhi Card Kit · K146",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "xiaozhi-card",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k146/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k146-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Handset and dock are separate products in the kit; the CAD dock includes stand geometry beyond the 84×54×8 mm handset. No dock dimensions pass is asserted.",
+        "Dock latch component identity is unlabelled in STL; retained source positions are not an electrical or assembly-service claim.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
+        "Default scene retains native handset and dock cluster;54x84x8mm belongs to handset only, complete dock assembly envelope not certified by that size. Dock geometry is not scaled into handset dimensions.",
+        "已接GDEY027T91官方驱动兼容的176×264单色命令端点；并未猜测未公开die型号，也不代表灰阶、LUT、温度/残影或真实刷新时间。",
+        "EPD45/46/42/41/BUSY48；共用G47复位真实控制EPD与FT6336U@0x38(SDA2/SCL1,IRQ16)；G21为实际唤醒输入。",
+        "当前20ms刷新期限、1ms触控IRQ和双读短触保留是明确的数字接口策略，未作实机时序标定。",
+        "AW32001/BQ27220、SD NAND、ES8311/音频、4G调制解调器、网络、USB切换与底座行为未实现；相应I2C设备保持NACK，未伪造上电或电量。",
+        "原厂固件仍为trial且未启动验收；显示/触控客体诊断不代表整机小智应用可用。"
+      ]
+    },
+    {
+      "id": "m5stack-k147",
+      "sku": "K147",
+      "name": "M5Stack AtomS3R AI Chatbot Kit · K147",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3r-chatbot",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k147/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-c126-uiflow2-reference",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "仅按K147文档的GC9107批次：屏幕、LP5562白光、G41按键与BMI270轮询子集；不是整机兼容认证。",
+        "Atomic Voice Base的ES8311音频和麦克风尚未模拟；小智固件会提示底座未连接。真实网络、红外、BMI270 AUX/BMM150未实现。",
+        "未找到K147整套明确的出厂恢复镜像；默认UIFlow2是官方开发固件，不标作出厂固件。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Official specifications list AtomS3R 12.9 mm and separate base 14.14 mm; source assembled stack is 22.9 mm with a 10 mm exposed base. Base mating/envelope convention is unverified.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+      ]
+    },
+    {
+      "id": "m5stack-k147-cam",
+      "sku": "K147-CAM",
+      "name": "M5Stack AtomS3R-CAM AI Chatbot · K147-CAM",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "atoms3r-cam-chatbot",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k147-cam/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分运行适配：ESP32-S3 / 8 MiB Flash / 8 MiB Octal PSRAM 与 BMI270 轮询寄存器；BMM150、红外、USB UVC、摄像头采集及音频未实现，未实机验证。",
+        "GC0308 仅支持 SCCB 配置寄存器、ID、复位和 G18 低有效供电；不提供 DVP 帧或 UVC 视频。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Catalog dimensions refer to camera controller24×24×13.5mm; audio base separately24×24×14.14mm. Assembled plastic CAD23.5mm total is a CAD measurement, not an independently documented full-kit envelope.",
+        "Audio base is named Atomic Voice Base by text but photographed labels say ATOMIC ECHO BASE; naming/revision correspondence remains unconfirmed.",
+        "Tiny isolated one-triangle source pieces8/11 are retained as omitted tessellation fragments, not interpreted as complete mechanical parts.",
+        "Paper/optical projection is isolated from molded shell; small printed markings and hidden hardware not supplied by source CAD may remain incomplete."
+      ]
+    },
+    {
+      "id": "m5stack-k148",
+      "sku": "K148",
+      "name": "M5Stack PowerHub Kit · K148",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "powerhub",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-c148/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-c148-factory-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "仅ESP32-S3 CPU/UART和G11用户按键子集；尚未启动验收官方出厂固件。",
+        "STM32G031、RGB、顶部/侧面电源键、电源轨、INA226、RTC、CAN、RS485和USB路由均未模拟；不将PMU键映射成ESP GPIO。",
+        "用户键的CAD按压区域已接入物理G11；背贴、孔洞和材质的原有几何边界仍以原模型报告为准。",
+        "官方K148套装包含NP-F550 2000mAh电池；当前共享C148主机几何，明确显示电池未安装。电池壳体、触点、充放电与续航均未还原。",
+        "固件目录通过明确firmwareTargetId共享；这不继承出厂镜像执行或实机验证结论。"
+      ]
+    },
+    {
+      "id": "m5stack-k149",
+      "sku": "K149",
+      "name": "M5Stack CoreS3 Thread BR",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cores3-thread-br",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k149/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k149-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "数字实现覆盖 ILI9342C、FT6336U 单点触摸、AW9523B、AXP2101 电源寄存器子集、BM8563 日历和 SPI TF。ILI9342E 批次尚未核验。",
+        "BMI270 仅支持虚拟传感器轴寄存器采样。BMM150 AUX、摄像头和接近传感器未模拟。",
+        "音频、USB OTG、RTC 唤醒、充电和实体电源/复位操作未模拟；未实机验证。",
+        "仅模拟 K149 的 CoreS3 主机数字子集；ESP32-H2 RCP、Thread/Zigbee 网络与电池底座未实现。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k150",
+      "sku": "K150",
+      "name": "M5Stack StickS3 · K150",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "sticks3",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k150/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "StickS3 板级 partial：SPI ST7789P3、PM1 GPIO2 屏幕电源门、GPIO11/12 按键、BMI270 轮询寄存器子集；尚未验证官方固件完整启动。",
+        "ES8311 仅初始化寄存器；麦克风/扬声器实际 I2S 引脚与 AW8737 脉冲控制、IR、PM1 电源键/主控断电及传感器中断未实现。",
+        "Grove G9/G10 与 Hat2 为资料引脚，不代表附件电气路由或 3D 线缆接插已适配。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Labels, connector inserts and populated PCB are not part of the imported shell CAD.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+      ]
+    },
+    {
+      "id": "m5stack-k151",
+      "sku": "K151/K151-R",
+      "name": "M5Stack StackChan",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stackchan",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k151/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k151-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "K151 部分板级模拟：显示、屏幕触摸、三分区触摸板、底座 RGB 与串口反馈舵机；完整官方固件兼容性以运行报告为准。",
+        "舵机为数字位置/反馈模型，未校准负载、惯量、扭矩或碰撞；3D 转轴与 LED 空间链序的估算见模型报告。",
+        "电源键、物理复位键、摄像头、红外、NFC、完整音频与电池行为尚未完成验证；未实机验证。",
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。"
+      ]
+    },
+    {
+      "id": "m5stack-k152",
+      "sku": "K152",
+      "name": "M5Stack Cardputer Mesh Kit",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "cardputer-adv",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k152/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k152-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "主控为官方说明的 Cardputer-Adv，复用其精确引脚的显示/TCA8418键盘/数字音频与IMU初始化子集；Cap LoRa-1262 的 SX1262 无线与GPS/PA1010D扩展尚未实现。",
+        "56个键帽从K152自身厂家CAD component10拆分，每个键帽250面，保留原39180面一次；没有以旧款Cardputer的74HC138扫描器代替TCA8418。",
+        "模拟板级共用不共享产品固件身份、私有存储、出厂验证或实机刷写许可；本轮未执行K152出厂或Meshtastic固件。",
+        "新增键帽未增加照片/外壳1:1验收结论；导入前的照片与尺寸偏差仍保留。"
+      ]
+    },
+    {
+      "id": "m5stack-k159",
+      "sku": "K159",
+      "name": "M5Stack PaperDIY Assembly Kit · K159",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "paperdiy",
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": false
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k159/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k159-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "按双方官网链接的同一K159-B原理图复用paperdiy数字子集：ET047TC1黑白像素、M5PM1基础寄存器、G4/G3按键与独立SPI TF总线。",
+        "16灰阶光学响应、FPC扩展、真实电源键/睡眠和模拟电压未验证；未实机验证。K159出厂固件保留独立条目及trial，不继承K159-B官方固件的历史验收。",
+        "近似零件、照片与 UNKNOWN 占位均不证明电气、制造或固件兼容；照片叠图验收尚未完成。",
+        "K159 不含 K159-B 的打印外壳或外壳按键；这里保留双方官方对比表证实相同主板的已建照片几何，移除六个外壳/按键网格。",
+        "PCB 历史照片测量的宽约63.55 mm，而官方整机宽62.5 mm；此偏差未用缩放掩盖。电池与屏幕排线装配仍未还原，不能作为完整装配精度通过。"
+      ]
+    },
+    {
+      "id": "m5stack-k159-b",
+      "sku": "K159-B",
+      "name": "M5Stack PaperDIY Complete Kit · K159-B",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "paperdiy",
+        "status": "partial",
+        "flashMb": 16,
+        "psramMb": 8
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k159-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-k159-b-factory-reference",
+        "role": "factory",
+        "status": "available",
+        "simulationVerified": true,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "ET047TC1 黑白数字显示、M5PM1 基础寄存器、A/B 按键及 SPI TF 的 FAT32 读写已验证；Wi-Fi 可扫描虚拟热点，外网、16 灰阶光学响应、FPC 与真实睡眠未验证。",
+        "官方 v1.0 首次启动会保存初始化标记并显示关机标志；保留设备存储后点击重启进入演示。屏幕没有触摸输入。",
+        "原厂外壳 CAD 与图纸尺寸相符；屏幕边框、背面屏蔽罩、M2 铜嵌件、电池插座及卡槽为有来源的外观补件，隐藏尺寸仍为估计。",
+        "内部主板保留 UNKNOWN 占位；分开查看仅是观察方式，不代表完成内部 PCB 还原。",
+        "厂家照片与 CAD 授权分别保留；展示材质不是实测反射率。"
+      ]
+    },
+    {
+      "id": "m5stack-k162",
+      "sku": "K162",
+      "name": "M5Stack ToughC5 · K162",
+      "chip": "esp32c5",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-k162/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-k162-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本条目提供有来源的外观预览和资料，尚无该 SKU 的独立板级模拟器。",
+        "近似零件、照片与 UNKNOWN 占位均不证明电气、制造或固件兼容；照片叠图验收尚未完成。",
+        "原厂 STL 的0/2为装配组，1/3为远离原点的重复打印排版，未将全文件248.6mm宽强行缩放为75.9mm。原厂几何深度41.9mm与官网42.5mm存在0.6mm偏差。",
+        "相似外观的旧 Tough 使用 ESP32/AXP192，本型号是 C5/M5PM1；未复用其板级运行器。"
+      ]
+    },
+    {
+      "id": "m5stack-m141",
+      "sku": "M141",
+      "name": "M5Stack Module Gateway H2 · M141",
+      "chip": "esp32h2",
+      "runtime": {
+        "board": null,
+        "flashMb": 2,
+        "psramMb": 0,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-m141/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本条目提供精确 SKU 的有来源预览和知识，尚无独立板级模拟器。",
+        "尺寸和照片估算明确区分。UNKNOWN 保留未知内部面；模型不能证明固件、总线或无线协议已运行。",
+        "M141是带ESP32-H2的独立协处理扩展模块；无线Thread/Zigbee/Matter、UART/SPI选择拨码和M-Bus传输均未模拟。",
+        "没有取得此SKU的原厂完整CAD或PCB布局；框体、模块/拨码和排针几何按照片估算。面向主机叠接的针序与电气资料保留，未把机械插上当电气连接。"
+      ]
+    },
+    {
+      "id": "m5stack-s007",
+      "sku": "S007",
+      "name": "M5Stack Stamp-S3 · S007",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamps3",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s007/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s007-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G0按键和G21单颗WS2812B RMT已用真实客体测试。GitHub UIFlow2 v2.5.4完整应用启动未证实；旧v2.5.3蓝灯为历史证据。不模拟软件GPIO灯时序、FPC屏、模拟电源或物理网络。",
+        "保留厂家机械 STEP 中的 PCB 外形、螺柱、螺丝、USB 和天线；并非完整电子元件布局。",
+        "外露背面采用有边界的官方照片，内侧未知区域保留 UNKNOWN，可用“分开查看”检查；PCB 和纸贴不随外壳改色。",
+        "原始文档照片为 800×800；未凭空补细节。USB、螺柱表面及镀孔仍有简化，未做实物材质标定。",
+        "原版默认保留未焊排针、未贴针脚纸贴的装配；套件里的可选零件不自动视为已安装。",
+        "官方 24 mm 长度与含 USB 的 CAD 25.948 mm 范围不同，尺寸偏差保留，未缩放掩盖。",
+        "厂家 CAD 与照片分别保留授权；轮廓核对不代表整机制造精度或实机兼容验证。"
+      ]
+    },
+    {
+      "id": "m5stack-s007-pin127",
+      "sku": "S007-PIN127",
+      "name": "M5Stack Stamp-S3 PIN1.27",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamps3",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s007-pin127/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s007-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G0按键、G21单颗WS2812B RMT；按本SKU单独验证客体输入输出。1.27mm排针保留独立机械身份，外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "外观保留原厂盖/PCB机械件，并按本型号官方封装引用补 17+11 个 1.27mm 标准排针；黑色 PCB 背面贴官方照片，内侧 UNKNOWN 可分开查看。排针方向/尺寸、铜柱唇边及 USB 细节仍属 partial，未声称制造精度。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
+      ]
+    },
+    {
+      "id": "m5stack-s007-pin127-v033",
+      "sku": "S007-PIN127-V033",
+      "name": "M5Stack Stamp-S3A PIN1.27 · S007-PIN127-V033",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamps3a",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s007-pin127-v033/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s007-v033-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G0按键、G21单颗WS2812B RMT、G38高电平数字灯电源；外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "模型保留原厂S3A外壳；本SKU黑色裸PCB用高清官方照片，内侧UNKNOWN可分开查看；USB与M2固定件为明确标注的同系列机械参考。",
+        "1.27mm排针17+11，标准针座体保留原始尺寸；针尾按本SKU整体9.7mm图纸另行建立，型号、针尖及隐藏焊接结构未验证。",
+        "官方表格4.7mm是模块本体，图纸9.7mm包含预焊排针；内部PCB布局、实际公差与完整物理装配仍未知。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
+      ]
+    },
+    {
+      "id": "m5stack-s007-pin254",
+      "sku": "S007-PIN254",
+      "name": "M5Stack Stamp-S3 PIN2.54 · S007-PIN254",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamps3",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s007-pin254/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s007-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G0按键、G21单颗WS2812B RMT；按本SKU单独验证客体输入输出。2.54mm排针保留独立机械身份，外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "原厂盖/PCB机械件与螺柱保留，黑色PCB背面贴本型号照片，内侧UNKNOWN可分开查看。9+6排针位置来自官方封装，塑料体/短针端采用标准参考，焊接端另作估算；USB、铜柱唇边和完整电子布局仍属partial。",
+        "官网4.6mm与原厂机械装配4.750002mm厚度不符，排针还会增加整体高度；保留差异，不缩放源几何。",
+        "照片与标准排针只约束外观，不能证明工厂零件型号、焊点、插接公差或完整PCB布局；散装丝印贴纸未默认贴装。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
+      ]
+    },
+    {
+      "id": "m5stack-s007-pin254-v033",
+      "sku": "S007-PIN254-V033",
+      "name": "M5Stack Stamp-S3A PIN2.54",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamps3a",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s007-pin254-v033/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s007-v033-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G0按键、G21单颗WS2812B RMT、G38高电平数字灯电源；按本SKU单独验证客体输入输出。2.54mm排针保留独立机械身份，外接器件、FPC屏、软件GPIO灯时序与模拟供电未实现。",
+        "保留本SKU原厂外壳网格；黑色PCB背面使用独立高清实拍，内侧UNKNOWN可分开查看；USB及M2固定件为注明来源的机械参考件。",
+        "2.54mm排针9+6，标准针座体保持原始尺寸；可见针尾按本SKU11.24mm含针总厚度建立。内部布局、针尖/焊接和实际装配公差未知。",
+        "官方图库USB端面照的薄针座与两张侧照/图纸不一致，保留冲突而不用于针高验收；商品表4.7mm仅为模块本体。",
+        "官方UIFlow2 v2.5.4仍为trial；Burner要求验证，GitHub地址受CORS限制且完整应用启动未证实，不能继承旧版本运行结论。"
+      ]
+    },
+    {
+      "id": "m5stack-s007-v033",
+      "sku": "S007-V033",
+      "name": "M5Stack Stamp-S3A · S007-V033",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamps3a",
+        "flashMb": 8,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s007-v033/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s007-v033-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：G0按键、G21 WS2812B RMT、G38数字灯电源已用真实客体测试；网络、模拟电源、软件GPIO灯驱动和FPC屏未模拟。v2.5.3蓝灯仅为历史证据，v2.5.4完整应用启动未证实。",
+        "厂家原生外罩保留；S3A 黑色 PCB 背面采用该型号1200px官方照片，内侧 UNKNOWN 可通过分开查看读取，照片不代表电气布局。",
+        "补齐一颗 M2 螺丝、黄铜安装柱及 USB 组件；采用官方旧 S3 的机械件作可见形状参考，已按 S3A 自身图纸和照片核对位置，隐藏配合与供应商型号仍未知。",
+        "新版 U 形天线仅按照片还原可见面；未套用旧 S3 主板或天线。裸款不安装随附的贴纸与可选排针。",
+        "尺寸、相机对齐、材质、来源和未验证项见模型报告；没有实物测量。"
+      ]
+    },
+    {
+      "id": "m5stack-s012",
+      "sku": "S012",
+      "name": "M5Stack Stamp-C6LoRa",
+      "chip": "esp32c6",
+      "runtime": {
+        "board": "stamp-c6lora",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s012/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "板级数字子集：C6、PI4IO 扩展器和 SX1262 SPI/BUSY/DIO1；LoRa 对端数据为显式输入，不模拟射频传播、LNA 增益或距离。",
+        "本轮未找到本型号预编译出厂/UIFlow 固件；可加载自行编译的本地 C6 固件。无板载屏幕、RGB 或已确认用户按键。",
+        "保留厂家完整PCB装配的500个组件；机械CAD不证明隐藏铜层、网表或BOM准确。",
+        "屏蔽罩标识和背面PCB使用有边界的官方照片贴图，未替换已知几何；颜色和光照未做实物标定。",
+        "天线座按照片分为黑色绝缘体、金色触点和银色焊接端；全部原始三角面完整保留。",
+        "厂家STEP中的离体圆柱缺少装配依据，保留排除记录，不作为螺柱移入主板。",
+        "正反面轮廓核对通过；侧视仅作定性对照，未声称全视角精确还原。"
+      ]
+    },
+    {
+      "id": "m5stack-s013",
+      "sku": "S013",
+      "name": "M5Stack Stamp-P4",
+      "chip": "esp32p4",
+      "runtime": {
+        "board": "stamp-p4",
+        "status": "partial",
+        "flashMb": 16,
+        "psramMb": 32
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s013/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前为 P4 rev < 3 裸模块数字运行配置；外接 MIPI、SDIO、USB 设备、模拟电源及物理接口连线尚未验收，无板载屏幕或用户按键。",
+        "官方 UIFlow2 依赖外接 ESP-Hosted C6 配置；此产品不自动接入 C6，镜像下载需厂商验证，尚未验证该固件运行兼容性。",
+        "已验证 IDF 6.0.2 内部固件的启动、PSRAM 与逻辑 UART0 输入；IDF 5.5.1 启动会等待尚未实现的 ADC 完成标志，详见运行报告。",
+        "保留官方 KiCad 内嵌 STEP 的全部 216 个原生组件（含 3 个开放 USB 曲面），未以空白板替换。",
+        "按官方照片修正近黑色 PCB，并将背面丝印与裸露正面纹理限定在真实板面；板孔和立体元件不被照片平面覆盖。",
+        "补充照片可见的一个黄铜色孔套两端空心边缘；尺寸为照片估算，隐藏筒身、螺纹及型号未知。",
+        "尺寸及正反面轮廓结果见验证记录；侧面对照仅定性，外观检查不代表固件兼容。"
+      ]
+    },
+    {
+      "id": "m5stack-s015",
+      "sku": "S015",
+      "name": "M5Stack Stamp-S3Bat · S015",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamps3bat",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s015/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s015-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：SDA48/SCL47 上的 M5PM1 寄存器、GPIO0 NeoPixel RGB565 刷新与 LED 电源；PWR 仅支持固件禁用自动单击复位及双击关机后的状态轮询。物理关机、复位、下载模式、模拟充电及网络未模拟。",
+        "模型保留厂家外壳 STL，并加入 KiCad 内嵌的 PCB 装配 STEP；裸板背面照片仅补丝印，孔位及 USB-C、电池座、BTB 保留原厂几何。",
+        "外壳原始尺寸未缩放；整机与 PCB 尺寸分别核验。FPC 天线平面外形依据官方拆解视频补齐，其弯折、精确厚度及射频屏蔽罩仍未精确建模。",
+        "官方视频确认贴纸覆盖内部卡扣释放槽；这处实物已有的跨槽保留。贴纸外缘、按键及插口分别遮罩；没有凭空添加螺丝或螺柱。"
+      ]
+    },
+    {
+      "id": "m5stack-s015-dip",
+      "sku": "S015-DIP",
+      "name": "M5Stack Stamp-S3Bat DIP",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stamps3bat",
+        "flashMb": 8,
+        "psramMb": 8,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s015-dip/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s015-dip-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "部分板级模型：SDA48/SCL47 上的 M5PM1 寄存器、GPIO0 NeoPixel RGB565 刷新与 LED 电源；PWR 仅支持固件禁用自动单击复位及双击关机后的状态轮询。物理关机、复位、下载模式、模拟充电及网络未模拟。",
+        "保留官方外壳和共用原生 PCB STEP，补齐 DIP 纸贴及黑色裸板照片；排针节距与整机高度有图纸依据，塑料座和针脚截面为明确标注的近似。FPC 弯折、RF 屏蔽罩及制造细节未完整复原。"
+      ]
+    },
+    {
+      "id": "m5stack-s016",
+      "sku": "S016",
+      "name": "M5Stack Stamp-C5",
+      "chip": "esp32c5",
+      "runtime": {
+        "board": "stamp-c5",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s016/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前仅支持 ESP32-C5 rev 1.0 的 SRAM app-direct：逻辑 UART0、GPIO 与板载 G28 蓝灯；不是 ROM、Flash/MMU 或 ESP-IDF 启动。",
+        "复位重新载入同一 SRAM 应用；无线、USB、充电控制、模拟供电、PSRAM 和外接设备未实现。",
+        "官方 UIFlow2 尚未验证且不属于该 SRAM 加载范围；内部裸机测试不能代表原厂固件兼容。",
+        "保留官方 KiCad 内嵌 STEP 全部 301 个原生组件及 USB 开放曲面，屏蔽罩下方仍有真实 PCB 和元件。",
+        "按官方照片补充带 IPEX 缺口的金属屏蔽罩与其标识；罩体高度、壁厚和隐藏卡扣为估算，未作制造精度验证。",
+        "红色裸板照片限定在真实板面，USB 与 IPEX 材质按照片区分。S016 背面为裸 FPC 焊盘，未按冲突侧图添加插座。",
+        "尺寸及正反面轮廓通过；侧图存在装配差异，仅定性对照。外观检查不代表固件兼容。"
+      ]
+    },
+    {
+      "id": "m5stack-s016-dip",
+      "sku": "S016-DIP",
+      "name": "M5Stack Stamp-C5 DIP",
+      "chip": "esp32c5",
+      "runtime": {
+        "board": "stamp-c5-dip",
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "partial"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-s016-dip/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-s016-dip-uiflow2",
+        "role": "alternative",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前仅支持 ESP32-C5 rev 1.0 的 SRAM app-direct：逻辑 UART0、GPIO 与板载 G28 蓝灯；不是 ROM、Flash/MMU 或 ESP-IDF 启动。",
+        "复位重新载入同一 SRAM 应用；无线、USB、充电控制、模拟供电、PSRAM 和外接设备未实现。",
+        "官方 UIFlow2 尚未验证且不属于该 SRAM 加载范围；内部裸机测试不能代表原厂固件兼容。",
+        "模型展示随盒散装排针的用户装配示例；FPC 座出厂已焊，排针不能据此认定出厂已焊。",
+        "官方 17.6×19.1×3.4 mm 为模块本体尺寸；含排针示例约17.95×19.06×10.06 mm，属于照片估算。",
+        "保留官方 301 个原生组件；屏蔽罩、FPC 与排针补件均记录照片依据及未测量部分。"
+      ]
+    },
+    {
+      "id": "m5stack-triviapod",
+      "sku": "TP-01-A",
+      "name": "M5Stack TriviaPOD TP-01-A · 白色",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": "stopwatch",
+        "flashMb": 32,
+        "psramMb": 8,
+        "status": "partial",
+        "touch": true,
+        "imu": {
+          "controller": "BMI270",
+          "address": 104,
+          "support": "register-subset-host-pose",
+          "physicalMountingVerified": false,
+          "hardwareValidated": false
+        },
+        "notes": "采用 StopWatch 兼容模拟配置；内部控制器和 GPIO 映射属于模型约定，尚未实机核验 TriviaPOD。"
+      },
+      "model": {
+        "type": "manufacturer-display-model",
+        "url": "./assets/m5stack-triviapod/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "共用 StopWatch 兼容模拟模型，保留 32 MB Flash、8 MB PSRAM 与独立产品身份；可尝试运行共享固件，不代表全部功能或实机兼容性通过。",
+        "官方产品尺寸与重量仍为 Work in progress；源模型数值按毫米展示属于单位推定，不代表已核验实物尺寸。",
+        "屏幕、触摸和 A/B 按键采用 StopWatch 模拟配置；本型号的内部引脚、显示/触摸控制器及电源芯片仍缺独立原理图核验。RTC、完整音频和物理电源键沿用当前模型限制。",
+        "官方软件由 Etermax 专有开发，通过机内 Wi-Fi 更新；本轮未找到公开的固定出厂镜像或该型号 UIFlow/小智映射。",
+        "使用官网展示网格与官方照片作为外观来源，未发现独立开放许可；内部结构及制造精度未验证。",
+        "无 Grove 或后部扩展接口，不开放 StopWatch 的物理配件路由与 GPS 测试通道。32 MB 容量保持独立；共享固件不是 TriviaPOD 原厂问答软件。"
+      ]
+    },
+    {
+      "id": "m5stack-u007",
+      "sku": "U007",
+      "name": "M5Stack ESP32 Camera · U007",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u007/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u007-official-source-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本模型只有exact-SKU照片约束的外观近似，未找到该SKU的独立完整厂家CAD/PCB布局。",
+        "未知PCB的轮廓/厚度、隐藏元件与插口深度均保持估算；照片丝印不等于可制造PCB或固件兼容。",
+        "未实现该型号板级运行、相机DVP捕获、Wi-Fi图传、接口协议、传感器电气及电源行为；保留unavailable。",
+        "未进行浏览器三种材质/同视角叠图验收；静态照片不会覆盖任何固件显示画面。",
+        "官方商品/文档尺寸54x54x26.6mm与长条裸板照片及带尺照片不符；模型采用约50x23mm的照片估计，误差数毫米级，不把54mm方形当PCB外形。此冲突尚未消解。",
+        "裸板上镜头/排线夹座和接口的拆卸关系缺少装配证据，因此不提供猜测的分层爆炸；PCB照片留在板上，背面UNKNOWN通过翻转查看。"
+      ]
+    },
+    {
+      "id": "m5stack-u017",
+      "sku": "U017",
+      "name": "M5Stack M5Camera · U017",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 4,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u017/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u017-official-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本条目提供精确 SKU 的有来源预览和知识，尚无独立板级模拟器。",
+        "尺寸和照片估算明确区分。UNKNOWN 保留未知内部面；模型不能证明固件、总线或无线协议已运行。",
+        "U017外观依据有限的3张厂家图做含LEGO支架预览，未找到精确原厂CAD；主体/镜头/端口位置与支架装配估算，不宣称1:1。",
+        "保留U017真实4MB PSRAM及Grove GPIO13/4，不套U038 M5Camera-X或U109 Unit CAM的引脚/固件。GPIO14蓝灯、OV2640相机和可选传感器未模拟。"
+      ]
+    },
+    {
+      "id": "m5stack-u017-pcba",
+      "sku": "U017-PCBA",
+      "name": "M5Stack ESP32-CAM PSRAM Fisheye · U017-PCBA",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 4,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u017-pcba/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u017-pcba-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尚无本型号板级运行模型；模型、光学参数和资料不代表相机/EPD/无线/传感器已经模拟。",
+        "No physical device, factory firmware execution or calibrated1:1 photographic acceptance in this batch.",
+        "Original photographs are M5Stack copyright, not relicensed under the repository MIT license.",
+        "Geometry explicitly marked image-measurement is an exterior approximation; connector depths, internal board-space and hidden component dimensions are estimates.",
+        "Official factory/UIFlow/Xiaozhi investigation is recorded separately; manufacturer identity and a model preview do not establish firmware compatibility.",
+        "PCB material boundary, thickness, camera/module heights and connector positions are estimates from photos and product envelope; not a47mm-long exact PCB drawing.",
+        "Knownfront is photograph appearance; reverse remains UNKNOWN. Smoothed ring/glass is not a full lens optical/mechanical model."
+      ]
+    },
+    {
+      "id": "m5stack-u037",
+      "sku": "U037",
+      "name": "M5Stack M5Camera-F · U037（160°文档版）",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 4,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u037/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u037-official-source-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尚未完成本SKU独立板级运行，保持 unavailable；模型、照片与元信息不代表固件已运行或硬件验证。",
+        "未验证独立 PCB 布局/板级 CAD，保留可展开的 UNKNOWN 主板；外壳、纸贴、镜头与连接器分别着色。",
+        "原照片/丝印版权归 M5Stack，未确认独立开放图片许可；近似几何按项目许可，厂家 CAD 保留原 MIT。",
+        "本轮未进行浏览器 WebGL 正反斜视/三种材质真实渲染验收；资产加载、几何、UV、材质隔离与展开复位另做离线检查。",
+        "接口位置/插合深度和逐脚物理方位未独立标定，禁用可连接线缆；不能以近似插口当电气路由。",
+        "未找到U037独立结构CAD；仅明示复用U038的24×48mm外壳。源外壳深13.2mm保持原值，鱼眼镜筒/光学表面按U037照片估算至总深约19mm，不能称作U037精确CAD。",
+        "同SKU的原版文档/商店列160°，SKU链接跳到New版150°；原页照片也含NEW标识，版本对应关系未消解。本条目保留original-160deg-docs身份，不合并New版引脚或恢复镜像。",
+        "外壳孔位/声学孔来自U038供体，U037内部照片仅能支持近似关系；供体元件、附件和相机本体均不继承。",
+        "OV2640 DVP、Wi-Fi传图、CP2104、UART/QR/可选传感器程序未模拟；不借用GC0308或UnitCamS3运行器。"
+      ]
+    },
+    {
+      "id": "m5stack-u038",
+      "sku": "U038",
+      "name": "M5Stack M5Camera-X · U038",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 4,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u038/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u038-official-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尚无本型号板级运行模型；模型、光学参数和资料不代表相机/EPD/无线/传感器已经模拟。",
+        "No physical device, factory firmware execution or calibrated1:1 photographic acceptance in this batch.",
+        "Original photographs are M5Stack copyright, not relicensed under the repository MIT license.",
+        "Geometry explicitly marked image-measurement is an exterior approximation; connector depths, internal board-space and hidden component dimensions are estimates.",
+        "Official factory/UIFlow/Xiaozhi investigation is recorded separately; manufacturer identity and a model preview do not establish firmware compatibility.",
+        "Loose wall/LEGO clips and translated print-layout duplicates are excluded; original selected shell assembly coordinates remain intact.",
+        "Manufacturer caseCAD omits the optical lens and populatedPCB; lens dimensions/placement use photograph estimates, not a claim of native lensCAD.",
+        "Official docs specify24x48x15mm while the store specifies24x48x13mm. Nativecase alone is13.2mm; the preview lens raises the envelope to14.9mm. This conflict is preserved; no nonuniform scaling.",
+        "BME280/MPU6050/SPM1423 are reserved unpopulated PCB footprints, not installed sensors."
+      ]
+    },
+    {
+      "id": "m5stack-u082",
+      "sku": "U082",
+      "name": "M5Stack TimerCamera · U082",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u082/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u082-official-source-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本模型只有exact-SKU照片约束的外观近似，未找到该SKU的独立完整厂家CAD/PCB布局。",
+        "未知PCB的轮廓/厚度、隐藏元件与插口深度均保持估算；照片丝印不等于可制造PCB或固件兼容。",
+        "未实现该型号板级运行、相机DVP捕获、Wi-Fi图传、接口协议、传感器电气及电源行为；保留unavailable。",
+        "未进行浏览器三种材质/同视角叠图验收；静态照片不会覆盖任何固件显示画面。",
+        "U082是无外壳、66.5° OV3660、预留SH1.0电池口的普通TimerCamera，不借用U082-X/F外壳、内置电池或鱼眼FactoryTest。",
+        "Micro-B插座为空腔几何近似，梯形轮廓/卡扣未精确还原；没有用Type-C模型替代。12mm官方整体厚度中的后侧器件尚未完整还原。",
+        "裸板上镜头/排线夹座和接口的拆卸关系缺少装配证据，因此不提供猜测的分层爆炸；PCB照片留在板上，背面UNKNOWN通过翻转查看。"
+      ]
+    },
+    {
+      "id": "m5stack-u082-f",
+      "sku": "U082-F",
+      "name": "M5Stack TimerCamera-F · U082-F",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u082-f/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u082-f-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尚无本型号板级运行模型；模型、光学参数和资料不代表相机/EPD/无线/传感器已经模拟。",
+        "No physical device, factory firmware execution or calibrated1:1 photographic acceptance in this batch.",
+        "Original photographs are M5Stack copyright, not relicensed under the repository MIT license.",
+        "Geometry explicitly marked image-measurement is an exterior approximation; connector depths, internal board-space and hidden component dimensions are estimates.",
+        "Official factory/UIFlow/Xiaozhi investigation is recorded separately; manufacturer identity and a model preview do not establish firmware compatibility.",
+        "Loose wall/LEGO clips and translated print-layout duplicates are excluded; original selected shell assembly coordinates remain intact.",
+        "Manufacturer caseCAD omits the optical lens and populatedPCB; lens dimensions/placement use photograph estimates, not a claim of native lensCAD."
+      ]
+    },
+    {
+      "id": "m5stack-u082-x",
+      "sku": "U082-X",
+      "name": "M5Stack TimerCamera-X · U082-X",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 4,
+        "psramMb": 8
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "manufacturer-cad",
+        "provenance": "official-cad",
+        "url": "./assets/m5stack-u082-x/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u082-x-official-factory-source",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "厂家原生外壳 CAD 与可追溯产品资料已接入；本型号的 ESP32 板级运行尚未实现，仍显示尚未完成适配。",
+        "Native source coordinates preserved by one rigid transform; print duplicates and separate kit mounting adapters are explicitly omitted, never globally rescaled.",
+        "Populated PCB is UNKNOWN; schematic connectivity is not fabricated as component placement or hidden structure.",
+        "Paper/optics/connectors retain separate materials; exact hidden depths and some printed detail remain approximate.",
+        "No real browser photo overlays, image decoding, embedded sharing or physical hardware acceptance claimed by the Node/static checks.",
+        "Grove and other external interfaces remain without cable permission until exact mating orientation and signal routing are audited.",
+        "Camera enclosure CAD depth13.2mm excludes optical protrusion; barrel/lens depth is photo/nominal-envelope constrained, not optical or image-capture simulation. Product140mAh battery and RTC are metadata only; no fake camera stream.",
+        "Independent paper sheet display thickness0.01mm and image-face separation0.005mm are visualization estimates. Source photos establish continuous printed paper, including bridges over native slots; physical stock/adhesive thickness and deformation are unknown. No plastic backing is invented.",
+        "Visible fastener/magnet seats are retained in native shell CAD; separate installed screw bodies and magnet geometry are not reconstructed. Hidden thread and magnet depth are unverified; visible screwhead observations are recorded in knowledge."
+      ]
+    },
+    {
+      "id": "m5stack-u109",
+      "sku": "U109",
+      "name": "M5Stack Unit CAM · U109",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u109/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u109-official-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本条目提供精确 SKU 的有来源预览和知识，尚无独立板级模拟器。",
+        "尺寸和照片估算明确区分。UNKNOWN 保留未知内部面；模型不能证明固件、总线或无线协议已运行。",
+        "裸板外观按本型号正反照片近似，PCB/器件高度、镜头光学结构和隐藏固定方式未实测；几何总厚与官方12mm可能有估算偏差。",
+        "UART GPIO16/17、GPIO4蓝灯、OV2640与Grove连接仅为知识；不将串口文本或照片流当作已模拟相机输出。"
+      ]
+    },
+    {
+      "id": "m5stack-u109-b",
+      "sku": "U109-B",
+      "name": "M5Stack Unit Camera · U109-B",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u109-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u109-b-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "U109-B是包含ESP32-WROOM-32E/4MB Flash/65°OV2640的完整主控，并非仅外壳；独立运行尚未实现，保持unavailable。",
+        "固定M5_Hardware树和该SKU官方链接未找到U109-B制造商CAD/内嵌PCB STEP。此模型是本SKU照片和尺寸图约束的近似，不把相同UnitCAM家族的外壳或固件直接算本SKU验证。",
+        "实际PCB布局、内部元件高度/连接器精确深度未知，保留可见UNKNOWN主板；RF金属罩、纸贴、镜头和端子材质不随外壳染色。",
+        "镜头中心取本SKU图纸距顶13.5mm，即模型Y=6.5mm；壳体8mm、总深11mm、R3外角、R8.4前圈分别记录，非U109-X旧估计。",
+        "附带Lego安装夹在型号照片中确认，但不计入主机40x24x11mm包络；未核验装配轨迹，因此不猜放在机身上。",
+        "相机DVP/OV2640寄存器、UART图传、Wi-Fi、蓝LED G4、电源与出厂固件均未运行验收；不借用GC0308、U109裸板或U174等相机运行器。",
+        "本站不下载/转存出厂BIN；官方M5Core UART接收示例明确不能刷到本机，UIFlow主机控制相机也不是相机内部MicroPython固件。",
+        "本轮完成源码加载/UV/真实几何承载/材质与复位检查；尚未完成浏览器正反斜视照片叠图、可读字形或物理硬件验收。",
+        "端口物理pin1/插合方向与深度未标定，Grove保持visual-only且禁止连接线缆。",
+        "两侧3针端子排按本SKU图纸17.78mm排距、2.54mm节距、最下端子距底3.63mm定位；针孔直径/隐藏深度仍是照片估算。"
+      ]
+    },
+    {
+      "id": "m5stack-u109-x",
+      "sku": "U109-X",
+      "name": "M5Stack UnitCAM DIY Kit · U109-X",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u109-x/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u109-x-official-source-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本模型只有exact-SKU照片约束的外观近似，未找到该SKU的独立完整厂家CAD/PCB布局。",
+        "未知PCB的轮廓/厚度、隐藏元件与插口深度均保持估算；照片丝印不等于可制造PCB或固件兼容。",
+        "未实现该型号板级运行、相机DVP捕获、Wi-Fi图传、接口协议、传感器电气及电源行为；保留unavailable。",
+        "未进行浏览器三种材质/同视角叠图验收；静态照片不会覆盖任何固件显示画面。",
+        "DIY套件包含65°和160°两颗OV2640；当前外观选择普通65°装配（40x24x11），160°版本17.2mm厚度仅记录为独立配置事实，未冒用为相同外形。",
+        "背面灰色WROOM32E屏蔽罩是真实金属窗口，单独建面，不能当纸贴；两个纸贴与两侧针孔分别避让。外露端子只作可见外观，不代表接线验证。"
+      ]
+    },
+    {
+      "id": "m5stack-u120",
+      "sku": "U120",
+      "name": "M5Stack Unit LCD · U120",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 4,
+        "psramMb": null
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "manufacturer-cad",
+        "provenance": "official-cad",
+        "url": "./assets/m5stack-u120/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "厂家原生外壳 CAD 与可追溯产品资料已接入；本型号的 ESP32 板级运行尚未实现，仍显示尚未完成适配。",
+        "Native source coordinates preserved by one rigid transform; print duplicates and separate kit mounting adapters are explicitly omitted, never globally rescaled.",
+        "Populated PCB is UNKNOWN; schematic connectivity is not fabricated as component placement or hidden structure.",
+        "Paper/optics/connectors retain separate materials; exact hidden depths and some printed detail remain approximate.",
+        "No real browser photo overlays, image decoding, embedded sharing or physical hardware acceptance claimed by the Node/static checks.",
+        "Grove and other external interfaces remain without cable permission until exact mating orientation and signal routing are audited.",
+        "I2C address0x3E and drawing protocol are facts; neither I2C slave communication nor ST7789 SPI output is emulated in this entry. Screen binds only the real framebuffer; idle preview uses a blank screen.",
+        "Independent paper sheet display thickness0.01mm and image-face separation0.005mm are visualization estimates. Source photos establish continuous printed paper, including bridges over native slots; physical stock/adhesive thickness and deformation are unknown. No plastic backing is invented.",
+        "Visible fastener/magnet seats are retained in native shell CAD; separate installed screw bodies and magnet geometry are not reconstructed. Hidden thread and magnet depth are unverified; visible screwhead observations are recorded in knowledge."
+      ]
+    },
+    {
+      "id": "m5stack-u121",
+      "sku": "U121",
+      "name": "M5Stack Unit PoE CAM · U121",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u121/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u121-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前提供来源明确的外观预览与硬件知识；尚未完成该 SKU 的独立板级模拟器，运行入口保持关闭。",
+        "未实机验证；相机采集、传感器寄存器、Ethernet/Wi-Fi、音频、SD、电源与出厂固件运行均未在本条目验证。",
+        "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+        "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+        "仅复用后继 U121-B-V11 外壳 CAD：两款独立官方尺寸相同并有各自照片对照。传感器、背贴、固件与 PCB 保持此 SKU 身份；外壳对应关系仍是有来源的近似。",
+        "商店明确为 W/O Wi-Fi，而当前文档规格表列出 SoC 的2.4GHz Wi-Fi；保留该资料冲突，不把芯片无线能力当作本 SKU 已装天线或已支持 Wi-Fi。",
+        "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt."
+      ]
+    },
+    {
+      "id": "m5stack-u121-b",
+      "sku": "U121-B",
+      "name": "M5Stack Unit PoE CAM-W · U121-B",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u121-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u121-b-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前提供来源明确的外观预览与硬件知识；尚未完成该 SKU 的独立板级模拟器，运行入口保持关闭。",
+        "未实机验证；相机采集、传感器寄存器、Ethernet/Wi-Fi、音频、SD、电源与出厂固件运行均未在本条目验证。",
+        "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+        "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+        "仅复用后继 U121-B-V11 外壳 CAD：两款独立官方尺寸相同并有各自照片对照。传感器、背贴、固件与 PCB 保持此 SKU 身份；外壳对应关系仍是有来源的近似。",
+        "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt."
+      ]
+    },
+    {
+      "id": "m5stack-u121-b-v11",
+      "sku": "U121-B-V11",
+      "name": "M5Stack Unit PoE CAM-W v1.1 · U121-B-V11",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u121-b-v11/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u121-b-v11-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前提供来源明确的外观预览与硬件知识；尚未完成该 SKU 的独立板级模拟器，运行入口保持关闭。",
+        "未实机验证；相机采集、传感器寄存器、Ethernet/Wi-Fi、音频、SD、电源与出厂固件运行均未在本条目验证。",
+        "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+        "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+        "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt."
+      ]
+    },
+    {
+      "id": "m5stack-u133",
+      "sku": "U133",
+      "name": "M5Stack Unit KMeter (ESP32-C3) · U133",
+      "chip": "esp32c3",
+      "runtime": {
+        "board": null,
+        "flashMb": null,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u133/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u133-official-source-reference",
+        "role": "project",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本模型只有exact-SKU照片约束的外观近似，未找到该SKU的独立完整厂家CAD/PCB布局。",
+        "未知PCB的轮廓/厚度、隐藏元件与插口深度均保持估算；照片丝印不等于可制造PCB或固件兼容。",
+        "未实现该型号板级运行、相机DVP捕获、Wi-Fi图传、接口协议、传感器电气及电源行为；保留unavailable。",
+        "未进行浏览器三种材质/同视角叠图验收；静态照片不会覆盖任何固件显示画面。",
+        "U133原型内部MCU为ESP32-C3，不能把U133-V11隔离版的STM32F030F4P6、固件或壳体版本复制进来。Flash/PSRAM未据资料确定；I2C@0x66与MAX31855仅作为真实硬件事实。"
+      ]
+    },
+    {
+      "id": "m5stack-u138",
+      "sku": "U138",
+      "name": "M5Stack Unit PoESP32 · U138",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": null,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u138/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u138-official-source-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "尚未完成本SKU独立板级运行，保持 unavailable；模型、照片与元信息不代表固件已运行或硬件验证。",
+        "未验证独立 PCB 布局/板级 CAD，保留可展开的 UNKNOWN 主板；外壳、纸贴、镜头与连接器分别着色。",
+        "原照片/丝印版权归 M5Stack，未确认独立开放图片许可；近似几何按项目许可，厂家 CAD 保留原 MIT。",
+        "本轮未进行浏览器 WebGL 正反斜视/三种材质真实渲染验收；资产加载、几何、UV、材质隔离与展开复位另做离线检查。",
+        "接口位置/插合深度和逐脚物理方位未独立标定，禁用可连接线缆；不能以近似插口当电气路由。",
+        "精确原厂 CAD 为26×72×19.2mm，排版副本未混入装配；RJ45金属/触点、Grove和可见单枚紧固件为照片估算。",
+        "文档 Model Size 链接文件名为U129，与U138身份不符；未将该尺寸图当U138测量依据。",
+        "ESP32 MAC+IP101G/RMII 与 W5500/PoE CAM、PoE-P4 不同；未实现 EMAC、PHY、ESP-AT串口或PoE供电。",
+        "Native -Z/16.4mm-wide recess carries the circuit diagram from photo2; +Z/18.8mm-wide recess carries PoESP32 branding from photo6. These distinct carriers are verified separately rather than swapping their printed sides.",
+        "Diagram paper is a single independent masked surface: the photographed RJ45 metal shield is estimated below the plastic-CAD cutout. Paper-to-plastic/metal display clearances0.05/0.025mm prevent z-fighting; hidden shield dimensions are not verified component CAD. Branding ROI uses the measured full-body crop with a conservative real-paper-edge inset, never projects to side/inner faces."
+      ]
+    },
+    {
+      "id": "m5stack-u139",
+      "sku": "U139",
+      "name": "M5Stack Unit ACSSR · U139",
+      "chip": "esp32c3",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": null,
+        "psramMb": null
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "manufacturer-cad",
+        "provenance": "official-cad",
+        "url": "./assets/m5stack-u139/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "厂家原生外壳 CAD 与可追溯产品资料已接入；本型号的 ESP32 板级运行尚未实现，仍显示尚未完成适配。",
+        "Native source coordinates preserved by one rigid transform; print duplicates and separate kit mounting adapters are explicitly omitted, never globally rescaled.",
+        "Populated PCB is UNKNOWN; schematic connectivity is not fabricated as component placement or hidden structure.",
+        "Paper/optics/connectors retain separate materials; exact hidden depths and some printed detail remain approximate.",
+        "No real browser photo overlays, image decoding, embedded sharing or physical hardware acceptance claimed by the Node/static checks.",
+        "Grove and other external interfaces remain without cable permission until exact mating orientation and signal routing are audited.",
+        "3D仅控制模块；随附大SSR本体没有厂家CAD，本轮不虚构其内部与整套装配。",
+        "Independent drawing specifies45×30.7×11.5mm including output forks; source shell alone is18.74×44.94×11.5mm. Do not rescale this shell to the full kit80×45×31mm.",
+        "AC and DC electrical loads, separate SKU labels and unverified factory image identities stay separate despite identical source enclosure bytes. Fork planar shape uses the drawing; hidden mounting depth and plug internals remain photo estimates.",
+        "Independent paper sheet display thickness0.01mm and image-face separation0.005mm are visualization estimates. Source photos establish continuous printed paper, including bridges over native slots; physical stock/adhesive thickness and deformation are unknown. No plastic backing is invented.",
+        "Visible fastener/magnet seats are retained in native shell CAD; separate installed screw bodies and magnet geometry are not reconstructed. Hidden thread and magnet depth are unverified; visible screwhead observations are recorded in knowledge."
+      ]
+    },
+    {
+      "id": "m5stack-u140",
+      "sku": "U140",
+      "name": "M5Stack Unit DCSSR · U140",
+      "chip": "esp32c3",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": null,
+        "psramMb": null
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "manufacturer-cad",
+        "provenance": "official-cad",
+        "url": "./assets/m5stack-u140/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "厂家原生外壳 CAD 与可追溯产品资料已接入；本型号的 ESP32 板级运行尚未实现，仍显示尚未完成适配。",
+        "Native source coordinates preserved by one rigid transform; print duplicates and separate kit mounting adapters are explicitly omitted, never globally rescaled.",
+        "Populated PCB is UNKNOWN; schematic connectivity is not fabricated as component placement or hidden structure.",
+        "Paper/optics/connectors retain separate materials; exact hidden depths and some printed detail remain approximate.",
+        "No real browser photo overlays, image decoding, embedded sharing or physical hardware acceptance claimed by the Node/static checks.",
+        "Grove and other external interfaces remain without cable permission until exact mating orientation and signal routing are audited.",
+        "3D仅控制模块；随附大SSR本体没有厂家CAD，本轮不虚构其内部与整套装配。",
+        "Independent drawing specifies45×30.7×11.5mm including output forks; source shell alone is18.74×44.94×11.5mm. Do not rescale this shell to the full kit80×45×31mm.",
+        "AC and DC electrical loads, separate SKU labels and unverified factory image identities stay separate despite identical source enclosure bytes. Fork planar shape uses the drawing; hidden mounting depth and plug internals remain photo estimates.",
+        "Independent paper sheet display thickness0.01mm and image-face separation0.005mm are visualization estimates. Source photos establish continuous printed paper, including bridges over native slots; physical stock/adhesive thickness and deformation are unknown. No plastic backing is invented.",
+        "Visible fastener/magnet seats are retained in native shell CAD; separate installed screw bodies and magnet geometry are not reconstructed. Hidden thread and magnet depth are unverified; visible screwhead observations are recorded in knowledge."
+      ]
+    },
+    {
+      "id": "m5stack-u149",
+      "sku": "U149",
+      "name": "M5Stack Unit Thermal2 · U149",
+      "chip": "esp32",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": null,
+        "psramMb": null
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "manufacturer-cad",
+        "provenance": "official-cad",
+        "url": "./assets/m5stack-u149/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u149-official-factory-source",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "厂家原生外壳 CAD 与可追溯产品资料已接入；本型号的 ESP32 板级运行尚未实现，仍显示尚未完成适配。",
+        "Native source coordinates preserved by one rigid transform; print duplicates and separate kit mounting adapters are explicitly omitted, never globally rescaled.",
+        "Populated PCB is UNKNOWN; schematic connectivity is not fabricated as component placement or hidden structure.",
+        "Paper/optics/connectors retain separate materials; exact hidden depths and some printed detail remain approximate.",
+        "No real browser photo overlays, image decoding, embedded sharing or physical hardware acceptance claimed by the Node/static checks.",
+        "Grove and other external interfaces remain without cable permission until exact mating orientation and signal routing are audited.",
+        "Native source enclosure bounds23.99×48×8.55mm differ from nominal48×24×8mm; CAD is retained without squeezing it.",
+        "No thermal frame, buzzer sound, RGB output or I2C slave result is fabricated. Front button remains part of the connected manufacturer molding; custom color treatment of that flexure is not individually calibrated.",
+        "Rear black circular buzzer symbol is printed on continuous paper/CAD support, not modeled as an exposed component or opening. Optical rim is a photo approximation; actual buzzer remains on UNKNOWN PCB.",
+        "Independent paper sheet display thickness0.01mm and image-face separation0.005mm are visualization estimates. Source photos establish continuous printed paper, including bridges over native slots; physical stock/adhesive thickness and deformation are unknown. No plastic backing is invented.",
+        "Visible fastener/magnet seats are retained in native shell CAD; separate installed screw bodies and magnet geometry are not reconstructed. Hidden thread and magnet depth are unverified; visible screwhead observations are recorded in knowledge."
+      ]
+    },
+    {
+      "id": "m5stack-u174",
+      "sku": "U174",
+      "name": "M5Stack Unit CamS3 · U174",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u174/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u174-factory",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前提供来源明确的外观预览与硬件知识；尚未完成该 SKU 的独立板级模拟器，运行入口保持关闭。",
+        "未实机验证；相机采集、传感器寄存器、Ethernet/Wi-Fi、音频、SD、电源与出厂固件运行均未在本条目验证。",
+        "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+        "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+        "仅复用后继 U174-B 外壳 CAD：两款独立官方尺寸相同并有各自照片对照。传感器、背贴、固件与 PCB 保持此 SKU 身份；外壳对应关系仍是有来源的近似。",
+        "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt."
+      ]
+    },
+    {
+      "id": "m5stack-u174-b",
+      "sku": "U174-B",
+      "name": "M5Stack Unit CamS3-5MP · U174-B",
+      "chip": "esp32s3",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 8,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u174-b/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u174-b-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "当前提供来源明确的外观预览与硬件知识；尚未完成该 SKU 的独立板级模拟器，运行入口保持关闭。",
+        "未实机验证；相机采集、传感器寄存器、Ethernet/Wi-Fi、音频、SD、电源与出厂固件运行均未在本条目验证。",
+        "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+        "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+        "U174-B 官方当前标为 PY260 5MP/88°，并明确不兼容 U174 程序；不借用 OV2640、OV5640 或 GC0308 的模拟能力。",
+        "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt.",
+        "5MP 蓝色标记按原厂前壳与镜头支架的实际表面投影；微小跨缝纸桥/纸厚仍未知，没有升高整张照片来掩盖支架穿插。"
+      ]
+    },
+    {
+      "id": "m5stack-u195",
+      "sku": "U195",
+      "name": "M5Stack Unit Gateway H2 · U195",
+      "chip": "esp32h2",
+      "runtime": {
+        "board": null,
+        "status": "unavailable",
+        "flashMb": 2,
+        "psramMb": null
+      },
+      "model": {
+        "type": "source-derived",
+        "basis": "manufacturer-cad",
+        "provenance": "official-cad",
+        "url": "./assets/m5stack-u195/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": null,
+        "role": null,
+        "status": null,
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "外观模型与产品知识入库；本型号板级模拟尚未实现，不能据此运行或声称官方固件兼容。",
+        "Manufacturer photos retain their original rights; exterior dimensions are source-backed while local feature sizes and materials are approximate.",
+        "Hidden populated PCB, internal fasteners and material calibration remain unknown. PCB placeholder is explicitly marked UNKNOWN.",
+        "Source images never cover the simulated display with a static firmware screenshot.",
+        "Connector shape/position estimates do not establish pin1 mating, electrical routing or working cables.",
+        "原色、金色和透明材质需要浏览器复核；本批静态检查不代表1:1照片或实物通过。",
+        "Native selected enclosure extents24×48×8mm match the independently documented rotated orientation. Source components1/3 are print duplicates. PCB is still an explicitly estimated unknown envelope; true populated board geometry is not inferred from the schematic.",
+        "USB-C is on the internal PCB; no external shell opening is fabricated. BOOT G9 comes from the exact U195 schematic, not from NanoH2."
+      ]
+    },
+    {
+      "id": "m5stack-u202",
+      "sku": "U202",
+      "name": "M5Stack Unit C6L · U202",
+      "chip": "esp32c6",
+      "runtime": {
+        "board": "unit-c6l",
+        "flashMb": 16,
+        "psramMb": 0,
+        "status": "partial",
+        "lora": true
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u202/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": false,
+      "defaultFirmware": {
+        "id": "m5stack-u202-official-factory-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "厂家STL的装配件原尺寸保留，排版副本已剔除。SMA、Grove、USB和贴纸位置依据尺寸图/照片估算，非连接器厂家CAD。",
+        "未公开PCB布局，内部为UNKNOWN空白占位；SMA螺纹、螺钉及鞭状天线未完整建模。",
+        "贴纸仅取白色纸面，OLED保持空白，不能将产品照片当成固件画面。",
+        "独立Unit C6L板型：SSD1306 CS6/MOSI21/SCK20/DC18/RESET15；64×48玻璃对应RAM X=32..95。硬件SPI与软件GPIO移位均消费客体输出。",
+        "用户键经真实PI4IOE5V6408 P0输入/中断状态，不映射为虚构ESP GPIO；G2 RMT驱动RGB。",
+        "LoRa沿用真实Stamp C6LoRa的电源/复位/引脚与数字包协议子集，不模拟RF、天线增益或距离。蜂鸣器、USB与Grove作为第二CPU附件的双机行为未实现。",
+        "未启动官方User Demo或UIFlow镜像；新增板级协议测试不等于原厂固件兼容。"
+      ]
+    },
+    {
+      "id": "m5stack-u213",
+      "sku": "U213",
+      "name": "M5Stack Unit PoE-P4 · U213",
+      "chip": "esp32p4",
+      "runtime": {
+        "board": null,
+        "flashMb": 16,
+        "psramMb": 32,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "manufacturer-cad",
+        "url": "./assets/m5stack-u213/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u213-official-reference",
+        "role": "factory",
+        "status": "trial",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本条目提供精确 SKU 的有来源预览和知识，尚无独立板级模拟器。",
+        "尺寸和照片估算明确区分。UNKNOWN 保留未知内部面；模型不能证明固件、总线或无线协议已运行。",
+        "原厂壳体保持独立的64×24×20.2mm，未导入远处重复排版。内部主板为UNKNOWN。",
+        "RJ45、双USB、FPC、排针、microSD、用户键和IR/RGB的完整立体件尚未逐件还原；未将DSI接口当作已集成显示屏或已有P4显示运行。"
+      ]
+    },
+    {
+      "id": "m5stack-u215",
+      "sku": "U215",
+      "name": "M5Stack Unit CardKB2 · U215",
+      "chip": "esp32c61",
+      "runtime": {
+        "board": null,
+        "flashMb": 4,
+        "psramMb": 0,
+        "status": "unavailable"
+      },
+      "model": {
+        "type": "photo-derived",
+        "url": "./assets/m5stack-u215/model.json",
+        "status": "partial"
+      },
+      "addedThisAudit": true,
+      "defaultFirmware": {
+        "id": "m5stack-u215-official-reference",
+        "role": "factory",
+        "status": "reference",
+        "simulationVerified": false,
+        "hardwareValidated": false
+      },
+      "limitations": [
+        "未实机验证；本条目提供精确 SKU 的有来源预览和知识，尚无独立板级模拟器。",
+        "尺寸和照片估算明确区分。UNKNOWN 保留未知内部面；模型不能证明固件、总线或无线协议已运行。",
+        "官网已抓规格为84.7×54.3×6.15mm，尺寸图区分84×54×1mm PCB及78×48mm孔距；搜索缓存中的1mm不当作整机厚度。",
+        "42键使用厂商4×11矩阵及真实GPIO/扫描编号；(0,10)/(3,10)未装键。按键高度和金属外观估算，I2C/UART/BLE HID/ESP-NOW均未实现，不将点击或ASCII回执当客体消费。"
+      ]
+    }
+  ]
+}

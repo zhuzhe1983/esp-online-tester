@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:33:50.580Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "b94d82b7b8f81359f018f9940070247f9bdf5cb3e06e4314cfbbae754b14e9eb",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "2563f4c49243ecd751eb45ae366eb723d562b236eaf7b1d89fd07111929435c1"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c8052e1919733bd2ecea6992e06722509a484dfea3704589250f14371407eb60"
+    }
+  ],
+  "products": [
+    {
+      "productId": "m5stack-k129",
+      "board": "capsule",
+      "control": "wake",
+      "outputKind": "rgb",
+      "flashMb": 8,
+      "psramMb": 0,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-RMT-output-cannot-light-real-RGB"
+      ],
+      "limits": [
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "仅实现 G42/G0 数字输入、G21 硬件 RMT RGB、SDA8/SCL10 的 BMI270@0x69 轮询寄存器与 BM8563@0x51 日历；GPIO38 仅在 v1.1 控制 RGB 电源。",
+        "保持虚拟常供电；HOLD46、RTC 定时唤醒/闹钟、microSD 传输、红外、麦克风、蜂鸣器与实机电源行为尚未实现。",
+        "可尝试目标芯片/容量/布局校验通过的固件，未执行本型号官方固件或实机验收。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ]
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.0586245,
+            "output": {
+              "leds": [
+                [
+                  0,
+                  255,
+                  0
+                ]
+              ]
+            }
+          },
+          "guestSerial": "COVERAGE capsule READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ]
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.058746445833333334,
+              "output": {
+                "leds": [
+                  [
+                    0,
+                    255,
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.06961574166666666,
+              "output": {
+                "leds": [
+                  [
+                    255,
+                    0,
+                    0
+                  ]
+                ]
+              }
+            }
+          ],
+          "guestSerial": "COVERAGE capsule READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "748223a7df008852098c22ee17f9194ce652995b1605645779b7768e13aea438",
+      "negativeProbeSha256": "06e3f7583399c3b625a59beb408c7342c6465cffc33360c9f10ca11585905f1f",
+      "negative": {
+        "initial": {
+          "leds": [],
+          "noRgbUpdatePublished": true
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.06686221666666667,
+          "output": {
+            "leds": [],
+            "noRgbUpdatePublished": true
+          }
+        },
+        "guestSerial": "COVERAGE capsule READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      },
+      "independentNegativeTrace": {
+        "initialClock": 0.0767354375,
+        "finalClock": 0.09986098333333333,
+        "observedLedEvents": [
+          {
+            "negative": true,
+            "leds": []
+          }
+        ],
+        "afterWrongRoutePressSerial": "COVERAGE capsule READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n",
+        "publicStateLeds": []
+      },
+      "romSha256": {
+        "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-c149",
+      "board": "nanoh2",
+      "control": "button-a",
+      "outputKind": "rgb",
+      "flashMb": 4,
+      "psramMb": 0,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-RMT-output-cannot-light-real-RGB"
+      ],
+      "limits": [
+        "可配置、分享和查看；尚未完成全部照片视角和可见连接器细节的1:1验收。",
+        "内部主板为UNKNOWN估算占位，不宣称真实PCB结构。",
+        "独立ESP32-H2执行核心；仅SRAM app-direct、轮询UART/GPIO、有限RMT，不支持ROM/Flash-cache启动、USB、Thread/Zigbee/蓝牙或红外。",
+        "RGB需G10真实GPIO供电并由G11客体RMT输出驱动；断电清除像素，重新供电不会重放旧颜色。蓝灯光学位置尚未校准。",
+        "3D按钮/灯窗按同型号官方正面照估计位置，约±0.5 mm；没有实机按压力或光学校准。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.15648438541666668,
+            "output": {
+              "leds": [
+                [
+                  0,
+                  255,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            }
+          },
+          "guestSerial": "COVERAGE nanoh2 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.17325598958333333,
+              "output": {
+                "leds": [
+                  [
+                    0,
+                    255,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.20231808333333334,
+              "output": {
+                "leds": [
+                  [
+                    255,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0
+                  ]
+                ]
+              }
+            }
+          ],
+          "guestSerial": "COVERAGE nanoh2 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "117d80196b2f6097807dbc0a9f0b38034eb87040e2dd8ea045de1339a216c9e0",
+      "negativeProbeSha256": "c469687ab376ec0a1bd735b048c3e9e7ca6f936614005f8f05f81044f4bc7563",
+      "negative": {
+        "initial": {
+          "leds": [],
+          "noRgbUpdatePublished": true
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.00019760416666666667,
+          "output": {
+            "leds": [],
+            "noRgbUpdatePublished": true
+          }
+        },
+        "guestSerial": "COVERAGE nanoh2 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      },
+      "independentNegativeTrace": {
+        "initialClock": 0.024076489583333333,
+        "finalClock": 0.05325751041666667,
+        "observedLedEvents": [
+          {
+            "negative": true,
+            "leds": []
+          }
+        ],
+        "afterWrongRoutePressSerial": "COVERAGE nanoh2 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n",
+        "publicStateLeds": []
+      },
+      "romSha256": {},
+      "status": "passed"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "status": "passed",
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ]
+}

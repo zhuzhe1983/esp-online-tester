@@ -1,0 +1,1316 @@
+{
+  "sourceId": "manufacturer-cad",
+  "title": "M5Stack Unit CamS3 · U174",
+  "summary": "Unit CamS3，OV2640 相机，16 MB Flash / 8 MB PSRAM。当前为有来源的外观预览，独立板级运行尚未完成。",
+  "preserveMesh": true,
+  "parts": [
+    {
+      "sourceComponent": 0,
+      "sourceAssemblyComponent": 0,
+      "sourceFaceRanges": [
+        [
+          0,
+          1754
+        ]
+      ],
+      "name": "shell-back",
+      "role": "shell",
+      "color": "#bfc2bb",
+      "basis": "manufacturer-cad",
+      "sourceIds": [
+        "manufacturer-cad"
+      ],
+      "notes": "Exact source STL face subset from assembled component 0. Shared exterior geometry from donor SKU; camera/PCB identity is not inherited."
+    },
+    {
+      "sourceComponent": 0,
+      "sourceAssemblyComponent": 2,
+      "sourceFaceRanges": [
+        [
+          3508,
+          6266
+        ]
+      ],
+      "name": "shell-front",
+      "role": "shell",
+      "color": "#bfc2bb",
+      "basis": "manufacturer-cad",
+      "sourceIds": [
+        "manufacturer-cad"
+      ],
+      "notes": "Exact source STL face subset from assembled component 2. Shared exterior geometry from donor SKU; camera/PCB identity is not inherited."
+    },
+    {
+      "sourceComponent": 0,
+      "sourceAssemblyComponent": 4,
+      "sourceFaceRanges": [
+        [
+          9024,
+          10438
+        ]
+      ],
+      "name": "lens-carrier",
+      "role": "shell",
+      "color": "#bfc2bb",
+      "basis": "manufacturer-cad",
+      "sourceIds": [
+        "manufacturer-cad"
+      ],
+      "notes": "Exact source STL face subset from assembled component 4. Shared exterior geometry from donor SKU; camera/PCB identity is not inherited."
+    }
+  ],
+  "matrixRows": [
+    [
+      1,
+      0,
+      0,
+      -12.425279974937439
+    ],
+    [
+      0,
+      1,
+      0,
+      -20.059738667681813
+    ],
+    [
+      0,
+      0,
+      1,
+      6.822604954242706
+    ],
+    [
+      0,
+      0,
+      0,
+      1
+    ]
+  ],
+  "assemblyNotes": "Original millimetres and assembled cluster only. One rigid right-handed rotation/translation; sourceFaceRanges select unchanged original binary STL faces. No global/nonuniform scaling or printed-layout fitting.",
+  "omittedComponents": [
+    {
+      "index": 1,
+      "reason": "Separated print-layout duplicate or optional mounting accessory; not inserted into the assembled camera. Camera-specific donor internals also omitted for earlier SKUs.",
+      "sourceBoundsMm": [
+        [
+          44.891422271728516,
+          0.03180408105254173,
+          -12.32260513305664
+        ],
+        [
+          68.87047576904297,
+          40.0108528137207,
+          -4.352604866027832
+        ]
+      ]
+    },
+    {
+      "index": 3,
+      "reason": "Separated print-layout duplicate or optional mounting accessory; not inserted into the assembled camera. Camera-specific donor internals also omitted for earlier SKUs.",
+      "sourceBoundsMm": [
+        [
+          92.61538696289062,
+          0.042276136577129364,
+          -9.32260513305664
+        ],
+        [
+          116.66077423095703,
+          40.08766174316406,
+          -4.322604656219482
+        ]
+      ]
+    },
+    {
+      "index": 5,
+      "reason": "Separated print-layout duplicate or optional mounting accessory; not inserted into the assembled camera. Camera-specific donor internals also omitted for earlier SKUs.",
+      "sourceBoundsMm": [
+        [
+          141.51632690429688,
+          8.114191055297852,
+          -6.322604656219482
+        ],
+        [
+          162.87570190429688,
+          30.639633178710938,
+          -1.322604775428772
+        ]
+      ]
+    }
+  ],
+  "dimensions": {
+    "width": 24,
+    "height": 40,
+    "depth": 11,
+    "unit": "mm",
+    "sourceId": "official-docs"
+  },
+  "targets": [
+    {
+      "name": "width",
+      "axis": 0,
+      "valueMm": 24,
+      "toleranceMm": 0.1,
+      "sourceId": "official-docs",
+      "notes": "Independent nominal product envelope; 0.1 mm display comparison allowance, not a manufacturing tolerance."
+    },
+    {
+      "name": "height",
+      "axis": 1,
+      "valueMm": 40,
+      "toleranceMm": 0.1,
+      "sourceId": "official-docs",
+      "notes": "Independent nominal product envelope; 0.1 mm display comparison allowance, not a manufacturing tolerance."
+    },
+    {
+      "name": "depth",
+      "axis": 2,
+      "valueMm": 11,
+      "toleranceMm": 0.1,
+      "sourceId": "official-docs",
+      "notes": "Independent nominal product envelope; 0.1 mm display comparison allowance, not a manufacturing tolerance."
+    }
+  ],
+  "presentation": {
+    "bodySizeMm": [
+      24,
+      40,
+      11
+    ],
+    "inspectionGroups": [
+      {
+        "id": "front-cover",
+        "parts": [
+          "shell-front",
+          "lens-carrier"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          25
+        ],
+        "sourceIds": [
+          "manufacturer-cad",
+          "photo-front"
+        ],
+        "notes": "Source-backed cover groups separate along Z; camera optics, board and soldered connectors remain together at the original electronics position. Viewing offsets do not claim a physical disassembly path."
+      },
+      {
+        "id": "rear-cover",
+        "parts": [
+          "shell-back",
+          "rear-paper"
+        ],
+        "offsetMm": [
+          0,
+          0,
+          -25
+        ],
+        "sourceIds": [
+          "manufacturer-cad",
+          "photo-back"
+        ],
+        "notes": "Rear shell and its paper move together. PCB/metal shield, SD cage, header housings and connector anchors remain a rigid electronics assembly."
+      }
+    ]
+  },
+  "derivedParts": [
+    {
+      "id": "pcb-main",
+      "kind": "pcb-placeholder",
+      "color": "#414b43",
+      "geometry": {
+        "sizeMm": [
+          20,
+          36,
+          1
+        ],
+        "centerMm": [
+          0,
+          0,
+          -2.2
+        ],
+        "labelSide": "front",
+        "labelSizeMm": [
+          11,
+          3
+        ],
+        "labelOffsetMm": [
+          0,
+          -6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Blank fitted mainboard layer. Visible shield and sockets are separately source-photo constrained; no invented PCB traces or component layout. Front UNKNOWN is exposed in Inspect parts."
+    },
+    {
+      "id": "camera-lens-barrel",
+      "kind": "cylinder",
+      "color": "#171b18",
+      "geometry": {
+        "radiusMm": 3.4,
+        "depthMm": 3.0,
+        "centerMm": [
+          0,
+          6.5,
+          3.65
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "OV2640 visible lens exterior only. Radius, hidden depth and seating are photograph estimates ±0.5 mm; no camera sensor behavior or internals."
+    },
+    {
+      "id": "camera-optical-window",
+      "kind": "cylinder",
+      "color": "#0d1110",
+      "geometry": {
+        "radiusMm": 1.6,
+        "depthMm": 0.1,
+        "centerMm": [
+          0,
+          6.5,
+          5.19
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Photo-constrained approximate visible hardware; size/height not independently measured."
+    },
+    {
+      "id": "grove",
+      "kind": "connector-visual",
+      "color": "#eeeeeb",
+      "geometry": {
+        "centerMm": [
+          0,
+          -19.98,
+          -1.5
+        ],
+        "rotation": [
+          1.5707963267948966,
+          0,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "HY2.0-4P brings out ESP32-S3 D+/D- per this SKU documentation. Shape/hidden depth estimated; pin1 mating direction is not calibrated, so attached cables remain disabled.",
+      "connectorType": "HY2.0-4P",
+      "allowConnections": false,
+      "housingColor": "#e4e4df"
+    },
+    {
+      "id": "rear-header-left-0-left",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          -9.82,
+          -10.9,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-0-right",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          -7.68,
+          -10.9,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-0-top",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          -8.75,
+          -9.83,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-0-bottom",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          -8.75,
+          -11.97,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-0-recess",
+      "kind": "box",
+      "color": "#111513",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          1.74,
+          0.1
+        ],
+        "centerMm": [
+          -8.75,
+          -10.9,
+          -3.8999999999999995
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Photo-constrained approximate visible hardware; size/height not independently measured."
+    },
+    {
+      "id": "rear-header-left-1-left",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          -9.82,
+          -13.44,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-1-right",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          -7.68,
+          -13.44,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-1-top",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          -8.75,
+          -12.37,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-1-bottom",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          -8.75,
+          -14.51,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-1-recess",
+      "kind": "box",
+      "color": "#111513",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          1.74,
+          0.1
+        ],
+        "centerMm": [
+          -8.75,
+          -13.44,
+          -3.8999999999999995
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Photo-constrained approximate visible hardware; size/height not independently measured."
+    },
+    {
+      "id": "rear-header-left-2-left",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          -9.82,
+          -15.98,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-2-right",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          -7.68,
+          -15.98,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-2-top",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          -8.75,
+          -14.91,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-2-bottom",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          -8.75,
+          -17.05,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-left-2-recess",
+      "kind": "box",
+      "color": "#111513",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          1.74,
+          0.1
+        ],
+        "centerMm": [
+          -8.75,
+          -15.98,
+          -3.8999999999999995
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Photo-constrained approximate visible hardware; size/height not independently measured."
+    },
+    {
+      "id": "rear-header-right-0-left",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          7.68,
+          -10.9,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-0-right",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          9.82,
+          -10.9,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-0-top",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          8.75,
+          -9.83,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-0-bottom",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          8.75,
+          -11.97,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-0-recess",
+      "kind": "box",
+      "color": "#111513",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          1.74,
+          0.1
+        ],
+        "centerMm": [
+          8.75,
+          -10.9,
+          -3.8999999999999995
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Photo-constrained approximate visible hardware; size/height not independently measured."
+    },
+    {
+      "id": "rear-header-right-1-left",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          7.68,
+          -13.44,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-1-right",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          9.82,
+          -13.44,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-1-top",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          8.75,
+          -12.37,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-1-bottom",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          8.75,
+          -14.51,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-1-recess",
+      "kind": "box",
+      "color": "#111513",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          1.74,
+          0.1
+        ],
+        "centerMm": [
+          8.75,
+          -13.44,
+          -3.8999999999999995
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Photo-constrained approximate visible hardware; size/height not independently measured."
+    },
+    {
+      "id": "rear-header-right-2-left",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          7.68,
+          -15.98,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-2-right",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          0.4,
+          2.54,
+          1.5
+        ],
+        "centerMm": [
+          9.82,
+          -15.98,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-2-top",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          8.75,
+          -14.91,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-2-bottom",
+      "kind": "box",
+      "color": "#171b19",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          0.4,
+          1.5
+        ],
+        "centerMm": [
+          8.75,
+          -17.05,
+          -4.6
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Open female-header frame from this SKU photograph; 2.54 mm nominal pitch and housing height are visual estimates, not a verified connector part. No cable/electrical attachment is enabled."
+    },
+    {
+      "id": "rear-header-right-2-recess",
+      "kind": "box",
+      "color": "#111513",
+      "geometry": {
+        "sizeMm": [
+          1.74,
+          1.74,
+          0.1
+        ],
+        "centerMm": [
+          8.75,
+          -15.98,
+          -3.8999999999999995
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Photo-constrained approximate visible hardware; size/height not independently measured."
+    },
+    {
+      "id": "radio-shield",
+      "kind": "box",
+      "color": "#b8bbb4",
+      "geometry": {
+        "sizeMm": [
+          15.296842105263158,
+          17.180315581854043,
+          1.4
+        ],
+        "centerMm": [
+          0.039473684210526994,
+          2.445759368836292,
+          -4.78
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Visible ESP32-S3 module shield footprint from this exact rear photograph. Height1.4mm and Z seating estimated; this is not a board-level CAD or populated PCB. XY footprint follows the retained source-photo ROI in the independent body envelope, plus0.03mm support margin on each edge. This is image measurement, not manufacturer PCB CAD."
+    },
+    {
+      "id": "sd-card-cage",
+      "kind": "box",
+      "color": "#a7aca5",
+      "geometry": {
+        "sizeMm": [
+          10.24421052631579,
+          4.320355029585802,
+          1.0
+        ],
+        "centerMm": [
+          -0.03947368421052655,
+          -15.581854043392507,
+          -4.97
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Visible microSD metal cage preview; hidden card/slot mechanism and thickness estimated. No guest SD transport exists for this SKU. XY footprint follows the retained source-photo ROI in the independent body envelope, plus0.03mm support margin on each edge. This is image measurement, not manufacturer PCB CAD."
+    },
+    {
+      "id": "rear-paper",
+      "kind": "label",
+      "color": "#343836",
+      "geometry": {
+        "sizeMm": [
+          24,
+          40
+        ],
+        "centerMm": [
+          0,
+          0,
+          -5.525
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Independent factory paper; source-pixel mask preserves shield and connector identities. Nominal display clearance is not a measured paper thickness.",
+      "texture": "rear-paper.png"
+    },
+    {
+      "id": "pcb-shield-markings",
+      "kind": "label",
+      "color": "#343836",
+      "geometry": {
+        "sizeMm": [
+          24,
+          40
+        ],
+        "centerMm": [
+          0,
+          0,
+          -5.495
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Photo appearance of the RF shield only; source reflections/uncalibrated color do not establish PCB layout or metal optical properties.",
+      "texture": "shield-markings.png"
+    },
+    {
+      "id": "pcb-sd-markings",
+      "kind": "label",
+      "color": "#343836",
+      "geometry": {
+        "sizeMm": [
+          24,
+          40
+        ],
+        "centerMm": [
+          0,
+          0,
+          -5.485
+        ],
+        "rotation": [
+          0,
+          3.141592653589793,
+          0
+        ]
+      },
+      "basis": "image-measurement",
+      "sourceIds": [
+        "official-docs",
+        "photo-front",
+        "photo-back"
+      ],
+      "notes": "Separate cage legend, not shell paper and not simulated storage output.",
+      "texture": "sd-markings.png"
+    }
+  ],
+  "photos": [
+    {
+      "sourceId": "photo-front",
+      "view": "front"
+    },
+    {
+      "sourceId": "photo-back",
+      "view": "back"
+    },
+    {
+      "sourceId": "photo-side",
+      "view": "side"
+    }
+  ],
+  "textureSources": [
+    {
+      "file": "rear-paper.png",
+      "sourceId": "photo-back",
+      "cropXYXY": [
+        248,
+        147,
+        552,
+        654
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              298,
+              169,
+              500,
+              255
+            ],
+            "radiusPx": 2
+          },
+          {
+            "xyxy": [
+              315,
+              484,
+              483,
+              556
+            ],
+            "radiusPx": 1
+          }
+        ]
+      },
+      "notes": "Only the exact SKU top and lower printed paper, excluding metal shield, black headers and SD cage. Full-body24x40mm mapping, ±0.6mm registration uncertainty; real paper is not extended across apertures."
+    },
+    {
+      "file": "shield-markings.png",
+      "sourceId": "photo-back",
+      "cropXYXY": [
+        248,
+        147,
+        552,
+        654
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              303,
+              261,
+              496,
+              478
+            ],
+            "radiusPx": 1
+          }
+        ]
+      },
+      "notes": "Actual metal RF shield markings from this SKU photograph, separately mapped onto the known-visible shield estimate; gray metal is not classified as paper or recolorable shell."
+    },
+    {
+      "file": "sd-markings.png",
+      "sourceId": "photo-back",
+      "cropXYXY": [
+        248,
+        147,
+        552,
+        654
+      ],
+      "alphaMask": {
+        "includeRoundedRects": [
+          {
+            "xyxy": [
+              336,
+              571,
+              465,
+              625
+            ],
+            "radiusPx": 1
+          }
+        ]
+      },
+      "notes": "Printed SD/socket legend only, separately attached to the metal cage estimate. No component geometry is inferred from the printed electrical diagram."
+    }
+  ],
+  "reviewViews": {
+    "front": {
+      "cameraPosition": [
+        0,
+        0,
+        180
+      ],
+      "lookAt": [
+        0,
+        0,
+        0
+      ]
+    },
+    "back": {
+      "cameraPosition": [
+        0,
+        0,
+        -180
+      ],
+      "lookAt": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "provenance": {
+    "repository": "https://github.com/m5stack/M5_Hardware",
+    "sourceLicense": "MIT; M5_Hardware manufacturer CAD only. Official photographs remain M5Stack copyright; no separate open photo licence established."
+  },
+  "limitations": [
+    "当前提供来源明确的外观预览与硬件知识；尚未完成该 SKU 的独立板级模拟器，运行入口保持关闭。",
+    "未实机验证；相机采集、传感器寄存器、Ethernet/Wi-Fi、音频、SD、电源与出厂固件运行均未在本条目验证。",
+    "照片用于该型号的可见印刷，原图及遮罩随模型保留。照片和近似插座/镜头不证明 PCB 布局、电气接线、制造精度或光学行为。",
+    "云浏览器无法创建 WebGL context；原色/金色/半透明与斜视的真实渲染验收尚未完成，另做几何与材质隔离检查。",
+    "仅复用后继 U174-B 外壳 CAD：两款独立官方尺寸相同并有各自照片对照。传感器、背贴、固件与 PCB 保持此 SKU 身份；外壳对应关系仍是有来源的近似。",
+    "Nominal dimensions constrain only the body: source CAD retains its measured deviations (CamS3 width/height about +0.056 mm). Derived contacts/connector inserts and camera seating are estimates and are measured separately in the verification receipt."
+  ],
+  "hardwareRevision": "unspecified",
+  "supportingAssets": [
+    {
+      "sourceId": "dimension-drawing",
+      "file": "dimension-drawing.jpg"
+    }
+  ]
+}

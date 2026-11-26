@@ -26,6 +26,9 @@ const STRIDE: u32 = 0x100;
 const COMMON: u32 = 0xa00;
 /// Descriptors walked per transfer before the chain is treated as looping.
 const STEP_BUDGET: usize = 1 << 16;
+/// Bound a guest's one service pass before allocating its stream. P4 frame
+/// buffers fit within this limit; malformed/looping chains fail with DSCR_ERR.
+const MAX_TRANSFER_BYTES: usize = 32 * 1024 * 1024;
 
 /// dma2d_channel.h: PPA SRM uses peri_sel 1 on both sides; blending reads background on TX 2,
 /// foreground on TX 3, writes on RX 2. M2M uses any of TX 4-7 / RX 3-7 (dma2d_ll.h masks 0xF0/0xF8).
@@ -145,11 +148,13 @@ impl Dma2d {
             if check_owner && !d.owner() { return Err(Fault::Prohibited); }
             if d.d2() {
                 let (start, row, stride, rows) = d.rows().ok_or(Fault::Unmapped)?;
+                if row.checked_mul(rows).and_then(|n| data.len().checked_add(n)).is_none_or(|n| n > MAX_TRANSFER_BYTES) { return Err(Fault::Prohibited); }
                 for r in 0..rows {
                     let at = data.len(); data.resize(at + row, 0);
                     mem.read(start.wrapping_add((r * stride) as u32), &mut data[at..])?;
                 }
             } else {
+                if data.len().checked_add(d.length()).is_none_or(|n| n > MAX_TRANSFER_BYTES) { return Err(Fault::Prohibited); }
                 let at = data.len(); data.resize(at + d.length(), 0);
                 mem.read(d.buf, &mut data[at..])?;
             }

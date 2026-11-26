@@ -19,6 +19,7 @@ pub mod bmi270;
 pub mod ina3221;
 pub mod vl53l3cx;
 pub mod mpu6886;
+pub mod mlx90640;
 pub mod lp5562;
 pub mod st25r3916;
 pub mod sht4x;

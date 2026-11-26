@@ -1,0 +1,1237 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-26T11:34:53.718Z",
+  "backend": "public-runtime-production-worker-wasm-original-LX6-LX7-RV32-SRAM",
+  "wasmSha256": "0cc18d96042c0b2707afbe3b80102cabcbdd6868fccfcc84504cabed8b3179a2",
+  "productionWorkerSha256": "79d6ab04a9b841886c42b27b2bc7291a883cd3ecc77153f15200c754892bdf97",
+  "runtimeSha256": "3e9887d282dd6ebcb3111145784c4acc221ed9077abf88c7b09a26998fad9b1d",
+  "catalogSha256": "5ed44ad4847013be6e03d5977556ae64c450c9d6ae85576f0bd585c27dcd62bb",
+  "harnessSha256": "9a8bae1b41b7c5394a6cee5d47d6a57baadbecb212c3f59a12e8490497a26da8",
+  "fixtureSources": [
+    {
+      "path": "tools/fixtures/m5-coverage-xtensa-probe.mjs",
+      "sha256": "2563f4c49243ecd751eb45ae366eb723d562b236eaf7b1d89fd07111929435c1"
+    },
+    {
+      "path": "tools/fixtures/m5-coverage-rv-probe.mjs",
+      "sha256": "c16b8a5693733a55fd0e6313f0b726a882afcbfad87143155450b24dbee524a4"
+    }
+  ],
+  "products": [
+    {
+      "productId": "m5stack-c148",
+      "board": "powerhub",
+      "control": "button-user",
+      "outputKind": "serial",
+      "flashMb": 16,
+      "psramMb": 8,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-GPIO-read-cannot-consume-real-key"
+      ],
+      "limits": [
+        "仅ESP32-S3 CPU/UART和G11用户按键子集；尚未启动验收官方出厂固件。",
+        "STM32G031、RGB、顶部/侧面电源键、电源轨、INA226、RTC、CAN、RS485和USB路由均未模拟；不将PMU键映射成ESP GPIO。",
+        "C148不含NP-F550电池；K148套装独立建档。既有模型仅表示主机，不表示已安装电池。",
+        "用户键的CAD按压区域已接入物理G11；背贴、孔洞和材质的原有几何边界仍以原模型报告为准。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": null,
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.0584962875,
+            "output": null
+          },
+          "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": null,
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.05865343333333333,
+              "output": null
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.070704675,
+              "output": null
+            }
+          ],
+          "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\nKEY UP\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "ae5d0e4bbf71e8088bd8f27baadd70bad3fd99d994b5da1e6ff2602669ac208e",
+      "negativeProbeSha256": "79e3edc8565cf8bedd5b9a17b3354c1999a0e40c6be31fad1851fa90a5c580b5",
+      "negative": {
+        "initial": null,
+        "queuedAtGuestSeconds": 0.058499725,
+        "observedAtGuestSeconds": 0.0831079375,
+        "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-k148",
+      "board": "powerhub",
+      "control": "button-user",
+      "outputKind": "serial",
+      "flashMb": 16,
+      "psramMb": 8,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-GPIO-read-cannot-consume-real-key"
+      ],
+      "limits": [
+        "仅ESP32-S3 CPU/UART和G11用户按键子集；尚未启动验收官方出厂固件。",
+        "STM32G031、RGB、顶部/侧面电源键、电源轨、INA226、RTC、CAN、RS485和USB路由均未模拟；不将PMU键映射成ESP GPIO。",
+        "用户键的CAD按压区域已接入物理G11；背贴、孔洞和材质的原有几何边界仍以原模型报告为准。",
+        "官方K148套装包含NP-F550 2000mAh电池；当前共享C148主机几何，明确显示电池未安装。电池壳体、触点、充放电与续航均未还原。",
+        "固件目录通过明确firmwareTargetId共享；这不继承出厂镜像执行或实机验证结论。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": null,
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.05851947083333333,
+            "output": null
+          },
+          "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": null,
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.00015520416666666667,
+              "output": null
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.006961475,
+              "output": null
+            }
+          ],
+          "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\nKEY UP\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "ae5d0e4bbf71e8088bd8f27baadd70bad3fd99d994b5da1e6ff2602669ac208e",
+      "negativeProbeSha256": "79e3edc8565cf8bedd5b9a17b3354c1999a0e40c6be31fad1851fa90a5c580b5",
+      "negative": {
+        "initial": null,
+        "queuedAtGuestSeconds": 0.05854247083333333,
+        "observedAtGuestSeconds": 0.08324801666666666,
+        "guestSerial": "COVERAGE powerhub READY\nKEY UP\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-k129",
+      "board": "capsule",
+      "control": "wake",
+      "outputKind": "rgb",
+      "flashMb": 8,
+      "psramMb": 0,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-RMT-output-cannot-light-real-RGB"
+      ],
+      "limits": [
+        "尺寸、材质、未知内部件和照片核验范围见模型报告。",
+        "仅实现 G42/G0 数字输入、G21 硬件 RMT RGB、SDA8/SCL10 的 BMI270@0x69 轮询寄存器与 BM8563@0x51 日历；GPIO38 仅在 v1.1 控制 RGB 电源。",
+        "保持虚拟常供电；HOLD46、RTC 定时唤醒/闹钟、microSD 传输、红外、麦克风、蜂鸣器与实机电源行为尚未实现。",
+        "可尝试目标芯片/容量/布局校验通过的固件，未执行本型号官方固件或实机验收。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ]
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.058488625,
+            "output": {
+              "leds": [
+                [
+                  0,
+                  255,
+                  0
+                ]
+              ]
+            }
+          },
+          "guestSerial": "COVERAGE capsule READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ]
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.058546720833333336,
+              "output": {
+                "leds": [
+                  [
+                    0,
+                    255,
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.07008270833333333,
+              "output": {
+                "leds": [
+                  [
+                    255,
+                    0,
+                    0
+                  ]
+                ]
+              }
+            }
+          ],
+          "guestSerial": "COVERAGE capsule READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "748223a7df008852098c22ee17f9194ce652995b1605645779b7768e13aea438",
+      "negativeProbeSha256": "06e3f7583399c3b625a59beb408c7342c6465cffc33360c9f10ca11585905f1f",
+      "negative": {
+        "initial": {
+          "leds": [],
+          "noPublishedLedFrame": true
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.0585731,
+          "output": {
+            "leds": [],
+            "noPublishedLedFrame": true
+          }
+        },
+        "guestSerial": "COVERAGE capsule READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-k129-v11",
+      "board": "capsule-v11",
+      "control": "wake",
+      "outputKind": "rgb",
+      "flashMb": 8,
+      "psramMb": 0,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-RMT-output-cannot-light-real-RGB"
+      ],
+      "limits": [
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Model uses the no-label front configuration explicitly pictured by the manufacturer; supplied loose label is not falsely printed into source geometry.",
+        "USB/Grove mouths are source-photo-informed standard visual approximations; shell outlines remain manufacturer CAD.",
+        "Capsule v1.1 changes core module to Stamp-S3A; earlier Capsule firmware/PCB is not assumed identical.",
+        "仅实现 G42/G0 数字输入、G21 硬件 RMT RGB、SDA8/SCL10 的 BMI270@0x69 轮询寄存器与 BM8563@0x51 日历；GPIO38 仅在 v1.1 控制 RGB 电源。",
+        "保持虚拟常供电；HOLD46、RTC 定时唤醒/闹钟、microSD 传输、红外、麦克风、蜂鸣器与实机电源行为尚未实现。",
+        "可尝试目标芯片/容量/布局校验通过的固件，未执行本型号官方固件或实机验收。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ]
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.05855525416666667,
+            "output": {
+              "leds": [
+                [
+                  0,
+                  255,
+                  0
+                ]
+              ]
+            }
+          },
+          "guestSerial": "COVERAGE capsule-v11 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ]
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.05853277916666667,
+              "output": {
+                "leds": [
+                  [
+                    0,
+                    255,
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.06993806666666667,
+              "output": {
+                "leds": [
+                  [
+                    255,
+                    0,
+                    0
+                  ]
+                ]
+              }
+            }
+          ],
+          "guestSerial": "COVERAGE capsule-v11 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "71dfa3175702885e58f55e4ded0025aba8430657cc111e4698e4c13c60775ae9",
+      "negativeProbeSha256": "8ecc68326da3d856f4c0360be7623107b708a8aa6d915082a03658d2b41b77f2",
+      "negative": {
+        "initial": {
+          "leds": [],
+          "noPublishedLedFrame": true
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.058508583333333336,
+          "output": {
+            "leds": [],
+            "noPublishedLedFrame": true
+          }
+        },
+        "guestSerial": "COVERAGE capsule-v11 READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-k125",
+      "board": "atoms3u",
+      "control": "button-a",
+      "outputKind": "rgb",
+      "flashMb": 8,
+      "psramMb": 0,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-RMT-output-cannot-light-real-RGB"
+      ],
+      "limits": [
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "No physical hardware measurements; colors are photograph-informed approximations, not calibrated materials.",
+        "PCB has no audited complete board layout and is represented only by a visible neutral UNKNOWN placeholder.",
+        "Manufacturer STL contains only the40.3mm plastic body. USB-A plug is separate drawing/photo-informed geometry; imported shell width20.7069mm differs from nominal20mm. Failed source-only envelope is retained.",
+        "Flash/PSRAM capacities were not explicitly confirmed in audited product table; chip naming is not used to silently fill unknown capacity.",
+        "板级子集实现 GPIO41 按键与 GPIO35 硬件 RMT WS2812；IR G12、PDM 麦克风 G38/G39、USB-OTG 和外部连接器电气路由尚未实现。",
+        "模拟配置为8MiB Flash/无PSRAM，对应目录中的官方8MB UIFlow2目标；原产品页未单列容量，硬件容量不据此宣称经过实测。",
+        "按键命中区依据原厂正面照片的可见塑料弹片估算；孔隙与隐藏开关行程未实机校准。",
+        "官方 UIFlow2 保持未验证试运行；本轮未执行官方固件或实机验证。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ]
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.05854727916666667,
+            "output": {
+              "leds": [
+                [
+                  0,
+                  255,
+                  0
+                ]
+              ]
+            }
+          },
+          "guestSerial": "COVERAGE atoms3u READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ]
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.058582908333333336,
+              "output": {
+                "leds": [
+                  [
+                    0,
+                    255,
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.0695089125,
+              "output": {
+                "leds": [
+                  [
+                    255,
+                    0,
+                    0
+                  ]
+                ]
+              }
+            }
+          ],
+          "guestSerial": "COVERAGE atoms3u READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "4b9adef82537d68d18ed4db00d61216f9c567857a7ede287418f2843ea4688a0",
+      "negativeProbeSha256": "3f332d83364e9f05054c5a6f91871ec3afb81e48da970bb781d389d5d2ef6214",
+      "negative": {
+        "initial": {
+          "leds": [],
+          "noPublishedLedFrame": true
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.05858522916666667,
+          "output": {
+            "leds": [],
+            "noPublishedLedFrame": true
+          }
+        },
+        "guestSerial": "COVERAGE atoms3u READY\nKEY UP\nRMT IRQ DONE\nOUTPUT COMPLETE\nKEY DOWN\nRMT IRQ DONE\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-c126-ext",
+      "board": "atoms3r-ext",
+      "control": "button-a",
+      "outputKind": "serial",
+      "flashMb": 8,
+      "psramMb": 8,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-GPIO-read-cannot-consume-real-key"
+      ],
+      "limits": [
+        "部分运行适配：ESP32-S3 / 8 MiB Flash / 8 MiB Octal PSRAM 与 BMI270 轮询寄存器；BMM150、红外、USB UVC、摄像头采集及音频未实现，未实机验证。",
+        "USER G41 按键通过控制面板/键盘输入；模型未新增无照片位置依据的按钮热区。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Source CAD provides enclosure only; visible gold prototype board and FPC are absent and not replaced with a fabricated display.",
+        "Official specification table states 12 mm depth; marketing photo states 12.9 mm. Both refer to this SKU and the discrepancy is retained.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": null,
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.00016580833333333333,
+            "output": null
+          },
+          "guestSerial": "COVERAGE atoms3r-ext READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": null,
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.00022706666666666667,
+              "output": null
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.008992304166666666,
+              "output": null
+            }
+          ],
+          "guestSerial": "COVERAGE atoms3r-ext READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\nKEY UP\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "edd8cf71a8d9fb3448fb814d88fc4a893604bcd07f4540bd26c90d65b31c4cd4",
+      "negativeProbeSha256": "f3f89159eb160862cc92072fe96a9654021c434c23d1d546a0889514436b8b99",
+      "negative": {
+        "initial": null,
+        "queuedAtGuestSeconds": 0.05854556666666667,
+        "observedAtGuestSeconds": 0.08103060833333334,
+        "guestSerial": "COVERAGE atoms3r-ext READY\nKEY UP\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32s3_rev0_rom.elf": "c0ce0f338d1de1bdc6efbef1591779a2a42c1ab7d759d3c6ae8ae63a7dd34cfd"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-k124-b",
+      "board": "station-bat",
+      "control": "button-a",
+      "outputKind": "pixel",
+      "flashMb": 16,
+      "psramMb": 0,
+      "classicMaskRom": true,
+      "explicitAppDirect": false,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-SPI-MOSI-cannot-produce-panel-pixels"
+      ],
+      "limits": [
+        "可配置、分享和查看；尚未完成全部照片视角和可见连接器细节的1:1验收。",
+        "内部主板为UNKNOWN估算占位，不宣称真实PCB结构。",
+        "PSRAM容量在本次官方资料中未明确，未按0MB作硬件事实。",
+        "Station-specific partial runtime: real SPI LCD, GPIO37/38/39 and internal hardware I2C. INA3221/199, RS485, RGB, Grove power switching, analog battery/power, software I2C and official factory boot are unverified or unimplemented; physical power key is not a GPIO button."
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "width": 240,
+            "height": 135,
+            "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+            "firstPixel": [
+              255,
+              0,
+              0,
+              255
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.06694466666666667,
+            "output": {
+              "width": 240,
+              "height": 135,
+              "rgbaSha256": "0c26a0ea9d8371c70daea9413c3a426713a4ff8d52c2728f6c172ca85ac78679",
+              "firstPixel": [
+                0,
+                255,
+                0,
+                255
+              ]
+            }
+          },
+          "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-bat READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "width": 240,
+            "height": 135,
+            "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+            "firstPixel": [
+              255,
+              0,
+              0,
+              255
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.06696729166666666,
+              "output": {
+                "width": 240,
+                "height": 135,
+                "rgbaSha256": "0c26a0ea9d8371c70daea9413c3a426713a4ff8d52c2728f6c172ca85ac78679",
+                "firstPixel": [
+                  0,
+                  255,
+                  0,
+                  255
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.1162350125,
+              "output": {
+                "width": 240,
+                "height": 135,
+                "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+                "firstPixel": [
+                  255,
+                  0,
+                  0,
+                  255
+                ]
+              }
+            }
+          ],
+          "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-bat READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "f04728ae3aaaaf6f43e51a471099568eead81f1152530a2ec78c78588c28812a",
+      "negativeProbeSha256": "9c919a07905a6a9a28b2b3c26487380827667790e6e53c66cd76a93879ebdccd",
+      "negative": {
+        "initial": {
+          "width": 240,
+          "height": 135,
+          "rgbaSha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46",
+          "firstPixel": [
+            0,
+            0,
+            0,
+            255
+          ]
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.06694666666666667,
+          "output": {
+            "width": 240,
+            "height": 135,
+            "rgbaSha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46",
+            "firstPixel": [
+              0,
+              0,
+              0,
+              255
+            ]
+          }
+        },
+        "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-bat READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32_rev300_rom": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-k123",
+      "board": "station-485",
+      "control": "button-a",
+      "outputKind": "pixel",
+      "flashMb": 16,
+      "psramMb": 0,
+      "classicMaskRom": true,
+      "explicitAppDirect": false,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-SPI-MOSI-cannot-produce-panel-pixels"
+      ],
+      "limits": [
+        "Specification height 88 mm differs from CAD overall 92 mm and marketing photo 92 mm; failure kept visible.",
+        "Some unlabelled CAD inserts retain neutral source-component names; no unverified electrical role inferred.",
+        "PCB placeholder has no components. Its dimensions/placement are an enclosure-space estimate, not a verified PCB layout.",
+        "Manufacturer photo rights are separate from CAD MIT license. Materials are visual approximations, not measured reflectance.",
+        "Station-specific partial runtime: real SPI LCD, GPIO37/38/39 and internal hardware I2C. INA3221/199, RS485, RGB, Grove power switching, analog battery/power, software I2C and official factory boot are unverified or unimplemented; physical power key is not a GPIO button."
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "width": 240,
+            "height": 135,
+            "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+            "firstPixel": [
+              255,
+              0,
+              0,
+              255
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.06693594166666667,
+            "output": {
+              "width": 240,
+              "height": 135,
+              "rgbaSha256": "0c26a0ea9d8371c70daea9413c3a426713a4ff8d52c2728f6c172ca85ac78679",
+              "firstPixel": [
+                0,
+                255,
+                0,
+                255
+              ]
+            }
+          },
+          "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-485 READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "width": 240,
+            "height": 135,
+            "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+            "firstPixel": [
+              255,
+              0,
+              0,
+              255
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.07524705,
+              "output": {
+                "width": 240,
+                "height": 135,
+                "rgbaSha256": "0c26a0ea9d8371c70daea9413c3a426713a4ff8d52c2728f6c172ca85ac78679",
+                "firstPixel": [
+                  0,
+                  255,
+                  0,
+                  255
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.08086365416666666,
+              "output": {
+                "width": 240,
+                "height": 135,
+                "rgbaSha256": "5c1c0b07b7507ca6be71c2b7a1b183730a4eeed51ce7f632523a625b02e8b213",
+                "firstPixel": [
+                  255,
+                  0,
+                  0,
+                  255
+                ]
+              }
+            }
+          ],
+          "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-485 READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "31befea317579a38c35df7f8a03a383a030f8d0001251bc1759c8280a3f5d4d4",
+      "negativeProbeSha256": "b980ec20361c94be790e00bcd8c1afd224c0046224800945c6dacf54f581dbe2",
+      "negative": {
+        "initial": {
+          "width": 240,
+          "height": 135,
+          "rgbaSha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46",
+          "firstPixel": [
+            0,
+            0,
+            0,
+            255
+          ]
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.06692329166666666,
+          "output": {
+            "width": 240,
+            "height": 135,
+            "rgbaSha256": "17687967283c6d29f77b4b523eef2b8f3efc466e1100e2eb987f636a05ed9d46",
+            "firstPixel": [
+              0,
+              0,
+              0,
+              255
+            ]
+          }
+        },
+        "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5776\r\nentry 0x40081000\r\nCOVERAGE station-485 READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32_rev300_rom": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-u202",
+      "board": "unit-c6l",
+      "control": "button",
+      "outputKind": "oled",
+      "flashMb": 16,
+      "psramMb": 0,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-I2C-SDA-cannot-read-expander-key"
+      ],
+      "limits": [
+        "厂家STL的装配件原尺寸保留，排版副本已剔除。SMA、Grove、USB和贴纸位置依据尺寸图/照片估算，非连接器厂家CAD。",
+        "未公开PCB布局，内部为UNKNOWN空白占位；SMA螺纹、螺钉及鞭状天线未完整建模。",
+        "贴纸仅取白色纸面，OLED保持空白，不能将产品照片当成固件画面。",
+        "独立Unit C6L板型：SSD1306 CS6/MOSI21/SCK20/DC18/RESET15；64×48玻璃对应RAM X=32..95。硬件SPI与软件GPIO移位均消费客体输出。",
+        "用户键经真实PI4IOE5V6408 P0输入/中断状态，不映射为虚构ESP GPIO；G2 RMT驱动RGB。",
+        "LoRa沿用真实Stamp C6LoRa的电源/复位/引脚与数字包协议子集，不模拟RF、天线增益或距离。蜂鸣器、USB与Grove作为第二CPU附件的双机行为未实现。",
+        "未启动官方User Demo或UIFlow镜像；新增板级协议测试不等于原厂固件兼容。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "width": 64,
+            "height": 48,
+            "rgbaSha256": "ce4603f37865e89f74b37212785068f10d1fa58facc2ed9ae03fb67a4a45b946",
+            "firstPixel": [
+              255,
+              255,
+              255,
+              255
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.0987565375,
+            "output": {
+              "width": 64,
+              "height": 48,
+              "rgbaSha256": "04e6a96bee826c675a258eb2ec234ab700c569dded2fd9e87046a6b121a0c746",
+              "firstPixel": [
+                0,
+                0,
+                0,
+                255
+              ]
+            }
+          },
+          "guestSerial": "COVERAGE unit-c6l READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "width": 64,
+            "height": 48,
+            "rgbaSha256": "ce4603f37865e89f74b37212785068f10d1fa58facc2ed9ae03fb67a4a45b946",
+            "firstPixel": [
+              255,
+              255,
+              255,
+              255
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.09832895,
+              "output": {
+                "width": 64,
+                "height": 48,
+                "rgbaSha256": "04e6a96bee826c675a258eb2ec234ab700c569dded2fd9e87046a6b121a0c746",
+                "firstPixel": [
+                  0,
+                  0,
+                  0,
+                  255
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.113373275,
+              "output": {
+                "width": 64,
+                "height": 48,
+                "rgbaSha256": "ce4603f37865e89f74b37212785068f10d1fa58facc2ed9ae03fb67a4a45b946",
+                "firstPixel": [
+                  255,
+                  255,
+                  255,
+                  255
+                ]
+              }
+            }
+          ],
+          "guestSerial": "COVERAGE unit-c6l READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\nKEY UP\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "d8941ec999912581f2251440e40663910a7f48969143e3ca01219b08de45ee2c",
+      "negativeProbeSha256": "9280214f361b04be530630eadc7903d33a59646208f1ce7970b4c0ab913366cf",
+      "negative": {
+        "initial": {
+          "width": 64,
+          "height": 48,
+          "rgbaSha256": "ce4603f37865e89f74b37212785068f10d1fa58facc2ed9ae03fb67a4a45b946",
+          "firstPixel": [
+            255,
+            255,
+            255,
+            255
+          ]
+        },
+        "queuedAtGuestSeconds": 0.09811195625,
+        "observedAtGuestSeconds": 0.12698928125,
+        "guestSerial": "COVERAGE unit-c6l READY\nI2C NACK\nKEY UP\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32c6_rev0_rom.elf": "788e1d38724aeb8fd974fa10c4a7b089c02627d35342ce84b9e0b12b239f3551"
+      },
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-c149",
+      "board": "nanoh2",
+      "control": "button-a",
+      "outputKind": "rgb",
+      "flashMb": 4,
+      "psramMb": 0,
+      "classicMaskRom": false,
+      "explicitAppDirect": true,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-RMT-output-cannot-light-real-RGB"
+      ],
+      "limits": [
+        "可配置、分享和查看；尚未完成全部照片视角和可见连接器细节的1:1验收。",
+        "内部主板为UNKNOWN估算占位，不宣称真实PCB结构。",
+        "独立ESP32-H2执行核心；仅SRAM app-direct、轮询UART/GPIO、有限RMT，不支持ROM/Flash-cache启动、USB、Thread/Zigbee/蓝牙或红外。",
+        "RGB需G10真实GPIO供电并由G11客体RMT输出驱动；断电清除像素，重新供电不会重放旧颜色。蓝灯光学位置尚未校准。",
+        "3D按钮/灯窗按同型号官方正面照估计位置，约±0.5 mm；没有实机按压力或光学校准。"
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.17164266666666667,
+            "output": {
+              "leds": [
+                [
+                  0,
+                  255,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ]
+              ]
+            }
+          },
+          "guestSerial": "COVERAGE nanoh2 READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "leds": [
+              [
+                255,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.16800878125,
+              "output": {
+                "leds": [
+                  [
+                    0,
+                    255,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0
+                  ]
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.19991246875,
+              "output": {
+                "leds": [
+                  [
+                    255,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    0
+                  ]
+                ]
+              }
+            }
+          ],
+          "guestSerial": "COVERAGE nanoh2 READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\nKEY UP\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "001e365708a7bbe382e966a35c742fa877c0d014927d72448b41dba932885cec",
+      "negativeProbeSha256": "5138a7b8069474cca2282189ca26c77db0af794bf8f41ab8f0f09108591e1189",
+      "negative": {
+        "initial": {
+          "leds": [],
+          "noPublishedLedFrame": true
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.00017460416666666666,
+          "output": {
+            "leds": [],
+            "noPublishedLedFrame": true
+          }
+        },
+        "guestSerial": "COVERAGE nanoh2 READY\nKEY UP\nOUTPUT COMPLETE\nKEY DOWN\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {},
+      "status": "passed"
+    },
+    {
+      "productId": "m5stack-k016-c",
+      "board": "stickc",
+      "control": "button-a",
+      "outputKind": "pixel",
+      "flashMb": 4,
+      "psramMb": 0,
+      "classicMaskRom": true,
+      "explicitAppDirect": false,
+      "checks": [
+        "public-physical-input-consumed-by-guest-MMIO-and-actual-output",
+        "public-reset-fresh-guest-releases-held-key-and-repeats-consumption",
+        "wrong-physical-SPI-MOSI-cannot-produce-panel-pixels"
+      ],
+      "limits": [
+        "部分板级模拟覆盖 ST7735SV 屏幕、A/B、红色 LED、AXP192 短按与供电寄存器、MPU6886 轮询和 BM8563 日历。默认温度 25 °C、电池 4.1 V 为模拟输入。",
+        "仅覆盖 MPU6886 版本。早期 SH200Q、物理麦克风、红外输出、无线通信和长按关机尚未验收。运行范围见 docs/platform/stick-k016-c-runtime.md。",
+        "尺寸和照片的通过、未通过、未测量分别保留；内部 UNKNOWN 不表示真实 PCB。",
+        "Assembled shell estimate is 24×48×13 mm, smaller than current document 25.5×48.2×13.7 mm; all dimensional failures remain visible. The directory may represent another housing revision.",
+        "Source assembly transform is estimated. Do not treat this model as a confirmed 1:1 match to current K016-C housing.",
+        "Photo and geometry comparisons remain partial; no complete 1:1 manufacturing or populated-PCB certification.",
+        "Source CAD MIT and manufacturer photographs have distinct rights; no separate open photo license verified.",
+        "Blank display rectangle uses documented active dimensions when available; placement/window boundary is estimated from photos/CAD, not a calibrated measurement.",
+        "本轮继续按真实厂家照片审核；刻字、部分贴纸、端子及内部PCB未全部还原，不能视为整机1:1通过。",
+        "Source separated shells are only provisionally assembled by recorded translation; rear small pieces are fasteners, not user keys. No exact enclosure assembly certification."
+      ],
+      "passes": [
+        {
+          "stage": "cold-boot",
+          "initial": {
+            "width": 80,
+            "height": 160,
+            "rgbaSha256": "4eace092c39c8789d04385ba8980b131e22045aef0d2faf8d72e4eafc280e6eb",
+            "firstPixel": [
+              255,
+              0,
+              0,
+              255
+            ]
+          },
+          "pressed": {
+            "pressed": true,
+            "guestTime": 0.06680981666666666,
+            "output": {
+              "width": 80,
+              "height": 160,
+              "rgbaSha256": "8ea0044daa99c7dff8bf271ad9b93f2d13145388919d609793db09d14e3dc616",
+              "firstPixel": [
+                0,
+                255,
+                0,
+                255
+              ]
+            }
+          },
+          "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5744\r\nentry 0x40081000\r\nCOVERAGE stickc READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+        },
+        {
+          "stage": "public-reset",
+          "initial": {
+            "width": 80,
+            "height": 160,
+            "rgbaSha256": "4eace092c39c8789d04385ba8980b131e22045aef0d2faf8d72e4eafc280e6eb",
+            "firstPixel": [
+              255,
+              0,
+              0,
+              255
+            ]
+          },
+          "edges": [
+            {
+              "pressed": true,
+              "guestTime": 0.058738283333333335,
+              "output": {
+                "width": 80,
+                "height": 160,
+                "rgbaSha256": "8ea0044daa99c7dff8bf271ad9b93f2d13145388919d609793db09d14e3dc616",
+                "firstPixel": [
+                  0,
+                  255,
+                  0,
+                  255
+                ]
+              }
+            },
+            {
+              "pressed": false,
+              "guestTime": 0.061873975,
+              "output": {
+                "width": 80,
+                "height": 160,
+                "rgbaSha256": "4eace092c39c8789d04385ba8980b131e22045aef0d2faf8d72e4eafc280e6eb",
+                "firstPixel": [
+                  255,
+                  0,
+                  0,
+                  255
+                ]
+              }
+            }
+          ],
+          "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5744\r\nentry 0x40081000\r\nCOVERAGE stickc READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+        }
+      ],
+      "probeSha256": "bbe7edb8b54ed77f193ae3142edcd6f02692659377f6190809ba998fb435996f",
+      "negativeProbeSha256": "42d408667187385163d0ba686d5fff4e3615c61315c47f71c60f2464a52b38c5",
+      "negative": {
+        "initial": {
+          "width": 80,
+          "height": 160,
+          "rgbaSha256": "587b51c7df2b7edd994eabbdb046400411cfc5b352bd40859ed9d114878c5605",
+          "firstPixel": [
+            0,
+            0,
+            0,
+            255
+          ]
+        },
+        "edge": {
+          "pressed": true,
+          "guestTime": 0.06704221666666667,
+          "output": {
+            "width": 80,
+            "height": 160,
+            "rgbaSha256": "587b51c7df2b7edd994eabbdb046400411cfc5b352bd40859ed9d114878c5605",
+            "firstPixel": [
+              0,
+              0,
+              0,
+              255
+            ]
+          }
+        },
+        "guestSerial": "ets Jul 29 2019 12:21:46\r\n\r\nrst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)\r\nconfigsip: 0, SPIWP:0x00\r\nclk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00\r\nmode:QIO, clock div:2\r\nload:0x3ffb0000,len:256\r\nload:0x40080000,len:5744\r\nentry 0x40081000\r\nCOVERAGE stickc READY\nKEY UP\nPIXEL COMPLETE\nOUTPUT COMPLETE\nKEY DOWN\nPIXEL COMPLETE\nOUTPUT COMPLETE\n"
+      },
+      "romSha256": {
+        "esp32_rev300_rom": "920b70635440517866aab2230964a570d2cf2b676658d93c52fbac108c1cca31"
+      },
+      "status": "passed"
+    }
+  ],
+  "physicalValidation": false,
+  "factoryFirmwareValidation": false,
+  "status": "passed",
+  "limitations": [
+    "Only the specifically recorded original diagnostics and digital subsets; no manufacturer factory application or full SDK acceptance.",
+    "Classic ESP32 uses real mask-ROM boot, no stubs. S3/C6/H2 explicitly use authored SRAM app-direct images.",
+    "PowerHub/Ext validate real user-key reads and guest UART only; absent PMU/RGB/audio/camera/expansion behavior is not invented.",
+    "No physical hardware, optical/RF/analog validation or new browser DOM/WebGL acceptance."
+  ]
+}

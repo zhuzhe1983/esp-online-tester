@@ -8,7 +8,7 @@
   "summarySourceIds": [
     "official-docs"
   ],
-  "updatedAt": "2026-10-26T20:08:14Z",
+  "updatedAt": "2026-11-26T07:21:05Z",
   "hardwareRevision": "unspecified",
   "identity": {
     "manufacturer": "M5Stack",
@@ -104,7 +104,8 @@
       "sourceIds": [
         "official-docs"
       ],
-      "group": "specification"
+      "group": "specification",
+      "notes": "Historical imported official page specified M09. The currently fetched official page names D67; these are separate command protocols, not interchangeable."
     },
     {
       "id": "spec-0-8",
@@ -469,6 +470,31 @@
         "product-photo-fe352f4310"
       ],
       "notes": "Label and visible position count read from the exact official rear photograph; no pin population imported from siblingCore products."
+    },
+    {
+      "id": "current-display-batch",
+      "label": "Current official display batch",
+      "value": "GDEY0154D67 / SSD1681,200x200; legacy GDEW0154M09 is a separate batch",
+      "basis": "official",
+      "sourceIds": [
+        "runtime-coreink-spec-json",
+        "runtime-panel-gdew0154d67-inl",
+        "runtime-current-docs"
+      ],
+      "group": "display",
+      "notes": "M5GFX source names this Panel_GDEW0154D67; current product documentation prints GDEY0154D67. Runtime selects D67 only and does not infer which panel a user owns."
+    },
+    {
+      "id": "runtime-digital-wiring",
+      "label": "D67 display, buttons and RTC pin map",
+      "value": "SPI SCK18/MOSI23/CS9/DC15/RST0/BUSY4; UP37/MID38/DOWN39/EXT5/PWR27; POWER_HOLD12; BM8563 I2C SDA21/SCL22,0x51",
+      "basis": "official",
+      "sourceIds": [
+        "runtime-coreink-config-h",
+        "runtime-coreink-rtc-cpp",
+        "runtime-coreink-spec-json"
+      ],
+      "group": "interfaces"
     }
   ],
   "revisions": [],
@@ -769,6 +795,118 @@
       "kind": "license",
       "status": "fetched",
       "archiveName": "license.txt"
+    },
+    {
+      "id": "official-docs-audit-20261126",
+      "url": "https://docs.m5stack.com/en/core/CoreInk",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/CoreInk",
+      "fetchedAt": "2026-11-26T06:01:50Z",
+      "bytes": 147477,
+      "sha256": "6c20cafc404a990d7772396ae07aae6eaa6101bed6d7687e76dffd15477a1f56",
+      "mediaType": "text/html",
+      "title": "M5Stack CoreInk official page audit 2026-11-26",
+      "kind": "official-product-document",
+      "status": "fetched",
+      "archiveName": "coreink.html"
+    },
+    {
+      "id": "runtime-coreink-spec-json",
+      "title": "Official pinned runtime source: coreink-spec.json",
+      "url": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/extras/board_spec/boards/m5stack_coreink.json",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/extras/board_spec/boards/m5stack_coreink.json",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T07:10:31Z",
+      "sha256": "809d627f9bd538b9ee5c23cf3abe92d0425aa887ed9b26a95c9c251dc05cbb3f",
+      "bytes": 7212,
+      "mediaType": "text/plain",
+      "archiveName": "coreink-spec.json",
+      "revision": {
+        "commit": "28d47949bdc84f30881623476f555398e2194313"
+      },
+      "notes": "Retained at docs/platform/evidence/m5-classic-paper-runtime/coreink-spec.json"
+    },
+    {
+      "id": "runtime-coreink-config-h",
+      "title": "Official pinned runtime source: coreink-config.h",
+      "url": "https://raw.githubusercontent.com/m5stack/M5Core-Ink/76283d3bebec85a82974bb7f5d6f325b225b2817/src/utility/config.h",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5Core-Ink/76283d3bebec85a82974bb7f5d6f325b225b2817/src/utility/config.h",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T07:10:55Z",
+      "sha256": "0e61de666c06d2716f9a240888ef4f20579cadec7cc654a1c2ed325af7cd5dd2",
+      "bytes": 428,
+      "mediaType": "text/plain",
+      "archiveName": "coreink-config.h",
+      "revision": {
+        "commit": "76283d3bebec85a82974bb7f5d6f325b225b2817"
+      },
+      "notes": "Retained at docs/platform/evidence/m5-classic-paper-runtime/coreink-config.h"
+    },
+    {
+      "id": "runtime-coreink-rtc-cpp",
+      "title": "Official pinned runtime source: coreink-rtc.cpp",
+      "url": "https://raw.githubusercontent.com/m5stack/M5Core-Ink/76283d3bebec85a82974bb7f5d6f325b225b2817/src/utility/BM8563.cpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5Core-Ink/76283d3bebec85a82974bb7f5d6f325b225b2817/src/utility/BM8563.cpp",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T07:11:02Z",
+      "sha256": "9c7547124e14106997b99b1855efa7caef0a62db183a19dca90d1acfd9cc242a",
+      "bytes": 6663,
+      "mediaType": "text/plain",
+      "archiveName": "coreink-rtc.cpp",
+      "revision": {
+        "commit": "76283d3bebec85a82974bb7f5d6f325b225b2817"
+      },
+      "notes": "Retained at docs/platform/evidence/m5-classic-paper-runtime/coreink-rtc.cpp"
+    },
+    {
+      "id": "runtime-panel-gdew0154d67-inl",
+      "title": "Official pinned runtime source: Panel_GDEW0154D67.inl",
+      "url": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/src/lgfx/v1/panel/Panel_GDEW0154D67.inl",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/src/lgfx/v1/panel/Panel_GDEW0154D67.inl",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T07:10:08Z",
+      "sha256": "729b9189a9bd3a0f6d89ec89172610296acee098e4dd60948cbb35b265e740aa",
+      "bytes": 17311,
+      "mediaType": "text/plain",
+      "archiveName": "Panel_GDEW0154D67.inl",
+      "revision": {
+        "commit": "28d47949bdc84f30881623476f555398e2194313"
+      },
+      "notes": "Retained at docs/platform/evidence/m5-classic-paper-runtime/Panel_GDEW0154D67.inl"
+    },
+    {
+      "id": "runtime-panel-gdew0154d67-hpp",
+      "title": "Official pinned runtime source: Panel_GDEW0154D67.hpp",
+      "url": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/src/lgfx/v1/panel/Panel_GDEW0154D67.hpp",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5GFX/28d47949bdc84f30881623476f555398e2194313/src/lgfx/v1/panel/Panel_GDEW0154D67.hpp",
+      "kind": "official-source-code",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T07:19:07Z",
+      "sha256": "4d01b9b2c76565f84f98553014074fe6dbf7b8ef166e3696ec60c61c17260682",
+      "bytes": 3573,
+      "mediaType": "text/plain",
+      "archiveName": "Panel_GDEW0154D67.hpp",
+      "revision": {
+        "commit": "28d47949bdc84f30881623476f555398e2194313"
+      },
+      "notes": "Retained at docs/platform/evidence/m5-classic-paper-runtime/Panel_GDEW0154D67.hpp"
+    },
+    {
+      "id": "runtime-current-docs",
+      "title": "Exact product documentation rechecked for current display batch and pin naming",
+      "url": "https://docs.m5stack.com/en/core/CoreInk",
+      "resolvedUrl": "https://docs.m5stack.com/en/core/CoreInk",
+      "kind": "official-documentation",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T06:01:50Z",
+      "sha256": "6c20cafc404a990d7772396ae07aae6eaa6101bed6d7687e76dffd15477a1f56",
+      "bytes": 147477,
+      "mediaType": "text/html",
+      "archiveName": "coreink.html",
+      "notes": "Raw page checked in temporary source cache. Original hash retained; protocol code is archived separately for offline review."
     }
   ],
   "assets": [
@@ -901,6 +1039,9 @@
   "collectionNotes": [
     "Specification and pin-map rows preserve factual parameters from the exact documented product, not sibling SKUs.",
     "Raw full official page/PDF downloads stay temporary; images and manufacturer CAD retain distinct rights.",
-    "Model import does not establish CPU/board/peripheral firmware support."
+    "Model import does not establish CPU/board/peripheral firmware support.",
+    "2026-11-26: exact-SKU official page rechecked. Existing factory/reference entries retained; no factory binary run or physical hardware verification. See docs/platform/m5-classic-audit-20261126.md.",
+    "2026-11-26 runtime: independent coreink-d67 board, sourced SSD1681 windows/RAM/refresh/BUSY/reset, GPIO keys and physical21/22 BM8563 calendar passed real LX6 tests; M09 command stream explicitly rejected.",
+    "Partial simulation only. No complete factory image was run or promoted to simulationVerified; no analog LUT/ghosting/timing calibration, battery/main power-off, RTC alarm/wake or full firmware compatibility. See docs/platform/m5-classic-paper-runtime-20261126.md for exact remaining peripherals and reproduction."
   ]
 }

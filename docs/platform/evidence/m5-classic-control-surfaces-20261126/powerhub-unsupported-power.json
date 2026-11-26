@@ -1,0 +1,22 @@
+{
+  "productIds": [
+    "m5stack-c148",
+    "m5stack-k148"
+  ],
+  "unsupportedControls": {
+    "power-top": false,
+    "power-side": false
+  },
+  "modeledUserInput": {
+    "id": "button-user",
+    "pin": 11,
+    "activeLow": true
+  },
+  "source": {
+    "path": "esp32s3/src/board/powerhub.rs",
+    "sha256": "ee36e468fd76b4ead9e03f03b52d34fc189d0a22561865f429e42b3b7f6a93c1",
+    "contract": "named_pin accepts only button-user\u219211; source regression explicitly rejects power-top/power-side/reset/button-a."
+  },
+  "change": "Set simulationSupported:false on the two independent STM32 power controls for each shared host identity. No GPIO assigned and no physical control removed from the product facts.",
+  "scope": "Catalog support boundary only. No fake STM32, power-off/wake, rail, battery or physical hardware acceptance."
+}

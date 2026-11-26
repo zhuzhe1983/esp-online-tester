@@ -1,0 +1,813 @@
+{
+  "schemaVersion": "1",
+  "id": "m5stack-u120",
+  "kind": "product",
+  "catalogId": "m5stack-u120",
+  "title": "M5Stack Unit LCD · U120",
+  "summary": "Unit LCD 内部 ESP32 独立板型：客体经 SPI13/15、CS5、DC23、RST18 驱动 ST7789V2 的真实 135×240 像素，G4 为低有效背光；外部接口仍是 ESP32 的 I²C 从机 0x3E。",
+  "summarySourceIds": [
+    "official-docs"
+  ],
+  "updatedAt": "2026-11-26T09:35:53Z",
+  "hardwareRevision": "unspecified",
+  "identity": {
+    "manufacturer": "M5Stack",
+    "sku": "U120",
+    "module": "ESP32-PICO (4M rear marking; exact package variant unspecified)"
+  },
+  "facts": [
+    {
+      "id": "official-table-0",
+      "label": "Manufacturer technical table 1",
+      "value": {
+        "rows": [
+          [
+            "Specification",
+            "Parameter"
+          ],
+          [
+            "Display Driver IC",
+            "ST7789V2"
+          ],
+          [
+            "Operating Current",
+            "45.7mA"
+          ],
+          [
+            "Communication Interface",
+            "I2C @ 0x3E"
+          ],
+          [
+            "Display Size",
+            "1.14 inch"
+          ],
+          [
+            "Pixel Pitch",
+            "0.1101 (H) x 0.1038 (V) mm"
+          ],
+          [
+            "Resolution",
+            "135 x 240"
+          ],
+          [
+            "Viewing Angle",
+            "Full viewing angle"
+          ],
+          [
+            "Operating Temperature",
+            "0 ~ 60°C"
+          ],
+          [
+            "Housing Material",
+            "Plastic (PC)"
+          ],
+          [
+            "Product Size",
+            "48.0 x 24.0 x 8.0mm"
+          ],
+          [
+            "Product Weight",
+            "8.6g"
+          ],
+          [
+            "Package Size",
+            "68.0 x 57.0 x 17.0mm"
+          ],
+          [
+            "Gross Weight",
+            "21.3g"
+          ]
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "specifications-and-pinmaps"
+    },
+    {
+      "id": "official-table-1",
+      "label": "Manufacturer technical table 2",
+      "value": {
+        "rows": [
+          [
+            "HY2.0-4P",
+            "Black",
+            "Red",
+            "Yellow",
+            "White"
+          ],
+          [
+            "PORT.A",
+            "GND",
+            "5V",
+            "SDA",
+            "SCL"
+          ]
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "specifications-and-pinmaps"
+    },
+    {
+      "id": "official-table-2",
+      "label": "Manufacturer technical table 3",
+      "value": {
+        "rows": [
+          [
+            "hex",
+            "len",
+            "command",
+            "description",
+            "send params"
+          ],
+          [
+            "0x00",
+            "1-∞",
+            "NOP",
+            "Do nothing until communication stops",
+            "[0] 0x00 / [1-∞] Ignored value"
+          ],
+          [
+            "0x20",
+            "1",
+            "INVOFF",
+            "Disable color inversion",
+            "[0] 0x20"
+          ],
+          [
+            "0x21",
+            "1",
+            "INVON",
+            "Enable color inversion",
+            "[0] 0x21"
+          ],
+          [
+            "0x22",
+            "2",
+            "BRIGHTNESS",
+            "Backlight brightness setting / 0:Off-255:Full lights",
+            "[0] 0x22 / [1] Brightness (0-255)"
+          ],
+          [
+            "0x23",
+            "7",
+            "COPYRECT",
+            "Copy rectangular area",
+            "[0] 0x23 / [1] Copy source X_Left / [2] Copy source Y_Top / [3] Copy source X_Right / [4] Copy source Y_Bottom / [5] Copy destination X_Left / [6] Copy destination Y_Top"
+          ],
+          [
+            "0x2A",
+            "3",
+            "CASET",
+            "X range selection",
+            "[0] 0x2A / [1] X_Left / [2] X_Right"
+          ],
+          [
+            "0x2B",
+            "3",
+            "RASET",
+            "Y range selection",
+            "[0] 0x2B / [1] Y_Top / [2] Y_Bottom"
+          ],
+          [
+            "0x36",
+            "2",
+            "ROTATE",
+            "Set drawing orientation / 0:Normal / 1:90° / 2:180° / 3:270° / 4-7: flips 0-3",
+            "[0] 0x36 / [1] Setting value (0-7)"
+          ],
+          [
+            "0x38",
+            "2",
+            "SET_POWER",
+            "Operating speed setting / (power consumption setting) / 0:Low / 1:Normal / 2:High",
+            "[0] 0x38 / [1] Setting value (0-2)"
+          ],
+          [
+            "0x39",
+            "2",
+            "SET_SLEEP",
+            "LCD panel sleep setting / 0: wake up / 1: sleep",
+            "[0] 0x39 / [1] Setting value (0-1)"
+          ],
+          [
+            "0x41",
+            "2-∞",
+            "WRITE_RAW_8",
+            "Write image RGB332",
+            "[0] 0x41 / [1] RGB332 / until communication STOP."
+          ],
+          [
+            "0x42",
+            "3-∞",
+            "WRITE_RAW_16",
+            "Write image RGB565",
+            "[0] 0x42 / [1-2] RGB565 / until communication STOP."
+          ],
+          [
+            "0x43",
+            "4-∞",
+            "WRITE_RAW_24",
+            "Write image RGB888",
+            "[0] 0x43 / [1-3] RGB888 / until communication STOP."
+          ],
+          [
+            "0x44",
+            "5-∞",
+            "WRITE_RAW_32",
+            "Write image ARGB8888",
+            "[0] 0x44 / [1-4] ARGB8888 / until communication STOP."
+          ],
+          [
+            "0x45",
+            "2-∞",
+            "WRITE_RAW_A",
+            "Write image A8 / alpha channel only. / Use the last drawing color.",
+            "[0] 0x45 / [1] A8 / until communication STOP."
+          ],
+          [
+            "0x49",
+            "3-∞",
+            "WRITE_RLE_8",
+            "Write RLE image RGB332",
+            "[0] 0x49 / [1-∞] RLE Data"
+          ],
+          [
+            "0x4A",
+            "4-∞",
+            "WRITE_RLE_16",
+            "Write RLE image RGB565",
+            "[0] 0x4A / [1-∞] RLE Data"
+          ],
+          [
+            "0x4B",
+            "5-∞",
+            "WRITE_RLE_24",
+            "Write RLE image RGB888",
+            "[0] 0x4B / [1-∞] RLE Data"
+          ],
+          [
+            "0x4C",
+            "6-∞",
+            "WRITE_RLE_32",
+            "Write RLE image ARGB8888",
+            "[0] 0x4C / [1-∞] RLE Data"
+          ],
+          [
+            "0x4D",
+            "3-∞",
+            "WRITE_RLE_A",
+            "Draw RLE image A8 / alpha channel only. / Use the last drawing color.",
+            "[0] 0x4D / [1-∞] RLE Data"
+          ],
+          [
+            "0x50",
+            "1",
+            "RAM_FILL",
+            "Fill selected area with the last drawing color",
+            "[0] 0x50"
+          ],
+          [
+            "0x51",
+            "2",
+            "SET_COLOR_8",
+            "Set drawing color by RGB332",
+            "[0] 0x51 / [1] RGB332"
+          ],
+          [
+            "0x52",
+            "3",
+            "SET_COLOR_16",
+            "Set drawing color by RGB565",
+            "[0] 0x52 / [1-2] RGB565"
+          ],
+          [
+            "0x53",
+            "4",
+            "SET_COLOR_24",
+            "Set drawing color by RGB888",
+            "[0] 0x53 / [1-3] RGB888"
+          ],
+          [
+            "0x54",
+            "5",
+            "SET_COLOR_32",
+            "Set drawing color by ARGB8888",
+            "[0] 0x54 / [1-4] ARGB8888"
+          ],
+          [
+            "0x60",
+            "3",
+            "DRAWPIXEL",
+            "Draw single pixel / Use stored drawing color",
+            "[0] 0x60 / [1] X / [2] Y"
+          ],
+          [
+            "0x61",
+            "4",
+            "DRAWPIXEL_8",
+            "Draw single pixel / RGB332 1Byte for color specification",
+            "[0] 0x61 / [1] X / [2] Y / [3] RGB332"
+          ],
+          [
+            "0x62",
+            "5",
+            "DRAWPIXEL_16",
+            "Draw single pixel / RGB565 2Byte for color specification",
+            "[0] 0x62 / [1] X / [2] Y / [3-4] RGB565"
+          ],
+          [
+            "0x63",
+            "6",
+            "DRAWPIXEL_24",
+            "Draw single pixel / RGB888 3Byte for color specification",
+            "[0] 0x63 / [1] X / [2] Y / [3-5] RGB888"
+          ],
+          [
+            "0x64",
+            "7",
+            "DRAWPIXEL_32",
+            "Draw single pixel / ARGB8888 4Byte for color specification / Alpha blending",
+            "[0] 0x64 / [1] X / [2] Y / [3-6] ARGB8888"
+          ],
+          [
+            "0x68",
+            "5",
+            "FILLRECT",
+            "Fill rectangle / Use stored drawing color",
+            "[0] 0x68 / [1] X_Left / [2] Y_Top / [3] X_Right / [4] Y_Bottom"
+          ],
+          [
+            "0x69",
+            "6",
+            "FILLRECT_8",
+            "Fill rectangle / RGB332 1Byte for color specification",
+            "[0] 0x69 / [1] X_Left / [2] Y_Top / [3] X_Right / [4] Y_Bottom / [5] RGB332"
+          ],
+          [
+            "0x6A",
+            "7",
+            "FILLRECT_16",
+            "Fill rectangle / RGB565 2Byte for color specification",
+            "[0] 0x6A / [1] X_Left / [2] Y_Top / [3] X_Right / [4] Y_Bottom / [5-6] RGB565"
+          ],
+          [
+            "0x6B",
+            "8",
+            "FILLRECT_24",
+            "Fill rectangle / RGB888 3Byte for color specification",
+            "[0] 0x6B / [1] X_Left / [2] Y_Top / [3] X_Right / [4] Y_Bottom / [5-7] RGB888"
+          ],
+          [
+            "0x6C",
+            "9",
+            "FILLRECT_32",
+            "Fill rectangle / ARGB8888 4Byte for color specification / Alpha blending",
+            "[0] 0x6C / [1] X_Left / [2] Y_Top / [3] X_Right / [4] Y_Bottom / [5-8] ARGB8888"
+          ],
+          [
+            "0xA0",
+            "4",
+            "CHANGE_ADDR",
+            "Change I2C address / [2] specifies the bit-inverted value of [1]",
+            "[0] 0xA0 / [1] New I2C address / [2] Bitwise inversion of [1] / [3] 0xA0"
+          ]
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "specifications-and-pinmaps"
+    },
+    {
+      "id": "official-table-3",
+      "label": "Manufacturer technical table 4",
+      "value": {
+        "rows": [
+          [
+            "hex",
+            "len",
+            "command",
+            "description",
+            "return values"
+          ],
+          [
+            "0x04",
+            "1",
+            "READ_ID",
+            "ID and firmware version / Receive 4 bytes",
+            "[0] 0x77 / [1] 0x89 / [2] Major version / [3] Minor version"
+          ],
+          [
+            "0x09",
+            "1",
+            "READ_BUFCOUNT",
+            "Get remaining command buffer / Larger value means more space",
+            "[0] Remaining buffer (0~255) / Repeated reading supported"
+          ],
+          [
+            "0x81",
+            "1",
+            "READ_RAW_8",
+            "Read RGB332 image",
+            "[0] RGB332 / Repeat until communication STOP"
+          ],
+          [
+            "0x82",
+            "1",
+            "READ_RAW_16",
+            "Read RGB565 image",
+            "[0-1] RGB565 / Repeat until communication STOP"
+          ],
+          [
+            "0x83",
+            "1",
+            "READ_RAW_24",
+            "Read RGB888 image",
+            "[0-2] RGB888 / Repeat until communication STOP"
+          ]
+        ]
+      },
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "group": "specifications-and-pinmaps"
+    },
+    {
+      "id": "product-envelope",
+      "label": "Official product envelope; U139 entire kit",
+      "value": {
+        "width": 24,
+        "height": 48,
+        "depth": 8
+      },
+      "unit": "mm",
+      "basis": "official",
+      "sourceIds": [
+        "official-docs"
+      ]
+    },
+    {
+      "id": "chip-module",
+      "label": "Chip/module identity",
+      "value": "ESP32-PICO (4M rear marking; exact package variant unspecified)",
+      "basis": "official",
+      "sourceIds": [
+        "photo-1"
+      ]
+    },
+    {
+      "id": "retained-native-cad-parts",
+      "label": "Unscaled manufacturer source components",
+      "value": [
+        {
+          "name": "shell-front",
+          "componentIndices": [
+            0
+          ],
+          "matrixRows": [
+            [
+              1,
+              0,
+              0,
+              30.763
+            ],
+            [
+              0,
+              1,
+              0,
+              -23.5137
+            ],
+            [
+              0,
+              0,
+              1,
+              4
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "boundsMm": [
+            [
+              -12.01400089263916,
+              -24.009368896484375,
+              -2.0
+            ],
+            [
+              12.013997077941895,
+              24.008153915405273,
+              4.0
+            ]
+          ]
+        },
+        {
+          "name": "shell-back",
+          "componentIndices": [
+            3
+          ],
+          "matrixRows": [
+            [
+              1,
+              0,
+              0,
+              30.763
+            ],
+            [
+              0,
+              1,
+              0,
+              -23.5137
+            ],
+            [
+              0,
+              0,
+              1,
+              4
+            ],
+            [
+              0,
+              0,
+              0,
+              1
+            ]
+          ],
+          "boundsMm": [
+            [
+              -12.000000953674316,
+              -23.99536895751953,
+              -4.0
+            ],
+            [
+              11.99999713897705,
+              24.004629135131836,
+              0.6500000953674316
+            ]
+          ]
+        }
+      ],
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad"
+      ],
+      "method": "Load fixed source STL; split connected components; apply only recorded rigid matrix. Read exported float32 triangle coordinates and native component bounds using tools/build-m5-missing-controller-models.py. Estimated derived features are listed separately in model-plan.json."
+    },
+    {
+      "id": "generated-geometry-envelope",
+      "label": "Native plus estimated visible parts (paper included)",
+      "value": [
+        24.027997970581055,
+        48.01752281188965,
+        8.010000228881836
+      ],
+      "unit": "mm",
+      "basis": "cad-measurement",
+      "sourceIds": [
+        "manufacturer-cad"
+      ],
+      "notes": "Not a manufacturing dimensional acceptance. Nominal depth may differ from retained STL; derived optics/ports and0.01mm display paper are estimates.",
+      "method": "Load fixed source STL; split connected components; apply only recorded rigid matrix. Read exported float32 triangle coordinates and native component bounds using tools/build-m5-missing-controller-models.py. Estimated derived features are listed separately in model-plan.json."
+    },
+    {
+      "id": "visible-mechanical-audit",
+      "label": "Visible mechanical hardware audit",
+      "value": "Own rear photo shows one central metal screwhead and two circular mounting seats below the label. Source seats retained; installed screw and magnets are not reconstructed.",
+      "basis": "official",
+      "sourceIds": [
+        "photo-1"
+      ]
+    }
+  ],
+  "revisions": [],
+  "sources": [
+    {
+      "id": "official-docs",
+      "title": "Official exact-SKU product documentation",
+      "kind": "official-product-document",
+      "url": "https://docs.m5stack.com/en/products/sku/U120",
+      "resolvedUrl": "https://docs.m5stack.com/en/unit/Unit_LCD",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T06:33:25Z",
+      "bytes": 149944,
+      "sha256": "4f566b1d6811dbbb5ec60b5f133531b46681f5d50c4c84478dafcc5434230044",
+      "mediaType": "text/html",
+      "archiveName": "u120-docs.html"
+    },
+    {
+      "id": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/18de3bb3087ea617c38642ba3eedd10dc9f17cbf/Products/U120_Unit_LCD/Structures/Unit_LCD.stl",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/18de3bb3087ea617c38642ba3eedd10dc9f17cbf/Products/U120_Unit_LCD/Structures/Unit_LCD.stl",
+      "fetchedAt": "2026-11-26T06:34:55Z",
+      "status": "fetched",
+      "bytes": 538884,
+      "sha256": "0c3036bf36afe591a742836f57629f94080fc8f0467b3405df7602460280dd1d",
+      "mediaType": "application/octet-stream",
+      "archiveName": "u120-source.stl",
+      "title": "manufacturer-cad for U120",
+      "kind": "manufacturer-cad"
+    },
+    {
+      "id": "cad-license",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/18de3bb3087ea617c38642ba3eedd10dc9f17cbf/LICENSE",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5_Hardware/18de3bb3087ea617c38642ba3eedd10dc9f17cbf/LICENSE",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T06:13:45Z",
+      "sha256": "44611d917bece311f5c8eeffce83d8bf9e9ca3f815d262f694ff4a7996af50ea",
+      "bytes": 1063,
+      "mediaType": "text/plain",
+      "archiveName": "hardware-license.txt",
+      "title": "cad-license for U120",
+      "kind": "license"
+    },
+    {
+      "id": "photo-1",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_02.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_02.webp",
+      "fetchedAt": "2026-11-26T06:34:45Z",
+      "status": "fetched",
+      "bytes": 47316,
+      "sha256": "7bc47763724fa65fc4cc884fd1c23f5fbc85c06a4f2f68faa9fc44944fae1075",
+      "mediaType": "image/webp",
+      "archiveName": "u120-photo-1.webp",
+      "title": "photo-1 for U120",
+      "kind": "official-photograph"
+    },
+    {
+      "id": "photo-3",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_03.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_03.webp",
+      "fetchedAt": "2026-11-26T06:34:45Z",
+      "status": "fetched",
+      "bytes": 43734,
+      "sha256": "2e86ad66598ab30fe7746e78b0ac089099986e0634c7ecfadf571c4dc6024f0c",
+      "mediaType": "image/webp",
+      "archiveName": "u120-photo-3.webp",
+      "title": "photo-3 for U120",
+      "kind": "official-photograph"
+    },
+    {
+      "id": "photo-5",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_06.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_06.webp",
+      "fetchedAt": "2026-11-26T06:34:47Z",
+      "status": "fetched",
+      "bytes": 37904,
+      "sha256": "fa8aedc8f41177aa37d640ca4496fde92a2d726f556dee3b47ef0fbce278f1ca",
+      "mediaType": "image/webp",
+      "archiveName": "u120-photo-5.webp",
+      "title": "photo-5 for U120",
+      "kind": "official-photograph"
+    },
+    {
+      "id": "photo-6",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_07.webp",
+      "resolvedUrl": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_07.webp",
+      "fetchedAt": "2026-11-26T06:34:46Z",
+      "status": "fetched",
+      "bytes": 52326,
+      "sha256": "a522ac8bf365f15edeed87cf00182be36d172c1e78fff1bc3da798ccb80b8b2b",
+      "mediaType": "image/webp",
+      "archiveName": "u120-photo-6.webp",
+      "title": "photo-6 for U120",
+      "kind": "official-photograph"
+    },
+    {
+      "id": "official-hardware-inventory",
+      "url": "https://api.github.com/repos/m5stack/M5_Hardware/git/trees/18de3bb3087ea617c38642ba3eedd10dc9f17cbf?recursive=1",
+      "resolvedUrl": "https://api.github.com/repos/m5stack/M5_Hardware/git/trees/18de3bb3087ea617c38642ba3eedd10dc9f17cbf?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T06:11:08Z",
+      "sha256": "7d0a68ee391b9ca701c121913caa84a80b5bc9c683c08b56a00a56faad4d6b38",
+      "bytes": 244573,
+      "mediaType": "application/json",
+      "archiveName": "hardware-tree.json",
+      "title": "Complete fixed-commit manufacturer hardware inventory",
+      "kind": "official-cad-inventory"
+    },
+    {
+      "id": "firmware-tree",
+      "url": "https://api.github.com/repos/m5stack/M5Unit-LCD-Internal-FW/git/trees/8c123afa3e9cc7dec0cc1d56c3ce469ba750a9d7?recursive=1",
+      "resolvedUrl": "https://api.github.com/repos/m5stack/M5Unit-LCD-Internal-FW/git/trees/8c123afa3e9cc7dec0cc1d56c3ce469ba750a9d7?recursive=1",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T06:45:33Z",
+      "bytes": 7017,
+      "sha256": "50bb20092b7f21c1c81c5cb6bb41ddc6c18d153d951192c181db580abc82e579",
+      "mediaType": "application/json",
+      "archiveName": "u120-firmware-tree.json",
+      "notes": "Checksum and byte count cover the UTF-8 JSON content returned by the GitHub connector; original HTTP whitespace/transport encoding is not available.",
+      "title": "Exact internal firmware repository",
+      "kind": "official-source-inventory"
+    },
+    {
+      "id": "firmware-readme",
+      "url": "https://raw.githubusercontent.com/m5stack/M5Unit-LCD-Internal-FW/8c123afa3e9cc7dec0cc1d56c3ce469ba750a9d7/README.md",
+      "resolvedUrl": "https://raw.githubusercontent.com/m5stack/M5Unit-LCD-Internal-FW/8c123afa3e9cc7dec0cc1d56c3ce469ba750a9d7/README.md",
+      "status": "fetched",
+      "fetchedAt": "2026-11-26T06:46:13Z",
+      "sha256": "42bbd5a3eb893bcb6dcdc90318b0c4561e5015f0bdbdac506d1f8a8413180ce9",
+      "bytes": 259,
+      "mediaType": "text/plain",
+      "archiveName": "u120-firmware-readme.txt",
+      "title": "Exact internal firmware repository",
+      "kind": "official-source-readme"
+    }
+  ],
+  "assets": [
+    {
+      "id": "manufacturer-cad",
+      "sourceId": "manufacturer-cad",
+      "role": "manufacturer-cad",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/18de3bb3087ea617c38642ba3eedd10dc9f17cbf/Products/U120_Unit_LCD/Structures/Unit_LCD.stl",
+      "localUrl": "../assets/m5stack-u120/source.stl"
+    },
+    {
+      "id": "cad-license",
+      "sourceId": "cad-license",
+      "role": "cad-license",
+      "url": "https://raw.githubusercontent.com/m5stack/M5_Hardware/18de3bb3087ea617c38642ba3eedd10dc9f17cbf/LICENSE",
+      "localUrl": "../assets/m5stack-u120/LICENSE-M5Stack.txt"
+    },
+    {
+      "id": "photo-1",
+      "sourceId": "photo-1",
+      "role": "reference-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_02.webp",
+      "localUrl": "../assets/m5stack-u120/u120-photo-1.webp"
+    },
+    {
+      "id": "photo-3",
+      "sourceId": "photo-3",
+      "role": "reference-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_03.webp",
+      "localUrl": "../assets/m5stack-u120/u120-photo-3.webp"
+    },
+    {
+      "id": "photo-5",
+      "sourceId": "photo-5",
+      "role": "reference-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_06.webp",
+      "localUrl": "../assets/m5stack-u120/u120-photo-5.webp"
+    },
+    {
+      "id": "photo-6",
+      "sourceId": "photo-6",
+      "role": "reference-photo",
+      "url": "https://static-cdn.m5stack.com/resource/docs/products/unit/lcd/lcd_07.webp",
+      "localUrl": "../assets/m5stack-u120/u120-photo-6.webp"
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "hardware-revision",
+      "label": "User hardware revision",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": []
+    },
+    {
+      "id": "populated-pcb-layout",
+      "label": "Complete populated PCB CAD/layout",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": []
+    },
+    {
+      "id": "physical-paper-thickness",
+      "label": "Physical paper/adhesive thickness",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": []
+    },
+    {
+      "id": "factory-runtime-compatibility",
+      "label": "Factory image execution compatibility",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": []
+    },
+    {
+      "id": "psram-capacity",
+      "label": "Installed PSRAM capacity independently verified for this SKU",
+      "value": null,
+      "basis": "unknown",
+      "sourceIds": [
+        "official-docs"
+      ],
+      "notes": "Runtime field remains null; no sibling capacity inherited."
+    }
+  ],
+  "collectionNotes": [
+    "内部 SPI 像素、旋转、休眠/显示开关、复位、低有效 GPIO/PWM 背光已接入；外部 SDA21/SCL22 的 I²C 从机传输尚未实现，不把 0x3E 假接成内部器件。官方 firmware.bin 为 app-only，完整冷启动包仍未知。",
+    "Populated PCB, hidden hardware, pin1 mating orientation and actual paper stock remain unknown. Continuous label bridges retain exact photo evidence; no invented plastic support.",
+    "Browser image decode, matching-angle photo overlay, side view and hardware acceptance remain unverified."
+  ]
+}
