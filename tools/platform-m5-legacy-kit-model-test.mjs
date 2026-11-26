@@ -32,11 +32,11 @@ test('all five actual old-SKU assets load and inspection restores source transfo
   }
  }finally{globalThis.fetch=fetch;THREE.TextureLoader.prototype.loadAsync=load;}
 });
-test('offline public builder reproduces every geometry byte from fixed inputs',async()=>{
+test('offline public builder reproduces every geometry byte from fixed inputs',async t=>{
  const scratch=await mkdtemp(join(tmpdir(),'m5-legacy-rebuild-'));
- try{for(const id of ids){const output=join(scratch,id),args=[fileURLToPath(new URL('tools/build-m5-legacy-kit-models.py',root)),id,'--output',output,'--source-root',fileURLToPath(sourceRoot)],override=process.env.M5_LEGACY_PLAN_ROOT&&join(process.env.M5_LEGACY_PLAN_ROOT,id,'model-plan.json');if(override&&existsSync(override))args.push('--plan',override);execFileSync('python',args);
+ try{for(const id of ids)await t.test(id,{skip:id==='m5stack-k016-b'&&(process.platform!=='linux'||process.arch!=='x64')?'K016-B exact OpenCascade tessellation and PNG bytes require the pinned Linux x86_64 producer; CI executes this check.':false},async()=>{const output=join(scratch,id),args=[fileURLToPath(new URL('tools/build-m5-legacy-kit-models.py',root)),id,'--output',output,'--source-root',fileURLToPath(sourceRoot)],override=process.env.M5_LEGACY_PLAN_ROOT&&join(process.env.M5_LEGACY_PLAN_ROOT,id,'model-plan.json');if(override&&existsSync(override))args.push('--plan',override);execFileSync('python',args);
    const base=new URL('assets/'+id+'/',platform);for(const file of ['geometry.bin','model.json'])assert.deepEqual(await readFile(join(output,file)),await readFile(new URL(file,base)),id+' '+file);
-  }}finally{await rm(scratch,{recursive:true,force:true});}
+  });}finally{await rm(scratch,{recursive:true,force:true});}
 });
 test('related K001 top preserves every vertex with only the declared rigid translation',async()=>{
  const base=JSON.parse(await readFile(new URL('assets/m5stack-k001/model.json',platform))),before=await readFile(new URL('assets/m5stack-k001/geometry.bin',platform));

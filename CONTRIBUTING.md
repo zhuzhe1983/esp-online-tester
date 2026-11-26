@@ -77,6 +77,10 @@ The first Clippy step runs before the tests in CI, so a lint failure stops the r
 result appears. If your change touches the WebAssembly JIT, also run `tools/wasm-jit-test.sh`; the
 remaining CI steps are in the workflow file.
 
+The platform Node tests also decode PNG alpha and rebuild fixed model inputs. Use Python 3.12
+and install `python -m pip install -r tools/requirements-platform-test.txt` in your active virtual
+environment before running `node --test tools/platform-*-test.mjs`.
+
 ## Tests
 
 [tests/README.md](tests/README.md) describes the test layers. Two rules catch most surprises:

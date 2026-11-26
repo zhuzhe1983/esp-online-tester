@@ -69,8 +69,12 @@ def build(id,output,source_root=ROOT,plan_path=None):
    part('camera-lobe',g.solid(7,18,d-2,2,[-w/2-2.5,9,0]),role='shell',color=plan['shellColor'],sourceIds=['photo-3','photo-4'],basis='outline approximation; hidden depth unknown')
    derived.extend([dict(id='camera-rim',kind='cylinder',color='#1b1d20',geometry=dict(radiusMm=2.8,depthMm=.6,centerMm=[0,8,-d/2-.3]),sourceIds=['photo-4'],basis='visible rear lens bezel; radius/depth estimated'),dict(id='camera-lens',kind='cylinder',color='#261b35',geometry=dict(radiusMm=1.7,depthMm=.08,centerMm=[0,8,-d/2-.64]),sourceIds=['photo-4'],basis='dark optical appearance only; no thermal input or optical transfer simulation')])
    outline=[[-w/2,-5],[-w/2-6,-9],[-w/2-6,-17],[-w/2,-21]]
-   holes=[]
-   for y in [-10.5,-16]:holes.append([[-w/2-3+1.6*math.cos(a),y+1.6*math.sin(a)] for a in [2*math.pi*i/24 for i in range(24)]])
+   # Keep the authored polygons in the plan: platform libm implementations can
+   # differ in cos(2*pi/3)'s final bit and change the pinned JSON spelling.
+   holes=plan.get('mountEarHolesMm')
+   if holes is None:
+    holes=[]
+    for y in [-10.5,-16]:holes.append([[-w/2-3+1.6*math.cos(a),y+1.6*math.sin(a)] for a in [2*math.pi*i/24 for i in range(24)]])
    derived.append(dict(id='mount-ear',kind='plate',color=plan['shellColor'],geometry=dict(outlineMm=outline,holesMm=holes,depthMm=2,centerMm=[0,0,-d/2+1]),sourceIds=['photo-3','photo-4'],basis='two visibly open holes and ear outline estimated from front/rear photos; not threaded CAD'))
    front=['front-bezel','front-button','live-display'];rear=['rear-cover','camera-rim','camera-lens']
   derived.append(dict(id='pcb-main',kind='pcb-placeholder',geometry=dict(sizeMm=[w-5,h-7,1],centerMm=[0,0,0],labelSide='both',labelSizeMm=[min(w-7,22),5]),sourceIds=['official-shop'],basis='unknown board layout; outline/position estimated from enclosure space'))

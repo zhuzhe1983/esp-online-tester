@@ -12,6 +12,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install platform test dependencies
+        run: python -m pip install -r tools/requirements-platform-test.txt
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
